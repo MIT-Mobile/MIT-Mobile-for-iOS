@@ -4,6 +4,7 @@
 #import "MobileKeychainServices.h"
 #import "ExplanatorySectionLabel.h"
 #import "MITNavigationActivityView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MobileRequestLoginViewController ()
 @property (nonatomic,retain) NSDictionary *tableCells;
@@ -11,7 +12,7 @@
 @property (nonatomic,assign) UITextField *usernameField;
 @property (nonatomic,assign) UITextField *passwordField;
 @property (nonatomic,assign) UISwitch *saveCredentials;
-@property (nonatomic,assign) UIButton *loginButton;
+@property (nonatomic,assign) UITableViewCell *logInCell;
 
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *password;
@@ -25,22 +26,11 @@
 - (void)setupTableCells;
 
 - (IBAction)cancelButtonPressed:(id)sender;
-- (IBAction)loginButtonPressed:(id)sender;
+- (IBAction)logInButtonPressed:(id)sender;
 @end
 
 @implementation MobileRequestLoginViewController
 #pragma mark -
-@synthesize delegate = _delegate;
-
-@synthesize activityView = _activityView;
-@synthesize dismissAfterAlert = _dismissAfterAlert;
-@synthesize loginButton = _loginButton;
-@synthesize password = _password;
-@synthesize passwordField = _passwordField;
-@synthesize saveCredentials = _saveCredentials;
-@synthesize tableCells = _tableCells;
-@synthesize username = _username;
-@synthesize usernameField = _usernameField;
 
 @dynamic shouldSaveLogin;
 @dynamic showActivityView;
@@ -76,7 +66,11 @@
 - (void)setupTableCells
 {
     NSMutableDictionary *cells = [NSMutableDictionary dictionary];
-    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    }
+    CGRect fieldFrame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, self.tableView.frame.size.width, self.tableView.rowHeight), textCellInsets);
     
     {
         UITableViewCell *usernameCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
@@ -92,6 +86,7 @@
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
         userField.keyboardType = UIKeyboardTypeEmailAddress;
+        userField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
@@ -101,7 +96,7 @@
             userField.text = self.username;
         }
         
-        userField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 40), textCellInsets);
+        userField.frame = fieldFrame;
         
         self.usernameField = userField;
         [usernameCell.contentView addSubview:userField];
@@ -117,6 +112,7 @@
         passField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         passField.delegate = self;
         passField.placeholder = @"Password";
+        passField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         passField.returnKeyType = UIReturnKeyDone;
         passField.secureTextEntry = YES;
         
@@ -124,7 +120,7 @@
             passField.text = self.password;
         }
         
-        passField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 40), textCellInsets);
+        passField.frame = fieldFrame;
         
         self.passwordField = passField;
         
@@ -140,35 +136,19 @@
         UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         buttonCell.accessoryType = UITableViewCellAccessoryNone;
         buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
-        buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        buttonCell.backgroundColor = [UIColor clearColor];
-        buttonCell.layer.borderWidth = 0;
-        buttonCell.userInteractionEnabled = YES;
-        [buttonCell layoutIfNeeded];
         
-        UIView *transparentView = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,44)] autorelease];
-        transparentView.backgroundColor = [UIColor clearColor];
-        [buttonCell setBackgroundView:transparentView];
+        buttonCell.textLabel.text = @"Log In";
         
-        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
-        CGRect loginFrame = CGRectMake(0,0,320,44);
-        loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
-        
-        UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        loginButton.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        loginButton.frame = loginFrame;
-        loginButton.enabled = NO;
-        
-        [loginButton setTitle:@"Log In"
-                     forState:UIControlStateNormal];
-        [loginButton setTitleColor:[UIColor grayColor]
-                     forState:UIControlStateDisabled];
-        [loginButton addTarget:self
-                        action:@selector(loginButtonPressed:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        self.loginButton = loginButton;
-        [buttonCell addSubview:loginButton];
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            buttonCell.textLabel.textColor = [UIColor MITTintColor];
+            buttonCell.textLabel.textAlignment = NSTextAlignmentLeft;
+        } else {
+            buttonCell.textLabel.textAlignment = NSTextAlignmentCenter;
+        }
+
+        self.logInCell = buttonCell;
+
+        [self setLogInButtonEnabled:NO];
         
         [cells setObject:buttonCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
@@ -197,7 +177,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     self.title = @"Touchstone";
     self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -207,7 +190,6 @@
 
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     self.activityView = [[[MITNavigationActivityView alloc] init] autorelease];
 }
@@ -223,7 +205,7 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (IBAction)loginButtonPressed:(id)sender {
+- (IBAction)logInButtonPressed:(id)sender {
     if (self.delegate)
     {
         [self.delegate loginRequest:self
@@ -252,7 +234,7 @@
         if (self.navigationItem.titleView == nil)
         {
             self.navigationItem.leftBarButtonItem.enabled = NO;
-            self.loginButton.enabled = NO;
+            [self setLogInButtonEnabled:NO];
             
             [self.usernameField resignFirstResponder];
             self.usernameField.userInteractionEnabled = NO;
@@ -269,7 +251,7 @@
         if (self.navigationItem.titleView)
         {
             self.navigationItem.leftBarButtonItem.enabled = YES;
-            self.loginButton.enabled = YES;
+            [self setLogInButtonEnabled:YES];
             
             self.usernameField.userInteractionEnabled = YES;
             self.passwordField.userInteractionEnabled = YES;
@@ -313,17 +295,30 @@
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
+#pragma mark - Private Methods
+
+- (BOOL)logInButtonEnabled {
+    return self.logInCell.textLabel.enabled;
+}
+
+- (void)setLogInButtonEnabled:(BOOL)enabled {
+    self.logInCell.textLabel.enabled = enabled;
+    self.logInCell.selectionStyle = (enabled) ? UITableViewCellSelectionStyleBlue : UITableViewCellSelectionStyleNone;
+}
+
 
 #pragma mark - UITextField Delegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // TODO: Make this disable the Log In button when a single backspace clears the entire password field.
+    //   In that case, string == @"" and range == {6, 1}, which seems like a bug in -textField:shouldChangeCharactersInRange:replacementString:.
     NSInteger lengthChange = ([string length]) ? [string length] : -range.length;
     if (textField == self.usernameField)
     {
-        self.loginButton.enabled = (([textField.text length] + lengthChange) > 0) && ([self.passwordField.text length] > 0);
+        [self setLogInButtonEnabled:(([textField.text length] + lengthChange) > 0) && ([self.passwordField.text length] > 0)];
     }
     else
     {
-        self.loginButton.enabled = (([textField.text length] + lengthChange) > 0) && ([self.usernameField.text length] > 0);
+        [self setLogInButtonEnabled:(([textField.text length] + lengthChange) > 0) && ([self.usernameField.text length] > 0)];
     }
     
     if ([string isEqualToString:@"\n"]) {
@@ -397,6 +392,14 @@
 }
 
 #pragma mark - UITableView Delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // section 1 == log in button
+    if (indexPath.section == 1 && [self logInButtonEnabled]) {
+        [self logInButtonPressed:nil];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     // section 1 == log in button
