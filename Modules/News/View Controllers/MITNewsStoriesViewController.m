@@ -67,7 +67,6 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:@"StoryCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:@"StoryNoDekCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:@"StoryExternalCell"];
-    [self.tableView registerClass:[UITableViewHeaderFooterView class] forHeaderFooterViewReuseIdentifier:@"LoadMoreFooter"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -312,42 +311,5 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 }
 
 #pragma mark UITableView Header
-- (UITableViewHeaderFooterView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    UITableViewHeaderFooterView *footerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"LoadMoreFooter"];
-    footerView.tag = NSNotFound;
-    return footerView;
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
-{
-    if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-        UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
-        headerFooterView.tag = section;
-        
-        if (![self.sectionsWithActiveRequests containsIndex:section]) {
-            UIGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadMoreStories:)];
-            [headerFooterView addGestureRecognizer:gestureRecognizer];
-            [self.footerGestureRecognizers setObject:gestureRecognizer forKey:view];
-            headerFooterView.textLabel.enabled = YES;
-        } else {
-            headerFooterView.textLabel.enabled = NO;
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didEndDisplayingFooterView:(UIView *)view forSection:(NSInteger)section
-{
-    if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-        UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
-        
-        headerFooterView.tag = NSNotFound;
-        
-        UIGestureRecognizer* gestureRecognizer = [self.footerGestureRecognizers objectForKey:view];
-        [view removeGestureRecognizer:gestureRecognizer];
-        
-        [self.footerGestureRecognizers removeObjectForKey:view];
-    }
-}
 
 @end
