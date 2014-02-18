@@ -2,7 +2,6 @@
 
 #import "ShuttleRoute.h"
 #import "ShuttleRouteViewController.h"
-#import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 
@@ -45,10 +44,10 @@
 	
 	_contactInfo = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Parking Office", @"description",
 																						 @"16172586510", @"phoneNumber", 
-																						 @"(617.258.6510)", @"formattedPhoneNumber", nil, nil],
+																						 @"617.258.6510", @"formattedPhoneNumber", nil, nil],
 					 [NSDictionary dictionaryWithObjectsAndKeys:@"Saferide", @"description",
 																@"16172532997", @"phoneNumber",
-					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil];
+					  @"617.253.2997", @"formattedPhoneNumber", nil, nil], nil];
 	
     _extraLinks = [NSArray arrayWithObjects:
                     [NSDictionary dictionaryWithObjectsAndKeys:
@@ -68,7 +67,13 @@
     UIGraphicsBeginImageContext(CGSizeMake(18, 19));
     _shuttleLoadingImage = UIGraphicsGetImageFromCurrentImageContext();
 	
-    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundView = nil;
+    
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 
 	ShuttleDataManager* dataManager = [ShuttleDataManager sharedDataManager];
 	[dataManager registerDelegate:self];
@@ -139,13 +144,8 @@
 	
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	NSString *headerTitle = self.sections[section][@"title"];
-	return [UITableView groupedSectionHeaderWithTitle:headerTitle];
-}
-
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return GROUPED_SECTION_HEADER_HEIGHT;
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	return self.sections[section][@"title"];
 }
 
 // Customize the appearance of table view cells.
@@ -196,18 +196,16 @@
 		
 		
 		cellID = @"PhoneCell";
-		cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
+		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
 		if (cell == nil) {
-			cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+            cell.detailTextLabel.textColor = [UIColor darkGrayColor];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 		}
 		
-		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-		
-		SecondaryGroupedTableViewCell* formattedCell = (SecondaryGroupedTableViewCell*)cell;
-		formattedCell.textLabel.text = phoneNumberInfo[@"description"];
-		formattedCell.secondaryTextLabel.text = phoneNumberInfo[@"formattedPhoneNumber"];
-		formattedCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-		
+		cell.textLabel.text = phoneNumberInfo[@"description"];
+		cell.detailTextLabel.text = phoneNumberInfo[@"formattedPhoneNumber"];
 	}
 	else if(nil != urls)
 	{
@@ -241,6 +239,37 @@
 	
 	
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	NSArray* phoneNumbers = self.sections[indexPath.section][@"phoneNumbers"];
+
+    if (phoneNumbers != nil) {
+        // There's probably a better way to do this —
+        // one that doesn't require hardcoding expected padding.
+        
+        // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+        static UIEdgeInsets labelInsets;
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
+        } else {
+            labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+        }
+        
+        NSString *title = phoneNumbers[indexPath.row][@"description"];
+        NSString *detail = phoneNumbers[indexPath.row][@"formattedPhoneNumber"];
+        
+        CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+        CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+        
+        CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+        
+        return MAX(titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
+    } else {
+        return self.tableView.rowHeight;
+    }
+
 }
 
 
@@ -308,9 +337,9 @@
 	
 	if ([self.shuttleRoutes count] > 0) {
 
-		[sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Daytime Shuttles:", @"title", 
+		[sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Daytime Shuttles", @"title",
 							 self.nonSaferideRoutes, @"routes", nil, nil]];
-		[sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Nighttime Saferide Shuttles:", @"title", 
+		[sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Nighttime Saferide Shuttles", @"title",
 							  self.saferideRoutes, @"routes", nil, nil]];
 		
 	}
