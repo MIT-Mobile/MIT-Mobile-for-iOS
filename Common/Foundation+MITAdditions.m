@@ -102,6 +102,10 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
 {
     static NSString const *fragmentRootXpathExpression = @"/html/body/p/node()";
 
+    if ([self length] == 0) {
+        return [self copy];
+    }
+
     // variables for the final returned string
     // and any libxml pointers which need to be cleaned up
     // prior to returning. These are here so clang won't
@@ -138,7 +142,7 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
         DDLogWarn(@"failed to create xpath context");
         goto error;
     }
-
+    
     // Evaluate the XPath and pick out the first node we find. This is to
     //  prevent us from causing problems by removing the <html>,<body>, and
     //  <p> elements (they should be ignored by the tree-walker).
