@@ -185,10 +185,17 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            UITableView *tableView = (UITableView*)sender;
+
             MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
 
-            NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-            MITNewsStory *story = [self storyAtIndexPath:selectedIndexPath];
+            NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
+            MITNewsStory *story = nil;
+            if (tableView == self.tableView) {
+                story = [self storyAtIndexPath:selectedIndexPath];
+            } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+                story = self.searchResults[selectedIndexPath.row];
+            }
 
             NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
             managedObjectContext.parentContext = self.managedObjectContext;
@@ -394,7 +401,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 }
 
-- (void)performDataUpdate:(void (^)(NSError *error))completion;
+- (void)performDataUpdate:(void (^)(NSError *error))completion
 {
     if (!self.isUpdating) {
         self.updating = YES;
@@ -449,6 +456,40 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
                                         }];
             }];
         }];
+    }
+}
+
+- (void)loadSearchResults:(void (^)(NSError *error))completion
+{
+    if (!self.isUpdating) {
+        self.updating = YES;
+        NSString *query = self.searchQuery;
+        NSInteger offset = [self.searchResults count];
+
+        MITNewsModelController *modelController = [MITNewsModelController sharedController];
+        __weak MITNewsViewController *weakSelf = self;
+        [modelController storiesInCategory:nil
+                                     query:query
+                                    offset:offset
+                                     limit:20
+                                completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                    MITNewsViewController *blockSelf = weakSelf;
+                                    if (blockSelf && [blockSelf.searchQuery isEqualToString:query]) {
+                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                            blockSelf.updating = NO;
+
+                                            if (offset == 0) {
+                                                blockSelf.searchResults = [[NSMutableArray alloc] initWithArray:stories];
+                                            } else {
+                                                [blockSelf.searchResults addObjectsFromArray:stories];
+                                            }
+
+                                            if (completion) {
+                                                completion(error);
+                                            }
+                                        }];
+                                    }
+                                }];
     }
 }
 
@@ -586,6 +627,15 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     return nil;
 }
 
+- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    if (tableView == self.searchDisplayController.searchResultsTableView) {
+        return nil;
+    }
+
+    return nil;
+}
+
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
@@ -675,7 +725,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self performSegueWithIdentifier:@"showStoryDetail" sender:self];
+    [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
 }
 
 #pragma mark UITableViewDataSource
@@ -858,18 +908,9 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
         self.searchQuery = queryString;
         
         __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
-        [[MITNewsModelController sharedController] storiesInCategory:nil
-                                                               query:queryString
-                                                              offset:0
-                                                               limit:20
-                                                          completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
-                                                              if ([self.searchQuery isEqualToString:queryString]) {
-                                                                  if (searchDisplayController.isActive) {
-                                                                      self.searchResults = [NSMutableArray arrayWithArray:stories];
-                                                                      [searchDisplayController.searchResultsTableView reloadData];
-                                                                  }
-                                                              }
-                                                          }];
+        [self loadSearchResults:^(NSError *error) {
+            [searchDisplayController.searchResultsTableView reloadData];
+        }];
     }
 }
 
