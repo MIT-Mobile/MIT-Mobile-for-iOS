@@ -1662,6 +1662,8 @@
 		2C5123111843DB4000902BB4 /* Mobile API */ = {
 			isa = PBXGroup;
 			children = (
+				2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */,
+				2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */,
 				2C99DB061846867200277B25 /* MITMobile.h */,
 				2C99DB071846867200277B25 /* MITMobile.m */,
 				2CA9AFB7185F929B0005D5DA /* Resources */,
@@ -1936,8 +1938,6 @@
 				2CF9F908181ABC3800EDB359 /* MITFetchedResultsTableViewController.h */,
 				2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */,
 				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
-				2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */,
-				2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */,
 				4431ACD52C16E08AB479048D /* MITMappedObject.h */,
 			);
 			name = Utility;
