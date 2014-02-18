@@ -42,6 +42,7 @@ static const CGSize MITNewsStoryNoDekCellDefaultImageSize = {.width = 86., .heig
 
 // StoryExternalCell sizing information
 // Retrieved from 'NewsStoryExternalTableCell.xib' on 2014/02/14
+static NSString* const MITNewsStoryExternalType = @"news_clip";
 static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
 static const CGFloat MITNewsStoryExternalCellMaximumContentWidth = 290.;
 static const CGFloat MITNewsStoryExternalCellVerticalPadding = 30.; // Sum of the top, bottom and inter-view spacings
@@ -528,7 +529,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
+        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
         UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
         if (recognizer) {
             [headerView removeGestureRecognizer:recognizer];
@@ -593,31 +594,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 }
 
-/*
- // StoryCell sizing constants
- // Retrieved from 'NewsStoryTableCell.xib" on 2014/02/14
- static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
- static const CGFloat MITNewsStoryCellMinimumHeight = 86.;
- static const CGFloat MITNewsStoryCellMaximumTextWidth = 196.;
- static const CGFloat MITNewsStoryCellVerticalPadding = 26.;
- static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 61.};
-
- // StoryNoDekCell sizing constants
- // Retrieved from 'NewsStoryNoDekTableCell.xib' on 2014/02/14
- static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
- static const CGFloat MITNewsStoryNoDekCellMinimumHeight = 86.;
- static const CGFloat MITNewsStoryNoDekCellMaximumTextWidth = 196.;
- static const CGFloat MITNewsStoryNoDekCellVerticalPadding = 22.;
- static const CGSize MITNewsStoryNoDekCellDefaultImageSize = {.width = 86., .height = 61.};
-
- // StoryExternalCell sizing information
- // Retrieved from 'NewsStoryExternalTableCell.xib' on 2014/02/14
- static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
- static const CGFloat MITNewsStoryExternalCellMaximumContentWidth = 290.;
- static const CGFloat MITNewsStoryExternalCellVerticalPadding = 30.; // Sum of the top, bottom and inter-view spacings
- static const CGSize MITNewsStoryExternalCellDefaultImageSize = {.width = 290., .height = 0.};
- */
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITNewsStory *story = nil;
@@ -639,47 +615,62 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
             type = blockStory.type;
         }];
 
-        CGFloat rowHeight = 0;
-        if ([type isEqualToString:@"news_clip"]) {
-            // StoryExternalCell
-        } else if ([dek length]) {
-            // StoryCell
-        } else {
-            // StoryNoDekCell
+
+        NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:nil];
+        if (!dekContent) {
+            dekContent = dek;
         }
 
-        CGFloat titleHeight = 0.;
-        if ([title length]) {
-            NSAttributedString *titleString = [[NSAttributedString alloc] initWithString:story.title attributes:[MITNewsViewController titleTextAttributes]];
 
-            CGRect titleRect = [titleString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
+        if ([type isEqualToString:@"news_clip"]) {
+            CGFloat dekHeight = 0.;
+            if (dekContent) {
+                NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:dekContent
+                                                                                attributes:[MITNewsViewController dekTextAttributes]];
+
+                CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
                                                          options:(NSStringDrawingUsesFontLeading |
                                                                   NSStringDrawingUsesLineFragmentOrigin)
                                                          context:nil];
-            titleHeight = ceil(CGRectGetHeight(titleRect));
+                dekHeight = ceil(CGRectGetHeight(dekRect));
+            }
+
+            return MAX(MITNewsStoryCellMinimumHeight,dekHeight + MITNewsStoryExternalCellVerticalPadding + MITNewsStoryExternalCellDefaultImageSize.height);
         } else {
-            DDLogVerbose(@"No title here!");
-        }
+            CGFloat titleHeight = 0.;
+            if (title) {
+                NSAttributedString *titleString = [[NSAttributedString alloc] initWithString:title attributes:[MITNewsViewController titleTextAttributes]];
 
-        CGFloat dekHeight = 0.;
-        if ([dek length]) {
-            NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsViewController dekTextAttributes]];
-            CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
-                                                     options:(NSStringDrawingUsesFontLeading |
-                                                              NSStringDrawingUsesLineFragmentOrigin)
-                                                     context:nil];
-            dekHeight = ceil(CGRectGetHeight(dekRect));
-        }
+                CGRect titleRect = [titleString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
+                                                             options:(NSStringDrawingUsesFontLeading |
+                                                                      NSStringDrawingUsesLineFragmentOrigin)
+                                                             context:nil];
+                titleHeight = ceil(CGRectGetHeight(titleRect));
+            } else {
+                DDLogVerbose(@"No title here!");
+            }
 
-        CGFloat totalVerticalPadding = 24.;
-        if ([dek length]) {
-            totalVerticalPadding += 4.;
-        }
+            CGFloat dekHeight = 0.;
+            if (dekContent) {
+                NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:dekContent
+                                                                                attributes:[MITNewsViewController dekTextAttributes]];
+                CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
+                                                         options:(NSStringDrawingUsesFontLeading |
+                                                                  NSStringDrawingUsesLineFragmentOrigin)
+                                                         context:nil];
+                dekHeight = ceil(CGRectGetHeight(dekRect));
+            }
 
-        return MAX(MITNewsStoryCellMinimumHeight,titleHeight + dekHeight + totalVerticalPadding);
-    } else {
-        return UITableViewAutomaticDimension;
+            CGFloat totalVerticalPadding = 24.;
+            if (dekContent) {
+                totalVerticalPadding += 4.;
+            }
+            
+            return MAX(MITNewsStoryCellMinimumHeight,titleHeight + dekHeight + totalVerticalPadding);
+        }
     }
+
+    return UITableViewAutomaticDimension;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -746,7 +737,9 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
         __block NSString *identifier = nil;
         [self.managedObjectContext performBlockAndWait:^{
             MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            if ([blockStory.dek length])  {
+            if ([blockStory.type isEqualToString:MITNewsStoryExternalType]) {
+                identifier = MITNewsStoryExternalCellIdentifier;
+            } else if ([blockStory.dek length])  {
                 identifier = MITNewsStoryCellIdentifier;
             } else {
                 identifier = MITNewsStoryNoDekCellIdentifier;
