@@ -49,7 +49,7 @@
             </constraints>
             <connections>
                 <outlet property="accessoryView" destination="9Sr-oA-zdz" id="RUf-05-OxL"/>
-                <outlet property="textLabel" destination="las-NX-67L" id="pXL-kN-bg9"/>
+                <outlet property="titleLabel" destination="las-NX-67L" id="yIw-2u-QS0"/>
             </connections>
         </view>
     </objects>
