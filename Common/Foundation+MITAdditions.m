@@ -125,7 +125,15 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
     // at "<html><body>$fragment...". An additional requirement is that TEXT
     // nodes *must* have a direct parent Element so the '<p>' tag is being used
     // as a catch-all for any TEXT (or CDATA) nodes.
-    NSString *htmlFragment = [NSString stringWithFormat:@"<html><body><p>%@</p></body></html>",self];
+    NSString *htmlFragment = nil;
+    
+    // Since news decided to start surrounding things with 'p' tags...
+    if ([self hasPrefix:@"<p>"]) {
+        htmlFragment = [NSString stringWithFormat:@"<html><body>%@</body></html>",self];
+    } else {
+        htmlFragment = [NSString stringWithFormat:@"<html><body><p>%@</p></body></html>",self];
+    }
+    
     NSData *stringData = [htmlFragment dataUsingEncoding:NSUTF8StringEncoding];
     NSInteger parserOptions = (HTML_PARSE_NONET |
                                HTML_PARSE_RECOVER |
@@ -262,6 +270,7 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
                 }
 
                 resultString = sanitizedFragmentString;
+                xmlResetLastError();
             }
 
             xmlXPathFreeObject(xpathFragmentRoot);
