@@ -21,21 +21,4 @@
     return self;
 }
 
-- (NSFetchRequest*)fetchRequestForURL:(NSURL*)url
-{
-    if (!url) {
-        return (NSFetchRequest*)nil;
-    }
-
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativePath]];
-    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
-
-    if (matches) {
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-        return fetchRequest;
-    } else {
-        return (NSFetchRequest*)nil;
-    }
-}
 @end
