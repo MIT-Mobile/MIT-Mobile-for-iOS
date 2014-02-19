@@ -66,6 +66,8 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 @property (nonatomic,strong) NSString *searchQuery;
 @property (nonatomic,strong) NSMutableArray *searchResults;
 
+@property (nonatomic,readonly) MITNewsStory *selectedStory;
+
 
 + (NSDictionary*)headerTextAttributes;
 + (NSDictionary*)titleTextAttributes;
@@ -162,7 +164,12 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 
     [super viewWillAppear:animated];
-    [self.navigationController setToolbarHidden:NO animated:animated];
+    
+    // Only make sure the toolbar is visible if we are not searching
+    // otherwise, returning after viewing a story pops it up
+    if (!self.isSearching) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -185,22 +192,14 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
-            UITableView *tableView = (UITableView*)sender;
-
             MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-
-            NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
-            MITNewsStory *story = nil;
-            if (tableView == self.tableView) {
-                story = [self storyAtIndexPath:selectedIndexPath];
-            } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-                story = self.searchResults[selectedIndexPath.row];
+            MITNewsStory *story = [self selectedStory];
+            if (story) {
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                managedObjectContext.parentContext = self.managedObjectContext;
+                storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext objectWithID:[story objectID]];
             }
-
-            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-            managedObjectContext.parentContext = self.managedObjectContext;
-            storyDetailViewController.managedObjectContext = managedObjectContext;
-            storyDetailViewController.story = (MITNewsStory*)[managedObjectContext objectWithID:[story objectID]];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
                       NSStringFromClass([MITNewsStoryViewController class]),
@@ -300,7 +299,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 #pragma mark Updating state
 - (void)setUpdating:(BOOL)updating
 {
-    [self setUpdating:updating animated:YES];
+    [self setUpdating:updating animated:NO];
 }
 
 - (void)setUpdating:(BOOL)updating animated:(BOOL)animated
@@ -367,7 +366,33 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     
     [self.tableView scrollRectToVisible:searchBarFrame animated:NO];
     [self.searchDisplayController.searchBar becomeFirstResponder];
-    //[self.searchDisplayController setActive:YES animated:YES];
+}
+
+- (IBAction)loadMoreFooterTapped:(id)sender
+{
+    __weak UITableViewHeaderFooterView *footerView = (UITableViewHeaderFooterView*)self.searchDisplayController.searchResultsTableView.tableFooterView;
+    
+    if (footerView.textLabel.isEnabled) {
+        NSString *query = self.searchQuery;
+        NSUInteger offset = [self.searchResults count];
+        
+        footerView.textLabel.enabled = NO;
+        
+        __weak MITNewsViewController *weakSelf = self;
+        [[MITNewsModelController sharedController] storiesInCategory:nil
+                                                               query:query
+                                                              offset:offset
+                                                               limit:20
+                                                          completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+                                                              MITNewsViewController *blockSelf = weakSelf;
+                                                              if (blockSelf && footerView) {
+                                                                  NSIndexSet *insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, [stories count])];
+                                                                  [blockSelf.searchResults insertObjects:stories atIndexes:insertedIndexes];
+                                                                  footerView.textLabel.enabled = YES;
+                                                                  [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+                                                              }
+                                                          }];
+    }
 }
 
 #pragma mark Table data helpers
@@ -459,30 +484,36 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 }
 
-- (void)loadSearchResults:(void (^)(NSError *error))completion
+- (void)loadSearchResultsForQuery:(NSString*)query loaded:(void (^)(NSError *error))completion
 {
-    if (!self.isUpdating) {
-        self.updating = YES;
-        NSString *query = self.searchQuery;
-        NSInteger offset = [self.searchResults count];
-
+    if ([query length] == 0) {
+        self.searchQuery = nil;
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            self.searchResults = [[NSMutableArray alloc] init];
+            
+            if (completion) {
+                completion(nil);
+            }
+        }];
+    }
+    
+    if (![self.searchQuery isEqualToString:query]) {
+        NSString *currentQuery = self.searchQuery;
+        
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
         __weak MITNewsViewController *weakSelf = self;
         [modelController storiesInCategory:nil
                                      query:query
-                                    offset:offset
+                                    offset:0
                                      limit:20
                                 completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
                                     MITNewsViewController *blockSelf = weakSelf;
-                                    if (blockSelf && [blockSelf.searchQuery isEqualToString:query]) {
+                                    if (blockSelf && (blockSelf.searchQuery == currentQuery)) {
+                                        blockSelf.searchQuery = query;
+                                        
                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                            blockSelf.updating = NO;
-
-                                            if (offset == 0) {
-                                                blockSelf.searchResults = [[NSMutableArray alloc] initWithArray:stories];
-                                            } else {
-                                                [blockSelf.searchResults addObjectsFromArray:stories];
-                                            }
+                                            blockSelf.searchResults = [[NSMutableArray alloc] initWithArray:stories];
 
                                             if (completion) {
                                                 completion(error);
@@ -492,7 +523,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
                                 }];
     }
 }
-
 
 - (NSArray*)storiesInCategory:(MITNewsCategory*)category
 {
@@ -519,25 +549,47 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     return cachedStories;
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
+- (MITNewsStory*)selectedStory
 {
-    MITNewsStory *story = nil;
+    UITableView *tableView = nil;
 
-    if (self.showFeaturedStoriesSection && (indexPath.section == 0)) {
-        id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][indexPath.section];
-        story = (MITNewsStory*)[sectionInfo objects][indexPath.row];
+    if (self.searchDisplayController.isActive) {
+        tableView = self.searchDisplayController.searchResultsTableView;
     } else {
-        NSInteger categoryIndex = indexPath.section;
-        if (self.showFeaturedStoriesSection) {
-            categoryIndex -= 1;
-        }
-
-        MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[categoryIndex];
-        NSArray *stories = [self storiesInCategory:sectionCategory];
-        story = stories[indexPath.row];
+        tableView = self.tableView;
     }
 
-    return story;
+    NSIndexPath* selectedIndexPath = [tableView indexPathForSelectedRow];
+    return [self storyAtIndexPath:selectedIndexPath inTableView:tableView];
+}
+
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath inTableView:(UITableView*)tableView
+{
+    NSUInteger section = (NSUInteger)indexPath.section;
+    NSUInteger row = (NSUInteger)indexPath.row;
+
+    if (tableView == self.tableView) {
+        MITNewsStory *story = nil;
+
+        if (self.showFeaturedStoriesSection && (section == 0)) {
+            id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][section];
+            story = (MITNewsStory*)[sectionInfo objects][row];
+        } else {
+            if (self.showFeaturedStoriesSection) {
+                section -= 1;
+            }
+
+            MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[section];
+            NSArray *stories = [self storiesInCategory:sectionCategory];
+            story = stories[row];
+        }
+
+        return story;
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+        return self.searchResults[row];
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark - NSFetchedResultsController
@@ -627,15 +679,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     return nil;
 }
 
-- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        return nil;
-    }
-
-    return nil;
-}
-
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
@@ -646,12 +689,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITNewsStory *story = nil;
-    if (tableView == self.tableView) {
-        story = [self storyAtIndexPath:indexPath];
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        story = self.searchResults[indexPath.row];
-    }
+    MITNewsStory *story = [self storyAtIndexPath:indexPath inTableView:tableView];
 
     if (story) {
         __block NSString *type = nil;
@@ -696,8 +734,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
                                                                       NSStringDrawingUsesLineFragmentOrigin)
                                                              context:nil];
                 titleHeight = ceil(CGRectGetHeight(titleRect));
-            } else {
-                DDLogVerbose(@"No title here!");
             }
 
             CGFloat dekHeight = 0.;
@@ -771,63 +807,54 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITNewsStory *story = nil;
-    if (tableView == self.tableView) {
-        story = [self storyAtIndexPath:indexPath];
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        story = self.searchResults[indexPath.row];
-    }
+    MITNewsStory *newsStory = [self storyAtIndexPath:indexPath inTableView:tableView];
+    __block NSString *identifier = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        if (newsStory) {
+            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[newsStory objectID]];
 
-    if (story) {
-        // TODO: Add logic to handle the StoryExternalCell.
-        //  Right now there is no way to determine which cells are
-        //  external so they'll just appear as StoryCells with
-        //  no title, a dek and an image.
-        // (2014.01.22 - bskinner)
-        __block NSString *identifier = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            if ([blockStory.type isEqualToString:MITNewsStoryExternalType]) {
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
                 identifier = MITNewsStoryExternalCellIdentifier;
-            } else if ([blockStory.dek length])  {
+            } else if ([story.dek length])  {
                 identifier = MITNewsStoryCellIdentifier;
             } else {
                 identifier = MITNewsStoryNoDekCellIdentifier;
             }
-        }];
+        }
+    }];
 
-        MITNewsStoryCell *cell = (MITNewsStoryCell*)[tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-        [self configureCell:cell forRowAtIndexPath:indexPath tableView:tableView];
-        return cell;
-    } else {
-        return nil;
-    }
+    NSAssert(identifier,@"[%@] missing UITableViewCell identifier in %@",self,NSStringFromSelector(_cmd));
+
+    MITNewsStoryCell *cell = (MITNewsStoryCell*)[tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    [self configureCell:cell forStory:newsStory];
+    return cell;
 }
 
-- (void)configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath tableView:(UITableView*)tableView
+- (void)configureCell:(UITableViewCell*)cell forStory:(MITNewsStory*)newsStory
 {
-    MITNewsStory *story = nil;
-    if (tableView == self.tableView) {
-        story = [self storyAtIndexPath:indexPath];
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        story = self.searchResults[indexPath.row];
-    }
-
     __block NSString *title = nil;
     __block NSString *dek = nil;
     __block NSURL *imageURL = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-        title = blockStory.title;
-        dek = blockStory.dek;
-        MITNewsImageRepresentation *representation = [blockStory.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
+        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[newsStory objectID]];
+        title = story.title;
+        dek = story.dek;
+
+        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
         imageURL = representation.url;
     }];
 
 
     MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
     if (title) {
-        storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:title
+        NSError *error = nil;
+        NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+        if (!titleContent) {
+            DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
+            titleContent = title;
+        }
+
+        storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleContent
                                                                               attributes:[MITNewsViewController titleTextAttributes]];
     } else {
         storyCell.titleLabel.text = nil;
@@ -887,7 +914,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
     self.searching = NO;
-    [self.searchResults removeAllObjects];
+    self.searchResults = nil;
 }
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
@@ -901,17 +928,41 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    NSString *queryString = searchBar.text;
+    NSString *searchQuery = searchBar.text;
     
-    if (![self.searchQuery isEqualToString:searchBar.text]) {
-        [self.searchResults removeAllObjects];
-        self.searchQuery = queryString;
+    __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
+    searchDisplayController.searchResultsTableView.tableFooterView = nil;
+    
+    __weak MITNewsViewController *weakSelf = self;
+    [self loadSearchResultsForQuery:searchQuery loaded:^(NSError *error) {
+        MITNewsViewController *blockSelf = weakSelf;
         
-        __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
-        [self loadSearchResults:^(NSError *error) {
-            [searchDisplayController.searchResultsTableView reloadData];
-        }];
-    }
+        if (!searchDisplayController.searchResultsTableView.tableFooterView) {
+            UITableViewHeaderFooterView* tableFooter = [[UITableViewHeaderFooterView alloc] init];
+            tableFooter.frame = CGRectMake(0, 0, 320, 44);
+            
+            UIColor *textColor = nil;
+            if ([blockSelf.view respondsToSelector:@selector(tintColor)]) {
+                textColor = blockSelf.view.tintColor;
+            } else {
+                textColor = [UIColor MITTintColor];
+            }
+            
+            tableFooter.textLabel.textColor = textColor;
+            tableFooter.textLabel.font = [UIFont systemFontOfSize:14.];
+            tableFooter.textLabel.text = @"Load more items...";
+            
+            UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadMoreFooterTapped:)];
+            tapRecognizer.numberOfTapsRequired = 1;
+            tapRecognizer.numberOfTouchesRequired = 1;
+            [tableFooter addGestureRecognizer:tapRecognizer];
+            [tableFooter sizeToFit];
+            tableFooter.backgroundColor = [UIColor blueColor];
+            searchDisplayController.searchResultsTableView.tableFooterView = tableFooter;
+        }
+        
+        [searchDisplayController.searchResultsTableView reloadData];
+    }];
 }
 
 @end
