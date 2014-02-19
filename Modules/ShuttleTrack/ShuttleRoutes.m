@@ -41,7 +41,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+    
+	// TODO: these phone numbers and links should be provided by the server, not hardcoded
 	_contactInfo = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Parking Office", @"description",
 																						 @"16172586510", @"phoneNumber", 
 																						 @"617.258.6510", @"formattedPhoneNumber", nil, nil],
@@ -285,8 +286,8 @@
 	{
 		ShuttleRoute* route = routes[indexPath.row];
 
-		
-		ShuttleRouteViewController *routeVC = [[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil ];
+        ShuttleRouteViewController *routeVC;
+        routeVC = [[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil];
 		routeVC.route = route;
 		
 		[self.navigationController pushViewController:routeVC animated:YES];

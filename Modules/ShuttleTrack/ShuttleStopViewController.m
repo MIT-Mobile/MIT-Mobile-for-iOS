@@ -68,7 +68,6 @@
 	}
 	
 	self.title = NSLocalizedString(@"Shuttle Stop", nil);
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
 
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 135)];
 	
@@ -121,13 +120,16 @@
                                                           alertHeaderIcon.frame.origin.x + alertHeaderIcon.frame.size.width + PADDING, 
                                                           alertHeaderIcon.frame.origin.y,
                                                           headerView.frame.size.width - alertHeaderIcon.frame.size.width - PADDING - 2 * MARGIN, 
-                                                          30)];
-	alertHeaderText.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
+                                                          50)];
+	alertHeaderText.font = [UIFont systemFontOfSize:13.];
 	alertHeaderText.lineBreakMode = NSLineBreakByWordWrapping;
 	alertHeaderText.backgroundColor = [UIColor clearColor];
 	alertHeaderText.text = @"Tap the 'Alert Me' icon to be notified 5 minutes before the estimated arrival time.";
 	alertHeaderText.numberOfLines = 0;
-	alertHeaderText.textColor = CELL_DETAIL_FONT_COLOR;
+	alertHeaderText.textColor = [UIColor darkGrayColor];
+
+    [alertHeaderText sizeToFit];
+    
 	[headerView addSubview:alertHeaderText];
 	
 	[self.tableView setTableHeaderView:headerView];
@@ -136,12 +138,17 @@
 	_tableFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
 	_tableFooterLabel.font = [UIFont systemFontOfSize:14];
 	_tableFooterLabel.textAlignment = NSTextAlignmentCenter;
+    _tableFooterLabel.textColor = [UIColor darkGrayColor];
 	_tableFooterLabel.backgroundColor = [UIColor clearColor];
 	
 	[self.tableView setTableFooterView:_tableFooterLabel];
 	
-	[self.tableView applyStandardColors];
-	self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 
 	[self requestStop];
 	
@@ -251,7 +258,6 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[ShuttlePredictionTableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
-		[cell applyStandardFonts];		
     }
     
     if (indexPath.section < [self.shuttleStopSchedules count])
@@ -297,26 +303,19 @@
     return cell;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
 	ShuttleStop *stop = self.shuttleStopSchedules[section];
-	NSString *headerTitle = nil;
-	
-	if (section < [self.shuttleStopSchedules count]) {
-		headerTitle = [NSString stringWithFormat:@"%@:", [(ShuttleRouteCache *)[stop.routeStop route] title]];
+    if (section < [self.shuttleStopSchedules count]) {
+		return [(ShuttleRouteCache *)[stop.routeStop route] title];
 	} else {
 		if(section == 0) {
-			headerTitle = @"Loading...";
+			return @"Loading...";
 		} else {
 			return nil;
 		}
-	}
-	return [UITableView groupedSectionHeaderWithTitle:headerTitle];
+    }
 }
-
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return GROUPED_SECTION_HEADER_HEIGHT;
-}
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -595,6 +594,17 @@
 @end
 
 @implementation ShuttlePredictionTableViewCell
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self != nil) {
+        self.textLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+        self.detailTextLabel.font = [UIFont systemFontOfSize:13.];
+        self.detailTextLabel.textColor = [UIColor darkGrayColor];
+    }
+    return self;
+}
 
 - (void) layoutSubviews {
 	[super layoutSubviews];

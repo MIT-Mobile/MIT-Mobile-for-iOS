@@ -10,7 +10,6 @@
 
 @property(nonatomic,strong) IBOutlet UIView *contentView;
 @property(nonatomic,strong) IBOutlet RouteInfoTitleCell* titleCell;
-@property(nonatomic,strong) IBOutlet UITableViewCell* loadingCell;
 @property(nonatomic,strong) IBOutlet ShuttleStopCell* shuttleStopCell;
 @property(nonatomic,strong) IBOutlet UITableView* tableView;
 
@@ -45,7 +44,6 @@
 	self.tableView = nil;
 	self.url = nil;
     self.titleCell = nil;
-    self.loadingCell = nil;
     self.shuttleStopCell = nil;
     self.routeMapViewController = nil;
 }
@@ -72,16 +70,23 @@
     
     CGFloat titleCellHeight = [self.titleCell heightForCellWithRoute:self.route];
     CGRect titleFrame = self.titleCell.frame;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        titleFrame.origin.y += 64.;
+    }
     titleFrame.size.height = titleCellHeight;
     
     CGRect tableFrame = self.tableView.frame;
-    tableFrame.origin.y = CGRectGetMinY(self.view.bounds) + titleCellHeight - 4.0;
-    tableFrame.size.height = CGRectGetHeight(self.view.bounds) - titleCellHeight + 4.0;
+    tableFrame.origin.y = CGRectGetMaxY(titleFrame);
+    tableFrame.size.height = CGRectGetHeight(self.view.bounds) - tableFrame.origin.y;
     
     self.titleCell.frame = titleFrame;
     self.tableView.frame = tableFrame;
     [self.titleCell setRouteInfo:self.route];
-    self.titleCell.backgroundColor = [UIColor mit_backgroundColor];
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.titleCell.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.titleCell.backgroundColor = [UIColor mit_backgroundColor];
+    }
 }
 
 - (void)viewDidUnload
@@ -153,11 +158,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	CGSize constraintSize = CGSizeMake(280.0f, 2009.0f);
-	NSString* cellText = @"A"; // just something to guarantee one line
-	UIFont* cellFont = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
-	CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:NSLineBreakByWordWrapping];
-	return labelSize.height + 20.0f;
+    return 44.;
 }
 
 
