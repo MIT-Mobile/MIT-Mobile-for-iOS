@@ -14,39 +14,15 @@
 
 #import "MITAdditions.h"
 
-typedef NS_ENUM(NSInteger, MITScaleMode) {
-    MITScaleModeAspectFit = UIViewContentModeScaleAspectFit,
-    MITScaleModeAspectFill = UIViewContentModeScaleAspectFill,
-};
-
-static CGSize MITCGSizeBestFitForSize(CGSize source, CGSize target, MITScaleMode mode)
-{
-    
-}
-
-// StoryCell sizing constants
-// Retrieved from 'NewsStoryTableCell.xib" on 2014/02/14
 static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
-static const CGFloat MITNewsStoryCellMinimumHeight = 86.;
-static const CGFloat MITNewsStoryCellMaximumTextWidth = 196.;
-static const CGFloat MITNewsStoryCellVerticalPadding = 26.;
-static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 61.};
+static NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";
 
-// StoryNoDekCell sizing constants
-// Retrieved from 'NewsStoryNoDekTableCell.xib' on 2014/02/14
 static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
-static const CGFloat MITNewsStoryNoDekCellMinimumHeight = 86.;
-static const CGFloat MITNewsStoryNoDekCellMaximumTextWidth = 196.;
-static const CGFloat MITNewsStoryNoDekCellVerticalPadding = 22.;
-static const CGSize MITNewsStoryNoDekCellDefaultImageSize = {.width = 86., .height = 61.};
+static NSString* const MITNewsStoryNoDekCellNibName = @"NewsStoryNoDekTableCell";
 
-// StoryExternalCell sizing information
-// Retrieved from 'NewsStoryExternalTableCell.xib' on 2014/02/14
 static NSString* const MITNewsStoryExternalType = @"news_clip";
 static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
-static const CGFloat MITNewsStoryExternalCellMaximumContentWidth = 290.;
-static const CGFloat MITNewsStoryExternalCellVerticalPadding = 30.; // Sum of the top, bottom and inter-view spacings
-static const CGSize MITNewsStoryExternalCellDefaultImageSize = {.width = 290., .height = 0.};
+static NSString* const MITNewsStoryExternalCellNibName = @"NewsStoryExternalTableCell";
 
 static NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
 static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeaturedStoriesRequest";
@@ -59,6 +35,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic,strong) NSMapTable *cachedStoriesByCategory;
+@property (nonatomic,strong) NSMapTable *sizingCellsByIdentifier;
 
 @property (nonatomic,strong) NSFetchedResultsController *featuredStoriesFetchedResultsController;
 @property (nonatomic,strong) NSFetchedResultsController *categoriesFetchedResultsController;
@@ -68,15 +45,13 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 @property (nonatomic,readonly) MITNewsStory *selectedStory;
 
-
 + (NSDictionary*)headerTextAttributes;
-+ (NSDictionary*)titleTextAttributes;
-+ (NSDictionary*)dekTextAttributes;
 
 - (void)loadFetchedResultsControllers;
 
 - (void)setNeedsNavigationItemUpdate;
 - (void)updateNavigationItemIfNeeded;
+- (MITNewsStoryCell*)sizingCellForIdentifier:(NSString*)identifier;
 @end
 
 @implementation MITNewsViewController
@@ -88,18 +63,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 {
     return @{NSFontAttributeName: [UIFont boldSystemFontOfSize:18.],
              NSForegroundColorAttributeName: [UIColor darkTextColor]};
-}
-
-+ (NSDictionary*)titleTextAttributes
-{
-    return @{NSFontAttributeName: [UIFont boldSystemFontOfSize:16.],
-             NSForegroundColorAttributeName: [UIColor blackColor]};
-}
-
-+ (NSDictionary*)dekTextAttributes
-{
-    return @{NSFontAttributeName: [UIFont systemFontOfSize:12.],
-             NSForegroundColorAttributeName: [UIColor blackColor]};
 }
 
 + (NSDictionary*)updateItemTextAttributes
@@ -133,12 +96,13 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     self.showFeaturedStoriesSection = YES;
 
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
+    self.sizingCellsByIdentifier = [NSMapTable strongToWeakObjectsMapTable];
     
     self.tableView.tableHeaderView = self.searchDisplayController.searchBar;
     
@@ -238,34 +202,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     [self updateNavigationItemIfNeeded];
 }
 
-- (void)updateNavigationItemIfNeeded
-{
-    if (self.needsNavigationItemUpdate) {
-        UIScrollView *tableView = self.tableView;
-        
-        CGRect visibleRect = tableView.bounds;
-        visibleRect.origin.x = tableView.contentOffset.x + tableView.contentInset.left;
-        visibleRect.origin.y = tableView.contentOffset.y + tableView.contentInset.top;
-            
-        CGRect searchBarFrame = self.searchDisplayController.searchBar.frame;
-        BOOL searchBarIsVisible = CGRectIntersectsRect(visibleRect, searchBarFrame);
-
-        if (searchBarIsVisible) {
-            if (self.navigationItem.rightBarButtonItem) {
-                [self.navigationItem setRightBarButtonItem:nil animated:YES];
-            }
-        } else {
-            if (!self.navigationItem.rightBarButtonItem) {
-                UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                                            target:self
-                                                                                            action:@selector(searchButtonTapped:)];
-                [self.navigationItem setRightBarButtonItem:searchItem animated:YES];
-            }
-        }
-        self.needsNavigationItemUpdate = NO;
-    }
-}
-
 - (void)setNeedsNavigationItemUpdate
 {
     self.needsNavigationItemUpdate = YES;
@@ -276,6 +212,11 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 - (BOOL)shouldAutorotate
 {
     return YES;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
 }
 
 - (NSUInteger)supportedInterfaceOrientations
@@ -296,7 +237,8 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     return _managedObjectContext;
 }
 
-#pragma mark Updating state
+#pragma mark - Managing states
+#pragma mark Updating
 - (void)setUpdating:(BOOL)updating
 {
     [self setUpdating:updating animated:NO];
@@ -343,7 +285,37 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
 }
 
-#pragma mark UI Events
+#pragma mark Navigation Item
+- (void)updateNavigationItemIfNeeded
+{
+    if (self.needsNavigationItemUpdate) {
+        UIScrollView *tableView = self.tableView;
+
+        CGRect visibleRect = tableView.bounds;
+        visibleRect.origin.x = tableView.contentOffset.x + tableView.contentInset.left;
+        visibleRect.origin.y = tableView.contentOffset.y + tableView.contentInset.top;
+
+        CGRect searchBarFrame = self.searchDisplayController.searchBar.frame;
+        BOOL searchBarIsVisible = CGRectIntersectsRect(visibleRect, searchBarFrame);
+
+        if (searchBarIsVisible) {
+            if (self.navigationItem.rightBarButtonItem) {
+                [self.navigationItem setRightBarButtonItem:nil animated:YES];
+            }
+        } else {
+            if (!self.navigationItem.rightBarButtonItem) {
+                UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                            target:self
+                                                                                            action:@selector(searchButtonTapped:)];
+                [self.navigationItem setRightBarButtonItem:searchItem animated:YES];
+            }
+        }
+        
+        self.needsNavigationItemUpdate = NO;
+    }
+}
+
+#pragma mark Responding to UI events
 - (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
@@ -395,7 +367,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 }
 
-#pragma mark Table data helpers
+#pragma mark Loading & updating, and retrieving data
 - (void)loadFetchedResultsControllers
 {
     // Featured fetched results controller
@@ -592,22 +564,65 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     }
 }
 
-#pragma mark - NSFetchedResultsController
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
+- (NSString*)tableViewCellIdentifierForStory:(MITNewsStory*)story
 {
+    __block NSString *identifier = nil;
+    if (story) {
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
 
+            if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
+                identifier = MITNewsStoryExternalCellIdentifier;
+            } else if ([newsStory.dek length])  {
+                identifier = MITNewsStoryCellIdentifier;
+            } else {
+                identifier = MITNewsStoryNoDekCellIdentifier;
+            }
+        }];
+    }
+
+    return identifier;
 }
 
+
+- (MITNewsStoryCell*)sizingCellForIdentifier:(NSString *)identifier
+{
+    MITNewsStoryCell *sizingCell = [self.sizingCellsByIdentifier objectForKey:identifier];
+
+    if (!sizingCell) {
+        UINib *cellNib = nil;
+        if ([identifier isEqualToString:MITNewsStoryCellIdentifier]) {
+            cellNib = [UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil];
+        } else if ([identifier isEqualToString:MITNewsStoryNoDekCellIdentifier]) {
+            cellNib = [UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil];
+        } else if ([identifier isEqualToString:MITNewsStoryExternalCellIdentifier]) {
+            cellNib = [UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil];
+        }
+
+        sizingCell = [[cellNib instantiateWithOwner:sizingCell options:nil] firstObject];
+        sizingCell.hidden = YES;
+        sizingCell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [self.tableView addSubview:sizingCell];
+        [self.sizingCellsByIdentifier setObject:sizingCell forKey:identifier];
+    }
+
+    sizingCell.frame = CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 84.);
+    return sizingCell;
+}
+
+#pragma mark - NSFetchedResultsController
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-
+    // Do nothing. Here so that change tracking is enabled for the NSFetchedResultsControllers
 }
 
 #pragma mark - UITableView
 #pragma mark UITableViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    [self setNeedsNavigationItemUpdate];
+    if ([self respondsToSelector:@selector(setNeedsNavigationItemUpdate)]) {
+        [self setNeedsNavigationItemUpdate];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -623,17 +638,17 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 {
     if (tableView == self.tableView) {
         MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
-        UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-        if (recognizer) {
-            [headerView removeGestureRecognizer:recognizer];
-            [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
-            [self.gestureRecognizersByView removeObjectForKey:headerView];
-        }
 
         if (self.showFeaturedStoriesSection && (section == 0)) {
-            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:@"Featured Stories"
-                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
+            headerView.titleLabel.text = @"Featured Stories";
             headerView.accessoryView.hidden = YES;
+
+            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+            if (recognizer) {
+                [headerView removeGestureRecognizer:recognizer];
+                [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
+                [self.gestureRecognizersByView removeObjectForKey:headerView];
+            }
 
             return headerView;
         } else {
@@ -641,15 +656,18 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
                 section -= 1;
             }
 
-            UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
-            [headerView addGestureRecognizer:gesture];
+            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+            if (!recognizer) {
+                recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+                [headerView addGestureRecognizer:recognizer];
+            }
 
             // Keep track of the gesture recognizers we create so we can remove
             // them later
-            [self.gestureRecognizersByView setObject:gesture forKey:headerView];
+            [self.gestureRecognizersByView setObject:recognizer forKey:headerView];
 
             NSArray *categories = [self.categoriesFetchedResultsController fetchedObjects];
-            [self.categoriesByGestureRecognizer setObject:categories[section] forKey:gesture];
+            [self.categoriesByGestureRecognizer setObject:categories[section] forKey:recognizer];
 
             __block NSString *categoryName = nil;
             [self.managedObjectContext performBlockAndWait:^{
@@ -657,9 +675,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
                 categoryName = category.name;
             }];
 
-            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:categoryName
-                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
-
+            headerView.titleLabel.text = categoryName;
             headerView.accessoryView.hidden = NO;
             return headerView;
         }
@@ -692,68 +708,16 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     MITNewsStory *story = [self storyAtIndexPath:indexPath inTableView:tableView];
 
     if (story) {
-        __block NSString *type = nil;
-        __block NSString *title = nil;
-        __block NSString *dek = nil;
+        NSString *identifier = [self tableViewCellIdentifierForStory:story];
+        MITNewsStoryCell *sizingCell = [self sizingCellForIdentifier:identifier];
+        [self configureCell:sizingCell forStory:story];
 
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            title = blockStory.title;
-            dek = blockStory.dek;
-            type = blockStory.type;
-        }];
+        [sizingCell setNeedsLayout];
+        [sizingCell layoutIfNeeded];
 
+        CGSize rowSize = [sizingCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
 
-        NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:nil];
-        if (!dekContent) {
-            dekContent = dek;
-        }
-
-
-        if ([type isEqualToString:@"news_clip"]) {
-            CGFloat dekHeight = 0.;
-            if (dekContent) {
-                NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:dekContent
-                                                                                attributes:[MITNewsViewController dekTextAttributes]];
-
-                CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
-                                                         options:(NSStringDrawingUsesFontLeading |
-                                                                  NSStringDrawingUsesLineFragmentOrigin)
-                                                         context:nil];
-                dekHeight = ceil(CGRectGetHeight(dekRect));
-            }
-
-            return MAX(MITNewsStoryCellMinimumHeight,dekHeight + MITNewsStoryExternalCellVerticalPadding + MITNewsStoryExternalCellDefaultImageSize.height);
-        } else {
-            CGFloat titleHeight = 0.;
-            if (title) {
-                NSAttributedString *titleString = [[NSAttributedString alloc] initWithString:title attributes:[MITNewsViewController titleTextAttributes]];
-
-                CGRect titleRect = [titleString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
-                                                             options:(NSStringDrawingUsesFontLeading |
-                                                                      NSStringDrawingUsesLineFragmentOrigin)
-                                                             context:nil];
-                titleHeight = ceil(CGRectGetHeight(titleRect));
-            }
-
-            CGFloat dekHeight = 0.;
-            if (dekContent) {
-                NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:dekContent
-                                                                                attributes:[MITNewsViewController dekTextAttributes]];
-                CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
-                                                         options:(NSStringDrawingUsesFontLeading |
-                                                                  NSStringDrawingUsesLineFragmentOrigin)
-                                                         context:nil];
-                dekHeight = ceil(CGRectGetHeight(dekRect));
-            }
-
-            CGFloat totalVerticalPadding = 24.;
-            if (dekContent) {
-                totalVerticalPadding += 4.;
-            }
-            
-            return MAX(MITNewsStoryCellMinimumHeight,titleHeight + dekHeight + totalVerticalPadding);
-        }
+		return MAX(86.,ceil(rowSize.height));
     }
 
     return UITableViewAutomaticDimension;
@@ -770,7 +734,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     if (tableView == self.tableView) {
         NSInteger numberOfSections = 0;
 
-        if (self.showFeaturedStoriesSection) {
+        if (self.showFeaturedStoriesSection && self.featuredStoriesFetchedResultsController.fetchedObjects) {
             numberOfSections += 1;
         }
 
@@ -808,20 +772,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITNewsStory *newsStory = [self storyAtIndexPath:indexPath inTableView:tableView];
-    __block NSString *identifier = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        if (newsStory) {
-            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[newsStory objectID]];
-
-            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-                identifier = MITNewsStoryExternalCellIdentifier;
-            } else if ([story.dek length])  {
-                identifier = MITNewsStoryCellIdentifier;
-            } else {
-                identifier = MITNewsStoryNoDekCellIdentifier;
-            }
-        }
-    }];
+    NSString *identifier = [self tableViewCellIdentifierForStory:newsStory];
 
     NSAssert(identifier,@"[%@] missing UITableViewCell identifier in %@",self,NSStringFromSelector(_cmd));
 
@@ -840,7 +791,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
         title = story.title;
         dek = story.dek;
 
-        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
+        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:cell.imageView.bounds.size];
         imageURL = representation.url;
     }];
 
@@ -854,8 +805,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
             titleContent = title;
         }
 
-        storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:titleContent
-                                                                              attributes:[MITNewsViewController titleTextAttributes]];
+        storyCell.titleLabel.text = titleContent;
     } else {
         storyCell.titleLabel.text = nil;
     }
@@ -868,7 +818,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
             dekContent = dek;
         }
 
-        storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:dekContent attributes:[MITNewsViewController dekTextAttributes]];
+        storyCell.dekLabel.text = dekContent;
     } else {
         storyCell.dekLabel.text = nil;
     }
@@ -932,26 +882,23 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
     
     __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
     searchDisplayController.searchResultsTableView.tableFooterView = nil;
-    
-    __weak MITNewsViewController *weakSelf = self;
+
+    UIColor *textColor = nil;
+    if ([self.view respondsToSelector:@selector(tintColor)]) {
+        textColor = self.view.tintColor;
+    } else {
+        textColor = [UIColor MITTintColor];
+    }
+
     [self loadSearchResultsForQuery:searchQuery loaded:^(NSError *error) {
-        MITNewsViewController *blockSelf = weakSelf;
-        
         if (!searchDisplayController.searchResultsTableView.tableFooterView) {
             UITableViewHeaderFooterView* tableFooter = [[UITableViewHeaderFooterView alloc] init];
             tableFooter.frame = CGRectMake(0, 0, 320, 44);
-            
-            UIColor *textColor = nil;
-            if ([blockSelf.view respondsToSelector:@selector(tintColor)]) {
-                textColor = blockSelf.view.tintColor;
-            } else {
-                textColor = [UIColor MITTintColor];
-            }
-            
+
             tableFooter.textLabel.textColor = textColor;
-            tableFooter.textLabel.font = [UIFont systemFontOfSize:14.];
+            tableFooter.textLabel.font = [UIFont boldSystemFontOfSize:16.];
             tableFooter.textLabel.text = @"Load more items...";
-            
+
             UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadMoreFooterTapped:)];
             tapRecognizer.numberOfTapsRequired = 1;
             tapRecognizer.numberOfTouchesRequired = 1;
