@@ -149,7 +149,6 @@
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="320" id="621-j2-upP"/>
                                             <constraint firstAttribute="height" id="Ibn-iN-m8V"/>
                                         </constraints>
                                         <connections>
@@ -159,7 +158,7 @@
                                     <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="xV7-HD-BKY">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <color key="backgroundColor" name="alternateSelectedControlColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="504" id="4Ef-2p-HeE"/>
                                         </constraints>
@@ -174,6 +173,7 @@
                                     <constraint firstItem="xV7-HD-BKY" firstAttribute="leading" secondItem="bZw-zT-ldn" secondAttribute="leading" id="jjJ-Hj-Gmh"/>
                                     <constraint firstItem="saG-db-2yb" firstAttribute="leading" secondItem="bZw-zT-ldn" secondAttribute="leading" id="o8F-F5-tWf"/>
                                     <constraint firstItem="saG-db-2yb" firstAttribute="top" secondItem="bZw-zT-ldn" secondAttribute="top" id="tDc-rF-dhN"/>
+                                    <constraint firstAttribute="width" secondItem="saG-db-2yb" secondAttribute="width" id="vQB-2a-0ea"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
@@ -340,6 +340,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="nGa-UM-Gil"/>
+        <segue reference="1ee-gP-Mga"/>
     </inferredMetricsTieBreakers>
 </document>

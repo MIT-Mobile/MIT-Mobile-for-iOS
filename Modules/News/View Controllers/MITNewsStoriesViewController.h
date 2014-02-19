@@ -6,5 +6,4 @@
 @interface MITNewsStoriesViewController : MITFetchedResultsTableViewController
 @property (nonatomic,strong) MITNewsCategory *category;
 
-- (IBAction)loadMoreStories:(id)sender;
 @end
