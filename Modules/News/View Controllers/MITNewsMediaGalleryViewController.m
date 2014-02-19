@@ -70,9 +70,9 @@
         UIPageViewController *pageViewController = [segue destinationViewController];
         pageViewController.dataSource = self;
         pageViewController.delegate = self;
-        pageViewController.view.backgroundColor = [UIColor blackColor];
+        pageViewController.view.backgroundColor = [UIColor clearColor];
 
-        self.galleryPageViewControllers = [[NSMutableArray alloc] init];
+        NSMutableArray *galleryPageViewControllers = [[NSMutableArray alloc] init];
         [self.managedObjectContext performBlockAndWait:^{
             [self.galleryImages enumerateObjectsUsingBlock:^(MITNewsImage *image, NSUInteger idx, BOOL *stop) {
                 MITNewsImageViewController *imageViewController = [[MITNewsImageViewController alloc] initWithNibName:@"MITNewsImageViewController" bundle:nil];
@@ -81,11 +81,12 @@
                 imageViewController.managedObjectContext = context;
                 imageViewController.image = (MITNewsImage*)[context objectWithID:[image objectID]];
                 
-                [self.galleryPageViewControllers addObject:imageViewController];
+                [galleryPageViewControllers addObject:imageViewController];
             }];
             
 
-            [pageViewController setViewControllers:@[[self.galleryPageViewControllers firstObject]]
+            self.galleryPageViewControllers = galleryPageViewControllers;
+            [pageViewController setViewControllers:@[[galleryPageViewControllers firstObject]]
                                          direction:UIPageViewControllerNavigationDirectionForward
                                           animated:NO
                                         completion:nil];
