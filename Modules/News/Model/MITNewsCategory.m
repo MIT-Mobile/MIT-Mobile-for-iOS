@@ -16,7 +16,8 @@
     categoryMapping.identificationAttributes = @[@"identifier"];
     [categoryMapping addAttributeMappingsFromDictionary:@{@"id" : @"identifier",
                                                           @"url" : @"url",
-                                                          @"name" : @"name"}];
+                                                          @"name" : @"name",
+                                                          @"@metadata.mapping.collectionIndex" : @"order"}];
 
     return categoryMapping;
 }
