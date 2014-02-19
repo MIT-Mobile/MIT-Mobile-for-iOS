@@ -88,11 +88,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-	
-	// if they're going to display, and we're not currently loading and we haven't retrieved any routes, try again
+
+    [self.tableView reloadData];
+    // if they're going to display, and we're not currently loading and we haven't retrieved any routes, try again
 	if (!self.isLoading && self.shuttleRoutes == nil) {
 		self.isLoading = YES;
-		[self.tableView reloadData];
 		[[ShuttleDataManager sharedDataManager] requestRoutes];
 	}
 }
@@ -231,10 +231,24 @@
 			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
 		}
 
-		
-		// check for text to display
-		NSString* text = self.sections[indexPath.section][@"text"];
-		cell.textLabel.text = text;
+        if (self.isLoading) {
+            cell.textLabel.text = @"Loading...";
+            
+            cell.imageView.image = _shuttleLoadingImage;
+			UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+			// TODO: hard coded values for center
+			spinny.center = CGPointMake(18.0, 22.0);
+			[spinny startAnimating];
+			[cell.contentView addSubview:spinny];
+        } else {
+            cell.textLabel.text = self.sections[indexPath.section][@"text"];
+            
+            for (UIView *aView in cell.contentView.subviews) {
+				if ([aView isKindOfClass:[UIActivityIndicatorView class]]) {
+					[aView removeFromSuperview];
+				}
+			}
+        }
 	}
 
 	
