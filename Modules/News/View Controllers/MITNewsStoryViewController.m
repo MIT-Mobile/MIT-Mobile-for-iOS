@@ -28,6 +28,7 @@
     [super viewDidLoad];
 
     self.bodyView.scrollView.scrollEnabled = NO;
+    self.bodyView.scrollView.bounces = NO;
     self.bodyView.delegate = self;
 }
 
@@ -67,8 +68,13 @@
 {
     [super updateViewConstraints];
 
-    CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
-    self.bodyViewHeightConstraint.constant = size.height;
+    if ([self.bodyView isLoading]) {
+        self.bodyViewHeightConstraint.constant = CGRectGetHeight(self.scrollView.frame);
+    } else {
+        CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
+        self.bodyViewHeightConstraint.constant = size.height;
+    }
+
 
     if (self.coverImageView.image) {
         // Using 213 here because all the images from the News office should be around a
@@ -202,11 +208,24 @@
     return _story;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self.bodyView loadHTMLString:[self htmlBody]
+                          baseURL:nil];
+}
+
 
 #pragma mark UIWebViewDelegate
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    [self.view setNeedsUpdateConstraints];
+    [self.view updateConstraintsIfNeeded];
+}
+
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     [self.view setNeedsUpdateConstraints];
+    [self.view updateConstraintsIfNeeded];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -238,4 +257,5 @@
         return self.story.title;
     }
 }
+
 @end
