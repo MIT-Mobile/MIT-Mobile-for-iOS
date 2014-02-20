@@ -2,6 +2,9 @@
 #import "MITNewsImageRepresentation.h"
 #import "MITNewsStory.h"
 
+// This should be larger than any size image we are going to run across (hopefully)
+CGSize const MITNewsImageLargestImageSize = {.width = 65535.,.height = 65535.};
+CGSize const MITNewsImageSmallestImageSize = {.width = 0.,.height = 0.};
 
 @implementation MITNewsImage
 
@@ -34,24 +37,30 @@
         
         return [@(area1) compare:@(area2)];
     }] mutableCopy];
-
-#warning potentially ugly behavior when the height or width of the size is really large (height * width >= CGFLOAT_MAX)
-    CGFloat targetArea = size.width * size.height;
-    [sortedRepresentations sortUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
-        CGFloat distance1 = ([representation1.width doubleValue] * [representation1.height doubleValue]) - targetArea;
-        CGFloat distance2 = ([representation2.width doubleValue] * [representation2.height doubleValue]) - targetArea;
-        
-        if (distance1 < 0) {
-            distance1 = CGFLOAT_MAX;
-        }
-        
-        if (distance2 < 0) {
-            distance1 = CGFLOAT_MAX;
-        }
-        
-        return [@(distance1) compare:@(distance2)];
-    }];
     
-    return [sortedRepresentations firstObject];
+    if (CGSizeEqualToSize(size, MITNewsImageSmallestImageSize)) {
+        return [sortedRepresentations firstObject];
+    } else if (CGSizeEqualToSize(size, MITNewsImageLargestImageSize)) {
+        return [sortedRepresentations lastObject];
+    } else {
+#warning potentially ugly behavior when the height or width of the size is really large (height * width >= CGFLOAT_MAX)
+        CGFloat targetArea = size.width * size.height;
+        [sortedRepresentations sortUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
+            CGFloat distance1 = ([representation1.width doubleValue] * [representation1.height doubleValue]) - targetArea;
+            CGFloat distance2 = ([representation2.width doubleValue] * [representation2.height doubleValue]) - targetArea;
+            
+            if (distance1 < 0) {
+                distance1 = CGFLOAT_MAX;
+            }
+            
+            if (distance2 < 0) {
+                distance1 = CGFLOAT_MAX;
+            }
+            
+            return [@(distance1) compare:@(distance2)];
+        }];
+        
+        return [sortedRepresentations firstObject];
+    }
 }
 @end

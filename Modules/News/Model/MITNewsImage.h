@@ -5,6 +5,9 @@
 
 @class MITNewsImageRepresentation, MITNewsStory;
 
+extern CGSize const MITNewsImageLargestImageSize;
+extern CGSize const MITNewsImageSmallestImageSize;
+
 @interface MITNewsImage : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, copy) NSString * credits;
