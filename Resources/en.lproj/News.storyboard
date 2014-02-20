@@ -325,10 +325,28 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchDisplayController" destination="9eG-2c-rZJ" id="pei-YN-Nak"/>
                         <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="1ee-gP-Mga"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3yq-dW-7Ss" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="9eG-2c-rZJ">
+                    <connections>
+                        <outlet property="delegate" destination="4LW-qO-0Fw" id="mxJ-69-XZi"/>
+                        <outlet property="searchBar" destination="Sao-Bh-wmX" id="ti5-YR-qYH"/>
+                        <outlet property="searchContentsController" destination="4LW-qO-0Fw" id="Ejq-TW-2Ax"/>
+                        <outlet property="searchResultsDataSource" destination="4LW-qO-0Fw" id="sUl-DA-Ekv"/>
+                        <outlet property="searchResultsDelegate" destination="4LW-qO-0Fw" id="5dW-n0-6Ke"/>
+                    </connections>
+                </searchDisplayController>
+                <searchBar contentMode="redraw" id="Sao-Bh-wmX">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="4LW-qO-0Fw" id="IjL-1h-mcY"/>
+                    </connections>
+                </searchBar>
             </objects>
             <point key="canvasLocation" x="1192" y="578"/>
         </scene>
