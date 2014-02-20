@@ -18,7 +18,7 @@ enum {
 @property (nonatomic,copy) NSDictionary *tableCells;
 @property (nonatomic,weak) UITextField *usernameField;
 @property (nonatomic,weak) UITextField *passwordField;
-@property (nonatomic,weak) UIButton *logoutButton;
+@property (nonatomic,weak) UITableViewCell *logoutCell;
 
 - (void)setupTableCells;
 - (IBAction)clearTouchstoneLogin:(id)sender;
@@ -54,7 +54,7 @@ enum {
 #pragma mark - View lifecycle
 - (void)loadView
 {
-    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
     UIView *mainView = [[UIView alloc] initWithFrame:screenRect];
     
     CGRect viewBounds = mainView.bounds;
@@ -67,9 +67,9 @@ enum {
         tableView.delegate = self;
         tableView.dataSource = self;
         tableView.rowHeight = 44.0;
-        tableView.allowsSelection = NO;
+        tableView.allowsSelection = YES;
         tableView.scrollEnabled = NO;
-        tableView.backgroundColor = [UIColor clearColor];
+        tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
         tableView.backgroundView = nil;
         tableView.opaque = NO;
         
@@ -84,7 +84,7 @@ enum {
 {
     [super viewDidLoad];
     
-    self.title = @"Touchstone";
+    self.title = @"MIT Touchstone";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
                                                                                            action:@selector(cancel:)];
@@ -134,9 +134,13 @@ enum {
 #pragma mark - Private Methods
 - (void)setupTableCells
 {
-    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
     NSMutableDictionary *cells = [NSMutableDictionary dictionary];
-    
+    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    }
+    CGRect fieldFrame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+
     NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
     
     {
@@ -153,6 +157,7 @@ enum {
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
         userField.keyboardType = UIKeyboardTypeEmailAddress;
+        userField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
@@ -163,7 +168,7 @@ enum {
             userField.text = username;
         }
         
-        userField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+        userField.frame = fieldFrame;
         self.usernameField = userField;
         [usernameCell.contentView addSubview:userField];
         
@@ -181,6 +186,7 @@ enum {
         passField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         passField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         passField.delegate = self;
+        passField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         passField.placeholder = @"Password";
         passField.returnKeyType = UIReturnKeyDone;
         passField.secureTextEntry = YES;
@@ -190,7 +196,7 @@ enum {
             passField.text = password;
         }
         
-        passField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+        passField.frame = fieldFrame;
         
         self.passwordField = passField;
         [passwordCell.contentView addSubview:passField];
@@ -203,41 +209,27 @@ enum {
         UITableViewCell *buttonCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
         buttonCell.accessoryType = UITableViewCellAccessoryNone;
         buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
-        buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        buttonCell.backgroundColor = [UIColor clearColor];
+
+        buttonCell.textLabel.text = @"Log out of Touchstone";
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            buttonCell.textLabel.textAlignment = NSTextAlignmentLeft;
+            buttonCell.textLabel.textColor = [UIColor MITTintColor];
+        } else {
+            buttonCell.textLabel.textAlignment = NSTextAlignmentCenter;
+            buttonCell.textLabel.textColor = [UIColor blackColor];
+        }
         
-        UIView *transparentView = [[UIView alloc] initWithFrame:CGRectMake(0,0,320,44)];
-        transparentView.backgroundColor = [UIColor clearColor];
-        [buttonCell setBackgroundView:transparentView];
+        self.logoutCell = buttonCell;
         
-        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
-        CGRect buttonFrame = CGRectMake(0,0,320,44);
-        buttonFrame = UIEdgeInsetsInsetRect(buttonFrame, buttonInsets);
-        
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        button.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        button.enabled = NO;
-        button.frame = buttonFrame;
-        
+        [self setLogOutButtonEnabled:NO];
+
         NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
             if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                button.enabled = YES;
+                [self setLogOutButtonEnabled:YES];
                 break;
             }
         }
-        
-        
-        [button setTitle:@"Log out of Touchstone"
-                forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor lightGrayColor]
-                          forState:UIControlStateDisabled];
-        [button addTarget:self
-                   action:@selector(clearTouchstoneLogin:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        [buttonCell addSubview:button];
-        self.logoutButton = button;
         
         [cells setObject:buttonCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
@@ -333,6 +325,17 @@ enum {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (BOOL)logOutButtonEnabled
+{
+    return self.logoutCell.textLabel.enabled;
+}
+
+- (void)setLogOutButtonEnabled:(BOOL)enabled
+{
+    self.logoutCell.textLabel.enabled = enabled;
+    self.logoutCell.selectionStyle = (enabled) ? UITableViewCellSelectionStyleBlue : UITableViewCellSelectionStyleNone;
+}
+
 #pragma mark - UITableView Data Source
 - (UITableViewCell*)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -378,7 +381,7 @@ enum {
         UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
 
         // TODO: move these user-visible strings out of code
-        NSString *labelText = @"A lock icon appears next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
+        NSString *labelText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
 
         ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
         footerLabel.text = labelText;
@@ -390,7 +393,7 @@ enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (section == 0) {
-        NSString *labelText = @"Features requiring authentication are marked with a lock icon. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
+        NSString *labelText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
         UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
         CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
                                                           width:self.view.frame.size.width
@@ -399,6 +402,14 @@ enum {
         return height;
     }
     return 0;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.tableCells[indexPath] == self.logoutCell && [self logOutButtonEnabled] == YES) {
+        [self clearTouchstoneLogin:nil];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 #pragma mark - Notification Handlers
@@ -415,7 +426,7 @@ enum {
 - (IBAction)clearTouchstoneLogin:(id)sender
 {
     [MobileRequestOperation clearAuthenticatedSession];
-    self.logoutButton.enabled = NO;
+    [self setLogOutButtonEnabled:NO];
 }
 
 #pragma mark - UITextField Delegate Methods

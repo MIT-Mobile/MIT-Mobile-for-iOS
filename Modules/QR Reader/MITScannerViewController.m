@@ -99,13 +99,16 @@
 - (void)loadView
 {
     UIView *controllerView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
-    controllerView.backgroundColor = [UIColor blackColor];
+    controllerView.backgroundColor = [UIColor whiteColor];
     controllerView.autoresizesSubviews = YES;
     controllerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
     self.view = controllerView;
 
-
+    if ([self.view respondsToSelector:@selector(setTintColor:)]) {
+        self.view.tintColor = [UIColor whiteColor];
+    }
+    
     UIView *scannerView = [[UIView alloc] init];
     scannerView.autoresizesSubviews = YES;
     scannerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -128,10 +131,11 @@
         self.cameraUnavailableView = unsupportedView;
     }
 
-    MITScannerOverlayView *overlay = [[MITScannerOverlayView alloc] init];
+    CGRect frame = self.view.bounds;
+    MITScannerOverlayView *overlay = [[MITScannerOverlayView alloc] initWithFrame:frame];
     overlay.backgroundColor = [UIColor clearColor];
     overlay.userInteractionEnabled = NO;
-    overlay.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+    overlay.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin |
                                 UIViewAutoresizingFlexibleWidth);
     if (self.isScanningSupported) {
         overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
@@ -161,7 +165,9 @@
         if (self.isScanningSupported) {
             self.readerView.frame = scannerContentBounds;
         } else {
-            self.cameraUnavailableView.frame = scannerContentBounds;
+            CGRect cameraFrame = scannerContentBounds;
+            cameraFrame.origin.y += 44.;
+            self.cameraUnavailableView.frame = cameraFrame;
         }
 
         self.overlayView.frame = scannerContentBounds;
@@ -173,13 +179,19 @@
     }
 
     if (self->_historyView) {
-        self.historyView.frame = self.view.bounds;
+        CGRect historyFrame = self.view.bounds;
+        historyFrame.origin.y = 64.;
+        historyFrame.size.height -= 64.;
+        self.historyView.frame = historyFrame;
     }
 }
 
 - (UIView*)historyView
 {
     if (!_historyView) {
+        CGRect historyFrame = self.view.bounds;
+        historyFrame.origin.y = 64.;
+        historyFrame.size.height -= 64.;
         UITableView *historyView = [[UITableView alloc] initWithFrame:self.view.bounds
                                                                 style:UITableViewStylePlain];
         historyView.delegate = self;
@@ -211,6 +223,8 @@
 {
     [super viewWillAppear:animated];
 
+    self.navigationController.navigationBar.translucent = YES;
+    
     // Directly access the ivar here so we don't trigger the lazy instantiation
     if (self->_historyView) {
         [self.historyView deselectRowAtIndexPath:[self.historyView indexPathForSelectedRow] animated:YES];
@@ -243,6 +257,8 @@
     }
     
     [self stopCapture];
+    // rely on Springboard to reset the navbar style to what it prefers
+//    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)viewDidUnload
@@ -309,7 +325,14 @@
 - (IBAction)showHelp:(id)sender
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
-    [self.navigationController presentViewController:vc animated:YES completion:NULL];
+    UINavigationController *helpNavController = [[UINavigationController alloc] initWithRootViewController:vc];
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        helpNavController.navigationBar.barStyle = UIBarStyleDefault;
+    } else {
+        helpNavController.navigationBar.barStyle = UIBarStyleBlack;
+    }
+    helpNavController.navigationBar.translucent = NO;
+    [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 
 - (BOOL)isCaptureActive
@@ -459,10 +482,6 @@
     id<NSFetchedResultsSectionInfo> sectionInfo = sections[section];
     
     return [sectionInfo numberOfObjects];
-}
-
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return @"Recently Scanned";
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

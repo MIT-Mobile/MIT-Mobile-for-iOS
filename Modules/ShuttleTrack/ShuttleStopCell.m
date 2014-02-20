@@ -2,6 +2,7 @@
 #import "ShuttleStopCell.h"
 #import "ShuttleStop.h"
 #import "MITUIConstants.h"
+#import "UIKit+MITAdditions.h"
 
 @interface ShuttleStopCell ()
 
@@ -21,6 +22,21 @@
     return self;
 }
 
+- (void)awakeFromNib
+{
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.shuttleNameLabel.highlightedTextColor = self.shuttleNameLabel.textColor;
+        self.shuttleTimeLabel.highlightedTextColor = self.shuttleTimeLabel.textColor;
+    } else {
+        CGRect nameFrame = self.shuttleNameLabel.frame;
+        nameFrame.origin.y -= 1;
+        self.shuttleNameLabel.frame = nameFrame;
+
+        CGRect timeFrame = self.shuttleTimeLabel.frame;
+        timeFrame.origin.y -= 1;
+        self.shuttleTimeLabel.frame = timeFrame;
+    }
+}
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 
@@ -42,7 +58,7 @@
 	if (shuttleStop.upcoming) 
 	{
 		self.shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;
-		self.shuttleTimeLabel.textColor = SEARCH_BAR_TINT_COLOR;
+		self.shuttleTimeLabel.textColor = [UIColor MITTintColor];
         self.shuttleTimeLabel.font = [UIFont boldSystemFontOfSize:16.0];
 		
 	}
@@ -52,6 +68,9 @@
 		self.shuttleTimeLabel.textColor = [UIColor blackColor];
         self.shuttleTimeLabel.font = [UIFont systemFontOfSize:16.0];
 	}
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.shuttleTimeLabel.highlightedTextColor = self.shuttleTimeLabel.textColor;
+    }
 }
 
 @end

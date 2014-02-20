@@ -8,7 +8,6 @@
 + (PersonDetails *)personWithUID:(NSString *)uid;
 + (PeopleRecentsData *)sharedData;
 + (void)eraseAll;
-+ (PersonDetails *)updatePerson:(PersonDetails *)personDetails withSearchResult:(NSDictionary *)searchResult;
-+ (PersonDetails *)createFromSearchResult:(NSDictionary *)searchResult;
++ (PersonDetails *)updatePerson:(PersonDetails *)personDetails;
 
 @end

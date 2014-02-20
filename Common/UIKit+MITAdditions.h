@@ -19,6 +19,16 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 + (UIColor*)mit_backgroundColor;
 + (UIColor *)MITTintColor;
 
+/*!
+ * Creates and returns a color object using the specified hexadecimal string.
+ * Accepts strings like #0099FF, 0x0099FF, and 0099FF.
+ *
+ *
+ *
+ * Calls +[UIColor colorWithRed:green:blue:alpha:] behind the scenes.
+ * @param hexString The hexadecimal string.
+ * @returns Creates and returns a color object using the specified hex string.
+ */
 + (UIColor *)colorWithHexString:(NSString *)hexString;
 
 @end

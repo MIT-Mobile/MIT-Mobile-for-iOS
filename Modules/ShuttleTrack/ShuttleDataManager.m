@@ -55,14 +55,14 @@ NSString * const shuttlePathExtension = @"shuttles/";
         NSArray *cachedRoutes = [CoreDataManager objectsForEntity:ShuttleRouteEntityName
                                                 matchingPredicate:matchAll
                                                   sortDescriptors:[NSArray arrayWithObject:sort]];
-        DDLogVerbose(@"%d routes cached", [cachedRoutes count]);
+        DDLogDebug(@"%d routes cached", [cachedRoutes count]);
         
         NSMutableArray *shuttleRoutes = [NSMutableArray array];
         NSMutableDictionary *shuttleRoutesByID = [NSMutableDictionary dictionary];
         for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
             NSString *routeID = cachedRoute.routeID;
             ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
-            DDLogVerbose(@"fetched route %@ from core data", route.routeID);
+            DDLogDebug(@"fetched route %@ from core data", route.routeID);
             [shuttleRoutes addObject:route];
             [shuttleRoutesByID setValue:route forKey:routeID];
         }

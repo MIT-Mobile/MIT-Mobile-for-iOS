@@ -4,7 +4,7 @@
 
 @class DispatchQueueLogFormatter;
 
-@interface MITLogFormatter : DispatchQueueLogFormatter
+@interface MITLogFormatter : DDDispatchQueueLogFormatter
 - (id)init;
 
 @end

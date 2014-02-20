@@ -40,7 +40,6 @@ enum {
     self.title = @"Settings";
 
     self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
 
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     self.notifications = [appDelegate.modules filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pushNotificationSupported == TRUE"]];
@@ -54,7 +53,7 @@ enum {
     self.sectionsMetadata = @[@{MITSettingsSectionTitleKey : @"Notifications",
                                 MITSettingsSectionDetailKey : @"Turn off Notifications to disable alerts for that module.",
                                 MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierNotifications"},
-                              @{MITSettingsSectionTitleKey : @"Touchstone",
+                              @{MITSettingsSectionTitleKey : @"",
                                 MITSettingsSectionDetailKey : @"Touchstone is MIT's single sign-on authentication service.",
                                 MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierTouchstone"},
                               @{MITSettingsSectionTitleKey : @"API Server",
@@ -139,20 +138,9 @@ enum {
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSString *text = self.sectionsMetadata[section][MITSettingsSectionTitleKey];
-
-    if ([text length]) {
-        return [UITableView groupedSectionHeaderWithTitle:text];
-    } else {
-        return nil;
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return GROUPED_SECTION_HEADER_HEIGHT;
+    return self.sectionsMetadata[section][MITSettingsSectionTitleKey];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section

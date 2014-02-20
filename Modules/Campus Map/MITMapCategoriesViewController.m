@@ -22,9 +22,8 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapCategory entityName]];
 
-    if (category) {
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@",category];
-    }
+    // nil parent means only fetch top-level categories
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@",category];
 
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
@@ -39,6 +38,10 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -49,15 +52,14 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
     
     [self.tableView reloadRowsAtIndexPaths:[self.tableView indexPathsForSelectedRows] withRowAnimation:UITableViewRowAnimationNone];
 
+    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                              target:self
+                                                                              action:@selector(doneItemTouched:)];
+    self.navigationItem.rightBarButtonItem = doneItem;
+
     if (!self.category) {
-        // We are about to appear and we will be showing
-        // the list of top-level categories. Stick the 'Cancel' button
-        // here
-        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                    target:self
-                                                                                    action:@selector(cancelItemTouched:)];
-        self.navigationItem.leftBarButtonItem = cancelItem;
-        self.navigationItem.title = @"Browse";
+        // Top level is titled "Places"
+        self.navigationItem.title = @"Places";
     } else {
         // Make sure the category object we have is in the right mananged object context.
         // This assumes that, if an NSManagedObjectContext (other than main) is desired,
@@ -91,7 +93,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
     }
 }
 
-- (IBAction)cancelItemTouched:(UIBarButtonItem*)doneItem
+- (IBAction)doneItemTouched:(UIBarButtonItem*)doneItem
 {
     [self didCompleteSelectionWithObjects:nil inCategory:nil];
 }
@@ -170,6 +172,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
                                                MITMapPlacesViewController *viewController = [[MITMapPlacesViewController alloc] initWithPredicate:fetchRequest.predicate
                                                                                                                                   sortDescriptors:fetchRequest.sortDescriptors];
                                                viewController.delegate = self;
+                                               viewController.title = category.name;
                                                [blockSelf.navigationController pushViewController:viewController animated:YES];
                                            }
                                        } else {

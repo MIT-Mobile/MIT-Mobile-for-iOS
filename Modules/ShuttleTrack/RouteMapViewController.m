@@ -14,7 +14,6 @@
 @property(nonatomic,weak) IBOutlet UILabel* routeStatusLabel;
 @property(nonatomic,weak) IBOutlet UIButton* resetButton;
 @property(nonatomic,weak) IBOutlet UIButton* gpsButton;
-@property(nonatomic,weak) IBOutlet UIImageView* scrim;
 
 @property(nonatomic,strong) NSArray* vehicleAnnotations;
 @property(nonatomic,strong) NSDictionary* routeStops;
@@ -44,6 +43,14 @@
 	
     [super viewDidLoad];
     
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        CGRect frame = self.routeInfoView.frame;
+        frame.origin.y += 64.;
+        self.routeInfoView.frame = frame;
+    } else {
+        self.routeInfoView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    
     if (self.mapView == nil)
     {
         MITMapView *mapView = [[MITMapView alloc] initWithFrame:self.view.bounds];
@@ -54,7 +61,6 @@
                     belowSubview:self.routeInfoView];
     }
     
-    [self.scrim setImage:[UIImage imageNamed:@"shuttle/shuttle-secondary-scrim"]];
     [self.resetButton setImage:[UIImage imageNamed:@"shuttle/button-icon-reset-zoom"]
                   forState:UIControlStateNormal];
     

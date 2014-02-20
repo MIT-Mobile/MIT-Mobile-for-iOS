@@ -39,11 +39,13 @@ NSString * const labelText = @"Some Text";
 
 
 #import "ExplanatorySectionLabel.h"
+#import "UIKit+MITAdditions.h"
 
 @interface ExplanatorySectionLabel ()
 
 @property (nonatomic, retain) UILabel *label;
 @property (nonatomic, retain) UIFont *font;
+@property (nonatomic, assign, getter = hasCustomTextAlignment) BOOL customTextAlignment;
 
 + (UIFont *)labelFont;
 + (UIEdgeInsets)headerInsetsWithAccessory;
@@ -56,13 +58,6 @@ NSString * const labelText = @"Some Text";
 
 @implementation ExplanatorySectionLabel
 
-@synthesize accessoryView = _accessoryView;
-@synthesize text = _text;
-@synthesize label = _label;
-@synthesize font = _font;
-@synthesize type = _type;
-@synthesize fontSize = _fontSize;
-
 - (id)initWithFrame:(CGRect)frame {
     return [self initWithType:ExplanatorySectionFooter];
 }
@@ -73,6 +68,7 @@ NSString * const labelText = @"Some Text";
         _label = [[UILabel alloc] initWithFrame:CGRectZero];
         [self addSubview:self.label];
         _accessoryView = nil;
+        _customTextAlignment = NO;
         _text = nil;
         _font = [[[self class] labelFont] retain];
         _type = type;
@@ -102,7 +98,7 @@ NSString * const labelText = @"Some Text";
 - (void)setText:(NSString *)text {
     if (text != _text) {
         [_text release];
-        _text = [text retain];
+        _text = [text copy];
         [self setNeedsLayout];
     }
 }
@@ -113,6 +109,12 @@ NSString * const labelText = @"Some Text";
         _font = [UIFont fontWithName:[[[self class] labelFont] fontName] size:fontSize];
         [self setNeedsLayout];
     }
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment {
+    _textAlignment = textAlignment;
+    self.customTextAlignment = YES;
+    [self setNeedsLayout];
 }
 
 - (void)layoutSubviews {
@@ -155,16 +157,29 @@ NSString * const labelText = @"Some Text";
     self.label.text = self.text;
     self.label.font = self.font;
     self.label.backgroundColor = [UIColor clearColor];
-    self.label.textAlignment = (!self.accessoryView) ? NSTextAlignmentCenter : NSTextAlignmentLeft;
-    self.label.textColor = [UIColor colorWithWhite:0.22 alpha:1.0];
-    self.label.shadowColor = [UIColor whiteColor];
-    self.label.shadowOffset = CGSizeMake(0, 1);
+    if (self.hasCustomTextAlignment) {
+        self.label.textAlignment = self.textAlignment;
+    } else {
+        self.label.textAlignment = (self.accessoryView || NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? NSTextAlignmentLeft : NSTextAlignmentCenter;
+    }
     self.label.lineBreakMode = NSLineBreakByWordWrapping;
     self.label.numberOfLines = 0;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.label.textColor = [UIColor colorWithHexString:@"6d6d72"];
+        // no text shadow on iOS 7
+    } else {
+        self.label.textColor = [UIColor colorWithWhite:0.22 alpha:1.0];
+        self.label.shadowColor = [UIColor whiteColor];
+        self.label.shadowOffset = CGSizeMake(0, 1);
+    }
 }
 
 + (UIFont *)labelFont {
-    return [UIFont systemFontOfSize:15.0];
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        return [UIFont systemFontOfSize:14.0];
+    } else {
+        return [UIFont systemFontOfSize:15.0];
+    }
 }
 
 + (UIEdgeInsets)headerInsetsWithAccessory {
@@ -180,29 +195,42 @@ NSString * const labelText = @"Some Text";
 }
 
 + (UIEdgeInsets)footerInsetsWithoutAccessory {
-    return UIEdgeInsetsMake(15.0, 20.0, 5.0, 20.0);
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        return UIEdgeInsetsMake(9., 15., 5., 15.);
+    } else {
+        return UIEdgeInsetsMake(15., 20., 5., 20.);
+    }
 }
 
++ (UIEdgeInsets)copyrightInsets {
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        return UIEdgeInsetsMake(15., 15., 15., 15.);
+    } else {
+        return UIEdgeInsetsMake(15., 20., 5., 20.);
+    }
+}
+
+
 + (UIEdgeInsets)insetsForType:(ExplanatorySectionLabelType)type accessoryView:(UIView *)accessoryView {
-    UIEdgeInsets insets = UIEdgeInsetsZero;
     switch (type) {
         case ExplanatorySectionHeader:
             if (accessoryView) {
-                insets = [self headerInsetsWithAccessory];
+                return [self headerInsetsWithAccessory];
             } else {
-                insets = [self headerInsetsWithoutAccessory];
+                return [self headerInsetsWithoutAccessory];
             }
-            break;
+
+        case ExplanatorySectionCopyright:
+            return [self copyrightInsets];
+        
         case ExplanatorySectionFooter:
         default:
             if (accessoryView) {
-                insets = [self footerInsetsWithAccessory];
+                return [self footerInsetsWithAccessory];
             } else {
-                insets = [self footerInsetsWithoutAccessory];
+                return [self footerInsetsWithoutAccessory];
             }
-            break;
     }
-    return insets;
 }
 
 + (CGFloat)heightWithText:(NSString *)text width:(CGFloat)width type:(ExplanatorySectionLabelType)type {

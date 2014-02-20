@@ -6,7 +6,6 @@
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id<DatePickerViewControllerDelegate> delegate;
 
-- (void)navBarButtonPressed:(id)sender;
 @end
 
 @protocol DatePickerViewControllerDelegate <NSObject>

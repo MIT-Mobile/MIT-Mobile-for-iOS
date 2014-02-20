@@ -61,7 +61,7 @@
 	
 	CGFloat height = self.routeDescriptionLabel.frame.origin.y ;
 	height += descriptionSize.height;
-	height += 10;
+	height += 12;
 	return height;
 }
 

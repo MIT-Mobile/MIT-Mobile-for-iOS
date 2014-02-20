@@ -9,8 +9,6 @@
 #import <EventKit/EventKit.h>
 #import "MobileRequestOperation.h"
 
-#define WEB_VIEW_PADDING 10.0
-#define BUTTON_PADDING 10.0
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
 
@@ -18,7 +16,6 @@
 @property (nonatomic,strong) UISegmentedControl *eventPager;
 @property (nonatomic,getter=isLoading) BOOL loading;
 @property (nonatomic,strong) NSArray *rowTypes;
-@property (nonatomic,strong) UIButton *shareButton;
 @property (nonatomic,strong) NSString *descriptionString;
 @property (nonatomic,strong) NSString *categoriesString;
 @property (nonatomic) CGFloat descriptionHeight;
@@ -42,11 +39,6 @@
         mainFrame.size.height -= navBarHeight;
     }
     
-    if (self.navigationController && (self.navigationController.toolbarHidden == NO))
-    {
-        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.frame);
-        mainFrame.size.height -= toolbarHeight;
-    }
     
     UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
     CGRect mainBounds = mainView.bounds;
@@ -78,15 +70,8 @@
 	
 	// setup nav bar
 	if ([self.events count] > 1) {
-		self.eventPager = [[UISegmentedControl alloc] initWithItems:@[[UIImage imageNamed:MITImageNameUpArrow],
-                                                                  [UIImage imageNamed:MITImageNameDownArrow]]];
-		[self.eventPager setMomentary:YES];
-		[self.eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
-		self.eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
-		self.eventPager.frame = CGRectMake(0, 0, 80.0, self.eventPager.frame.size.height);
-		
-        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.eventPager];
-		self.navigationItem.rightBarButtonItem = segmentBarItem;
+        UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(share:)];
+		self.navigationItem.rightBarButtonItem = shareItem;
 	}
     
 	self.descriptionString = nil;
@@ -155,10 +140,6 @@
 
 - (void)reloadEvent
 {
-    if (self.event.url) {
-        [self setupShareButton];
-	}
-	
 	[self setupHeader];
     
     if ([self.events count] > 1) {
@@ -219,36 +200,12 @@
 	[self.tableView reloadData];
 }
 
-- (void)setupShareButton {
-    if (!self.shareButton) {
-        CGRect tableFrame = self.tableView.frame;
-        self.shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *buttonImage = [UIImage imageNamed:@"global/share.png"];
-        self.shareButton.frame = CGRectMake(tableFrame.size.width - buttonImage.size.width - BUTTON_PADDING,
-                                       BUTTON_PADDING,
-                                       buttonImage.size.width,
-                                       buttonImage.size.height);
-        [self.shareButton setImage:buttonImage forState:UIControlStateNormal];
-        [self.shareButton setImage:[UIImage imageNamed:@"global/share_pressed.png"]
-                          forState:(UIControlStateNormal | UIControlStateHighlighted)];
-        [self.shareButton addTarget:self
-                             action:@selector(share:)
-                   forControlEvents:UIControlEventTouchUpInside];
-    }
-}
-
 - (void)setupHeader {	
 	CGRect tableFrame = self.tableView.frame;
 	
-	CGFloat titlePadding = 10.0;
+	CGFloat titlePadding = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 15. : 10.;
     CGFloat titleWidth;
-    if ([self.event hasMoreDetails]) {
-        titleWidth = tableFrame.size.width - self.shareButton.frame.size.width - BUTTON_PADDING * 2 - titlePadding;
-        self.tableView.separatorColor = [UIColor colorWithWhite:0.8 alpha:1.0];
-    } else {
-        titleWidth = tableFrame.size.width - titlePadding * 2;
-        self.tableView.separatorColor = [UIColor whiteColor];
-    }
+    titleWidth = tableFrame.size.width - titlePadding * 2;
 	UIFont *titleFont = [UIFont boldSystemFontOfSize:20.0];
 	CGSize titleSize = [self.event.title sizeWithFont:titleFont
 									constrainedToSize:CGSizeMake(titleWidth, 2010.0)];
@@ -258,29 +215,9 @@
 	titleView.font = titleFont;
 	titleView.text = self.event.title;
 	
-	// if title is very short, add extra padding so button won't be too close to first cell
-	if (titleSize.height < self.shareButton.frame.size.height) {
-		titleSize.height += BUTTON_PADDING;
-	}
-	
 	CGRect titleFrame = CGRectMake(0.0, 0.0, tableFrame.size.width, titleSize.height + titlePadding * 2);
 	self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:titleFrame];
 	[self.tableView.tableHeaderView addSubview:titleView];
-    if ([self.event hasMoreDetails]) {
-        [self.tableView.tableHeaderView addSubview:self.shareButton];
-    }
-    
-    // Add border "between" header and first cell.
-    if ([self.event hasMoreDetails]) {
-        CGRect borderRect = CGRectMake(0,
-                                       self.tableView.tableHeaderView.frame.size.height - 1,
-                                       self.tableView.tableHeaderView.frame.size.width,
-                                       1);
-        UIView *bottomBorder = [[UIView alloc] initWithFrame:borderRect];
-        bottomBorder.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1.0];
-        [self.tableView.tableHeaderView addSubview:bottomBorder];
-    }
-    
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -344,6 +281,9 @@
     
 	[cell applyStandardFonts];
 	
+    CGFloat webHorizontalPadding = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 15. : 10.;
+    CGFloat webVerticalPadding = 10.;
+    
 	switch (rowType) {
 		case CalendarDetailRowTypeTime:
 			cell.textLabel.text = 
@@ -382,11 +322,12 @@
 				webViewHeight = 2000;
 			}
 
-            CGRect frame = CGRectMake(WEB_VIEW_PADDING, WEB_VIEW_PADDING, self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING, webViewHeight);
+            CGRect frame = CGRectMake(webHorizontalPadding, webVerticalPadding, self.tableView.frame.size.width - 2 * webHorizontalPadding, webViewHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
 				webView.scrollView.scrollsToTop = NO;
-				
+				webView.scrollView.scrollEnabled = NO;
+                
                 webView.delegate = self;
                 [webView loadHTMLString:self.descriptionString
                                 baseURL:nil];
@@ -403,9 +344,9 @@
 		case CalendarDetailRowTypeCategories:
         {
             UIWebView *webView = (UIWebView *)[cell viewWithTag:kCategoriesWebViewTag];
-            CGRect frame = CGRectMake(WEB_VIEW_PADDING,
-                                      WEB_VIEW_PADDING,
-                                      self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING,
+            CGRect frame = CGRectMake(webHorizontalPadding,
+                                      webVerticalPadding,
+                                      self.tableView.frame.size.width - 2 * webHorizontalPadding,
                                       self.categoriesHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
@@ -437,7 +378,9 @@
 		DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
 
-    NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
+    CGFloat webHorizontalPadding = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 15. : 10.;
+
+    NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * webHorizontalPadding];
     [target replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, target.length)];
     
 	[target replaceOccurrencesOfStrings:@[@"__BODY__"]

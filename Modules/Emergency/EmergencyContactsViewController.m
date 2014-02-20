@@ -1,7 +1,5 @@
 #import "EmergencyContactsViewController.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MultiLineTableViewCell.h"
-#import "MITMultilineTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "EmergencyData.h"
 #import "MITModule.h"
@@ -12,9 +10,19 @@
 
 @implementation EmergencyContactsViewController
 
+- (id)init
+{
+    return [self initWithStyle:UITableViewStylePlain];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [MultiLineTableViewCell setNeedsRedrawing:YES];
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor whiteColor];
+    }
+    self.tableView.backgroundView = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -60,29 +68,41 @@
     return [self.emergencyContacts count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-    static UITableViewCell *templateCell = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        templateCell = [self tableView:nil cellForRowAtIndexPath:indexPath];
-    });
-
-    [self configureCell:templateCell
-            atIndexPath:indexPath
-           forTableView:tableView];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // There's probably a better way to do this —
+    // one that doesn't require hardcoding expected padding.
     
-    // Get the cells ideal size for its content.
-    CGSize cellSize = [templateCell sizeThatFits:CGSizeMake(CGRectGetWidth(tableView.bounds), CGFLOAT_MAX)];
-    return cellSize.height;
+    // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+    static UIEdgeInsets labelInsets;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
+    } else {
+        labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+    }
+    
+    NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
+    NSString *title = [contactInfo valueForKey:@"title"];
+    NSString *detail = [self detailText:contactInfo];
+    
+    CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+    CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+    
+    CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+    
+    return MAX(titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-    MITMultilineTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[MITMultilineTableViewCell alloc] init];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell.contentView.backgroundColor = [UIColor whiteColor];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+        cell.textLabel.numberOfLines = 0;
+        cell.detailTextLabel.numberOfLines = 0;
+        cell.detailTextLabel.textColor = [UIColor darkGrayColor];
     }
     
     [self configureCell:cell
@@ -94,16 +114,14 @@
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-    MITMultilineTableViewCell *multilineCell = (MITMultilineTableViewCell*)cell;
-
 	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-	multilineCell.headlineLabel.text = [contactInfo valueForKey:@"title"];
-	multilineCell.bodyLabel.text = [self detailText:contactInfo];
+	cell.textLabel.text = [contactInfo valueForKey:@"title"];
+	cell.detailTextLabel.text = [self detailText:contactInfo];
 }
 
 - (NSString *)detailText:(NSManagedObject*)contactInfo {
 	NSString *phoneString = [contactInfo valueForKey:@"phone"];
-	phoneString = [NSString stringWithFormat:@"(%@.%@.%@)", 
+	phoneString = [NSString stringWithFormat:@"%@.%@.%@",
 				   [phoneString substringToIndex:3], 
 				   [phoneString substringWithRange:NSMakeRange(3, 3)], 
 				   [phoneString substringFromIndex:6]];
@@ -111,7 +129,7 @@
     NSString *descriptionString = [contactInfo valueForKey:@"summary"];
     
 	if ([descriptionString length]) {
-		return [NSString stringWithFormat:@"%@ %@", descriptionString, phoneString];
+		return [NSString stringWithFormat:@"%@ (%@)", descriptionString, phoneString];
 	} else {
 		return phoneString;
 	}

@@ -38,7 +38,7 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
         }
     }
     
-    if ([longitudes count] != [latitudes count]) {
+    if ([longitudes count] != [latitudes count] || [longitudes count] == 0) {
         DDLogCError(@"error creating region due invalid coordinate data (%ld != %ld)",
                     (unsigned long)[longitudes count],
                     (unsigned long)[latitudes count]);

@@ -1,7 +1,6 @@
 #import "EmergencyModule.h"
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
-#import "SecondaryGroupedTableViewCell.h"
 #import "MITUIConstants.h"
 #import "EmergencyData.h"
 #import "MITJSON.h"
@@ -29,7 +28,11 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"Emergency Info";
-        _webViewInsets = UIEdgeInsetsMake(10., 10., 10., 22.);
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
+        } else {
+            _webViewInsets = UIEdgeInsetsMake(10., 10., 0., 10.);
+        }
     }
     return self;
 }
@@ -37,7 +40,12 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
-	self.tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+	self.tableView.backgroundView = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -133,22 +141,45 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
         CGFloat height = self.infoWebView.scrollView.contentSize.height + self.webViewInsets.bottom + self.webViewInsets.top;
         return height;
+    } else if (indexPath.section == MITEmergencyTableSectionContacts && indexPath.row < [contacts count]) {
+        // There's probably a better way to do this —
+        // one that doesn't require hardcoding expected padding.
+        
+        // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+        static UIEdgeInsets labelInsets;
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
+        } else {
+            labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+        }
+        
+        NSString *title = contacts[indexPath.row][@"title"];
+        NSString *phone = contacts[indexPath.row][@"phone"];
+        
+        CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+        CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+        
+        CGSize phoneSize = [phone sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+        
+        return MAX(titleSize.height + phoneSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
     } else {
-        return 40.;
+        return 44.;
     }
 }
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *alertCellId = @"AlertCell";
+    static NSString *contactCellId = @"ContactCell";
     
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:alertCellId];
         if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:alertCellId];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.contentView.autoresizesSubviews = YES;
             cell.contentView.clipsToBounds = YES;
@@ -164,6 +195,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             webView.scrollView.scrollEnabled = NO;
             webView.scrollView.showsHorizontalScrollIndicator = NO;
             webView.scrollView.showsVerticalScrollIndicator = NO;
+            webView.userInteractionEnabled = NO;
             [cell.contentView addSubview:webView];
             self.infoWebView = webView;
 
@@ -177,13 +209,13 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         
         return cell;
     } else if (indexPath.section == MITEmergencyTableSectionContacts) {
-        NSString *cellIdentifier = @"MITEmergencyContactCell";
-        SecondaryGroupedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:contactCellId];
         if (!cell) {
-            cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                        reuseIdentifier:CellIdentifier];
-            cell.textLabel.backgroundColor = [UIColor clearColor];
-            cell.secondaryTextLabel.backgroundColor = [UIColor clearColor];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                          reuseIdentifier:contactCellId];
+            cell.textLabel.numberOfLines = 0;
+            cell.detailTextLabel.numberOfLines = 0;
+            cell.detailTextLabel.textColor = [UIColor darkGrayColor];
         }
         
         NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
@@ -191,10 +223,10 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             NSDictionary *contact = contacts[indexPath.row];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             cell.textLabel.text = contact[@"title"];
-            cell.secondaryTextLabel.text = contact[@"phone"];
+            cell.detailTextLabel.text = contact[@"phone"];
         } else {
             cell.textLabel.text = @"More Emergency Contacts";
-            cell.secondaryTextLabel.text = nil;
+            cell.detailTextLabel.text = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
@@ -219,7 +251,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             [tableView deselectRowAtIndexPath:indexPath
                                      animated:YES];
         } else {
-            EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil];
+            EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] init];
             [self.navigationController pushViewController:contactsVC animated:YES];
             
         }

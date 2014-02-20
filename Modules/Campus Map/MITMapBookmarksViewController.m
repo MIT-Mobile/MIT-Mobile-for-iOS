@@ -1,6 +1,6 @@
 #import "MITMapBookmarksViewController.h"
 #import "CampusMapViewController.h"
-#import "MITUIConstants.h"
+#import "UIKit+MITAdditions.h"
 #import "MITMapModel.h"
 #import "MITCoreDataController.h"
 
@@ -32,6 +32,10 @@
 		self.editButtonItem.enabled = YES;
 	}
 
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    }
+    
     [self.navigationItem setLeftBarButtonItem:self.editButtonItem animated:animated];
 
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
@@ -131,7 +135,7 @@
 
 	// get the bookmark that was selected.
     MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self didSelectPlaces:@[[place objectID]]];
+    [self didSelectPlaces:@[place]];
 }
 
 @end

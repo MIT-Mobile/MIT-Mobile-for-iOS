@@ -7,7 +7,7 @@
 #import "DatePickerViewController.h"
 #import "MITSearchDisplayController.h"
 #import "CalendarDataManager.h"
-#import "NavScrollerView.h"
+#import "MITScrollingNavigationBar.h"
 
 @class MITSearchDisplayController;
 
@@ -16,7 +16,7 @@
 @class MITEventList;
 
 @interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
-MITMapViewDelegate, NavScrollerDelegate,
+MITMapViewDelegate, MITScrollingNavigationBarDelegate, MITScrollingNavigationBarDataSource,
 DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
 
 
@@ -44,7 +44,7 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
 - (void)listButtonToggled;
 
 - (void)reloadView:(MITEventList *)listType;
-- (void)selectScrollerButton:(NSString *)buttonTitle;
+//- (void)selectScrollerButton:(NSString *)buttonTitle;
 
 
 @end

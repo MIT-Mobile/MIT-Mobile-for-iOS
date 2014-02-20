@@ -1,5 +1,4 @@
 #import "PeopleDetailsViewController.h"
-#import "PeopleDetailsTableViewCell.h"
 #import "ConnectionDetector.h"
 #import "PeopleRecentsData.h"
 #import "MIT_MobileAppDelegate.h"
@@ -7,106 +6,117 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITMailComposeController.h"
-#import "MobileRequestOperation.h"
-
-#import "PeopleDetailsHeaderView.h"
+#import "MITPeopleResource.h"
 
 @interface PeopleDetailsViewController ()
-@property (nonatomic, strong) NSMutableArray *sections;
+
+@property (nonatomic, strong) NSArray *attributes;
+
+@property (nonatomic, weak) IBOutlet UILabel * personName;
+@property (nonatomic, weak) IBOutlet UILabel * personTitle;
+@property (nonatomic, weak) IBOutlet UILabel * personOrganization;
+
 @end
 
-static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
+static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 @implementation PeopleDetailsViewController
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
 	self.title = @"Info";
 	[self.tableView applyStandardColors];
     self.view.backgroundColor = [UIColor mit_backgroundColor];
-    [self registerNibsForTableViewCells];
-	
-	// populate remaining contents to be displayed
-	self.sections = [[NSMutableArray alloc] init];
-	
-//	NSArray *jobSection = @[@"title", @"dept"];
-	NSArray *phoneSection = @[@"phone", @"fax"];
-	NSArray *emailSection = @[@"email"];
-	NSArray *officeSection = @[@"office"];
-	
-	NSArray *sectionCandidates = @[emailSection, phoneSection, officeSection];
 
-	for (NSArray *section in sectionCandidates) {
-		// each element of currentSection will be a 2-array of NSString *tag and NSString *value
-        NSMutableArray *currentSection = [[NSMutableArray alloc] init];
-
-		for (NSString *ldapTag in section) {
-			NSString *ldapValue = [self.personDetails valueForKey:ldapTag];
-			NSString *displayTag = ldapTag;
-			
-			if (ldapValue) {
-                BOOL shouldDisplayValue = ([ldapTag isEqualToString:@"email"] ||
-                                           [ldapTag isEqualToString:@"phone"] ||
-                                           [ldapTag isEqualToString:@"office"]);
-				if (shouldDisplayValue) {
-                    NSArray *ldapComponents = [ldapValue componentsSeparatedByString:@","];
-                    for (NSString *value in ldapComponents) {
-						[currentSection addObject:@[ldapTag, value]];
-					}
-				}
-
-				[currentSection addObject:@[displayTag, ldapValue]];
-			}
-		}
-		
-		if ([currentSection count]) {
-			[self.sections addObject:currentSection];
-        }
-	}
-    
     [self updateTableViewHeaderView];
 	
 	// if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
-                                                                                  command:nil
-                                                                               parameters:@{@"q" : self.personDetails.displayName}];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contactResults, NSString *contentType, NSError *error) {
+        [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
             if (!error) {
-                [contactResults enumerateObjectsUsingBlock:^(NSDictionary *entry, NSUInteger idx, BOOL *stop) {
-                    if ([entry[@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {
-                        self.personDetails = [PeopleRecentsData updatePerson:self.personDetails withSearchResult:entry];
-                        [self updateTableViewHeaderView];
-                        [self.tableView reloadData];
-                        (*stop) = YES;
-                    }
-                }];
+                self.personDetails = [objects lastObject];
+                [self updateTableViewHeaderView];
+                [self.tableView reloadData];
             }
-        };
+        }];
+    }
+}
+
+- (void) setPersonDetails:(PersonDetails *)personDetails
+{
+    _personDetails = [PeopleRecentsData updatePerson:personDetails];
+    [self mapPersonAttributes];
+}
+
+static NSString * EmailAccessoryIcon    = @"email";
+static NSString * PhoneAccessoryIcon    = @"phone";
+static NSString * MapAccessoryIcon      = @"map";
+static NSString * ExternalAccessoryIcon = @"external";
+
+static NSInteger AttributeValueIndex    = 0;
+static NSInteger DisplayNameIndex       = 1;
+static NSInteger AccessoryIconIndex     = 2;
+
+- (void) mapPersonAttributes
+{
+    /* key : display name : accessory icon
+     * -----------------------------------
+     * email     : email : email
+     *
+     * phone     : phone : phone
+     * fax       : fax   : phone
+     * homephone : home  : phone
+     *
+     * office            : office  : map
+     * street/city/state : address : map
+     *
+     * website   : website : external
+     */
+    
+    // The following section of code will initialize @property 'attributes' with items structured:
+    //   @[value for key, display name, accessory icon ]
+    NSMutableArray *tempAttributes = [NSMutableArray array];
+    NSArray *attributeKeys = @[@"email", @"phone", @"fax", @"home", @"office", @"address", @"website"];
+    for (NSString *key in attributeKeys) {
+        id attribute = [self.personDetails valueForKey:key];
         
-        [[MobileRequestOperation defaultQueue] addOperation:request];
-	}
+        NSString *attrAccessoryIcon = [self accessoryIconForKey:key];
+        
+        if ([attribute isKindOfClass:[NSString class]]) {
+            NSArray * attrData = @[attribute, key, attrAccessoryIcon];
+            [tempAttributes addObject:attrData];
+        } else if ([attribute isKindOfClass:[NSArray class]]) {
+            for (NSString *subAttribute in attribute) {
+                NSArray *attrData = @[subAttribute, key, attrAccessoryIcon];
+                [tempAttributes addObject:attrData];
+            }
+        }
+    }
+    self.attributes = [tempAttributes copy];
+}
+
+- (NSString *)accessoryIconForKey:(NSString *)key
+{
+    if ([key isEqualToString:@"email"]) {
+        return EmailAccessoryIcon;
+    } else if ([@[@"phone", @"fax", @"home"] containsObject:key]) {
+        return PhoneAccessoryIcon;
+    } else if ([@[@"office", @"address"] containsObject:key]) {
+        return MapAccessoryIcon;
+    } else if ([key isEqualToString:@"website"]){
+       return ExternalAccessoryIcon;
+    }
+    return @"";
 }
 
 - (void) updateTableViewHeaderView
 {
-    PeopleDetailsHeaderView *headerView = [[[NSBundle mainBundle] loadNibNamed:@"PeopleDetailsHeaderView" owner:self options:nil] firstObject];
-    headerView.primaryLabel.text = self.personDetails.displayName;
-    
-    NSString *secondaryLabel = @"";
-    if ([self.personDetails.title length] && [self.personDetails.dept length]) {
-        secondaryLabel = [NSString stringWithFormat:@"%@\n%@", self.personDetails.title, self.personDetails.dept];
-    } else if ([self.personDetails.title length] || [self.personDetails.dept length]) {
-        secondaryLabel = ([self.personDetails.title length]) ? self.personDetails.title : self.personDetails.dept;
+    if (self.personDetails) {
+        self.personName.text = self.personDetails.name;
+        self.personTitle.text = self.personDetails.title;
+        self.personOrganization.text = self.personDetails.dept;
     }
-    
-    headerView.secondaryLabel.text = secondaryLabel;
-    self.tableView.tableHeaderView = headerView;
-}
-
-- (void) registerNibsForTableViewCells
-{
-    [self.tableView registerNib:[UINib nibWithNibName:@"PeopleDetailsTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:PeopleDetailCellReuseIdentifier];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -131,17 +141,34 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return [self.sections count] + 1;
+	return 3;
 }
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if (section == [self.sections count]) {
-		return 2;
-    } else {
-        return [self.sections[section] count];
+	// Return the number of rows in the section.
+    switch (section) {
+        case 0:
+            return [self.attributes count];
+
+        case 1:
+            return 2;
+
+        case 2:
+            return 1;
+
+        default:
+            return 0;
     }
+}
+
+- (BOOL) tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 2) {
+        return NO;
+    }
+    return YES;
 }
 
 
@@ -151,79 +178,89 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 	NSInteger section = indexPath.section;
 	NSInteger row = indexPath.row;
 
-	NSString *cellID = [NSString stringWithFormat:@"%d",section];
+	UITableViewCell * cell;
 	
-	if (section == [self.sections count]) {
+	if (section == 1) {
 		// cells for Create New / Add Existing rows at the end
-		// we are mimicking the style of UIButtonTypeRoundedRect until we find something more built-in
-		UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-		
-		if (!cell) {
-			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
-            cell.textLabel.textColor = STANDARD_CONTENT_FONT_COLOR;
-        }
+		cell = [tableView dequeueReusableCellWithIdentifier:@"ActionCell" forIndexPath:indexPath];
 
 		if (row == 0) {
 			cell.textLabel.text = @"Create New Contact";
         } else {
 			cell.textLabel.text = @"Add to Existing Contact";
 		}
+		
+	} else if (section == 0) { // cells for displaying person details
+		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
 
-		return cell;
-		
-	} else { // cells for displaying person details
-		PeopleDetailsTableViewCell *cell = (PeopleDetailsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PeopleDetailCellReuseIdentifier];
+		NSArray *personInfo = self.attributes[row]; // see mapPersonAttributes method for creation of @property attributes
+        NSString * attrValue    = personInfo[AttributeValueIndex];
+        NSString * attrType     = personInfo[DisplayNameIndex];
+        NSString * attrIcon     = personInfo[AccessoryIconIndex];
 
-		NSArray *personInfo = self.sections[section][row];
-		NSString *tag = personInfo[0];
-		NSString *data = personInfo[1];
-		
-		cell.typeLabel.text = tag;
-		cell.valueLabel.text = data;
-		
-		if ([tag isEqualToString:@"email"]) {
+        cell.detailTextLabel.text = attrValue;
+        cell.textLabel.text = attrType;
+        
+
+		if ([attrIcon isEqualToString:EmailAccessoryIcon]) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-		} else if ([tag isEqualToString:@"phone"]) {
+		} else if ([attrIcon isEqualToString:PhoneAccessoryIcon]) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-		} else if ([tag isEqualToString:@"office"]) {
+		} else if ([attrIcon isEqualToString:MapAccessoryIcon]) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-		} else {
+		} else if ([attrIcon isEqualToString:ExternalAccessoryIcon]) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        } else {
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		}
-		
-		return cell;
-	}	
+        
+        if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+            // testing attributes accessoryIcon with the next attribute array
+            //  like accessory icons should not display separatorInsets
+            if ([self.attributes count] > indexPath.row + 1 && [self.attributes[indexPath.row + 1][AccessoryIconIndex] isEqualToString:self.attributes[indexPath.row][AccessoryIconIndex]] ) {
+                cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
+            } else {
+                cell.separatorInset = UIEdgeInsetsMake(0, 15., 0, 0);
+            }
+        }
+
+	} else {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"BlankCell" forIndexPath:indexPath];
+        if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
+        }
+    }
+    
+    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-	
-	NSInteger row = indexPath.row;
-	NSInteger section = indexPath.section;
+    NSString * attrType = nil;
+    if (indexPath.section == 0) {
+        NSArray *personInfo = self.attributes[indexPath.row];
+        attrType = personInfo[DisplayNameIndex];
+    }
+    
+	switch (indexPath.section) {
+        case 0:
+            if ([attrType isEqualToString:@"address"]) {
+                return 82.;
+            }
+            return 62.;
 
-	if (section == [self.sections count]) {
-        return tableView.rowHeight;
-	} else {
-        NSArray *personInfo = self.sections[section][row];
-        NSString *tag = personInfo[0];
-        NSString *data = personInfo[1];
+        case 1:
+            return 44.;
 
-        // the following may be off by a pixel or 2 for different OS versions
-        // in the future we should prepare for the general case where widths can be way different (including flipping orientation)
-        CGFloat labelWidth = ([tag isEqualToString:@"phone"] || [tag isEqualToString:@"email"] || [tag isEqualToString:@"office"]) ? 182.0 : 207.0;
-        
-        CGSize labelSize = [data sizeWithFont:[UIFont boldSystemFontOfSize:15.0]
-                            constrainedToSize:CGSizeMake(labelWidth, 2009.0f)
-                                lineBreakMode:NSLineBreakByWordWrapping];
-        return labelSize.height + 26.0;
+        case 2:
+        default:
+            return 62.;
     }
 
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (indexPath.section == [self.sections count]) { // user selected create/add to contacts
+	if (indexPath.section == 1) { // user selected create/add to contacts
 		if (indexPath.row == 0) { // create addressbook entry
 			ABRecordRef person = ABPersonCreate();
 			CFErrorRef error = NULL;
@@ -289,19 +326,21 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 			[appDelegate presentAppModalViewController:picker animated:YES];
 		}
 	} else {
-		NSArray *personInfo = self.sections[indexPath.section][indexPath.row];
-		NSString *tag = personInfo[0];
+		NSArray *personInfo = self.attributes[indexPath.row];
+		NSString *actionIcon = personInfo[AccessoryIconIndex];
+        NSString * value = personInfo[AttributeValueIndex];
 		
-		if ([tag isEqualToString:@"email"]) {
-			[self emailIconTapped:personInfo[1]];
-        } else if ([tag isEqualToString:@"phone"]) {
-			[self phoneIconTapped:personInfo[1]];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else if ([tag isEqualToString:@"office"]) {
-			[self mapIconTapped:personInfo[1]];
+		if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
+			[self emailIconTapped:value];
+        } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
+			[self phoneIconTapped:value];
+        } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
+			[self mapIconTapped:value];
+        } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
+            [self externalIconTapped:value];
         }
-
 	}
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark -
@@ -332,12 +371,7 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 {
 	CFErrorRef error;
 	
-	ABAddressBookRef ab = ABAddressBookCreate();
-	
-	//ABPersonViewController *personController = [[ABPersonViewController alloc] init];
-	//personController.personViewDelegate = self;
-	//personController.allowsEditing = YES;
-	//personController.displayedPerson = person;
+	ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &error);
 
 	NSString *ldapValue = nil;
 	ABRecordRef newPerson = ABPersonCreate();
@@ -459,6 +493,13 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
     [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
 }
 
+- (void)externalIconTapped:(NSString *)urlString
+{
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
 
 @end
 

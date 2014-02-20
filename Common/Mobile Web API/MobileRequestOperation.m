@@ -696,8 +696,14 @@ typedef enum
                 loginView.delegate = self;
                 
                 UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginView];
-                loginNavController.navigationBar.barStyle = UIBarStyleBlack;
-                
+                if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                    loginNavController.navigationBar.barStyle = UIBarStyleDefault;
+                    loginNavController.navigationBar.translucent = YES;
+                } else {
+                    loginNavController.navigationBar.barStyle = UIBarStyleBlack;
+                    loginNavController.navigationBar.translucent = NO;
+                }
+
                 [[MITAppDelegate() rootNavigationController] presentViewController:loginNavController animated:YES completion:NULL];
                 self.loginViewController = loginView;
             }

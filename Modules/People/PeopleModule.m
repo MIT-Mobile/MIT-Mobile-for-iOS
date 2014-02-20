@@ -30,8 +30,9 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (void)loadModuleHomeController
 {
-    PeopleSearchViewController *controller = [[PeopleSearchViewController alloc] init];
-    self.moduleHomeController = controller;
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
+    PeopleSearchViewController *vc = [storyboard instantiateInitialViewController];
+    self.moduleHomeController = vc;
 }
 
 - (PeopleSearchViewController*)peopleController
@@ -46,7 +47,7 @@ static NSString * const PeopleStateDetail = @"detail";
 	UIViewController *visibleVC = self.peopleController.navigationController.visibleViewController;
 	if ([visibleVC isMemberOfClass:[PeopleSearchViewController class]]) {
 		PeopleSearchViewController *searchVC = (PeopleSearchViewController *)visibleVC;
-		if (searchVC.searchController.active) {
+		if (searchVC.searchDisplayController.active) {
             [url setPath:PeopleStateSearchBegin query:searchVC.searchBar.text];
         } else if (searchVC.searchResults != nil) {
             [url setPath:PeopleStateSearchComplete query:searchVC.searchBar.text];
@@ -80,7 +81,7 @@ static NSString * const PeopleStateDetail = @"detail";
 			self.peopleController.searchBar.text = query;
 		}
 
-        [self.peopleController.searchController setActive:YES animated:NO];
+        [self.peopleController.searchDisplayController setActive:YES animated:NO];
         didHandle = YES;
 	} else if (!query || [query length] == 0) {
 		// from this point forward we don't want to handle anything

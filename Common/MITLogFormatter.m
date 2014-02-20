@@ -1,7 +1,7 @@
-#import "DispatchQueueLogFormatter.h"
+#import "DDDispatchQueueLogFormatter.h"
 #import "MITLogFormatter.h"
 
-@interface DispatchQueueLogFormatter ()
+@interface DDDispatchQueueLogFormatter ()
 - (NSString *)stringFromDate:(NSDate *)date;
 - (NSString *)queueThreadLabelForLogMessage:(DDLogMessage *)logMessage;
 @end

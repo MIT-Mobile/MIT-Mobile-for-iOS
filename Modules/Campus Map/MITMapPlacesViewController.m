@@ -3,7 +3,6 @@
 #import "MITAdditions.h"
 #import "MITMapModel.h"
 #import "MITConstants.h"
-#import "MITUIConstants.h"
 #import "MITMapDetailViewController.h"
 
 static NSString* const MITMapCategoryViewAllText = @"View all on map";
@@ -38,6 +37,10 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    }
 
     UIEdgeInsets insets = UIEdgeInsetsMake(0, 8, 0, 0);
     UIImage *buttonImage =[UIImage imageNamed:@"global/action-map"];

@@ -13,7 +13,7 @@
 {
     self = [super init];
     if (self) {
-        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 10);
+        self.contentInsets = [[self class] defaultContentInsets];
     }
     return self;
 }
@@ -22,7 +22,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 10);
+        self.contentInsets = [[self class] defaultContentInsets];
     }
     return self;
 }
@@ -33,6 +33,15 @@
     [self.bodyLabel removeFromSuperview];
 }
 
++ (UIEdgeInsets)defaultContentInsets
+{
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        return UIEdgeInsetsMake(8, 15, 8, 10);
+    } else {
+        return UIEdgeInsetsMake(8, 10, 8, 10);
+    }
+}
+
 #pragma mark - Lazy Views
 - (UILabel*)headlineLabel
 {
@@ -40,8 +49,10 @@
         UILabel *headlineLabel = [[UILabel alloc] init];
         headlineLabel.backgroundColor = [UIColor clearColor];
         headlineLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        headlineLabel.textColor = CELL_STANDARD_FONT_COLOR;
-        headlineLabel.highlightedTextColor = [UIColor whiteColor];
+        headlineLabel.textColor = [UIColor blackColor];
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            headlineLabel.highlightedTextColor = [UIColor whiteColor];
+        }
         headlineLabel.numberOfLines = 0;
         headlineLabel.lineBreakMode = NSLineBreakByWordWrapping;
         headlineLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -60,8 +71,10 @@
         UILabel *bodyLabel = [[UILabel alloc] init];
         bodyLabel.backgroundColor = [UIColor clearColor];
         bodyLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
-        bodyLabel.textColor = CELL_DETAIL_FONT_COLOR;
-        bodyLabel.highlightedTextColor = [UIColor whiteColor];
+        bodyLabel.textColor = [UIColor darkGrayColor];
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            bodyLabel.highlightedTextColor = [UIColor whiteColor];
+        }
         bodyLabel.numberOfLines = 0;
         bodyLabel.lineBreakMode = NSLineBreakByWordWrapping;
         bodyLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -79,6 +92,9 @@
     [super updateConstraints];
 
     CGFloat preferredTextWidth = CGRectGetWidth(self.contentView.bounds) - self.contentInsets.left - self.contentInsets.right;
+    if (self.accessoryType != UITableViewCellAccessoryNone) {
+        preferredTextWidth -= 30.;
+    }
     self.headlineLabel.preferredMaxLayoutWidth = preferredTextWidth;
     self.bodyLabel.preferredMaxLayoutWidth = preferredTextWidth;
 
@@ -118,6 +134,9 @@
     [self layoutIfNeeded];
 
     CGFloat textWidth = MIN(CGRectGetWidth(self.contentView.bounds), size.width) - self.contentInsets.left - self.contentInsets.right;
+    if (self.accessoryType != UITableViewCellAccessoryNone && NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textWidth -= 30.;
+    }
 
     NSString *headlineText = self.headlineLabel.text;
     CGSize headlineLabelSize = [self.headlineLabel sizeThatFits:[headlineText sizeWithFont:self.headlineLabel.font

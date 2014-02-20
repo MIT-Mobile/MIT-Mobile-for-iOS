@@ -22,7 +22,7 @@ static NSString* const MITLinksDataTitleKey = @"name";
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
-        self.title = @"Links";
+        [self setup];
     }
     
     return self;
@@ -32,9 +32,14 @@ static NSString* const MITLinksDataTitleKey = @"name";
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"Links";
+        [self setup];
     }
     return self;
+}
+
+- (void)setup
+{
+    self.title = @"Links";
 }
 
 - (BOOL)wantsFullScreenLayout
@@ -47,7 +52,8 @@ static NSString* const MITLinksDataTitleKey = @"name";
 {
     [super viewDidLoad];
     
-    self.tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.tableView.backgroundView = nil;
     self.linkResults = [self cachedLinks];
 }
 
@@ -192,11 +198,12 @@ static NSString* const MITLinksDataTitleKey = @"name";
     
     cell.textLabel.text = currentLink[MITLinksDataTitleKey];
     cell.detailTextLabel.text = currentLink[MITLinksDataURLKey];
+    cell.detailTextLabel.textColor = [UIColor darkGrayColor];
     
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     
     cell.textLabel.numberOfLines = 0;
-    [cell applyStandardFonts];
+    cell.detailTextLabel.numberOfLines = 0;
     
     return cell;
 }
@@ -209,20 +216,27 @@ static NSString* const MITLinksDataTitleKey = @"name";
     return 0;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     if (self.linkResults) {
-        NSString *headerTitle = self.linkResults[section][MITLinksDataSectionTitleKey];
-        return [UITableView groupedSectionHeaderWithTitle:headerTitle];
+        return self.linkResults[section][MITLinksDataSectionTitleKey];
     }
     return nil;
 }
 
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return GROUPED_SECTION_HEADER_HEIGHT;
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // There's probably a better way to do this —
+    // one that doesn't require hardcoding expected padding.
+    
+    // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+    static UIEdgeInsets labelInsets;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
+    } else {
+        labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+    }
+    
     NSDictionary *section = self.linkResults[indexPath.section];
     NSArray *links = section[MITLinksDataSectionKey];
     NSDictionary *currentLink = links[indexPath.row];
@@ -230,13 +244,12 @@ static NSString* const MITLinksDataTitleKey = @"name";
     NSString *title = currentLink[MITLinksDataTitleKey];
     NSString *url = currentLink[MITLinksDataURLKey];
 
-    CGFloat padding = 10.0f;
-    CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
-    CGSize titleSize = [title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+    CGFloat linkTitleWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+    CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
     
-    CGSize urlSize = [url sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+    CGSize urlSize = [url sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
 
-    return MAX(titleSize.height + urlSize.height + 2 * padding, tableView.rowHeight);
+    return MAX(titleSize.height + urlSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
 }
 
 #pragma mark - Table View Delegate

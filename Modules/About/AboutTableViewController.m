@@ -18,7 +18,8 @@
 
 - (void)viewDidLoad {
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.tableView.backgroundView = nil;
 
     self.title = @"About";
     
@@ -59,7 +60,11 @@
         NSString *aboutText = infoDictionary[@"MITAboutAppText"];
         UIFont *aboutFont = [UIFont systemFontOfSize:14.0];
         CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:NSLineBreakByWordWrapping];
-        return aboutSize.height + 20;
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            return aboutSize.height + 40.;
+        } else {
+            return aboutSize.height + 20.;
+        }
     }
     else {
         return self.tableView.rowHeight;
@@ -193,10 +198,11 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     switch (section) {
         case 1: {
-            ExplanatorySectionLabel *copyrightFooter = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
+            ExplanatorySectionLabel *copyrightFooter = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionCopyright];
             NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
             copyrightFooter.text = infoDict[@"MITCopyright"];
             copyrightFooter.fontSize = 12.0;
+            copyrightFooter.textAlignment = NSTextAlignmentCenter;
             return copyrightFooter;
         }
     }

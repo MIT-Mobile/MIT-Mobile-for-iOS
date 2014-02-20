@@ -53,10 +53,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.backgroundImageView removeFromSuperview];
-    self.backgroundImageView = nil;
-
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.view.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     if (self.scanResult.scanImage) {
         self.qrImageView.image = self.scanResult.scanImage;

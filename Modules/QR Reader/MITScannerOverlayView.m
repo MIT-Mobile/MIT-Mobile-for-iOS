@@ -27,7 +27,7 @@
                                               alpha:0.5];
         
         {
-            UILabel *helpLabel = [[UILabel alloc] init];
+            UILabel *helpLabel = [[UILabel alloc] initWithFrame:CGRectMake(30., 64., frame.size.width - 60., 100.)];
             helpLabel.backgroundColor = [UIColor clearColor];
             helpLabel.textColor = [UIColor whiteColor];
             helpLabel.textAlignment = NSTextAlignmentCenter;
@@ -78,19 +78,8 @@
     // Layout the help text view
     {
         CGRect cropRect = self.qrRect;
-        CGRect bounds = self.bounds;
-        CGRect textFrame = CGRectZero;
-        
-        CGFloat maxHeight = cropRect.origin.y - bounds.origin.y;
-        CGSize textSize = [self.helpLabel.text sizeWithFont:self.helpLabel.font
-                                          constrainedToSize:CGSizeMake(CGRectGetWidth(cropRect), maxHeight)
-                                              lineBreakMode:self.helpLabel.lineBreakMode];
-        
-        textFrame.size.width = textSize.width;
-        textFrame.size.height = textSize.height;
-        textFrame.origin.y = floor(bounds.origin.y +
-                              ((maxHeight - textSize.height) / 2.0));
-        textFrame.origin.x = floor(((bounds.size.width - textSize.width) / 2.0));
+        CGRect textFrame = self.helpLabel.frame;
+        textFrame.size.height = cropRect.origin.y - textFrame.origin.y;
         self.helpLabel.frame = textFrame;
     }
 }
@@ -117,6 +106,9 @@
                             [self.outlineColor CGColor]);
     
     {
+        // TODO: This path doesn't close cleanly.
+        //   By using a dashed line instead of 4 separate paths,
+        //   the top left corner is not closed completely.
         CGFloat lineWidth = 4.0;
         CGFloat lineOffset = lineWidth / 2.0;
         
@@ -169,7 +161,7 @@
     CGRect qrRect = self.bounds;
     CGFloat minRect = MIN(qrRect.size.width, qrRect.size.height) * kRectScalingFactor;
     qrRect.origin.x = (qrRect.size.width - minRect) / 2.0;
-    qrRect.origin.y = (qrRect.size.height - minRect) / 2.0;
+    qrRect.origin.y = (qrRect.size.height - minRect) / 2.0 + 44.;
     qrRect.size = CGSizeMake(minRect, minRect);
     
     return qrRect;
