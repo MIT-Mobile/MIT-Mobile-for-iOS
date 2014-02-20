@@ -177,6 +177,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.tableView.backgroundView = nil;
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
