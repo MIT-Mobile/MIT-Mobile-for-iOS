@@ -35,7 +35,6 @@
 @property (nonatomic,readonly) MITNewsStory *selectedStory;
 @property (nonatomic,strong) MITNewsCategory *category;
 
-- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer;
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender;
 - (IBAction)loadMoreFooterTapped:(UIGestureRecognizer*)sender;
 
@@ -279,21 +278,6 @@
 }
 
 #pragma mark Responding to UI events
-- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
-{
-    MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
-
-    if (category) {
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsCategory *localCategory = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
-            DDLogVerbose(@"Recieved tap on section header for category with name '%@'",localCategory.name);
-        }];
-
-        [self performSegueWithIdentifier:@"showCategoryDetail" sender:gestureRecognizer];
-    }
-
-}
-
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender
 {
     CGRect searchBarFrame = self.searchDisplayController.searchBar.frame;
