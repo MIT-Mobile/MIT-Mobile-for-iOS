@@ -499,7 +499,7 @@
     }
     
     NSUUID *requestUUID = [NSUUID UUID];
-    _storyUpdateForSearchQueryInProgressToken = [NSUUID UUID];
+    _storyUpdateForSearchQueryInProgressToken = requestUUID;
     
     if ([query length] == 0) {
         // Just 'cause I'm paranoid. This method *should* never be called
