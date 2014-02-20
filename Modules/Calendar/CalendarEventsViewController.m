@@ -10,6 +10,7 @@
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
 #import "MITMapAnnotationView.h"
+#import "Foundation+MITAdditions.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -20,7 +21,7 @@
 // (bskinner - 2013.08)
 // These really should be weak but the current code depends on having strong
 // references and breaks badly when weak is used.
-@property (nonatomic,strong) NavScrollerView *navigationScroller;
+@property (nonatomic, strong) MITScrollingNavigationBar *scrollingNavBar;
 @property (nonatomic,strong) UISearchBar *searchBar;
 @property (nonatomic,strong) UIView *datePicker;
 @property (nonatomic,strong) MITSearchDisplayController *searchController;
@@ -114,7 +115,7 @@
 	self.view.backgroundColor = [UIColor clearColor];
 	
 	if (self.showScroller) {
-		[self.view addSubview:self.navigationScroller];
+		[self.view addSubview:self.scrollingNavBar];
 		[self.view addSubview:self.searchBar];
 	}
 	
@@ -130,7 +131,7 @@
     
     self.tableView = nil;
     self.mapView = nil;
-    self.navigationScroller = nil;
+    self.scrollingNavBar = nil;
     self.datePicker = nil;
     self.category = nil;
 }
@@ -153,6 +154,10 @@
     UIView *controllerView = [self defaultApplicationView];
     self.view = controllerView;
 
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+    
 	self.dateRangeDidChange = YES;
 	
 	[CalendarDataManager sharedManager].delegate = self;
@@ -161,51 +166,75 @@
 
 - (void)setupScrollButtons {
 	if (self.showScroller) {
-        NavScrollerView *navigationScroller = self.navigationScroller;
-        
-        if (!navigationScroller) {
-            navigationScroller = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
-            navigationScroller.navScrollerDelegate = self;
-            self.navigationScroller = navigationScroller;
+        if (!self.scrollingNavBar) {
+            CGRect frame = CGRectMake(CGRectGetMinX(self.view.bounds),
+                                      CGRectGetMinY(self.view.bounds),
+                                      CGRectGetWidth(self.view.bounds),
+                                      44.0);
+            self.scrollingNavBar = [[MITScrollingNavigationBar alloc] initWithFrame:frame];
+            self.scrollingNavBar.delegate = self;
+            self.scrollingNavBar.dataSource = self;
+            self.scrollingNavBar.autoresizingMask = UIViewAutoresizingNone;
+            self.scrollingNavBar.backgroundColor = [UIColor colorWithWhite:0.95
+                                                              alpha:1.0];
+            
+            
         }
-		
-		[navigationScroller removeAllButtons];
-        
-		UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		UIImage *searchImage = [UIImage imageNamed:MITImageNameSearch];
-		[searchButton setImage:searchImage forState:UIControlStateNormal];
-        searchButton.adjustsImageWhenHighlighted = NO;
-		searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with event list types
-        
-        navigationScroller.currentXOffset += 4.0;
-        [navigationScroller addButton:searchButton shouldHighlight:NO];
-		
-        // increase tappable area for search button
-        UIControl *searchTapRegion = [[UIControl alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
-        searchTapRegion.backgroundColor = [UIColor clearColor];
-        searchTapRegion.center = searchButton.center;
-        [searchTapRegion addTarget:self action:@selector(showSearchBar) forControlEvents:UIControlEventTouchUpInside];
-        
-		NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
-		
-		// create buttons for nav scroller view
-        [eventLists enumerateObjectsUsingBlock:^(MITEventList *eventList, NSUInteger idx, BOOL *stop) {
-			UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			aButton.tag = idx;
-			[aButton setTitle:eventList.title forState:UIControlStateNormal];
-            [navigationScroller addButton:aButton shouldHighlight:YES];
-        }];
-        
-        [navigationScroller setNeedsLayout];
-		
-        // TODO: use active category instead of always start at first tab
-		UIButton *homeButton = [navigationScroller buttonWithTag:0];
-		
-        [navigationScroller buttonPressed:homeButton];
-        searchTapRegion.tag = 8768; // all subviews of navscrollview need tag numbers that don't compete with buttons
-        [navigationScroller addSubview:searchTapRegion];
 	}
 }
+
+#pragma mark MITScrollingNavigationBarDataSource
+- (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar
+{
+    return [[[CalendarDataManager sharedManager] eventLists] count];
+}
+
+- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndex:(NSInteger)index
+{
+    NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+    MITEventList *eventList = eventLists[index];
+    return eventList.title;
+}
+
+#pragma mark MITScrollingNavigationBarDelegate
+- (CGFloat)widthForAccessoryViewInNavigationBar:(MITScrollingNavigationBar *)navigationBar
+{
+    return 40.;
+}
+
+- (UIView *)accessoryViewForNavigationBar:(MITScrollingNavigationBar *)navigationBar
+{
+    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *searchImage = [UIImage imageNamed:@"global/search_magnifier"];
+    [searchButton setImage:searchImage forState:UIControlStateNormal];
+    [searchButton addTarget:self action:@selector(showSearchBar) forControlEvents:UIControlEventTouchUpInside];
+    searchButton.adjustsImageWhenHighlighted = YES;
+    searchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    searchButton.tintColor = [UIColor MITTintColor];
+    searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with event list types
+    return searchButton;
+}
+
+- (void)navigationBar:(MITScrollingNavigationBar *)navigationBar didSelectItemAtIndex:(NSInteger)index
+{
+    NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+    MITEventList *eventList = eventLists[index];
+    [self reloadView:eventList];
+}
+
+//- (void)selectScrollerButton:(NSString *)buttonTitle
+//{
+//	for (UIButton *aButton in self.navigationScroller.buttons) {
+//		if ([aButton.titleLabel.text isEqualToString:buttonTitle]) {
+//			[self.navigationScroller buttonPressed:aButton];
+//			return;
+//		}
+//	}
+//    // we haven't found the button among our titles;
+//    // hold on to it in case a request response comes in with new titles
+//    self.queuedButtonTitle = buttonTitle;
+//}
+
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
@@ -266,9 +295,11 @@
 
 - (void)datePickerViewController:(DatePickerViewController *)controller didSelectDate:(NSDate *)date
 {
-    self.startDate = date;
-    self.dateRangeDidChange = YES;
-    [self reloadView:self.activeEventList];
+    if (![date isEqualToDateIgnoringTime:self.startDate]) {
+        self.startDate = date;
+        self.dateRangeDidChange = YES;
+        [self reloadView:self.activeEventList];
+    }
     
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	[appDelegate dismissAppModalViewControllerAnimated:YES];
@@ -290,7 +321,7 @@
 
 #pragma mark Redrawing logic and helper functions
 - (CGRect)contentFrame {
-	CGFloat yOffset = self.showScroller ? CGRectGetHeight(self.navigationScroller.frame) : 0.0;
+	CGFloat yOffset = self.showScroller ? CGRectGetHeight(self.scrollingNavBar.frame) : 0.0;
 	if ([self shouldShowDatePicker:self.activeEventList]) {
 		[self setupDatePicker];
 		yOffset += CGRectGetHeight(self.datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
@@ -355,7 +386,12 @@
 		
 		if ([self.activeEventList.listID isEqualToString:@"categories"]) {
 			self.tableView = [[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
-			[self.tableView applyStandardColors];
+            self.tableView.backgroundView = nil;
+            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            } else {
+                self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+            }
 			EventCategoriesTableView *categoriesTV = (EventCategoriesTableView *)self.tableView;
 			categoriesTV.delegate = categoriesTV;
 			categoriesTV.dataSource = categoriesTV;
@@ -453,19 +489,6 @@
 	self.dateRangeDidChange = NO;
 }
 
-- (void)selectScrollerButton:(NSString *)buttonTitle
-{
-	for (UIButton *aButton in self.navigationScroller.buttons) {
-		if ([aButton.titleLabel.text isEqualToString:buttonTitle]) {
-			[self.navigationScroller buttonPressed:aButton];
-			return;
-		}
-	}
-    // we haven't found the button among our titles;
-    // hold on to it in case a request response comes in with new titles
-    self.queuedButtonTitle = buttonTitle;
-}
-
 - (void)incrementStartDate:(BOOL)forward
 {
 	NSTimeInterval interval = [CalendarDataManager intervalForEventType:self.activeEventList
@@ -501,8 +524,8 @@
     
 	if (!self.datePicker) {
 		
-		CGFloat yOffset = self.showScroller ? self.navigationScroller.frame.size.height : 0.0;
-		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+		CGFloat yOffset = self.showScroller ? self.scrollingNavBar.frame.size.height : 0.0;
+		CGRect appFrame = [[UIScreen mainScreen] bounds];
 		
 		self.datePicker = [[UIView alloc] initWithFrame:CGRectMake(0.0, yOffset, appFrame.size.width, 44.0)];
 		UIImageView *datePickerBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, CGRectGetWidth(self.datePicker.bounds), CGRectGetHeight(self.datePicker.bounds))];
@@ -514,39 +537,37 @@
 		UIButton *prevDate = [UIButton buttonWithType:UIButtonTypeCustom];
 		prevDate.frame = CGRectMake(0, 0, buttonImage.size.width, buttonImage.size.height);
 		prevDate.center = CGPointMake(21.0, 21.0);
-		[prevDate setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		[prevDate setBackgroundImage:[UIImage imageNamed:@"global/subheadbar_button_pressed"] forState:UIControlStateHighlighted];
-		[prevDate setImage:[UIImage imageNamed:MITImageNameLeftArrow] forState:UIControlStateNormal];	
+		[prevDate setImage:[UIImage imageNamed:MITImageNameLeftArrow] forState:UIControlStateNormal];
 		[prevDate addTarget:self action:@selector(showPreviousDate) forControlEvents:UIControlEventTouchUpInside];
 		[self.datePicker addSubview:prevDate];
 		
 		UIButton *nextDate = [UIButton buttonWithType:UIButtonTypeCustom];
 		nextDate.frame = CGRectMake(0, 0, buttonImage.size.width, buttonImage.size.height);
 		nextDate.center = CGPointMake(appFrame.size.width - 21.0, 21.0);
-		[nextDate setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		[nextDate setBackgroundImage:[UIImage imageNamed:@"global/subheadbar_button_pressed"] forState:UIControlStateHighlighted];
 		[nextDate setImage:[UIImage imageNamed:MITImageNameRightArrow] forState:UIControlStateNormal];
 		[nextDate addTarget:self action:@selector(showNextDate) forControlEvents:UIControlEventTouchUpInside];
 		[self.datePicker addSubview:nextDate];
         
-        UIFont *dateFont = [UIFont boldSystemFontOfSize:20.0];
+        
+        UIFont *dateFont = [UIFont boldSystemFontOfSize:18.0];
         
         UIButton *dateButton = [UIButton buttonWithType:UIButtonTypeCustom];
         dateButton.titleLabel.font = dateFont;
         dateButton.titleLabel.textColor = [UIColor whiteColor];
         [dateButton addTarget:self action:@selector(datePickerDateLabelTapped) forControlEvents:UIControlEventTouchUpInside];
         dateButton.tag = randomTag;
+        
+        dateButton.frame = CGRectMake(prevDate.bounds.size.width, 0.0, self.datePicker.bounds.size.width - (prevDate.bounds.size.width + nextDate.bounds.size.width), self.datePicker.bounds.size.height);
+        dateButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        dateButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        
         [self.datePicker addSubview:dateButton];
 	}
 	
 	UIButton *dateButton = (UIButton *)[self.datePicker viewWithTag:randomTag];
     
-    UIFont *dateFont = [UIFont boldSystemFontOfSize:20.0];
     NSString *dateText = [CalendarDataManager dateStringForEventType:self.activeEventList
                                                              forDate:self.startDate];
-    CGSize textSize = [dateText sizeWithFont:dateFont];
-    dateButton.frame = CGRectMake(0.0, 0.0, textSize.width, textSize.height);
-    dateButton.center = CGPointMake(self.datePicker.center.x, self.datePicker.center.y - self.datePicker.bounds.origin.y);
     [dateButton setTitle:dateText
                 forState:UIControlStateNormal];
     
@@ -562,7 +583,7 @@
 - (void)showSearchBar
 {
     if (!self.searchBar) {
-        self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
+        self.searchBar = [[UISearchBar alloc] initWithFrame:self.scrollingNavBar.frame];
         self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
         self.searchBar.alpha = 0.0;
         [self.view addSubview:self.searchBar];
@@ -962,7 +983,7 @@
 - (void)calendarListsLoaded {
 	[self setupScrollButtons];
     if (self.queuedButtonTitle) {
-        [self selectScrollerButton:self.queuedButtonTitle];
+//        [self selectScrollerButton:self.queuedButtonTitle];
         self.queuedButtonTitle = nil;
     }
 }

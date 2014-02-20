@@ -11,8 +11,8 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
 	return [self.events count];
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *titleView = nil;
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     NSString *titleString = nil;
     
 	if (self.searchResults) {
@@ -32,11 +32,8 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
         if (self.searchSpan) {
             titleString = [NSString stringWithFormat:@"%@ in the next %@", titleString, self.searchSpan];
         }
-        
-        titleView = [UITableView ungroupedSectionHeaderWithTitle:titleString];
-	}
-    
-    return titleView;
+    }
+    return titleString;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -74,7 +71,9 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
         shortLocationLabel.backgroundColor = [UIColor clearColor];
         shortLocationLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         shortLocationLabel.numberOfLines = 1;
-        shortLocationLabel.highlightedTextColor = [UIColor whiteColor];
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            shortLocationLabel.highlightedTextColor = [UIColor whiteColor];
+        }
         shortLocationLabel.textColor = cell.bodyLabel.textColor;
         shortLocationLabel.textAlignment = NSTextAlignmentRight;
         shortLocationLabel.font = cell.bodyLabel.font;

@@ -23,7 +23,6 @@ UIWebViewDelegate, EKEventEditViewDelegate>
 
 - (void)reloadEvent;
 - (void)setupHeader;
-- (void)setupShareButton;
 - (void)requestEventDetails;
 - (void)showNextEvent:(id)sender;
 
