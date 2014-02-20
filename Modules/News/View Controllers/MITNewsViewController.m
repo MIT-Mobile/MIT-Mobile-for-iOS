@@ -168,7 +168,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
             NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
             storiesViewController.managedObjectContext = managedObjectContext;
-            storiesViewController.category = (MITNewsCategory*)[managedObjectContext objectWithID:[category objectID]];
+            [storiesViewController setCategoryWithObjectID:[category objectID]];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
                       NSStringFromClass([MITNewsStoriesViewController class]),
