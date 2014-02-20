@@ -64,12 +64,12 @@
     NSAssert(categoryEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,categoryEntityName);
 
     RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:categoryEntity];
-    [categoryMapping addAttributeMappingsFromDictionary:@{@"categoryId": @"identifier",
+    [categoryMapping addAttributeMappingsFromDictionary:@{@"id": @"identifier",
                                                           @"url" : @"url",
-                                                          @"categoryName" : @"name",
+                                                          @"name" : @"name",
                                                           @"@metadata.mapping.collectionIndex" : @"order"}];
 
-    RKRelationshipMapping *subcategories = [RKRelationshipMapping relationshipMappingFromKeyPath:@"subcategories"
+    RKRelationshipMapping *subcategories = [RKRelationshipMapping relationshipMappingFromKeyPath:@"categories"
                                                                                        toKeyPath:@"children"
                                                                                      withMapping:categoryMapping];
     [categoryMapping addPropertyMapping:subcategories];

@@ -77,6 +77,11 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     searchBar.delegate = self;
     searchBar.translatesAutoresizingMaskIntoConstraints = NO;
     [searchBar sizeToFit];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        searchBar.tintColor = [UIColor MITTintColor];
+        self.navigationController.toolbar.barStyle = UIBarStyleBlack;
+    }
 
     [controllerView addSubview:searchBar];
     self.searchBar = searchBar;
@@ -234,13 +239,14 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
             [self.mapView showCalloutForAnnotation:self.selectedPlaces[0]];
         }
 
-        UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:self
-                                                                    action:@selector(listItemWasTapped:)];
-        [self.navigationItem setRightBarButtonItem:listItem animated:animated];
+        // We don't have time to implement this right now.
+//        UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
+//                                                                     style:UIBarButtonItemStylePlain
+//                                                                    target:self
+//                                                                    action:@selector(listItemWasTapped:)];
+//        [self.navigationItem setRightBarButtonItem:listItem animated:animated];
     } else {
-        [self.navigationItem setRightBarButtonItem:nil animated:animated];
+//        [self.navigationItem setRightBarButtonItem:nil animated:animated];
     }
 }
 
@@ -309,14 +315,23 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     NSMutableArray *toolbarItems = [[NSMutableArray alloc] init];
 
+    NSString *geoFilledName = @"global/location_filled";
+    NSString *geoEmptyName = @"global/location";
+    NSString *favoritesName = @"global/star";
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        geoFilledName = @"global/location_filled_iOS_6";
+        geoEmptyName = @"global/location_iOS_6";
+        favoritesName = @"global/star_iOS_6";
+    }
+    
     UIBarButtonItem *geotrackingItem = nil;
     if (self.isGeotrackingEnabled) {
-        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_location-filled"]
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:geoFilledName]
                                                            style:UIBarButtonItemStylePlain
                                                           target:self
                                                           action:@selector(geotrackingItemWasTapped:)];
     } else {
-        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_location"]
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:geoEmptyName]
                                                            style:UIBarButtonItemStylePlain
                                                           target:self
                                                           action:@selector(geotrackingItemWasTapped:)];
@@ -324,15 +339,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     geotrackingItem.tag = MITCampusMapItemTagGeotrackingItem;
     [toolbarItems addObject:geotrackingItem];
 
-    if ([self hasFavorites]) {
-        UIBarButtonItem *favoritesItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/bookmark"]
-                                                                          style:UIBarButtonItemStylePlain
-                                                                         target:self
-                                                                         action:@selector(favoritesItemWasTapped:)];
-        favoritesItem.tag = MITCampusMapItemTagFavoritesItem;
-        [toolbarItems addObject:favoritesItem];
-    }
-
+    UIBarButtonItem *favoritesItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:favoritesName]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(favoritesItemWasTapped:)];
+    favoritesItem.tag = MITCampusMapItemTagFavoritesItem;
+    [toolbarItems addObject:favoritesItem];
     
     UIBarButtonItem *browseItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
                                                                                 target:self
@@ -482,7 +494,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)mapView:(MGSMapView *)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate screenPoint:(CGPoint)screenPoint
 {
-    self.interfaceHidden = !self.interfaceHidden;
+
 }
 
 - (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation

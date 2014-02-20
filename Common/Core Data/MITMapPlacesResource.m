@@ -32,7 +32,10 @@
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMapPlace entityName]];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier != nil"];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+    // use a natural sort, so that Building 7 comes before Building 10
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier"
+                                                                   ascending:YES
+                                                                    selector:@selector(localizedStandardCompare:)]];
     
     // TODO (bskinner - 2013.12.18): The Mobile v3 map/place_categories call is currently broken;
     //  The URL is not included and the fields are named incorrectly. Manually formatting the 'category'

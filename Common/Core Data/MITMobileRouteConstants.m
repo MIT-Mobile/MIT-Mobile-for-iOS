@@ -43,15 +43,15 @@ NSString* const MITMapBootstrapPathPattern = @"apis/map/bootstrap";
 
 #pragma mark maps/place_categories
 NSString* const MITMapCategoriesResourceName = @"MITMapCategoriesResourceName";
-NSString* const MITMapCategoriesPathPattern = @"apis/map/place_categories";
+NSString* const MITMapCategoriesPathPattern = @"apis/map/place_categories/";
 
 #pragma mark maps/places
 NSString* const MITMapPlacesResourceName = @"MITMapPlacesResourceName";
-NSString* const MITMapPlacesPathPattern = @"apis/map/places";
+NSString* const MITMapPlacesPathPattern = @"apis/map/places/";
 
 #pragma mark maps/rooms
 NSString* const MITMapRoomsResourceName = @"MITMapRoomsResourceName";
-NSString* const MITMapRoomsPathPattern = @"apis/map/rooms";
+NSString* const MITMapRoomsPathPattern = @"apis/map/rooms/";
 
 #pragma mark map/building/:building
 NSString* const MITMapBuildingResourceName = @"MITMapBuildingResourceName";
