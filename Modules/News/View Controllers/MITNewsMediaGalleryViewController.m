@@ -112,7 +112,36 @@
 
 - (IBAction)shareImage:(id)sender
 {
-
+    NSMutableArray *items = [[NSMutableArray alloc] init];
+    
+    MITNewsImageViewController *currentViewController = self.galleryPageViewControllers[self.selectedIndex];
+    if (currentViewController.cachedImage) {
+        [items addObject:currentViewController.cachedImage];
+    }
+    
+    [self.managedObjectContext performBlockAndWait:^{
+        NSArray *galleryImages = self.galleryImages;
+        MITNewsImage *image = galleryImages[self.selectedIndex];
+        
+        if ([items count] == 0) {
+           MITNewsImageRepresentation *imageRepresentation = [image bestRepresentationForSize:MITNewsImageLargestImageSize];
+            [items addObject:imageRepresentation.url];
+        }
+        
+        if (image.caption) {
+            [items addObject:image.caption];
+        } else if (image.descriptionText) {
+            [items addObject:image.descriptionText];
+        }
+    }];
+    
+    UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                        applicationActivities:nil];
+    sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
+                                                    UIActivityTypeAssignToContact,
+                                                    UIActivityTypeSaveToCameraRoll];
+    
+    [self presentViewController:sharingViewController animated:YES completion:nil];
 }
 
 - (IBAction)toggleUI:(id)sender
