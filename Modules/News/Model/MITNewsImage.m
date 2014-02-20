@@ -49,12 +49,14 @@ CGSize const MITNewsImageSmallestImageSize = {.width = 0.,.height = 0.};
             CGFloat distance1 = ([representation1.width doubleValue] * [representation1.height doubleValue]) - targetArea;
             CGFloat distance2 = ([representation2.width doubleValue] * [representation2.height doubleValue]) - targetArea;
             
+            // Subtracting 1 (just in case, probably does nothing useful)
+            // TODO: Pick a smaller maximum value; CGFLOAT_MAX is overkill here
             if (distance1 < 0) {
-                distance1 = CGFLOAT_MAX;
+                distance1 = (CGFLOAT_MAX - 1.) + distance1;
             }
             
             if (distance2 < 0) {
-                distance1 = CGFLOAT_MAX;
+                distance2 = (CGFLOAT_MAX - 1.) + distance2;
             }
             
             return [@(distance1) compare:@(distance2)];
