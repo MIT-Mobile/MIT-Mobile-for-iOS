@@ -9,5 +9,6 @@
 
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) MITNewsImage *image;
+@property (nonatomic,weak) UIImage *cachedImage;
 
 @end

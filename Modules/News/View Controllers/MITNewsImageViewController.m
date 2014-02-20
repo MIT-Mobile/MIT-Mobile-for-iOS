@@ -37,7 +37,7 @@
         __block CGSize imageSize = CGSizeZero;
         __block NSURL *imageURL = nil;
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsImageRepresentation *imageRepresentation = [self.image bestRepresentationForSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            MITNewsImageRepresentation *imageRepresentation = [self.image bestRepresentationForSize:MITNewsImageLargestImageSize];
             imageSize.width = [imageRepresentation.width doubleValue];
             imageSize.height = [imageRepresentation.height doubleValue];
             imageURL = imageRepresentation.url;
@@ -49,6 +49,8 @@
         self.scrollView.contentSize = imageSize;
         [self.imageView setImageWithURL:imageURL
                               completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                                  self.cachedImage = image;
+                                  
                                   [self.imageView sizeToFit];
                                   self.scrollView.contentSize = image.size;
                                   [self updateScrollViewScales];
