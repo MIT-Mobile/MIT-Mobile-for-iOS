@@ -3,7 +3,9 @@
 
 @class MITNewsCategory;
 
-@interface MITNewsStoriesViewController : MITFetchedResultsTableViewController
-@property (nonatomic,strong) MITNewsCategory *category;
+@interface MITNewsStoriesViewController : UITableViewController
+@property (nonatomic,readonly) MITNewsCategory *category;
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
+- (void)setCategoryWithObjectID:(NSManagedObjectID*)objectID;
 @end
