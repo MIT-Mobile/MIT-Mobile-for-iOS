@@ -1,4 +1,4 @@
-#import "MITNewsStoriesViewController.h"
+#import "MITNewsCategoryViewController.h"
 #import "MITNewsStoryCell.h"
 #import "MITCoreData.h"
 
@@ -16,7 +16,7 @@
 #import "UIImageView+WebCache.h"
 #import "MITNewsConstants.h"
 
-@interface MITNewsStoriesViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITNewsCategoryViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,strong) NSDate *lastUpdated;
@@ -43,7 +43,7 @@
 - (UITableViewHeaderFooterView*)createLoadMoreFooterView;
 @end
 
-@implementation MITNewsStoriesViewController {
+@implementation MITNewsCategoryViewController {
     NSManagedObjectID *_categoryObjectID;
     id _storyUpdateInProgressToken;
     id _storyUpdateForSearchQueryInProgressToken;
@@ -97,9 +97,9 @@
     self.title = title;
 
     if (!self.isSearching && !self.newsStories) {
-        __weak MITNewsStoriesViewController *weakSelf = self;
+        __weak MITNewsCategoryViewController *weakSelf = self;
         [self fetchFirstPageOfStoriesForCurrentCategory:^{
-            MITNewsStoriesViewController *blockSelf = weakSelf;
+            MITNewsCategoryViewController *blockSelf = weakSelf;
             if (blockSelf) {
                 if (blockSelf.newsStories && !blockSelf.tableView.tableFooterView) {
                     blockSelf.tableView.tableFooterView = [self createLoadMoreFooterView];
@@ -204,9 +204,9 @@
     _category = nil;
     
     if (self.category && self.isViewLoaded && self.view.superview) {
-        __weak MITNewsStoriesViewController *weakSelf = self;
+        __weak MITNewsCategoryViewController *weakSelf = self;
         [self fetchFirstPageOfStoriesForCurrentCategory:^{
-            MITNewsStoriesViewController *blockSelf = weakSelf;
+            MITNewsCategoryViewController *blockSelf = weakSelf;
             if (blockSelf) {
                 if (blockSelf.newsStories && !blockSelf.tableView.tableFooterView) {
                     blockSelf.tableView.tableFooterView = [blockSelf createLoadMoreFooterView];
@@ -337,11 +337,11 @@
 }
 
 - (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
-{    __weak MITNewsStoriesViewController *weakSelf = self;
+{    __weak MITNewsCategoryViewController *weakSelf = self;
     [self loadStoriesInCategory:self.category
              shouldLoadNextPage:NO
                      completion:^(NSManagedObjectID *category, NSError *error) {
-                         MITNewsStoriesViewController *blockSelf = weakSelf;
+                         MITNewsCategoryViewController *blockSelf = weakSelf;
                          if (blockSelf) {
                              if (error) {
                                  [blockSelf setUpdateText:@"Update failed" animated:NO];
@@ -466,9 +466,9 @@
         offset = [self.newsStories count];
     }
     
-    __weak MITNewsStoriesViewController *weakSelf = self;
+    __weak MITNewsCategoryViewController *weakSelf = self;
     void (^requestCompletionBlock)(NSArray*, MITResultsPager*, NSError*error) = ^(NSArray *stories, MITResultsPager *pager, NSError *error) {
-        MITNewsStoriesViewController *blockSelf = weakSelf;
+        MITNewsCategoryViewController *blockSelf = weakSelf;
         if (blockSelf) {
             BOOL isSameRequestToken = (blockSelf->_storyUpdateInProgressToken == requestUUID);
             
@@ -565,9 +565,9 @@
         }
         
         __weak NSString *currentSearchQuery = self.searchQuery;
-        __weak MITNewsStoriesViewController *weakSelf = self;
+        __weak MITNewsCategoryViewController *weakSelf = self;
         void (^requestCompletionBlock)(NSArray*, MITResultsPager*, NSError*error) = ^(NSArray *stories, MITResultsPager *pager, NSError *error) {
-            MITNewsStoriesViewController *blockSelf = weakSelf;
+            MITNewsCategoryViewController *blockSelf = weakSelf;
             if (blockSelf) {
                 BOOL isSameQuery = (blockSelf.searchQuery == currentSearchQuery);
                 BOOL isSameRequestToken = (blockSelf->_storyUpdateForSearchQueryInProgressToken == requestUUID);
@@ -919,10 +919,10 @@
         textColor = [UIColor MITTintColor];
     }
     
-    __weak MITNewsStoriesViewController *weakSelf = self;
+    __weak MITNewsCategoryViewController *weakSelf = self;
     [self loadStoriesForQuery:searchQuery
                        loaded:^(NSString *query, NSError *error) {
-                           MITNewsStoriesViewController *blockSelf = weakSelf;
+                           MITNewsCategoryViewController *blockSelf = weakSelf;
                            if (blockSelf) {
                                blockSelf.searchQuery = query;
                                

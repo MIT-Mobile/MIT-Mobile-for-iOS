@@ -6,7 +6,7 @@
 #import "MITNewsImageRepresentation.h"
 
 #import "MITNewsStoryViewController.h"
-#import "MITNewsStoriesViewController.h"
+#import "MITNewsCategoryViewController.h"
 #import "MITNewsModelController.h"
 #import "MITNewsStoryCell.h"
 #import "MITDisclosureHeaderView.h"
@@ -175,8 +175,8 @@
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else if ([segue.identifier isEqualToString:@"showCategoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsStoriesViewController class]]) {
-            MITNewsStoriesViewController *storiesViewController = (MITNewsStoriesViewController*)destinationViewController;
+        if ([destinationViewController isKindOfClass:[MITNewsCategoryViewController class]]) {
+            MITNewsCategoryViewController *storiesViewController = (MITNewsCategoryViewController*)destinationViewController;
 
             UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
             MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
@@ -186,7 +186,7 @@
             [storiesViewController setCategoryWithObjectID:[category objectID]];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsStoriesViewController class]),
+                      NSStringFromClass([MITNewsCategoryViewController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else {

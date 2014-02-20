@@ -3,7 +3,7 @@
 
 @class MITNewsCategory;
 
-@interface MITNewsStoriesViewController : UITableViewController
+@interface MITNewsCategoryViewController : UITableViewController
 @property (nonatomic,readonly) MITNewsCategory *category;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
