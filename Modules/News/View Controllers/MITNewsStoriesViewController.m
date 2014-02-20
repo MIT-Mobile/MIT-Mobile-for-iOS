@@ -778,7 +778,7 @@
         title = story.title;
         dek = story.dek;
 
-        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:cell.imageView.bounds.size];
+        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsImageSmallestImageSize];
         imageURL = representation.url;
     }];
 
@@ -892,4 +892,5 @@
                        }];
 
 }
+
 @end
