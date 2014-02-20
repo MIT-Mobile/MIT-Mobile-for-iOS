@@ -320,7 +320,7 @@
                     <navigationItem key="navigationItem" id="YZZ-bQ-JNd">
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="jsg-Cn-66o">
                             <connections>
-                                <action selector="searchButtonTapped:" destination="pGg-6v-bdr" id="BzD-XX-8fM"/>
+                                <action selector="searchButtonTapped:" destination="4LW-qO-0Fw" id="eKr-8i-xzb"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
