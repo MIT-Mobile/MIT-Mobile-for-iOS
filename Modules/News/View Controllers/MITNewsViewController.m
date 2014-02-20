@@ -14,11 +14,14 @@
 
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
+#import "UIScrollView+SVPullToRefresh.h"
 
 @interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
+
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,getter = isSearching) BOOL searching;
+@property (nonatomic,strong) NSDate *lastUpdated;
 
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
@@ -87,9 +90,14 @@
     
     self.tableView.tableHeaderView = self.searchDisplayController.searchBar;
     
+    // Make sure to correct the contentOffset before adding the pull-to-refresh
     CGPoint offset = self.tableView.contentOffset;
     offset.y = CGRectGetMaxY(self.searchDisplayController.searchBar.frame);
     self.tableView.contentOffset = offset;
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlWasTriggered:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -120,13 +128,29 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self performDataUpdate:^(NSError *error){
-        if (error) {
-            [self setUpdateText:@"Update failed" animated:animated];
-        }
-        
-        [self.tableView reloadData];
-    }];
+    if (!self.lastUpdated) {
+        __weak MITNewsViewController *weakSelf = self;
+        [self performDataUpdate:^(NSError *error){
+            MITNewsViewController *blockSelf = weakSelf;
+            if (blockSelf) {
+                if (error) {
+                    [blockSelf setUpdateText:@"Update failed" animated:animated];
+                } else {
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:blockSelf.lastUpdated
+                                                                                        toDate:[NSDate date]];
+                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                    [blockSelf setUpdateText:updateText animated:animated];
+                }
+                
+                [self.tableView reloadData];
+            }
+        }];
+    } else {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self setUpdateText:updateText animated:animated];
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -220,41 +244,6 @@
 
 #pragma mark - Managing states
 #pragma mark Updating
-- (void)setUpdating:(BOOL)updating
-{
-    [self setUpdating:updating animated:NO];
-}
-
-- (void)setUpdating:(BOOL)updating animated:(BOOL)animated
-{
-    if (_updating != updating) {
-        if (updating) {
-            [self willBeginUpdating:animated];
-        }
-
-        _updating = updating;
-
-        if (!_updating) {
-            [self didEndUpdating:animated];
-        }
-
-    }
-}
-
-- (void)willBeginUpdating:(BOOL)animated
-{
-    [self setUpdateText:@"Updating..." animated:animated];
-
-}
-
-- (void)didEndUpdating:(BOOL)animated
-{
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:[NSDate date]
-                                                                        toDate:[NSDate date]];
-    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self setUpdateText:updateText animated:animated];
-}
-
 - (void)setUpdateText:(NSString*)string animated:(BOOL)animated
 {
     UILabel *updatingLabel = [[UILabel alloc] init];
@@ -348,6 +337,26 @@
     }
 }
 
+- (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
+{    __weak MITNewsViewController *weakSelf = self;
+    [self performDataUpdate:^(NSError *error){
+        MITNewsViewController *blockSelf = weakSelf;
+        if (blockSelf) {
+            if (error) {
+                [blockSelf setUpdateText:@"Update failed" animated:NO];
+            } else {
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:blockSelf.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [blockSelf setUpdateText:updateText animated:NO];
+            }
+            
+            [blockSelf.tableView reloadData];
+            [blockSelf.refreshControl endRefreshing];
+        }
+    }];
+}
+
 #pragma mark Loading & updating, and retrieving data
 - (void)loadFetchedResultsControllers
 {
@@ -384,6 +393,12 @@
     if (!self.isUpdating) {
         self.updating = YES;
 
+        // Probably can be reimplemented some other way but, for now, this works.
+        // Assumes that each of the blocks passed to the model controller below
+        // will retain a strong reference to inFlightDataRequests even after this method
+        // returns. When the final request completes and removes the last 'token'
+        // from the in-flight request tracker, call our completion block.
+        // All the callbacks should be on the main thread so race conditions should be a non-issue.
         NSHashTable *inFlightDataRequests = [NSHashTable weakObjectsHashTable];
         __weak MITNewsViewController *weakSelf = self;
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
@@ -398,10 +413,16 @@
                                                     [inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesRequestToken];
 
                                                     if ([inFlightDataRequests count] == 0) {
-                                                        [blockSelf setUpdating:NO animated:YES];
-
-                                                        if (completion) {
-                                                            completion(error);
+                                                        blockSelf.updating = NO;
+                                                        if (error) {
+                                                            if (completion) {
+                                                                completion(error);
+                                                            }
+                                                        } else {
+                                                            blockSelf.lastUpdated = [NSDate date];
+                                                            if (completion) {
+                                                                completion(nil);
+                                                            }
                                                         }
                                                     }
                                                 }];
@@ -423,10 +444,16 @@
                                                     [inFlightDataRequests removeObject:category];
 
                                                     if ([inFlightDataRequests count] == 0) {
-                                                        [blockSelf setUpdating:NO animated:YES];
-
-                                                        if (completion) {
-                                                            completion(error);
+                                                        blockSelf.updating = NO;
+                                                        if (error) {
+                                                            if (completion) {
+                                                                completion(error);
+                                                            }
+                                                        } else {
+                                                            blockSelf.lastUpdated = [NSDate date];
+                                                            if (completion) {
+                                                                completion(nil);
+                                                            }
                                                         }
                                                     }
                                                 }];
