@@ -45,8 +45,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 
 @property (nonatomic,readonly) MITNewsStory *selectedStory;
 
-+ (NSDictionary*)headerTextAttributes;
-
 - (void)loadFetchedResultsControllers;
 
 - (void)setNeedsNavigationItemUpdate;
@@ -57,14 +55,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 @implementation MITNewsViewController
 
 #pragma mark UI Element text attributes
-// TODO: Look for an alternate spot for these. UIAppearance or a utility class maybe?
-// Figure out how much we are going to be reusing these
-+ (NSDictionary*)headerTextAttributes
-{
-    return @{NSFontAttributeName: [UIFont boldSystemFontOfSize:18.],
-             NSForegroundColorAttributeName: [UIColor darkTextColor]};
-}
-
 + (NSDictionary*)updateItemTextAttributes
 {
     return @{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]],
@@ -849,11 +839,6 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeatur
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
 {
     [tableView reloadData];
-}
-
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
-{
-    
 }
 
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
