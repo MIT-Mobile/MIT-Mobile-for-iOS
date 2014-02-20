@@ -68,10 +68,6 @@
     if (self.numberOfStoriesPerPage == 0) {
         self.numberOfStoriesPerPage = MITNewsDefaultNumberOfStoriesPerPage;
     }
-    
-    self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
-    self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
-    self.sizingCellsByIdentifier = [NSMapTable strongToWeakObjectsMapTable];
 
     self.tableView.tableHeaderView = self.searchDisplayController.searchBar;
 
@@ -148,6 +144,26 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Setter/Getter Implementations
+- (NSMapTable*)gestureRecognizersByView
+{
+    if (!_gestureRecognizersByView) {
+        _gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
+    }
+    
+    return _gestureRecognizersByView;
+}
+
+
+- (NSMapTable*)sizingCellsByIdentifier
+{
+    if (!_sizingCellsByIdentifier) {
+        _sizingCellsByIdentifier = [NSMapTable strongToWeakObjectsMapTable];
+    }
+    
+    return _sizingCellsByIdentifier;
 }
 
 #pragma mark Category Management
