@@ -38,6 +38,9 @@
 - (void)setNeedsNavigationItemUpdate;
 - (void)updateNavigationItemIfNeeded;
 - (MITNewsStoryCell*)sizingCellForIdentifier:(NSString*)identifier;
+
+- (IBAction)searchButtonTapped:(UIBarButtonItem*)sender;
+- (IBAction)loadMoreFooterTapped:(UIGestureRecognizer*)sender;
 @end
 
 @implementation MITNewsViewController
@@ -318,7 +321,7 @@
     [self.searchDisplayController.searchBar becomeFirstResponder];
 }
 
-- (IBAction)loadMoreFooterTapped:(id)sender
+- (IBAction)loadMoreFooterTapped:(UIGestureRecognizer*)sender
 {
     __weak UITableViewHeaderFooterView *footerView = (UITableViewHeaderFooterView*)self.searchDisplayController.searchResultsTableView.tableFooterView;
     

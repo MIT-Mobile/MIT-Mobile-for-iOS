@@ -35,6 +35,10 @@
 @property (nonatomic,readonly) MITNewsStory *selectedStory;
 @property (nonatomic,strong) MITNewsCategory *category;
 
+- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer;
+- (IBAction)searchButtonTapped:(UIBarButtonItem*)sender;
+- (IBAction)loadMoreFooterTapped:(UIGestureRecognizer*)sender;
+
 - (UITableViewHeaderFooterView*)createLoadMoreFooterView;
 @end
 
@@ -283,12 +287,11 @@
     [self.searchDisplayController.searchBar becomeFirstResponder];
 }
 
-- (IBAction)loadMoreFooterTapped:(id)sender
+- (IBAction)loadMoreFooterTapped:(UIGestureRecognizer*)sender
 {
+    // Just make absolutely sure we are dealing with a real UIGestureRecognizer
     if ([sender isKindOfClass:[UIGestureRecognizer class]]) {
-        UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
-
-        __weak UITableViewHeaderFooterView *footerView = (UITableViewHeaderFooterView*)gestureRecognizer.view;
+        __weak UITableViewHeaderFooterView *footerView = (UITableViewHeaderFooterView*)sender.view;
 
         // Fall-out if the text label is current disabled
         if (!footerView.textLabel.isEnabled) {
@@ -315,6 +318,8 @@
                                [tableView reloadData];
                            }];
         }
+    } else {
+        DDLogError(@"I don't know how to respond to %@",sender);
     }
 }
 
@@ -834,11 +839,6 @@
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
 {
     [tableView reloadData];
-}
-
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
-{
-
 }
 
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
