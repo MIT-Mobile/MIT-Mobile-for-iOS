@@ -46,8 +46,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return YES;
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 - (NSArray*)galleryImages
@@ -151,6 +152,13 @@
         self.shouldHideUI = YES;
     }
 
+
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    } else {
+        [[UIApplication sharedApplication] setStatusBarHidden:self.shouldHideUI withAnimation:UIStatusBarAnimationNone];
+    }
+
     self.navigationBar.hidden = !self.navigationBar.hidden;
     self.captionView.hidden = !self.captionView.hidden;
 }
@@ -170,6 +178,10 @@
     
     self.descriptionLabel.text = description;
     self.creditLabel.text = credits;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return self.shouldHideUI;
 }
 
 #pragma mark - UIPageViewController
