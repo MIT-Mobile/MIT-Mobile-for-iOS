@@ -19,6 +19,8 @@
 @interface MITNewsStoriesViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
 @property (nonatomic,getter = isUpdating) BOOL updating;
+@property (nonatomic,strong) NSDate *lastUpdated;
+
 @property (nonatomic,getter = isSearching) BOOL searching;
 
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
@@ -73,6 +75,10 @@
     CGPoint offset = self.tableView.contentOffset;
     offset.y = CGRectGetMaxY(self.searchDisplayController.searchBar.frame);
     self.tableView.contentOffset = offset;
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlWasTriggered:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -104,6 +110,13 @@
                 [self.tableView reloadData];
             }
         }];
+    }
+    
+    if (self.lastUpdated) {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self setUpdateText:updateText animated:NO];
     }
 }
 
@@ -323,6 +336,28 @@
     }
 }
 
+- (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
+{    __weak MITNewsStoriesViewController *weakSelf = self;
+    [self loadStoriesInCategory:self.category
+             shouldLoadNextPage:NO
+                     completion:^(NSManagedObjectID *category, NSError *error) {
+                         MITNewsStoriesViewController *blockSelf = weakSelf;
+                         if (blockSelf) {
+                             if (error) {
+                                 [blockSelf setUpdateText:@"Update failed" animated:NO];
+                             } else {
+                                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:blockSelf.lastUpdated
+                                                                                                     toDate:[NSDate date]];
+                                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                                 [blockSelf setUpdateText:updateText animated:NO];
+                             }
+                             
+                             [blockSelf.tableView reloadData];
+                             [blockSelf.refreshControl endRefreshing];
+                         }
+    }];
+}
+
 #pragma mark Loading & updating, and retrieving data
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
@@ -386,9 +421,14 @@
             DDLogError(@"failed to fetch stories from CoreData cache: %@",error);
             objectCount = NSNotFound;
         } else {
-            self.newsStories = results;        }
+            self.newsStories = results;
+        }
         
-        if (objectCount == NSNotFound || objectCount < self.numberOfStoriesPerPage) {
+        BOOL shouldReloadStories = ((objectCount == NSNotFound) ||
+                                    (objectCount < self.numberOfStoriesPerPage) ||
+                                    (self.lastUpdated == nil));
+        
+        if (shouldReloadStories) {
             [self loadStoriesInCategory:self.category
                      shouldLoadNextPage:NO
                              completion:^(NSManagedObjectID *categoryID, NSError *error) {
@@ -457,6 +497,8 @@
                         blockSelf.newsStories = localStories;
                     }
                     
+                    [self.refreshControl endRefreshing];
+                    
                     if (error) {
                         [self setUpdateText:@"Update failed" animated:NO];
                         
@@ -464,7 +506,8 @@
                             completion(nil,error);
                         }
                     } else {
-                        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:[NSDate date]
+                        self.lastUpdated = [NSDate date];
+                        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                             toDate:[NSDate date]];
                         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                         [self setUpdateText:updateText animated:NO];
@@ -479,6 +522,7 @@
     };
     
     _storyUpdateInProgressToken = requestUUID;
+    [self.refreshControl beginRefreshing];
     [[MITNewsModelController sharedController] storiesInCategory:categoryIdentifier
                                                            query:nil
                                                           offset:offset
