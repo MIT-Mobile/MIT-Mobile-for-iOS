@@ -35,7 +35,7 @@
         return [@(area1) compare:@(area2)];
     }] mutableCopy];
 
-#warning potentially ugly behavior when the height or width of the size is really large
+#warning potentially ugly behavior when the height or width of the size is really large (height * width >= CGFLOAT_MAX)
     CGFloat targetArea = size.width * size.height;
     [sortedRepresentations sortUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
         CGFloat distance1 = ([representation1.width doubleValue] * [representation1.height doubleValue]) - targetArea;
