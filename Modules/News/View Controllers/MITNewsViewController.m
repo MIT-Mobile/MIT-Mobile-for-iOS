@@ -12,20 +12,8 @@
 #import "MITDisclosureHeaderView.h"
 #import "UIImageView+WebCache.h"
 
+#import "MITNewsConstants.h"
 #import "MITAdditions.h"
-
-static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
-static NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";
-
-static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
-static NSString* const MITNewsStoryNoDekCellNibName = @"NewsStoryNoDekTableCell";
-
-static NSString* const MITNewsStoryExternalType = @"news_clip";
-static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
-static NSString* const MITNewsStoryExternalCellNibName = @"NewsStoryExternalTableCell";
-
-static NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
-static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeaturedStoriesRequest";
 
 @interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;

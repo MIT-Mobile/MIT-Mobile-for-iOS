@@ -14,18 +14,7 @@
 #import "MITNewsStory.h"
 
 #import "UIImageView+WebCache.h"
-
-static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
-static NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";
-
-static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
-static NSString* const MITNewsStoryNoDekCellNibName = @"NewsStoryNoDekTableCell";
-
-static NSString* const MITNewsStoryExternalType = @"news_clip";
-static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
-static NSString* const MITNewsStoryExternalCellNibName = @"NewsStoryExternalTableCell";
-
-static NSUInteger MITNewsDefaultNumberOfStoriesPerPage = 20;
+#import "MITNewsConstants.h"
 
 @interface MITNewsStoriesViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
@@ -837,9 +826,9 @@ static NSUInteger MITNewsDefaultNumberOfStoriesPerPage = 20;
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
