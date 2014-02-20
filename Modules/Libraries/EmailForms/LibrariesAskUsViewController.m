@@ -28,7 +28,7 @@
         MenuLibraryFormElement *vpnElement = [[MenuLibraryFormElement alloc] initWithKey:@"vpn"
                                                                             displayLabel:@"Using VPN"
                                                                                 required:YES
-                                                                                  values:@[@YES,@NO]
+                                                                                  values:@[@"yes",@"no"]
                                                                            displayValues:@[@"Yes", @"No"]];
         vpnElement.value = @"no";
         
