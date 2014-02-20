@@ -1,6 +1,9 @@
 #import "MITPeopleResource.h"
+
+#import "MITMobileRouteConstants.h"
+#import "MITMobile.h"
+#import "MITCoreData.h"
 #import "MITAdditions.h"
-#import "MITMobileResources.h"
 
 @implementation MITPeopleResource
 
@@ -9,9 +12,8 @@
     NSDictionary *params = @{@"q": query};
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITPeopleResourceName
-                                                    object:nil
                                                 parameters:params
-                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
                                                             NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];

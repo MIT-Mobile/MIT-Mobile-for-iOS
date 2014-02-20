@@ -2,6 +2,9 @@
 #import "MITAdditions.h"
 #import "MITMapModel.h"
 
+#import "MITCoreData.h"
+#import "MITAdditions.h"
+
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 

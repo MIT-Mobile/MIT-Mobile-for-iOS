@@ -7,11 +7,15 @@
 @dynamic height;
 @dynamic width;
 @dynamic url;
-@dynamic name;
 @dynamic image;
 
-+ (NSString*)entityName
++ (RKObjectMapping*)objectMapping
 {
-    return @"NewsImageRep";
+    RKEntityMapping *imageRepresentationMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    imageRepresentationMapping.identificationAttributes = @[@"url"] ;
+    [imageRepresentationMapping addAttributeMappingsFromDictionary:@{@"url" : @"url",
+                                                                     @"width" : @"width",
+                                                                     @"height" : @"height"}];
+    return imageRepresentationMapping;
 }
 @end

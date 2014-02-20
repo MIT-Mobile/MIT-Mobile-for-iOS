@@ -1,17 +1,17 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITNewsStory;
 
-@interface MITNewsCategory : NSManagedObject
+@interface MITNewsCategory : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, copy) NSString * identifier;
-@property (nonatomic, strong) NSDate * lastUpdated;
-@property (nonatomic, strong) NSURL * url;
+@property (nonatomic, strong) NSString * identifier;
 @property (nonatomic, copy) NSString * name;
+@property (nonatomic, strong) NSNumber * order;
+@property (nonatomic, strong) NSURL * url;
 @property (nonatomic, copy) NSSet *stories;
-
-+ (NSString*)entityName;
 @end
 
 @interface MITNewsCategory (CoreDataGeneratedAccessors)

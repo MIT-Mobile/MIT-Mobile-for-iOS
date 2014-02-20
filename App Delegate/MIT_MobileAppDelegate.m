@@ -9,13 +9,10 @@
 #import "MITLogging.h"
 #import "Secret.h"
 #import "SDImageCache.h"
-#import "Foundation+MITAdditions.h"
-#import "UIKit+MITAdditions.h"
 
 // CoreData persistence and Mobile API access
-#import "MITCoreDataController.h"
-#import "CoreDataManager.h"
-#import "MITMobile.h"
+#import "MITAdditions.h"
+#import "MITCoreData.h"
 #import "MITMobileResources.h"
 
 // Module headers

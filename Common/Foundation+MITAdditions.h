@@ -1,7 +1,9 @@
 #import <Foundation/Foundation.h>
 
-extern NSUInteger kMITFloatDefaultEpsilon;
-BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
+#pragma mark Error Domains
+extern NSString * const MITXMLErrorDomain;
+
+BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 
 @interface NSURL (MITAdditions)
 
@@ -11,7 +13,7 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @end
 
 @interface NSArray (MITAdditions)
-
+- (NSArray*)arrayByMappingObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
 - (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
 
 @end
@@ -43,6 +45,7 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
  *  and punctuation removed and normalized using NFKD form.
  */
 - (NSString*)stringBySearchNormalization;
+- (NSString*)stringBySanitizingHTMLFragmentWithPermittedElementNames:(NSArray*)tagNames error:(NSError**)error;
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 @end
 

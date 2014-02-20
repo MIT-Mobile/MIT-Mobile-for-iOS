@@ -1,8 +1,8 @@
 #import "CoreDataManager.h"
+
 #import "MITBuildInfo.h"
 #import "MITLogging.h"
 #import "MITCoreDataController.h"
-#import "MITMapModelController.h"
 
 // not sure what to call this, just a placeholder for now, still hard coding file name below
 #define SQLLITE_PREFIX @"CoreDataXML."

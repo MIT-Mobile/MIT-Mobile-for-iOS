@@ -43,15 +43,15 @@
 
 /** Creates a new NSManagedObjectContext for a background update and calls the
  *  passed block synchronously. This method should only be called to kick off
- *  a single, atomic CoreData operation. Calling this method recursively will
- *  result in strange and undefined behavior. The block is guaranteed to be
+ *  a single, atomic CoreData operation. This method is not re-entrant and should
+ *  not be called recursively. The block is guaranteed to be
  *  called on the context's queue.
  *
  * Onces the block completes, any saved changes will be persisted and synched with
  *  the main queue context. If the block's context is not saved prior to returning
  *  its changes will be discarded.
  */
-- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))updateBlock completion:(void (^)(NSError *error))savedBlock;
+- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))updateBlock error:(NSError**)error;
 
 /** Flushes any un-persisted data in the background context to the persistent store.
  *  Once the save is completed, the passed block will be called on the main queue.

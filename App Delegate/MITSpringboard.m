@@ -320,6 +320,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     self.navigationController.navigationBarHidden = NO;
+    [self.navigationController setToolbarHidden:YES animated:animated];
     
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         self.navigationController.navigationBar.barStyle = UIBarStyleDefault;

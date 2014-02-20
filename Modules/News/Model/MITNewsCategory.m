@@ -5,13 +5,21 @@
 @implementation MITNewsCategory
 
 @dynamic identifier;
-@dynamic lastUpdated;
-@dynamic url;
 @dynamic name;
+@dynamic order;
+@dynamic url;
 @dynamic stories;
 
-+ (NSString*)entityName
++ (RKObjectMapping*)objectMapping
 {
-    return @"NewsCategory";
+    RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    categoryMapping.identificationAttributes = @[@"identifier"];
+    [categoryMapping addAttributeMappingsFromDictionary:@{@"id" : @"identifier",
+                                                          @"url" : @"url",
+                                                          @"name" : @"name",
+                                                          @"@metadata.mapping.collectionIndex" : @"order"}];
+
+    return categoryMapping;
 }
+
 @end

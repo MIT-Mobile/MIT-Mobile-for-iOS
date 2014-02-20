@@ -1,4 +1,4 @@
-#import "MITMobileResources.h"
+#import "MITMobileManagedResource.h"
 
 @interface MITMapCategoriesResource : MITMobileManagedResource
 + (NSFetchRequest*)categories:(MITMobileManagedResult)block;

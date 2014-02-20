@@ -11,11 +11,8 @@
 
 static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlacesFetchDate";
 
-
 @interface MITMapModelController ()
 @property (nonatomic,strong) NSDate *placesFetchDate;
-
-- (void)addRecentSearch:(NSString*)queryString;
 @end
 
 @implementation MITMapModelController
@@ -45,8 +42,9 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 #pragma mark - Search, Create, Read methods
 #pragma mark Synchronous
-- (void)addRecentSearch:(NSString*)queryString
+- (NSManagedObjectID*)addRecentSearch:(NSString*)queryString
 {
+    __block NSManagedObjectID *searchObjectID = nil;
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
     [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
@@ -61,12 +59,14 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
 
-        [context save:error];
+        [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
 
-        if (error) {
-            DDLogWarn(@"Failed to save search: %@", (*error));
+        if (!error) {
+            searchObjectID = [mapSearch objectID];
         }
-    } completion:nil];
+    } error:nil];
+
+    return searchObjectID;
 }
 
 #pragma mark Asynchronous
