@@ -1,7 +1,6 @@
 #import "LibrariesAskUsTableViewController.h"
 #import "LibrariesAskUsViewController.h"
 #import "LibrariesAppointmentViewController.h"
-#import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "SecondaryGroupedTableViewCell.h"
 
@@ -37,8 +36,13 @@
 {
     [super viewDidLoad];
 
-    [self.tableView applyStandardColors];
-    
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+
     self.title = @"Ask";
 }
 
@@ -55,7 +59,7 @@
 
 
 - (CGFloat)heightForText:(NSString *)text {
-    CGSize textSize = [text sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+    CGSize textSize = [text sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
                        constrainedToSize:CGSizeMake(260, 100)];
     return textSize.height;
 }
@@ -86,7 +90,6 @@
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
-            [cell applyStandardFonts];
             cell.textLabel.numberOfLines = 0;
         }
     
@@ -97,12 +100,13 @@
         }
         return cell;
     } else if (indexPath.section == HELP_SECTION) {
-        SecondaryGroupedTableViewCell *helpCell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Help"];
+        UITableViewCell *helpCell = [tableView dequeueReusableCellWithIdentifier:@"Help"];
         if (!helpCell) {
-            helpCell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Help"];
+            helpCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Help"];
             helpCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             helpCell.textLabel.text = @"General help";
-            helpCell.secondaryTextLabel.text = @"(617-324-2275)";
+            helpCell.detailTextLabel.text = @"617.324.2275";
+            helpCell.detailTextLabel.textColor = [UIColor darkGrayColor];
         }
         return helpCell;
     }
@@ -118,6 +122,27 @@
             text = APPOINTMENT_TEXT;
         }
         return MAX([self heightForText:text] + 2 * PADDING, tableView.rowHeight);
+    } else {
+        // There's probably a better way to do this —
+        // one that doesn't require hardcoding expected padding.
+        
+        // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+        static UIEdgeInsets labelInsets;
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
+        } else {
+            labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+        }
+        
+        NSString *title = @"General Help";
+        NSString *detail = @"617.324.2275";
+        
+        CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+        CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+        
+        CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+        
+        return MAX(titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
     }
     return tableView.rowHeight;
 }

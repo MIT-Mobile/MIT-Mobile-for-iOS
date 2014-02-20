@@ -1,4 +1,3 @@
-#import "MITUIConstants.h"
 #import "LibrariesLocationsHoursViewController.h"
 #import "LibrariesViewController.h"
 #import "MITConstants.h"
@@ -6,6 +5,7 @@
 #import "LibrariesAskUsTableViewController.h"
 #import "LibrariesTellUsViewController.h"
 #import "MobileRequestOperation.h"
+#import "UIKit+MITAdditions.h"
 
 // links expiration time 10 days
 #define LinksExpirationTime 86400
@@ -49,13 +49,23 @@
 {
     [super viewDidLoad];
     
-    self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+    
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.tableView.backgroundView = nil;
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+        self.searchBar.tintColor = [UIColor MITTintColor];
+    }
     self.searchBar.delegate = self;
     self.searchDisplayController.delegate = self;
     self.title = @"Libraries";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.tableView applyStandardColors];
+//    [self.tableView applyStandardColors];
     
     NSDate *linksUpdated = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksUpdatedKey];
     if (linksUpdated && (-[linksUpdated timeIntervalSinceNow] < LinksExpirationTime)) {
@@ -94,7 +104,7 @@
 }
 
 - (CGFloat)heightForLinkTitle:(NSString *)aTitle {
-    CGSize titleSize = [aTitle sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
+    CGSize titleSize = [aTitle sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
     return titleSize.height;
 }
 
@@ -174,7 +184,6 @@
                     linkCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"];
                     linkCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
                     linkCell.textLabel.numberOfLines = 0;
-                    [linkCell applyStandardFonts];
                 }
                 
                 linkCell.textLabel.text = self.links[indexPath.row][@"title"];
