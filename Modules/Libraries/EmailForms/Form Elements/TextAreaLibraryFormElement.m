@@ -4,14 +4,19 @@
 #import "MITUIConstants.h"
 
 @implementation TextAreaLibraryFormElement
+
 - (UITableViewCell *)tableViewCell {
     self.textView = (PlaceholderTextView *)[self textInputView];
     self.textView.placeholder = self.displayLabel;
     self.textView.inputAccessoryView = self.formViewController.formInputAccessoryView;
-    self.textView.font = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
+    self.textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+    self.textView.scrollsToTop = NO;
     
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key];
-    UIEdgeInsets textFieldInsets = UIEdgeInsetsMake(4., 4., 4., 4.);
+    UIEdgeInsets textFieldInsets = UIEdgeInsetsMake(0., 9., 0., 9.);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textFieldInsets = UIEdgeInsetsMake(0., 2., 0., 2.);
+    }
     self.textView.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds, textFieldInsets);
     self.textView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight);

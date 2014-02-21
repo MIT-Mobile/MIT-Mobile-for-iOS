@@ -6,6 +6,7 @@
 @interface LibraryFormElement : NSObject
 @property (copy) NSString *key;
 @property (nonatomic,copy) NSString *displayLabel;
+@property (nonatomic, readonly) NSString *rawDisplayLabel;
 @property (copy) NSString *displayLabelSubtitle;
 @property (getter = isRequired) BOOL required;
 @property (nonatomic, weak) LibraryEmailFormViewController *formViewController;

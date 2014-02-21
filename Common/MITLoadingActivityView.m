@@ -1,4 +1,5 @@
 #import "MITLoadingActivityView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITLoadingActivityView ()
 @property (nonatomic,retain) UIView *activityView;
@@ -21,7 +22,7 @@
         NSString *loadingText = @"Loading...";
         
         CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
-        CGFloat labelLeftMargin = 5.0;
+        CGFloat labelLeftMargin = 6.0;
         loadingLabel.frame = CGRectMake(spinner.frame.size.width + labelLeftMargin,
                                         0.0,
                                         labelSize.width,
@@ -51,7 +52,7 @@
     // center the loading indicator
     CGRect frame = self.activityView.frame;
     frame.origin.x = (self.bounds.size.width - frame.size.width) / 2.0;
-    frame.origin.y = (self.bounds.size.height - frame.size.height) / 2.0;
+    frame.origin.y = (self.bounds.size.height - frame.size.height - 64.) / 2.0;
     // make sure it is always whole pixel aligned
     self.activityView.frame = CGRectIntegral(frame);
 }
@@ -67,7 +68,11 @@
     if (usesBackgroundImage != self.usesBackgroundImage) {
         _usesBackgroundImage = usesBackgroundImage;
         if (self.usesBackgroundImage) {
-            self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                self.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            } else {
+                self.backgroundColor = [UIColor mit_backgroundColor];
+            }
         } else {
             self.backgroundColor = [UIColor clearColor];
         }

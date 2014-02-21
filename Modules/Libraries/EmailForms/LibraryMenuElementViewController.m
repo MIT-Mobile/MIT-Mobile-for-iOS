@@ -9,9 +9,15 @@
 @implementation LibraryMenuElementViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    
     self.currentSelectedValue = self.menuElement.currentOptionIndex;
     
-    self.view.backgroundColor = [UIColor clearColor];
     self.title = self.menuElement.displayLabel;
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel

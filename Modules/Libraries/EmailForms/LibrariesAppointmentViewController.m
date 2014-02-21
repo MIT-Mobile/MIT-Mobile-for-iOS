@@ -2,6 +2,11 @@
 #import "UIKit+MITAdditions.h"
 #import "LibraryFormElements.h"
 
+@interface LibrariesAppointmentViewController ()
+
+@property (nonatomic,copy) NSArray *formGroups;
+
+@end
 
 @implementation LibrariesAppointmentViewController
 
@@ -27,65 +32,68 @@
 
 - (NSArray *)formGroups {
     LibraryFormElementGroup *researchGroup = nil;
-    {
-        DedicatedViewTextLibraryFormElement *subjectElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"subject"
-                                                                                                          displayLabel:@"Topic"
-                                                                                                              required:YES];
+    if (!_formGroups) {
+        {
+            DedicatedViewTextLibraryFormElement *subjectElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"subject"
+                                                                                                              displayLabel:@"Topic"
+                                                                                                                  required:YES];
+            
+            DedicatedViewTextLibraryFormElement *timeframeElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"timeframe"
+                                                                                                               displayLabel:@"Timeframe"
+                                                                                                                   required:YES];
+            TextAreaLibraryFormElement *descriptionTextElement = [[TextAreaLibraryFormElement alloc] initWithKey:@"description"
+                                                                                                    displayLabel:@"How can we help you?"
+                                                                                                        required:YES];
+            
+            MenuLibraryFormElement *purposeMenuElement = [[MenuLibraryFormElement alloc] initWithKey:@"why"
+                                                                                        displayLabel:@"Purpose"
+                                                                                            required:NO
+                                                                                              values:@[@"Course", @"Thesis", @"Research"]];
+            
+            DedicatedViewTextLibraryFormElement *courseElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"course"
+                                                                                                             displayLabel:@"Course"
+                                                                                                                    required:NO];
+            
+            NSArray *topics = @[@"General", @"Art & Architecture", @"Engineering & Computer Science",
+                               @"GIS", @"Humanities", @"Management & Business", @"Science",
+                               @"Social Sciences", @"Urban Planning"];
+            MenuLibraryFormElement *topicMenuElement = [[MenuLibraryFormElement alloc] initWithKey:@"topic"
+                                                                                      displayLabel:@"Subject"
+                                                                                          required:YES
+                                                                                            values:topics];
+            
+            researchGroup = [LibraryFormElementGroup groupForName:@"Research Info"
+                                                         elements:@[subjectElement,
+                                                                    timeframeElement,
+                                                                    descriptionTextElement,
+                                                                    purposeMenuElement,
+                                                                    courseElement,
+                                                                    topicMenuElement]];
+            researchGroup.footerText = @"Your request will be sent to the appropriate person, based on your choice of subject.";
+        }
         
-        DedicatedViewTextLibraryFormElement *timeframeElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"timeframe"
-                                                                                                           displayLabel:@"Timeframe"
-                                                                                                               required:YES];
-        TextAreaLibraryFormElement *descriptionTextElement = [[TextAreaLibraryFormElement alloc] initWithKey:@"description"
-                                                                                                displayLabel:@"How can we help you?"
-                                                                                                    required:YES];
         
-        MenuLibraryFormElement *purposeMenuElement = [[MenuLibraryFormElement alloc] initWithKey:@"why"
-                                                                                    displayLabel:@"Purpose"
-                                                                                        required:NO
-                                                                                          values:@[@"Course", @"Thesis", @"Research"]];
+        LibraryFormElementGroup *contactInfoGroup = nil;
+        {
+            TextLibraryFormElement *departmentElement = [[TextLibraryFormElement alloc] initWithKey:@"department"
+                                                                                       displayLabel:@"Department, Lab, or Center"
+                                                                                           required:YES];
+            
+            TextLibraryFormElement *phoneElement =  [[TextLibraryFormElement alloc] initWithKey:@"phone"
+                                                                                   displayLabel:@"Phone"
+                                                                                       required:NO];
+            phoneElement.keyboardType = UIKeyboardTypePhonePad;
+            
+            contactInfoGroup = [LibraryFormElementGroup groupForName:@"Personal Info"
+                                                            elements:@[[self statusMenuFormElementWithRequired:YES],
+                                                                       departmentElement,
+                                                                       phoneElement]];
+        }
         
-        DedicatedViewTextLibraryFormElement *courseElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"course"
-                                                                                                         displayLabel:@"Course"
-                                                                                                                required:NO];
         
-        NSArray *topics = @[@"General", @"Art & Architecture", @"Engineering & Computer Science",
-                           @"GIS", @"Humanities", @"Management & Business", @"Science",
-                           @"Social Sciences", @"Urban Planning"];
-        MenuLibraryFormElement *topicMenuElement = [[MenuLibraryFormElement alloc] initWithKey:@"topic"
-                                                                                  displayLabel:@"Subject"
-                                                                                      required:YES
-                                                                                        values:topics];
-        
-        researchGroup = [LibraryFormElementGroup groupForName:@"Research Info"
-                                                     elements:@[subjectElement,
-                                                                timeframeElement,
-                                                                descriptionTextElement,
-                                                                purposeMenuElement,
-                                                                courseElement,
-                                                                topicMenuElement]];
-        researchGroup.footerText = @"Your request will be sent to the appropriate person, based on your choice of subject.";
+        _formGroups = @[researchGroup,contactInfoGroup];
     }
-    
-    
-    LibraryFormElementGroup *contactInfoGroup = nil;
-    {
-        TextLibraryFormElement *departmentElement = [[TextLibraryFormElement alloc] initWithKey:@"department"
-                                                                                   displayLabel:@"Department, Lab, or Center"
-                                                                                       required:YES];
-        
-        TextLibraryFormElement *phoneElement =  [[TextLibraryFormElement alloc] initWithKey:@"phone"
-                                                                               displayLabel:@"Phone"
-                                                                                   required:NO];
-        phoneElement.keyboardType = UIKeyboardTypePhonePad;
-        
-        contactInfoGroup = [LibraryFormElementGroup groupForName:@"Personal Info"
-                                                        elements:@[[self statusMenuFormElementWithRequired:YES],
-                                                                   departmentElement,
-                                                                   phoneElement]];
-    }
-    
-    
-    return @[researchGroup,contactInfoGroup];
+    return _formGroups;
 }
                                                  
 @end

@@ -4,64 +4,69 @@
 
 @interface LibrariesAskUsViewController () <LibraryFormElementDelegate>
 @property BOOL techHelpSectionHidden;
+@property (nonatomic,copy) NSArray *formGroups;
+
 @end
 
 @implementation LibrariesAskUsViewController
 
 - (NSArray *)formGroups {
     LibraryFormElementGroup *questionGroup = nil;
-    {
-        TopicsMenuLibraryFormElement *formElement = [TopicsMenuLibraryFormElement formElementWithDelegate:self];
-        TextLibraryFormElement *subjectElement = [[TextLibraryFormElement alloc] initWithKey:@"subject"
-                                                                                displayLabel:@"Subject"
-                                                                                    required:YES];
-        TextAreaLibraryFormElement *questionElement = [[TextAreaLibraryFormElement alloc] initWithKey:@"question"
-                                                                                         displayLabel:@"Detailed question"
-                                                                                             required:YES];
-        questionGroup = [LibraryFormElementGroup groupForName:nil
-                                                     elements:@[formElement,subjectElement, questionElement]];
+    if (!_formGroups) {
+        {
+            TopicsMenuLibraryFormElement *formElement = [TopicsMenuLibraryFormElement formElementWithDelegate:self];
+            TextLibraryFormElement *subjectElement = [[TextLibraryFormElement alloc] initWithKey:@"subject"
+                                                                                    displayLabel:@"Subject"
+                                                                                        required:YES];
+            TextAreaLibraryFormElement *questionElement = [[TextAreaLibraryFormElement alloc] initWithKey:@"question"
+                                                                                             displayLabel:@"Detailed question"
+                                                                                                 required:YES];
+            questionGroup = [LibraryFormElementGroup groupForName:nil
+                                                         elements:@[formElement,subjectElement, questionElement]];
+        }
+        
+        
+        LibraryFormElementGroup *technicalGroup = nil;
+        {
+            MenuLibraryFormElement *vpnElement = [[MenuLibraryFormElement alloc] initWithKey:@"vpn"
+                                                                                displayLabel:@"Using VPN"
+                                                                                    required:YES
+                                                                                      values:@[@"yes",@"no"]
+                                                                               displayValues:@[@"Yes", @"No"]];
+            vpnElement.value = @"no";
+            
+            
+            MenuLibraryFormElement *locationElement = [[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
+                                                                                     displayLabel:@"Location"
+                                                                                         required:YES
+                                                                                           values:@[@"on campus",@"off campus"]
+                                                                                    displayValues:@[@"On campus",@"Off campus"]];
+            technicalGroup = [LibraryFormElementGroup hiddenGroupForName:@"Technical Help"
+                                                                elements:@[vpnElement,locationElement]];
+        }
+        
+        LibraryFormElementGroup *personalGroup = nil;
+        {
+            
+            TextLibraryFormElement *phoneElement = [[TextLibraryFormElement alloc] initWithKey:@"phone"
+                                                                                  displayLabel:@"Phone"
+                                                                                      required:NO];
+            phoneElement.keyboardType = UIKeyboardTypePhonePad;
+            
+            TextLibraryFormElement *departmentElement = [[TextLibraryFormElement alloc] initWithKey:@"department"
+                                                                                       displayLabel:@"Department, Lab, or Center"
+                                                                                           required:YES];
+            
+            personalGroup = [LibraryFormElementGroup groupForName:@"Personal Info"
+                                                         elements:@[[self statusMenuFormElementWithRequired:YES],
+                                                                    departmentElement,
+                                                                    phoneElement]];
+            
+        }
+        
+        _formGroups = @[questionGroup, technicalGroup, personalGroup];
     }
-    
-    
-    LibraryFormElementGroup *technicalGroup = nil;
-    {
-        MenuLibraryFormElement *vpnElement = [[MenuLibraryFormElement alloc] initWithKey:@"vpn"
-                                                                            displayLabel:@"Using VPN"
-                                                                                required:YES
-                                                                                  values:@[@"yes",@"no"]
-                                                                           displayValues:@[@"Yes", @"No"]];
-        vpnElement.value = @"no";
-        
-        
-        MenuLibraryFormElement *locationElement = [[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
-                                                                                 displayLabel:@"Location"
-                                                                                     required:YES
-                                                                                       values:@[@"on campus",@"off campus"]
-                                                                                displayValues:@[@"On campus",@"Off campus"]];
-        technicalGroup = [LibraryFormElementGroup hiddenGroupForName:@"Technical Help"
-                                                            elements:@[vpnElement,locationElement]];
-    }
-    
-    LibraryFormElementGroup *personalGroup = nil;
-    {
-        
-        TextLibraryFormElement *phoneElement = [[TextLibraryFormElement alloc] initWithKey:@"phone"
-                                                                              displayLabel:@"Phone"
-                                                                                  required:NO];
-        phoneElement.keyboardType = UIKeyboardTypePhonePad;
-        
-        TextLibraryFormElement *departmentElement = [[TextLibraryFormElement alloc] initWithKey:@"department"
-                                                                                   displayLabel:@"Department, Lab, or Center"
-                                                                                       required:YES];
-        
-        personalGroup = [LibraryFormElementGroup groupForName:@"Personal Info"
-                                                     elements:@[[self statusMenuFormElementWithRequired:YES],
-                                                                departmentElement,
-                                                                phoneElement]];
-
-    }
-    
-    return @[questionGroup, technicalGroup, personalGroup];
+    return _formGroups;
 }
 
 - (void)viewDidLoad {
@@ -71,7 +76,8 @@
     self.title = @"Ask Us!";
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     LibraryFormElementGroup *techFormGroup = [self groupForName:@"Technical Help"];

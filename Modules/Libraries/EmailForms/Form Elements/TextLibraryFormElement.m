@@ -17,14 +17,17 @@
 
 - (UITableViewCell *)tableViewCell {
     self.textField = (UITextField *)[self textInputView];
-    self.textField.font = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
+    self.textField.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
     self.textField.placeholder = self.displayLabel;
     
     self.textField.inputAccessoryView = self.formViewController.formInputAccessoryView;
     self.textField.keyboardType = self.keyboardType;
     
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key];
-    UIEdgeInsets textFieldInsets = UIEdgeInsetsMake(4., 4., 4., 4.);
+    UIEdgeInsets textFieldInsets = UIEdgeInsetsMake(4., 15., 4., 4.);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textFieldInsets = UIEdgeInsetsMake(8., 10., 4., 4.);
+    }
     self.textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds, textFieldInsets);
     self.textField.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleHeight);
@@ -36,7 +39,7 @@
 }
 
 - (CGFloat)heightForTableViewCell {
-    return 46;
+    return 44;
 }
 
 - (UIView *)textInputView {

@@ -54,7 +54,12 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     [super viewDidLoad];
     
     // setup the form and event listeners required
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
                                                                               style:UIBarButtonItemStyleDone
                                                                              target:self
@@ -366,31 +371,12 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     }
 }
 
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
-    if (formGroup.headerText) {
-        CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
-                                                           width:self.view.frame.size.width
-                                                            type:ExplanatorySectionFooter];
-        return height;
-    } else if (formGroup.name) {
-        return GROUPED_SECTION_HEADER_HEIGHT;
-    }
-    return 0;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     if (self.identityVerified) {
         LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
-        if (formGroup.headerText) {
-            ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
-            headerLabel.text = formGroup.headerText;
-            return headerLabel;
-        } else if (formGroup.name) {
-            return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
-        }
+        return formGroup.name;
     }
-    
     return nil;
 }
 
@@ -425,7 +411,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
             NSString *value = [formGroup getFormValueForKey:key];
             
             if ([formGroup valueRequiredForKey:key]) {
-                if (![value length]) {
+                if ([value length] <= 0) {
                     return NO;
                 }
             }
@@ -471,7 +457,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";
-    [self.navigationController pushViewController:thanksController animated:NO];
+    [self.navigationController pushViewController:thanksController animated:YES];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSDictionary *jsonDict = content;
@@ -493,7 +479,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (LibraryFormElementGroup *)groupForName:(NSString *)name {
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
+    for (LibraryFormElementGroup *formGroup in self.formGroups) {
         if ([formGroup.name isEqualToString:name]) {
             return formGroup;
         }

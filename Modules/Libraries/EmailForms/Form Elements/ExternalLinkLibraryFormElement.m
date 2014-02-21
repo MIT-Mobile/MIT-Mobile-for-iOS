@@ -16,4 +16,9 @@
     tableViewCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
 }
 
+- (NSString *)displayLabel
+{
+    return self.rawDisplayLabel;
+}
+
 @end

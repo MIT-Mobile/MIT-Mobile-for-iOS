@@ -32,15 +32,20 @@
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    self.navigationItem.hidesBackButton = YES;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(returnToHomeButtonTapped:)];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    self.navigationItem.hidesBackButton = YES;
-
+- (void)viewWillAppear:(BOOL)animated
+{
     // show a loading indicator
     if ([self.message length] == 0) {
         if (!self.loadingView) {
@@ -68,7 +73,7 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 1;
 }
 
 
@@ -80,17 +85,14 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // There's two sections and one row per section.
     switch (indexPath.section) {
-        case 0: {
-            CGSize messageSize =  [self.message  sizeWithFont:[UIFont systemFontOfSize:15.]
+        case 0:
+        default: {
+            CGSize messageSize =  [self.message  sizeWithFont:[UIFont systemFontOfSize:[UIFont systemFontSize]]
                                             constrainedToSize:CGSizeMake(280, 1000)
                                                 lineBreakMode:NSLineBreakByWordWrapping];
             return messageSize.height + 20;
             break;
         }
-        case 1:
-        default:
-            return 45.0 - 2.0; // height of the image minus imaginary border space 
-            break;
     }
 }
 
@@ -112,16 +114,8 @@
     
     if (indexPath.section == 0) {
         // The thank you text cell.
-        cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
+        cell.textLabel.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
         cell.textLabel.text = self.message;
-    } else {
-        // The "button".
-        UIImageView *imageView =  [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/return_button.png"]];
-        cell.backgroundView = imageView;
-        cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-        cell.textLabel.textColor = [UIColor whiteColor];
-        cell.textLabel.text = @"Return to Libraries";
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }
 	
     return cell;

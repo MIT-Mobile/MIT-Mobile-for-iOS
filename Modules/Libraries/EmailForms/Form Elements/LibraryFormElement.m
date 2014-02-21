@@ -45,12 +45,19 @@
     return nil;
 }
 
+- (NSString *)rawDisplayLabel
+{
+    return _displayLabel;
+}
+
 - (NSString *)displayLabel
 {
+    NSString *value;
     if (self.isRequired) {
-        return self.displayLabel;
+        value = _displayLabel;
     } else {
-        return [NSString stringWithFormat:@"%@ (optional)", self.displayLabel];
+        value = [NSString stringWithFormat:@"%@ (optional)", _displayLabel];
     }
+    return value;
 }
 @end

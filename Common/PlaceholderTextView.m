@@ -1,18 +1,20 @@
 #import "PlaceholderTextView.h"
 
+@interface PlaceholderTextView ()
+
+@property (nonatomic, retain) UILabel *placeHolderLabel;
+@property (nonatomic, retain) UIColor *placeholderColor;
+
+@end
 
 @implementation PlaceholderTextView
-
-@synthesize placeHolderLabel;
-@synthesize placeholder;
-@synthesize placeholderColor;
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [placeHolderLabel release]; placeHolderLabel = nil;
-    [placeholderColor release]; placeholderColor = nil;
-    [placeholder release]; placeholder = nil;
+    [_placeHolderLabel release]; _placeHolderLabel = nil;
+    [_placeholderColor release]; _placeholderColor = nil;
+    [_placeholder release]; _placeholder = nil;
     [super dealloc];
 }
 
@@ -35,58 +37,34 @@
     return self;
 }
 
-- (void)textChanged:(NSNotification *)notification
+- (void)layoutSubviews
 {
-    if([[self placeholder] length] == 0)
-    {
-        return;
-    }
-    
-    if([[self text] length] == 0)
-    {
-        [[self viewWithTag:999] setAlpha:1];
-    }
-    else
-    {
-        [[self viewWithTag:999] setAlpha:0];
-    }
-}
-
-- (void)setFrame:(CGRect)frame {
-    [super setFrame:frame];
-    [self.placeHolderLabel removeFromSuperview];
-    self.placeHolderLabel = nil;
-    [self setNeedsDisplay];
-}
-
-- (void)drawRect:(CGRect)rect
-{
-    if( [[self placeholder] length] > 0 )
-    {
-        if ( placeHolderLabel == nil )
-        {
-            placeHolderLabel = [[UILabel alloc] initWithFrame:CGRectMake(8,8,self.bounds.size.width - 16,0)];
-            placeHolderLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            placeHolderLabel.numberOfLines = 0;
-            placeHolderLabel.font = self.font;
-            placeHolderLabel.backgroundColor = [UIColor clearColor];
-            placeHolderLabel.textColor = self.placeholderColor;
-            placeHolderLabel.alpha = 0;
-            placeHolderLabel.tag = 999;
-            [self addSubview:placeHolderLabel];
+    [super layoutSubviews];
+    if([_placeholder length] > 0) {
+        if (!_placeHolderLabel) {
+            _placeHolderLabel = [[UILabel alloc] initWithFrame:CGRectMake(5,8,self.bounds.size.width,0)];
+            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                _placeHolderLabel.frame = CGRectMake(7,9,self.bounds.size.width,0);
+            }
+            _placeHolderLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            _placeHolderLabel.numberOfLines = 0;
+            _placeHolderLabel.font = self.font;
+            _placeHolderLabel.backgroundColor = [UIColor clearColor];
+            _placeHolderLabel.textColor = _placeholderColor;
+            [self addSubview:_placeHolderLabel];
         }
         
-        placeHolderLabel.text = self.placeholder;
-        [placeHolderLabel sizeToFit];
-        [self sendSubviewToBack:placeHolderLabel];
+        _placeHolderLabel.text = self.placeholder;
+        [_placeHolderLabel sizeToFit];
+        [self sendSubviewToBack:_placeHolderLabel];
     }
-    
-    if( [[self text] length] == 0 && [[self placeholder] length] > 0 )
-    {
-        [[self viewWithTag:999] setAlpha:1];
+}
+
+- (void)textChanged:(NSNotification *)notification
+{
+    if([self.placeholder length] > 0) {
+        self.placeHolderLabel.hidden = ([self.text length] > 0);
     }
-    
-    [super drawRect:rect];
 }
 
 @end

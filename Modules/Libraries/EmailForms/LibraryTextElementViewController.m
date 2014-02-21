@@ -24,6 +24,12 @@ static const CGFloat kEditViewWidth = 300.;
 {
     [super viewDidLoad];
 
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -33,25 +39,8 @@ static const CGFloat kEditViewWidth = 300.;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
                                                                                            action:@selector(doneTapped:)];
-        
-    // Add custom title label so that text fits to size.
-    UILabel *label =  [[UILabel alloc] initWithFrame:CGRectMake(0, 2, 200, NAVIGATION_BAR_HEIGHT - 4)];
-    label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont boldSystemFontOfSize:20];
-    label.adjustsFontSizeToFitWidth = YES;
-    label.textAlignment = NSTextAlignmentCenter;
-    label.textColor = [UIColor whiteColor];
-    label.shadowColor = [UIColor darkGrayColor];
-    label.shadowOffset = CGSizeMake(0, -1);
-    label.text = self.textElement.displayLabel;
     
-    self.navigationItem.titleView = label;
-    
-    // Uncomment the following line to display an Edit button in the navigation 
-    // bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self.tableView applyStandardColors];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.title = self.textElement.displayLabel;
 }
 
 - (void)viewDidAppear:(BOOL)animated
