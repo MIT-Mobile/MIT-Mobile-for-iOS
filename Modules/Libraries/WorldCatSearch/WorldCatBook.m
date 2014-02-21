@@ -185,9 +185,13 @@ static NSString * const WCHoldingAvailableKey = @"available";
 }
 
 - (NSString *)yearWithAuthors {
-    NSString *yearWithAuthors = [self.authors componentsJoinedByString:@", "];
+    NSMutableString *yearWithAuthors = [NSMutableString string];
     if ([self.years count] > 0) {
-        yearWithAuthors = [NSString stringWithFormat:@"%@; %@", self.years[0], yearWithAuthors];
+        [yearWithAuthors appendString:self.years[0]];
+    }
+    if ([self.authors count] > 0) {
+        [yearWithAuthors appendFormat:@"; %@", [self.authors componentsJoinedByString:@", "]];
+
     }
     return yearWithAuthors;
 }
