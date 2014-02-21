@@ -7,11 +7,6 @@
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"
 
-#define PADDING 10
-#define CELL_TITLE_TAG 1
-#define CELL_SUBTITLE_TAG 2
-#define CELL_LABEL_WIDTH 250
-
 @interface LibrariesLocationsHoursViewController ()
 @property (nonatomic, weak) UIView *loadingView;
 @end
@@ -31,14 +26,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
+
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     self.title = @"Locations & Hours";
     
     if (!self.libraries) {
-        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
-        loadingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                        UIViewAutoresizingFlexibleHeight);
-        [self.view addSubview:loadingView];
+        if (!self.loadingView) {
+            MITLoadingActivityView* loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+            loadingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                                 UIViewAutoresizingFlexibleHeight);
+            self.loadingView = loadingView;
+            [self.view addSubview:self.loadingView];
+        }
         
         MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
                                                                                  command:@"locations"
@@ -57,9 +61,9 @@
                 
                 [CoreDataManager saveData];
                 [self.loadingView removeFromSuperview];
+                self.loadingView = nil;
                 self.libraries = mutableLibraries;
                 [self.tableView reloadData];
-            
             }
         };
 
@@ -75,26 +79,6 @@
     self.loadingView = nil;
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -132,41 +116,13 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, 0)];
-        titleLabel.tag = CELL_TITLE_TAG;
-        titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
-        titleLabel.highlightedTextColor = [UIColor whiteColor];
-        titleLabel.tag = CELL_TITLE_TAG;
-        titleLabel.numberOfLines = 0;
-        
-        UIFont *subtitleFont = [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE];
-        UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, subtitleFont.lineHeight)];
-        subtitleLabel.backgroundColor = [UIColor clearColor];
-        subtitleLabel.font = subtitleFont;
-        subtitleLabel.textColor = CELL_DETAIL_FONT_COLOR;
-        subtitleLabel.highlightedTextColor = [UIColor whiteColor];
-        subtitleLabel.tag = CELL_SUBTITLE_TAG;
-        
-        [cell.contentView addSubview:titleLabel];
-        [cell.contentView addSubview:subtitleLabel];
+        cell.textLabel.numberOfLines = 0;
+        cell.detailTextLabel.textColor = [UIColor darkGrayColor];
     }
     
-    UILabel *titleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_TITLE_TAG];
-    UILabel *subtitleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_SUBTITLE_TAG];    
-    
     LibrariesLocationsHours *library = self.libraries[indexPath.row];
-    titleLabel.text = library.title;
-    subtitleLabel.text = library.status;
-    
-    CGRect titleFrame = titleLabel.frame;
-    titleFrame.size.height = [library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
-                                       constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)].height;
-    titleLabel.frame = titleFrame;
-    CGRect subtitleFrame = subtitleLabel.frame;
-    subtitleFrame.origin.y = titleFrame.origin.y + titleFrame.size.height;
-    subtitleLabel.frame = subtitleFrame;
+    cell.textLabel.text = library.title;
+    cell.detailTextLabel.text = library.status;
     
     return cell;
 }
@@ -182,10 +138,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
 {
+    CGFloat width = self.tableView.bounds.size.width;
+    width -= 30;
     LibrariesLocationsHours *library = self.libraries[indexPath.row];
-    CGSize titleSize = [library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
-                                 constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)];
-    return titleSize.height + 2 * PADDING + [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE].lineHeight;
+    CGSize titleSize = [library.title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
+                                 constrainedToSize:CGSizeMake(width, 2000)];
+    return titleSize.height + 2 * 11 + [UIFont systemFontOfSize:[UIFont smallSystemFontSize]].lineHeight;
 }
 
 #pragma mark - UIAlertView delegate methods

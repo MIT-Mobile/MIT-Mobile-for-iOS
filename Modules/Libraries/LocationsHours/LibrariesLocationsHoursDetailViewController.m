@@ -4,7 +4,6 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MITUIConstants.h"
 #import "MobileRequestOperation.h"
 
 typedef enum 
@@ -27,14 +26,6 @@ LocationsHoursTableRows;
 @end
 
 @implementation LibrariesLocationsHoursDetailViewController
-- (id)init {
-    self = [super initWithNibName:nil
-                           bundle:nil];
-    if (self) {
-        
-    }
-    return self;
-}
 
 - (void)dealloc
 {
@@ -43,17 +34,24 @@ LocationsHoursTableRows;
 
 #pragma mark - View lifecycle
 - (void)loadView {
-    UIView *myView = [self defaultApplicationView];
+    CGRect frame = [[UIScreen mainScreen] bounds];
+    UIView *view = [[UIView alloc] initWithFrame:frame];
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:myView.bounds
+    UITableView *tableView = [[UITableView alloc] initWithFrame:view.bounds
                                                           style:UITableViewStyleGrouped];
     tableView.delegate = self;
     tableView.dataSource = self;
-    [tableView applyStandardColors];
     self.tableView = tableView;
+
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
-    [myView addSubview:tableView];
-    self.view = myView;
+    [view addSubview:tableView];
+    self.view = view;
 }
 
 - (void)viewDidLoad
@@ -123,13 +121,7 @@ LocationsHoursTableRows;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TITLE_WIDTH, 0)];
-        titleLabel.tag = TITLE_ROW_TAG;
-        titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
-        titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.numberOfLines = 0;
-        [cell.contentView addSubview:titleLabel];
+        cell.textLabel.numberOfLines = 0;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
@@ -142,8 +134,7 @@ LocationsHoursTableRows;
     
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        [cell applyStandardFonts];
-    }  
+    }
     return cell;
 }
 
@@ -152,11 +143,7 @@ LocationsHoursTableRows;
     UITableViewCell *cell = nil;
     if (indexPath.row == TITLE_ROW) {
         cell = [self titleRowWithTable:tableView];
-        UILabel *titleLabel = (UILabel *)[cell viewWithTag:TITLE_ROW_TAG];
-        titleLabel.text = self.library.title;
-        CGSize titleSize = [self.library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
-                                          constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
-        titleLabel.frame = CGRectMake(PADDING, PADDING, TITLE_WIDTH, titleSize.height);
+        cell.textLabel.text = self.library.title;
     } else {
         if (self.librariesDetailStatus != LibrariesDetailStatusLoaded) {
             cell = [self defaultRowWithTable:tableView];
@@ -164,7 +151,7 @@ LocationsHoursTableRows;
             if (self.librariesDetailStatus == LibrariesDetailStatusLoading) {
                 cell.textLabel.text = @"Loading...";
             } else if (self.librariesDetailStatus == LibrariesDetailStatusLoadingFailed) {
-                cell.textLabel.text = @"Failed loading details";
+                cell.textLabel.text = @"Error loading info";
             }
         } else {
             if (indexPath.row == PHONE_ROW) {
@@ -184,7 +171,11 @@ LocationsHoursTableRows;
                 CGFloat padding;
                 switch (self.tableView.style) {
                     case UITableViewStyleGrouped:
-                        padding = 20.0;
+                        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                            padding = 15.0;
+                        } else {
+                            padding = 10.0;
+                        }
                         break;
                         
                     case UITableViewStylePlain:
@@ -195,12 +186,13 @@ LocationsHoursTableRows;
                 
                 if (cell == nil) {
                     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-                    UIWebView *contentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width - padding, 100)];
+                    UIWebView *contentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(padding, 0, tableView.frame.size.width - 2 * padding, 100)];
                     contentWebView.delegate = self;
                     // Make web view background transparent.
                     contentWebView.backgroundColor = [UIColor clearColor];
                     contentWebView.opaque = NO;
                     contentWebView.scrollView.scrollsToTop = NO;
+                    contentWebView.scrollView.scrollEnabled = NO;
                     
                     [contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
                     [cell.contentView addSubview:contentWebView];
@@ -234,7 +226,7 @@ LocationsHoursTableRows;
     if (indexPath.row == CONTENT_ROW) {
         return self.contentRowHeight;
     } if (indexPath.row == TITLE_ROW) {
-        CGSize titleSize = [self.library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] 
+        CGSize titleSize = [self.library.title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
                                           constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
         return titleSize.height + 2*PADDING;
     } else {
@@ -281,6 +273,9 @@ LocationsHoursTableRows;
 - (NSString *)contentHtml {
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"libraries/libraries.html" relativeToURL:baseURL];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        fileURL = [NSURL URLWithString:@"libraries/libraries_iOS_6.html" relativeToURL:baseURL];
+    }
     NSError *error;
     NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!target) {
