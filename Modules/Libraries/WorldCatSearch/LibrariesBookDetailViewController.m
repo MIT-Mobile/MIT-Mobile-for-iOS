@@ -45,14 +45,13 @@ typedef enum {
     [super viewDidLoad];
     
     self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor colorWithWhite:0.88
-                                                       alpha:1.0];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     MITLoadingActivityView *activityView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
     activityView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                      UIViewAutoresizingFlexibleWidth);
-    activityView.backgroundColor = [UIColor colorWithWhite:0.88
-                                                     alpha:1.0];
     [self.view addSubview:activityView];
     self.activityView = activityView;
     
@@ -95,72 +94,45 @@ typedef enum {
             NSMutableArray *bookAttribs = [NSMutableArray array];
             
             // title
-            [bookAttribs addObject:[BookDetailTableViewCell 
-                                    displayStringWithTitle:self.book.title
-                                    subtitle:nil
-                                    separator:nil
-                                    fontSize:BookDetailFontSizeTitle]];
-
             // year; authors
-            [bookAttribs addObject:[BookDetailTableViewCell
-                                    displayStringWithTitle:nil
-                                    subtitle:[self.book yearWithAuthors]
-                                    separator:nil
-                                    fontSize:BookDetailFontSizeDefault]];
+            [bookAttribs addObject:@{@"label": self.book.title,
+                                     @"subtitle":[self.book yearWithAuthors]}];
             
             // format
             if (self.book.formats.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"Format" 
-                                        subtitle:[self.book.formats componentsJoinedByString:@","] 
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"Format",
+                                         @"subtitle":[self.book.formats componentsJoinedByString:@","]}];
             }
 
             // summary
             if (self.book.summarys.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"Summary"
-                                        subtitle:[self.book.summarys componentsJoinedByString:@"; "]
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"Summary",
+                                         @"subtitle":[self.book.summarys componentsJoinedByString:@"; "]}];
             }
 
             // publisher
             NSArray *addressesWithPublishers = [self.book addressesWithPublishers];
             if ([addressesWithPublishers count] > 0) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"Publisher"
-                                        subtitle:[addressesWithPublishers componentsJoinedByString:@"; "]
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"Publisher",
+                                         @"subtitle":[addressesWithPublishers componentsJoinedByString:@"; "]}];
             }
 
             // edition
             if (self.book.editions.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"Edition"
-                                        subtitle:[self.book.editions componentsJoinedByString:@", "]
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"Edition",
+                                         @"subtitle":[self.book.editions componentsJoinedByString:@", "]}];
             }
 
             // description
             if (self.book.extents.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"Description"
-                                        subtitle:[self.book.extents componentsJoinedByString:@", "]
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"Description",
+                                         @"subtitle":[self.book.extents componentsJoinedByString:@", "]}];
             }
 
             // isbn
             if (self.book.isbns.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell 
-                                        displayStringWithTitle:@"ISBN"
-                                        subtitle:[self.book.isbns componentsJoinedByString:@" : "]
-                                        separator:@": "
-                                        fontSize:BookDetailFontSizeDefault]];
+                [bookAttribs addObject:@{@"label": @"ISBN",
+                                         @"subtitle":[self.book.isbns componentsJoinedByString:@"\n"]}];
             }
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
@@ -201,6 +173,10 @@ typedef enum {
         switch (section) {
             case kInfoSection:
                 rows = self.bookInfo.count;
+                if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                    rows += 1;
+                }
+
                 break;
             case kEmailAndCiteSection:
                 rows = 1;
@@ -221,6 +197,7 @@ typedef enum {
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *titleIdentifier = @"title";
     static NSString *infoIdentifier = @"info";
     static NSString *availabilityIdentifier = @"availability";
     static NSString *defaultIdentifier = @"default";
@@ -229,14 +206,41 @@ typedef enum {
     
     switch (indexPath.section) {
         case kInfoSection: {
-            BookDetailTableViewCell *bookDetailCell = [tableView dequeueReusableCellWithIdentifier:infoIdentifier];
-            if (!cell) {
-                bookDetailCell = [[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                       reuseIdentifier:infoIdentifier];
+            if (indexPath.row == 0) {
+                cell = [tableView dequeueReusableCellWithIdentifier:titleIdentifier];
+                if (!cell) {
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                                  reuseIdentifier:titleIdentifier];
+                    cell.detailTextLabel.textColor = [UIColor darkGrayColor];
+                }
+            } else {
+                cell = [tableView dequeueReusableCellWithIdentifier:infoIdentifier];
+                if (!cell) {
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2
+                                                  reuseIdentifier:infoIdentifier];
+                    cell.textLabel.textColor = [UIColor darkGrayColor];
+                    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                        cell.textLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+                        cell.detailTextLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+                    }
+                }
             }
-            
-            bookDetailCell.displayString = self.bookInfo[indexPath.row];
-            cell = bookDetailCell;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.textLabel.numberOfLines = 0;
+            cell.detailTextLabel.numberOfLines = 0;
+            cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+                cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 10000.);
+            }
+
+            if (indexPath.row >= [self.bookInfo count]) {
+                cell.textLabel.text = nil;
+                cell.detailTextLabel.text = nil;
+            } else {
+                cell.textLabel.text = self.bookInfo[indexPath.row][@"label"];
+                cell.detailTextLabel.text = self.bookInfo[indexPath.row][@"subtitle"];
+            }
             break;
         }
             
@@ -325,8 +329,59 @@ typedef enum {
     CGFloat height = tableView.rowHeight;
     switch (indexPath.section) {
         case kInfoSection: {
-            NSAttributedString *displayString = self.bookInfo[indexPath.row];
-            height = [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
+            if (indexPath.row == 0) {
+                // There's probably a better way to do this —
+                // one that doesn't require hardcoding expected padding.
+                
+                // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+                static UIEdgeInsets labelInsets;
+                if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                    labelInsets = UIEdgeInsetsMake(11., 15., 11., 15.);
+                } else {
+                    labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
+                }
+                
+                NSString *title = self.bookInfo[indexPath.row][@"label"];
+                NSString *detail = self.bookInfo[indexPath.row][@"subtitle"];
+                
+                CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+                CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+                
+                CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+                
+                height = titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom;
+            } else {
+                if (indexPath.row >= [self.bookInfo count]) {
+                    return 10.;
+                }
+                // There's probably a better way to do this —
+                // one that doesn't require hardcoding expected padding.
+                
+                // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+                static UIEdgeInsets labelInsets;
+                // insets for detailTextLabel of UITableViewCellStyleValue2
+                if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                    labelInsets = UIEdgeInsetsMake(4., 90. + 15. + 7., 4., 15.);
+                } else {
+                    labelInsets = UIEdgeInsetsMake(11., 80. + 10. + 4., 11., 10. + 10.);
+                }
+                
+                NSString *title = self.bookInfo[indexPath.row][@"label"];
+                NSString *detail = self.bookInfo[indexPath.row][@"subtitle"];
+                
+                UIFont *font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
+                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                    font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+                }
+                
+                CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+                CGSize titleSize = [title sizeWithFont:font constrainedToSize:CGSizeMake(90, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+                
+                CGSize detailSize = [detail sizeWithFont:font constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+                
+                CGFloat tallestLabelHeight = MAX(titleSize.height, detailSize.height);
+                height = tallestLabelHeight + labelInsets.top + labelInsets.bottom;
+            }
             break;
         }
         case kMITHoldingSection: {
@@ -413,7 +468,7 @@ typedef enum {
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
     switch (section) {
         case kMITHoldingSection:
@@ -431,19 +486,7 @@ typedef enum {
         default:
             break;
     }
-	return [UITableView groupedSectionHeaderWithTitle:title];
-}
-
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    switch (section) {
-        case kMITHoldingSection:
-        case kBLCHoldingSection:
-            return GROUPED_SECTION_HEADER_HEIGHT;
-        case kEmailAndCiteSection:
-        case kInfoSection:
-        default:
-            return 0;
-    }
+	return title;
 }
 
 #pragma mark - MFMailComposeViewController Delegate

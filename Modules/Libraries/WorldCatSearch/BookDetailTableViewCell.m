@@ -64,10 +64,9 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-        self.backgroundView.backgroundColor = [UIColor clearColor];
+        self.textLabel.textColor = [UIColor darkGrayColor];
+        self.detailTextLabel.numberOfLines = 0;
     }
     return self;
 }
@@ -79,44 +78,4 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
     }
 }
 
-- (void)drawRect:(CGRect)rect
-{
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-    CGContextTranslateCTM(context, 0, rect.size.height);
-    CGContextScaleCTM(context, 1.0f, -1.0f);
-    
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.displayString);
-    
-    // add margins to the outside rect
-    CGRect innerRect = CGRectMake(BOOK_DETAIL_CELL_MARGIN, 0,
-                                  CGRectGetWidth(rect) - BOOK_DETAIL_CELL_MARGIN * 2,
-                                  CGRectGetHeight(rect));
-    
-    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
-                                                                  CFRangeMake(0, 0),
-                                                                  NULL,
-                                                                  innerRect.size,
-                                                                  NULL);
-    
-    CGRect stringRect = CGRectZero;
-    stringRect.size.height = ceilf(fitSize.height);
-    stringRect.size.width = ceilf(fitSize.width);
-    stringRect.origin.y = ceilf((innerRect.size.height - fitSize.height) / 2.0);
-    stringRect.origin.x = innerRect.origin.x;
-    
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, stringRect);
-    CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
-                                                CFRangeMake(0, 0),
-                                                path,
-                                                NULL);
-    CGPathRelease(path);
-    
-    CTFrameDraw(frame,context);
-    
-    CFRelease(framesetter);
-    CFRelease(frame);
-}
 @end
