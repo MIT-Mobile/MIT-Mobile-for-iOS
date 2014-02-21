@@ -36,7 +36,7 @@ typedef enum {
 @property (nonatomic,strong) UIView *loadMoreView;
 
 @property (copy) NSString *searchTerms;
-@property (copy) NSMutableArray *searchResults;
+@property (strong) NSMutableArray *searchResults;
 @property (strong) NSNumber *totalResultsCount;
 @property (strong) NSNumber *nextIndex;
 
@@ -162,8 +162,6 @@ typedef enum {
         [self.loadMoreView addSubview:activityView];
         
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(LABEL_ORIGIN_X, LABEL_ORIGIN_Y, 200.0, 30)];
-        label.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        label.textColor = CELL_STANDARD_FONT_COLOR;
         label.tag = LABEL_TAG;
         [self.loadMoreView addSubview:label];        
         self.loadMoreView.backgroundColor = [UIColor clearColor];
@@ -185,6 +183,7 @@ typedef enum {
         [self.loadMoreView removeFromSuperview];
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     }
+    tableView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -279,12 +278,9 @@ typedef enum {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         cell.textLabel.numberOfLines = 0;
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
         cell.detailTextLabel.numberOfLines = 1;
         cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        cell.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
-        cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
+        cell.detailTextLabel.textColor = [UIColor darkGrayColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     WorldCatBook *book = self.searchResults[indexPath.row];
@@ -300,11 +296,11 @@ typedef enum {
         UIEdgeInsets margins = [[self class] searchCellMargins];
         CGFloat availableWidth = CGRectGetWidth(tableView.bounds) - (margins.left + margins.right);
         
-        CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+        CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
                                   constrainedToSize:CGSizeMake(availableWidth, 2000.0)
                                       lineBreakMode:NSLineBreakByWordWrapping];
         
-        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
+        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]]
                                                         forWidth:availableWidth
                                                    lineBreakMode:NSLineBreakByTruncatingTail];
         
@@ -314,19 +310,10 @@ typedef enum {
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     if (self.searchResults) {
-        return UNGROUPED_SECTION_HEADER_HEIGHT;
-    } else {
-        return 0;
-    }
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (self.searchResults) {
-        NSString *title;
-        title = [NSString stringWithFormat:@"%d results", [self.totalResultsCount intValue]];
-        return [UITableView ungroupedSectionHeaderWithTitle:title];    
+        return [NSString stringWithFormat:@"%d results", [self.totalResultsCount intValue]];
     } else {
         return nil;
     }
