@@ -8,6 +8,8 @@
 @implementation MITNewsStoryCell
 - (void)prepareForReuse
 {
+    [super prepareForReuse];
+    
     [self.storyImageView cancelCurrentImageLoad];
     self.storyImageView.image = nil;
     self.titleLabel.text = nil;
