@@ -3,14 +3,15 @@
 #import "MITTabBar.h"
 #import "MITTabHeaderView.h"
 
-NSString* const MITTabViewWillBecomeActiveNotification = @"MITTabViewWillBecomeActive";
-NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeActive";
-NSString* const MITTabViewWillBecomeInactiveNotification = @"MITTabViewWillBecomeInactive";
-NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeInactive";
+NSString * const MITTabViewWillBecomeActiveNotification = @"MITTabViewWillBecomeActive";
+NSString * const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeActive";
+NSString * const MITTabViewWillBecomeInactiveNotification = @"MITTabViewWillBecomeInactive";
+NSString * const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeInactive";
 
 static CGFloat kHeaderDefaultHeight = 5.0;
 
 @interface MITTabView ()
+@property (nonatomic,retain) UISegmentedControl *segmentedControl;
 @property (nonatomic,retain) MITTabBar *tabControl;
 @property (nonatomic,retain) UIView *contentView;
 @property (nonatomic,retain) NSMutableArray *tabViews;
@@ -30,28 +31,8 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 @end
 
 @implementation MITTabView
-@synthesize delegate = _delegate;
-@synthesize contentView = _contentView;
-@synthesize tabBarHidden = _tabBarHidden;
-
-
-@synthesize activeView = _activeView;
-@synthesize tabControl = _tabControl;
-@synthesize tabViews = _tabViews;
-@synthesize headerView = _headerView;
-@synthesize activeHeaderView = _activeHeaderView;
 
 @dynamic views;
-
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        [self privateInit];
-    }
-    
-    return self;
-}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -70,13 +51,56 @@ static CGFloat kHeaderDefaultHeight = 5.0;
     self.autoresizesSubviews = YES;
     
     {
+        UISegmentedControl *control = [[[UISegmentedControl alloc] initWithItems:@[@"Loans", @"Fines", @"Holds"]] autorelease];
+        control.selectedSegmentIndex = 0;
+        control.autoresizingMask = UIViewAutoresizingNone;
+        [control addTarget:self
+                action:@selector(controlWasTouched:)
+      forControlEvents:UIControlEventValueChanged];
+
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            UIImage *normalImage = [[UIImage imageNamed:@"global/tab2-unselected"] stretchableImageWithLeftCapWidth:10
+                                                                                                       topCapHeight:10];
+            UIImage *selectedImage = [[UIImage imageNamed:@"global/tab2-selected"] stretchableImageWithLeftCapWidth:10
+                                                                                                       topCapHeight:10];
+            UIImage *highlightImage = [[UIImage imageNamed:@"global/tab2-unselected-pressed"] stretchableImageWithLeftCapWidth:10
+                                                                                                                  topCapHeight:10];
+            UIImage *nnDividerImage = [[UIImage imageNamed:@"global/tab2-divider"] stretchableImageWithLeftCapWidth:0 topCapHeight:10];
+            
+            [control setBackgroundImage:normalImage forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+            [control setBackgroundImage:highlightImage forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+            [control setBackgroundImage:selectedImage forState:UIControlStateSelected barMetrics:UIBarMetricsDefault];
+            
+            [control setTitleTextAttributes:@{UITextAttributeTextColor: [UIColor whiteColor],
+                                              UITextAttributeTextShadowColor: [UIColor colorWithWhite:0.0 alpha:0.5],
+                                              UITextAttributeTextShadowOffset: [NSValue valueWithUIOffset:UIOffsetMake(0, -0.5)]}
+                                   forState:UIControlStateNormal];
+            [control setTitleTextAttributes:@{UITextAttributeTextColor: [UIColor whiteColor]}
+                                   forState:UIControlStateHighlighted];
+            [control setTitleTextAttributes:@{UITextAttributeTextColor: [UIColor colorWithWhite:0.2 alpha:1.0],
+                                              UITextAttributeTextShadowColor: [UIColor whiteColor],
+                                              UITextAttributeTextShadowOffset: [NSValue valueWithUIOffset:UIOffsetMake(0, 0.5)]}
+                                   forState:UIControlStateSelected];
+            
+            [control setDividerImage:nnDividerImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+            
+            [control setContentOffset:CGSizeMake(0, 3) forSegmentAtIndex:0];
+            [control setContentOffset:CGSizeMake(0, 3) forSegmentAtIndex:1];
+            [control setContentOffset:CGSizeMake(15, 3) forSegmentAtIndex:2];
+        }
+        
+        self.segmentedControl = control;
+        [self addSubview:control];
+    }
+    
+    {
         MITTabBar *bar = [[[MITTabBar alloc] init] autorelease];
         [bar addTarget:self
                 action:@selector(controlWasTouched:)
       forControlEvents:UIControlEventValueChanged];
         
         self.tabControl = bar;
-        [self addSubview:bar];
+//        [self addSubview:bar];
     }
     
     {
@@ -134,13 +158,16 @@ static CGFloat kHeaderDefaultHeight = 5.0;
     CGRect contentFrame = CGRectZero;
     
     {
-        barFrame = CGRectZero;
-        barFrame.origin = frameOrigin;
-        
-        CGSize barSize = [self.tabControl sizeThatFits:viewRect.size];
-        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), barSize.height);
-        
-        frameOrigin.y += CGRectGetHeight(barFrame);
+        UIEdgeInsets insets = UIEdgeInsetsMake(11., 20., 4., 20.);
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            insets = UIEdgeInsetsMake(11., 5., 0., 5.);
+        }
+        barFrame = self.segmentedControl.frame;
+        barFrame.origin.x = insets.left;
+        barFrame.origin.y = frameOrigin.y + insets.top;
+        barFrame.size.width = viewRect.size.width - insets.left - insets.right;
+        self.segmentedControl.frame = barFrame;
+        frameOrigin.y += insets.top + CGRectGetHeight(self.segmentedControl.frame) + insets.bottom;
     }
     
     {
@@ -177,8 +204,8 @@ static CGFloat kHeaderDefaultHeight = 5.0;
     }
 
     {
-        self.activeHeaderView.frame = CGRectStandardize(headerFrame);
-        self.tabControl.frame = barFrame;
+        self.activeHeaderView.frame = headerFrame;
+        self.segmentedControl.frame = barFrame;
         self.contentView.frame = CGRectStandardize(contentFrame);
         if (self.activeView)
         {
@@ -194,7 +221,7 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 
 - (void)controlWasTouched:(id)sender
 {
-    [self selectTabAtIndex:self.tabControl.selectedSegmentIndex];
+    [self selectTabAtIndex:self.segmentedControl.selectedSegmentIndex];
 }
 
 - (void)selectTabAtIndex:(NSInteger)index
@@ -376,7 +403,7 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 
         if (tabBarHidden == NO) {
             self.activeHeaderView.hidden = tabBarHidden;
-            self.tabControl.hidden = tabBarHidden;
+            self.segmentedControl.hidden = tabBarHidden;
         }
 
         {
@@ -393,7 +420,7 @@ static CGFloat kHeaderDefaultHeight = 5.0;
                                 {
                                     if (tabBarHidden == YES) {
                                         self.activeHeaderView.hidden = tabBarHidden;
-                                        self.tabControl.hidden = tabBarHidden;
+                                        self.segmentedControl.hidden = tabBarHidden;
                                     }
                                     finishedBlock();
                                 }

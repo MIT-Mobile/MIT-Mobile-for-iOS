@@ -1,10 +1,10 @@
 #import <UIKit/UIKit.h>
 #import "LibrariesLoanTabController.h"
 
-extern NSString* const MITTabViewWillBecomeActiveNotification;
-extern NSString* const MITTabViewDidBecomeActiveNotification;
-extern NSString* const MITTabViewWillBecomeInactiveNotification;
-extern NSString* const MITTabViewDidBecomeInactiveNotification;
+extern NSString * const MITTabViewWillBecomeActiveNotification;
+extern NSString * const MITTabViewDidBecomeActiveNotification;
+extern NSString * const MITTabViewWillBecomeInactiveNotification;
+extern NSString * const MITTabViewDidBecomeInactiveNotification;
 
 @class MITTabView;
 
@@ -25,9 +25,6 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 @property (nonatomic,readonly,retain) UIView *contentView;
 @property (nonatomic,readonly,assign) UIView *activeView;
 @property (nonatomic) BOOL tabBarHidden;
-
-- (id)init;
-- (id)initWithFrame:(CGRect)frame;
 
 - (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
 - (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;

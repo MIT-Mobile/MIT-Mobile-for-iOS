@@ -24,18 +24,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.gradientLayer.colors = [NSArray arrayWithObjects:
-                                     (id)[[UIColor colorWithWhite:1.0
-                                                            alpha:1.0] CGColor],
-                                     (id)[[UIColor colorWithWhite:0.85
-                                                            alpha:1.0] CGColor],
-                                     nil];
-        
-        self.gradientLayer.locations = [NSArray arrayWithObjects:
-                                        [NSNumber numberWithFloat:0.0],
-                                        [NSNumber numberWithFloat:1.0],
-                                        nil];
-        
         self.imageView = [[[UIImageView alloc] init] autorelease];
         [self addSubview:self.imageView];
         
