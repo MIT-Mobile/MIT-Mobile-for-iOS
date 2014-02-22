@@ -1,7 +1,6 @@
 #import "WorldCatHoldingsViewController.h"
 #import "WorldCatBook.h"
 #import "UIKit+MITAdditions.h"
-#import "MITUIConstants.h"
 #import "ExplanatorySectionLabel.h"
 #import "BookDetailTableViewCell.h"
 
@@ -22,16 +21,8 @@ typedef enum {
 
 @implementation WorldCatHoldingsViewController
 
-- (id)initWithStyle:(UITableViewStyle)style {
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)setBook:(WorldCatBook *)book {
-    if ([_book isEqual:book]) {
+    if (![_book isEqual:book]) {
         _book = book;
         
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
@@ -54,7 +45,10 @@ typedef enum {
     [super viewDidLoad];
     
     self.title = @"BLC Holdings";
-    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.backgroundView = nil;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -77,7 +71,7 @@ typedef enum {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case TitleSection:
-            return 2;
+            return 1;
         case LinkSection:
             return 1;
         case OwnerSection:
@@ -96,7 +90,7 @@ typedef enum {
         case TitleSection: {
             cell = [tableView dequeueReusableCellWithIdentifier:TitleCellIdentifier];
             if (cell == nil) {
-                cell = [[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:TitleCellIdentifier];
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:TitleCellIdentifier];
             }
             break;
         }
@@ -120,27 +114,13 @@ typedef enum {
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case TitleSection: {
-            NSAttributedString *displayString = nil;
-            switch (indexPath.row) {
-                case 0:
-                    displayString = [BookDetailTableViewCell 
-                                     displayStringWithTitle:self.book.title
-                                     subtitle:nil
-                                     separator:nil
-                                     fontSize:BookDetailFontSizeTitle];
-                    break;
-                case 1:
-                    displayString = [BookDetailTableViewCell 
-                                     displayStringWithTitle:nil
-                                     subtitle:[self.book yearWithAuthors]
-                                     separator:nil
-                                     fontSize:BookDetailFontSizeDefault];
-                    break;
-                default:
-                    break;
-            }
-            ((BookDetailTableViewCell *)cell).displayString = displayString;
-            cell.backgroundColor = [UIColor greenColor];
+            cell.textLabel.text = self.book.title;
+            cell.detailTextLabel.text = [self.book yearWithAuthors];
+            cell.detailTextLabel.textColor = [UIColor darkGrayColor];
+            cell.textLabel.numberOfLines = 0;
+            cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            cell.detailTextLabel.numberOfLines = 0;
+            cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
             break;
         }
         case LinkSection:
@@ -162,27 +142,26 @@ typedef enum {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case TitleSection: {
-            NSAttributedString *displayString = nil;
-            switch (indexPath.row) {
-                case 0:
-                    displayString = [BookDetailTableViewCell 
-                                     displayStringWithTitle:self.book.title
-                                     subtitle:nil
-                                     separator:nil
-                                     fontSize:BookDetailFontSizeTitle];
-                    break;
-                case 1:
-                    displayString = [BookDetailTableViewCell 
-                                     displayStringWithTitle:nil
-                                     subtitle:[self.book yearWithAuthors]
-                                     separator:nil
-                                     fontSize:BookDetailFontSizeDefault];
-                    break;
-                default:
-                    break;
+            // There's probably a better way to do this —
+            // one that doesn't require hardcoding expected padding.
+            
+            // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
+            static UIEdgeInsets labelInsets;
+            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                labelInsets = UIEdgeInsetsMake(11., 15., 11., 15.);
+            } else {
+                labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
             }
-            CGSize size = [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView];
-            return size.height + 8.0;
+            
+            NSString *title = self.book.title;
+            NSString *detail = [self.book yearWithAuthors];
+            
+            CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
+            CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+            
+            CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+            
+            return titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom;
         }
         case LinkSection:
             return self.tableView.rowHeight;
@@ -196,35 +175,42 @@ typedef enum {
     }
 }
 
-- (UIView *)tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     switch (section) {
-        case LinkSection: {
+        case OwnerSection: {
+            return @"Owned By";
+        }
+        default:
+            return nil;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    switch (section) {
+        case TitleSection: {
             NSString *labelText = @"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan.";
-            ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
+            ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
             footerLabel.text = labelText;
             return footerLabel;
         }
-        case OwnerSection: {
-            NSString *headerTitle = @"Owned By";
-            return [UITableView groupedSectionHeaderWithTitle:headerTitle];
-        }
+        default:
+            return nil;
     }
-    return nil;
 }
 
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
     switch (section) {
-        case LinkSection: {
-            NSString *labelText = @"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan.";
-            CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
-                                                               width:CGRectGetWidth(tableView.bounds)
-                                                                type:ExplanatorySectionHeader];
-            return height;
+        case TitleSection: {
+            return [ExplanatorySectionLabel heightWithText:@"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan."
+                                              width:tableView.bounds.size.width
+                                               type:ExplanatorySectionFooter];
         }
-        case OwnerSection:
-            return GROUPED_SECTION_HEADER_HEIGHT;
+        default:
+            return 0;
     }
-    return 0;
 }
 
 #pragma mark - Table view delegate

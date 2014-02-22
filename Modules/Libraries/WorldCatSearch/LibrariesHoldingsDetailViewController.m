@@ -1,11 +1,12 @@
 #import "LibrariesHoldingsDetailViewController.h"
-#import "MITUIConstants.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation LibrariesHoldingsDetailViewController
 - (id)initWithHoldings:(NSArray*)holdings
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
+        self.tableView.backgroundView = nil;
         self.holdings = holdings;
     }
     
@@ -28,7 +29,6 @@
 - (IBAction)done:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
-    return;
 }
 
 - (void)setHoldings:(NSArray *)holdings
@@ -66,7 +66,6 @@
     cell.textLabel.text = holding[@"call-no"];
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     
     BOOL available = [holding[@"available"] boolValue];
 
@@ -74,9 +73,8 @@
     cell.detailTextLabel.numberOfLines = 0;
     cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.detailTextLabel.font = (available) ?
-                                 [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
-                                 [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
-    cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
+                                 [UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]] :
+                                 [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
     return cell;
 }
 
@@ -85,19 +83,19 @@
 {
     // TODO:
     NSDictionary *holding = self.holdings[indexPath.row];
-    CGSize labelSize = [holding[@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
-                                                     constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
+    CGSize labelSize = [holding[@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
+                                                     constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (10.0 * 2.0), CGFLOAT_MAX)
                                                          lineBreakMode:NSLineBreakByWordWrapping];
     
     NSString *detailString = [NSString stringWithFormat:@"%@\n%@",holding[@"collection"], holding[@"status"]];
     UIFont *detailFont = ([holding[@"available"] boolValue]) ?
-                          [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
-                          [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
+                          [UIFont boldSystemFontOfSize:[UIFont labelFontSize]] :
+                          [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
 
     CGSize detailSize = [detailString sizeWithFont:detailFont
-                                 constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
+                                 constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (10.0 * 2.0), CGFLOAT_MAX)
                                      lineBreakMode:NSLineBreakByWordWrapping];
     
-    return (labelSize.height + detailSize.height + (CELL_VERTICAL_PADDING * 2.0));
+    return (labelSize.height + detailSize.height + (11. * 2.0));
 }
 @end
