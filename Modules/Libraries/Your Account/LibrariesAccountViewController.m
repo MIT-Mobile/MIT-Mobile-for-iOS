@@ -35,6 +35,10 @@ typedef enum {
         
         self.requestOperations = [[NSOperationQueue alloc] init];
         self.requestOperations.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+        
+        if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+            self.edgesForExtendedLayout = UIRectEdgeNone;
+        }
     }
     
     return self;
@@ -59,6 +63,12 @@ typedef enum {
     
     UIView *mainView = [[UIView alloc] initWithFrame:screenRect];
     mainView.autoresizesSubviews = YES;
+    
+    mainView.backgroundColor = [UIColor colorWithHexString:@"f7f7f7"];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+
     
     {
         MITTabView *tabView = [[MITTabView alloc] init];
@@ -258,7 +268,9 @@ typedef enum {
         if (view == [obj tableView]) {
             UIView *header = [obj headerView];
             
-            header.frame = CGRectMake(0,0,CGRectGetWidth(tabView.bounds),CGRectGetHeight(tabView.bounds));
+            CGRect frame = header.frame;
+            frame.size.width = tabView.bounds.size.width;
+            header.frame = frame;
             [header sizeToFit];
             
             height = CGRectGetHeight(header.frame);
