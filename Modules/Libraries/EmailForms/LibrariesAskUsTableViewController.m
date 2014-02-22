@@ -43,7 +43,7 @@
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
     }
 
-    self.title = @"Ask";
+    self.title = @"Ask Us";
 }
 
 // Override to allow orientations other than the default portrait orientation.
