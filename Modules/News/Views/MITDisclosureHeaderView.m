@@ -5,8 +5,6 @@
 @end
 
 @implementation MITDisclosureHeaderView
-@synthesize textLabel = _textLabel;
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -16,7 +14,7 @@
         label.translatesAutoresizingMaskIntoConstraints = NO;
         label.numberOfLines = 1;
         [self.contentView addSubview:label];
-        self->_textLabel = label;
+        self->_titleLabel = label;
 
         UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"news/news_chevron_small"]];
         imageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -24,14 +22,14 @@
         self->_accessoryView = imageView;
 
         NSDictionary *views = @{@"accessoryView" : _accessoryView,
-                                @"textLabel" : _textLabel};
+                                @"titleLabel" : _titleLabel};
 
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[textLabel]-[accessoryView]"
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[titleLabel]-[accessoryView]"
                                                                                  options:NSLayoutFormatAlignAllCenterY
                                                                                  metrics:nil
                                                                                    views:views]];
 
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[textLabel]|"
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[titleLabel]|"
                                                                                  options:0
                                                                                  metrics:nil
                                                                                    views:views]];
@@ -49,9 +47,10 @@
 {
     [super prepareForReuse];
     
-    self.textLabel.text = @"";
-    self.textLabel.hidden = NO;
+    self.titleLabel.text = @"";
+    self.titleLabel.hidden = NO;
 
     self.accessoryView.hidden = NO;
 }
+
 @end
