@@ -234,8 +234,8 @@
         UIBarButtonItem *cancelBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                  target:self
                                                                                  action:@selector(cancelRenew:)];
-        [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
-                                                           animated:YES];
+        [self.parentController.navigationItem setLeftBarButtonItem:cancelBarItem
+                                                          animated:YES];
         self.cancelBarItem = cancelBarItem;
     }
 
@@ -245,8 +245,8 @@
                                                                          style:UIBarButtonItemStyleDone
                                                                         target:self
                                                                         action:@selector(renewItems:)];
-        [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
-                                                          animated:YES];
+        [self.parentController.navigationItem setRightBarButtonItem:renewBarItem
+                                                           animated:YES];
         self.renewBarItem = renewBarItem;
     }
     
