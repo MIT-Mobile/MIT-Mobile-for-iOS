@@ -23,6 +23,11 @@
     _story = nil;
 }
 
+- (void)setRepresentedObject:(id)object
+{
+    [self setStory:object];
+}
+
 - (void)setStory:(MITNewsStory *)story
 {
     if (![_story isEqual:story]) {

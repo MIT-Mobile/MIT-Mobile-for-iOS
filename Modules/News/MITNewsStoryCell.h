@@ -8,4 +8,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *dekLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *storyImageView;
 
+- (void)setRepresentedObject:(id)object;
 @end
