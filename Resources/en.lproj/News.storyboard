@@ -67,7 +67,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <items>
                                     <navigationItem title="x of y" id="8nF-a1-hss">
-                                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="ZlE-Y2-CiE">
+                                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="ZlE-Y2-CiE">
                                             <color key="tintColor" red="0.85669479927007308" green="0.13768309962931449" blue="0.28046557274104433" alpha="1" colorSpace="deviceRGB"/>
                                             <connections>
                                                 <segue destination="dbi-Pd-X66" kind="unwind" unwindAction="unwindFromImageGallery:" id="fpp-DT-aUM"/>
