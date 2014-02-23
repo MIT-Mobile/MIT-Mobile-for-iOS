@@ -42,10 +42,12 @@
 
     __block NSURL *imageURL = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *story = self.story;
+        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
 
         CGSize imageSize = self.coverImageView.bounds.size;
         imageSize.height = 213.;
+        
+        DDLogVerbose(@"Cover image for %@ has %d representations",story.identifier, [story.coverImage.representations count]);
         MITNewsImageRepresentation *imageRepresentation = [story.coverImage bestRepresentationForSize:imageSize];
         imageURL = imageRepresentation.url;
     }];
@@ -193,19 +195,6 @@
     }];
     
     return templateString;
-}
-
-- (MITNewsStory*)story
-{
-    if (_story) {
-        if (_story.managedObjectContext != self.managedObjectContext) {
-            [self.managedObjectContext performBlockAndWait:^{
-                _story = (MITNewsStory*)[self.managedObjectContext objectWithID:[_story objectID]];
-            }];
-        }
-    }
-
-    return _story;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
