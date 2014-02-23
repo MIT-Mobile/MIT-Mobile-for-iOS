@@ -724,7 +724,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
 
         if (self.showFeaturedStoriesSection && (section == 0)) {
-            headerView.titleLabel.text = @"Featured Stories";
+            headerView.titleLabel.text = @"Featured";
             headerView.accessoryView.hidden = YES;
 
             UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
