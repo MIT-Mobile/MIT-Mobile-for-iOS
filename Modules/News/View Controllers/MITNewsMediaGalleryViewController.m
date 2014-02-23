@@ -112,36 +112,40 @@
 
 - (IBAction)shareImage:(id)sender
 {
-    NSMutableArray *items = [[NSMutableArray alloc] init];
-    
-    MITNewsImageViewController *currentViewController = self.galleryPageViewControllers[self.selectedIndex];
-    if (currentViewController.cachedImage) {
-        [items addObject:currentViewController.cachedImage];
+    if (self.selectedIndex != NSNotFound) {
+        NSMutableArray *items = [[NSMutableArray alloc] init];
+        
+        MITNewsImageViewController *currentViewController = self.galleryPageViewControllers[self.selectedIndex];
+        if (currentViewController.cachedImage) {
+            [items addObject:currentViewController.cachedImage];
+        }
+        
+        [self.managedObjectContext performBlockAndWait:^{
+            NSArray *galleryImages = self.galleryImages;
+            MITNewsImage *image = galleryImages[self.selectedIndex];
+            
+            if ([items count] == 0) {
+               MITNewsImageRepresentation *imageRepresentation = [image bestRepresentationForSize:MITNewsImageLargestImageSize];
+                [items addObject:imageRepresentation.url];
+            }
+            
+            if (image.caption) {
+                [items addObject:image.caption];
+            } else if (image.descriptionText) {
+                [items addObject:image.descriptionText];
+            }
+        }];
+        
+        UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                            applicationActivities:nil];
+        sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
+                                                        UIActivityTypeAssignToContact,
+                                                        UIActivityTypeSaveToCameraRoll];
+        
+        [self presentViewController:sharingViewController animated:YES completion:nil];
+    } else {
+        DDLogWarn(@"attempting to share an image with an index of NSNotFound");
     }
-    
-    [self.managedObjectContext performBlockAndWait:^{
-        NSArray *galleryImages = self.galleryImages;
-        MITNewsImage *image = galleryImages[self.selectedIndex];
-        
-        if ([items count] == 0) {
-           MITNewsImageRepresentation *imageRepresentation = [image bestRepresentationForSize:MITNewsImageLargestImageSize];
-            [items addObject:imageRepresentation.url];
-        }
-        
-        if (image.caption) {
-            [items addObject:image.caption];
-        } else if (image.descriptionText) {
-            [items addObject:image.descriptionText];
-        }
-    }];
-    
-    UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
-                                                                                        applicationActivities:nil];
-    sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
-                                                    UIActivityTypeAssignToContact,
-                                                    UIActivityTypeSaveToCameraRoll];
-    
-    [self presentViewController:sharingViewController animated:YES completion:nil];
 }
 
 - (IBAction)toggleUI:(id)sender
@@ -165,19 +169,21 @@
 
 - (void)didChangeSelectedIndex
 {
-    UINavigationItem *navigationItem = [[self.navigationBar items] lastObject];
-    navigationItem.title = [NSString stringWithFormat:@"%d of %d",self.selectedIndex + 1,[_galleryImages count]];
-    
-    __block NSString *description = nil;
-    __block NSString *credits = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        MITNewsImage *image = self.galleryImages[self.selectedIndex];
-        description = image.descriptionText;
-        credits = image.credits;
-    }];
-    
-    self.descriptionLabel.text = description;
-    self.creditLabel.text = credits;
+    if (self.selectedIndex != NSNotFound) {
+        UINavigationItem *navigationItem = [[self.navigationBar items] lastObject];
+        navigationItem.title = [NSString stringWithFormat:@"%d of %d",self.selectedIndex + 1,[_galleryImages count]];
+        
+        __block NSString *description = nil;
+        __block NSString *credits = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsImage *image = self.galleryImages[self.selectedIndex];
+            description = image.descriptionText;
+            credits = image.credits;
+        }];
+        
+        self.descriptionLabel.text = description;
+        self.creditLabel.text = credits;
+    }
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -232,10 +238,20 @@
 {
     if (completed) {
         NSMutableOrderedSet *viewControllers = [[NSMutableOrderedSet alloc] initWithArray:[pageViewController viewControllers]];
-        [viewControllers minusSet:[NSSet setWithArray:previousViewControllers]];
+        NSOrderedSet *previousViewControllersSet = [NSOrderedSet orderedSetWithArray:previousViewControllers];
+        
+        // TODO: See if this is even need or if we can just use -[NSOrderedSet lastObject]
+        if (![previousViewControllersSet isEqualToOrderedSet:viewControllers]) {
+            [viewControllers minusSet:[NSSet setWithArray:previousViewControllers]];
+        }
         
         MITNewsImageViewController *imageViewController = [viewControllers firstObject];
-        self.selectedIndex = [self.galleryPageViewControllers indexOfObject:imageViewController];
+        if (imageViewController) {
+            self.selectedIndex = [self.galleryPageViewControllers indexOfObject:imageViewController];
+        } else {
+            DDLogWarn(@"unable to pick a selected index in for the gallery");
+            self.selectedIndex = NSNotFound;
+        }
     }
 }
 
