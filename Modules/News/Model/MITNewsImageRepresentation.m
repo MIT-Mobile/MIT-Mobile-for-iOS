@@ -7,7 +7,7 @@
 @dynamic height;
 @dynamic width;
 @dynamic url;
-@dynamic image;
+@dynamic images;
 
 + (RKObjectMapping*)objectMapping
 {
