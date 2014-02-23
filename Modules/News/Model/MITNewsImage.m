@@ -31,38 +31,36 @@ CGSize const MITNewsImageSmallestImageSize = {.width = 0.,.height = 0.};
 
 - (MITNewsImageRepresentation*)bestRepresentationForSize:(CGSize)size
 {
-    NSMutableArray *sortedRepresentations = [[[self.representations allObjects] sortedArrayUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
-        CGFloat area1 = [representation1.width doubleValue] * [representation1.height doubleValue];
-        CGFloat area2 = [representation2.width doubleValue] * [representation2.height doubleValue];
+    CGFloat scale = [[UIScreen mainScreen] scale];
+    size.width *= scale;
+    size.height *= scale;
+    
+    NSArray *sortedRepresentations = [[self.representations allObjects] sortedArrayUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
+        CGFloat diagonal1 = sqrt(pow([representation1.width doubleValue],2.) + pow([representation1.height doubleValue],2.));
+        CGFloat diagonal2 = sqrt(pow([representation2.width doubleValue],2.) + pow([representation2.height doubleValue],2.));
         
-        return [@(area1) compare:@(area2)];
-    }] mutableCopy];
+        return [@(diagonal1) compare:@(diagonal2)];
+    }];
     
     if (CGSizeEqualToSize(size, MITNewsImageSmallestImageSize)) {
         return [sortedRepresentations firstObject];
     } else if (CGSizeEqualToSize(size, MITNewsImageLargestImageSize)) {
         return [sortedRepresentations lastObject];
     } else {
-#warning potentially ugly behavior when the height or width of the size is really large (height * width >= CGFLOAT_MAX)
-        CGFloat targetArea = size.width * size.height;
-        [sortedRepresentations sortUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
-            CGFloat distance1 = ([representation1.width doubleValue] * [representation1.height doubleValue]) - targetArea;
-            CGFloat distance2 = ([representation2.width doubleValue] * [representation2.height doubleValue]) - targetArea;
+        CGFloat targetDiagonal = sqrt(pow(size.width, 2.) + pow(size.height,2.));
+        __block CGFloat bestFit = CGFLOAT_MAX;
+        __block MITNewsImageRepresentation *selectedRepresentation = nil;
+        [sortedRepresentations enumerateObjectsUsingBlock:^(MITNewsImageRepresentation *representation, NSUInteger idx, BOOL *stop) {
+            CGFloat diagonal = sqrt(pow([representation.width doubleValue], 2.) + pow([representation.height doubleValue],2.));
+            CGFloat difference = fabs(diagonal - targetDiagonal);
             
-            // Subtracting 1 (just in case, probably does nothing useful)
-            // TODO: Pick a smaller maximum value; CGFLOAT_MAX is overkill here
-            if (distance1 < 0) {
-                distance1 = (CGFLOAT_MAX - 1.) + distance1;
+            if (difference < bestFit) {
+                selectedRepresentation = representation;
+                bestFit = difference;
             }
-            
-            if (distance2 < 0) {
-                distance2 = (CGFLOAT_MAX - 1.) + distance2;
-            }
-            
-            return [@(distance1) compare:@(distance2)];
         }];
         
-        return [sortedRepresentations firstObject];
+        return selectedRepresentation;
     }
 }
 @end
