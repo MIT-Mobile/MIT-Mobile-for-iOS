@@ -721,21 +721,26 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
-
+    
         if (self.showFeaturedStoriesSection && (section == 0)) {
-            headerView.titleLabel.text = @"Featured";
-            headerView.accessoryView.hidden = YES;
+            if ([self.featuredStoriesFetchedResultsController.fetchedObjects count]) {
+                MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
+                headerView.titleLabel.text = @"Featured";
+                headerView.accessoryView.hidden = YES;
 
-            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-            if (recognizer) {
-                [headerView removeGestureRecognizer:recognizer];
-                [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
-                [self.gestureRecognizersByView removeObjectForKey:headerView];
+                UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+                if (recognizer) {
+                    [headerView removeGestureRecognizer:recognizer];
+                    [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
+                    [self.gestureRecognizersByView removeObjectForKey:headerView];
+                }
+                
+                return headerView;
+            } else {
+                return nil;
             }
-
-            return headerView;
-        } else {
+        } else if ([self.categoriesFetchedResultsController.fetchedObjects count]) {
+            MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
             if (self.featuredStoriesFetchedResultsController) {
                 section -= 1;
             }
@@ -762,6 +767,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             headerView.titleLabel.text = categoryName;
             headerView.accessoryView.hidden = NO;
             return headerView;
+        } else {
+            return nil;
         }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         if (self.searchQuery) {
