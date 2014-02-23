@@ -24,7 +24,6 @@
 {
     RKEntityMapping *storyMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     storyMapping.identificationAttributes = @[@"identifier"];
-    [storyMapping setModificationAttributeForName:@"publishedAt"];
     [storyMapping addAttributeMappingsFromDictionary:@{@"id" : @"identifier",
                                                        @"source_url" : @"sourceURL",
                                                        @"title" : @"title",
