@@ -76,7 +76,7 @@
     }
 
     if (featured) {
-        parameters[@"featured"] = @YES;
+        parameters[@"featured"] = @"true";
     }
 
     if (offset) {
