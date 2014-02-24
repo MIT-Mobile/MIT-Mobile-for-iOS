@@ -3,5 +3,5 @@
 #import <RestKit/RestKit.h>
 
 @protocol MITMappedObject <NSObject>
-+ (RKObjectMapping*)objectMapping;
++ (RKMapping*)objectMapping;
 @end
