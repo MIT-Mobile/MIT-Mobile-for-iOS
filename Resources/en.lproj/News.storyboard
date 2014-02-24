@@ -21,6 +21,7 @@
                                 <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <segue destination="s7x-YS-u7y" kind="embed" identifier="embedPageViewController" id="htc-Dm-RH8"/>
                                 </connections>
@@ -68,13 +69,12 @@
                                 <items>
                                     <navigationItem title="x of y" id="8nF-a1-hss">
                                         <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="ZlE-Y2-CiE">
-                                            <color key="tintColor" red="0.85669479927007308" green="0.13768309962931449" blue="0.28046557274104433" alpha="1" colorSpace="deviceRGB"/>
                                             <connections>
                                                 <segue destination="dbi-Pd-X66" kind="unwind" unwindAction="unwindFromImageGallery:" id="fpp-DT-aUM"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="action" id="lCO-W6-uzA">
-                                            <color key="tintColor" red="0.8519331660583942" green="0.13691783711057337" blue="0.27890670465052464" alpha="1" colorSpace="deviceRGB"/>
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
                                                 <action selector="shareImage:" destination="iDy-Gm-VsE" id="lcV-Yx-a38"/>
                                             </connections>
@@ -84,7 +84,7 @@
                             </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <color key="tintColor" red="0.85983120437956206" green="0.1381871647614194" blue="0.2814923720821052" alpha="1" colorSpace="deviceRGB"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="PD2-yH-VxL" firstAttribute="leading" secondItem="9YM-VJ-fPn" secondAttribute="leading" id="08h-KT-xOt"/>
