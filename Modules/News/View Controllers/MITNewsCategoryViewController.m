@@ -1057,17 +1057,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     NSString *searchQuery = searchBar.text;
-    
+
     __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
-    searchDisplayController.searchResultsTableView.tableFooterView = nil;
-    
-    UIColor *textColor = nil;
-    if ([self.view respondsToSelector:@selector(tintColor)]) {
-        textColor = self.view.tintColor;
-    } else {
-        textColor = [UIColor MITTintColor];
-    }
-    
     [self loadStoriesForQuery:searchQuery loaded:^(NSString *query, NSError *error) {
         [searchDisplayController.searchResultsTableView reloadData];
     }];
