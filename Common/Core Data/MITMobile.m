@@ -1,5 +1,5 @@
-#import <RestKit/RKHTTPUtilities.h>
 #import "MITMobile.h"
+#import <RestKit/RestKit.h>
 
 #import "MITMapModelController.h"
 #import "MITMobileResource.h"
@@ -21,6 +21,19 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 @implementation MITMobile
 + (MITMobile*)defaultManager
 {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        RKCompoundValueTransformer *compoundTransformer = [RKValueTransformer defaultValueTransformer];
+
+        NSDateFormatter *spaceDelimitedISO8601 = [[NSDateFormatter alloc] init];
+        NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        [spaceDelimitedISO8601 setLocale:enUSPOSIXLocale];
+        spaceDelimitedISO8601.dateFormat =@"yyyy-MM-dd HH:mm:ssZ";
+        [compoundTransformer addValueTransformer:spaceDelimitedISO8601];
+
+        [RKValueTransformer setDefaultValueTransformer:compoundTransformer];
+    });
+
     return [[MIT_MobileAppDelegate applicationDelegate] remoteObjectManager];
 }
 
