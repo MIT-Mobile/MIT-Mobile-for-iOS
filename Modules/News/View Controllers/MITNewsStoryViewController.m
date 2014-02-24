@@ -9,10 +9,13 @@
 #import "UIImageView+WebCache.h"
 
 @interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
-
+@property (nonatomic,strong) MITNewsStory *story;
 @end
 
-@implementation MITNewsStoryViewController
+@implementation MITNewsStoryViewController {
+    NSManagedObjectID *_storyObjectID;
+}
+@synthesize story = _story;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -39,17 +42,16 @@
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
-
     __block NSURL *imageURL = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
-
-        CGSize imageSize = self.coverImageView.bounds.size;
-        imageSize.height = 213.;
-        
-        DDLogVerbose(@"Cover image for %@ has %d representations",story.identifier, [story.coverImage.representations count]);
-        MITNewsImageRepresentation *imageRepresentation = [story.coverImage bestRepresentationForSize:imageSize];
-        imageURL = imageRepresentation.url;
+        if (self.story) {
+            CGSize imageSize = self.coverImageView.bounds.size;
+            imageSize.height = 213.;
+            
+            DDLogVerbose(@"Cover image for %@ has %d representations",self.story.identifier, [self.story.coverImage.representations count]);
+            MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+            imageURL = imageRepresentation.url;
+        }
     }];
 
     if (imageURL) {
@@ -92,18 +94,20 @@
 
 - (IBAction)shareButtonTapped:(id)sender
 {
-    NSMutableArray *items = [NSMutableArray arrayWithObject:self];
-    [self.managedObjectContext performBlockAndWait:^{
-        [items addObject:self.story.sourceURL];
-    }];
+    if (self.story) {
+        NSMutableArray *items = [NSMutableArray arrayWithObject:self];
+        [self.managedObjectContext performBlockAndWait:^{
+                [items addObject:self.story.sourceURL];
+        }];
 
-    UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
-                                                                                        applicationActivities:nil];
-    sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
-                                                    UIActivityTypeAssignToContact,
-                                                    UIActivityTypeSaveToCameraRoll];
+        UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                            applicationActivities:nil];
+        sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
+                                                        UIActivityTypeAssignToContact,
+                                                        UIActivityTypeSaveToCameraRoll];
 
-    [self presentViewController:sharingViewController animated:YES completion:nil];
+        [self presentViewController:sharingViewController animated:YES completion:nil];
+    }
 }
 
 - (IBAction)unwindFromImageGallery:(UIStoryboardSegue *)sender
@@ -113,7 +117,7 @@
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
-    if ([identifier isEqualToString:@"showMediaGallery"]) {
+    if (self.story && [identifier isEqualToString:@"showMediaGallery"]) {
         __block NSInteger numberOfGalleryImages = 0;
         [self.managedObjectContext performBlockAndWait:^{
             numberOfGalleryImages = [self.story.galleryImages count];
@@ -141,6 +145,28 @@
     }
 }
 
+
+- (void)setStory:(MITNewsStory*)story
+{
+    NSManagedObjectID *newStoryObjectID = [story objectID];
+    if (newStoryObjectID && ![newStoryObjectID isEqual:_storyObjectID]) {
+        _storyObjectID = newStoryObjectID;
+    }
+    
+    _story = nil;
+}
+
+- (MITNewsStory*)story
+{
+    if (!_story && _storyObjectID) {
+        [self.managedObjectContext performBlockAndWait:^{
+            _story = (MITNewsStory*)[self.managedObjectContext objectWithID:_storyObjectID];
+        }];
+    }
+    
+    return _story;
+}
+
 - (NSString*)htmlBody
 {
     static NSDateFormatter *dateFormatter = nil;
@@ -159,19 +185,24 @@
     __block NSDictionary *templateBindings = nil;
     [self.managedObjectContext performBlockAndWait:^{
         MITNewsStory *story = self.story;
+        if (story) {
+            NSString *postDate = @"";
+            NSDate *publishedAt = story.publishedAt;
+            if (publishedAt) {
+                postDate = [dateFormatter stringFromDate:publishedAt];
+            }
 
-        NSString *postDate = [dateFormatter stringFromDate:story.publishedAt];
-
-        templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
-                             @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
-                             @"__DATE__": (postDate ? postDate : [NSNull null]),
-                             @"__DEK__": (story.dek ? story.dek : [NSNull null]),
-                             @"__BODY__": (story.body ? story.body : [NSNull null]),
-                             @"__GALLERY_COUNT__": @(0),
-                             @"__BOOKMARKED__": @"",
-                             @"__THUMBNAIL_URL__": @"",
-                             @"__THUMBNAIL_WIDTH__": @"",
-                             @"__THUMBNAIL_HEIGHT__": @""};
+            templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
+                                 @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
+                                 @"__DATE__": (postDate ? postDate : [NSNull null]),
+                                 @"__DEK__": (story.dek ? story.dek : [NSNull null]),
+                                 @"__BODY__": (story.body ? story.body : [NSNull null]),
+                                 @"__GALLERY_COUNT__": @(0),
+                                 @"__BOOKMARKED__": @"",
+                                 @"__THUMBNAIL_URL__": @"",
+                                 @"__THUMBNAIL_WIDTH__": @"",
+                                 @"__THUMBNAIL_HEIGHT__": @""};
+        }
     }];
 
 

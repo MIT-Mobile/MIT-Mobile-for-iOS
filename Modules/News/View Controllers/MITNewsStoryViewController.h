@@ -3,7 +3,6 @@
 
 @interface MITNewsStoryViewController : UIViewController <UIGestureRecognizerDelegate>
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,strong) MITNewsStory *story;
 
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *coverImageGestureRecognizer;
 
@@ -15,5 +14,6 @@
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *bodyViewHeightConstraint;
 
 - (IBAction)unwindFromImageGallery:(UIStoryboardSegue*)sender;
+- (void)setStory:(MITNewsStory*)story;
 
 @end
