@@ -16,7 +16,9 @@
 #import "MITNewsStory.h"
 
 #import "UIImageView+WebCache.h"
+#import "MITLoadingActivityView.h"
 #import "MITNewsConstants.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMutableDictionary";
 
@@ -48,10 +50,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)endUpdatingWithError:(NSError*)error animated:(BOOL)animate;
 - (void)setToolbarString:(NSString*)string animated:(BOOL)animated;
 
-#pragma mark Searching
-- (void)beginSearchingAnimated:(BOOL)animate;
-- (void)endSearchingAnimated:(BOOL)animate;
-
 #pragma mark UITableView Data Source Help
 @end
 
@@ -73,13 +71,30 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
+@interface MITNewsCategoryViewController (NewsSearching)
+// These methods are in the order they will (at least, should) be called in
+- (void)beginSearchingAnimated:(BOOL)animated;
+- (void)willLoadSearchResultsAnimated:(BOOL)animate;
+
+- (void)loadStoriesForQuery:(NSString*)query loaded:(void (^)(NSString *query, NSError *error))completion;
+- (void)loadStoriesForQuery:(NSString*)query shouldLoadNextPage:(BOOL)loadNextPage completion:(void (^)(NSString *query, NSError *error))completion;
+
+- (void)didLoadResultsForSearchWithError:(NSError*)error animated:(BOOL)animate;
+- (void)endSearchingAnimated:(BOOL)animated;
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView;
+- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller;
+- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller;
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString;
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar;
+@end
+
 @implementation MITNewsCategoryViewController {
     NSManagedObjectID *_categoryObjectID;
-    
+
+    CGPoint _contentOffsetToRestoreAfterSearching;
+    id _storySearchInProgressToken;
     id _storyUpdateInProgressToken;
-    id _storyUpdateForSearchQueryInProgressToken;
-    
-    NSMapTable *_tableViewCellPrototypes;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -100,7 +115,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    [self _tableView:self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
     
     if (self.numberOfStoriesPerPage == 0) {
         self.numberOfStoriesPerPage = MITNewsDefaultNumberOfStoriesPerPage;
@@ -115,32 +130,33 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     [super viewWillAppear:animated];
     
-    __block NSString *title = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        if (self.category) {
-            title = self.category.name;
-        } else {
-            title = @"Top Stories";
-        }
-    }];
-    
-    self.title = title;
-    
-    if (!self.isSearching && !self.newsStories) {
-        __weak MITNewsCategoryViewController *weakSelf = self;
-        [self fetchFirstPageOfStoriesForCurrentCategory:^{
-            MITNewsCategoryViewController *blockSelf = weakSelf;
-            if (blockSelf) {
-                [self.tableView reloadData];
+    if (!self.isSearching) {
+        __block NSString *title = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if (self.category) {
+                title = self.category.name;
+            } else {
+                title = @"Top Stories";
             }
         }];
-    }
-    
-    if (self.lastUpdated) {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                            toDate:[NSDate date]];
-        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-        [self setToolbarString:updateText animated:NO];
+        
+        self.title = title;
+        if (!self.newsStories) {
+            __weak MITNewsCategoryViewController *weakSelf = self;
+            [self fetchFirstPageOfStoriesForCurrentCategory:^{
+                MITNewsCategoryViewController *blockSelf = weakSelf;
+                if (blockSelf) {
+                    [self.tableView reloadData];
+                }
+            }];
+        }
+        
+        if (self.lastUpdated) {
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self setToolbarString:updateText animated:NO];
+        }
     }
 }
 
@@ -265,16 +281,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
-#pragma mark Searching
-- (void)beginSearchingAnimated:(BOOL)animate
-{
-    
-}
-
-- (void)endSearchingAnimated:(BOOL)animate
-{
-    
-}
 
 #pragma mark UI Helper
 - (void)setToolbarString:(NSString*)string animated:(BOOL)animated
@@ -292,25 +298,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark Responding to UI events
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender
 {
-    UISearchBar *searchBar = self.searchDisplayController.searchBar;
-    CGRect searchBarFrame = searchBar.frame;
-    
-    // Using the frame here so the search bar appears to slide in from outside the top of the view
-    // TODO: Make sure that the root view is clipping to its bounds
-    searchBarFrame.origin.y = CGRectGetMinY(self.view.frame) - CGRectGetHeight(searchBarFrame);
-    searchBarFrame.origin.x = CGRectGetMinX(self.view.bounds);
-    searchBar.frame = searchBarFrame;
-    
-    searchBarFrame.origin.y = CGRectGetMinY(self.view.bounds);
-    [self.view addSubview:searchBar];
-    
-    [UIView animateWithDuration:0.33
-                     animations:^{
-                         searchBar.frame = searchBarFrame;
-                         [self.searchDisplayController setActive:YES animated:NO];
-                     } completion:^(BOOL finished) {
-                         [searchBar becomeFirstResponder];
-                     }];
+    [self beginSearchingAnimated:NO];
 }
 
 - (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
@@ -361,10 +349,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     // nil out the update in progress token so that when the request returns
     // it skips its update (since we'll be messing with the data source)
-    if (_storyUpdateInProgressToken) {
-        _storyUpdateInProgressToken = nil;
-    }
-    
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
     
     if (_categoryObjectID) {
@@ -427,13 +411,15 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
         categoryIdentifier = category.identifier;
     }];
-    
-    NSUUID *requestUUID = [NSUUID UUID];
+
     NSUInteger offset = 0;
     if (shouldLoadNextPage) {
         offset = [self.newsStories count];
     }
-    
+
+    NSUUID *requestUUID = [NSUUID UUID];
+    _storyUpdateInProgressToken = requestUUID;
+
     [self beginUpdatingAnimated:YES];
     
     __weak MITNewsCategoryViewController *weakSelf = self;
@@ -443,6 +429,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             BOOL isSameRequestToken = (blockSelf->_storyUpdateInProgressToken == requestUUID);
             
             if (isSameRequestToken) {
+                _storyUpdateInProgressToken = nil;
+
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     if (!error) {
                         __block NSArray *localStories = nil;
@@ -484,8 +472,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             }
         }
     };
-    
-    _storyUpdateInProgressToken = requestUUID;
+
     self.updating = YES;
     [self.refreshControl beginRefreshing];
     [[MITNewsModelController sharedController] storiesInCategory:categoryIdentifier
@@ -494,92 +481,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                                            limit:20
                                                       completion:requestCompletionBlock];
     
-}
-
-- (void)loadStoriesForQuery:(NSString*)query loaded:(void (^)(NSString *query, NSError *error))completion
-{
-    [self loadStoriesForQuery:query shouldLoadNextPage:NO completion:completion];
-}
-
-- (void)loadStoriesForQuery:(NSString*)query shouldLoadNextPage:(BOOL)loadNextPage completion:(void (^)(NSString *query, NSError *error))completion
-{
-    if (_storyUpdateForSearchQueryInProgressToken) {
-        DDLogWarn(@"there appears to be an request already in progress; it will be ignored");
-    }
-    
-    NSUUID *requestUUID = [NSUUID UUID];
-    _storyUpdateForSearchQueryInProgressToken = requestUUID;
-    
-    if ([query length] == 0) {
-        // Just 'cause I'm paranoid. This method *should* never be called
-        // on any queue other than main.
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (requestUUID == _storyUpdateForSearchQueryInProgressToken) {
-                _storyUpdateForSearchQueryInProgressToken = nil;
-                self.searchResults = @[];
-                
-                if (completion) {
-                    completion(query,nil);
-                }
-            }
-        }];
-    } else {
-        NSUInteger offset = 0;
-        if (loadNextPage) {
-            offset = [self.searchResults count];
-        }
-        
-        __weak NSString *currentSearchQuery = self.searchQuery;
-        __weak MITNewsCategoryViewController *weakSelf = self;
-        void (^requestCompletionBlock)(NSArray*, MITResultsPager*, NSError*error) = ^(NSArray *stories, MITResultsPager *pager, NSError *error) {
-            MITNewsCategoryViewController *blockSelf = weakSelf;
-            if (blockSelf) {
-                BOOL isSameQuery = (blockSelf.searchQuery == currentSearchQuery);
-                BOOL isSameRequestToken = (blockSelf->_storyUpdateForSearchQueryInProgressToken == requestUUID);
-                
-                if (isSameQuery && isSameRequestToken) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        __block NSArray *localStories = nil;
-                        [blockSelf.managedObjectContext performBlockAndWait:^{
-                            localStories = [blockSelf.managedObjectContext transferManagedObjects:stories];
-                        }];
-                        
-                        // If we are loading the next (or additional pages, in general)
-                        // we should append the results onto the existing search results.
-                        // Otherwise, just do a wholesale replacement of the content.
-                        if (loadNextPage) {
-                            NSMutableArray *newSearchResults = [NSMutableArray arrayWithArray:self.searchResults];
-                            NSRange insertionRange = NSMakeRange(offset, [stories count]);
-                            NSIndexSet *insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:insertionRange];
-                            
-                            if (offset < [newSearchResults count]) {
-                                [newSearchResults removeObjectsInRange:NSMakeRange(offset, [newSearchResults count])];
-                            }
-                            
-                            [newSearchResults insertObjects:stories atIndexes:insertedIndexes];
-                            blockSelf.searchResults = newSearchResults;
-                        } else {
-                            blockSelf.searchResults = localStories;
-                        }
-                        
-                        if (completion) {
-                            if (error) {
-                                completion(nil,error);
-                            } else {
-                                completion(query,nil);
-                            }
-                        }
-                    }];
-                }
-            }
-        };
-        
-        [[MITNewsModelController sharedController] storiesInCategory:nil
-                                                               query:query
-                                                              offset:offset
-                                                               limit:20
-                                                          completion:requestCompletionBlock];
-    }
 }
 
 - (MITNewsStory*)selectedStory
@@ -619,7 +520,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                 headerView = [[UITableViewHeaderFooterView alloc] initWithReuseIdentifier:@"NewsSearchHeader"];
             }
             
-            if (self.isUpdating) {
+            if (_storySearchInProgressToken) {
                 headerView.textLabel.text = [NSString stringWithFormat:@"loading results for '%@'",self.searchQuery];
             } else {
                 headerView.textLabel.text = [NSString stringWithFormat:@"results for '%@'",self.searchQuery];
@@ -653,45 +554,37 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
-    
-    if ([selectedCell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier] && !self.isUpdating) {
-        selectedCell.textLabel.enabled = NO;
-        
-        __weak UITableView *weakTableView = self.tableView;
-        
-        if (self.tableView == tableView) {
-            [self loadStoriesInCategory:self.category
-                     shouldLoadNextPage:YES
-                             completion:^(NSManagedObjectID *category, NSError *error) {
-                                 UITableView *blockTableView = weakTableView;
-                                 if (blockTableView) {
-                                     if ([[blockTableView indexPathsForVisibleRows] containsObject:indexPath]) {
-                                         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-                                         cell.textLabel.enabled = YES;
-                                     }
-                                     
-                                     [blockTableView reloadData];
-                                 }
-                             }];
-        } else if (self.searchDisplayController.searchResultsTableView == tableView) {
-            __weak UITableView *weakTableView = self.searchDisplayController.searchResultsTableView;
-            [self loadStoriesForQuery:self.searchQuery
-                   shouldLoadNextPage:YES
-                           completion:^(NSString *query, NSError *error) {
-                               UITableView *blockTableView = weakTableView;
-                               if (blockTableView) {
-                                   if ([[blockTableView indexPathsForVisibleRows] containsObject:indexPath]) {
-                                       UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-                                       cell.textLabel.enabled = YES;
-                                   }
-                                   
-                                   [blockTableView reloadData];
-                               }
-                           }];
-        }
-    } else {
+    id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+    if (representedObject && [representedObject isKindOfClass:[MITNewsStory class]]) {
         [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
+    } else  {
+        NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+
+        if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+            if (tableView == self.tableView) {
+                __weak UITableView *weakTableView = self.tableView;
+                [self loadStoriesInCategory:self.category
+                         shouldLoadNextPage:YES
+                                 completion:^(NSManagedObjectID *category, NSError *error) {
+                                     UITableView *blockTableView = weakTableView;
+                                     if (blockTableView) {
+                                         [blockTableView reloadData];
+                                     }
+                                 }];
+            } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+                __weak UITableView *weakTableView = self.searchDisplayController.searchResultsTableView;
+                [self loadStoriesForQuery:self.searchQuery
+                                   loaded:^(NSString *query, NSError *error) {
+                                       UITableView *blockTableView = weakTableView;
+                                       if (blockTableView) {
+                                           [blockTableView reloadData];
+                                       }
+                                   }];
+            }
+
+            [tableView reloadData];
+        }
+
     }
 }
 
@@ -721,59 +614,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     
     [self _tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
-}
-
-#pragma mark - UISearchDisplayController
-#pragma mark UISearchDisplayDelegate
-- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
-{
-    self.searching = YES;
-    [self.navigationController setToolbarHidden:YES animated:YES];
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
-{
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
-}
-
-- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
-{
-    [self.navigationController setToolbarHidden:NO animated:YES];
-}
-
-- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
-{
-    self.searching = NO;
-    self.searchResults = nil;
-}
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
-{
-    if ([searchString length] == 0) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
-{
-    NSString *searchQuery = searchBar.text;
-    
-    self.searchQuery = searchQuery;
-    self.searchResults = @[];
-    [self.searchDisplayController.searchResultsTableView reloadData];
-    
-    __weak MITNewsCategoryViewController *weakSelf = self;
-    [self loadStoriesForQuery:searchQuery
-                       loaded:^(NSString *query, NSError *error) {
-                           MITNewsCategoryViewController *blockSelf = weakSelf;
-                           if (blockSelf && blockSelf.isSearching) {
-                               [blockSelf.searchDisplayController.searchResultsTableView reloadData];
-                           }
-                       }];
 }
 
 @end
@@ -920,9 +760,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        cell.textLabel.text = @"Load More...";
-        cell.textLabel.textColor = [UIColor MITTintColor];
-        cell.textLabel.font = [UIFont systemFontOfSize:18.];
+        if (self.tableView == tableView) {
+            cell.textLabel.enabled = !_storyUpdateInProgressToken;
+        } else if (self.searchDisplayController.searchResultsTableView == tableView) {
+            cell.textLabel.enabled = !_storySearchInProgressToken;
+        }
     } else {
         id object = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
         
@@ -986,4 +828,249 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         return nil;
     }
 }
+@end
+
+
+@implementation MITNewsCategoryViewController (NewsSearching)
+- (void)beginSearchingAnimated:(BOOL)animated
+{
+    if (!self.isSearching) {
+        _contentOffsetToRestoreAfterSearching = self.tableView.contentOffset;
+
+        UISearchBar *searchBar = self.searchDisplayController.searchBar;
+        searchBar.frame = CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 44.);
+        [searchBar sizeToFit];
+        self.tableView.tableHeaderView = searchBar;
+
+        [UIView animateWithDuration:(animated ? 0.33 : 0)
+                              delay:0.
+                            options:UIViewAnimationCurveEaseOut
+                         animations:^{
+                             [self.tableView scrollRectToVisible:searchBar.frame animated:NO];
+                         } completion:^(BOOL finished) {
+                             [searchBar becomeFirstResponder];
+                             [self.navigationController setToolbarHidden:YES animated:NO];
+
+                             self.searching = YES;
+                         }];
+    }
+}
+
+
+// Replace with a dedicated paging helper
+- (void)loadStoriesForQuery:(NSString*)query loaded:(void (^)(NSString *query, NSError *error))completion
+{
+    // Default behavior is to automatically page the results (if the query matches the current
+    //  one). If the two queries do not match, the search results will be cleared first.
+    // Passing 'NO' for shouldLoadNextPage should always clear the results and reload the first
+    //  page of stories.
+    [self loadStoriesForQuery:query shouldLoadNextPage:YES completion:completion];
+}
+
+- (void)loadStoriesForQuery:(NSString*)query shouldLoadNextPage:(BOOL)loadNextPage completion:(void (^)(NSString *query, NSError *error))completion
+{
+    if (_storySearchInProgressToken) {
+        DDLogWarn(@"there appears to be an request already in progress; it will be ignored upon completion");
+    }
+
+    NSUUID *requestUUID = [NSUUID UUID];
+    self->_storySearchInProgressToken = requestUUID;
+
+    if ([query length] == 0) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (requestUUID == _storySearchInProgressToken) {
+                self.searchQuery = nil;
+                self.searchResults = @[];
+
+                [self willLoadSearchResultsAnimated:YES];
+
+                if (completion) {
+                    completion(query,nil);
+                }
+
+                [self didLoadResultsForSearchWithError:Nil animated:YES];
+
+                _storySearchInProgressToken = nil;
+            }
+        }];
+    } else {
+        NSUInteger offset = 0;
+        if (loadNextPage) {
+            offset = [self.searchResults count];
+        }
+
+        if (![self.searchQuery isEqualToString:query]) {
+            self.searchResults = @[];
+        }
+
+        self.searchQuery = query;
+
+        [self willLoadSearchResultsAnimated:YES];
+
+        __weak MITNewsCategoryViewController *weakSelf = self;
+        [[MITNewsModelController sharedController] storiesInCategory:nil query:query offset:offset limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+            MITNewsCategoryViewController *blockSelf = weakSelf;
+            if (blockSelf) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    BOOL isSameRequestToken = (blockSelf->_storySearchInProgressToken == requestUUID);
+                    if (isSameRequestToken) {
+                        blockSelf->_storySearchInProgressToken = nil;
+
+                        __block NSArray *localStories = nil;
+                        [blockSelf.managedObjectContext performBlockAndWait:^{
+                            localStories = [blockSelf.managedObjectContext transferManagedObjects:stories];
+                        }];
+
+                        // If we are loading the next (or additional pages, in general)
+                        // we should append the results onto the existing search results.
+                        // Otherwise, just do a wholesale replacement of the content.
+                        if (loadNextPage) {
+                            // Should have the same exact results as passing loadNextPage == NO,
+                            //  if searchResults is currently nil or empty
+                            NSMutableArray *newSearchResults = [NSMutableArray arrayWithArray:self.searchResults];
+                            NSRange insertionRange = NSMakeRange(offset, [stories count]);
+                            NSIndexSet *insertedIndexes = [NSIndexSet indexSetWithIndexesInRange:insertionRange];
+
+                            if (offset < [newSearchResults count]) {
+                                [newSearchResults removeObjectsInRange:NSMakeRange(offset, [newSearchResults count])];
+                            }
+
+                            [newSearchResults insertObjects:stories atIndexes:insertedIndexes];
+                            blockSelf.searchResults = newSearchResults;
+                        } else {
+                            blockSelf.searchResults = localStories;
+                        }
+
+
+                        [self didLoadResultsForSearchWithError:error animated:YES];
+
+                        if (completion) {
+                            if (error) {
+                                completion(nil,error);
+                            } else {
+                                completion(query,nil);
+                            }
+                        }
+
+                    }
+                }];
+            }
+        }];
+    }
+}
+
+
+- (void)willLoadSearchResultsAnimated:(BOOL)animate
+{
+    if (self.searchDisplayController.isActive) {
+        UITableView *tableView = self.searchDisplayController.searchResultsTableView;
+
+        if (![self.searchResults count]) {
+            NSUInteger tag = 0xdeadbeef;
+            MITLoadingActivityView *loadingActivityView = [[MITLoadingActivityView alloc] initWithFrame:tableView.bounds];
+            loadingActivityView.tag = tag;
+            [tableView addSubview:loadingActivityView];
+        }
+    }
+}
+
+- (void)didLoadResultsForSearchWithError:(NSError*)error animated:(BOOL)animate
+{
+    if (self.searchDisplayController.isActive) {
+        UITableView *tableView = self.searchDisplayController.searchResultsTableView;
+
+        NSUInteger tag = 0xdeadbeef;
+        UIView *view = [tableView viewWithTag:tag];
+        [view removeFromSuperview];
+    }
+}
+
+- (void)endSearchingAnimated:(BOOL)animated
+{
+    if (self.isSearching) {
+        UISearchBar *searchBar = self.searchDisplayController.searchBar;
+
+        [UIView animateWithDuration:(animated ? 0.33 : 0)
+                              delay:0.
+                            options:UIViewAnimationCurveEaseIn
+                         animations:^{
+                             if (animated) {
+                                 // Add in the search bar's height otherwise we will come up short
+                                 CGPoint targetPoint = _contentOffsetToRestoreAfterSearching;
+                                 targetPoint.y += CGRectGetHeight(searchBar.frame);
+                                 [self.tableView setContentOffset:targetPoint animated:NO];
+                             } else {
+                                 [self.tableView setContentOffset:_contentOffsetToRestoreAfterSearching animated:NO];
+                                 self.tableView.tableHeaderView = nil;
+                             }
+
+                             [self.navigationController setToolbarHidden:NO animated:NO];
+                         } completion:^(BOOL finished) {
+                             if (animated) {
+                                 self.tableView.tableHeaderView = nil;
+
+                                 // Now that the search bar is gone, correct out content offset to the
+                                 // correct one.
+                                 [self.tableView setContentOffset:_contentOffsetToRestoreAfterSearching animated:NO];
+                             }
+                             
+                             self.searchQuery = nil;
+                             self.searchResults = nil;
+                             _contentOffsetToRestoreAfterSearching = CGPointZero;
+                             self.searching = NO;
+                         }];
+    }
+}
+
+
+#pragma mark UISearchDisplayDelegate
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+}
+
+- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
+{
+    [controller.searchBar becomeFirstResponder];
+}
+
+- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+    [self endSearchingAnimated:NO];
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+{
+    if ([searchString length] == 0) {
+        [self loadStoriesForQuery:nil loaded:^(NSString *query, NSError *error) {
+            [controller.searchResultsTableView reloadData];
+        }];
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    NSString *searchQuery = searchBar.text;
+    
+    __weak UISearchDisplayController *searchDisplayController = self.searchDisplayController;
+    searchDisplayController.searchResultsTableView.tableFooterView = nil;
+    
+    UIColor *textColor = nil;
+    if ([self.view respondsToSelector:@selector(tintColor)]) {
+        textColor = self.view.tintColor;
+    } else {
+        textColor = [UIColor MITTintColor];
+    }
+    
+    [self loadStoriesForQuery:searchQuery loaded:^(NSString *query, NSError *error) {
+        [searchDisplayController.searchResultsTableView reloadData];
+    }];
+}
+
 @end
