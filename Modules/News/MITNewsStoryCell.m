@@ -42,11 +42,6 @@
                 dek = story.dek;
                 
                 MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsImageSmallestImageSize];
-                
-                CGSize compressedSize = [self.storyImageView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-                CGSize expandedSize = [self.storyImageView systemLayoutSizeFittingSize:UILayoutFittingExpandedSize];
-                DDLogVerbose(@"****\nImageView (%@,%@,%@)\n\tCompressed:%@\n\tExpanded:%@\n****",story.identifier,story.coverImage.descriptionText,NSStringFromSelector(_cmd),NSStringFromCGSize(compressedSize),NSStringFromCGSize(expandedSize));
-                
                 if (representation) {
                     imageURL = representation.url;
                 }
