@@ -90,7 +90,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 @implementation MITNewsViewController {
     CGPoint _contentOffsetToRestoreAfterSearching;
-    id _storyUpdateInProgressToken;
     id _storySearchInProgressToken;
 }
 
@@ -549,8 +548,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     if (tableView == self.tableView) {
         return 44.;
-    } else if (self.searchDisplayController.searchResultsTableView) {
-        return 22.;
     } else {
         return UITableViewAutomaticDimension;
     }
@@ -607,17 +604,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         } else {
             return nil;
         }
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([self.searchQuery length]) {
-            UITableViewHeaderFooterView *headerView = (UITableViewHeaderFooterView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsSearchHeader"];
-            
-            if (!headerView) {
-                headerView = [[UITableViewHeaderFooterView alloc] initWithReuseIdentifier:@"NewsSearchHeader"];
-            }
-            
-            headerView.textLabel.text = [NSString stringWithFormat:@"results for '%@'",self.searchQuery];
-            return  headerView;
-        }
     }
     
     return nil;
@@ -649,6 +635,20 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     return UITableViewAutomaticDimension;
 }
 
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.searchDisplayController.searchResultsTableView) {
+        NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+        if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+            if (_storySearchInProgressToken) {
+                return NO;
+            }
+        }
+    }
+
+    return YES;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
@@ -657,7 +657,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     } else {
         NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
         if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-            if (self.searchDisplayController.searchResultsTableView == tableView) {
+            if (self.searchDisplayController.searchResultsTableView == tableView && !_storySearchInProgressToken) {
                 __weak UITableView *weakTableView = self.searchDisplayController.searchResultsTableView;
                 [self loadStoriesForQuery:self.searchQuery
                                    loaded:^(NSString *query, NSError *error) {
@@ -882,8 +882,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         
         return 0;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([self.searchResults count] > 0) {
-            return [self.searchResults count] + 1; // Add one for the 'load more' cell
+        if ([self.searchResults count]) {
+            return [self.searchResults count] + 1;
         } else {
             return 0;
         }
@@ -896,10 +896,16 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (self.tableView == tableView) {
-            cell.textLabel.enabled = !_storyUpdateInProgressToken;
-        } else if (self.searchDisplayController.searchResultsTableView == tableView) {
+        if (self.searchDisplayController.searchResultsTableView == tableView) {
             cell.textLabel.enabled = !_storySearchInProgressToken;
+
+            if (_storySearchInProgressToken) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            } else {
+                cell.accessoryView = nil;
+            }
         }
     } else {
         MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
@@ -974,19 +980,19 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                     completion(query,nil);
                 }
 
-                [self didLoadResultsForSearchWithError:Nil animated:YES];
+                [self didLoadResultsForSearchWithError:nil animated:YES];
 
                 _storySearchInProgressToken = nil;
             }
         }];
     } else {
         NSUInteger offset = 0;
-        if (loadNextPage) {
-            offset = [self.searchResults count];
-        }
 
         if (![self.searchQuery isEqualToString:query]) {
             self.searchResults = @[];
+            offset = 0;
+        } else if (loadNextPage) {
+            offset = [self.searchResults count];
         }
 
         self.searchQuery = query;
@@ -1117,9 +1123,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 }
 
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
+- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
-    [controller.searchBar becomeFirstResponder];
+    [self loadStoriesForQuery:nil loaded:^(NSString *query, NSError *error) {
+        [controller.searchResultsTableView reloadData];
+    }];
 }
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
@@ -1133,6 +1141,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         [self loadStoriesForQuery:nil loaded:^(NSString *query, NSError *error) {
             [controller.searchResultsTableView reloadData];
         }];
+        return YES;
+    } else if ([self.searchResults count]) {
         return YES;
     } else {
         return NO;
