@@ -172,7 +172,7 @@
     static NSDateFormatter *dateFormatter = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"MMM dd, y"];
     });
 
