@@ -20,7 +20,7 @@
 #import "UIScrollView+SVPullToRefresh.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
-static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMutableDictionary";
+static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMapTable";
 
 @interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
