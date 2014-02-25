@@ -104,7 +104,9 @@
     NSArray *loans = self.loanData[@"items"];
     cell.itemDetails = loans[indexPath.row];
     
-    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
+    CGFloat accessoryWidth = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 33. : 20;
+    
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - accessoryWidth];
 }
 
 - (void)updateLoanData

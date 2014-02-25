@@ -13,7 +13,7 @@
 @property (nonatomic, weak) UIBarButtonItem *cancelBarItem;
 
 @property (copy) NSDictionary *loanData;
-@property (copy) NSMutableIndexSet *renewItems;
+@property (retain) NSMutableIndexSet *renewItems;
 
 @property (strong) MobileRequestOperation *renewOperation;
 
@@ -183,7 +183,9 @@
     cell.itemDetails = loans[indexPath.row];
     cell.editing = tableView.isEditing;
 
-    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
+    CGFloat accessoryWidth = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 33. : 20;
+    
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - accessoryWidth];
 }
 
 #pragma mark -

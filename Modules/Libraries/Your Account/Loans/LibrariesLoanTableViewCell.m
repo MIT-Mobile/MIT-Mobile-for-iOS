@@ -31,11 +31,27 @@
     {
         if (selected)
         {
-            self.selectionView.image = [UIImage imageNamed:@"libraries/cell-selected"];
+            UIImage *image = [UIImage imageNamed:@"libraries/cell-selected-iOS-7"];
+            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                image = [UIImage imageNamed:@"libraries/cell-selected"];
+            } else {
+                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                self.selectionView.tintColor = [UIColor MITTintColor];
+            }
+
+            self.selectionView.image = image;
         }
         else
         {
-            self.selectionView.image = [UIImage imageNamed:@"libraries/cell-unselected"];
+            UIImage *image = [UIImage imageNamed:@"libraries/cell-unselected-iOS-7"];
+            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                image = [UIImage imageNamed:@"libraries/cell-unselected"];
+            } else {
+                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                self.selectionView.tintColor = [UIColor lightGrayColor];
+            }
+            
+            self.selectionView.image = image;
         }
     }
 
@@ -48,11 +64,27 @@
     // - selectionView is totally invisible and hidden, so make it unhidden
     if (state & UITableViewCellStateShowingEditControlMask) {
         if (!self.selectionView) {
-            UIImageView *selectionView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]];
+            NSString *imageName = @"libraries/cell-unselected-iOS-7";
+            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                imageName = @"libraries/cell-unselected";
+            }
+            UIImage *image = [UIImage imageNamed:imageName];
+            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
+            UIImageView *selectionView = [[UIImageView alloc] initWithImage:image];
+            
+            selectionView.alpha = 0.0;
             
             CGRect frame = selectionView.frame;
             frame.origin.x = -30.0 + self.contentViewInsets.left;
             frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(selectionView.frame)) / 2.0);
+
+            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                selectionView.tintColor = [UIColor lightGrayColor];
+                frame.origin.x -= 18.;
+            }
+
             selectionView.frame = frame;
 
             self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -111,22 +143,38 @@
     if (self.selectionView) {
         // The checkmark image is 31px wide, but should really be 30px wide
         // to match the width of the accessory on the right.
-        CGFloat leftSpace = 30.0 - self.contentViewInsets.left;
+        CGFloat accessoryWidth = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 33. : 20;
+        CGFloat indentWidth = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 15. : 10;
+        CGFloat leftSpace = accessoryWidth + indentWidth - self.contentViewInsets.left;
         CGRect selectionFrame = self.selectionView.frame;
         selectionFrame.origin.y = floor((CGRectGetHeight(bounds) - selectionFrame.size.height) / 2.0);
         
         if (self.editing) {
             // slide everything to the right as the accessory disappears
-            selectionFrame.origin.x = 0.0;
+            self.selectionView.alpha = 1.0;
+            selectionFrame.origin.x = floor((accessoryWidth + indentWidth - selectionFrame.size.width) / 2.0);
             bounds.origin.x += leftSpace;
-            bounds.size.width -= 30.0 - self.contentViewInsets.right;
+            bounds.size.width -= accessoryWidth + indentWidth - self.contentViewInsets.right;
         } else {
             // The checkbox starts out of view on the left
-            selectionFrame.origin.x = -leftSpace;
+            self.selectionView.alpha = 0.0;
+            selectionFrame.origin.x = -leftSpace + floor((accessoryWidth + indentWidth - selectionFrame.size.width) / 2.0);
             
         }
         
         self.selectionView.frame = selectionFrame;
+        
+        if ([self respondsToSelector:@selector(setSeparatorInset:)]) {
+            UIEdgeInsets insets = self.separatorInset;
+            insets.left = 48.;
+            self.separatorInset = insets;
+        }
+    } else {
+        if ([self respondsToSelector:@selector(setSeparatorInset:)]) {
+            UIEdgeInsets insets = self.separatorInset;
+            insets.left = 15.;
+            self.separatorInset = insets;
+        }
     }
     
     [super layoutContentUsingBounds:bounds];

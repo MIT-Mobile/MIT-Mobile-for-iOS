@@ -45,7 +45,11 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
         [self addSubview:renewButton];
         self.renewButton = renewButton;
         
-        self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            self.edgeInsets = UIEdgeInsetsMake(6, 15, 9, 15);
+        } else {
+            self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
+        }
     }
     return self;
 }

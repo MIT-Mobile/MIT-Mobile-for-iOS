@@ -1,7 +1,7 @@
 #import "LibrariesDetailViewController.h"
 #import "LibrariesDetailLabel.h"
 #import "LibrariesRenewResultViewController.h"
-#import "MITUIConstants.h"
+#import "UIKit+MITAdditions.h"
 #import "MobileRequestOperation.h"
 #import "MITNavigationActivityView.h"
 #import "Foundation+MITAdditions.h"
@@ -58,9 +58,17 @@
     contentFrame.origin = CGPointZero;
     contentFrame.size.height = 0.0;
     
-    UIEdgeInsets detailInsets = UIEdgeInsetsMake(14, 10, 14, 10);
-    UIEdgeInsets statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 10, 4, 10);
+    UIEdgeInsets detailInsets = UIEdgeInsetsMake(14, 15, 14, 15);
+    UIEdgeInsets statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 15, 4, 15);
 
+    mainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        detailInsets = UIEdgeInsetsMake(14, 10, 14, 10);
+        statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 10, 4, 10);
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    
     {
         LibrariesDetailLabel *detailLabel = [[LibrariesDetailLabel alloc] initWithBook:self.details];
         detailLabel.backgroundColor = [UIColor whiteColor];
@@ -200,7 +208,10 @@
 
     if (self.type == LibrariesDetailLoanType)
     {
-        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+        }
         CGRect loginFrame = CGRectMake(contentFrame.origin.x,
                                        contentFrame.origin.y,
                                        CGRectGetWidth(contentFrame),
@@ -211,6 +222,25 @@
         renewButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         renewButton.frame = loginFrame;
 
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+
+            renewButton.backgroundColor = [UIColor whiteColor];
+            renewButton.adjustsImageWhenHighlighted = NO;
+            
+            UIColor *color = [UIColor darkGrayColor];
+            CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+            UIGraphicsBeginImageContext(rect.size);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            
+            CGContextSetFillColorWithColor(context, [color CGColor]);
+            CGContextFillRect(context, rect);
+            
+            UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            [renewButton setBackgroundImage:image forState:UIControlStateHighlighted];
+        }
+        
         [renewButton setTitle:@"Renew This Book"
                      forState:UIControlStateNormal];
         [renewButton setTitleColor:[UIColor grayColor]

@@ -13,7 +13,9 @@
         fineLabel.numberOfLines = 1;
         fineLabel.font = [UIFont systemFontOfSize:17.0];
         fineLabel.textColor = [UIColor blackColor];
-        fineLabel.highlightedTextColor = [UIColor whiteColor];
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            fineLabel.highlightedTextColor = [UIColor whiteColor];
+        }
         [self.contentView addSubview:fineLabel];
         self.fineLabel = fineLabel;
         
