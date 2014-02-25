@@ -80,11 +80,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 #if defined(TESTFLIGHT)
     if ([MITApplicationTestFlightToken length]) {
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-        #pragma clang diagnostic pop
-        
         [TestFlight setOptions:@{@"logToConsole" : @NO,
                                  @"logToSTDERR"  : @NO}];
         [TestFlight takeOff:MITApplicationTestFlightToken];

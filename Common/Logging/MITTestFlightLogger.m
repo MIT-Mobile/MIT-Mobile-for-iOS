@@ -1,11 +1,3 @@
-//
-//  MITTestFlightLogger.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 6/7/13.
-//
-//
-
 #import "MITTestFlightLogger.h"
 
 @implementation MITTestFlightLogger
@@ -45,7 +37,7 @@
 	}
 	
 	if (logMsg) {
-		TFLog(logMsg);
+		TFLog(@"%@",logMsg);
 	}
 }
 

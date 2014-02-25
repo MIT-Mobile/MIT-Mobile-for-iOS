@@ -1,11 +1,3 @@
-//
-//  MITTestFlightLogger.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 6/7/13.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "DDLog.h"
 
