@@ -144,17 +144,21 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     
     if (!self.isSearching) {
         [self loadFetchedResultsControllers];
-        
-        NSError *fetchError = nil;
-        [self.featuredStoriesFetchedResultsController performFetch:&fetchError];
-        if (fetchError) {
-            DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
-        }
 
-        fetchError = nil;
-        [self.categoriesFetchedResultsController performFetch:&fetchError];
-        if (fetchError) {
-            DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
+        if (!self.featuredStoriesFetchedResultsController.fetchedObjects || !self.categoriesFetchedResultsController.fetchedObjects) {
+            NSError *fetchError = nil;
+            [self.featuredStoriesFetchedResultsController performFetch:&fetchError];
+            if (fetchError) {
+                DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
+            }
+
+            fetchError = nil;
+            [self.categoriesFetchedResultsController performFetch:&fetchError];
+            if (fetchError) {
+                DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
+            }
+
+            [self.tableView reloadData];
         }
         
         // Only make sure the toolbar is visible if we are not searching
