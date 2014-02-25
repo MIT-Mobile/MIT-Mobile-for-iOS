@@ -16,26 +16,26 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                            <rect key="frame" x="20" y="12" width="68" height="20"/>
+                            <rect key="frame" x="15" y="11" width="77" height="22"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                             </constraints>
-                            <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="news/news_chevron_small.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
-                            <rect key="frame" x="96" y="17" width="11" height="11"/>
+                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
+                            <rect key="frame" x="100" y="16" width="11" height="11"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" white="0.96999999999999997" alpha="0.97999999999999998" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9Sr-oA-zdz" secondAttribute="trailing" constant="20" symbolic="YES" id="1SU-oL-ANf"/>
-                        <constraint firstAttribute="centerY" secondItem="9Sr-oA-zdz" secondAttribute="centerY" constant="-0.5" id="EJs-bO-757"/>
+                        <constraint firstAttribute="centerY" secondItem="9Sr-oA-zdz" secondAttribute="centerY" id="EJs-bO-757"/>
                         <constraint firstItem="9Sr-oA-zdz" firstAttribute="leading" secondItem="las-NX-67L" secondAttribute="trailing" constant="8" symbolic="YES" id="IeF-Pj-r5i"/>
-                        <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="20" id="WEC-3o-98q"/>
+                        <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="15" id="WEC-3o-98q"/>
                         <constraint firstAttribute="centerY" secondItem="las-NX-67L" secondAttribute="centerY" id="scE-l3-kPA"/>
                     </constraints>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -54,6 +54,6 @@
         </view>
     </objects>
     <resources>
-        <image name="news/news_chevron_small.png" width="11" height="11"/>
+        <image name="global/action-arrow.png" width="11" height="11"/>
     </resources>
 </document>
