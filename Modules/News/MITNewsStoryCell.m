@@ -6,10 +6,18 @@
 #import "MITAdditions.h"
 
 @interface MITNewsStoryCell ()
-
+@property (nonatomic,strong) IBOutlet NSLayoutConstraint *imageHeightConstraint;
+@property (nonatomic,strong) IBOutlet NSLayoutConstraint *imageWidthConstraint;
 @end
 
-@implementation MITNewsStoryCell
+#warning 'External' story image size should probably not be hardcoded
+static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 200., .height = 34.};
+
+@implementation MITNewsStoryCell {
+    BOOL _isExternalStory;
+    CGSize _scaledImageSize;
+}
+
 @synthesize story = _story;
 
 - (void)prepareForReuse
@@ -23,9 +31,32 @@
     _story = nil;
 }
 
+- (void)updateConstraints
+{
+    [super updateConstraints];
+
+    if (_isExternalStory) {
+        _imageHeightConstraint.constant = _scaledImageSize.height;
+        _imageWidthConstraint.constant = _scaledImageSize.width;
+    }
+}
+
 - (void)setRepresentedObject:(id)object
 {
     [self setStory:object];
+}
+
+- (CGSize)scaledSizeForSize:(CGSize)targetSize withMaximumSize:(CGSize)maximumSize
+{
+    if ((targetSize.width > maximumSize.width) || (targetSize.height > maximumSize.height)) {
+        CGFloat xScale = maximumSize.width / targetSize.width;
+        CGFloat yScale = maximumSize.height / targetSize.height;
+
+        CGFloat scale = MIN(xScale,yScale);
+        return CGSizeMake(targetSize.width * scale, targetSize.height * scale);
+    } else {
+        return targetSize;
+    }
 }
 
 - (void)setStory:(MITNewsStory *)story
@@ -40,10 +71,25 @@
             [_story.managedObjectContext performBlockAndWait:^{
                 title = story.title;
                 dek = story.dek;
-                
-                MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsImageSmallestImageSize];
+
+
+                CGSize idealImageSize = CGSizeZero;
+                if ([story.type isEqualToString:@"news_clip"]) {
+                    idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
+                    _isExternalStory = YES;
+                } else {
+                    idealImageSize = self.storyImageView.frame.size;
+                    _isExternalStory = NO;
+                }
+
+                MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];
                 if (representation) {
                     imageURL = representation.url;
+
+                    if (_isExternalStory) {
+                        _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:MITNewsStoryCellExternalMaximumImageSize];
+                        [self setNeedsUpdateConstraints];
+                    }
                 }
             }];
             
