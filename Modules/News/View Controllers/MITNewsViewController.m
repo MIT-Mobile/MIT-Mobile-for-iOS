@@ -22,7 +22,7 @@
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMapTable";
 
-@interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
 
 @property (nonatomic,getter = isUpdating) BOOL updating;
@@ -637,13 +637,26 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
-        if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (tableView == self.searchDisplayController.searchResultsTableView) {
             if (_storySearchInProgressToken) {
                 return NO;
             }
         }
+    } else {
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+
+        return (!isExternalStory || [[UIApplication sharedApplication] canOpenURL:externalURL]);
     }
 
     return YES;
@@ -653,7 +666,24 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
     if (representedObject && [representedObject isKindOfClass:[MITNewsStory class]]) {
-        [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
+        MITNewsStory *story = representedObject;
+
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+
+        if (isExternalStory) {
+            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+            [willOpenInExternalBrowserAlertView show];
+        } else {
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
+        }
     } else {
         NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
         if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
@@ -707,6 +737,34 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     
     [self _tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
+}
+
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.firstOtherButtonIndex) {
+        __block NSURL *url = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *story = [self selectedStory];
+            if (story) {
+                url = story.sourceURL;
+            }
+        }];
+
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+
+    UITableView *activeTableView = nil;
+    if (self.isSearching) {
+        activeTableView = self.searchDisplayController.searchResultsTableView;
+    } else {
+        activeTableView = self.tableView;
+    }
+
+    NSIndexPath *selectedIndexPath = [activeTableView indexPathForSelectedRow];
+    [activeTableView deselectRowAtIndexPath:selectedIndexPath animated:YES];
 }
 
 @end

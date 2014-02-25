@@ -22,7 +22,7 @@
 
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMutableDictionary";
 
-@interface MITNewsCategoryViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITNewsCategoryViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,strong) NSDate *lastUpdated;
 
@@ -83,7 +83,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)endSearchingAnimated:(BOOL)animated;
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView;
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller;
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller;
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString;
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar;
@@ -174,7 +173,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext objectWithID:[story objectID]];
+                storyDetailViewController.story = story;
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
@@ -352,8 +351,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
     
     if (_categoryObjectID) {
-        MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:_categoryObjectID];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@",category];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@",_categoryObjectID];
     }
     
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
@@ -400,7 +398,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }];
 }
 
-- (void)loadStoriesInCategory:(MITNewsCategory*)category shouldLoadNextPage:(BOOL)shouldLoadNextPage completion:(void (^)(NSManagedObjectID *category,NSError *error))completion
+- (void)loadStoriesInCategory:(MITNewsCategory*)newsCategory shouldLoadNextPage:(BOOL)shouldLoadNextPage completion:(void (^)(NSManagedObjectID *category,NSError *error))completion
 {
     if (_storyUpdateInProgressToken) {
         DDLogWarn(@"there appears to be an request already in progress; it will be ignored");
@@ -408,7 +406,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     
     __block NSString *categoryIdentifier = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
+        MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[newsCategory objectID]];
         categoryIdentifier = category.identifier;
     }];
 
@@ -459,7 +457,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                         [self endUpdatingAnimated:YES];
                         
                         if (completion) {
-                            completion([category objectID],nil);
+                            completion([newsCategory objectID],nil);
                         }
                     } else {
                         [self endUpdatingWithError:error animated:YES];
@@ -530,6 +528,19 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         } else if (tableView == self.tableView) {
             return (_storyUpdateInProgressToken == nil);
         }
+    } else {
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+
+        return (!isExternalStory || [[UIApplication sharedApplication] canOpenURL:externalURL]);
     }
 
     return YES;
@@ -537,12 +548,30 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+
     id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
     if (representedObject && [representedObject isKindOfClass:[MITNewsStory class]]) {
-        [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
-    } else  {
-        NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+        MITNewsStory *story = representedObject;
 
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+
+
+        if (isExternalStory) {
+            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+            [willOpenInExternalBrowserAlertView show];
+        } else {
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
+        }
+    } else {
         if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier] && !_storyUpdateInProgressToken) {
             if (tableView == self.tableView) {
                 __weak UITableView *weakTableView = self.tableView;
@@ -599,8 +628,39 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     return cell;
 }
 
+
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.firstOtherButtonIndex) {
+        __block NSURL *url = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *story = [self selectedStory];
+            if (story) {
+                url = story.sourceURL;
+            }
+        }];
+
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+
+    UITableView *activeTableView = nil;
+    if (self.isSearching) {
+        activeTableView = self.searchDisplayController.searchResultsTableView;
+    } else {
+        activeTableView = self.tableView;
+    }
+
+    NSIndexPath *selectedIndexPath = [activeTableView indexPathForSelectedRow];
+    [activeTableView deselectRowAtIndexPath:selectedIndexPath animated:YES];
+}
+
 @end
 
+
+#pragma mark - MITNewsCategoryViewController Category Implementations
 @implementation MITNewsCategoryViewController (DynamicTableViewCellsShared)
 - (NSMutableDictionary*)_cachedLayoutCellsForTableView:(UITableView*)tableView
 {
@@ -774,12 +834,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-    if (story) {
+    MITNewsStory *newsStory = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+    if (newsStory) {
         __block NSString *identifier = nil;
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-
             if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
                 if (newsStory.coverImage) {
                     identifier = MITNewsStoryExternalCellIdentifier;
