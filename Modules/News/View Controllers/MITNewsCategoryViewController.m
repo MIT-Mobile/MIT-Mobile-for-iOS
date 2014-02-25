@@ -344,6 +344,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
+
+// The completion block will be called at least once, and may be called twice
+// (first to display any current stories and then to display the updated results,
+//  if an update was necessary)
 - (void)fetchFirstPageOfStoriesForCurrentCategory:(void (^)(void))completion
 {
     // nil out the update in progress token so that when the request returns
@@ -373,7 +377,13 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         } else {
             self.newsStories = results;
         }
-        
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (completion) {
+                completion();
+            }
+        }];
+
         BOOL shouldReloadStories = ((objectCount == NSNotFound) ||
                                     (objectCount < self.numberOfStoriesPerPage) ||
                                     (self.lastUpdated == nil));
@@ -388,12 +398,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                      }
                                  }];
                              }];
-        } else {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (completion) {
-                    completion();
-                }
-            }];
         }
     }];
 }
