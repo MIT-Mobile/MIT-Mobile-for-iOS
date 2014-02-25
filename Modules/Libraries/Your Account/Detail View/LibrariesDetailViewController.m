@@ -239,9 +239,11 @@
             UIGraphicsEndImageContext();
             
             [renewButton setBackgroundImage:image forState:UIControlStateHighlighted];
+            
+            renewButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
         }
         
-        [renewButton setTitle:@"Renew This Book"
+        [renewButton setTitle:@"Renew this Book"
                      forState:UIControlStateNormal];
         [renewButton setTitleColor:[UIColor grayColor]
                           forState:UIControlStateDisabled];
