@@ -259,10 +259,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)endUpdatingWithError:(NSError*)error animated:(BOOL)animate
 {
     if (self.isUpdating) {
+        self.lastUpdated = [NSDate date];
+
         if (!self.isSearching) {
             if (!error) {
-                self.lastUpdated = [NSDate date];
-                
                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                     toDate:[NSDate date]];
                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
@@ -273,7 +273,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             
             [self.refreshControl endRefreshing];
         }
-        
+
         self.updating = NO;
     }
 }
@@ -300,8 +300,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
 {
-    self.lastUpdated = nil;
-
     __weak MITNewsCategoryViewController *weakSelf = self;
     [self loadStoriesInCategory:self.category
              shouldLoadNextPage:NO
