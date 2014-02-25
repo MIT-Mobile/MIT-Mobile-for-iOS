@@ -28,10 +28,9 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,strong) NSDate *lastUpdated;
 
-@property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
-@property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
-@property (nonatomic,strong) NSMapTable *cachedStoriesByCategory;
-@property (nonatomic,strong) NSMapTable *sizingCellsByIdentifier;
+@property (nonatomic,strong) NSMapTable *gestureRecognizersByView;      // Should contain @{<UIView> : <UIGestureRecognizer>} mappings
+@property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer; // Should contain @{<UIGestureRecognizer> : <NSManagedObjectID>} mappings
+@property (nonatomic,strong) NSMutableDictionary *cachedStoriesByCategory; // Needs to be replaced by something else, maybe just using another FRC
 
 @property (nonatomic,strong) NSFetchedResultsController *featuredStoriesFetchedResultsController;
 @property (nonatomic,strong) NSFetchedResultsController *categoriesFetchedResultsController;
@@ -132,8 +131,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
-    self.sizingCellsByIdentifier = [NSMapTable strongToWeakObjectsMapTable];
-    
+
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlWasTriggered:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
@@ -200,7 +198,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext objectWithID:[story objectID]];
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
@@ -212,11 +210,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             MITNewsCategoryViewController *storiesViewController = (MITNewsCategoryViewController*)destinationViewController;
 
             UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
-            MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+            NSManagedObjectID *categoryObjectID = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
 
             NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
             storiesViewController.managedObjectContext = managedObjectContext;
-            [storiesViewController setCategoryWithObjectID:[category objectID]];
+            [storiesViewController setCategoryWithObjectID:categoryObjectID];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
                       NSStringFromClass([MITNewsCategoryViewController class]),
@@ -327,11 +325,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark - Responding to UI events
 - (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
 {
-    MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+    NSManagedObjectID *categoryObjectID = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
 
-    if (category) {
+    if (categoryObjectID) {
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsCategory *localCategory = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
+            MITNewsCategory *localCategory = (MITNewsCategory*)[self.managedObjectContext existingObjectWithID:categoryObjectID error:nil];
             DDLogVerbose(@"Recieved tap on section header for category with name '%@'",localCategory.name);
         }];
 
@@ -397,7 +395,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         // returns. When the final request completes and removes the last 'token'
         // from the in-flight request tracker, call our completion block.
         // All the callbacks should be on the main thread so race conditions should be a non-issue.
-        NSHashTable *inFlightDataRequests = [NSHashTable weakObjectsHashTable];
+        NSMutableSet *inFlightDataRequests = [[NSMutableSet alloc] init];
+
         __weak MITNewsViewController *weakSelf = self;
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
 
@@ -412,6 +411,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                                     
                                                     if ([inFlightDataRequests count] == 0) {
                                                         [self endUpdatingWithError:error animated:YES];
+
                                                         if (error) {
                                                             if (completion) {
                                                                 completion(error);
@@ -440,9 +440,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                             if (blockSelf) {
                                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                     [inFlightDataRequests removeObject:category];
+                                                    [self.cachedStoriesByCategory removeObjectForKey:[category objectID]];
 
                                                     if ([inFlightDataRequests count] == 0) {
                                                         [self endUpdatingWithError:error animated:YES];
+
                                                         
                                                         if (error) {
                                                             if (completion) {
@@ -466,10 +468,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (NSArray*)storiesInCategory:(MITNewsCategory*)category
 {
     if (!self.cachedStoriesByCategory) {
-        self.cachedStoriesByCategory = [NSMapTable strongToStrongObjectsMapTable];
+        self.cachedStoriesByCategory = [[NSMutableDictionary alloc] init];
     }
 
-    NSArray *cachedStories = [self.cachedStoriesByCategory objectForKey:[category objectID]];
+    NSArray *cachedStories = self.cachedStoriesByCategory[[category objectID]];
 
     if (!cachedStories) {
         __block NSArray *stories = nil;
@@ -481,7 +483,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             stories = [blockCategory.stories sortedArrayUsingDescriptors:sortDescriptors];
         }];
 
-        [self.cachedStoriesByCategory setObject:stories forKey:[category objectID]];
+        self.cachedStoriesByCategory[[category objectID]] = stories;
         cachedStories = stories;
     }
 
@@ -537,9 +539,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark - NSFetchedResultsController
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    if (controller == self.categoriesFetchedResultsController) {
-        [self.cachedStoriesByCategory removeAllObjects];
-    }
+    /* Do Nothing. Here to enabled NSFRC's change tracking */
 }
 
 #pragma mark - UITableView
@@ -590,7 +590,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             [self.gestureRecognizersByView setObject:recognizer forKey:headerView];
 
             NSArray *categories = [self.categoriesFetchedResultsController fetchedObjects];
-            [self.categoriesByGestureRecognizer setObject:categories[section] forKey:recognizer];
+            [self.categoriesByGestureRecognizer setObject:[categories[section] objectID] forKey:recognizer];
 
             __block NSString *categoryName = nil;
             [self.managedObjectContext performBlockAndWait:^{
