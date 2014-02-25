@@ -160,7 +160,12 @@
 {
     if (!_story && _storyObjectID) {
         [self.managedObjectContext performBlockAndWait:^{
-            _story = (MITNewsStory*)[self.managedObjectContext objectWithID:_storyObjectID];
+            NSError *error = nil;
+            _story = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:_storyObjectID error:&error];
+
+            if (error) {
+                DDLogError(@"failed to retreive object for id '%@': %@",_storyObjectID,error);
+            }
         }];
     }
     
