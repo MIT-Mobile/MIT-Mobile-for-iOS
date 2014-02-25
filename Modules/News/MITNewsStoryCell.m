@@ -11,7 +11,7 @@
 @end
 
 #warning 'External' story image size should probably not be hardcoded
-static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 200., .height = 34.};
+static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .height = 34.};
 
 @implementation MITNewsStoryCell {
     BOOL _isExternalStory;
