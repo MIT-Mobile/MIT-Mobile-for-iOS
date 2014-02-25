@@ -29,6 +29,7 @@
                     <constraint firstItem="Uj3-Se-cjq" firstAttribute="leading" secondItem="qyb-Rm-gJH" secondAttribute="leading" constant="20" id="tNo-Bv-oEv"/>
                 </constraints>
             </tableViewCellContentView>
+            <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
                 <outlet property="textLabel" destination="Uj3-Se-cjq" id="TAS-NS-CQh"/>
             </connections>
