@@ -81,7 +81,10 @@
     UIView *headerView = [[MITTabHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)];
     headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    UIEdgeInsets headerInsets = UIEdgeInsetsMake(8, 10, 9, 10);
+    UIEdgeInsets headerInsets = UIEdgeInsetsMake(8, 15, 9, 15);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        headerInsets = UIEdgeInsetsMake(8, 10, 9, 10);
+    }
     __block CGRect contentFrame = UIEdgeInsetsInsetRect(headerView.frame, headerInsets);
 
     contentFrame.size.height = 0.0;
