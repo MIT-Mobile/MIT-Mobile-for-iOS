@@ -247,8 +247,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         if (!self.isSearching) {
             [self.refreshControl beginRefreshing];
             [self setToolbarString:@"Updating..." animated:animate];
-        } else {
-            
         }
     }
 }
@@ -303,14 +301,16 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (IBAction)refreshControlWasTriggered:(UIRefreshControl*)sender
 {
     self.lastUpdated = nil;
-    
+
     __weak MITNewsCategoryViewController *weakSelf = self;
-    [self fetchFirstPageOfStoriesForCurrentCategory:^{
-        MITNewsCategoryViewController *blockSelf = weakSelf;
-        if (blockSelf) {
-            [blockSelf.tableView reloadData];
-        }
-    }];
+    [self loadStoriesInCategory:self.category
+             shouldLoadNextPage:NO
+                     completion:^(NSManagedObjectID *categoryID, NSError *error) {
+                         MITNewsCategoryViewController *blockSelf = weakSelf;
+                         if (blockSelf) {
+                             [blockSelf.tableView reloadData];
+                         }
+                     }];
 }
 
 #pragma mark Loading & updating, and retrieving data
