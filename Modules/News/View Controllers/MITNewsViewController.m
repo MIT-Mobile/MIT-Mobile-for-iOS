@@ -396,69 +396,50 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         // from the in-flight request tracker, call our completion block.
         // All the callbacks should be on the main thread so race conditions should be a non-issue.
         NSMutableSet *inFlightDataRequests = [[NSMutableSet alloc] init];
-
         __weak MITNewsViewController *weakSelf = self;
+        void (^requestCompleted)(id token, NSError *error) = ^(id token, NSError *error) {
+            MITNewsViewController *blockSelf = weakSelf;
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [inFlightDataRequests removeObject:token];
+
+                if (blockSelf) {
+                    if ([inFlightDataRequests count] == 0) {
+                        if (error) {
+                            if (completion) {
+                                completion(error);
+                            }
+                        } else {
+                            if (completion) {
+                                completion(nil);
+                            }
+                        }
+
+                        [blockSelf endUpdatingWithError:error animated:YES];
+                    }
+                }
+            }];
+        };
+
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
 
         [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
         [modelController featuredStoriesWithOffset:0
-                                             limit:self.numberOfStoriesPerCategory
+                                             limit:MITNewsDefaultNumberOfFeaturedStories
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                            MITNewsViewController *blockSelf = weakSelf;
-                                            if (blockSelf) {
-                                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                    [inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesRequestToken];
-                                                    
-                                                    if ([inFlightDataRequests count] == 0) {
-                                                        [self endUpdatingWithError:error animated:YES];
-
-                                                        if (error) {
-                                                            if (completion) {
-                                                                completion(error);
-                                                            }
-                                                        } else {
-                                                            blockSelf.lastUpdated = [NSDate date];
-                                                            if (completion) {
-                                                                completion(nil);
-                                                            }
-                                                        }
-                                                    }
-                                                }];
-                                            }
+                                            requestCompleted(MITNewsStoryFeaturedStoriesRequestToken,error);
                                         }];
 
         [modelController categories:^(NSArray *categories, NSError *error) {
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-                [inFlightDataRequests addObject:category];
+                NSManagedObjectID *objectID = [category objectID];
+                [inFlightDataRequests addObject:objectID];
 
                 [modelController storiesInCategory:category.identifier
                                              query:nil
                                             offset:0
                                              limit:self.numberOfStoriesPerCategory
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                            MITNewsViewController *blockSelf = weakSelf;
-                                            if (blockSelf) {
-                                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                    [inFlightDataRequests removeObject:category];
-                                                    [self.cachedStoriesByCategory removeObjectForKey:[category objectID]];
-
-                                                    if ([inFlightDataRequests count] == 0) {
-                                                        [self endUpdatingWithError:error animated:YES];
-
-                                                        
-                                                        if (error) {
-                                                            if (completion) {
-                                                                completion(error);
-                                                            }
-                                                        } else {
-                                                            blockSelf.lastUpdated = [NSDate date];
-                                                            if (completion) {
-                                                                completion(nil);
-                                                            }
-                                                        }
-                                                    }
-                                                }];
-                                            }
+                                            requestCompleted(objectID,error);
                                         }];
             }];
         }];
