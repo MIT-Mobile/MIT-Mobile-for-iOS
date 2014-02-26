@@ -8,7 +8,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITNewsImageViewController">
             <connections>
                 <outlet property="imageLoadingIndicator" destination="2A0-EY-k4i" id="JXu-jY-Fbv"/>
-                <outlet property="imageView" destination="Pei-SZ-wBv" id="zrC-PI-eOt"/>
                 <outlet property="scrollView" destination="FbI-YN-vBD" id="fJB-8P-Bxy"/>
                 <outlet property="view" destination="vBQ-4H-gV2" id="dWa-wA-Ek0"/>
             </connections>
@@ -22,18 +21,9 @@
                     <rect key="frame" x="142" y="266" width="37" height="37"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </activityIndicatorView>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="FbI-YN-vBD">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="FbI-YN-vBD" customClass="MITImageScrollView">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" placeholderIntrinsicWidth="100" placeholderIntrinsicHeight="100" id="Pei-SZ-wBv">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </imageView>
-                    </subviews>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="gHF-zC-Op8"/>
-                    </connections>
                 </scrollView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

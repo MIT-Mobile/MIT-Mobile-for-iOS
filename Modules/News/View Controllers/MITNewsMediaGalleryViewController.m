@@ -5,11 +5,14 @@
 #import "MITNewsImageRepresentation.h"
 #import "MITNewsImage.h"
 
+#import "MITImageScrollView.h"
 
 #import "MITAdditions.h"
 
 @interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
-@property (nonatomic) BOOL shouldHideUI;
+@property (nonatomic,weak) IBOutlet UIGestureRecognizer *toggleUIGesture;
+@property (nonatomic,weak) IBOutlet UIGestureRecognizer *resetZoomGesture;
+@property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
 @property (nonatomic,strong) NSMutableArray *galleryPageViewControllers;
 @property (nonatomic) NSInteger selectedIndex;
 
@@ -31,6 +34,8 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     self.title = nil;
+    
+    [self.toggleUIGesture requireGestureRecognizerToFail:self.resetZoomGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -40,20 +45,9 @@
     [self didChangeSelectedIndex];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleBlackTranslucent;
 }
 
 - (NSArray*)galleryImages
@@ -153,23 +147,58 @@
     }
 }
 
-- (IBAction)toggleUI:(id)sender
+- (IBAction)resetZoom:(UIGestureRecognizer*)sender
 {
-    if (self.shouldHideUI) {
-        self.shouldHideUI = NO;
-    } else {
-        self.shouldHideUI = YES;
+    MITNewsImageViewController *currentViewController = self.galleryPageViewControllers[self.selectedIndex];
+    [currentViewController.scrollView resetZoom];
+}
+
+- (IBAction)toggleUI:(UIGestureRecognizer*)sender
+{
+    [self setInterfaceHidden:!self.isInterfaceHidden animated:YES];
+}
+
+- (void)setInterfaceHidden:(BOOL)interfaceHidden
+{
+    [self setInterfaceHidden:interfaceHidden animated:NO];
+}
+
+- (void)setInterfaceHidden:(BOOL)interfaceHidden animated:(BOOL)animated
+{
+    if (_interfaceHidden != interfaceHidden) {
+        _interfaceHidden = interfaceHidden;
+        
+        CATransform3D captionViewHideTransform = CATransform3DIdentity;
+        CATransform3D navigationBarHideTransform = CATransform3DIdentity;
+        if (_interfaceHidden) {
+            // If we are hiding things, the UINavigationBar's maximum y should always be greater
+            // than the view's origin (otherwise it wouldn't be visible!). This should slide the navigation
+            // bar up out of the top of the superview (with a 1px error bar)
+            CGFloat navigationBarTranslationY = CGRectGetMinY(self.view.bounds) - (CGRectGetMaxY(self.navigationBar.frame) + 1.);
+            navigationBarHideTransform = CATransform3DMakeTranslation(0., navigationBarTranslationY, 0);
+            
+            // Similar to the above, only pushing it out the bottom
+            CGFloat captionViewTranslationY = CGRectGetMaxY(self.view.bounds) - (CGRectGetMinY(self.captionView.frame) + 1.);
+            captionViewHideTransform = CATransform3DMakeTranslation(0., captionViewTranslationY, 0);
+
+        }
+        
+        [UIView animateWithDuration:(animated ? 0.33 : 0)
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+                             
+                             if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+                                
+                                 [self setNeedsStatusBarAppearanceUpdate];
+                             } else {
+                                 [[UIApplication sharedApplication] setStatusBarHidden:self.isInterfaceHidden withAnimation:UIStatusBarAnimationSlide];
+                             }
+                             
+                             self.navigationBar.layer.transform = navigationBarHideTransform;
+                             self.captionView.layer.transform = captionViewHideTransform;
+                         } completion:nil];
     }
-
-
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        [self setNeedsStatusBarAppearanceUpdate];
-    } else {
-        [[UIApplication sharedApplication] setStatusBarHidden:self.shouldHideUI withAnimation:UIStatusBarAnimationNone];
-    }
-
-    self.navigationBar.hidden = !self.navigationBar.hidden;
-    self.captionView.hidden = !self.captionView.hidden;
 }
 
 - (void)didChangeSelectedIndex
@@ -192,7 +221,7 @@
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return self.shouldHideUI;
+    return self.isInterfaceHidden;
 }
 
 #pragma mark - UIPageViewController

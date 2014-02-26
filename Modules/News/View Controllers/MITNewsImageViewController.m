@@ -2,15 +2,12 @@
 #import "UIImageView+WebCache.h"
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
+#import "MITImageScrollView.h"
 
-@interface MITNewsImageViewController () <UIScrollViewDelegate>
-@property (nonatomic,readonly) BOOL needsToRecenterImage;
-
-- (void)setNeedsToRecenterImage;
-- (void)recenterImageIfNeeded;
-@end
-
-@implementation MITNewsImageViewController
+@implementation MITNewsImageViewController {
+    NSManagedObjectID *_newsImageObjectID;
+    MITNewsImage *_newsImageObject;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -24,7 +21,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.scrollView.bounces = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -43,24 +39,17 @@
             imageURL = imageRepresentation.url;
         }];
         
-        CGRect imageFrame = self.imageView.frame;
-        imageFrame.size = imageSize;
         
-        self.scrollView.contentSize = imageSize;
-        [self.imageView setImageWithURL:imageURL
-                              completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                  self.cachedImage = image;
-                                  
-                                  [self.imageView sizeToFit];
-                                  self.scrollView.contentSize = image.size;
-                                  [self updateScrollViewScales];
-                                  
-                                  [self.imageLoadingIndicator stopAnimating];
-                                  self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
-                                  
-                                  [self setNeedsToRecenterImage];
-                                  [self recenterImageIfNeeded];
-                              }];
+        [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:imageURL
+                                                              options:0
+                                                             progress:nil
+                                                            completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+                                                                [self.imageLoadingIndicator stopAnimating];
+                                                                
+                                                                if (image) {
+                                                                    [self.scrollView displayImage:image];
+                                                                }
+                                                            }];
     }
 }
 
@@ -70,95 +59,41 @@
     [self.imageView cancelCurrentImageLoad];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    _newsImageObject = nil;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
 }
 
-- (void)viewWillLayoutSubviews
-{
-    [self setNeedsToRecenterImage];
-}
-
 #pragma mark Properties
-- (void)setNeedsToRecenterImage
+- (void)setImage:(MITNewsImage *)image
 {
-    self->_needsToRecenterImage = YES;
+    if (![_newsImageObjectID isEqual:image]) {
+        _newsImageObjectID = [image objectID];
+        _newsImageObject = nil;
+    }
 }
 
+/** Returns the view's NewsImage entity.
+ * Guaranteed to be in the local managed object context.
+ */
 - (MITNewsImage*)image
 {
-    if (_image) {
-        if (_image.managedObjectContext != self.managedObjectContext) {
-            [self.managedObjectContext performBlockAndWait:^{
-                _image = (MITNewsImage*)[self.managedObjectContext objectWithID:[_image objectID]];
+    if (!_newsImageObject) {
+        if (_newsImageObjectID && _managedObjectContext) {
+            [_managedObjectContext performBlockAndWait:^{
+                NSError *error = nil;
+                _newsImageObject = (MITNewsImage*)[_managedObjectContext existingObjectWithID:_newsImageObjectID error:&error];
             }];
         }
     }
     
-    return _image;
-}
-
-- (void)updateScrollViewScales
-{
-    CGSize imageSize = self.imageView.image.size;
-    CGSize viewBoundsSize = self.view.bounds.size;
-
-    CGFloat minimumZoomScale = fmin((viewBoundsSize.width / imageSize.width),
-                                    (viewBoundsSize.height / imageSize.height));
-
-    if (minimumZoomScale > 1) {
-        self.scrollView.minimumZoomScale = 1;
-    } else {
-        self.scrollView.minimumZoomScale = minimumZoomScale;
-    }
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self setNeedsToRecenterImage];
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView
-{
-    [self setNeedsToRecenterImage];
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    [self recenterImageIfNeeded];
-}
-
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
-{
-    [self recenterImageIfNeeded];
-}
-
-- (UIView*)viewForZoomingInScrollView:(UIScrollView *)scrollView
-{
-    return self.imageView;
-}
-
-- (void)recenterImageIfNeeded
-{
-    if (self.needsToRecenterImage) {
-        CGSize boundsSize = self.scrollView.bounds.size;
-        CGRect contentsFrame = self.imageView.frame;
-        
-        if (contentsFrame.size.width < boundsSize.width) {
-            contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
-        } else {
-            contentsFrame.origin.x = 0.0f;
-        }
-        
-        if (contentsFrame.size.height < boundsSize.height) {
-            contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0f;
-        } else {
-            contentsFrame.origin.y = 0.0f;
-        }
-        
-        self.imageView.frame = contentsFrame;
-    }
+    return _newsImageObject;
 }
 
 @end

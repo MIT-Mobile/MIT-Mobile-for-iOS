@@ -14,4 +14,5 @@
 
 - (IBAction)shareImage:(id)sender;
 - (IBAction)toggleUI:(id)sender;
+- (IBAction)resetZoom:(UIGestureRecognizer*)sender;
 @end

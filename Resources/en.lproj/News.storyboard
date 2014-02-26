@@ -13,11 +13,11 @@
                         <viewControllerLayoutGuide type="top" id="qUC-35-LJG"/>
                         <viewControllerLayoutGuide type="bottom" id="FAw-0X-NZH"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="9YM-VJ-fPn">
+                    <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="9YM-VJ-fPn">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ywu-5z-mdl">
+                            <containerView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ywu-5z-mdl">
                                 <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -101,19 +101,27 @@
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="rGn-4n-87c" appends="YES" id="2Jr-Tp-Xmi"/>
+                            <outletCollection property="gestureRecognizers" destination="AI3-GU-tgE" appends="YES" id="TEa-8e-KmA"/>
                         </connections>
                     </view>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="captionView" destination="A2e-Qq-yf8" id="em2-pQ-sVZ"/>
                         <outlet property="creditLabel" destination="oKd-zQ-w0y" id="VX4-C2-LQR"/>
                         <outlet property="descriptionLabel" destination="R38-Zj-OFV" id="Ffq-5C-dSk"/>
                         <outlet property="navigationBar" destination="PD2-yH-VxL" id="GZv-tZ-eWL"/>
+                        <outlet property="resetZoomGesture" destination="AI3-GU-tgE" id="Fca-jn-71f"/>
+                        <outlet property="toggleUIGesture" destination="rGn-4n-87c" id="wHz-hK-700"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Na-Fa-DcQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="dbi-Pd-X66" userLabel="Exit" sceneMemberID="exit"/>
-                <tapGestureRecognizer id="rGn-4n-87c">
+                <tapGestureRecognizer delaysTouchesEnded="NO" numberOfTapsRequired="2" id="AI3-GU-tgE" userLabel="Reset Zoom Tap Gesture">
+                    <connections>
+                        <action selector="resetZoom:" destination="iDy-Gm-VsE" id="dtt-95-YjN"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer delaysTouchesEnded="NO" id="rGn-4n-87c" userLabel="Hide/Show Tap Gesture">
                     <connections>
                         <action selector="toggleUI:" destination="iDy-Gm-VsE" id="rcm-4S-NBq"/>
                     </connections>
