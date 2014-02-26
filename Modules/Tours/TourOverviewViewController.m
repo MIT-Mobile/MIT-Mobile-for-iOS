@@ -736,7 +736,7 @@ enum {
 }
 
 - (NSString *)textForDistance:(CLLocationDistance)meters {
-    NSString *measureSystem = [NSLocale currentLocale][NSLocaleMeasurementSystem];
+    NSString *measureSystem = [[NSLocale currentLocale] objectForKey:NSLocaleMeasurementSystem];
     BOOL isMetric = ![measureSystem isEqualToString:@"U.S."];
     
     CGFloat smoots = meters / METERS_PER_SMOOT;
