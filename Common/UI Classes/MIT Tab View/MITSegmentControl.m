@@ -6,7 +6,6 @@ static NSString* const kMITSegmentTitleColorKey = @"MITSegmentTitleColor";
 static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundColor";
 static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
 
-static CGFloat const kMITSegmentMinimumFontSize = 8.0;
 static CGFloat const kMITSegmentMinimumHeight = 28.0;
 
 @interface MITSegmentControl ()
@@ -83,10 +82,10 @@ static CGFloat const kMITSegmentMinimumHeight = 28.0;
     {
         self.textLabel = [[[UILabel alloc] init] autorelease];
         self.textLabel.textAlignment = NSTextAlignmentCenter;
-        self.textLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
+        self.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         self.textLabel.numberOfLines = 1;
         self.textLabel.adjustsFontSizeToFitWidth = YES;
-        self.textLabel.minimumFontSize = kMITSegmentMinimumFontSize;
+        self.textLabel.minimumScaleFactor = 0.5;
         self.titleFont = [UIFont boldSystemFontOfSize:15.0];
     }
     
