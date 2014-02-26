@@ -94,6 +94,9 @@
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
                     cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
+                    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                        cell.separatorInset = UIEdgeInsetsMake(0., 15., 0., 15.);
+                    }
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
                     if (self.showBuildNumber && [[MITBuildInfo description] length]) {
                         cell.textLabel.text = [MITBuildInfo description];
