@@ -54,12 +54,15 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
-
     UITableView *searchTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-	searchTableView.backgroundColor = [UIColor mit_backgroundColor];
     self.searchResultsTableView = searchTableView;
 
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundView = nil;
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+        searchTableView.backgroundView = nil;
+        searchTableView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -77,14 +80,16 @@
 
 - (void) searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if ([self.searchResults count]) {
+    if ([self.searchResults count] > 0) {
         self.searchDisplayController.searchResultsTableView.hidden = NO;
+    } else {
+        self.searchDisplayController.searchResultsTableView.hidden = YES;
     }
 }
 
 - (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    if (![searchBar.text length]) {
+    if ([searchBar.text length] <= 0) {
         self.searchResults = nil;
         _searchCancelled = YES;
         [self.searchResultsTableView reloadData];
@@ -261,34 +266,13 @@
 	}
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	if (section == 1) {
-		return GROUPED_SECTION_HEADER_HEIGHT;
-	} else if (tableView == self.searchDisplayController.searchResultsTableView && [self.searchResults count] > 0) {
-		return UNGROUPED_SECTION_HEADER_HEIGHT;
-	} else {
-		return 0.0;
-	}
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if (section == 1) {
-		return [UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"];
-	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		NSUInteger numResults = [self.searchResults count];
-		switch (numResults) {
-			case 0:
-				break;
-			case 100:
-				return [UITableView ungroupedSectionHeaderWithTitle:@"Many found, showing 100"];
-				break;
-			default:
-				return [UITableView ungroupedSectionHeaderWithTitle:[NSString stringWithFormat:@"%d found", numResults]];
-				break;
-		}
-	}
-	
-    return nil;
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section == 1) {
+        return @"Recently Viewed";
+    } else {
+        return nil;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
