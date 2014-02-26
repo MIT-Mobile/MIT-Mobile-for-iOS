@@ -19,7 +19,7 @@
 @property (nonatomic,readonly) MITMobile *remoteObjectManager;
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
-+ (MITModule *)moduleForTag:(NSString *)aTag DEPRECATED_ATTRIBUTE;
++ (MITModule *)moduleForTag:(NSString *)aTag;
 
 - (void)showNetworkActivityIndicator;
 - (void)hideNetworkActivityIndicator;
