@@ -36,6 +36,16 @@
     self.title = nil;
     
     [self.toggleUIGesture requireGestureRecognizerToFail:self.resetZoomGesture];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.navigationBar.tintColor = [UIColor blackColor];
+    } else {
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        self.extendedLayoutIncludesOpaqueBars = YES;
+        self.navigationBar.tintColor = [UIColor whiteColor];
+    }
+    
+    self.view.backgroundColor = [UIColor blackColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -47,7 +57,7 @@
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleBlackTranslucent;
+    return UIStatusBarStyleLightContent;
 }
 
 - (NSArray*)galleryImages
@@ -168,36 +178,26 @@
     if (_interfaceHidden != interfaceHidden) {
         _interfaceHidden = interfaceHidden;
         
-        CATransform3D captionViewHideTransform = CATransform3DIdentity;
-        CATransform3D navigationBarHideTransform = CATransform3DIdentity;
-        if (_interfaceHidden) {
-            // If we are hiding things, the UINavigationBar's maximum y should always be greater
-            // than the view's origin (otherwise it wouldn't be visible!). This should slide the navigation
-            // bar up out of the top of the superview (with a 1px error bar)
-            CGFloat navigationBarTranslationY = CGRectGetMinY(self.view.bounds) - (CGRectGetMaxY(self.navigationBar.frame) + 1.);
-            navigationBarHideTransform = CATransform3DMakeTranslation(0., navigationBarTranslationY, 0);
-            
-            // Similar to the above, only pushing it out the bottom
-            CGFloat captionViewTranslationY = CGRectGetMaxY(self.view.bounds) - (CGRectGetMinY(self.captionView.frame) + 1.);
-            captionViewHideTransform = CATransform3DMakeTranslation(0., captionViewTranslationY, 0);
-
+        if (!_interfaceHidden) {
+            if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+                [self setNeedsStatusBarAppearanceUpdate];
+            }
         }
         
+        CGFloat alpha = (_interfaceHidden ? 0. : 1);
         [UIView animateWithDuration:(animated ? 0.33 : 0)
                               delay:0
-                            options:UIViewAnimationOptionCurveEaseOut
+                            options:0
                          animations:^{
-                             
-                             if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                                
-                                 [self setNeedsStatusBarAppearanceUpdate];
-                             } else {
-                                 [[UIApplication sharedApplication] setStatusBarHidden:self.isInterfaceHidden withAnimation:UIStatusBarAnimationSlide];
+                             self.captionView.alpha = alpha;
+                             self.navigationBar.alpha = alpha;
+                         } completion:^(BOOL finished) {
+                             if (_interfaceHidden) {
+                                 if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+                                     [self setNeedsStatusBarAppearanceUpdate];
+                                 }
                              }
-                             
-                             self.navigationBar.layer.transform = navigationBarHideTransform;
-                             self.captionView.layer.transform = captionViewHideTransform;
-                         } completion:nil];
+                         }];
     }
 }
 
