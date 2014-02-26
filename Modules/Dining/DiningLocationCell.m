@@ -18,26 +18,28 @@ static CGFloat textWidth = 180;
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
         self.statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 12)]; // height from font spec
-        self.statusLabel.highlightedTextColor = [UIColor whiteColor];
         self.statusLabel.font = [UIFont systemFontOfSize:12];
         self.statusLabel.textAlignment = NSTextAlignmentRight;
         [self.contentView addSubview:self.statusLabel];
         
         self.titleLabel = [[UILabel alloc] initWithFrame: CGRectMake(54, 10, textWidth, 17)]; // length is calculated, height is for single line of text
-        self.titleLabel.highlightedTextColor = [UIColor whiteColor];
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.font = [DiningLocationCell fontForPrimaryText];
         [self.contentView addSubview:self.titleLabel];
         
         self.subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(54, CGRectGetMaxY(self.titleLabel.frame) + 10, textWidth, 13)];
-        self.subtitleLabel.highlightedTextColor = [UIColor whiteColor];
         self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.subtitleLabel.numberOfLines = 0;
         self.subtitleLabel.font = [DiningLocationCell fontForSecondaryText];
         self.subtitleLabel.textColor = [UIColor colorWithHexString:@"#4c4c4c"];
         [self.contentView addSubview:self.subtitleLabel];
         
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            self.statusLabel.highlightedTextColor = [UIColor whiteColor];
+            self.titleLabel.highlightedTextColor = [UIColor whiteColor];
+            self.subtitleLabel.highlightedTextColor = [UIColor whiteColor];
+        }
     }
     return self;
 }
@@ -82,6 +84,10 @@ static CGFloat textWidth = 180;
     titleFrame.origin = CGPointMake(CGRectGetMaxX(self.imageView.frame) + 10, 10 - titleOffset);
     self.titleLabel.frame = CGRectIntegral(titleFrame);
     
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.separatorInset = UIEdgeInsetsMake(0., titleFrame.origin.x, 0., 0.);
+    }
+
     CGRect frame = self.subtitleLabel.frame;
     CGFloat subtitleOffset = floor(self.subtitleLabel.font.lineHeight - self.subtitleLabel.font.ascender) + 3; // Add 3 to make the subtitle's baseline align with the bottom of the 34pt icon.
 
