@@ -146,6 +146,7 @@
 		[[UIApplication sharedApplication] openURL:phoneURL];
     }
 
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 
