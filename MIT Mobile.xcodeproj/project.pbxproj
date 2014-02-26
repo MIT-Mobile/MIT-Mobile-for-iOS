@@ -95,6 +95,7 @@
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C893ABF18BE3090002690CE /* MITNavigationController.m */; };
+		2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A074718BE690900284F8A /* MITImageScrollView.m */; };
 		2C8E2B4B18206989002752F0 /* MITMapPlacesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499332C11A371CF00A7041B /* MITMapPlacesViewController.m */; };
 		2C9146F517ECFFAC007130D8 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9146F417ECFFAC007130D8 /* MITMapCategoriesViewController.m */; };
 		2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -630,6 +631,8 @@
 		2C868B0616D52D81000B2414 /* MGSAnnotationTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MGSAnnotationTypes.h; sourceTree = "<group>"; };
 		2C893ABE18BE3090002690CE /* MITNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationController.h; sourceTree = "<group>"; };
 		2C893ABF18BE3090002690CE /* MITNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNavigationController.m; sourceTree = "<group>"; };
+		2C8A074618BE690900284F8A /* MITImageScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITImageScrollView.h; sourceTree = "<group>"; };
+		2C8A074718BE690900284F8A /* MITImageScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITImageScrollView.m; sourceTree = "<group>"; };
 		2C9146F317ECFFAC007130D8 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		2C9146F417ECFFAC007130D8 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
 		2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MGTwitterBase64.h"; sourceTree = "<group>"; };
@@ -2459,6 +2462,8 @@
 		DE2A458A1885AF83002DE0EA /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2C8A074618BE690900284F8A /* MITImageScrollView.h */,
+				2C8A074718BE690900284F8A /* MITImageScrollView.m */,
 				2C920D5F1896C35C00A60BA6 /* XIBs */,
 				2CA7FDA6188EA64F0083FD25 /* Table View Cells */,
 			);
@@ -3273,6 +3278,7 @@
 				DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */,
 				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
 				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
+				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
 				DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */,
 				DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */,
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
