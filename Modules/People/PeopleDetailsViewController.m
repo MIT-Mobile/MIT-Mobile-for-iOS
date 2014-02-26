@@ -28,8 +28,6 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     [super viewDidLoad];
 
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.tableView.backgroundView = nil;
-        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
         self.headerLeftIndentLayoutConstraint.constant = 10.;
     }
     
@@ -290,7 +288,7 @@ static NSInteger AccessoryIconIndex     = 2;
 			// set multivalue properties: email and phone numbers
 			ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
 			if ((value = [self.personDetails valueForKey:@"email"])) {
-				for (NSString *email in [value componentsSeparatedByString:@","])
+				for (NSString *email in self.personDetails.email)
 					ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)email, kABWorkLabel, NULL);
 				ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
 			}
@@ -300,14 +298,18 @@ static NSInteger AccessoryIconIndex     = 2;
 			BOOL haveValues = NO;
 			ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
 			if ((value = [self.personDetails valueForKey:@"phone"])) {
-				for (NSString *phone in [value componentsSeparatedByString:@","])
+				for (NSString *phone in self.personDetails.phone) {
 					ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)phone, kABWorkLabel, NULL);
+                }
 				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
 				haveValues = YES;
 			}
 
 			if ((value = [self.personDetails valueForKey:@"fax"])) {
-				ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)value, kABPersonPhoneWorkFAXLabel, NULL);
+				for (NSString *fax in self.personDetails.fax) {
+                    ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)fax, kABPersonPhoneWorkFAXLabel, NULL);
+                }
+				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
 				haveValues = YES;
 			}
 
