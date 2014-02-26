@@ -26,10 +26,24 @@ const NSInteger kSubtitleWidth = 160;
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     if (self) {
                                                                             // heights are initialized to be minimum allowed. Height will vary
-        self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, kStationWidth, 14)];
-        self.title          = [[UILabel alloc] initWithFrame:CGRectMake(90, 15, kTitleWidth, 14)];
-        self.subtitle       = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, kSubtitleWidth, 12)];
         
+        CGRect stationFrame = CGRectMake(10, 15, kStationWidth, 14);
+        CGRect titleFrame = CGRectMake(90, 15, kTitleWidth, 14);
+        CGRect subtitleFrame = CGRectMake(90, 41, kSubtitleWidth, 12);
+        
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            stationFrame.origin.x = 15.;
+            titleFrame.origin.x += 5.;
+            titleFrame.size.width -= 5.;
+            subtitleFrame.origin.x += 5.;
+            subtitleFrame.size.width -= 5.;
+            self.separatorInset = UIEdgeInsetsMake(0., titleFrame.origin.x, 0., 0.);
+        }
+
+        self.station        = [[UILabel alloc] initWithFrame:stationFrame];
+        self.title          = [[UILabel alloc] initWithFrame:titleFrame];
+        self.subtitle       = [[UILabel alloc] initWithFrame:subtitleFrame];
+
         [self formatLabel:self.station withFont:[[self class] primaryFont]];
         [self formatLabel:self.title withFont:[[self class] primaryFont]];
         [self formatLabel:self.subtitle withFont:[[self class] secondaryFont]];
