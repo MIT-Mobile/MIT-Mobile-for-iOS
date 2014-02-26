@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) NSArray *attributes;
 
+@property (weak, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerLeftIndentLayoutConstraint;
 @property (nonatomic, weak) IBOutlet UILabel * personName;
 @property (nonatomic, weak) IBOutlet UILabel * personTitle;
 @property (nonatomic, weak) IBOutlet UILabel * personOrganization;
@@ -24,14 +26,18 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	self.title = @"Info";
-	[self.tableView applyStandardColors];
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
 
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundView = nil;
+        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+        self.headerLeftIndentLayoutConstraint.constant = 10.;
+    }
+    
     [self updateTableViewHeaderView];
 	
 	// if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
+    // TODO: let Cache-Control headers from API response determine how long data is fresh
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
         [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
             if (!error) {
@@ -116,6 +122,15 @@ static NSInteger AccessoryIconIndex     = 2;
         self.personName.text = self.personDetails.name;
         self.personTitle.text = self.personDetails.title;
         self.personOrganization.text = self.personDetails.dept;
+        
+        [self.headerView setNeedsLayout];
+        [self.headerView layoutIfNeeded];
+        
+        CGSize size = [self.headerView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+        
+        CGRect frame = self.headerView.frame;
+        frame.size.height = size.height;
+        self.headerView.frame = frame;
     }
 }
 
@@ -141,7 +156,7 @@ static NSInteger AccessoryIconIndex     = 2;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return 3;
+	return 2;
 }
 
 // Customize the number of rows in the table view.
@@ -155,22 +170,10 @@ static NSInteger AccessoryIconIndex     = 2;
         case 1:
             return 2;
 
-        case 2:
-            return 1;
-
         default:
             return 0;
     }
 }
-
-- (BOOL) tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.section == 2) {
-        return NO;
-    }
-    return YES;
-}
-
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -190,7 +193,7 @@ static NSInteger AccessoryIconIndex     = 2;
 			cell.textLabel.text = @"Add to Existing Contact";
 		}
 		
-	} else if (section == 0) { // cells for displaying person details
+	} else { // (section == 0) cells for displaying person details
 		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
 
 		NSArray *personInfo = self.attributes[row]; // see mapPersonAttributes method for creation of @property attributes
@@ -224,12 +227,7 @@ static NSInteger AccessoryIconIndex     = 2;
             }
         }
 
-	} else {
-        cell = [tableView dequeueReusableCellWithIdentifier:@"BlankCell" forIndexPath:indexPath];
-        if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
-        }
-    }
+	}
     
     return cell;
 }
@@ -249,13 +247,26 @@ static NSInteger AccessoryIconIndex     = 2;
             return 62.;
 
         case 1:
-            return 44.;
-
-        case 2:
         default:
-            return 62.;
+            return 44.;
     }
 
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    if (section == 1) {
+        return [[UIView alloc] init];
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    if (section == 1) {
+        return 44.;
+    }
+    return 0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

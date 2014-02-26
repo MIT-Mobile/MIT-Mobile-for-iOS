@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
         <!--People Search View Controller - Master-->
@@ -13,7 +13,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="E5U-BI-S0w">
+                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT Directory" id="E5U-BI-S0w">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
@@ -206,7 +206,7 @@ Phone: '6172531000', '31000'</string>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="1000" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="U1x-Zh-WlB">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="91"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="96"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="bbU-A2-CDr">
@@ -216,13 +216,13 @@ Phone: '6172531000', '31000'</string>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="nl5-pf-Fri">
-                                    <rect key="frame" x="15" y="41" width="285" height="17"/>
+                                    <rect key="frame" x="15" y="43" width="285" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Organization (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="flg-EW-KeT">
-                                    <rect key="frame" x="15" y="59" width="285" height="17"/>
+                                    <rect key="frame" x="15" y="64" width="285" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
@@ -230,21 +230,24 @@ Phone: '6172531000', '31000'</string>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <constraints>
+                                <constraint firstItem="flg-EW-KeT" firstAttribute="trailing" secondItem="bbU-A2-CDr" secondAttribute="trailing" id="3BF-io-Dga"/>
                                 <constraint firstItem="bbU-A2-CDr" firstAttribute="top" secondItem="U1x-Zh-WlB" secondAttribute="top" constant="15" id="71p-6r-vCE"/>
-                                <constraint firstItem="nl5-pf-Fri" firstAttribute="top" secondItem="bbU-A2-CDr" secondAttribute="bottom" constant="2" id="C39-AB-vXd"/>
+                                <constraint firstItem="nl5-pf-Fri" firstAttribute="top" secondItem="bbU-A2-CDr" secondAttribute="bottom" constant="4" id="C39-AB-vXd"/>
+                                <constraint firstItem="flg-EW-KeT" firstAttribute="leading" secondItem="bbU-A2-CDr" secondAttribute="leading" id="EkF-hV-tDA"/>
                                 <constraint firstItem="nl5-pf-Fri" firstAttribute="width" secondItem="bbU-A2-CDr" secondAttribute="width" id="KDQ-co-K5f"/>
+                                <constraint firstItem="nl5-pf-Fri" firstAttribute="leading" secondItem="bbU-A2-CDr" secondAttribute="leading" id="QjR-wG-0T9"/>
                                 <constraint firstItem="bbU-A2-CDr" firstAttribute="leading" secondItem="U1x-Zh-WlB" secondAttribute="leading" constant="15" id="YfC-TS-ZVU"/>
+                                <constraint firstItem="nl5-pf-Fri" firstAttribute="trailing" secondItem="bbU-A2-CDr" secondAttribute="trailing" id="Yir-DA-58j"/>
                                 <constraint firstItem="flg-EW-KeT" firstAttribute="trailing" secondItem="bbU-A2-CDr" secondAttribute="trailing" id="afq-ag-W2N"/>
-                                <constraint firstItem="flg-EW-KeT" firstAttribute="top" secondItem="nl5-pf-Fri" secondAttribute="bottom" constant="1" id="coX-O0-pjL"/>
+                                <constraint firstItem="flg-EW-KeT" firstAttribute="top" secondItem="nl5-pf-Fri" secondAttribute="bottom" constant="4" id="coX-O0-pjL"/>
                                 <constraint firstAttribute="bottom" secondItem="flg-EW-KeT" secondAttribute="bottom" constant="15" id="ijB-wv-tvQ"/>
-                                <constraint firstItem="nl5-pf-Fri" firstAttribute="leading" secondItem="U1x-Zh-WlB" secondAttribute="leading" constant="15" id="unQ-l6-oOe"/>
                                 <constraint firstAttribute="trailing" secondItem="bbU-A2-CDr" secondAttribute="trailing" constant="20" id="y1l-Xy-MqH"/>
                                 <constraint firstItem="flg-EW-KeT" firstAttribute="leading" secondItem="nl5-pf-Fri" secondAttribute="leading" id="yn7-QT-oF7"/>
                             </constraints>
                         </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AttributeCell" textLabel="7U3-2g-sH2" detailTextLabel="aGC-dz-p6Y" rowHeight="62" style="IBUITableViewCellStyleSubtitle" id="2aR-qd-43w">
-                                <rect key="frame" x="0.0" y="113" width="320" height="62"/>
+                                <rect key="frame" x="0.0" y="118" width="320" height="62"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2aR-qd-43w" id="TGr-FU-xe7">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="61"/>
@@ -269,7 +272,7 @@ Phone: '6172531000', '31000'</string>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ActionCell" textLabel="OrJ-8v-qBh" rowHeight="44" style="IBUITableViewCellStyleDefault" id="efG-pu-1dU">
-                                <rect key="frame" x="0.0" y="175" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="180" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="efG-pu-1dU" id="BUs-y9-Fbb">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -286,15 +289,6 @@ Phone: '6172531000', '31000'</string>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BlankCell" rowHeight="44" id="hvr-mu-EYn">
-                                <rect key="frame" x="0.0" y="219" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hvr-mu-EYn" id="iSv-F8-tcy">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                                <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            </tableViewCell>
                         </prototypes>
                         <sections/>
                         <connections>
@@ -304,6 +298,8 @@ Phone: '6172531000', '31000'</string>
                     </tableView>
                     <navigationItem key="navigationItem" id="tOP-Ql-u2d"/>
                     <connections>
+                        <outlet property="headerLeftIndentLayoutConstraint" destination="YfC-TS-ZVU" id="RiZ-Bh-vK7"/>
+                        <outlet property="headerView" destination="U1x-Zh-WlB" id="UwY-ZP-ZwG"/>
                         <outlet property="personName" destination="bbU-A2-CDr" id="61S-Em-DDa"/>
                         <outlet property="personOrganization" destination="flg-EW-KeT" id="utT-qt-5PA"/>
                         <outlet property="personTitle" destination="nl5-pf-Fri" id="5P3-3r-5WD"/>
