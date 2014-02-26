@@ -9,6 +9,7 @@
 #import "MITLogging.h"
 #import "Secret.h"
 #import "SDImageCache.h"
+#import "MITNavigationController.h"
 
 // CoreData persistence and Mobile API access
 #import "MITAdditions.h"
@@ -474,7 +475,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     springboard.primaryModules = self.modules;
     self.springboardController = springboard;
     
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:springboard];
     navigationController.navigationBarHidden = NO;
     
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
