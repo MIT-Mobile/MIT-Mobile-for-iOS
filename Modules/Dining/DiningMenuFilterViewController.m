@@ -46,14 +46,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundView = nil;
+        self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+    }
     
     self.title = @"Filters";
     self.tableView.rowHeight = 44;
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPressed:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commitChanges:)];
     
     NSSortDescriptor *alphabetical = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:NO];
     self.allFilters = [[CoreDataManager coreDataManager] objectsForEntity:@"DiningDietaryFlag" matchingPredicate:nil sortDescriptors:@[alphabetical]];

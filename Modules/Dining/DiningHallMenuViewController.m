@@ -76,8 +76,11 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.tableView.backgroundView = nil;
+        self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+    }
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
     self.filtersApplied = (defaultFilterNames)?[DiningDietaryFlag flagsWithNames:defaultFilterNames]:nil;
@@ -269,7 +272,10 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:filterVC];
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    navController.navigationBar.barStyle = UIBarStyleBlack;
+    navController.navigationBar.barStyle = UIBarStyleDefault;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        navController.navigationBar.barStyle = UIBarStyleBlack;
+    }
     
     [self presentViewController:navController animated:YES completion:NULL];
 }
