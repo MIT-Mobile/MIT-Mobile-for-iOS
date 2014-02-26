@@ -47,8 +47,7 @@
         if (self.story) {
             CGSize imageSize = self.coverImageView.bounds.size;
             imageSize.height = 213.;
-            
-            DDLogVerbose(@"Cover image for %@ has %d representations",self.story.identifier, [self.story.coverImage.representations count]);
+
             MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
             imageURL = imageRepresentation.url;
         }
