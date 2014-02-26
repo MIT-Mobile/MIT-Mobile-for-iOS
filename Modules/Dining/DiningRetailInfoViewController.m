@@ -90,13 +90,12 @@ static NSString * sHomePageURLKey       = @"homepageURL";
                                         [weakHeaderView layoutIfNeeded];
                                     }];
     self.headerView.titleLabel.text = self.venue.name;
-    CGRect frame = self.headerView.accessoryButton.frame;
-    frame.origin = CGPointMake(frame.origin.x - 10, frame.origin.y - 15);
-    self.headerView.accessoryButton.frame = frame;
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark"] forState:UIControlStateNormal];
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark_selected"] forState:UIControlStateSelected];
-    [self.headerView.accessoryButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
+    CGRect frame = self.headerView.starButton.frame;
+    self.headerView.starButton.frame = frame;
+    [self.headerView.starButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.headerView.starButton.selected = [self.venue.favorite boolValue];
+    self.headerView.starButton.hidden = NO;
+    self.headerView.infoButton.hidden = YES;
     
     if ([self.venue isOpenNow]) {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];

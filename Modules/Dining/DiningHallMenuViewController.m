@@ -120,9 +120,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     }
     headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate date]];
     
-    [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
-    [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
-    [headerView.accessoryButton addTarget:self action:@selector(infoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [headerView.infoButton addTarget:self action:@selector(infoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    headerView.infoButton.hidden = NO;
+    headerView.starButton.hidden = YES;
     
     self.tableView.tableHeaderView = headerView;
     
