@@ -53,7 +53,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
         CGFloat yScale = maximumSize.height / targetSize.height;
 
         CGFloat scale = MIN(xScale,yScale);
-        return CGSizeMake(targetSize.width * scale, targetSize.height * scale);
+        return CGSizeMake(ceil(targetSize.width * scale), ceil(targetSize.height * scale));
     } else {
         return targetSize;
     }
@@ -88,7 +88,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 
                     if (_isExternalStory) {
                         _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:MITNewsStoryCellExternalMaximumImageSize];
-                        [self setNeedsUpdateConstraints];
                     }
                 }
             }];
@@ -117,6 +116,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             
             if (imageURL) {
                 [self.storyImageView setImageWithURL:imageURL];
+                [self.contentView setNeedsUpdateConstraints];
             }
         } else {
             [self.storyImageView cancelCurrentImageLoad];
