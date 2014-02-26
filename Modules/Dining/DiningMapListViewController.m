@@ -528,7 +528,6 @@
 }
 
 - (void)configureLinkCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    [cell applyStandardFonts];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     DiningLink *link = [[[DiningData sharedData] links] objectAtIndex:indexPath.row];
     cell.textLabel.text = link.name;
