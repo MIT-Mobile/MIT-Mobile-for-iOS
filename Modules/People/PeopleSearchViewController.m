@@ -7,8 +7,6 @@
 #import "MobileRequestOperation.h"
 // common UI elements
 #import "MITLoadingActivityView.h"
-#import "SecondaryGroupedTableViewCell.h"
-#import "MITUIConstants.h"
 // external modules
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
@@ -36,7 +34,7 @@
                            bundle:nil];
     
     if (self) {
-        self.directoryPhoneURL = [NSURL URLWithString:@"telprompt://617.253.1000"];
+        self.directoryPhoneURL = [NSURL URLWithString:@"tel://617.253.1000"];
     }
     
     return self;
@@ -257,12 +255,19 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (tableView == self.tableView && indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            return 88.0;
+        switch (indexPath.row) {
+            case 0:
+                return 86.;
+
+            case 1:
+                return 60.;
+                
+            case 2:
+            default:
+                return 44.;
         }
-		return 44.0;
 	} else {
-		return CELL_TWO_LINE_HEIGHT;
+		return 60.;
 	}
 }
 
