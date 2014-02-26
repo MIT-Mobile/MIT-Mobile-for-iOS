@@ -260,7 +260,11 @@
 - (void) layoutListState
 {
     CGRect frame = self.listTabContainerView.frame;
-    frame.origin = CGPointMake(0.0, 0.0);
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        frame.origin = CGPointMake(0.0, 64.0);
+    } else {
+        frame.origin = CGPointMake(0.0, 0.0);
+    }
     self.listTabContainerView.frame = frame;
     
     frame = self.mapSegmentContainerView.frame;
