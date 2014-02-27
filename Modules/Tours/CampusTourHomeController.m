@@ -19,21 +19,7 @@
 
 - (void)loadView
 {
-    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
-    
-    if (self.navigationController)
-    {
-        if (self.navigationController.isNavigationBarHidden == NO)
-        {
-            mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
-            mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
-        }
-        
-        if (self.navigationController.isToolbarHidden == NO)
-        {
-            mainFrame.size.height -= CGRectGetHeight(self.navigationController.toolbar.frame);
-        }
-    }
+    CGRect mainFrame = [[UIScreen mainScreen] bounds];
     
     UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
     mainView.autoresizesSubviews = YES;
@@ -44,8 +30,7 @@
     {
         ScrollFadeImageView *fadeView = [[ScrollFadeImageView alloc] initWithFrame:viewBounds];
         fadeView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                     UIViewAutoresizingFlexibleHeight |
-                                     UIViewAutoresizingFlexibleBottomMargin);
+                                     UIViewAutoresizingFlexibleHeight);
         fadeView.animationImages = [NSArray arrayWithObjects:
                                                [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_killian.jpg"]],
                                                [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_stata.jpg"]],
@@ -57,14 +42,16 @@
     }
     
     {
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12,
-                                                                   12,
-                                                                   CGRectGetWidth(viewBounds) - 12,
+        CGFloat offset = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? 64. : 0;
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15.,
+                                                                   15. + offset,
+                                                                   CGRectGetWidth(viewBounds) - 30.,
                                                                    0)];
+        
         label.backgroundColor = [UIColor clearColor];
         label.lineBreakMode = NSLineBreakByWordWrapping;
         label.numberOfLines = 0;
-        label.font = [UIFont systemFontOfSize:16];
+        label.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
         label.text = NSLocalizedString(@"TOUR_INTRO_TEXT", nil);
         label.textColor = [UIColor whiteColor];
         [label sizeToFit];
@@ -73,20 +60,23 @@
     }
     
     {
-        CGFloat tableHeight = 44 * 3 + 40; // three cells plus some padding
+        CGFloat tableHeight = 44 * 3 + 50; // three cells plus some padding
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            tableHeight += 20. + 20.; // extra padding on iOS 7
+        }
         CGRect tableFrame = CGRectMake(0,
                                        CGRectGetHeight(viewBounds) - tableHeight,
                                        CGRectGetWidth(viewBounds),
                                        tableHeight);
         UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStyleGrouped];
         tableView.backgroundColor = [UIColor clearColor];
-        tableView.separatorColor = [UIColor clearColor];
-        tableView.backgroundView.hidden = YES;
+        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        tableView.backgroundView = nil;
         tableView.scrollEnabled = NO;
         
         tableView.dataSource = self;
         tableView.delegate = self;
-        tableView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
         self.tableView = tableView;
         [mainView insertSubview:tableView aboveSubview:self.scrollingBackground];
     }
@@ -95,12 +85,10 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
     [self.scrollingBackground startAnimating];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     [self.scrollingBackground stopAnimating];
 }
 
@@ -205,13 +193,6 @@
     return num;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 1 && indexPath.row != 0) {
-        return tableView.rowHeight + 1;
-    }
-    return tableView.rowHeight;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static CGFloat cellAlpha = 0.85;
     static NSString *cellID = @"fawnrubw";
@@ -220,7 +201,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
+    cell.accessoryView = nil;
     UIView *hairline = [cell viewWithTag:5235];
     if (hairline) {
         [hairline removeFromSuperview];
@@ -228,7 +209,7 @@
     
     switch (indexPath.section) {
         case 0:
-            cell.backgroundColor = [UIColor colorWithRed:0.6 green:0 blue:0 alpha:cellAlpha];
+            cell.backgroundColor = [[UIColor MITTintColor] colorWithAlphaComponent:0.75];
             cell.textLabel.textColor = [UIColor whiteColor];
             
             if (self.tours) {
@@ -236,11 +217,14 @@
                 //CampusTour *tour = self.tours[indexPath.row];
                 //cell.textLabel.text = tour.title;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
+                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                    cell.accessoryType = UITableViewCellAccessoryNone;
+                    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
+                }
             } else if (self.shouldRetry && !self.isLoading) {
                 cell.textLabel.text = @"Retry Loading";
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                cell.accessoryType = UITableViewCellAccessoryNone;
+//                cell.accessoryType = UITableViewCellAccessoryNone;
                 cell.accessoryView = nil;
             } else {
                 cell.textLabel.text = @"Loading...";
@@ -253,10 +237,17 @@
         case 1:
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"Introduction to MIT";
-                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
+                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                    cell.accessoryType = UITableViewCellAccessoryNone;
+                    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
+                }
             } else {
-                UIView *hairline = [[UIView alloc] initWithFrame:CGRectMake(10, 0, tableView.frame.size.width - 20, 1)];
-                hairline.backgroundColor = [UIColor colorWithHexString:@"#666666"];
+                CGRect hairlineFrame = CGRectMake(15, 0, tableView.frame.size.width - 15, 1.0 / [[UIScreen mainScreen] scale]);
+                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                    hairlineFrame = CGRectMake(10, 0, tableView.frame.size.width - 20, 1.0 / [[UIScreen mainScreen] scale]);
+                }
+                UIView *hairline = [[UIView alloc] initWithFrame:hairlineFrame];
+                hairline.backgroundColor = [UIColor lightGrayColor];
                 hairline.tag = 5235;
                 
                 //Adding this to the cell itself as the content view is clipped
@@ -266,8 +257,8 @@
                 cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external-white.png"]];
                 cell.autoresizesSubviews = YES;
             }
-            cell.backgroundColor = [UIColor colorWithWhite:0 alpha:cellAlpha];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.7 alpha:1];
+            cell.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
+            cell.textLabel.textColor = [UIColor whiteColor];
             cell.selectionStyle = UITableViewCellSelectionStyleGray;
             break;
         default:
