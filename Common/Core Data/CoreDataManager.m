@@ -124,10 +124,10 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];	// make a request object
 	NSEntityDescription *entity = [NSEntityDescription entityForName:attributeName inManagedObjectContext:self.managedObjectContext];	// tell the request what to look for
 	[request setEntity:entity];
-	
+
 	NSError *error;
     NSArray *result = [self.managedObjectContext executeFetchRequest:request error:&error];
-    
+
 	return result;
 }
 
@@ -135,15 +135,15 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
     NSArray *result = nil;
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];	// make a request object
 	[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-    
+
     if (self.managedObjectContext) {
         NSEntityDescription *entity = [NSEntityDescription entityForName:attributeName inManagedObjectContext:self.managedObjectContext];	// tell the request what to look for
         [request setEntity:entity];
-        
+
         NSError *error;
         result = [self.managedObjectContext executeFetchRequest:request error:&error];
     }
-    
+
 	return result;
 }
 
@@ -187,15 +187,15 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 	NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
     request.predicate = predicate;
     request.sortDescriptors = sortDescriptors;
-	
+
 	NSError *error = nil;
 	NSArray *objects = [self.managedObjectContext executeFetchRequest:request
                                                                 error:&error];
-    
+
     if (error) {
         DDLogError(@"fetch for entity '%@' failed: %@", entityName, [error localizedDescription]);
     }
-    
+
     // Should only return 'nil' on error
     return objects;
 }
@@ -272,10 +272,10 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
     } else {
         NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
         NSManagedObjectContext *localContext = threadDictionary[MITCoreDataThreadLocalContextKey];
-        
+
         if (!localContext) {
             localContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSConfinementConcurrencyType trackChanges:NO];
-            
+
             __weak NSManagedObjectContext *weakContext = localContext;
             id contextToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification
                                                                                 object:[[MITCoreDataController defaultController] mainQueueContext]
@@ -283,25 +283,25 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
                                                                             usingBlock:^(NSNotification *note) {
                                                                                 [weakContext mergeChangesFromContextDidSaveNotification:note];
                                                                             }];
-            
+
             id threadToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSThreadWillExitNotification
                                                                                object:[NSThread currentThread]
                                                                                 queue:nil
                                                                            usingBlock:^(NSNotification *note) {
                                                                                NSThread *thread = (NSThread*)[note object];
-                                                                               
+
                                                                                id threadToken = [thread threadDictionary][MITCoreDataThreadObserverTokenKey];
                                                                                [[NSNotificationCenter defaultCenter] removeObserver:threadToken];
-                                                                               
+
                                                                                id contextToken = [thread threadDictionary][MITCoreDataContextObserverTokenKey];
                                                                                [[NSNotificationCenter defaultCenter] removeObserver:contextToken];
                                                                            }];
-            
+
             threadDictionary[MITCoreDataContextObserverTokenKey] = contextToken;
             threadDictionary[MITCoreDataThreadObserverTokenKey] = threadToken;
             threadDictionary[MITCoreDataThreadLocalContextKey] = localContext;
         }
-        
+
         return localContext;
     }
 }
@@ -312,7 +312,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     return [MITCoreDataController defaultController].persistentStoreCoordinator;
-    
+
 }
 
 
@@ -329,7 +329,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 
 - (NSString *)storeFileName {
 	NSString *currentFileName = [self currentStoreFileName];
-	
+
 	if (![[NSFileManager defaultManager] fileExistsAtPath:currentFileName]) {
 		NSInteger maxVersion = 0;
 		NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self applicationDocumentsDirectory] error:NULL];
@@ -345,7 +345,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 			}
 		}
 	}
-    
+
 	DDLogVerbose(@"Core Data stored at %@", currentFileName);
 	return currentFileName;
 }
@@ -360,78 +360,78 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 - (BOOL)migrateData
 {
 	NSError *error = nil;
-	
+
 	NSString *sourcePath = [self storeFileName];
 	NSURL *sourceURL = [NSURL fileURLWithPath:sourcePath];
 	NSURL *destURL = [NSURL fileURLWithPath: [self currentStoreFileName]];
-	
+
 	DDLogVerbose(@"Attempting to migrate from %@ to %@", [[self storeFileName] lastPathComponent], [[self currentStoreFileName] lastPathComponent]);
-    
+
 	NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType
 																							  URL:sourceURL
 																							error:&error];
-	
+
 	if (sourceMetadata == nil) {
 		DDLogError(@"Failed to fetch metadata with error %d: %@", [error code], [error userInfo]);
 		return NO;
 	}
-	
+
 	NSManagedObjectModel *sourceModel = [NSManagedObjectModel mergedModelFromBundles:nil
 																	forStoreMetadata:sourceMetadata];
-	
+
 	if (sourceModel == nil) {
 		DDLogError(@"Failed to create source model");
 		return NO;
 	}
-	
+
 	NSManagedObjectModel *destinationModel = [self managedObjectModel];
-    
+
 	if ([destinationModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata]) {
 		DDLogError(@"No persistent store incompatilibilities detected, cancelling");
 		return YES;
 	}
-	
+
 	DDLogVerbose(@"source model entities: %@", [[sourceModel entityVersionHashesByName] description]);
 	DDLogVerbose(@"destination model entities: %@", [[destinationModel entityVersionHashesByName] description]);
-	
+
 	NSMappingModel *mappingModel;
-	
+
 	// try to get a mapping automatically first
 	mappingModel = [NSMappingModel inferredMappingModelForSourceModel:sourceModel
 													 destinationModel:destinationModel
 																error:&error];
-    
+
 	if (mappingModel == nil) {
 		DDLogWarn(@"Could not create inferred mapping model: %@", [error userInfo]);
 		// try again with xcmappingmodel files we created
 		mappingModel = [NSMappingModel mappingModelFromBundles:nil
 												forSourceModel:sourceModel
                                               destinationModel:destinationModel];
-		
+
 		if (mappingModel == nil) {
 			DDLogError(@"Failed to create mapping model");
 			return NO;
 		}
 	}
-	
-	
+
+
 	NSValue *classValue = [[NSPersistentStoreCoordinator registeredStoreTypes] objectForKey:NSSQLiteStoreType];
 	Class sqliteStoreClass = (Class)[classValue pointerValue];
 	Class sqliteStoreMigrationManagerClass = [sqliteStoreClass migrationManagerClass];
-	
+
 	NSMigrationManager *manager = [[sqliteStoreMigrationManagerClass alloc]
 								   initWithSourceModel:sourceModel destinationModel:destinationModel];
-	
+
 	if (![manager migrateStoreFromURL:sourceURL type:NSSQLiteStoreType options:nil withMappingModel:mappingModel
 					 toDestinationURL:destURL destinationType:NSSQLiteStoreType destinationOptions:nil error:&error]) {
 		DDLogError(@"Migration failed with error %d: %@", [error code], [error userInfo]);
 		return NO;
 	}
-	
+
 	if (![[NSFileManager defaultManager] removeItemAtPath:sourcePath error:&error]) {
 		DDLogWarn(@"Failed to remove old store with error %d: %@", [error code], [error userInfo]);
 	}
-	
+    
 	DDLogVerbose(@"Migration complete!");
 	return YES;
 	
