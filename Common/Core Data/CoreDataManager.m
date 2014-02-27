@@ -211,20 +211,55 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 }
 
 - (void)saveData {
-	NSError *error = nil;
-	if (![self.managedObjectContext save:&error])
-    {
-        DDLogError(@"Failed to save to data store: %@", [error localizedDescription]);
-        NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
-        if(detailedErrors != nil && [detailedErrors count] > 0) {
-            for(NSError* detailedError in detailedErrors) {
-                DDLogError(@"  DetailedError: %@", [detailedError userInfo]);
+
+    if ([[NSThread currentThread] isMainThread]) {
+        DDLogVerbose(@"Every time you call this method on the main thread, the user weeps");
+    }
+
+    NSManagedObjectContext *context = self.managedObjectContext;
+
+    // Since the main thread managed object context
+    // may not be at the root of the tree with the new MITCoreDataManager
+    // we'll need to walk up the tree and bubble the save up until
+    // everything is flushed to the PSC. As long as everything either uses
+    // CoreDataManager xor MITCoreDataManager, things should work fine
+    while (context != nil) {
+        NSError *error = nil;
+        BOOL saveSucceeded = [context save:&error];
+
+        if (!saveSucceeded) {
+            NSMutableString *message = [[NSMutableString alloc] init];
+            [message appendFormat:@"failed to save managed object context %@: %@",context,error];
+
+            NSArray *detailedErrors = [error userInfo][NSDetailedErrorsKey];
+
+            if ([detailedErrors count]) {
+                [message appendFormat:@"\n\tdetail:"];
+                [detailedErrors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    [message appendFormat:@"\n\t\t%@",obj];
+                }];
             }
+
+            DDLogError(@"%@",message);
+        } else {
+            context = context.parentContext;
         }
-        else {
-            DDLogError(@"  %@", [error userInfo]);
-        }
-	}
+    }
+
+    /*
+     NSError *error = nil;
+     if (![context save:&error]) {
+     DDLogError(@"Failed to save to data store: %@", [error localizedDescription]);
+     NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
+     if(detailedErrors != nil && [detailedErrors count] > 0) {
+     for(NSError* detailedError in detailedErrors) {
+     DDLogError(@"  DetailedError: %@", [detailedError userInfo]);
+     }
+     }
+     else {
+     DDLogError(@"  %@", [error userInfo]);
+     }
+     }*/
 }
 
 #pragma mark -
