@@ -211,11 +211,6 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 }
 
 - (void)saveData {
-
-    if ([[NSThread currentThread] isMainThread]) {
-        DDLogVerbose(@"Every time you call this method on the main thread, the user weeps");
-    }
-
     NSManagedObjectContext *context = self.managedObjectContext;
 
     // Since the main thread managed object context
