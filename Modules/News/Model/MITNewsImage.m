@@ -34,12 +34,15 @@ CGSize const MITNewsImageSmallestImageSize = {.width = 0.,.height = 0.};
     CGFloat scale = [[UIScreen mainScreen] scale];
     size.width *= scale;
     size.height *= scale;
-    
-    NSArray *sortedRepresentations = [[self.representations allObjects] sortedArrayUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
-        CGFloat diagonal1 = sqrt(pow([representation1.width doubleValue],2.) + pow([representation1.height doubleValue],2.));
-        CGFloat diagonal2 = sqrt(pow([representation2.width doubleValue],2.) + pow([representation2.height doubleValue],2.));
-        
-        return [@(diagonal1) compare:@(diagonal2)];
+
+    __block NSArray *sortedRepresentations = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        sortedRepresentations = [[self.representations allObjects] sortedArrayUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {
+            CGFloat diagonal1 = sqrt(pow([representation1.width doubleValue],2.) + pow([representation1.height doubleValue],2.));
+            CGFloat diagonal2 = sqrt(pow([representation2.width doubleValue],2.) + pow([representation2.height doubleValue],2.));
+
+            return [@(diagonal1) compare:@(diagonal2)];
+        }];
     }];
     
     if (CGSizeEqualToSize(size, MITNewsImageSmallestImageSize)) {
@@ -50,14 +53,17 @@ CGSize const MITNewsImageSmallestImageSize = {.width = 0.,.height = 0.};
         CGFloat targetDiagonal = sqrt(pow(size.width, 2.) + pow(size.height,2.));
         __block CGFloat bestFit = CGFLOAT_MAX;
         __block MITNewsImageRepresentation *selectedRepresentation = nil;
-        [sortedRepresentations enumerateObjectsUsingBlock:^(MITNewsImageRepresentation *representation, NSUInteger idx, BOOL *stop) {
-            CGFloat diagonal = sqrt(pow([representation.width doubleValue], 2.) + pow([representation.height doubleValue],2.));
-            CGFloat difference = fabs(diagonal - targetDiagonal);
-            
-            if (difference < bestFit) {
-                selectedRepresentation = representation;
-                bestFit = difference;
-            }
+
+        [self.managedObjectContext performBlockAndWait:^{
+            [sortedRepresentations enumerateObjectsUsingBlock:^(MITNewsImageRepresentation *representation, NSUInteger idx, BOOL *stop) {
+                CGFloat diagonal = sqrt(pow([representation.width doubleValue], 2.) + pow([representation.height doubleValue],2.));
+                CGFloat difference = fabs(diagonal - targetDiagonal);
+                
+                if (difference < bestFit) {
+                    selectedRepresentation = representation;
+                    bestFit = difference;
+                }
+            }];
         }];
         
         return selectedRepresentation;
