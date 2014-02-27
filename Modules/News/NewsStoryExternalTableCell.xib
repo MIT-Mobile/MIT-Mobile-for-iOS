@@ -15,7 +15,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Dek (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="YJ7-7b-kY4">
-                        <rect key="frame" x="15" y="11" width="290" height="14"/>
+                        <rect key="frame" x="15" y="11" width="290" height="15"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <constraints>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" id="ouk-H3-yhx"/>
@@ -25,7 +25,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CYC-Ci-Qsf">
-                        <rect key="frame" x="130" y="33" width="175" height="34"/>
+                        <rect key="frame" x="130" y="34" width="175" height="34"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="175" id="D1x-G5-jJi"/>
@@ -37,7 +37,7 @@
                     <constraint firstItem="CYC-Ci-Qsf" firstAttribute="top" secondItem="YJ7-7b-kY4" secondAttribute="bottom" constant="8" id="QBs-xy-4t3"/>
                     <constraint firstAttribute="trailing" secondItem="YJ7-7b-kY4" secondAttribute="trailing" constant="15" id="RyR-pZ-Sbf"/>
                     <constraint firstItem="YJ7-7b-kY4" firstAttribute="leading" secondItem="Kqk-42-6Sm" secondAttribute="leading" constant="15" id="b7k-gY-d6t"/>
-                    <constraint firstAttribute="bottom" secondItem="CYC-Ci-Qsf" secondAttribute="bottom" priority="800" constant="11" id="bFZ-fi-FeK"/>
+                    <constraint firstAttribute="bottom" secondItem="CYC-Ci-Qsf" secondAttribute="bottom" constant="11" id="bFZ-fi-FeK"/>
                     <constraint firstItem="YJ7-7b-kY4" firstAttribute="top" secondItem="Kqk-42-6Sm" secondAttribute="top" constant="11" id="xy7-cN-GHd"/>
                     <constraint firstItem="CYC-Ci-Qsf" firstAttribute="trailing" secondItem="YJ7-7b-kY4" secondAttribute="trailing" id="zNh-H0-0QQ"/>
                 </constraints>
@@ -45,6 +45,7 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
+                <outlet property="contentContainerView" destination="Kqk-42-6Sm" id="gY3-pF-23o"/>
                 <outlet property="dekLabel" destination="YJ7-7b-kY4" id="hSr-aR-hHW"/>
                 <outlet property="imageHeightConstraint" destination="E16-Ve-Lie" id="lib-Nk-qWt"/>
                 <outlet property="imageWidthConstraint" destination="D1x-G5-jJi" id="lbE-dY-P1q"/>

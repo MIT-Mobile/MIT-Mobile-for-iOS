@@ -64,7 +64,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     if (![_story isEqual:story]) {
         _story = story;
         
-        if (story) {
+        if (_story) {
             __block NSString *title = nil;
             __block NSString *dek = nil;
             __block NSURL *imageURL = nil;
@@ -116,7 +116,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             
             if (imageURL) {
                 [self.storyImageView setImageWithURL:imageURL];
-                [self.contentView setNeedsUpdateConstraints];
             }
         } else {
             [self.storyImageView cancelCurrentImageLoad];
@@ -124,6 +123,21 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             self.titleLabel.text = nil;
             self.dekLabel.text = nil;
         }
+    }
+
+
+
+    [self setNeedsUpdateConstraints];
+    [self setNeedsLayout];
+}
+
+#pragma mark UITableViewCell Overrides
+- (UIView*)contentView
+{
+    if (self.contentContainerView) {
+        return self.contentContainerView;
+    } else {
+        return [super contentView];
     }
 }
 @end

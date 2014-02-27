@@ -830,7 +830,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     
     CGSize cellSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     layoutCell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    layoutCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), cellSize.height + 16.);
+    layoutCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), cellSize.height + 1.);
     
     if (![layoutCell isDescendantOfView:tableView]) {
         [tableView addSubview:layoutCell];
@@ -839,8 +839,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
     
     layoutCell.hidden = YES;
-    [layoutCell.contentView setNeedsLayout];
-    [layoutCell.contentView layoutIfNeeded];
+    [layoutCell setNeedsLayout];
+    [layoutCell layoutIfNeeded];
     
     return layoutCell;
 }
@@ -862,12 +862,12 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                      userInfo:nil];
     }
     
-    [layoutCell.contentView setNeedsUpdateConstraints];
-    [layoutCell.contentView setNeedsLayout];
-    [layoutCell.contentView layoutIfNeeded];
+    [layoutCell setNeedsUpdateConstraints];
+    [layoutCell setNeedsLayout];
+    [layoutCell layoutIfNeeded];
     
     CGSize rowSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return (ceil(rowSize.height) + 6);
+    return (ceil(rowSize.height) + 1.);
 }
 @end
 
@@ -956,7 +956,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
             MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
             [self.managedObjectContext performBlockAndWait:^{
-                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
+                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
                 storyCell.story = contextStory;
             }];
         }
