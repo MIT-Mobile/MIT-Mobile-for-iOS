@@ -105,6 +105,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     return self;
 }
 
+- (BOOL)hidesBottomBarWhenPushed
+{
+    return NO;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -155,6 +160,15 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                                                                 toDate:[NSDate date]];
             NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
             [self setToolbarString:updateText animated:NO];
+        }
+
+        // Only make sure the toolbar is visible if we are not searching
+        // otherwise, returning after viewing a story pops it up
+        [self.navigationController setToolbarHidden:NO animated:animated];
+
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            self.navigationController.toolbar.barStyle = UIBarStyleBlack;
+            self.navigationController.toolbar.translucent = NO;
         }
     }
 }
@@ -285,9 +299,16 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     UILabel *updatingLabel = [[UILabel alloc] init];
     updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
     updatingLabel.text = string;
+
+    if (self.navigationController.toolbar.barStyle == UIBarStyleBlack) {
+        updatingLabel.textColor = [UIColor whiteColor];
+    } else {
+        updatingLabel.textColor = [UIColor blackColor];
+    }
+
     updatingLabel.backgroundColor = [UIColor clearColor];
     [updatingLabel sizeToFit];
-    
+
     UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
 }
