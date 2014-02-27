@@ -7,6 +7,8 @@
 
 @interface TourIntroViewController ()
 
+@property (nonatomic, strong) UIWebView *webView;
+
 - (void)loadTourInfo;
 - (void)showLoadingView;
 - (void)hideLoadingView;
@@ -43,11 +45,24 @@
                                                                                  target:nil
                                                                                  action:nil]];
     
+    NSLog(@"%@", NSStringFromCGRect(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)));
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    webView.delegate = self;
+    [self.view addSubview:webView];
+    self.webView = webView;
+
     [self loadTourInfo];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    DDLogDebug(@"%@", (self.navigationController.navigationBar.translucent) ? @"YES": @"NO");
+    NSLog(@"%@", NSStringFromCGRect(self.webView.frame));
+}
+
+
 - (void)loadTourInfo {
-    [self.view removeAllSubviews];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoLoaded:) name:TourDetailsLoadedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoFailedToLoad:) name:TourDetailsFailedToLoadNotification object:nil];
     
@@ -67,6 +82,9 @@
     
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"tours/tour_intro_template.html" relativeToURL:baseURL];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        fileURL = [NSURL URLWithString:@"tours/tour_intro_template_iOS_6.html" relativeToURL:baseURL];
+    }
     NSError *error = nil;
     NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!html) {
@@ -75,18 +93,12 @@
     }
     
     [self hideLoadingView];
-    [self.view removeAllSubviews];
-    
-    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    webView.delegate = self;
-    [self.view addSubview:webView];
 
     [html replaceOccurrencesOfString:@"__LOCAL_BASE_URL__" withString:[baseURL absoluteString] options:NSLiteralSearch range:NSMakeRange(0, [html length])];
 	[html replaceOccurrencesOfString:@"__BODY_BEFORE_BUTTON__" withString:[[ToursDataManager sharedManager] activeTour].summary options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     [html replaceOccurrencesOfString:@"__BODY_AFTER_BUTTON__" withString:[[ToursDataManager sharedManager] activeTour].moreInfo options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     
-    [webView loadHTMLString:html baseURL:baseURL];
+    [self.webView loadHTMLString:html baseURL:baseURL];
 }
 
 - (void)tourInfoFailedToLoad:(NSNotification *)aNotification {
@@ -95,20 +107,17 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsFailedToLoadNotification object:nil];
 
     [self hideLoadingView];
-    [self.view removeAllSubviews];
 
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 330)];
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.text = @"Failed to load tour data.";
-    label.font = [UIFont systemFontOfSize:15];
-    [self.view addSubview:label];
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
+    NSURL *fileURL = [NSURL URLWithString:@"tours/tour_intro_retry_template.html" relativeToURL:baseURL];
+    NSError *error = nil;
+    NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
+
+    [html replaceOccurrencesOfString:@"__LOCAL_BASE_URL__" withString:[baseURL absoluteString] options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [button setTitle:@"Retry" forState:UIControlStateNormal];
-    button.frame = CGRectMake(10, 350, 300, 44);
-    [button addTarget:self action:@selector(loadTourInfo) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
+    [self.webView loadHTMLString:html baseURL:baseURL];
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
 }
 
 
@@ -116,7 +125,7 @@
 // TODO: consolidate similar loading views into Common
 - (void)showLoadingView
 {
-	if (_loadingIndicator == nil) {
+	if (self.loadingIndicator == nil) {
 		static NSString *loadingString = @"Loading...";
 		UIFont *loadingFont = [UIFont systemFontOfSize:17.0];
 		CGSize stringSize = [loadingString sizeWithFont:loadingFont];
@@ -136,23 +145,23 @@
 		label.font = loadingFont;
 		label.backgroundColor = [UIColor clearColor];
         
-		_loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2, stringSize.height + verticalPadding * 2)];
-        _loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        _loadingIndicator.backgroundColor = [UIColor clearColor];
-		[_loadingIndicator addSubview:spinny];
-		[_loadingIndicator addSubview:label];
+		self.loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2, stringSize.height + verticalPadding * 2)];
+        self.loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.loadingIndicator.backgroundColor = [UIColor clearColor];
+		[self.loadingIndicator addSubview:spinny];
+		[self.loadingIndicator addSubview:label];
 	}
     
-	_loadingIndicator.center = self.view.center;
+	self.loadingIndicator.center = self.view.center;
 	
-	[self.view addSubview:_loadingIndicator];
+	[self.view addSubview:self.loadingIndicator];
 }
 
 - (void)hideLoadingView
 {
-    if (_loadingIndicator) {
-        [_loadingIndicator removeFromSuperview];
-        _loadingIndicator = nil;
+    if (self.loadingIndicator) {
+        [self.loadingIndicator removeFromSuperview];
+        self.loadingIndicator = nil;
     }
 }
 
@@ -172,6 +181,8 @@
 		shouldStart = NO;
         if ([[url path] rangeOfString:@"select_start"].location != NSNotFound) {
             [self selectStartingLocation];
+        } else if ([[url path] rangeOfString:@"retry"].location != NSNotFound) {
+            [self loadTourInfo];
         } else {
 			if ([[UIApplication sharedApplication] canOpenURL:url]) {
 				[[UIApplication sharedApplication] openURL:url];

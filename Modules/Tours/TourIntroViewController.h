@@ -1,11 +1,9 @@
 #import <UIKit/UIKit.h>
 #import "ToursDataManager.h"
 
-@interface TourIntroViewController : UIViewController <UIWebViewDelegate> {
-    
-    UIView *_loadingIndicator;
+@interface TourIntroViewController : UIViewController <UIWebViewDelegate>
 
-}
+@property (nonatomic, strong) UIView *loadingIndicator;
 
 - (void)selectStartingLocation;
 - (void)tourInfoLoaded:(NSNotification *)aNotification;
