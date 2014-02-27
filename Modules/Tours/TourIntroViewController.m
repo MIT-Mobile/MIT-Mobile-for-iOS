@@ -45,7 +45,6 @@
                                                                                  target:nil
                                                                                  action:nil]];
     
-    NSLog(@"%@", NSStringFromCGRect(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)));
     UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webView.delegate = self;
@@ -54,13 +53,6 @@
 
     [self loadTourInfo];
 }
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    DDLogDebug(@"%@", (self.navigationController.navigationBar.translucent) ? @"YES": @"NO");
-    NSLog(@"%@", NSStringFromCGRect(self.webView.frame));
-}
-
 
 - (void)loadTourInfo {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoLoaded:) name:TourDetailsLoadedNotification object:nil];
