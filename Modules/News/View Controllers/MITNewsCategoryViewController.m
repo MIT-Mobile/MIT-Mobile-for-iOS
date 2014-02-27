@@ -20,7 +20,7 @@
 #import "MITNewsConstants.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 
-static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells_NSMutableDictionary";
+static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCellsAssociatedObject";
 
 @interface MITNewsCategoryViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
 @property (nonatomic,getter = isUpdating) BOOL updating;
