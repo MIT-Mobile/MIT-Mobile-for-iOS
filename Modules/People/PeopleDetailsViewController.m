@@ -8,6 +8,16 @@
 #import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
+#import "MITCampusMapViewController.h"
+
+static NSString * EmailAccessoryIcon    = @"email";
+static NSString * PhoneAccessoryIcon    = @"phone";
+static NSString * MapAccessoryIcon      = @"map";
+static NSString * ExternalAccessoryIcon = @"external";
+
+static NSInteger AttributeValueIndex    = 0;
+static NSInteger DisplayNameIndex       = 1;
+static NSInteger AccessoryIconIndex     = 2;
 
 @interface PeopleDetailsViewController ()
 
@@ -48,20 +58,28 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     }
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([@"showLocationOnMap" isEqualToString:segue.identifier]) {
+        MITCampusMapViewController *mapViewController = (MITCampusMapViewController*)[segue destinationViewController];
+        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+        if (selectedIndexPath.row < [self.attributes count]) {
+            NSArray *personAttributes = self.attributes[selectedIndexPath.row];
+
+            DDLogVerbose(@"Using attribute %@:%@",personAttributes[DisplayNameIndex],personAttributes[AttributeValueIndex]);
+            NSString *locationName = personAttributes[AttributeValueIndex];
+
+            [mapViewController setPendingSearch:locationName];
+        }
+    }
+}
+
 - (void) setPersonDetails:(PersonDetails *)personDetails
 {
     _personDetails = [PeopleRecentsData updatePerson:personDetails];
     [self mapPersonAttributes];
 }
 
-static NSString * EmailAccessoryIcon    = @"email";
-static NSString * PhoneAccessoryIcon    = @"phone";
-static NSString * MapAccessoryIcon      = @"map";
-static NSString * ExternalAccessoryIcon = @"external";
-
-static NSInteger AttributeValueIndex    = 0;
-static NSInteger DisplayNameIndex       = 1;
-static NSInteger AccessoryIconIndex     = 2;
 
 - (void) mapPersonAttributes
 {
@@ -362,9 +380,9 @@ static NSInteger AccessoryIconIndex     = 2;
 			[self mapIconTapped:value];
         } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
             [self externalIconTapped:value];
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
         }
 	}
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark -
@@ -502,14 +520,17 @@ static NSInteger AccessoryIconIndex     = 2;
 
 - (void)mapIconTapped:(NSString *)room
 {
-	[[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:room]];	
+    if (room) {
+        [self performSegueWithIdentifier:@"showLocationOnMap" sender:self.tableView];
+    }
 }
 
 - (void)phoneIconTapped:(NSString *)phone
 {
 	NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phone]];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL])
+	if ([[UIApplication sharedApplication] canOpenURL:externURL]) {
 		[[UIApplication sharedApplication] openURL:externURL];
+    }
 }
 
 - (void)emailIconTapped:(NSString *)email

@@ -45,27 +45,28 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)setInterfaceHidden:(BOOL)interfaceHidden animated:(BOOL)animated;
 @end
 
-@implementation MITCampusMapViewController
+@implementation MITCampusMapViewController {
+    NSString* _pendingSearchQuery;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.hidesBottomBarWhenPushed = NO;
 
-        if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
-            // Make sure that the map view extends all the way under the toolbar in
-            // iOS 7
-            self.edgesForExtendedLayout = UIRectEdgeBottom;
-        }
     }
 
     return self;
 }
 
+- (BOOL)hidesBottomBarWhenPushed
+{
+    return NO;
+}
+
 - (void)loadView
 {
-    UIView *controllerView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
+    UIView *controllerView = [[UIView alloc] init];
     controllerView.backgroundColor = [UIColor mit_backgroundColor];
     self.view = controllerView;
 
@@ -92,7 +93,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
     NSDictionary *views = @{@"mapView" : mapView,
                             @"searchBar" : searchBar};
-    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[mapView]|"
+
+    // probably a more elegant way to do this, but it works for now
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mapView]|"
                                                                            options:0
                                                                            metrics:nil
                                                                              views:views]];
@@ -102,22 +105,51 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                                                            metrics:nil
                                                                              views:views]];
 
-    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[searchBar]|"
-                                                                           options:NSLayoutFormatAlignAllTop
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[searchBar]-(>=0)-|"
+                                                                           options:0
                                                                            metrics:nil
                                                                              views:views]];
+
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[searchBar]|"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:views]];
+
+    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        // Make sure that the map view extends all the way under the toolbar in
+        // iOS 7
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+    }
 
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     if (!self.interfaceHidden) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
 
     [self updateToolbarItems:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (_pendingSearchQuery) {
+        NSString *searchQuery = _pendingSearchQuery;
+        _pendingSearchQuery = nil;
+
+        self.searchBar.text = searchQuery;
+        [[MITMapModelController sharedController] searchMapWithQuery:searchQuery
+                                                              loaded:^(NSArray *objects, NSError *error) {
+                                                                  if (!error) {
+                                                                      self.selectedPlaces = objects;
+                                                                  } else {
+                                                                      DDLogVerbose(@"Failed to perform search '%@', %@",_pendingSearchQuery,error);
+                                                                  }
+                                                              }];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -166,15 +198,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init];
     categoryBrowseController.delegate = self;
 
-    //:^(MITMapCategory *category, NSOrderedSet *mapPlaceIDs) {
-    //    DDLogVerbose(@"Selected %d places (from categories)", [mapPlaceIDs count]);
-    //    if (mapPlaceIDs) {
-    //        self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
-    //    }
-    //
-    //    [self dismissViewControllerAnimated:YES completion:nil];
-    //}];
-    
     UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:categoryBrowseController];
     navigationController.navigationBarHidden = NO;
     [self presentViewController:navigationController
@@ -187,14 +210,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init];
     bookmarksViewController.delegate = self;
 
-    //:^(NSOrderedSet *mapPlaceIDs) {
-    //    DDLogVerbose(@"Selected %d places (from bookmarks)", [mapPlaceIDs count]);
-    //    if (mapPlaceIDs) {
-    //        self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
-    //    }
-    //    [self dismissViewControllerAnimated:YES completion:nil];
-    //}];
-
     UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:bookmarksViewController];
     navigationController.navigationBarHidden = NO;
     [self presentViewController:navigationController
@@ -204,7 +219,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (IBAction)listItemWasTapped:(UIBarButtonItem*)sender
 {
-
+    
 }
 
 - (IBAction)geotrackingItemWasTapped:(UIBarButtonItem*)sender
@@ -213,6 +228,11 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 }
 
 #pragma mark - Dynamic Properties
+- (void)setPendingSearch:(NSString*)pendingSearch
+{
+    _pendingSearchQuery = pendingSearch;
+}
+
 - (BOOL)hasFavorites
 {
     NSUInteger numberOfBookmarks = [[MITMapModelController sharedController] numberOfBookmarks];
