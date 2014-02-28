@@ -33,7 +33,10 @@ enum {
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor mit_backgroundColor];
+    mainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 
     {
         CGFloat margin = 20.0;
@@ -47,9 +50,14 @@ enum {
         
         CGSize fittedSize = [labelView sizeThatFits:CGSizeMake(viewFrame.size.width - (2.0 * margin), 2000.0)];
         labelFrame.origin = CGPointMake(margin, margin);
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            labelFrame.origin.y += 64.;
+        }
+        
         labelFrame.size = fittedSize;
         labelView.frame = labelFrame;
 
+        
         [mainView addSubview:labelView];
         self.messageView = labelView;
     }
@@ -58,12 +66,19 @@ enum {
         CGRect tableFrame = CGRectZero;
         tableFrame.origin = CGPointMake(0, floor(CGRectGetMaxY(self.messageView.frame) + 10.0));
         tableFrame.size = CGSizeMake(viewFrame.size.width, viewFrame.size.height - tableFrame.origin.y);
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            tableFrame.origin.y += 64.;
+            tableFrame.size.height -= 64.;
+        }
+
         UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame
                                                               style:UITableViewStyleGrouped];
         [tableView applyStandardColors];
         tableView.delegate = self;
         tableView.dataSource = self;
-
+        tableView.scrollEnabled = NO;
+        tableView.rowHeight = 60.;
+        
         [mainView addSubview:tableView];
         self.contactsTable = tableView;
     }
@@ -141,15 +156,13 @@ enum {
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellReuseIdentifier = @"FacilitiesLeasedTableViewCell";
     
-    SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell*)[tableView dequeueReusableCellWithIdentifier:cellReuseIdentifier];
+    UITableViewCell *cell = (UITableViewCell*)[tableView dequeueReusableCellWithIdentifier:cellReuseIdentifier];
     
     if (cell == nil) {
-        cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                                     reuseIdentifier:cellReuseIdentifier];
-        cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
         cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+        cell.detailTextLabel.textColor = [UIColor darkGrayColor];
     }
     
     switch (indexPath.row) {
@@ -158,14 +171,14 @@ enum {
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
                 cell.textLabel.text = @"Email";
                 cell.tag = FacilitiesLeasedEmailTag;
-                cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",self.location.propertyOwner.email];
+                cell.detailTextLabel.text = self.location.propertyOwner.email;
             } else if ([self.location.propertyOwner.phone length] > 0) {
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
                 cell.textLabel.text = @"Call";
                 cell.tag = FacilitiesLeasedPhoneTag;
                 
                 NSString *phone = self.location.propertyOwner.phone;
-                cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@.%@.%@)",
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@.%@.%@",
                                                 [phone substringToIndex:3],
                                                 [phone substringWithRange:NSMakeRange(3, 3)],
                                                 [phone substringFromIndex:6]];
@@ -175,7 +188,7 @@ enum {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
             cell.textLabel.text = @"Email";
             cell.tag = FacilitiesLeasedEmailTag;
-            cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",self.location.propertyOwner.email];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",self.location.propertyOwner.email];
             break;
         default:
             break;

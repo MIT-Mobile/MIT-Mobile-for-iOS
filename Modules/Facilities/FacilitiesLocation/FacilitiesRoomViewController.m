@@ -11,6 +11,7 @@
 #import "UIKit+MITAdditions.h"
 
 @interface FacilitiesRoomViewController ()
+@property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
 @property (nonatomic,strong) MITLoadingActivityView* loadingView;
 @property (nonatomic,strong) FacilitiesLocationData* locationData;
 @property (nonatomic,strong) NSPredicate* filterPredicate;
@@ -45,26 +46,12 @@
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor mit_backgroundColor];
-    
+    mainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     CGRect searchBarFrame = CGRectZero;
-    
-    {
-        UISearchBar *searchBar = [[UISearchBar alloc] init];
-        searchBar.delegate = self;
-        searchBar.barStyle = UIBarStyleBlackOpaque;
-        
-        UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
-                                                                                         contentsController:self];
-        searchController.delegate = self;
-        searchController.searchResultsDataSource = self;
-        searchController.searchResultsDelegate = self;
-        
-        [searchBar sizeToFit];
-        searchBarFrame = searchBar.frame;
-        [mainView addSubview:searchBar];
-    }
     
     {
         CGRect tableRect = screenFrame;
@@ -73,7 +60,8 @@
         
         UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
                                                                style: UITableViewStyleGrouped];
-        [tableView applyStandardColors];
+        tableView.backgroundView = nil;
+        tableView.backgroundColor = [UIColor clearColor];
         
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
@@ -87,6 +75,24 @@
         [mainView addSubview:tableView];
     }
     
+    {
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
+        searchBar.delegate = self;
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            searchBar.barStyle = UIBarStyleBlackOpaque;
+        }
+        
+        UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
+                                                                                        contentsController:self];
+        searchController.delegate = self;
+        searchController.searchResultsDataSource = self;
+        searchController.searchResultsDelegate = self;
+        self.strongSearchDisplayController = searchController;
+        
+        [searchBar sizeToFit];
+        searchBarFrame = searchBar.frame;
+        self.tableView.tableHeaderView = searchBar;
+    }
     
     {
         CGRect loadingFrame = screenFrame;
