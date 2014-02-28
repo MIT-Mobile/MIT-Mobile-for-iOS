@@ -106,13 +106,15 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
                 UICollectionViewLayoutAttributes *dividerAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
                 dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
                 dividerLayoutInfo[indexPath] = dividerAttributes;
+
                 if (indexPath.section == sectionCount - 1) {
                     // need to add section divider at right edge of collectionview
-                    indexPath = [NSIndexPath indexPathForRow:item inSection:section + 1];
+                    indexPath = [NSIndexPath indexPathForRow:item inSection:section];
                     UICollectionViewLayoutAttributes *dividerAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
                     dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
                     dividerLayoutInfo[indexPath] = dividerAttributes;
                 }
+                
                 newLayoutInfo[MITDiningMenuComparisonSectionDividerKind] = dividerLayoutInfo;
             }
         }

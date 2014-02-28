@@ -473,6 +473,7 @@ typedef enum {
 
 - (NSInteger) numberOfSectionsInCompareView:(DiningHallMenuCompareView *)compareView
 {
+#warning potentially unsafe hardcoded value
     return 5;
 }
 
