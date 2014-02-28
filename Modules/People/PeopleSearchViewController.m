@@ -107,6 +107,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
     self.searchTerms = nil;
     self.searchTokens = nil;
+    self.searchResults = nil;
     [self.searchResultsLoadingView removeFromSuperview];
 }
 
