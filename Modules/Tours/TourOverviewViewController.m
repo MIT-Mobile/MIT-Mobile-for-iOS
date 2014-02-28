@@ -1064,13 +1064,17 @@ enum {
      CGSizeMake(mainTextLabelWidth, TOUR_SITE_ROW_HEIGHT * 0.6) 
                         lineBreakMode:NSLineBreakByTruncatingTail];
 	self.textLabel.font = font;
-    self.textLabel.frame = CGRectMake(mainTextLabelX, mainTextLabelY, 
-                                      mainTextLabelWidth, labelSize.height);
+    self.textLabel.frame = CGRectIntegral(CGRectMake(mainTextLabelX, mainTextLabelY,
+                                      mainTextLabelWidth, labelSize.height));
     
     if (self.detailTextLabel.text) {
         self.detailTextLabel.frame = 
-        CGRectMake(mainTextLabelX, round(TOUR_SITE_ROW_HEIGHT * 0.6) + 5, 
-                   mainTextLabelWidth, round(TOUR_SITE_ROW_HEIGHT * 0.4) - 5);
+        CGRectIntegral(CGRectMake(mainTextLabelX, round(TOUR_SITE_ROW_HEIGHT * 0.6) + 5,
+                   mainTextLabelWidth, round(TOUR_SITE_ROW_HEIGHT * 0.4) - 5));
+    }
+    
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.separatorInset = UIEdgeInsetsMake(0, mainTextLabelX, 0, 0);
     }
 }
 
