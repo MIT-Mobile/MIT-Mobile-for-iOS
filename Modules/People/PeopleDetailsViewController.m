@@ -232,18 +232,28 @@ static NSInteger AccessoryIconIndex     = 2;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSString * attrType = nil;
-    if (indexPath.section == 0) {
-        NSArray *personInfo = self.attributes[indexPath.row];
-        attrType = personInfo[DisplayNameIndex];
-    }
-    
 	switch (indexPath.section) {
         case 0:
-            if ([attrType isEqualToString:@"address"]) {
-                return 82.;
-            }
-            return 62.;
+        {
+            NSArray *personInfo = self.attributes[indexPath.row];
+            NSString * attrValue = personInfo[AttributeValueIndex];
+
+            // Quick and dirty sizing for the 3.5 release. Needs to be replaced later
+            NSDictionary *fontAttributes = @{NSFontAttributeName : [UIFont systemFontOfSize:16.]};
+            NSAttributedString *sizingString = [[NSAttributedString alloc] initWithString:attrValue attributes:fontAttributes];
+
+            // the 30.px size here is a rough estimate, assuming 15px insets
+            // on either side of the contentView in the 'AttributeCell'
+            CGSize maximumSize = CGSizeMake(CGRectGetWidth(tableView.bounds) - 30., CGFLOAT_MAX);
+            CGFloat height = CGRectGetHeight([sizingString boundingRectWithSize:maximumSize
+                                                                           options:NSStringDrawingUsesLineFragmentOrigin
+                                                                           context:nil]);
+
+            // Calculated from the storyboard on 2014.02.28 (bskinner)
+            // Height of the 'AttributeCell', minus the 20px
+            // display size of the value label
+            return 42 + fabs(ceil(height));
+        }
 
         case 1:
         default:
