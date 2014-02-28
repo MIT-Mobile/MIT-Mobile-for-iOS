@@ -341,10 +341,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             return UITableViewAutomaticDimension;
         }
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		return UITableViewAutomaticDimension;
+        if (self.searchResults) {
+            return 60.;
+        }
 	}
 
-    return UITableViewAutomaticDimension;
+    return 0;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
