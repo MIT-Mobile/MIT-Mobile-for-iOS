@@ -11,6 +11,7 @@
 #import "MITMapCategoriesViewController.h"
 #import "MITMapBookmarksViewController.h"
 #import "MITMapDetailViewController.h"
+#import "MITNavigationController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -174,7 +175,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     //    [self dismissViewControllerAnimated:YES completion:nil];
     //}];
     
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:categoryBrowseController];
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:categoryBrowseController];
     navigationController.navigationBarHidden = NO;
     [self presentViewController:navigationController
                        animated:YES
@@ -194,7 +195,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     //    [self dismissViewControllerAnimated:YES completion:nil];
     //}];
 
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:bookmarksViewController];
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:bookmarksViewController];
     navigationController.navigationBarHidden = NO;
     [self presentViewController:navigationController
                        animated:YES

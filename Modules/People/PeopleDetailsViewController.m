@@ -7,6 +7,7 @@
 #import "Foundation+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
+#import "MITNavigationController.h"
 
 @interface PeopleDetailsViewController ()
 
@@ -325,7 +326,7 @@ static NSInteger AccessoryIconIndex     = 2;
 			
 			// present newPersonController in a separate navigationController
 			// since it doesn't have its own nav bar
-			UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:creator];
+			UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
 			
 			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 			[appDelegate presentAppModalViewController:navController animated:YES];

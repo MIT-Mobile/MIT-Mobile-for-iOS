@@ -11,6 +11,7 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "MITScannerHelpViewController.h"
 #import "UIImage+Resize.h"
+#import "MITNavigationController.h"
 #import "CoreDataManager.h"
 
 @interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate,UITableViewDataSource,NSFetchedResultsControllerDelegate>
@@ -325,7 +326,7 @@
 - (IBAction)showHelp:(id)sender
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
-    UINavigationController *helpNavController = [[UINavigationController alloc] initWithRootViewController:vc];
+    UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         helpNavController.navigationBar.barStyle = UIBarStyleDefault;
     } else {

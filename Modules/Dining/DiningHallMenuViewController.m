@@ -14,6 +14,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "UIImageView+WebCache.h"
+#import "MITNavigationController.h"
 
 @interface DiningHallMenuViewController ()
 
@@ -270,7 +271,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [filterVC setFilters:self.filtersApplied];
     filterVC.delegate = self;
     
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:filterVC];
+    UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:filterVC];
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     navController.navigationBar.barStyle = UIBarStyleDefault;
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {

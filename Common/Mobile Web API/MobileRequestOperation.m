@@ -8,6 +8,7 @@
 #import "MobileRequestLoginViewController.h"
 #import "TouchstoneResponse.h"
 #import "MIT_MobileAppDelegate.h"
+#import "MITNavigationController.h"
 
 
 static MobileRequestAuthenticationTracker *gSecureStateTracker = nil;
@@ -695,7 +696,7 @@ typedef enum
                                                                                                                 password:self.touchstonePassword];
                 loginView.delegate = self;
                 
-                UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginView];
+                UINavigationController *loginNavController = [[MITNavigationController alloc] initWithRootViewController:loginView];
                 if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
                     loginNavController.navigationBar.barStyle = UIBarStyleDefault;
                     loginNavController.navigationBar.translucent = YES;

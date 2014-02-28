@@ -12,6 +12,7 @@
 #import "CoreLocation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMapAnnotationView.h"
+#import "MITNavigationController.h"
 
 
 typedef enum {
@@ -237,7 +238,7 @@ enum {
     vc.startingLocations = [[ToursDataManager sharedManager] startLocationsForTour];
     vc.overviewController = self;
     
-    UINavigationController *dummyVC = [[UINavigationController alloc] initWithRootViewController:vc];
+    UINavigationController *dummyVC = [[MITNavigationController alloc] initWithRootViewController:vc];
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] presentAppModalViewController:dummyVC animated:YES];
 }
 
