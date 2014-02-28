@@ -80,9 +80,13 @@
 		}
 		return YES;
 	} else {
-        MITCampusMapViewController *campusMapController = [[MITCampusMapViewController alloc] init];
-        [campusMapController setPendingSearch:query];
-        [[MIT_MobileAppDelegate applicationDelegate].rootNavigationController pushViewController:campusMapController animated:YES];
+        if ([localPath hasPrefix:@"search"]) {
+            MITCampusMapViewController *campusMapController = [[MITCampusMapViewController alloc] init];
+            [campusMapController setPendingSearch:query];
+            [[MIT_MobileAppDelegate applicationDelegate].rootNavigationController pushViewController:campusMapController animated:YES];
+        } else {
+            DDLogWarn(@"Ignoring URL request for %@", localPath);
+        }
         
         /*
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
