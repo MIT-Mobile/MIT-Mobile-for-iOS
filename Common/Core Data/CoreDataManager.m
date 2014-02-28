@@ -205,7 +205,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 }
 
 - (id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ LIKE %@", attributeName, value];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K like %@", attributeName, value];
     NSArray *objects = [self objectsForEntity:entityName matchingPredicate:predicate];
     return [objects lastObject];
 }
