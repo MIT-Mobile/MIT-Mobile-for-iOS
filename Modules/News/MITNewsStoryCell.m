@@ -111,7 +111,18 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             }
             
             if (imageURL) {
-                [self.storyImageView setImageWithURL:imageURL];
+                MITNewsStory *currentStory = self.story;
+                __weak MITNewsStoryCell *weakSelf = self;
+                [self.storyImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                    MITNewsStoryCell *blockSelf = weakSelf;
+                    if (blockSelf && (blockSelf->_story == currentStory)) {
+                        if (error) {
+                            blockSelf.storyImageView.image = nil;
+                        }
+                    }
+                }];
+            } else {
+                self.storyImageView.image = nil;
             }
         } else {
             [self.storyImageView cancelCurrentImageLoad];
