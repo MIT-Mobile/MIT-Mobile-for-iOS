@@ -341,7 +341,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             return UITableViewAutomaticDimension;
         }
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if (self.searchResults) {
+        if ([self.searchResults count]) {
             return 60.;
         }
 	}
