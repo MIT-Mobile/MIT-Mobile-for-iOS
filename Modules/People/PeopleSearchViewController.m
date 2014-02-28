@@ -93,12 +93,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     }
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
-{
-    tableView.backgroundView = nil;
-    tableView.backgroundColor = [UIColor mit_backgroundColor];
-}
-
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     return NO;
