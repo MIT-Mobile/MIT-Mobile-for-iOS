@@ -224,6 +224,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	if (tableView == self.tableView) { // show phone directory tel #, recents
         if (MITPeopleSearchTableViewSectionExample == indexPath.section) {
             cell = [tableView dequeueReusableCellWithIdentifier:@"SampleCell" forIndexPath:indexPath];
+            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGRectGetWidth(tableView.bounds));
         } else if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
             if (indexPath.row == 0) {
                 cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
@@ -319,6 +320,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         return nil;
     }
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
