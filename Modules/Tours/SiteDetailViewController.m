@@ -328,12 +328,15 @@
 }
 
 - (void)prepSlidingViewsForward:(BOOL)forward {
-    CGFloat viewWidth = self.view.frame.size.width;
+    CGFloat viewWidth = self.view.bounds.size.width;
     CGFloat slideWidth = viewWidth  * (forward ? 1 : -1);
     CGFloat xOrigin = (self.oldSlidingView == nil) ? 0 : slideWidth;
-    CGFloat height = self.view.frame.size.height - self.fakeToolbar.frame.size.height;
+    CGFloat height = self.view.bounds.size.height - self.fakeToolbar.bounds.size.height;
     
-    CGRect newFrame = CGRectMake(xOrigin, 0, self.view.frame.size.width, height);
+    CGRect newFrame = CGRectMake(xOrigin, 0, self.view.bounds.size.width, height);
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        newFrame = CGRectMake(xOrigin, 64., self.view.bounds.size.width, height - 64.);
+    }
     self.incomingSlidingView = [[UIScrollView alloc] initWithFrame:newFrame];
     self.incomingSlidingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.incomingSlidingView];
@@ -456,7 +459,7 @@
             
             self.navigationItem.title = @"Walking Directions";
             
-            newFrame = CGRectMake(10, 10, self.incomingSlidingView.frame.size.width - 20, floor(self.incomingSlidingView.frame.size.height * 0.5));
+            newFrame = CGRectMake(10, 10, self.incomingSlidingView.bounds.size.width - 20, floor(self.incomingSlidingView.bounds.size.height * 0.5));
             if (!self.routeMapView) {
                 MITMapView *routeMapView = [[MITMapView alloc] initWithFrame:newFrame];
                 routeMapView.delegate = self;
@@ -580,7 +583,7 @@
             [self.progressbar setNeedsDisplay];
         }
         
-        newFrame = CGRectMake(0, 0, self.incomingSlidingView.frame.size.width, floor(self.incomingSlidingView.frame.size.height * 0.5));
+        newFrame = CGRectMake(0, 0, self.incomingSlidingView.bounds.size.width, floor(self.incomingSlidingView.bounds.size.height * 0.5));
         MITThumbnailView *thumb = [[MITThumbnailView alloc] initWithFrame:newFrame];
         NSData *imageData = component.photo;
         NSString *imageURL = component.photoURL;
@@ -606,13 +609,7 @@
     webView.delegate = self;
     webView.tag = WEB_VIEW_TAG;
     webView.scrollView.scrollsToTop = NO;
-	
-	// prevent webView from scrolling separately from the parent scrollview
-	for (id subview in webView.subviews) {
-		if ([[subview class] isSubclassOfClass: [UIScrollView class]]) {
-			((UIScrollView *)subview).bounces = NO;
-		}
-	}
+	webView.scrollView.scrollEnabled = NO;
     
     NSMutableString *html = [NSMutableString stringWithString:self.siteTemplate];
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", webView.frame.size.width];
@@ -808,6 +805,9 @@
         // increase scrollview height by how much the webview height grows
         CGSize contentSize = self.incomingSlidingView.contentSize;
         contentSize.height = self.incomingSlidingView.frame.size.height + addedHeight;
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            contentSize.height += 64.;
+        }
         self.incomingSlidingView.contentSize = contentSize;
     }
 }

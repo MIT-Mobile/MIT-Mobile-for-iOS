@@ -113,7 +113,7 @@ enum {
     
     [self updateTourComponents];
     
-    self.locateUserButton.image = [UIImage imageNamed:@"map/map_button_location.png"];
+    self.locateUserButton.image = [UIImage imageNamed:@"global/location"];
     
     [self showMap:YES];
 }
@@ -317,14 +317,18 @@ enum {
 
 - (void)showMap:(BOOL)showMap {
     
-    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width,
-                              self.view.frame.size.height - self.toolBar.frame.size.height);
-    
     NSMutableArray *toolbarItems = [self.toolBar.items mutableCopy];
     
     self.mapListToggle.selectedSegmentIndex = showMap ? MapListSegmentMap : MapListSegmentList;
     
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.toolBar.tintColor = [UIColor MITTintColor];
+    }
+    
     if (showMap) {
+        CGRect frame = CGRectMake(0, 0, self.view.frame.size.width,
+                                  self.view.frame.size.height - self.toolBar.frame.size.height);
+        
         //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
         
         [self.tableView removeFromSuperview];
@@ -349,6 +353,13 @@ enum {
     } else {
         [self.mapView removeFromSuperview];
         self.mapView = nil;
+        
+        CGRect frame = CGRectMake(0, 64., self.view.frame.size.width,
+                                  self.view.frame.size.height - self.toolBar.frame.size.height - 64.);
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            frame = CGRectMake(0, 0, self.view.frame.size.width,
+                               self.view.frame.size.height - self.toolBar.frame.size.height);
+        }
         
         if (!self.tableView) {
             self.tableView = [[UITableView alloc] initWithFrame:frame
@@ -463,7 +474,11 @@ enum {
     if (!control) {
         UIImage *scrim = [UIImage imageNamed:@"tours/tour_notsure_scrim_top.png"];
         
-        CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, scrim.size.height);
+        CGRect frame = CGRectMake(0, 64., self.view.frame.size.width, scrim.size.height);
+        
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            frame = CGRectMake(0, 0, self.view.frame.size.width, scrim.size.height);
+        }
         
         control = [[UIControl alloc] initWithFrame:frame];
         control.backgroundColor = [UIColor clearColor];
@@ -472,6 +487,7 @@ enum {
         UIImageView *imageView = [[UIImageView alloc] initWithImage:scrim];
         [control addSubview:imageView];
         
+        frame = control.bounds;
         frame.origin.x += 7;
         frame.origin.y += 2;
         frame.size.width -= 14;
@@ -815,7 +831,7 @@ enum {
     for (id annotation in self.mapView.annotations) {
         if ([annotation isKindOfClass:[TourSiteMapAnnotation class]]) {
             TourSiteMapAnnotation *tourAnnotation = (TourSiteMapAnnotation *)annotation;
-            if (tourAnnotation.site == currentSite) {
+            if ([tourAnnotation.site isEqual:currentSite]) {
                 [self.mapView selectAnnotation:tourAnnotation animated:YES withRecenter:YES];
                 self.selectedAnnotation = tourAnnotation;
                 break;
