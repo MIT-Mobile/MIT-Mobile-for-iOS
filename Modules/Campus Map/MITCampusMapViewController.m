@@ -7,6 +7,7 @@
 
 #import "MGSMapView.h"
 #import "MGSLayer.h"
+#import "MITModule.h"
 
 #import "MITMapCategoriesViewController.h"
 #import "MITMapBookmarksViewController.h"
@@ -121,6 +122,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         self.edgesForExtendedLayout = UIRectEdgeBottom;
     }
 
+    self.title = [[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:CampusMapTag] longName];
 }
 
 - (void)viewWillAppear:(BOOL)animated
