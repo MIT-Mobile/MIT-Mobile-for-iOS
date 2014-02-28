@@ -147,6 +147,15 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     if (!objectManager) {
         objectManager = [RKObjectManager managerWithBaseURL:url];
 
+        RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        [errorMapping addPropertyMapping: [RKAttributeMapping attributeMappingFromKeyPath:@"error" toKeyPath:@"errorMessage"]];
+        RKResponseDescriptor *errorResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorMapping
+                                                                                                     method:RKRequestMethodAny
+                                                                                                pathPattern:nil
+                                                                                                    keyPath:nil
+                                                                                                statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError)];
+        [objectManager addResponseDescriptor:errorResponseDescriptor];
+
         [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
             NSIndexSet *successfulStatusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
             
