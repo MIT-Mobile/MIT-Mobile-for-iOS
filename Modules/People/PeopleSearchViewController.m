@@ -73,91 +73,126 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
 	[super viewWillAppear:animated];
 
-    if (self.searchResultsTableView) {
-        NSIndexPath *selectedRow = [self.searchResultsTableView indexPathForSelectedRow];
+    if ([self.searchDisplayController isActive]) {
+        NSIndexPath *selectedRow = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
         if (selectedRow && self.clearsSelectionOnViewWillAppear) {
-            [self.searchResultsTableView deselectRowAtIndexPath:selectedRow animated:animated];
+            [self.searchDisplayController.searchResultsTableView deselectRowAtIndexPath:selectedRow animated:animated];
         }
     } else {
         [self.tableView reloadData];
     }
 }
 
-#pragma mark -
-#pragma mark Search methods
-- (void) searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+#pragma mark - Search methods
+#pragma mark UISearchDisplay Delegate
+- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
-
-}
-
-- (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    if ([searchBar.text length] <= 0) {
-        self.searchResults = nil;
-        _searchCancelled = YES;
-        [self.searchResultsTableView reloadData];
+    if (self.searchTerms) {
+        controller.searchBar.text = self.searchTerms;
+        [self performSearch];
     }
 }
 
-- (void)beginExternalSearch:(NSString *)externalSearchTerms {
-	self.searchTerms = externalSearchTerms;
-	self.searchBar.text = self.searchTerms;
-	
-	[self performSearch];
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+    tableView.backgroundView = nil;
+    tableView.backgroundColor = [UIColor mit_backgroundColor];
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
-	self.searchResults = nil;
-    self.searchCancelled = YES;
-    self.searchTerms = nil;
+    return NO;
+}
 
-    self.searchDisplayController.searchResultsTableView.hidden = YES;
+- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
+{
+    [self.tableView reloadData];
+}
+
+- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+    self.searchTerms = nil;
+    self.searchTokens = nil;
     [self.searchResultsLoadingView removeFromSuperview];
+}
+
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if ([searchBar.text length] <= 0) {
+        self.searchResults = nil;
+        self.searchTerms = nil;
+        self.searchCancelled = YES;
+        [self.searchDisplayController.searchResultsTableView reloadData];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
 	self.searchTerms = searchBar.text;
 	[self performSearch];
-    [self.searchBar resignFirstResponder];
+}
+
+
+- (void)beginExternalSearch:(NSString *)externalSearchTerms {
+	self.searchTerms = externalSearchTerms;
+
+    if ([self.searchDisplayController isActive]) {
+        self.searchDisplayController.searchBar.text = externalSearchTerms;
+        [self.searchDisplayController.searchBar resignFirstResponder];
+        [self performSearch];
+    } else {
+        [self.searchDisplayController setActive:YES animated:YES];
+    }
 }
 
 - (void)performSearch
 {
 	// save search tokens for drawing table cells
-	NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:[[self.searchTerms lowercaseString] componentsSeparatedByString:@" "]];
-	[tempTokens sortUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
+    NSString *searchQuery = [self.searchTerms lowercaseString];
+    NSArray *searchTokens = [searchQuery componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    searchTokens = [searchTokens sortedArrayUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
         return [@([string1 length]) compare:@([string2 length])];
     }];
-    
-	self.searchTokens = tempTokens;
-    
-    [MITPeopleResource peopleMatchingQuery:self.searchTerms loaded:^(NSArray *objects, NSError *error) {
-        if (!error && !_searchCancelled) {
-            // if there is no error and the search is not cancelled
-            self.searchResults = objects;
-            [self.searchDisplayController.searchResultsTableView reloadData];
-        }
 
-        [self.searchResultsTableView removeFromSuperview];
+	self.searchTokens = searchTokens;
+	self.searchCancelled = NO;
+
+    NSString *currentQueryString = self.searchTerms;
+    __weak PeopleSearchViewController *weakSelf = self;
+    [MITPeopleResource peopleMatchingQuery:currentQueryString loaded:^(NSArray *objects, NSError *error) {
+        PeopleSearchViewController *blockSelf = weakSelf;
+        if (blockSelf) {
+            if (error) {
+                blockSelf.searchResults = nil;
+                [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+
+            } else if (!blockSelf.searchCancelled && (blockSelf.searchTerms == currentQueryString)) {
+                blockSelf.searchResults = objects;
+                [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+            }
+
+            [blockSelf.searchResultsLoadingView removeFromSuperview];
+        }
     }];
 
-    self.searchResultsTableView.hidden = NO;
     [self showLoadingView];
-
-	_searchCancelled = NO;
 }
-#pragma mark -
-#pragma mark Table view methods
+
+#pragma mark - Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	if (tableView == self.searchDisplayController.searchResultsTableView)
+    if (tableView == self.tableView) {
+        if ([[[PeopleRecentsData sharedData] recents] count] > 0) {
+            return 3; // Examples + Directory Assistance/Contacts + Recents
+        } else {
+            return 2; // Examples + Directory Assistance/Contacts, no recents
+        }
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		return 1;
-	else if ([[[PeopleRecentsData sharedData] recents] count] > 0)
-		return 3;
-	else
-		return 2;
+    } else {
+        return 0;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -173,7 +208,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 			default:
 				return 0;
 		}
-	} else if (tableView == self.searchResultsTableView) {
+	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		return ([self.searchResults count] ? [self.searchResults count] : 1); //Force a single row
 	} else {
         return 0;
@@ -228,7 +263,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         }
 
         return cell;
-	} else if (tableView == self.searchResultsTableView) { // search results
+	} else if (tableView == self.searchDisplayController.searchResultsTableView) { // search results
 		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
 
 		if (!cell) {
@@ -256,11 +291,13 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             // in this section we try to highlight the parts of the results that match the search terms
             UIFont *labelFont = cell.textLabel.font;
             UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
+
             __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:fullname];
             [self.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
-                NSRange boldRange = [[fullname lowercaseString] rangeOfString:token];
+                NSRange boldRange = [fullname rangeOfString:token options:NSCaseInsensitiveSearch];
+
                 if (boldRange.location != NSNotFound) {
-                    [attributeString addAttribute:NSFontAttributeName value:boldFont range:boldRange];
+                    [attributeString setAttributes:@{NSFontAttributeName : boldFont} range:boldRange];
                 }
             }];
             
@@ -301,7 +338,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         } else if (MITPeopleSearchTableViewSectionRecentlyViewed == section) {
             return UITableViewAutomaticDimension;
         }
-	} else if (tableView == self.searchResultsTableView) {
+	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		return 60.;
 	}
 
@@ -349,16 +386,17 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 #pragma mark - Connection methods
 - (void)showLoadingView {
-	if (!self.searchResultsLoadingView) {
-        CGRect frame = self.tableView.bounds;
-        frame.origin.y = CGRectGetMaxY(self.searchBar.frame);
-        frame.size.height -= frame.origin.y;
+    if (self.searchDisplayController.searchResultsTableView) {
+        MITLoadingActivityView *loadingView = self.searchResultsLoadingView;
+        if (!self.searchResultsLoadingView) {
+            CGRect frame = self.searchDisplayController.searchResultsTableView.bounds;
+            loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
 
-		MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
-        self.searchResultsLoadingView = loadingView;
-	}
+            self.searchResultsLoadingView = loadingView;
+        }
 
-    [self.view addSubview:self.searchResultsLoadingView];
+        [self.searchDisplayController.searchResultsTableView addSubview:loadingView];
+    }
 }
 
 #pragma mark - Storyboard Segues
@@ -400,25 +438,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
 		[[UIApplication sharedApplication] openURL:phoneURL];
     }
-}
-
-#pragma mark UISearchDisplay Delegate
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
-{
-    tableView.backgroundView = nil;
-    tableView.backgroundColor = [UIColor mit_backgroundColor];
-    self.searchResultsTableView = tableView;
-}
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
-{
-    return NO;
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView
-{
-    // Not really needed since self.searchResultsTableView is weak, but just for correctness-sake
-    self.searchResultsTableView = nil;
 }
 
 @end
