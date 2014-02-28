@@ -180,7 +180,6 @@
         [dateFormatter setDateFormat:@"MMM dd, y"];
     });
 
-#warning Update base URL in News template from comm-staging-web.mit.edu to newsoffice.mit.edu before submitting for release.
     NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];
     
     NSError *error = nil;
