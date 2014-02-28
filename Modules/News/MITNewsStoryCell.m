@@ -25,10 +25,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     [super prepareForReuse];
     
     [self.storyImageView cancelCurrentImageLoad];
-    self.storyImageView.image = nil;
-    self.titleLabel.text = nil;
-    self.dekLabel.text = nil;
-    _story = nil;
 }
 
 - (void)updateConstraints
