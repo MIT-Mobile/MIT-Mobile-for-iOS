@@ -325,10 +325,19 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     if ([sectionKey isEqualToString:sDescriptionHTMLKey]) {
         return self.descriptionHeight + 20; // add some vertical padding
     } else if ([sectionKey isEqualToString:sCuisinesKey]) {
-        CGSize constraint = CGSizeMake(205, CGFLOAT_MAX);
+
+        // Width sized out on 2014.02.28 by measuring text width in
+        // retina simulator
+        CGSize constraint = CGSizeMake(160, CGFLOAT_MAX);
         NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
-        CGSize stringSize = [cuisineString sizeWithFont:[self detailTextLabelFont] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
-        return MAX(44, stringSize.height + 20);
+
+
+        NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:cuisineString attributes:@{NSFontAttributeName : [self detailTextLabelFont]}];
+
+        CGFloat stringHeight = CGRectGetHeight([attributedString boundingRectWithSize:constraint
+                                                                              options:NSStringDrawingUsesLineFragmentOrigin
+                                                                              context:nil]);
+        return MAX(44, ceil(stringHeight) + 16.);
     }
     
     return 44;
