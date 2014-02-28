@@ -28,10 +28,17 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
         self.view.backgroundColor = [UIColor mit_backgroundColor];
     } else {
-        CGRect frame = self.textView.frame;
-        frame.origin.y += 64.;
-        self.textView.frame = frame;
+        CGRect textFrame = self.textView.frame;
+        textFrame.origin.y += 64.;
+        self.textView.frame = textFrame;
     }
+
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        CGRect tableFrame = self.tableView.frame;
+        tableFrame.origin.y += 44.;
+        self.tableView.frame = tableFrame;
+    }
+    
     self.textView.backgroundColor = [UIColor clearColor];
 }
 
@@ -82,8 +89,9 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:contactCellIdentifier];
         if (cell == nil) {
-            cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                                           reuseIdentifier:contactCellIdentifier];
+            cell.detailTextLabel.textColor = [UIColor darkGrayColor];
         }
     }
 
@@ -99,7 +107,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
         
         case 1:
         {
-            SecondaryGroupedTableViewCell *customCell = (SecondaryGroupedTableViewCell *)cell;
+            UITableViewCell *customCell = (UITableViewCell *)cell;
             customCell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
             customCell.accessoryType = UITableViewCellAccessoryNone;
             customCell.textLabel.backgroundColor = [UIColor clearColor];
@@ -109,12 +117,12 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
                 case 0:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
                     customCell.textLabel.text = @"Email Facilities";
-                    customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesEmailAddress];
+                    customCell.detailTextLabel.text = kFacilitiesEmailAddress;
                     break;
                 case 1:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
                     customCell.textLabel.text =  @"Call Facilities";
-                    customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesPhoneNumber];
+                    customCell.detailTextLabel.text = kFacilitiesPhoneNumber;
                     break;
                 default:
                     break;
@@ -126,6 +134,17 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     }
     
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case 0:
+            return 44.;
+
+        default:
+            return 60.;
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
