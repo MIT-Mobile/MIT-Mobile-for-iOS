@@ -30,7 +30,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"Detail";
+        self.title = @"Report";
     }
     return self;
 }
@@ -71,7 +71,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.view.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     self.submitButton = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
                                                           style:UIBarButtonItemStyleDone
@@ -91,7 +94,33 @@
         self.imageView.adjustsImageWhenHighlighted = NO;
         self.imageView.imageView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageButton.titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
-        self.imageButton.titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
+        
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+
+            self.imageButton.backgroundColor = [UIColor whiteColor];
+            self.imageButton.adjustsImageWhenHighlighted = NO;
+            
+            UIColor *color = [UIColor darkGrayColor];
+            CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+            UIGraphicsBeginImageContext(rect.size);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            
+            CGContextSetFillColorWithColor(context, [color CGColor]);
+            CGContextFillRect(context, rect);
+            
+            UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            [self.imageButton setBackgroundImage:image forState:UIControlStateHighlighted];
+            
+            self.imageButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+            [self.imageButton setTitleColor:[UIColor MITTintColor] forState:UIControlStateNormal];
+
+            CGRect frame = self.imageButton.frame;
+            frame.origin.x = CGRectGetMinX(self.view.bounds);
+            frame.size.width = CGRectGetWidth(self.view.bounds);
+            self.imageButton.frame = frame;
+        }
     }
     
     {

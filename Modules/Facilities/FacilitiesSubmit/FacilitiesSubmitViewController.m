@@ -18,7 +18,10 @@
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     self.title = @"Submit Report";
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.view.backgroundColor = [UIColor mit_backgroundColor];
+    }
     
     CGRect frame = self.view.frame;
     CGFloat margin = 20.0;
@@ -43,6 +46,33 @@
         self.completeButton.hidden = YES;
         self.completeButton.titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         [self.completeButton setTitleColor:CELL_STANDARD_FONT_COLOR forState:UIControlStateNormal];
+
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            
+            self.completeButton.backgroundColor = [UIColor whiteColor];
+            self.completeButton.adjustsImageWhenHighlighted = NO;
+            
+            UIColor *color = [UIColor darkGrayColor];
+            CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+            UIGraphicsBeginImageContext(rect.size);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            
+            CGContextSetFillColorWithColor(context, [color CGColor]);
+            CGContextFillRect(context, rect);
+            
+            UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            [self.completeButton setBackgroundImage:image forState:UIControlStateHighlighted];
+            
+            self.completeButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+            [self.completeButton setTitleColor:[UIColor MITTintColor] forState:UIControlStateNormal];
+            
+            CGRect frame = self.completeButton.frame;
+            frame.origin.x = CGRectGetMinX(self.view.bounds);
+            frame.size.width = CGRectGetWidth(self.view.bounds);
+            self.completeButton.frame = frame;
+        }
 
         [self.completeButton setTitle:@"Return to Start"
                              forState:UIControlStateNormal];
