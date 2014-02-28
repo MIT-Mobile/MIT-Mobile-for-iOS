@@ -133,8 +133,6 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
     return cell;
 }
 
