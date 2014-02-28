@@ -367,6 +367,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 			[appDelegate presentAppModalViewController:picker animated:YES];
 		}
+
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 	} else {
 		NSArray *personInfo = self.attributes[indexPath.row];
 		NSString *actionIcon = personInfo[AccessoryIconIndex];
@@ -376,10 +378,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 			[self emailIconTapped:value];
         } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
 			[self phoneIconTapped:value];
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
         } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
 			[self mapIconTapped:value];
         } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
             [self externalIconTapped:value];
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        } else {
             [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
         }
 	}
