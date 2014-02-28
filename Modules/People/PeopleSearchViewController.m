@@ -266,6 +266,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) { // search results
 		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
 
+
 		if (!cell) {
 			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -310,6 +311,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             cell.textLabel.text = nil;
             cell.detailTextLabel.text = nil;
             cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.hidden = YES;
         }
 
         return cell;
