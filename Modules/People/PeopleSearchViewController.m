@@ -15,9 +15,12 @@
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
-    MITPeopleSearchTableViewSectionContacts,
-    MITPeopleSearchTableViewSectionRecentlyViewed
+    MITPeopleSearchTableViewSectionContacts = 1,
+    MITPeopleSearchTableViewSectionRecentlyViewed = 2
 };
+
+// Hard-code this for now, should be pulled from the API in the future
+static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 @interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
 
@@ -29,7 +32,6 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 @property (nonatomic,copy) NSString *searchTerms;
 @property (nonatomic,copy) NSArray *searchTokens;
 
-@property (strong) NSURL *directoryPhoneURL;
 @property BOOL searchCancelled;
 @end
 
@@ -41,7 +43,7 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
                            bundle:nil];
     
     if (self) {
-        self.directoryPhoneURL = [NSURL URLWithString:@"tel://617.253.1000"];
+        
     }
     
     return self;
@@ -191,9 +193,13 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
             if (indexPath.row == 0) {
                 cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+                
+                // Overwrite whatever text there is in the prototyped cell (even if it's correct)
+                // and replace it with our local value. Eventually, this information should be
+                // pulled from the server instead of a constant.
+                cell.detailTextLabel.text = MITPeopleDirectoryAssistancePhone;
             } else if (indexPath.row == 1) {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
-                //cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
             }
         } else if (MITPeopleSearchTableViewSectionRecentlyViewed == indexPath.section) {
             cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
@@ -261,6 +267,9 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
             cell.textLabel.attributedText = attributeString;
         } else {
             // Clear out the text fields in the event of cell reuse
+            // Needs to be done if there is not a valid person object for this row
+            // because we may be displaying an empty cell (for example, in search results
+            // to suppress the "No Results" text)
             cell.textLabel.text = nil;
             cell.detailTextLabel.text = nil;
             cell.accessoryType = UITableViewCellAccessoryNone;
@@ -281,12 +290,13 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
             return 86.;
         } else if (MITPeopleSearchTableViewSectionContacts == section) {
             switch (indexPath.row) {
-                case 0:
+                case 0: // Directory Assistance
                     return 60.;
-                case 1:
+                case 1: // Emergency Contacts
                     return 44.;
                 default:
-                    return 44.;
+                     // There shouldn't be anything else in this section but, just in case
+                    return UITableViewAutomaticDimension;
             }
         } else if (MITPeopleSearchTableViewSectionRecentlyViewed == section) {
             return UITableViewAutomaticDimension;
@@ -310,7 +320,17 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
+    if (tableView == self.tableView) {
+        if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
+            switch (indexPath.row) {
+                case 0:
+                    // Call directory assistance!
+                    [self phoneIconTapped];
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                    break;
+            }
+        }
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
 		PersonDetails *personDetails = nil;
 
         // TODO: Switch to using the segues
@@ -328,7 +348,6 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 }
 
 #pragma mark - Connection methods
-
 - (void)showLoadingView {
 	if (!self.searchResultsLoadingView) {
         CGRect frame = self.tableView.bounds;
@@ -355,7 +374,6 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 
 #pragma mark -
 #pragma mark Action sheet methods
-
 - (void)showActionSheet
 {
 	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Clear Recents?"
@@ -378,8 +396,10 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 
 - (void)phoneIconTapped
 {
-	if ([[UIApplication sharedApplication] canOpenURL:self.directoryPhoneURL])
-		[[UIApplication sharedApplication] openURL:self.directoryPhoneURL];
+    NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@",MITPeopleDirectoryAssistancePhone]];
+	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
+		[[UIApplication sharedApplication] openURL:phoneURL];
+    }
 }
 
 #pragma mark UISearchDisplay Delegate
