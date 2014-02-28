@@ -39,7 +39,10 @@
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor mit_backgroundColor];
+    mainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 
     {
         CGRect tableRect = screenFrame;
