@@ -22,9 +22,17 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.view.backgroundColor = [UIColor mit_backgroundColor];
+    } else {
+        CGRect frame = self.textView.frame;
+        frame.origin.y += 64.;
+        self.textView.frame = frame;
+    }
     self.textView.backgroundColor = [UIColor clearColor];
-    [self.tableView applyStandardColors];
 }
 
 - (void)viewDidUnload
