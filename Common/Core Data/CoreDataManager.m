@@ -241,21 +241,6 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
             context = context.parentContext;
         }
     }
-
-    /*
-     NSError *error = nil;
-     if (![context save:&error]) {
-     DDLogError(@"Failed to save to data store: %@", [error localizedDescription]);
-     NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
-     if(detailedErrors != nil && [detailedErrors count] > 0) {
-     for(NSError* detailedError in detailedErrors) {
-     DDLogError(@"  DetailedError: %@", [detailedError userInfo]);
-     }
-     }
-     else {
-     DDLogError(@"  %@", [error userInfo]);
-     }
-     }*/
 }
 
 #pragma mark -
