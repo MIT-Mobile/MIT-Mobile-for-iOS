@@ -24,32 +24,12 @@
 
 - (void)loadModuleHomeController
 {
-    MITCampusMapViewController *controller = [[MITCampusMapViewController alloc] init];
-    
-    self.moduleHomeController = controller;
+    self.moduleHomeController = [[MITCampusMapViewController alloc] init];
 }
 
 - (MITCampusMapViewController*)campusMapVC
 {
-    if ([self.moduleHomeController isKindOfClass:[MITCampusMapViewController class]]) {
-        return ((MITCampusMapViewController*)self.moduleHomeController);
-    } else {
-        return nil;
-    }
-}
-
-- (void)applicationDidEnterBackground {
-    UINavigationController *controller = [MITAppDelegate() rootNavigationController];
-    if (controller.visibleViewController == self.campusMapVC) {
-        [self.campusMapVC viewWillDisappear:NO];
-    }
-}
-
-- (void)applicationWillEnterForeground {
-    UINavigationController *controller = [MITAppDelegate() rootNavigationController];
-    if (controller.visibleViewController == self.campusMapVC) {
-        [self.campusMapVC viewWillAppear:NO];
-    }
+    return nil;
 }
 
 /*
@@ -100,7 +80,9 @@
 		}
 		return YES;
 	} else {
-        DDLogWarn(@"Ignoring URL request for %@", localPath);
+        MITCampusMapViewController *campusMapController = [[MITCampusMapViewController alloc] init];
+        [campusMapController setPendingSearch:query];
+        [[MIT_MobileAppDelegate applicationDelegate].rootNavigationController pushViewController:campusMapController animated:YES];
         
         /*
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
