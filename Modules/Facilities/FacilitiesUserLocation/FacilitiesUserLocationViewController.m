@@ -49,7 +49,11 @@ static const NSUInteger kMaxResultCount = 10;
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor mit_backgroundColor];
+
+    mainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        mainView.backgroundColor = [UIColor mit_backgroundColor];
+    }
 
     {
         CGRect tableRect = mainView.frame;
@@ -92,7 +96,6 @@ static const NSUInteger kMaxResultCount = 10;
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.hidden = YES;
 }
