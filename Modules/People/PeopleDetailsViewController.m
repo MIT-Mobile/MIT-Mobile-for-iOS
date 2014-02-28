@@ -257,7 +257,7 @@ static NSInteger AccessoryIconIndex     = 2;
 
         case 1:
         default:
-            return 44.;
+            return UITableViewAutomaticDimension;
     }
 
 }
