@@ -264,11 +264,11 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) { // search results
 		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
 
-
 		if (!cell) {
 			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
-			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
+
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
         // Make sure to sanity check the current row. Since tableView:numberOfRowsInSection:
         //  returns a minimum value of 1 (even if there are no actual results). If the table
@@ -340,7 +340,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             return UITableViewAutomaticDimension;
         }
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		return 60.;
+		return UITableViewAutomaticDimension;
 	}
 
     return UITableViewAutomaticDimension;
