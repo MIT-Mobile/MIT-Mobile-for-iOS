@@ -842,12 +842,17 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     } else {
         MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
 
-        if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
+        if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
             MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-            [self.managedObjectContext performBlockAndWait:^{
-                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                storyCell.story = contextStory;
-            }];
+            
+            if (story) {
+                [self.managedObjectContext performBlockAndWait:^{
+                    MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                    storyCell.story = contextStory;
+                }];
+            } else {
+                storyCell.story = nil;
+            }
         }
     }
 }
