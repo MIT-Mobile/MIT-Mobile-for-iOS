@@ -241,6 +241,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
             }
 
             DDLogError(@"%@",message);
+            break;
         } else {
             context = context.parentContext;
         }
