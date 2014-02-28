@@ -2,7 +2,6 @@
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "SBJSON.h"
 #import "MobileRequestOperation.h"
 
 #define TAB_COUNT 4
@@ -126,13 +125,13 @@
 			NSMutableArray *noticeStrings = [NSMutableArray array];
 			for(MITNotification *notification in notifications) {
 				[noticeStrings addObject:[notification string]];
-			}		
-			SBJSON *sbjson = [SBJSON new];
-		
+			}
+
 			NSMutableDictionary *parameters = [identity mutableDictionary];
-			[parameters setObject:[sbjson stringWithObject:noticeStrings] forKey:@"tags"];
-			[sbjson release];
-            
+
+            NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
+            parameters[@"tags"] = [[[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding] autorelease];
+
             MobileRequestOperation *request = [[self class] requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
             [[NSOperationQueue mainQueue] addOperation:request];
 		}

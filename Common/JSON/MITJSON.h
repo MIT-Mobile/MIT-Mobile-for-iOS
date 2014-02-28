@@ -1,10 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "JSON.h"
 
-
-@interface MITJSON : NSObject {
-
-}
+@interface MITJSON : NSObject
 
 + (id)objectWithJSONString:(NSString *)jsonString;
 + (id)objectWithJSONString:(NSString *)jsonString error:(NSError**)error;

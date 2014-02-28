@@ -263,17 +263,11 @@
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
 		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
-		BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BD1E930B103B5D60004429AA /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FA103B5D60004429AA /* SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BD1E930C103B5D60004429AA /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FC103B5D60004429AA /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BD1E930D103B5D60004429AA /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FE103B5D60004429AA /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E9300103B5D60004429AA /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
-		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; };
 		DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */; };
 		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
 		DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */; };
@@ -964,19 +958,6 @@
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTextElementViewController.h; sourceTree = "<group>"; };
 		A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryTextElementViewController.m; sourceTree = "<group>"; };
-		BD1E92F4103B5D60004429AA /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		BD1E92F5103B5D60004429AA /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
-		BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
-		BD1E92F7103B5D60004429AA /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
-		BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
-		BD1E92F9103B5D60004429AA /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
-		BD1E92FA103B5D60004429AA /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJSON.m; sourceTree = "<group>"; };
-		BD1E92FB103B5D60004429AA /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
-		BD1E92FC103B5D60004429AA /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonBase.m; sourceTree = "<group>"; };
-		BD1E92FD103B5D60004429AA /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
-		BD1E92FE103B5D60004429AA /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
-		BD1E92FF103B5D60004429AA /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
-		BD1E9300103B5D60004429AA /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBuildInfo.h; sourceTree = "<group>"; };
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
@@ -2401,19 +2382,6 @@
 			children = (
 				DE1B4D7010CE17B30073BABC /* MITJSON.h */,
 				DE1B4D7110CE17B30073BABC /* MITJSON.m */,
-				BD1E92F4103B5D60004429AA /* JSON.h */,
-				BD1E92F5103B5D60004429AA /* NSObject+SBJSON.h */,
-				BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */,
-				BD1E92F7103B5D60004429AA /* NSString+SBJSON.h */,
-				BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */,
-				BD1E92F9103B5D60004429AA /* SBJSON.h */,
-				BD1E92FA103B5D60004429AA /* SBJSON.m */,
-				BD1E92FB103B5D60004429AA /* SBJsonBase.h */,
-				BD1E92FC103B5D60004429AA /* SBJsonBase.m */,
-				BD1E92FD103B5D60004429AA /* SBJsonParser.h */,
-				BD1E92FE103B5D60004429AA /* SBJsonParser.m */,
-				BD1E92FF103B5D60004429AA /* SBJsonWriter.h */,
-				BD1E9300103B5D60004429AA /* SBJsonWriter.m */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -3220,8 +3188,6 @@
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
 				2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */,
-				BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */,
-				BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */,
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
@@ -3244,11 +3210,7 @@
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
-				BD1E930B103B5D60004429AA /* SBJSON.m in Sources */,
-				BD1E930C103B5D60004429AA /* SBJsonBase.m in Sources */,
 				2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */,
-				BD1E930D103B5D60004429AA /* SBJsonParser.m in Sources */,
-				BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */,
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,

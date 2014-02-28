@@ -9,7 +9,6 @@
 #import "ConnectionDetector.h"
 #import "ModuleVersions.h"
 #import "MobileRequestOperation.h"
-#import "JSON.h"
 
 @interface DiningData ()
 

@@ -2,7 +2,6 @@
 #import "MITMapDetailViewController.h"
 #import "TabViewControl.h"
 #import "CampusMapViewController.h"
-#import "NSString+SBJSON.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITMapAnnotationView.h"
