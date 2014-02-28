@@ -543,13 +543,12 @@
                                         fromView:nil];
     CGSize keyboardSize = keyboardRect.size;
 
-    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSTimeInterval duration = 0;
-    [durationValue getValue:&duration];
+    NSNumber *durationNumber = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval duration = [durationNumber doubleValue];
+    
 
-    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    UIViewAnimationOptions options = 0;
-    [curveValue getValue:&options];
+    NSNumber *curveNumber = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    UIViewAnimationOptions options = [curveNumber integerValue];
     options |= UIViewAnimationOptionBeginFromCurrentState;
     options |= UIViewAnimationOptionAllowAnimatedContent;
 
@@ -582,13 +581,11 @@
     NSValue *keyboardValue = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
     CGRect keyboardRect = [keyboardValue CGRectValue];
 
-    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSTimeInterval duration = 0;
-    [durationValue getValue:&duration];
+    NSNumber *durationNumber = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval duration = [durationNumber doubleValue];
 
-    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    UIViewAnimationOptions options = 0;
-    [curveValue getValue:&options];
+    NSNumber *curveNumber = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    UIViewAnimationOptions options = [curveNumber integerValue];
     options |= UIViewAnimationOptionBeginFromCurrentState;
     
     CGRect visibleRect = self.scrollView.frame;
