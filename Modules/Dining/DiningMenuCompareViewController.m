@@ -146,16 +146,6 @@ typedef enum {
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        // Only tweaking the height here because the width
-        //  (which was the height) was already layed out underneath
-        //  the status bar so we only need to tweak the top content inset
-        CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
-        UIEdgeInsets contentInset = self.scrollView.contentInset;
-        contentInset.top += statusBarHeight;
-        self.scrollView.contentInset = contentInset;
-    }
-
     [self loadData];
     [self reloadAllComparisonViews];
     [self.scrollView setContentOffset:self.current.frame.origin];
