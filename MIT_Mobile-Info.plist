@@ -25,12 +25,6 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>FB_APP_ID</string>
-			</array>
-		</dict>
-		<dict>
 			<key>CFBundleURLName</key>
 			<string>edu.mit.mitmobile</string>
 			<key>CFBundleURLSchemes</key>
