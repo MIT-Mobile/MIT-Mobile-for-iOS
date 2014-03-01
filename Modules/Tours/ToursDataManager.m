@@ -119,7 +119,7 @@ static ToursDataManager *s_toursDataManager = nil;
     }
     
     TourSiteOrRoute *currentComponent = firstComponent.nextComponent;
-    while (currentComponent != firstComponent) {
+    while ([currentComponent.componentID isEqual:firstComponent.componentID]) {
         if ([currentComponent.type isEqualToString:@"site"]) {
             [sites addObject:currentComponent];
         }
