@@ -23,7 +23,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     self = [super initWithFrame:frame];
     if (self) {
         
-        self.headerView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, HEADER_VIEW_HEIGHT)];
+        self.headerView = [[UILabel alloc] initWithFrame:CGRectZero];
         self.headerView.textAlignment = NSTextAlignmentCenter;
         self.headerView.textColor = [UIColor whiteColor];
         self.headerView.font = [UIFont boldSystemFontOfSize:12];
@@ -34,8 +34,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
         
-        CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
-        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
+        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         self.columnWidth = DEFAULT_COLUMN_WIDTH;
         self.collectionView.dataSource = self;
         self.collectionView.delegate = self;
@@ -53,6 +52,20 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         [self addSubview:self.collectionView];
     }
     return self;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    CGRect bounds = self.bounds;
+
+    CGRect headerViewFrame = CGRectZero;
+    CGRect collectionViewFrame = CGRectZero;
+    CGRectDivide(bounds, &headerViewFrame, &collectionViewFrame, HEADER_VIEW_HEIGHT, CGRectMinYEdge);
+
+    self.headerView.frame = headerViewFrame;
+    self.collectionView.frame = collectionViewFrame;
 }
 
 - (void) setColumnWidth:(CGFloat)columnWidth
