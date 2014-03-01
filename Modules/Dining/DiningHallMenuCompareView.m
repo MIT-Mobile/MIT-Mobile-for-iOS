@@ -43,6 +43,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.collectionView.showsVerticalScrollIndicator = NO;
         self.collectionView.bounces = YES;
         self.collectionView.alwaysBounceVertical = YES;
+        self.collectionView.alwaysBounceHorizontal = NO;
         self.collectionView.backgroundColor = [UIColor whiteColor];
         [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];                  // may want a delegate method or some way to register classes outside ComparisonView
         [self.collectionView registerClass:[DiningHallMenuComparisonNoMealsCell class] forCellWithReuseIdentifier:@"DiningMenuNoMealsCell"];
