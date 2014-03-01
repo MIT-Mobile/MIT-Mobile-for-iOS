@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xO0-MG-RIm">
-                    <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="L0t-F6-TLI"/>
@@ -29,7 +29,7 @@
                 <constraint firstItem="xO0-MG-RIm" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="2ty-z1-H3B"/>
                 <constraint firstAttribute="bottom" secondItem="xO0-MG-RIm" secondAttribute="bottom" id="GaO-BJ-nSD"/>
                 <constraint firstAttribute="trailing" secondItem="xO0-MG-RIm" secondAttribute="trailing" id="H5O-hE-dUL"/>
-                <constraint firstItem="xO0-MG-RIm" firstAttribute="top" secondItem="1" secondAttribute="top" constant="20" symbolic="YES" id="Ods-uF-JcF"/>
+                <constraint firstItem="xO0-MG-RIm" firstAttribute="top" secondItem="1" secondAttribute="top" id="Ods-uF-JcF"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>

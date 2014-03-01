@@ -99,25 +99,33 @@ typedef enum {
     //  so we need to swap the height and width values and also take into account the shifted
     //  position of the status bar. The nib should be automatically positioning the scroll view;
     //  we just need to figure out the content offset
-    CGFloat statusBarHeight = 20.;
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        // Using ...size.width instead of ...size.height because of the
-        // orientation swap
-        statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
-    }
-
     CGSize pageSize = self.scrollView.bounds.size;
     CGFloat pageWidth = pageSize.width;
-    pageSize.width = pageSize.height + statusBarHeight;
-    pageSize.height = pageWidth - statusBarHeight;
+    pageSize.width = pageSize.height;
+    pageSize.height = pageWidth;
+
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        CGFloat statusBarHeight = 20.;
+        pageSize.height -= statusBarHeight;
+        pageSize.width += statusBarHeight;
+    } else {
+        // Only tweaking the height here because the width
+        //  (which was the height) was already layed out underneath
+        //  the status bar so we only need to tweak the top content inset
+        CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
+        pageSize.height -= statusBarHeight;
+
+        UIEdgeInsets contentInset = self.scrollView.contentInset;
+        contentInset.top += statusBarHeight;
+        self.scrollView.contentInset = contentInset;
+    }
 
     CGSize contentSize = CGSizeMake((pageSize.width * 3), pageSize.height);
-    CGPoint contentOffset = CGPointMake(DAY_VIEW_PADDING, 0.);
-    self.scrollView.contentOffset = contentOffset;
     self.scrollView.contentSize = contentSize;
     
     CGSize comparisonSize = pageSize;
     comparisonSize.width -= (DAY_VIEW_PADDING * 2);
+
 	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height)];
     self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
@@ -144,10 +152,6 @@ typedef enum {
     } else {
         [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
         [self.previous setScrollOffsetAgainstRightEdge];
-    }
-
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.edgesForExtendedLayout = (UIRectEdgeAll ^ UIRectEdgeTop);
     }
 }
 
@@ -249,7 +253,7 @@ typedef enum {
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
-    if (scrollView.contentOffset.x > scrollView.frame.size.width) {
+    if (scrollView.contentOffset.x > scrollView.bounds.size.width) {
         // have scrolled to the right
         if ([self didReachEdgeInDirection:kPageDirectionForward]) {
             shouldCenter = NO;
@@ -262,7 +266,7 @@ typedef enum {
             }
         }
         
-    } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
+    } else if (scrollView.contentOffset.x < scrollView.bounds.size.width) {
         // have scrolled to the left
         if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
             shouldCenter = NO;
@@ -277,7 +281,8 @@ typedef enum {
     }
     
     if (shouldCenter) {
-        [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
+        CGFloat currentContentOffsetY = scrollView.contentOffset.y;
+        [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING,currentContentOffsetY) animated:NO]; // return to center view to give illusion of infinite scroll
     }
     
 }
