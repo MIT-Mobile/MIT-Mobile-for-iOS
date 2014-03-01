@@ -1,7 +1,7 @@
 #import "DiningMenuCompareViewController.h"
 #import "DiningHallMenuCompareView.h"
 #import "CoreDataManager.h"
-#import "Foundation+MITAdditions.h"
+#import "MITAdditions.h"
 
 #import "HouseVenue.h"
 #import "DiningDay.h"
@@ -38,7 +38,7 @@
 
 @interface DiningMenuCompareViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
 
-@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
 
 @property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
 @property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
@@ -77,9 +77,7 @@ typedef enum {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-    self.view.autoresizesSubviews = YES;
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
     NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
@@ -87,24 +85,39 @@ typedef enum {
 
     // The scrollview has a frame that is just larger than the viewcontrollers view bounds so that padding can be seen between scrollable pages.
     // Frames are also inverted (height => width, width => height) because when the view loads the rotation has not yet occurred.
-    CGRect frame;
+    /*CGRect frame = CGRectZero;
     if ([[[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."] objectAtIndex:0] integerValue] >= 6) {
-        frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
+        frame = CGRectMake(-DAY_VIEW_PADDING, 20, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
     } else {
         // iOS 5 and iOS 6 differ on the size of the status bar at this point in time.
         CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-        frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2) + statusBarHeight, CGRectGetWidth(self.view.bounds) - statusBarHeight);
+        frame = CGRectMake(-DAY_VIEW_PADDING, statusBarHeight, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2) + statusBarHeight, CGRectGetWidth(self.view.bounds) - statusBarHeight);
+     }*/
+    //CGSize contentSize = CGSizeMake(CGRectGetWidth(frame) * 3, CGRectGetHeight(frame));
+
+    // The way this view is used is comes into existence in landscape mode but it's loaded in portrait mode
+    //  so we need to swap the height and width values and also take into account the shifted
+    //  position of the status bar. The nib should be automatically positioning the scroll view;
+    //  we just need to figure out the content offset
+    CGFloat statusBarHeight = 20.;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        // Using ...size.width instead of ...size.height because of the
+        // orientation swap
+        statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
     }
+
+    CGSize pageSize = self.scrollView.bounds.size;
+    CGFloat pageWidth = pageSize.width;
+    pageSize.width = pageSize.height + statusBarHeight;
+    pageSize.height = pageWidth - statusBarHeight;
+
+    CGSize contentSize = CGSizeMake((pageSize.width * 3), pageSize.height);
+    CGPoint contentOffset = CGPointMake(DAY_VIEW_PADDING, 0.);
+    self.scrollView.contentOffset = contentOffset;
+    self.scrollView.contentSize = contentSize;
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
-    self.scrollView.delegate = self;
-    self.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) * 3, CGRectGetHeight(self.scrollView.bounds));
-    self.scrollView.pagingEnabled = YES;
-    self.scrollView.showsHorizontalScrollIndicator = NO;
-    
-    [self.view addSubview:self.scrollView];
-    
-    CGSize comparisonSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) - (DAY_VIEW_PADDING * 2), CGRectGetHeight(self.scrollView.bounds));
+    CGSize comparisonSize = pageSize;
+    comparisonSize.width -= (DAY_VIEW_PADDING * 2);
 	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height)];
     self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
@@ -131,6 +144,10 @@ typedef enum {
     } else {
         [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
         [self.previous setScrollOffsetAgainstRightEdge];
+    }
+
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.edgesForExtendedLayout = (UIRectEdgeAll ^ UIRectEdgeTop);
     }
 }
 
