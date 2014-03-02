@@ -435,12 +435,14 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
 
-        [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
-        [modelController featuredStoriesWithOffset:0
-                                             limit:MITNewsDefaultNumberOfFeaturedStories
-                                        completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                            requestCompleted(MITNewsStoryFeaturedStoriesRequestToken,error);
-                                        }];
+        if (self.showFeaturedStoriesSection) {
+            [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
+            [modelController featuredStoriesWithOffset:0
+                                                 limit:MITNewsDefaultNumberOfFeaturedStories
+                                            completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                                requestCompleted(MITNewsStoryFeaturedStoriesRequestToken,error);
+                                            }];
+        }
 
         [modelController categories:^(NSArray *categories, NSError *error) {
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
