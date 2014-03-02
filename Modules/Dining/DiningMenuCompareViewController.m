@@ -91,6 +91,8 @@ typedef enum {
     self.current.delegate = self;
     self.next.delegate = self;
     
+    self.scrollView.pagingEnabled = YES;
+    
     [self.scrollView addSubview:self.previous];
     [self.scrollView addSubview:self.current];
     [self.scrollView addSubview:self.next];
