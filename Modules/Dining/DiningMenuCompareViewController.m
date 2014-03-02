@@ -1,6 +1,8 @@
 #import "DiningMenuCompareViewController.h"
 #import "DiningHallMenuCompareView.h"
 #import "CoreDataManager.h"
+#import "Foundation+MITAdditions.h"
+
 #import "MITAdditions.h"
 
 #import "HouseVenue.h"
@@ -38,7 +40,8 @@
 
 @interface DiningMenuCompareViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
 
-@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
+@property (nonatomic,strong) IBOutlet NSLayoutConstraint *topSpacingConstraint;
 
 @property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
 @property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
@@ -52,7 +55,7 @@
 @property (nonatomic, strong) NSFetchedResultsController *nextFRC;
 
 @property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
-
+@property (nonatomic) BOOL shouldSetupForInitialAppearance;
 @end
 
 @implementation DiningMenuCompareViewController
@@ -77,80 +80,90 @@ typedef enum {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     self.view.backgroundColor = [UIColor mit_backgroundColor];
-    
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
-    NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
-    self.houseVenueSections = [houseVenues valueForKey:@"shortName"];
-
-	self.previous = [[DiningHallMenuCompareView alloc] init];
-    self.current = [[DiningHallMenuCompareView alloc] init];
-    self.next = [[DiningHallMenuCompareView alloc] init];
-
-    self.previous.delegate = self;
-    self.current.delegate = self;
-    self.next.delegate = self;
-    
+    self.scrollView.delegate = self;
     self.scrollView.pagingEnabled = YES;
+    self.scrollView.showsHorizontalScrollIndicator = NO;
+    self.scrollView.showsVerticalScrollIndicator = NO;
+    self.scrollView.backgroundColor = [UIColor clearColor];
     
-    [self.scrollView addSubview:self.previous];
-    [self.scrollView addSubview:self.current];
-    [self.scrollView addSubview:self.next];
+    DiningHallMenuCompareView *previous = [[DiningHallMenuCompareView alloc] init];
+    previous.delegate = self;
+    [self.scrollView addSubview:previous];
+    self.previous = previous;
+    
+    DiningHallMenuCompareView *current = [[DiningHallMenuCompareView alloc] init];
+    current.delegate = self;
+    [self.scrollView addSubview:current];
+    self.current = current;
+    
+    DiningHallMenuCompareView *next = [[DiningHallMenuCompareView alloc] init];
+    next.delegate = self;
+    [self.scrollView addSubview:next];
+    self.next = next;
+    
 
+    self.shouldSetupForInitialAppearance = YES;
+    
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.edgesForExtendedLayout = UIRectEdgeAll ^ UIRectEdgeTop;
+        self.edgesForExtendedLayout = UIRectEdgeNone;
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
 }
 
-- (void)viewWillLayoutSubviews
+- (void)updateViewConstraints
 {
-    // The way this view is used is comes into existence in landscape mode but it's loaded in portrait mode
-    //  so we need to swap the height and width values and also take into account the shifted
-    //  position of the status bar. The nib should be automatically positioning the scroll view;
-    //  we just need to figure out the content offset
-    CGSize pageSize = self.scrollView.bounds.size;
-
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        UIEdgeInsets contentInset = self.scrollView.contentInset;
-        CGSize statusBarSize = [[UIApplication sharedApplication] statusBarFrame].size;
-        contentInset.top = MIN(statusBarSize.height,statusBarSize.width);
-        self.scrollView.contentInset = contentInset;
-        pageSize.height -= contentInset.top;
-    }
-
-    CGSize contentSize = CGSizeMake((pageSize.width * 3), pageSize.height);
-    self.scrollView.contentSize = contentSize;
-
-    CGSize comparisonSize = pageSize;
-    comparisonSize.width -= (DAY_VIEW_PADDING * 2);
-
-    self.previous.frame = CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height);
-    self.current.frame = CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
-    self.next.frame = CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
-
-    CGFloat currentContentOffsetY = self.scrollView.contentOffset.y;
-    // offset if on edge of list
-    if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
-        // should center on previous view and have current meal ref be one ahead
-        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
-        [self.scrollView setContentOffset:CGPointMake(self.previous.frame.origin.x - DAY_VIEW_PADDING, currentContentOffsetY) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-    } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
-        // should center on next view and have current meal ref be one behind
-        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
-        [self.scrollView setContentOffset:CGPointMake(self.next.frame.origin.x - DAY_VIEW_PADDING, currentContentOffsetY) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-        [self.current setScrollOffsetAgainstRightEdge];
-    } else {
-        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, currentContentOffsetY) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-        [self.previous setScrollOffsetAgainstRightEdge];
+    [super updateViewConstraints];
+    
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        self.topSpacingConstraint.constant = 0;
     }
 }
 
 - (void) viewWillAppear:(BOOL)animated
 {
     [self loadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    // This code was originally in viewDidLoad but had to be moved out because
+    // the sizing needs to be done *after* the view has been layed out
+    if (self.shouldSetupForInitialAppearance) {
+        self.shouldSetupForInitialAppearance = NO;
+        // offset if on edge of list
+        
+        
+        if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+            // should center on previous view and have current meal ref be one ahead
+            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.previous.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+        } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
+            // should center on next view and have current meal ref be one behind
+            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.next.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+            [self.current setScrollOffsetAgainstRightEdge];
+        } else {
+            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+            [self.previous setScrollOffsetAgainstRightEdge];
+        }
+    }
+    
     [self reloadAllComparisonViews];
-    [self.scrollView setContentOffset:self.current.frame.origin];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    CGSize contentSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) * 3 , CGRectGetHeight(self.scrollView.bounds));
+    self.scrollView.contentSize = contentSize;
+
+    // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
+    CGSize comparisonSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) - (DAY_VIEW_PADDING * 2), CGRectGetHeight(self.scrollView.bounds));
+    
+    self.previous.frame = CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height);
+    self.current.frame = CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
+    self.next.frame = CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
 }
 
 - (void)didReceiveMemoryWarning
@@ -171,6 +184,10 @@ typedef enum {
 
 - (void) loadData
 {
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
+    NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
+    self.houseVenueSections = [houseVenues valueForKey:@"shortName"];
+    
     // load data for current collection view, set meal pointers
     self.currentFRC = [self fetchedResultsControllerForMealReference:self.mealRef];
     [self.currentFRC performFetch:nil];
@@ -215,10 +232,10 @@ typedef enum {
     fetchRequest.sortDescriptors = @[sectionSort, sort];
     
     NSFetchedResultsController *fetchedResultsController =
-                    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                        managedObjectContext:self.managedObjectContext
-                                                          sectionNameKeyPath:sectionKeyPath
-                                                                   cacheName:ref.cacheName];
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:self.managedObjectContext
+                                          sectionNameKeyPath:sectionKeyPath
+                                                   cacheName:ref.cacheName];
     return fetchedResultsController;
 }
 
@@ -273,8 +290,7 @@ typedef enum {
     }
     
     if (shouldCenter) {
-        CGFloat currentContentOffsetY = scrollView.contentOffset.y;
-        [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING,currentContentOffsetY) animated:NO]; // return to center view to give illusion of infinite scroll
+        [scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING,0) animated:NO]; // return to center view to give illusion of infinite scroll
     }
     
 }
@@ -591,8 +607,7 @@ typedef enum {
             [self pagePointersRight];
         }
 
-        CGFloat currentContentOffsetY = self.scrollView.contentOffset.y;
-        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, currentContentOffsetY) animated:NO]; // return to center view to give illusion of infinite scroll
+        [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
         self.pauseBeforeResettingScrollOffset = NO;
     }
 }
