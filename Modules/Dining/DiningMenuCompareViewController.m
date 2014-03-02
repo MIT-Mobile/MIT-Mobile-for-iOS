@@ -123,6 +123,18 @@ typedef enum {
 
 - (void) viewWillAppear:(BOOL)animated
 {
+    // This code was originally in viewDidLoad but had to be moved out because
+    // the sizing needs to be done *after* the view has been layed out
+    if (self.shouldSetupForInitialAppearance) {
+        if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+            // should center on previous view and have current meal ref be one ahead
+            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+        } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
+            // should center on next view and have current meal ref be one behind
+            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+        }
+    }
+    
     [self loadData];
 }
 
@@ -131,23 +143,19 @@ typedef enum {
     // This code was originally in viewDidLoad but had to be moved out because
     // the sizing needs to be done *after* the view has been layed out
     if (self.shouldSetupForInitialAppearance) {
-        self.shouldSetupForInitialAppearance = NO;
         // offset if on edge of list
         
-        
         if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
-            // should center on previous view and have current meal ref be one ahead
-            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
             [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.previous.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
         } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
-            // should center on next view and have current meal ref be one behind
-            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
             [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.next.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
             [self.current setScrollOffsetAgainstRightEdge];
         } else {
             [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
             [self.previous setScrollOffsetAgainstRightEdge];
         }
+        
+        self.shouldSetupForInitialAppearance = NO;
     }
     
     [self reloadAllComparisonViews];
