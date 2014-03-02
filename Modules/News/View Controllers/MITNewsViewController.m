@@ -118,7 +118,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     self.numberOfStoriesPerCategory = 3;
-    self.showFeaturedStoriesSection = YES;
+    self.showFeaturedStoriesSection = NO;
 
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
     
