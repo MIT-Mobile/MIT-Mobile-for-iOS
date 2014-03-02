@@ -42,6 +42,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (void)loadFetchedResultsControllers;
 
+// 'YES" if both featured stories are enabled, the FRC has been fetched,
+//  there there is at least a single object in the result
+- (BOOL)canShowFeaturedStories;
+
 #pragma mark Updating
 - (void)beginUpdatingAnimated:(BOOL)animate;
 - (void)endUpdatingAnimated:(BOOL)animate;
@@ -256,6 +260,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 
 #pragma mark - Property Setters & Getters
+- (BOOL)canShowFeaturedStories
+{
+    return (self.showFeaturedStoriesSection && [self.featuredStoriesFetchedResultsController.fetchedObjects count]);
+
+}
 - (NSManagedObjectContext*)managedObjectContext
 {
     if (!_managedObjectContext) {
@@ -508,10 +517,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     if (tableView == self.tableView) {
         MITNewsStory *story = nil;
 
-        if (self.showFeaturedStoriesSection && (section == 0)) {
+        if ((section == 0) && [self canShowFeaturedStories]) {
             story = [self.featuredStoriesFetchedResultsController objectAtIndexPath:indexPath];
         } else {
-            if (self.showFeaturedStoriesSection) {
+            if ([self canShowFeaturedStories]) {
                 section -= 1;
             }
 
@@ -552,26 +561,22 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (self.showFeaturedStoriesSection && (section == 0)) {
-            if ([self.featuredStoriesFetchedResultsController.fetchedObjects count]) {
-                MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
-                headerView.titleLabel.text = @"Featured";
-                headerView.accessoryView.hidden = YES;
+        if ((section == 0) && [self canShowFeaturedStories]) {
+            MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
+            headerView.titleLabel.text = @"Featured";
+            headerView.accessoryView.hidden = YES;
 
-                UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-                if (recognizer) {
-                    [headerView removeGestureRecognizer:recognizer];
-                    [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
-                    [self.gestureRecognizersByView removeObjectForKey:headerView];
-                }
-                
-                return headerView;
-            } else {
-                return nil;
+            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+            if (recognizer) {
+                [headerView removeGestureRecognizer:recognizer];
+                [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
+                [self.gestureRecognizersByView removeObjectForKey:headerView];
             }
+
+            return headerView;
         } else if ([self.categoriesFetchedResultsController.fetchedObjects count]) {
             MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
-            if (self.featuredStoriesFetchedResultsController) {
+            if ([self canShowFeaturedStories]) {
                 section -= 1;
             }
 
@@ -705,7 +710,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     if (tableView == self.tableView) {
         NSInteger numberOfSections = 0;
 
-        if (self.showFeaturedStoriesSection && self.featuredStoriesFetchedResultsController.fetchedObjects) {
+        if ([self canShowFeaturedStories]) {
             numberOfSections += 1;
         }
 
@@ -921,11 +926,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (NSInteger)_tableView:(UITableView *)tableView primitiveNumberOfRowsInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (self.showFeaturedStoriesSection && (section == 0)) {
+        if ((section == 0) && [self canShowFeaturedStories]) {
             NSArray *stories = [self.featuredStoriesFetchedResultsController fetchedObjects];
             return MIN(MITNewsDefaultNumberOfFeaturedStories,[stories count]);
         } else if (self.categoriesFetchedResultsController.fetchedObjects) {
-            if (self.featuredStoriesFetchedResultsController) {
+            if ([self canShowFeaturedStories]) {
                 section -= 1;
             }
             
