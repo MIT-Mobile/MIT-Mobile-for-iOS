@@ -27,8 +27,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 @property (nonatomic,weak) UITableView *searchResultsTableView;
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
 
-@property (nonatomic,strong) UIView *recentlyViewedHeader;
-
 @property (nonatomic,copy) NSString *searchTerms;
 @property (nonatomic,copy) NSArray *searchTokens;
 
