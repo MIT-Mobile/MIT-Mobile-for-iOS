@@ -40,12 +40,12 @@
 
 @interface DiningMenuCompareViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
-@property (nonatomic,strong) IBOutlet NSLayoutConstraint *topSpacingConstraint;
+@property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
+@property (nonatomic,weak) IBOutlet NSLayoutConstraint *topSpacingConstraint;
 
-@property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
-@property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
-@property (nonatomic, strong) DiningHallMenuCompareView * next;         // on right
+@property (nonatomic,weak) DiningHallMenuCompareView * previous;     // on left
+@property (nonatomic,weak) DiningHallMenuCompareView * current;      // center
+@property (nonatomic,weak) DiningHallMenuCompareView * next;         // on right
 
 @property (nonatomic, strong) NSArray * houseVenueSections;     // array of houseVenueSection titles, needed because fetchedResultsController will not return empty sections
 
@@ -55,7 +55,6 @@
 @property (nonatomic, strong) NSFetchedResultsController *nextFRC;
 
 @property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
-@property (nonatomic) BOOL shouldSetupForInitialAppearance;
 @end
 
 @implementation DiningMenuCompareViewController {
@@ -106,9 +105,6 @@ typedef enum {
     [self.scrollView addSubview:next];
     self.next = next;
     
-
-    self.shouldSetupForInitialAppearance = YES;
-    
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
         self.automaticallyAdjustsScrollViewInsets = NO;
@@ -126,6 +122,7 @@ typedef enum {
 
 - (void) viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self loadData];
     
     // This is to handle the edge cases of the current paging system
@@ -180,6 +177,8 @@ typedef enum {
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
+    
     if (_mealReferenceToMakeVisibleInViewDidAppear) {
         // Just in case, recenter things again on the visible view. This most likely won't change a thing
         // but is here in case the view hierarchy was not stable the last time we tried to visibly center
@@ -191,6 +190,8 @@ typedef enum {
 
 - (void)viewDidLayoutSubviews
 {
+    [super viewDidLayoutSubviews];
+    
     CGSize contentSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) * 3 , CGRectGetHeight(self.scrollView.bounds));
     self.scrollView.contentSize = contentSize;
 
@@ -200,6 +201,12 @@ typedef enum {
     self.previous.frame = CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height);
     self.current.frame = CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
     self.next.frame = CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    _mealReferenceToRestoreAfterOrientationChange = nil;
 }
 
 - (void)didReceiveMemoryWarning
