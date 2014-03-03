@@ -58,7 +58,10 @@
 @property (nonatomic) BOOL shouldSetupForInitialAppearance;
 @end
 
-@implementation DiningMenuCompareViewController
+@implementation DiningMenuCompareViewController {
+    __weak MealReference *_mealReferenceToRestoreAfterOrientationChange;
+    __weak MealReference *_mealReferenceToMakeVisibleInViewDidAppear;
+}
 
 typedef enum {
     // used in paging logic
@@ -123,42 +126,67 @@ typedef enum {
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    // This code was originally in viewDidLoad but had to be moved out because
-    // the sizing needs to be done *after* the view has been layed out
-    if (self.shouldSetupForInitialAppearance) {
-        if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
-            // should center on previous view and have current meal ref be one ahead
-            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
-        } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
-            // should center on next view and have current meal ref be one behind
-            self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
-        }
+    [self loadData];
+    
+    // This is to handle the edge cases of the current paging system
+    // At all times there must be 3 views and all 3 must have valid meal
+    // references.
+    // If we are at the far left edge of the current 'page' then we need to perform the following
+    // transform on the views:
+    //      |[previous(EMPTYMEALREFERENCE)]-[current(self.mealRef==startingMealReference)]-[next(nextMealRef0)]|
+    // to
+    //      |[previous(startingMealReference)]-[current(self.mealRef==nextMealRef0)]-[next(nextMealRef1)]|
+    //
+    // If we are on the far right:
+    //      |[previous(previousMealRef0)]-[current(self.mealRef==startingMealReference)]-[next(EMPTYMEALREFERENCE)]|
+    // to
+    //      |[previous(previousMealRef1)]-[current(self.mealRef==previousMealRef0)]-[next(startingMealReference)]|
+    //
+    // In all cases, we need to end up visually centered on the view with the startingMealReference
+    //
+    
+    // Save this for later. See the comments below and in the viewDidAppear:
+    // method for more information on why.
+    _mealReferenceToMakeVisibleInViewDidAppear = self.mealRef;
+    
+    if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+        // Set the 'current'  meal reference (in this case, middle of the current page)
+        // to the next meal..
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+        
+        //...and move the pointers around so everything is happy
+        [self pagePointersRight];
+    } else if ([self didReachEdgeInDirection:kPageDirectionForward]) { // Same as the above, only in the opposite direction
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+        [self pagePointersLeft];
+    } else {
+        // This should only be triggered if our current meal reference is already
+        // the centered meal. Nothing to do here but twiddle our thumbs.
     }
     
-    [self loadData];
+    // Force a view layout so we can make sure all of the subviews in the
+    // scroll view are properly layed out (and scrolling to somewhere makes
+    // a limited degree of sense)
+    // TODO: Double-check and make sure our superview is in a sane place at this point.
+    //  For now, just repeat the scroll in viewDidAppear:
+    // (bskinner - 2014.03.02)
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+    
+    // And then make sure the view we want is visible, centered and reloaded
+    [self scrollMealReferenceToVisible:_mealReferenceToMakeVisibleInViewDidAppear animated:animated];
+    [self reloadAllComparisonViews];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    // This code was originally in viewDidLoad but had to be moved out because
-    // the sizing needs to be done *after* the view has been layed out
-    if (self.shouldSetupForInitialAppearance) {
-        // offset if on edge of list
-        
-        if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
-            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.previous.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-        } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
-            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.next.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-            [self.current setScrollOffsetAgainstRightEdge];
-        } else {
-            [self.scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-            [self.previous setScrollOffsetAgainstRightEdge];
-        }
-        
-        self.shouldSetupForInitialAppearance = NO;
+    if (_mealReferenceToMakeVisibleInViewDidAppear) {
+        // Just in case, recenter things again on the visible view. This most likely won't change a thing
+        // but is here in case the view hierarchy was not stable the last time we tried to visibly center
+        // the meal and everything (should) be set by now.
+        [self scrollMealReferenceToVisible:_mealReferenceToMakeVisibleInViewDidAppear animated:animated];
+        _mealReferenceToMakeVisibleInViewDidAppear = nil;
     }
-    
-    [self reloadAllComparisonViews];
 }
 
 - (void)viewDidLayoutSubviews
@@ -188,7 +216,57 @@ typedef enum {
     return NO;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    _mealReferenceToRestoreAfterOrientationChange = [self visibleMealReference];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (_mealReferenceToRestoreAfterOrientationChange) {
+        [self scrollMealReferenceToVisible:_mealReferenceToRestoreAfterOrientationChange animated:YES];
+        _mealReferenceToRestoreAfterOrientationChange = nil;
+    }
+}
+
+
+// Returns 'NO' if the reference is not on the current 'page'
+- (BOOL)scrollMealReferenceToVisible:(MealReference*)reference animated:(BOOL)animated
+{
+    __block NSUInteger index = NSNotFound;
+    NSArray *views = @[self.previous,self.current,self.next];
+    [views enumerateObjectsUsingBlock:^(DiningHallMenuCompareView *menuView, NSUInteger idx, BOOL *stop) {
+        if ([menuView.mealRef isEqual:reference]) {
+            (*stop) = YES;
+            index = idx;
+        }
+    }];
+    
+    if (index != NSNotFound) {
+        DiningHallMenuCompareView *menuView = views[index];
+        
+        CGPoint targetPoint = CGRectInset(menuView.frame, -DAY_VIEW_PADDING, 0.).origin;
+        
+        [self.scrollView setContentOffset:targetPoint animated:animated];
+        
+        if (index && (index < [views count])) {
+            DiningHallMenuCompareView *previousView = views[index - 1];
+            [previousView setScrollOffsetAgainstRightEdge];
+        }
+    }
+    
+    return (index != NSNotFound);
+}
+
 #pragma mark - Model methods
+- (void)configureControllerWithMealReference:(MealReference*)mealReference
+{
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
+    NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
+    self.houseVenueSections = [houseVenues valueForKey:@"shortName"];
+    
+    
+}
 
 - (void) loadData
 {
@@ -402,7 +480,7 @@ typedef enum {
                 // Return a MealReference with a flag saying it is an empty meal reference. date is correct, but meal name is not valid
                 newDatePointer = (direction == kPageDirectionForward) ? [self.mealRef.date dayAfter] : [self.mealRef.date dayBefore];
                 return [MealReference referenceWithMealName:MealReferenceEmptyMeal onDate:newDatePointer];
-                break;
+                //break;
             }
         }
         
@@ -446,19 +524,23 @@ typedef enum {
 - (MealReference *) visibleMealReference
 {
     // Gets Meal reference of Comparison view currently on screen
-    CGFloat xOffset = self.scrollView.contentOffset.x;
-    if (xOffset >= CGRectGetMaxX(self.current.frame)) {
-        // to the right of center
-        NSLog(@"Viewing Next");
-        return self.next.mealRef;
-    } else if (xOffset >= CGRectGetMaxX(self.previous.frame)) {
-        // to the right of left
-        NSLog(@"Viewing Center");
-        return self.current.mealRef;
-    } else {
-        // must be left
-        NSLog(@"Viewing Previous");
+    
+    CGPoint contentOffset = self.scrollView.contentOffset;
+    CGRect leftViewFrame = CGRectInset(self.previous.frame, -DAY_VIEW_PADDING, 0.);
+    CGRect rightViewFrame = CGRectInset(self.next.frame, -DAY_VIEW_PADDING, 0.);
+    CGRect centerViewFrame = CGRectInset(self.current.frame, -DAY_VIEW_PADDING, 0.);
+    
+    if (CGRectContainsPoint(leftViewFrame, self.scrollView.contentOffset)) {
         return self.previous.mealRef;
+    } else if (CGRectContainsPoint(centerViewFrame, self.scrollView.contentOffset)) {
+        return self.current.mealRef;
+        
+    } else if (CGRectContainsPoint(rightViewFrame, self.scrollView.contentOffset)) {
+        return self.next.mealRef;
+    } else {
+        // Don't know what to do here do just log it an return nil
+        DDLogError(@"attempting to handle an invalid content offset of '%@'",NSStringFromCGPoint(contentOffset));
+        return nil;
     }
 }
 
