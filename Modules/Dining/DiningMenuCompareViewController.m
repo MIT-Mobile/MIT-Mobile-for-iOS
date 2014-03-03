@@ -353,12 +353,14 @@ typedef enum {
 {
     scrollView.scrollEnabled = YES;
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
+    UIView *viewToRecenter = self.current;
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
     if (scrollView.contentOffset.x > scrollView.bounds.size.width) {
         // have scrolled to the right
         if ([self didReachEdgeInDirection:kPageDirectionForward]) {
-            shouldCenter = NO;
+            shouldCenter = YES;
+            viewToRecenter = self.next;
         } else {
             if (!self.next.isScrolling) {
                 [self pagePointersRight];
@@ -371,7 +373,8 @@ typedef enum {
     } else if (scrollView.contentOffset.x < scrollView.bounds.size.width) {
         // have scrolled to the left
         if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
-            shouldCenter = NO;
+            shouldCenter = YES;
+            viewToRecenter = self.previous;
         } else {
             if (!self.previous.isScrolling) {
                 [self pagePointersLeft];
@@ -383,7 +386,8 @@ typedef enum {
     }
     
     if (shouldCenter) {
-        [scrollView setContentOffset:CGPointMake(CGRectGetMinX(self.current.frame) - DAY_VIEW_PADDING,0) animated:NO]; // return to center view to give illusion of infinite scroll
+        CGRect contentFrame = CGRectInset(viewToRecenter.frame, -DAY_VIEW_PADDING, 0);
+        [scrollView setContentOffset:contentFrame.origin animated:NO]; // return to center view to give illusion of infinite scroll
     }
     
 }
