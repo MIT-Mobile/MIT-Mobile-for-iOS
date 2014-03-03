@@ -29,7 +29,7 @@
 @property (nonatomic, strong) MealReference *mealRef;
 @property (nonatomic, assign) CGFloat columnWidth;
 
-@property (nonatomic, assign) id<DiningCompareViewDelegate> delegate;
+@property (nonatomic, weak) id<DiningCompareViewDelegate> delegate;
 @property (nonatomic, assign) BOOL isScrolling;
 
 - (void) reloadData;
