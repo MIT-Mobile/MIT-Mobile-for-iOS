@@ -330,8 +330,6 @@ enum {
         CGRect frame = CGRectMake(0, 0, self.view.frame.size.width,
                                   self.view.frame.size.height - self.toolBar.frame.size.height);
         
-        //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-        
         [self.tableView removeFromSuperview];
         if (!self.mapView) {
             self.mapView = [[MITMapView alloc] initWithFrame:frame];
