@@ -43,6 +43,8 @@
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *topSpacingConstraint;
 
+@property (nonatomic,strong) MealReference *visibleMealReference;
+
 @property (nonatomic,weak) DiningHallMenuCompareView * previous;     // on left
 @property (nonatomic,weak) DiningHallMenuCompareView * current;      // center
 @property (nonatomic,weak) DiningHallMenuCompareView * next;         // on right
@@ -57,10 +59,7 @@
 @property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
 @end
 
-@implementation DiningMenuCompareViewController {
-    __weak MealReference *_mealReferenceToRestoreAfterOrientationChange;
-    __weak MealReference *_mealReferenceToMakeVisibleInViewDidAppear;
-}
+@implementation DiningMenuCompareViewController
 
 typedef enum {
     // used in paging logic
@@ -142,9 +141,7 @@ typedef enum {
     // In all cases, we need to end up visually centered on the view with the startingMealReference
     //
     
-    // Save this for later. See the comments below and in the viewDidAppear:
-    // method for more information on why.
-    _mealReferenceToMakeVisibleInViewDidAppear = self.mealRef;
+    self.visibleMealReference = self.mealRef;
     
     if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
         // Set the 'current'  meal reference (in this case, middle of the current page)
@@ -171,21 +168,18 @@ typedef enum {
     [self.view layoutIfNeeded];
     
     // And then make sure the view we want is visible, centered and reloaded
-    [self scrollMealReferenceToVisible:_mealReferenceToMakeVisibleInViewDidAppear animated:animated];
+    [self scrollMealReferenceToVisible:self.visibleMealReference animated:animated];
     [self reloadAllComparisonViews];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    if (_mealReferenceToMakeVisibleInViewDidAppear) {
-        // Just in case, recenter things again on the visible view. This most likely won't change a thing
-        // but is here in case the view hierarchy was not stable the last time we tried to visibly center
-        // the meal and everything (should) be set by now.
-        [self scrollMealReferenceToVisible:_mealReferenceToMakeVisibleInViewDidAppear animated:animated];
-        _mealReferenceToMakeVisibleInViewDidAppear = nil;
-    }
+
+    // Just in case, recenter things again on the visible view. This most likely won't change a thing
+    // but is here in case the view hierarchy was not stable the last time we tried to visibly center
+    // the meal and everything (should) be set by now.
+    [self scrollMealReferenceToVisible:self.visibleMealReference animated:animated];
 }
 
 - (void)viewDidLayoutSubviews
@@ -203,62 +197,41 @@ typedef enum {
     self.next.frame = CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height);
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    _mealReferenceToRestoreAfterOrientationChange = nil;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Rotation
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-        return YES;
-    }
-    return NO;
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    _mealReferenceToRestoreAfterOrientationChange = [self visibleMealReference];
-}
-
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (_mealReferenceToRestoreAfterOrientationChange) {
-        [self scrollMealReferenceToVisible:_mealReferenceToRestoreAfterOrientationChange animated:YES];
-        _mealReferenceToRestoreAfterOrientationChange = nil;
-    }
+    [self scrollMealReferenceToVisible:self.visibleMealReference animated:YES];
 }
-
 
 // Returns 'NO' if the reference is not on the current 'page'
 - (BOOL)scrollMealReferenceToVisible:(MealReference*)reference animated:(BOOL)animated
 {
     __block NSUInteger index = NSNotFound;
     NSArray *views = @[self.previous,self.current,self.next];
-    [views enumerateObjectsUsingBlock:^(DiningHallMenuCompareView *menuView, NSUInteger idx, BOOL *stop) {
-        if ([menuView.mealRef isEqual:reference]) {
-            (*stop) = YES;
-            index = idx;
-        }
-    }];
     
-    if (index != NSNotFound) {
-        DiningHallMenuCompareView *menuView = views[index];
+    if (reference || self.visibleMealReference) {
+        if (!reference) {
+            reference = self.visibleMealReference;
+        }
+    
+        [views enumerateObjectsUsingBlock:^(DiningHallMenuCompareView *menuView, NSUInteger idx, BOOL *stop) {
+            if ([menuView.mealRef isEqual:reference]) {
+                (*stop) = YES;
+                index = idx;
+            }
+        }];
         
-        CGPoint targetPoint = CGRectInset(menuView.frame, -DAY_VIEW_PADDING, 0.).origin;
-        
-        [self.scrollView setContentOffset:targetPoint animated:animated];
-        
-        if (index && (index < [views count])) {
-            DiningHallMenuCompareView *previousView = views[index - 1];
-            [previousView setScrollOffsetAgainstRightEdge];
+        if (index != NSNotFound) {
+            DiningHallMenuCompareView *menuView = views[index];
+            
+            CGPoint targetPoint = CGRectInset(menuView.frame, -DAY_VIEW_PADDING, 0.).origin;
+            
+            [self.scrollView setContentOffset:targetPoint animated:animated];
+            
+            if (index && (index < [views count])) {
+                DiningHallMenuCompareView *previousView = views[index - 1];
+                [previousView setScrollOffsetAgainstRightEdge];
+            }
         }
     }
     
@@ -353,7 +326,7 @@ typedef enum {
 {
     scrollView.scrollEnabled = YES;
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
-    UIView *viewToRecenter = self.current;
+    DiningHallMenuCompareView *viewToRecenter = self.current;
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
     if (scrollView.contentOffset.x > scrollView.bounds.size.width) {
@@ -388,6 +361,9 @@ typedef enum {
     if (shouldCenter) {
         CGRect contentFrame = CGRectInset(viewToRecenter.frame, -DAY_VIEW_PADDING, 0);
         [scrollView setContentOffset:contentFrame.origin animated:NO]; // return to center view to give illusion of infinite scroll
+        self.visibleMealReference = viewToRecenter.mealRef;
+        
+        DDLogVerbose(@"Centered on meal reference '%@'",viewToRecenter.mealRef);
     }
     
 }
@@ -532,28 +508,31 @@ typedef enum {
     return meal.name;
 }
 
+/*
 - (MealReference *) visibleMealReference
 {
     // Gets Meal reference of Comparison view currently on screen
     
-    CGPoint contentOffset = self.scrollView.contentOffset;
-    CGRect leftViewFrame = CGRectInset(self.previous.frame, -DAY_VIEW_PADDING, 0.);
-    CGRect rightViewFrame = CGRectInset(self.next.frame, -DAY_VIEW_PADDING, 0.);
-    CGRect centerViewFrame = CGRectInset(self.current.frame, -DAY_VIEW_PADDING, 0.);
+    CGPoint leftViewCenter = self.previous.center;
+    CGPoint centerViewFrame = self.current.center;
+    CGPoint rightViewFrame = self.next.center;
     
-    if (CGRectContainsPoint(leftViewFrame, self.scrollView.contentOffset)) {
+    CGRect bounds = self.scrollView.bounds;
+    
+    DDLogVerbose(@"Left:%@\nCenter:%@\nRight:%@",self.previous.mealRef,self.current.mealRef,self.next.mealRef);
+    if (CGRectContainsPoint(bounds, leftViewCenter)) {
         return self.previous.mealRef;
-    } else if (CGRectContainsPoint(centerViewFrame, self.scrollView.contentOffset)) {
+    } else if (CGRectContainsPoint(bounds, centerViewFrame)) {
         return self.current.mealRef;
-        
-    } else if (CGRectContainsPoint(rightViewFrame, self.scrollView.contentOffset)) {
+    } else if (CGRectContainsPoint(bounds, rightViewFrame)) {
         return self.next.mealRef;
     } else {
         // Don't know what to do here do just log it an return nil
-        DDLogError(@"attempting to handle an invalid content offset of '%@'",NSStringFromCGPoint(contentOffset));
+        DDLogError(@"attempting to handle an invalid content offset of '%@'",NSStringFromCGPoint(self.scrollView.contentOffset));
         return nil;
     }
 }
+*/
 
 #pragma mark - DiningCompareView Helper Methods
 - (void) reloadAllComparisonViews
