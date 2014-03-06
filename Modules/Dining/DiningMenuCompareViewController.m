@@ -164,11 +164,6 @@ typedef enum {
     // TODO: Double-check and make sure our superview is in a sane place at this point.
     //  For now, just repeat the scroll in viewDidAppear:
     // (bskinner - 2014.03.02)
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-    
-    // And then make sure the view we want is visible, centered and reloaded
-    [self scrollMealReferenceToVisible:self.visibleMealReference animated:animated];
     [self reloadAllComparisonViews];
 }
 
@@ -507,32 +502,6 @@ typedef enum {
     meal = [results lastObject];                                                                                                            // grab last meal
     return meal.name;
 }
-
-/*
-- (MealReference *) visibleMealReference
-{
-    // Gets Meal reference of Comparison view currently on screen
-    
-    CGPoint leftViewCenter = self.previous.center;
-    CGPoint centerViewFrame = self.current.center;
-    CGPoint rightViewFrame = self.next.center;
-    
-    CGRect bounds = self.scrollView.bounds;
-    
-    DDLogVerbose(@"Left:%@\nCenter:%@\nRight:%@",self.previous.mealRef,self.current.mealRef,self.next.mealRef);
-    if (CGRectContainsPoint(bounds, leftViewCenter)) {
-        return self.previous.mealRef;
-    } else if (CGRectContainsPoint(bounds, centerViewFrame)) {
-        return self.current.mealRef;
-    } else if (CGRectContainsPoint(bounds, rightViewFrame)) {
-        return self.next.mealRef;
-    } else {
-        // Don't know what to do here do just log it an return nil
-        DDLogError(@"attempting to handle an invalid content offset of '%@'",NSStringFromCGPoint(self.scrollView.contentOffset));
-        return nil;
-    }
-}
-*/
 
 #pragma mark - DiningCompareView Helper Methods
 - (void) reloadAllComparisonViews
