@@ -169,6 +169,7 @@
 		2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */; };
 		2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF6C2917E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m */; };
 		2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */; };
+		2CFFF00818C8B06600680694 /* DiningHallMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CFFF00718C8B06600680694 /* DiningHallMenuViewController.xib */; };
 		3A827081103DAA0500BB4109 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A827080103DAA0500BB4109 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */; };
 		3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -767,6 +768,7 @@
 		2CFF6C2817E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScrollingNavigationBarCell.h; sourceTree = "<group>"; };
 		2CFF6C2917E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScrollingNavigationBarCell.m; sourceTree = "<group>"; };
 		2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITNewsImageViewController.xib; path = ../Views/MITNewsImageViewController.xib; sourceTree = "<group>"; };
+		2CFFF00718C8B06600680694 /* DiningHallMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DiningHallMenuViewController.xib; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -2075,6 +2077,16 @@
 			name = "Scrolling Navigation Bar";
 			sourceTree = "<group>";
 		};
+		2CFFF00C18C8B06C00680694 /* XIBs */ = {
+			isa = PBXGroup;
+			children = (
+				48327CE316F75017003A2F23 /* DiningMapListViewController.xib */,
+				2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */,
+				2CFFF00718C8B06600680694 /* DiningHallMenuViewController.xib */,
+			);
+			name = XIBs;
+			sourceTree = "<group>";
+		};
 		3AA21C481039DDBA00DB7637 /* Connection */ = {
 			isa = PBXGroup;
 			children = (
@@ -2131,6 +2143,7 @@
 		48327CDD16F74EA0003A2F23 /* Dining */ = {
 			isa = PBXGroup;
 			children = (
+				2CFFF00C18C8B06C00680694 /* XIBs */,
 				48B06EA2175CE90B001DBCC6 /* lib */,
 				DED41FD217381CDE0048376F /* Model */,
 				48A6E4D8170B91E9004DED46 /* Views */,
@@ -2138,10 +2151,8 @@
 				48327CDF16F74F19003A2F23 /* DiningModule.m */,
 				48327CE116F75017003A2F23 /* DiningMapListViewController.h */,
 				48327CE216F75017003A2F23 /* DiningMapListViewController.m */,
-				48327CE316F75017003A2F23 /* DiningMapListViewController.xib */,
 				4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */,
 				4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */,
-				2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */,
 				48A6E4D5170B89C2004DED46 /* DiningHallMenuViewController.h */,
 				48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */,
 				48E60268173D4553008A3521 /* DiningHallInfoViewController.h */,
@@ -3013,6 +3024,7 @@
 				EB5C625A1201D93A00805EBE /* news in Resources */,
 				EB5C625B1201D93A00805EBE /* people in Resources */,
 				2CDF301F134DF504007C6813 /* qrreader in Resources */,
+				2CFFF00818C8B06600680694 /* DiningHallMenuViewController.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
 				EB5C625C1201D93A00805EBE /* shuttle in Resources */,
 				2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */,

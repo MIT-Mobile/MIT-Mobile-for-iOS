@@ -16,7 +16,10 @@
 #import "UIImageView+WebCache.h"
 #import "MITNavigationController.h"
 
-@interface DiningHallMenuViewController ()
+@interface DiningHallMenuViewController () <DiningMenuFilterDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic,weak) IBOutlet UITableView *tableView;
+@property (nonatomic,weak) IBOutlet UIView *compareContainerView;
 
 @property (nonatomic, strong) UIBarButtonItem *filterBarButton;
 @property (nonatomic, strong) NSSet * filtersApplied;
@@ -30,7 +33,7 @@
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
-@property (nonatomic, strong) DiningMenuCompareViewController *comparisonVC;
+@property (nonatomic,weak) DiningMenuCompareViewController *comparisonVC;
 
 @end
 
@@ -39,9 +42,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 @implementation DiningHallMenuViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
@@ -69,7 +72,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     NSArray *results = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:predicate sortDescriptors:@[sort]];
     
     if ([results count]) {
-        self.currentMeal = results[0];
+        self.currentMeal = [results firstObject];
         self.currentDate = self.currentMeal.startTime;
     }
 }
@@ -77,10 +80,12 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
         self.tableView.backgroundView = nil;
         self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+    } else {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
@@ -135,12 +140,6 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     self.navigationItem.rightBarButtonItem = self.filterBarButton;
     
     self.tableView.allowsSelection = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-}
-
-- (void) viewDidUnload
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void) infoButtonPressed:(id) sender
@@ -221,44 +220,89 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 
 #pragma mark - Rotation
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return UIDeviceOrientationIsPortrait(orientation);
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscape;
 }
 
-- (void) orientationDidChange:(NSNotification *)aNotification
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    UIViewController *visibleVC = self.navigationController.visibleViewController;
-    if (visibleVC == self || [visibleVC isKindOfClass:[DiningMenuCompareViewController class]]) {
-        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-        if (UIDeviceOrientationIsLandscape(orientation)) {
-            [self showComparisonView];
-        } else if (orientation == UIDeviceOrientationPortrait && [self.presentedViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
-            [self dismissViewControllerAnimated:YES completion:NULL];
-            self.mealRef = [self.comparisonVC visibleMealReference];
-            [self reloadMealInfo];
-        }
+    if (self.comparisonVC) {
+        return UIInterfaceOrientationMaskLandscape;
+    } else {
+        return UIInterfaceOrientationMaskPortrait;
     }
 }
 
-- (void) showComparisonView
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if (!self.comparisonVC) {
-        self.comparisonVC = [[DiningMenuCompareViewController alloc] init];
-    }
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
-    if (!self.presentedViewController) {
-        // don't present comparison view over itself
-        self.comparisonVC.filtersApplied = self.filtersApplied;
-        self.comparisonVC.mealRef = self.mealRef;
-        self.comparisonVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
+        // The setMealRef: and setFiltersApplied: are called in two locations due to the compare
+        // menu view controller being *extremely* unhappy if the view is loaded
         
-        [self presentViewController:self.comparisonVC animated:YES completion:NULL];
+        DiningMenuCompareViewController *comparisonViewController = [[DiningMenuCompareViewController alloc] init];
+        comparisonViewController.filtersApplied = self.filtersApplied;
+        comparisonViewController.mealRef = self.mealRef;
+        
+        
+        [self addChildViewController:comparisonViewController];
+        UIView *comparisonView = comparisonViewController.view;
+        [self.compareContainerView addSubview:comparisonView];
+        self.comparisonVC = comparisonViewController;
+    
+        comparisonView.translatesAutoresizingMaskIntoConstraints = NO;
+        id viewBindings = @{@"compareView" : comparisonView};
+        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[compareView]|"
+                                                                                          options:0
+                                                                                          metrics:nil
+                                                                                            views:viewBindings]];
+        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[compareView]|"
+                                                                                          options:0
+                                                                                          metrics:nil
+                                                                                            views:viewBindings]];
+        
+        [self.navigationController setNavigationBarHidden:YES animated:YES];
+        [UIView transitionFromView:self.tableView
+                            toView:self.compareContainerView
+                          duration:duration
+                           options:(UIViewAnimationOptionOverrideInheritedOptions |
+                                    UIViewAnimationOptionShowHideTransitionViews |
+                                    UIViewAnimationOptionTransitionCrossDissolve)
+                        completion:^(BOOL finished) {
+                            [comparisonViewController didMoveToParentViewController:self];
+                        }];
+    } else {
+        DiningMenuCompareViewController *comparisonViewController = self.comparisonVC;
+        self.mealRef = [comparisonViewController visibleMealReference];
+        
+        [comparisonViewController willMoveToParentViewController:nil];
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+        
+        [UIView transitionFromView:self.compareContainerView
+                            toView:self.tableView
+                          duration:duration
+                           options:(UIViewAnimationOptionShowHideTransitionViews)
+                        completion:^(BOOL finished) {
+                            [comparisonViewController.view removeFromSuperview];
+                            [comparisonViewController removeFromParentViewController];
+                            self.comparisonVC = nil;
+                        }];
+    }
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
+    if (UIDeviceOrientationIsLandscape(fromInterfaceOrientation)) {
+        [self reloadMealInfo];
     }
 }
 
 #pragma mark - MealReference Delegate
--(void) reloadMealInfo
+- (void)reloadMealInfo
 {
     [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
     [self.tableView reloadData];
