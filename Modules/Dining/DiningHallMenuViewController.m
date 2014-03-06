@@ -239,13 +239,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
-        // The setMealRef: and setFiltersApplied: are called in two locations due to the compare
-        // menu view controller being *extremely* unhappy if the view is loaded
-        
         DiningMenuCompareViewController *comparisonViewController = [[DiningMenuCompareViewController alloc] init];
         comparisonViewController.filtersApplied = self.filtersApplied;
         comparisonViewController.mealRef = self.mealRef;
-        
         
         [self addChildViewController:comparisonViewController];
         UIView *comparisonView = comparisonViewController.view;
