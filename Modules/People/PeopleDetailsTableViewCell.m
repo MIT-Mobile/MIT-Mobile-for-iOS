@@ -3,6 +3,17 @@
 
 @implementation PeopleDetailsTableViewCell
 
+- (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.detailTextLabel.numberOfLines = 0;
+        return self;
+    }
+    return nil;
+}
+
 // this adjusts the height of the cell to fit contents
 - (void) layoutSubviews {
 	[super layoutSubviews];
@@ -17,9 +28,6 @@
 											self.detailTextLabel.frame.origin.y,
 											self.detailTextLabel.frame.size.width, 
 											labelSize.height);
-	
-	self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
-	self.detailTextLabel.numberOfLines = 0;
 }
 
 #pragma mark -
