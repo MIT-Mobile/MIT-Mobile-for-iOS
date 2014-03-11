@@ -21,6 +21,4 @@ extern NSString* const MITNewsStoryExternalNoImageCellIdentifier;
 extern NSString* const MITNewsStoryExternalNoImageCellNibName;
 
 extern NSString* const MITNewsCategoryHeaderIdentifier;
-extern NSString* const MITNewsStoryFeaturedStoriesRequestToken;
-
 extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;

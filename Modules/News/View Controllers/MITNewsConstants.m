@@ -17,6 +17,5 @@ NSString* const MITNewsStoryExternalNoImageCellIdentifier = @"StoryExternalNoIma
 NSString* const MITNewsStoryExternalNoImageCellNibName = @"NewsStoryExternalNoImageTableCell";
 
 NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
-NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeaturedStoriesRequest";
 
 NSUInteger const MITNewsDefaultNumberOfStoriesPerPage = 20;
