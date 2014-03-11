@@ -18,20 +18,26 @@
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
 #import "UIScrollView+SVPullToRefresh.h"
+#import "UITableView+DynamicSizing.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells";
+static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryFeaturedStoriesRequest";
 
-@interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
+@interface MITNewsViewController () <UITableViewDataSourceDynamicSizing,NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,strong) NSDate *lastUpdated;
 
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;      // Should contain @{<UIView> : <UIGestureRecognizer>} mappings
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer; // Should contain @{<UIGestureRecognizer> : <NSManagedObjectID>} mappings
-@property (nonatomic,strong) NSMutableDictionary *cachedStoriesByCategory; // Needs to be replaced by something else, maybe just using another FRC
 
-@property (nonatomic,strong) NSFetchedResultsController *featuredStoriesFetchedResultsController;
-@property (nonatomic,strong) NSFetchedResultsController *categoriesFetchedResultsController;
+
+// Using multiple FRCs in order to keep track of the various data we need (most of this could probably be
+// relocated to data source objects for each of the resources)
+// Contains @{<NSManagedObjectID (MITNewsCategory)> : <NSFetchedResultsControllers>}
+@property (nonatomic,readonly,strong) NSMapTable *fetchedResultsControllersByCategory;
+@property (nonatomic,readonly,strong) NSFetchedResultsController *featuredStoriesFetchedResultsController;
+@property (nonatomic,readonly,strong) NSFetchedResultsController *categoriesFetchedResultsController;
 
 #pragma mark Searching
 @property (nonatomic,getter = isSearching) BOOL searching;
@@ -39,8 +45,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 @property (nonatomic,strong) NSArray *searchResults;
 
 @property (nonatomic,readonly) MITNewsStory *selectedStory;
-
-- (void)loadFetchedResultsControllers;
 
 // 'YES" if both featured stories are enabled, the FRC has been fetched,
 //  there there is at least a single object in the result
@@ -53,26 +57,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)setToolbarString:(NSString*)string animated:(BOOL)animated;
 
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender;
-@end
 
-@interface MITNewsViewController (DynamicTableViewCellsShared)
-#pragma mark private(-ish)
-// I think these methods shouldn't require modification to be used
-// in another class.
-- (NSMutableDictionary*)_cachedLayoutCellsForTableView:(UITableView*)tableView;
-- (UITableViewCell*)_tableView:(UITableView*)tableView dequeueReusableLayoutCellWithIdentifier:(NSString*)reuseIdentifier forIndexPath:(NSIndexPath*)indexPath;
-- (NSInteger)_tableView:(UITableView*)tableView minimumHeightForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void)_tableView:(UITableView*)tableView registerClass:(Class)nilOrClass forCellReuseIdentifier:(NSString*)cellReuseIdentifier;
-- (void)_tableView:(UITableView*)tableView registerNib:(UINib*)nilOrNib forCellReuseIdentifier:(NSString*)cellReuseIdentifier;
-@end
-
-@interface MITNewsViewController (DynamicTableViewCells)
-// You'll need to modify these for them to work in another class
-// should be delegated out
-- (NSInteger)_tableView:(UITableView *)tableView primitiveNumberOfRowsInSection:(NSInteger)section;
-- (id)_tableView:(UITableView*)tableView representedObjectForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
+#pragma mark Story Data Source methods
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView;
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView;
 @end
 
 
@@ -93,6 +81,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     CGPoint _contentOffsetToRestoreAfterSearching;
     id _storySearchInProgressToken;
 }
+
+@synthesize fetchedResultsControllersByCategory = _fetchedResultsControllersByCategory;
+@synthesize featuredStoriesFetchedResultsController = _featuredStoriesFetchedResultsController;
+@synthesize categoriesFetchedResultsController = _categoriesFetchedResultsController;
 
 #pragma mark UI Element text attributes
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -122,13 +114,13 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     self.numberOfStoriesPerCategory = 3;
-    self.showFeaturedStoriesSection = NO;
+    self.showFeaturedStories = NO;
 
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
     
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
@@ -144,23 +136,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [super viewWillAppear:animated];
     
     if (!self.isSearching) {
-        [self loadFetchedResultsControllers];
-
-        if (!self.featuredStoriesFetchedResultsController.fetchedObjects || !self.categoriesFetchedResultsController.fetchedObjects) {
-            NSError *fetchError = nil;
-            [self.featuredStoriesFetchedResultsController performFetch:&fetchError];
-            if (fetchError) {
-                DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
-            }
-
-            fetchError = nil;
-            [self.categoriesFetchedResultsController performFetch:&fetchError];
-            if (fetchError) {
-                DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
-            }
-
-            [self.tableView reloadData];
-        }
+        [self.tableView reloadData];
         
         // Only make sure the toolbar is visible if we are not searching
         // otherwise, returning after viewing a story pops it up
@@ -262,9 +238,68 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark - Property Setters & Getters
 - (BOOL)canShowFeaturedStories
 {
-    return (self.showFeaturedStoriesSection && [self.featuredStoriesFetchedResultsController.fetchedObjects count]);
-
+    return (self.isShowingFeaturedStories && [self.featuredStoriesFetchedResultsController.fetchedObjects count]);
 }
+
+- (NSFetchedResultsController*)featuredStoriesFetchedResultsController
+{
+    if (self.isShowingFeaturedStories && !_featuredStoriesFetchedResultsController) {
+        NSFetchRequest *featuredStories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == YES"];
+        featuredStories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
+                                            [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
+
+        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:featuredStories
+                                                                                                   managedObjectContext:self.managedObjectContext
+                                                                                                     sectionNameKeyPath:nil
+                                                                                                              cacheName:nil];
+        fetchedResultsController.delegate = self;
+
+        NSError *error = nil;
+        BOOL fetchDidSucceed = [fetchedResultsController performFetch:&error];
+        if (!fetchDidSucceed) {
+            DDLogError(@"failed to fetch news categories: %@",error);
+        } else {
+            _featuredStoriesFetchedResultsController = fetchedResultsController;
+        }
+    }
+
+    return _featuredStoriesFetchedResultsController;
+}
+
+- (NSFetchedResultsController*)categoriesFetchedResultsController
+{
+    if (!_categoriesFetchedResultsController) {
+        NSFetchRequest *categories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
+        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:categories
+                                                                                                   managedObjectContext:self.managedObjectContext
+                                                                                                     sectionNameKeyPath:nil
+                                                                                                              cacheName:nil];
+        fetchedResultsController.delegate = self;
+
+        NSError *error = nil;
+        BOOL fetchDidSucceed = [fetchedResultsController performFetch:&error];
+        if (!fetchDidSucceed) {
+            DDLogError(@"failed to fetch news categories: %@",error);
+        } else {
+            _categoriesFetchedResultsController = fetchedResultsController;
+        }
+    }
+
+    return _categoriesFetchedResultsController;
+}
+
+- (NSMapTable*)fetchedResultsControllersByCategory
+{
+    if (!_fetchedResultsControllersByCategory) {
+        _fetchedResultsControllersByCategory = [NSMapTable weakToStrongObjectsMapTable];
+    }
+
+    return _fetchedResultsControllersByCategory;
+}
+
 - (NSManagedObjectContext*)managedObjectContext
 {
     if (!_managedObjectContext) {
@@ -376,36 +411,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 }
 
 #pragma mark Loading & updating, and retrieving data
-- (void)loadFetchedResultsControllers
-{
-    // Featured fetched results controller
-    if (self.showFeaturedStoriesSection && !self.featuredStoriesFetchedResultsController) {
-        NSFetchRequest *featuredStories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
-        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == YES"];
-        featuredStories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
-                                            [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
-
-        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:featuredStories
-                                                                                                   managedObjectContext:self.managedObjectContext
-                                                                                                     sectionNameKeyPath:nil
-                                                                                                              cacheName:nil];
-        fetchedResultsController.delegate = self;
-        self.featuredStoriesFetchedResultsController = fetchedResultsController;
-    }
-
-    if (!self.categoriesFetchedResultsController) {
-        NSFetchRequest *categories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
-        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
-        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:categories
-                                                                                                   managedObjectContext:self.managedObjectContext
-                                                                                                     sectionNameKeyPath:nil
-                                                                                                              cacheName:nil];
-        fetchedResultsController.delegate = self;
-        self.categoriesFetchedResultsController = fetchedResultsController;
-    }
-}
-
 - (void)performDataUpdate:(void (^)(NSError *error))completion
 {
     if (!self.isUpdating) {
@@ -444,7 +449,9 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
 
-        if (self.showFeaturedStoriesSection) {
+        if (self.isShowingFeaturedStories) {
+            [self.featuredStoriesFetchedResultsController performFetch:nil];
+
             [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
             [modelController featuredStoriesWithOffset:0
                                                  limit:MITNewsDefaultNumberOfFeaturedStories
@@ -454,6 +461,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         }
 
         [modelController categories:^(NSArray *categories, NSError *error) {
+            [self.categoriesFetchedResultsController performFetch:nil];
+
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
                 NSManagedObjectID *objectID = [category objectID];
                 [inFlightDataRequests addObject:objectID];
@@ -463,6 +472,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
                                             offset:0
                                              limit:self.numberOfStoriesPerCategory
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                            [self invalidateStoriesInCategories:@[category]];
                                             requestCompleted(objectID,error);
                                         }];
             }];
@@ -470,29 +480,45 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
+- (void)invalidateStoriesInCategories:(NSArray*)categories
+{
+    [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+        [self.fetchedResultsControllersByCategory removeObjectForKey:category];
+    }];
+}
+
 - (NSArray*)storiesInCategory:(MITNewsCategory*)category
 {
-    if (!self.cachedStoriesByCategory) {
-        self.cachedStoriesByCategory = [[NSMutableDictionary alloc] init];
+    // (bskinner - 2014.03.11)
+    // TODO: See if NSFetchedResultsController maintains a strong reference to objects returned by -fetchedObjects.
+    //  If it does not, this is going to fall flat on it's face every time since the FRC will be released
+    //  the moment the local strong reference fall out of scope.
+    //
+    // TODO: Revisit this later and see if just a sectioned FRC would work instead of a bunch of separate ones
+    //  (also look at performance issues!)
+    NSFetchedResultsController *categoryFetchedResultsController = [self.fetchedResultsControllersByCategory objectForKey:category];
+
+    if (!categoryFetchedResultsController) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
+                                         [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@", category];
+
+        categoryFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                               managedObjectContext:self.managedObjectContext
+                                                                                 sectionNameKeyPath:nil
+                                                                                          cacheName:nil];
+
+        NSError *error = nil;
+        BOOL fetchDidSucceed = [categoryFetchedResultsController performFetch:&error];
+        if (!fetchDidSucceed) {
+            DDLogError(@"failed to fetch results for category '%@': %@",category,error);
+        } else {
+            [self.fetchedResultsControllersByCategory setObject:categoryFetchedResultsController forKey:category];
+        }
     }
 
-    NSArray *cachedStories = self.cachedStoriesByCategory[[category objectID]];
-
-    if (!cachedStories) {
-        __block NSArray *stories = nil;
-        NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
-
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsCategory *blockCategory = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
-            stories = [blockCategory.stories sortedArrayUsingDescriptors:sortDescriptors];
-        }];
-
-        self.cachedStoriesByCategory[[category objectID]] = stories;
-        cachedStories = stories;
-    }
-
-    return cachedStories;
+    return [categoryFetchedResultsController.fetchedObjects copy];
 }
 
 - (MITNewsStory*)selectedStory
@@ -506,39 +532,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 
     NSIndexPath* selectedIndexPath = [tableView indexPathForSelectedRow];
-    return [self storyAtIndexPath:selectedIndexPath inTableView:tableView];
-}
-
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath inTableView:(UITableView*)tableView
-{
-    NSUInteger section = (NSUInteger)indexPath.section;
-    NSUInteger row = (NSUInteger)indexPath.row;
-
-    if (tableView == self.tableView) {
-        MITNewsStory *story = nil;
-
-        if ((section == 0) && [self canShowFeaturedStories]) {
-            story = [self.featuredStoriesFetchedResultsController objectAtIndexPath:indexPath];
-        } else {
-            if ([self canShowFeaturedStories]) {
-                section -= 1;
-            }
-
-            MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[section];
-            NSArray *stories = [self storiesInCategory:sectionCategory];
-            story = stories[row];
-        }
-
-        return story;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if (indexPath.row < [self.searchResults count]) {
-            return self.searchResults[row];
-        } else {
-            return nil;
-        }
-    } else {
-        return nil;
-    }
+    return [self storyAtIndexPath:selectedIndexPath forTableView:tableView];
 }
 
 #pragma mark - NSFetchedResultsController
@@ -620,25 +614,19 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView == self.tableView) {
-        // Our normal table view is only made up of the various MITNewsStoryCells
-        // so we can just calculate the height for each one
-        return [self _tableView:tableView minimumHeightForRowAtIndexPath:indexPath];
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        NSString *identifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
-        if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-            return 44.; // Fixed height for the load more cells
-        } else {
-            return [self _tableView:tableView minimumHeightForRowAtIndexPath:indexPath];
-        }
-    }
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
 
-    return UITableViewAutomaticDimension;
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        return 44.; // Fixed height for the load more cells
+    } else {
+        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (tableView == self.searchDisplayController.searchResultsTableView) {
             if (_storySearchInProgressToken) {
@@ -648,7 +636,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     } else {
         __block BOOL isExternalStory = NO;
         __block NSURL *externalURL = nil;
-        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+        MITNewsStory *story = [self storyAtIndexPath:indexPath forTableView:tableView];
 
         [self.managedObjectContext performBlockAndWait:^{
             if ([story.type isEqualToString:MITNewsStoryExternalType]) {
@@ -665,10 +653,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-    if (representedObject && [representedObject isKindOfClass:[MITNewsStory class]]) {
-        MITNewsStory *story = representedObject;
-
+    MITNewsStory *story = [self storyAtIndexPath:indexPath forTableView:tableView];
+    if (story) {
         __block BOOL isExternalStory = NO;
         __block NSURL *externalURL = nil;
         [self.managedObjectContext performBlockAndWait:^{
@@ -686,7 +672,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             [self performSegueWithIdentifier:@"showStoryDetail" sender:tableView];
         }
     } else {
-        NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+        NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+
         if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
             if (self.searchDisplayController.searchResultsTableView == tableView && !_storySearchInProgressToken) {
                 __weak UITableView *weakTableView = self.searchDisplayController.searchResultsTableView;
@@ -725,19 +712,69 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self _tableView:tableView primitiveNumberOfRowsInSection:section];
+    if (tableView == self.tableView) {
+        if ((section == 0) && [self canShowFeaturedStories]) {
+            NSArray *stories = [self.featuredStoriesFetchedResultsController fetchedObjects];
+            return MIN(MITNewsDefaultNumberOfFeaturedStories,[stories count]);
+        } else if (self.categoriesFetchedResultsController.fetchedObjects) {
+            if ([self canShowFeaturedStories]) {
+                section -= 1;
+            }
+
+            MITNewsCategory *category = self.categoriesFetchedResultsController.fetchedObjects[section];
+            NSArray *storiesInCategory = [self storiesInCategory:category];
+            return MIN(self.numberOfStoriesPerCategory,[storiesInCategory count]);
+        }
+
+        return 0;
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+        if ([self.searchResults count]) {
+            return [self.searchResults count] + 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 0;
+    }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
-
-    NSAssert(identifier,@"[%@] missing UITableViewCell identifier in %@",self,NSStringFromSelector(_cmd));
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     
-    [self _tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
+}
+
+#pragma mark UITableViewDataSourceDynamicSizing
+- (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (self.searchDisplayController.searchResultsTableView == tableView) {
+            cell.textLabel.enabled = !_storySearchInProgressToken;
+
+            if (_storySearchInProgressToken) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            } else {
+                cell.accessoryView = nil;
+            }
+        }
+    } else {
+        MITNewsStory *story = [self storyAtIndexPath:indexPath forTableView:tableView];
+
+        if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
+            MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
+            [self.managedObjectContext performBlockAndWait:^{
+                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                storyCell.story = contextStory;
+            }];
+        }
+    }
 }
 
 #pragma mark UIAlertViewDelegate
@@ -768,129 +805,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [activeTableView deselectRowAtIndexPath:selectedIndexPath animated:YES];
 }
 
-@end
-
-
-
-#pragma mark Data Source/Delegate Helper Methods
-@implementation MITNewsViewController (DynamicTableViewCellsShared)
-- (NSMutableDictionary*)_cachedLayoutCellsForTableView:(UITableView*)tableView
+#pragma mark UITableView Data Source/Delegate Helper Methods
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-    const void *objectKey = (__bridge const void *)MITNewsCachedLayoutCellsAssociatedObjectKey;
-    NSMapTable *cachedLayoutCells = objc_getAssociatedObject(tableView,objectKey);
-    
-    if (!cachedLayoutCells) {
-        cachedLayoutCells = [NSMapTable weakToStrongObjectsMapTable];
-        objc_setAssociatedObject(tableView, objectKey, cachedLayoutCells, OBJC_ASSOCIATION_RETAIN);
-    }
-    
-    NSMutableDictionary *sizingCellsByIdentifier = [cachedLayoutCells objectForKey:tableView];
-    if (!sizingCellsByIdentifier) {
-        sizingCellsByIdentifier = [[NSMutableDictionary alloc] init];
-        [cachedLayoutCells setObject:sizingCellsByIdentifier forKey:tableView];
-    }
-    
-    return sizingCellsByIdentifier;
-}
+    MITNewsStory *story = [self storyAtIndexPath:indexPath forTableView:tableView];
 
-- (void)_tableView:(UITableView*)tableView registerClass:(Class)nilOrClass forCellReuseIdentifier:(NSString*)cellReuseIdentifier
-{
-    // Order is important! This depends on !nilOrClass short-circuiting the
-    // OR.
-    NSParameterAssert(!nilOrClass || class_isMetaClass(object_getClass(nilOrClass)));
-    NSParameterAssert(!nilOrClass || [nilOrClass isSubclassOfClass:[UITableViewCell class]]);
-    
-    [tableView registerClass:nilOrClass forCellReuseIdentifier:cellReuseIdentifier];
-    
-    NSMutableDictionary *cachedLayoutCells = [self _cachedLayoutCellsForTableView:tableView];
-    if (nilOrClass) {
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            UITableViewCell *layoutCell = (UITableViewCell*)[[[nilOrClass class] alloc] init];
-            cachedLayoutCells[cellReuseIdentifier] = layoutCell;
-        }
-    } else {
-        [cachedLayoutCells removeObjectForKey:cellReuseIdentifier];
-    }
-}
-
-- (void)_tableView:(UITableView*)tableView registerNib:(UINib*)nilOrNib forCellReuseIdentifier:(NSString*)cellReuseIdentifier
-{
-    NSParameterAssert(!nilOrNib || [nilOrNib isKindOfClass:[UINib class]]);
-    
-    [tableView registerNib:nilOrNib forCellReuseIdentifier:cellReuseIdentifier];
-    
-    NSMutableDictionary *cachedLayoutCells = [self _cachedLayoutCellsForTableView:tableView];
-    
-    if (nilOrNib) {
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            UITableViewCell *layoutCell = [[nilOrNib instantiateWithOwner:nil options:nil] firstObject];
-            NSAssert([layoutCell isKindOfClass:[UITableViewCell class]], @"class must be a subclass of %@",NSStringFromClass([UITableViewCell class]));
-            cachedLayoutCells[cellReuseIdentifier] = layoutCell;
-        }
-    } else {
-        [cachedLayoutCells removeObjectForKey:cellReuseIdentifier];
-    }
-}
-
-- (UITableViewCell*)_tableView:(UITableView*)tableView dequeueReusableLayoutCellWithIdentifier:(NSString*)reuseIdentifier forIndexPath:(NSIndexPath*)indexPath
-{
-    NSMutableDictionary *cachedLayoutCellsForTableView = [self _cachedLayoutCellsForTableView:tableView];
-    
-    UITableViewCell *layoutCell = cachedLayoutCellsForTableView[reuseIdentifier];
-    
-    if (!layoutCell) {
-        layoutCell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
-        NSAssert(layoutCell, @"you must register a nib or class with for reuse identifier '%@'",reuseIdentifier);
-        cachedLayoutCellsForTableView[reuseIdentifier] = layoutCell;
-    }
-    
-    CGSize cellSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    layoutCell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    layoutCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), cellSize.height + 1.);
-    
-    if (![layoutCell isDescendantOfView:tableView]) {
-        [tableView addSubview:layoutCell];
-    } else {
-        [layoutCell prepareForReuse];
-    }
-    
-    layoutCell.hidden = YES;
-    [layoutCell setNeedsLayout];
-    [layoutCell layoutIfNeeded];
-    
-    return layoutCell;
-}
-
-- (NSInteger)_tableView:(UITableView*)tableView minimumHeightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
-    UITableViewCell *layoutCell = [self _tableView:tableView dequeueReusableLayoutCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-    
-    NSAssert(layoutCell, @"unable to get a valid layout cell!");
-    if ([self respondsToSelector:@selector(_tableView:configureCell:forRowAtIndexPath:)]) {
-        [self _tableView:tableView configureCell:layoutCell forRowAtIndexPath:indexPath];
-    } else if ([layoutCell respondsToSelector:@selector(setRepresentedObject:)]) {
-        id representedObejct = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-        [layoutCell performSelector:@selector(setRepresentedObject:) withObject:representedObejct];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:[NSString stringWithFormat:@"unable to configure cell in table view %@ at %@",tableView,indexPath]
-                                     userInfo:nil];
-    }
-    
-    [layoutCell setNeedsUpdateConstraints];
-    [layoutCell setNeedsLayout];
-    [layoutCell layoutIfNeeded];
-    
-    CGSize rowSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return (ceil(rowSize.height) + 1.);
-}
-@end
-
-@implementation MITNewsViewController (DynamicTableViewCells)
-- (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
     if (story) {
         __block NSString *identifier = nil;
         [self.managedObjectContext performBlockAndWait:^{
@@ -917,68 +836,37 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
-// Should delegate
-- (id)_tableView:(UITableView*)tableView representedObjectForRowAtIndexPath:(NSIndexPath*)indexPath {
-    return [self storyAtIndexPath:indexPath inTableView:tableView];
-}
-
-// Should delegate
-- (NSInteger)_tableView:(UITableView *)tableView primitiveNumberOfRowsInSection:(NSInteger)section
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
+    NSUInteger section = (NSUInteger)indexPath.section;
+    NSUInteger row = (NSUInteger)indexPath.row;
+
     if (tableView == self.tableView) {
+        MITNewsStory *story = nil;
+
         if ((section == 0) && [self canShowFeaturedStories]) {
-            NSArray *stories = [self.featuredStoriesFetchedResultsController fetchedObjects];
-            return MIN(MITNewsDefaultNumberOfFeaturedStories,[stories count]);
-        } else if (self.categoriesFetchedResultsController.fetchedObjects) {
+            story = [self.featuredStoriesFetchedResultsController objectAtIndexPath:indexPath];
+        } else {
             if ([self canShowFeaturedStories]) {
                 section -= 1;
             }
-            
-            MITNewsCategory *category = self.categoriesFetchedResultsController.fetchedObjects[section];
-            NSArray *storiesInCategory = [self storiesInCategory:category];
-            return MIN(self.numberOfStoriesPerCategory,[storiesInCategory count]);
+
+            MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[section];
+            NSArray *stories = [self storiesInCategory:sectionCategory];
+            story = stories[row];
         }
-        
-        return 0;
+
+        return story;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([self.searchResults count]) {
-            return [self.searchResults count] + 1;
+        if (indexPath.row < [self.searchResults count]) {
+            return self.searchResults[row];
         } else {
-            return 0;
+            return nil;
         }
     } else {
-        return 0;
+        return nil;
     }
 }
-
-// Should delegate
-- (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (self.searchDisplayController.searchResultsTableView == tableView) {
-            cell.textLabel.enabled = !_storySearchInProgressToken;
-
-            if (_storySearchInProgressToken) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-            } else {
-                cell.accessoryView = nil;
-            }
-        }
-    } else {
-        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-    
-        if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
-            MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-            [self.managedObjectContext performBlockAndWait:^{
-                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                storyCell.story = contextStory;
-            }];
-        }
-    }
-}
-
 @end
 
 
@@ -1176,10 +1064,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark UISearchDisplayDelegate
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 }
 
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
