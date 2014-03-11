@@ -15,10 +15,6 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 @end
 
 @implementation CoreDataManager
-
-@synthesize managedObjectModel;
-@synthesize managedObjectContext;
-@synthesize persistentStoreCoordinator;
 @dynamic modelNames;
 
 #pragma mark -
@@ -175,7 +171,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 }
 
 - (id)insertNewObjectForEntityForName:(NSString *)entityName context:(NSManagedObjectContext *)aManagedObjectContext {
-	NSEntityDescription *entityDescription = [[managedObjectModel entitiesByName] objectForKey:entityName];
+	NSEntityDescription *entityDescription = [[self.managedObjectModel entitiesByName] objectForKey:entityName];
 	return [[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:aManagedObjectContext];
 }
 

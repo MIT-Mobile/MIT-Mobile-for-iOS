@@ -24,7 +24,7 @@ static NSString* const MITMapPlaceURLKey = @"url";
 static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
 @implementation MITMapPlace
-@synthesize coordinate = _coordinate;
+@dynamic coordinate;
 @dynamic identifier;
 @dynamic buildingNumber;
 @dynamic architect;
@@ -43,7 +43,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 {
     self = [super init];
     if (self) {
-        _coordinate = kCLLocationCoordinate2DInvalid;
+        
     }
 
     return self;
