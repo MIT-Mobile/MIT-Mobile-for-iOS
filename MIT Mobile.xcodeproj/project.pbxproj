@@ -54,6 +54,7 @@
 		2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */; };
 		2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */; };
 		2C276713184CC90E00E53E9F /* MITMobileResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C276712184CC90E00E53E9F /* MITMobileResource.m */; };
+		2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -549,6 +550,8 @@
 		2C249EE117AC556C003C41FE /* LibraryFormElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElements.h; path = "Form Elements/LibraryFormElements.h"; sourceTree = "<group>"; };
 		2C276711184CC90E00E53E9F /* MITMobileResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileResource.h; sourceTree = "<group>"; };
 		2C276712184CC90E00E53E9F /* MITMobileResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileResource.m; sourceTree = "<group>"; };
+		2C2C6F8B18CF58AC00E15D62 /* UITableView+DynamicSizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITableView+DynamicSizing.h"; path = "Categories/UITableView+DynamicSizing.h"; sourceTree = "<group>"; };
+		2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITableView+DynamicSizing.m"; path = "Categories/UITableView+DynamicSizing.m"; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
@@ -1581,6 +1584,8 @@
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				2C2C6F8B18CF58AC00E15D62 /* UITableView+DynamicSizing.h */,
+				2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
@@ -3241,6 +3246,7 @@
 				DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */,
 				EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */,
 				EB86944D115120C4003AEDFA /* ShuttleRouteStop.m in Sources */,
+				2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */,
 				DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */,
 				DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */,
 				DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */,
