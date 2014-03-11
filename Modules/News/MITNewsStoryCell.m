@@ -57,82 +57,78 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 
 - (void)setStory:(MITNewsStory *)story
 {
-    if (![_story isEqual:story]) {
-        _story = story;
-        
-        if (_story) {
-            __block NSString *title = nil;
-            __block NSString *dek = nil;
-            __block NSURL *imageURL = nil;
-            [_story.managedObjectContext performBlockAndWait:^{
-                title = story.title;
-                dek = story.dek;
+    _story = story;
+    
+    if (_story) {
+        __block NSString *title = nil;
+        __block NSString *dek = nil;
+        __block NSURL *imageURL = nil;
+        [_story.managedObjectContext performBlockAndWait:^{
+            title = story.title;
+            dek = story.dek;
 
 
-                CGSize idealImageSize = CGSizeZero;
-                if ([story.type isEqualToString:@"news_clip"]) {
-                    idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
-                    _isExternalStory = YES;
-                } else {
-                    idealImageSize = self.storyImageView.frame.size;
-                    _isExternalStory = NO;
+            CGSize idealImageSize = CGSizeZero;
+            if ([story.type isEqualToString:@"news_clip"]) {
+                idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
+                _isExternalStory = YES;
+            } else {
+                idealImageSize = self.storyImageView.frame.size;
+                _isExternalStory = NO;
+            }
+
+            MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];
+            if (representation) {
+                imageURL = representation.url;
+
+                if (_isExternalStory) {
+                    _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:MITNewsStoryCellExternalMaximumImageSize];
                 }
-
-                MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];
-                if (representation) {
-                    imageURL = representation.url;
-
-                    if (_isExternalStory) {
-                        _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:MITNewsStoryCellExternalMaximumImageSize];
+            }
+        }];
+        
+        if (title) {
+            NSError *error = nil;
+            NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (!titleContent) {
+                DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
+                titleContent = title;
+            }
+            
+            self.titleLabel.text = titleContent;
+        }
+        
+        if (dek) {
+            NSError *error = nil;
+            NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (error) {
+                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
+                dekContent = dek;
+            }
+            
+            self.dekLabel.text = dekContent;
+        }
+        
+        if (imageURL) {
+            MITNewsStory *currentStory = self.story;
+            __weak MITNewsStoryCell *weakSelf = self;
+            [self.storyImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                MITNewsStoryCell *blockSelf = weakSelf;
+                if (blockSelf && (blockSelf->_story == currentStory)) {
+                    if (error) {
+                        blockSelf.storyImageView.image = nil;
                     }
                 }
             }];
-            
-            if (title) {
-                NSError *error = nil;
-                NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-                if (!titleContent) {
-                    DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
-                    titleContent = title;
-                }
-                
-                self.titleLabel.text = titleContent;
-            }
-            
-            if (dek) {
-                NSError *error = nil;
-                NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-                if (error) {
-                    DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
-                    dekContent = dek;
-                }
-                
-                self.dekLabel.text = dekContent;
-            }
-            
-            if (imageURL) {
-                MITNewsStory *currentStory = self.story;
-                __weak MITNewsStoryCell *weakSelf = self;
-                [self.storyImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                    MITNewsStoryCell *blockSelf = weakSelf;
-                    if (blockSelf && (blockSelf->_story == currentStory)) {
-                        if (error) {
-                            blockSelf.storyImageView.image = nil;
-                        }
-                    }
-                }];
-            } else {
-                self.storyImageView.image = nil;
-            }
         } else {
-            [self.storyImageView cancelCurrentImageLoad];
             self.storyImageView.image = nil;
-            self.titleLabel.text = nil;
-            self.dekLabel.text = nil;
         }
+    } else {
+        [self.storyImageView cancelCurrentImageLoad];
+        self.storyImageView.image = nil;
+        self.titleLabel.text = nil;
+        self.dekLabel.text = nil;
     }
-
-
 
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
