@@ -19,10 +19,11 @@
 #import "MITLoadingActivityView.h"
 #import "MITNewsConstants.h"
 #import "MITNewsLoadMoreTableViewCell.h"
+#import "UITableView+DynamicSizing.h"
 
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCellsAssociatedObject";
 
-@interface MITNewsCategoryViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
+@interface MITNewsCategoryViewController () <UITableViewDataSourceDynamicSizing,NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate,UIAlertViewDelegate>
 @property (nonatomic,getter = isUpdating) BOOL updating;
 @property (nonatomic,strong) NSDate *lastUpdated;
 
@@ -51,24 +52,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (void)setToolbarString:(NSString*)string animated:(BOOL)animated;
 
 #pragma mark UITableView Data Source Help
-@end
-
-@interface MITNewsCategoryViewController (DynamicTableViewCellsShared)
-// I believe these methods shouldn't require modification to be used in another class.
-- (NSMutableDictionary*)_cachedLayoutCellsForTableView:(UITableView*)tableView;
-- (UITableViewCell*)_tableView:(UITableView*)tableView dequeueReusableLayoutCellWithIdentifier:(NSString*)reuseIdentifier forIndexPath:(NSIndexPath*)indexPath;
-- (NSInteger)_tableView:(UITableView*)tableView minimumHeightForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void)_tableView:(UITableView*)tableView registerClass:(Class)nilOrClass forCellReuseIdentifier:(NSString*)cellReuseIdentifier;
-- (void)_tableView:(UITableView*)tableView registerNib:(UINib*)nilOrNib forCellReuseIdentifier:(NSString*)cellReuseIdentifier;
-@end
-
-@interface MITNewsCategoryViewController (DynamicTableViewCells)
-// You'll need to modify these for them to work in another class
-// TODO: these should be delegated out (somehow)
-- (NSInteger)_tableView:(UITableView *)tableView primitiveNumberOfRowsInSection:(NSInteger)section;
-- (id)_tableView:(UITableView*)tableView representedObjectForRowAtIndexPath:(NSIndexPath*)indexPath;
-- (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath;
-- (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
 @interface MITNewsCategoryViewController (NewsSearching)
@@ -115,11 +98,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [super viewDidLoad];
     
     
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    [self _tableView:self.tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
     
     if (self.numberOfStoriesPerPage == 0) {
         self.numberOfStoriesPerPage = MITNewsDefaultNumberOfStoriesPerPage;
@@ -513,7 +496,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
     
     NSIndexPath* selectedIndexPath = [tableView indexPathForSelectedRow];
-    return [self _tableView:tableView representedObjectForRowAtIndexPath:selectedIndexPath];
+    return [self tableView:tableView representedObjectForRowAtIndexPath:selectedIndexPath];
 }
 
 #pragma mark - UITableView
@@ -529,19 +512,19 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    NSString *reuseIdentifier = [self tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
     
     // Go for the low-hanging fruit first
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 44.;
     } else {
-        return [self _tableView:tableView minimumHeightForRowAtIndexPath:indexPath];
+        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     }
 }
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    NSString *reuseIdentifier = [self tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
 
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (tableView == self.searchDisplayController.searchResultsTableView) {
@@ -552,7 +535,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     } else {
         __block BOOL isExternalStory = NO;
         __block NSURL *externalURL = nil;
-        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+        MITNewsStory *story = [self tableView:tableView representedObjectForRowAtIndexPath:indexPath];
 
         [self.managedObjectContext performBlockAndWait:^{
             if ([story.type isEqualToString:MITNewsStoryExternalType]) {
@@ -569,12 +552,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    NSString *reuseIdentifier = [self tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
 
-    id representedObject = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-    if (representedObject && [representedObject isKindOfClass:[MITNewsStory class]]) {
-        MITNewsStory *story = representedObject;
-
+    MITNewsStory *story = [self tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+    if (story) {
         __block BOOL isExternalStory = NO;
         __block NSURL *externalURL = nil;
         [self.managedObjectContext performBlockAndWait:^{
@@ -635,17 +616,33 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self _tableView:tableView primitiveNumberOfRowsInSection:section];
+    if (tableView == self.tableView) {
+        NSInteger numberOfRows = [self.newsStories count];
+
+        if (numberOfRows > 0) {
+            numberOfRows += 1; // Extra row for the 'Load More' cell
+        }
+
+        return numberOfRows;
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+        if ([self.searchResults count]) {
+            return [self.searchResults count] + 1;
+        } else {
+            return 0;
+        }
+    }
+
+    return 0;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
+    NSString *reuseIdentifier = [self tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(reuseIdentifier,@"[%@] missing UITableViewCell identifier in %@",self,NSStringFromSelector(_cmd));
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
     
-    [self _tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
 }
 
@@ -678,146 +675,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [activeTableView deselectRowAtIndexPath:selectedIndexPath animated:YES];
 }
 
-@end
-
-#pragma mark - Categories
-@implementation MITNewsCategoryViewController (DynamicTableViewCellsShared)
-- (NSMutableDictionary*)_cachedLayoutCellsForTableView:(UITableView*)tableView
-{
-    const void *objectKey = (__bridge const void *)MITNewsCachedLayoutCellsAssociatedObjectKey;
-    NSMapTable *cachedLayoutCells = objc_getAssociatedObject(tableView,objectKey);
-
-    if (!cachedLayoutCells) {
-        cachedLayoutCells = [NSMapTable weakToStrongObjectsMapTable];
-        objc_setAssociatedObject(tableView, objectKey, cachedLayoutCells, OBJC_ASSOCIATION_RETAIN);
-    }
-
-    NSMutableDictionary *sizingCellsByIdentifier = [cachedLayoutCells objectForKey:tableView];
-    if (!sizingCellsByIdentifier) {
-        sizingCellsByIdentifier = [[NSMutableDictionary alloc] init];
-        [cachedLayoutCells setObject:sizingCellsByIdentifier forKey:tableView];
-    }
-
-    return sizingCellsByIdentifier;
-}
-
-- (void)_tableView:(UITableView*)tableView registerClass:(Class)nilOrClass forCellReuseIdentifier:(NSString*)cellReuseIdentifier
-{
-    // Order is important! This depends on !nilOrClass short-circuiting the
-    // OR.
-    NSParameterAssert(!nilOrClass || class_isMetaClass(object_getClass(nilOrClass)));
-    NSParameterAssert(!nilOrClass || [nilOrClass isSubclassOfClass:[UITableViewCell class]]);
-
-    [tableView registerClass:nilOrClass forCellReuseIdentifier:cellReuseIdentifier];
-
-    NSMutableDictionary *cachedLayoutCells = [self _cachedLayoutCellsForTableView:tableView];
-    if (nilOrClass) {
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            UITableViewCell *layoutCell = (UITableViewCell*)[[[nilOrClass class] alloc] init];
-            cachedLayoutCells[cellReuseIdentifier] = layoutCell;
-        }
-    } else {
-        [cachedLayoutCells removeObjectForKey:cellReuseIdentifier];
-    }
-}
-
-- (void)_tableView:(UITableView*)tableView registerNib:(UINib*)nilOrNib forCellReuseIdentifier:(NSString*)cellReuseIdentifier
-{
-    NSParameterAssert(!nilOrNib || [nilOrNib isKindOfClass:[UINib class]]);
-
-    [tableView registerNib:nilOrNib forCellReuseIdentifier:cellReuseIdentifier];
-
-    NSMutableDictionary *cachedLayoutCells = [self _cachedLayoutCellsForTableView:tableView];
-
-    if (nilOrNib) {
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            UITableViewCell *layoutCell = [[nilOrNib instantiateWithOwner:nil options:nil] firstObject];
-            NSAssert([layoutCell isKindOfClass:[UITableViewCell class]], @"class must be a subclass of %@",NSStringFromClass([UITableViewCell class]));
-            cachedLayoutCells[cellReuseIdentifier] = layoutCell;
-        }
-    } else {
-        [cachedLayoutCells removeObjectForKey:cellReuseIdentifier];
-    }
-}
-
-- (UITableViewCell*)_tableView:(UITableView*)tableView dequeueReusableLayoutCellWithIdentifier:(NSString*)reuseIdentifier forIndexPath:(NSIndexPath*)indexPath
-{
-    NSMutableDictionary *cachedLayoutCellsForTableView = [self _cachedLayoutCellsForTableView:tableView];
-
-    UITableViewCell *layoutCell = cachedLayoutCellsForTableView[reuseIdentifier];
-
-    if (!layoutCell) {
-        layoutCell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
-        NSAssert(layoutCell, @"you must register a nib or class with for reuse identifier '%@'",reuseIdentifier);
-        cachedLayoutCellsForTableView[reuseIdentifier] = layoutCell;
-    }
-
-    CGSize cellSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    layoutCell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    layoutCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), cellSize.height + 1.);
-
-    if (![layoutCell isDescendantOfView:tableView]) {
-        [tableView addSubview:layoutCell];
-    } else {
-        [layoutCell prepareForReuse];
-    }
-
-    layoutCell.hidden = YES;
-    [layoutCell setNeedsLayout];
-    [layoutCell layoutIfNeeded];
-
-    return layoutCell;
-}
-
-- (NSInteger)_tableView:(UITableView*)tableView minimumHeightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    NSString *reuseIdentifier = [self _tableView:tableView reuseIdentifierForRowAtIndexPath:indexPath];
-    UITableViewCell *layoutCell = [self _tableView:tableView dequeueReusableLayoutCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-
-    NSAssert(layoutCell, @"unable to get a valid layout cell!");
-    if ([self respondsToSelector:@selector(_tableView:configureCell:forRowAtIndexPath:)]) {
-        [self _tableView:tableView configureCell:layoutCell forRowAtIndexPath:indexPath];
-    } else if ([layoutCell respondsToSelector:@selector(setRepresentedObject:)]) {
-        id representedObejct = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
-        [layoutCell performSelector:@selector(setRepresentedObject:) withObject:representedObejct];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:[NSString stringWithFormat:@"unable to configure cell in table view %@ at %@",tableView,indexPath]
-                                     userInfo:nil];
-    }
-
-    [layoutCell setNeedsUpdateConstraints];
-    [layoutCell setNeedsLayout];
-    [layoutCell layoutIfNeeded];
-
-    CGSize rowSize = [layoutCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return (ceil(rowSize.height) + 1.);
-}
-@end
-
-@implementation MITNewsCategoryViewController (DynamicTableViewCells)
-- (NSInteger)_tableView:(UITableView *)tableView primitiveNumberOfRowsInSection:(NSInteger)section
-{
-    if (tableView == self.tableView) {
-        NSInteger numberOfRows = [self.newsStories count];
-        
-        if (numberOfRows > 0) {
-            numberOfRows += 1; // Extra row for the 'Load More' cell
-        }
-        
-        return numberOfRows;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([self.searchResults count]) {
-            return [self.searchResults count] + 1;
-        } else {
-            return 0;
-        }
-    }
-    
-    return 0;
-}
-
-- (void)_tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
+#pragma mark UITableView Data Source Helpers
+- (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         BOOL needsActivityIndicatorAccessory = NO;
@@ -840,7 +699,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             cell.accessoryView = nil;
         }
     } else {
-        MITNewsStory *story = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+        MITNewsStory *story = [self tableView:tableView representedObjectForRowAtIndexPath:indexPath];
 
         if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
             MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
@@ -857,9 +716,9 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
-- (NSString*)_tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
+- (NSString*)tableView:(UITableView*)tableView reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    MITNewsStory *newsStory = [self _tableView:tableView representedObjectForRowAtIndexPath:indexPath];
+    MITNewsStory *newsStory = [self tableView:tableView representedObjectForRowAtIndexPath:indexPath];
     if (newsStory) {
         __block NSString *identifier = nil;
         [self.managedObjectContext performBlockAndWait:^{
@@ -878,7 +737,8 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 
         return identifier;
     } else {
-        NSUInteger numberOfRowsInSection = [self _tableView:tableView primitiveNumberOfRowsInSection:indexPath.section];
+        NSUInteger numberOfRowsInSection = [self tableView:tableView numberOfRowsInSection:indexPath.section];
+
         if ((indexPath.row) == (numberOfRowsInSection - 1)) {
             return MITNewsLoadMoreCellIdentifier;
         } else {
@@ -887,7 +747,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     }
 }
 
-- (id)_tableView:(UITableView*)tableView representedObjectForRowAtIndexPath:(NSIndexPath*)indexPath {
+- (MITNewsStory*)tableView:(UITableView*)tableView representedObjectForRowAtIndexPath:(NSIndexPath*)indexPath {
     NSInteger row = indexPath.row;
     
     if (tableView == self.tableView) {
@@ -1103,10 +963,10 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 #pragma mark UISearchDisplayDelegate
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
-    [self _tableView:tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 }
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
