@@ -21,8 +21,8 @@
 
 @interface ShuttleStopViewController () <UIAlertViewDelegate>
 @property (nonatomic, strong) NSMutableArray* shuttleStopSchedules;
-@property (nonatomic, copy) NSMutableDictionary* subscriptions;
-@property (nonatomic, copy) NSMutableArray* loadingSubscriptionRequests;
+@property (nonatomic, retain) NSMutableDictionary* subscriptions;
+@property (nonatomic, retain) NSMutableArray* loadingSubscriptionRequests;
 
 - (void)requestStop;
 - (void)findScheduledSubscriptions;

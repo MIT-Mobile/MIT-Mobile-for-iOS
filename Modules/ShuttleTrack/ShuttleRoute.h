@@ -34,7 +34,7 @@
 @property (nonatomic, copy) NSString *routeID;
 @property (nonatomic, assign) NSInteger interval;
 @property (nonatomic, assign) BOOL isSafeRide;
-@property (nonatomic, copy) NSMutableArray *stops;
+@property (nonatomic, retain) NSMutableArray *stops;
 @property (nonatomic, assign) NSInteger sortOrder;
 
 @end
