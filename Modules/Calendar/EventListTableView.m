@@ -3,10 +3,30 @@
 #import "CalendarDetailViewController.h"
 #import "MITUIConstants.h"
 #import "MITMultiLineTableViewCell.h"
+#import "UITableView+DynamicSizing.h"
+#import "MITEventListTableViewCell.h"
 
-static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
+@interface EventListTableView () <UITableViewDataSourceDynamicSizing>
+
+@end
 
 @implementation EventListTableView
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    [self registerNib:[UINib nibWithNibName:@"MITEventListTableViewCell" bundle:nil] forDynamicCellReuseIdentifier:@"Cell"];
+}
+
+- (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style
+{
+    self = [super initWithFrame:frame style:style];
+    if (self) {
+        [self registerNib:[UINib nibWithNibName:@"MITEventListTableViewCell" bundle:nil] forDynamicCellReuseIdentifier:@"Cell"];
+    }
+
+    return self;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return [self.events count];
 }
@@ -37,73 +57,21 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static UITableViewCell *templateCell = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        templateCell = [self tableView:nil cellForRowAtIndexPath:indexPath];
-    });
-
-    [self configureCell:templateCell
-            atIndexPath:indexPath
-           forTableView:tableView];
-
-    CGSize cellSize = [templateCell sizeThatFits:CGSizeMake(CGRectGetWidth(tableView.bounds), CGFLOAT_MAX)];
-    return cellSize.height;
+    return [tableView minimumHeightForCellWithReuseIdentifier:@"Cell" atIndexPath:indexPath];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-    MITMultilineTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    MITMultilineTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
 
-    if (!cell) {
-        cell = [[MITMultilineTableViewCell alloc] init];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
-
-    cell.headlineLabel.numberOfLines = 2;
-    cell.headlineLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    cell.bodyLabel.numberOfLines = 1;
-
-    UILabel *shortLocationLabel = (UILabel*)[cell.contentView viewWithTag:MITEventListCellLocationLabelTag];
-    if (!shortLocationLabel) {
-        shortLocationLabel = [[UILabel alloc] init];
-        shortLocationLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        shortLocationLabel.backgroundColor = [UIColor clearColor];
-        shortLocationLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        shortLocationLabel.numberOfLines = 1;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            shortLocationLabel.highlightedTextColor = [UIColor whiteColor];
-        }
-        shortLocationLabel.textColor = cell.bodyLabel.textColor;
-        shortLocationLabel.textAlignment = NSTextAlignmentRight;
-        shortLocationLabel.font = cell.bodyLabel.font;
-        shortLocationLabel.tag = MITEventListCellLocationLabelTag;
-
-        [cell.contentView addSubview:shortLocationLabel];
-
-        NSDictionary *constraintViews = @{@"bodyLabel" : cell.bodyLabel,
-                                          @"locationLabel" : shortLocationLabel};
-
-        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[bodyLabel]-[locationLabel]"
-                                                                                 options:NSLayoutFormatAlignAllCenterY
-                                                                                 metrics:nil
-                                                                                   views:constraintViews]];
-        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[locationLabel(<=112.)]-10-|"
-                                                                                 options:0
-                                                                                 metrics:nil
-                                                                                   views:constraintViews]];
-    }
-
-    [self configureCell:cell
-            atIndexPath:indexPath
-           forTableView:tableView];
+    [self tableView:self configureCell:cell forRowAtIndexPath:indexPath];
 
     return cell;
 }
 
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
+- (void)tableView:(UITableView *)tableView configureCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITMultilineTableViewCell *multilineCell = (MITMultilineTableViewCell*)cell;
+    MITEventListTableViewCell *multilineCell = (MITEventListTableViewCell*)cell;
 
     MITCalendarEvent *event = self.events[indexPath.row];
     multilineCell.headlineLabel.text = event.title;
@@ -125,9 +93,7 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
     }
 
     multilineCell.bodyLabel.text = bodyText;
-
-    UILabel *locationLabel = (UILabel*)[multilineCell.contentView viewWithTag:MITEventListCellLocationLabelTag];
-    locationLabel.text = event.shortloc;
+    multilineCell.rightBodyLabel.text = event.shortloc;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
