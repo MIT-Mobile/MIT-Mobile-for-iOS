@@ -800,14 +800,15 @@
     CGFloat addedHeight = size.height - frame.size.height;
     frame.size.height = size.height;
     webView.frame = frame;
-    
+
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        addedHeight += 64.;
+    }
+
     if (addedHeight > 0) {
         // increase scrollview height by how much the webview height grows
         CGSize contentSize = self.incomingSlidingView.contentSize;
         contentSize.height = self.incomingSlidingView.frame.size.height + addedHeight;
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            contentSize.height += 64.;
-        }
         self.incomingSlidingView.contentSize = contentSize;
     }
 }
