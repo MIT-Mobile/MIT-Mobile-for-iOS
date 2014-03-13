@@ -1,11 +1,3 @@
-//
-//  MITMultilineTableViewCell.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 8/21/13.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @interface MITMultilineTableViewCell : UITableViewCell
