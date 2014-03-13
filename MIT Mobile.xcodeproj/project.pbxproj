@@ -90,6 +90,8 @@
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C75D20A16C975D100DD5350 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C75D20916C975D100DD5350 /* libc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
+		2C7DA7EB18D226B100260352 /* MITEventListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */; };
+		2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */; };
 		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
@@ -617,6 +619,9 @@
 		2C75D20916C975D100DD5350 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
+		2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventListTableViewCell.m; sourceTree = "<group>"; };
+		2C7DA7E918D226B100260352 /* MITEventListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventListTableViewCell.h; sourceTree = "<group>"; };
+		2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventListTableViewCell.xib; sourceTree = "<group>"; };
 		2C7EDD901656CD2E001684E1 /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
 		2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
 		2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
@@ -2887,6 +2892,9 @@
 				EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */,
 				EB976D15116CF6630036A18E /* EventListTableView.h */,
 				EB976D16116CF6630036A18E /* EventListTableView.m */,
+				2C7DA7E918D226B100260352 /* MITEventListTableViewCell.h */,
+				2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */,
+				2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */,
 				EB976D19116CF6A10036A18E /* EventCategoriesTableView.h */,
 				EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */,
 				EB3F094F118F0FFE00540B8A /* CalendarMapView.h */,
@@ -3059,6 +3067,7 @@
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
+				2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
@@ -3228,6 +3237,7 @@
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */,
+				2C7DA7EB18D226B100260352 /* MITEventListTableViewCell.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
