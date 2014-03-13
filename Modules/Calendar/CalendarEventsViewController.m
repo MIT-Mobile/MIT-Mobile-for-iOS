@@ -29,6 +29,8 @@
 @property (nonatomic,strong) EventListTableView *searchResultsTableView;
 @property (nonatomic,strong) CalendarMapView *searchResultsMapView;
 
+@property (nonatomic,weak) MobileRequestOperation *activeRequest;
+
 @property BOOL dateRangeDidChange;
 @property NSInteger loadingIndicatorCount;
 
@@ -832,6 +834,18 @@
 - (void)makeRequest
 {
     MobileRequestOperation *request = nil;
+
+    // Clear out the active request. We're going to be sending a new one anyway
+    // at this point so we should be ignoring whatever request is currently
+    // processing (if there is one). The request is not being canceled here
+    // because, at the moment, MobileRequestOperation becomes extremely
+    // unhappy if the request is canceled.
+    // (bskinner - 2014.03.13)
+    if (!self.activeRequest) {
+        [self addLoadingIndicatorForSearch:NO];
+    } else {
+        self.activeRequest = nil;
+    }
     
 	if ([[CalendarDataManager sharedManager] isDailyEvent:self.activeEventList]) {
 		NSTimeInterval interval = [self.startDate timeIntervalSince1970];
@@ -870,19 +884,31 @@
         NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
         request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
 	}
-    
-    
+
+    self.activeRequest = request;
+    __weak CalendarEventsViewController *weakSelf = self;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            
+        CalendarEventsViewController *blockSelf = weakSelf;
+        if (!blockSelf || (blockSelf.activeRequest != operation)) {
+            // Either the view controller was popped or the request that we launch earlier
+            // has finished after we already dispatched another one. We are returning immediately
+            // here because the -makeRequest method only increments the status bar activity
+            // indicator if there is not a request currently in progress. If we let this go all the
+            // way through, we'd end up decrementing the counter too much.
+            // (bskinner - 2014.03.13)
+            return;
+        } else if (error) {
+            // Should be doing something but we aren't doing anything...
+            // Don't return immediately because we need to hit the removeLoadingIndicator
+            // method below to keep the accounting balanced
         } else if ([jsonResult isKindOfClass:[NSArray class]]) {
             NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
             EventCategory *category = nil;
             
-            if ([self.activeEventList.listID isEqualToString:@"Exhibits"]) {
+            if ([blockSelf.activeEventList.listID isEqualToString:@"Exhibits"]) {
                 category = [CalendarDataManager categoryForExhibits];
             } else {
-                category = self.category;
+                category = blockSelf.category;
             }
             
             for (NSDictionary *eventDict in jsonResult) {
@@ -891,19 +917,18 @@
                 if (category != nil) {
                     [event addCategoriesObject:category];
                 }
-                [self.activeEventList addEventsObject:event];
+                [blockSelf.activeEventList addEventsObject:event];
                 [CoreDataManager saveData]; // save now to preserve many-many relationships
                 [arrayForTable addObject:event];
             }
             
-            self.events = arrayForTable;
-            [self.tableView reloadData];
+            blockSelf.events = arrayForTable;
+            [blockSelf.tableView reloadData];
         }
-        
-        [self removeLoadingIndicator];
+
+        [blockSelf removeLoadingIndicator];
     };
-	
-    [self addLoadingIndicatorForSearch:NO];
+
     [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
