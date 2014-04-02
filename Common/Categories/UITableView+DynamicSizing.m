@@ -75,7 +75,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         [dataSource tableView:self configureCell:layoutCell forRowAtIndexPath:indexPath];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:[NSString stringWithFormat:@"[%@] unable to configure cell at %@ with reuse identifier %@",self,indexPath,reuseIdentifier]
+                                       reason:[NSString stringWithFormat:@"failed to configure cell, %@ does not conform to <%@>",NSStringFromClass([self class]),NSStringFromProtocol(@protocol(UITableViewDataSourceDynamicSizing))]
                                      userInfo:nil];
     }
 
