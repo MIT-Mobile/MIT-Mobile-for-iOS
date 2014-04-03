@@ -42,6 +42,7 @@
 
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate>
 @property NSInteger networkActivityCounter;
+@property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
 - (void)updateBasicServerInfo;
 @end
@@ -281,17 +282,19 @@
 #pragma mark -
 #pragma mark Push notifications
 
-- (void)application:(UIApplication *)application 
-didReceiveRemoteNotification:(NSDictionary *)userInfo {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[MITUnreadNotifications updateUI];
 	
 	// vibrate the phone
 	AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
 	
 	// display the notification in an alert
+    APNSUIDelegate *notificationHelper = [[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self];
+    [self.pendingNotifications addObject:notificationHelper];
+
 	UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
                                                               message:userInfo[@"aps"][@"alert"]
-                                                             delegate:[[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self]
+                                                             delegate:notificationHelper
                                                     cancelButtonTitle:@"Close"
                                                     otherButtonTitles:@"View", nil];
 	[notificationView show];
@@ -381,6 +384,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
     
     return _modules;
+}
+
+- (NSMutableSet*)pendingNotifications
+{
+    if (!_pendingNotifications) {
+        _pendingNotifications = [[NSMutableSet alloc] init];
+    }
+
+    return _pendingNotifications;
 }
 
 #pragma mark Property load methods
@@ -540,12 +552,18 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	
 	MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
+
 	BOOL shouldOpen = (buttonIndex == 1);
 	if (shouldOpen) {
 		[self.appDelegate dismissAppModalViewControllerAnimated:YES];
 	}
 
 	[[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    [self.appDelegate.pendingNotifications removeObject:self];
 }
 
 @end
