@@ -8,6 +8,7 @@
 @property (nonatomic,strong) NSArray *primaryModules;
 
 - (void)pushModuleWithTag:(NSString*)tag;
+- (void)pushModuleWithTag:(NSString*)tag animated:(BOOL)animated;
 @end
 
 @interface SpringboardIcon : UIButton {

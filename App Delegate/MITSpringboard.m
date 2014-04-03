@@ -185,24 +185,29 @@
 	}
 }
 
-- (void)pushModuleWithTag:(NSString *)tag
+- (void)pushModuleWithTag:(NSString*)tag
+{
+    [self pushModuleWithTag:tag animated:YES];
+}
+
+- (void)pushModuleWithTag:(NSString*)tag animated:(BOOL)animated
 {
     if ([tag isEqualToString:MobileWebTag]) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebGetCurrentServerDomain()]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url];
         }
-        
-        return;
-    }
 
-    for (MITModule *module in self.primaryModules) {
-        if ([[module tag] isEqualToString:tag]) {
-            [self.navigationController pushViewController:module.moduleHomeController
-                                                 animated:YES];
-            module.hasLaunchedBegun = YES;
-            [module didAppear];
-        }
+    } else {
+        [self.primaryModules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+            if ([[module tag] isEqualToString:tag]) {
+                [self.navigationController pushViewController:module.moduleHomeController
+                                                     animated:animated];
+                module.hasLaunchedBegun = YES;
+                [module didAppear];
+                (*stop) = YES;
+            }
+        }];
     }
 }
 

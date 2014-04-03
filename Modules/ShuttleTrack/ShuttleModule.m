@@ -68,14 +68,14 @@
         [[MITAppDelegate() rootNavigationController] popToViewController:self.moduleHomeController animated:NO];
     } else {
         [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag animated:NO];
     }
     
     if ([localPath length] == 0) {
 		return YES;
 	}
 	
-	NSArray *components = [localPath componentsSeparatedByString:@"/"];
+	NSArray *components = [localPath pathComponents];
 	NSString *pathRoot = components[0];
 	UINavigationController *navigationController = [self rootViewController].navigationController;
 	 
