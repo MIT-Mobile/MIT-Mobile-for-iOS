@@ -1,6 +1,6 @@
-#import "AFHTTPRequestOperation.h"
+#import <RestKit/RKHTTPRequestOperation.h>
 
-@interface MITTouchstoneRequestOperation : AFHTTPRequestOperation
+@interface MITTouchstoneRequestOperation : RKHTTPRequestOperation
 + (void)setUserAgent:(NSString*)userAgent;
 + (NSString*)userAgent;
 
