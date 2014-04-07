@@ -158,8 +158,16 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     }
 }
 
+
+- (void)setSavedCredential:(NSURLCredential *)savedCredential
+{
+    NSAssert(NO, @"Not yet implemented");
+}
+
 - (NSURLCredential*)savedCredential
 {
+    NSAssert(NO, @"Not yet implemented");
+
     NSString *lastLoggedInUser = [[NSUserDefaults standardUserDefaults] stringForKey:MITTouchstoneLastLoggedInUserKey];
     NSURLCredentialStorage *credentialStorage = [NSURLCredentialStorage sharedCredentialStorage];
     __block NSURLCredential *credential = nil;
@@ -386,6 +394,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 #pragma mark _Public
 - (void)logout
 {
+    NSAssert(NO, @"Not yet implemented");
     [self clearAllCredentials];
 }
 

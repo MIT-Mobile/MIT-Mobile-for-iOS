@@ -11,4 +11,6 @@
 - (id)initWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 
 - (void)setCompleteBlock:(void (^)(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error))block DEPRECATED_ATTRIBUTE;
+
+- (void)migrateLegacyStoredCredentialsIfNeeded;
 @end

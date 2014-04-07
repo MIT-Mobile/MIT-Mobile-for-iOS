@@ -109,4 +109,9 @@
         }];
     }];
 }
+
+- (void)migrateLegacyStoredCredentialsIfNeeded
+{
+    NSAssert(NO, @"Not yet implemented");
+}
 @end
