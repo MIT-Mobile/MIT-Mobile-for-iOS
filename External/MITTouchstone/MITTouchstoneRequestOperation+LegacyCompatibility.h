@@ -2,13 +2,11 @@
 
 @compatibility_alias MobileRequestOperation MITTouchstoneRequestOperation;
 
-@interface MITTouchstoneRequestOperation (LegacyCompatibility) 
+@interface MITTouchstoneRequestOperation (LegacyCompatibility)
 + (id)operationWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
-+ (id)operationWithRelativePath:(NSString*)relativePath parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 + (id)operationWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
-- (id)initWithRelativePath:(NSString*)relativePath parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 - (id)initWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 
 - (void)setCompleteBlock:(void (^)(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error))block DEPRECATED_ATTRIBUTE;
