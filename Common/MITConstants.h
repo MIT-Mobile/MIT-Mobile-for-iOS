@@ -125,7 +125,7 @@ extern NSString * const MobileWebTouchstoneErrorDomain;
 enum {
     MobileWebUnknownError = 0,
     MobileWebTouchstoneError,
-    MobileWebInvalidLoginError
+    MobileWebInvalidLoginError = NSURLErrorUserAuthenticationRequired
 };
 
 extern NSString * const MobileLoginKeychainIdentifier;
