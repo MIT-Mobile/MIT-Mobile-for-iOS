@@ -7,7 +7,9 @@
 #import "NSMutableURLRequest+ECP.h"
 #import "MITTouchstoneDefaultLoginViewController.h"
 
-#define AFNETWORKING_20
+#import "MITAdditions.h"
+
+//#define AFNETWORKING_20
 
 #if defined(AFNETWORKING_20)
 
@@ -108,8 +110,6 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 - (void)setCompletionBlockWithSuccess:(void (^)(MITTouchstoneRequestOperation *operation, id responseObject))success
                               failure:(void (^)(MITTouchstoneRequestOperation *operation, NSError *error))failure;
 {
-
-
     __weak MITTouchstoneRequestOperation *weakSelf = self;
     [super setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *data) {
         MITTouchstoneRequestOperation *blockSelf = weakSelf;
