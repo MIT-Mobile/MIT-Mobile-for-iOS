@@ -1,153 +1,73 @@
+#import <QuartzCore/QuartzCore.h>
+
 #import "SettingsTouchstoneViewController.h"
-#import "MobileKeychainServices.h"
-#import "MobileRequestOperation.h"
-#import "MITConstants.h"
-#import "UIKit+MITAdditions.h"
+#import "MITTouchstoneOperation.h"
+#import "MITTouchstoneController.h"
+
 #import "ExplanatorySectionLabel.h"
 #import "MITNavigationActivityView.h"
 
-enum {
-    TouchstoneUserCell = 0,
-    TouchstonePasswordCell
+typedef NS_ENUM(NSInteger, MITTouchstoneSettingsViewTag) {
+    MITTouchstoneLoginViewUserTag = 0x49485400,
+    MITTouchstoneLoginViewPasswordTag,
+    MITTouchstoneLoginViewRememberMeTag,
+    MITTouchstoneLoginViewLogInTag
 };
 
-@interface SettingsTouchstoneViewController ()
-@property (nonatomic) BOOL authenticationFailed;
+typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
+    MITTouchstoneLoginCredentialsSectionIndex = 0,
+    MITTouchstoneLoginLogInSectionIndex,
+    MITTouchstoneLoginRememberMeSectionIndex
+};
 
-@property (nonatomic,weak) MobileRequestOperation *authOperation;
-@property (nonatomic,copy) NSDictionary *tableCells;
-@property (nonatomic,weak) UITextField *usernameField;
-@property (nonatomic,weak) UITextField *passwordField;
-@property (nonatomic,weak) UITableViewCell *logoutCell;
+@interface SettingsTouchstoneViewController () <UITextFieldDelegate>
+@property (nonatomic,weak) IBOutlet UITextField *usernameField;
+@property (nonatomic,weak) IBOutlet UITextField *passwordField;
+@property (nonatomic,weak) IBOutlet UISwitch *persistCredentialsSwitch;
+@property (nonatomic,weak) MITNavigationActivityView *activityView;
 
-- (void)setupTableCells;
-- (IBAction)clearTouchstoneLogin:(id)sender;
+@property (nonatomic,readonly,strong) NSOperationQueue *authenticationOperationQueue;
+@property (nonatomic,weak) NSOperation *currentOperation;
 
-- (void)save:(id)sender;
-- (void)cancel:(id)sender;
-- (void)saveWithUsername:(NSString*)username password:(NSString*)password;
+@property (nonatomic,getter=isAuthenticating) BOOL authenticating;
+@property (nonatomic,readonly) BOOL needsToValidateCredentials;
+@property (nonatomic,readonly) BOOL needsToUpdateNavigationBarItems;
+
+- (void)setNeedsToValidateCredentials;
+- (void)validateCredentialsIfNeeded;
+
+- (IBAction)cancelButtonPressed:(id)sender;
+- (IBAction)logInButtonPressed:(id)sender;
+- (IBAction)didChangeCredentialPersistence:(id)sender;
 @end
 
-@implementation SettingsTouchstoneViewController
-+ (NSString*)touchstoneUsername
-{
-    NSDictionary *accountInfo = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
-    
-    return accountInfo[(__bridge id)kSecAttrAccount];
+@implementation SettingsTouchstoneViewController {
+    NSURLCredential *_existingCredential;
 }
 
-- (id)init
-{
-    self = [super initWithNibName:nil
-                           bundle:nil];
-    if (self) {
+@synthesize authenticationOperationQueue = _authenticationOperationQueue;
 
+- (instancetype)init
+{
+    return [self initWithCredential:nil];
+}
+
+- (instancetype)initWithCredential:(NSURLCredential*)credential
+{
+    self = [super initWithStyle:UITableViewStyleGrouped];
+    if (self) {
+        _existingCredential = credential;
     }
+    
     return self;
 }
 
-- (void)dealloc
+#pragma mark - View Setup
+- (UITextField*)usernameField
 {
-    [self.authOperation cancel];
-}
-
-#pragma mark - View lifecycle
-- (void)loadView
-{
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    UIView *mainView = [[UIView alloc] initWithFrame:screenRect];
-    
-    CGRect viewBounds = mainView.bounds;
-    {
-        [self setupTableCells];
-        
-        CGRect tableFrame = viewBounds;
-        UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame
-                                                              style:UITableViewStyleGrouped];
-        tableView.delegate = self;
-        tableView.dataSource = self;
-        tableView.rowHeight = 44.0;
-        tableView.allowsSelection = YES;
-        tableView.scrollEnabled = NO;
-        tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-        tableView.backgroundView = nil;
-        tableView.opaque = NO;
-        
-        viewBounds.origin.y += tableFrame.size.height;
-        [mainView addSubview:tableView];
-    }
-    
-    [self setView:mainView];
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.title = @"MIT Touchstone";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                           target:self
-                                                                                           action:@selector(cancel:)];
-    self.navigationItem.rightBarButtonItem.tag = NSIntegerMax;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                          target:self
-                                                                                          action:@selector(cancel:)];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
-                                                 name:UIKeyboardDidShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
-#pragma mark - Private Methods
-- (void)setupTableCells
-{
-    NSMutableDictionary *cells = [NSMutableDictionary dictionary];
-    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
-    }
-    CGRect fieldFrame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
-
-    NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
-    
-    {
-        UITableViewCell *usernameCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        usernameCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        UITextField *userField = [[UITextField alloc] init];
+    UITextField *userField = _usernameField;
+    if (!userField) {
+        userField = [[UITextField alloc] init];
         userField.adjustsFontSizeToFitWidth = YES;
         userField.autocapitalizationType = UITextAutocapitalizationTypeNone;
         userField.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -162,322 +82,530 @@ enum {
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
         userField.textAlignment = NSTextAlignmentLeft;
+        userField.tag = MITTouchstoneLoginViewUserTag;
         
-        NSString *username = credentials[(__bridge id)kSecAttrAccount];
-        if ([username length]) {
-            userField.text = username;
-        }
-        
-        userField.frame = fieldFrame;
-        self.usernameField = userField;
-        [usernameCell.contentView addSubview:userField];
-        
-        [cells setObject:usernameCell
-                  forKey:[NSIndexPath indexPathForRow:0 inSection:0]];
+        _usernameField = userField;
     }
     
-    {
-        UITableViewCell *passwordCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        passwordCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        UITextField *passField = [[UITextField alloc] init];
-        passField.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                      UIViewAutoresizingFlexibleWidth);
-        passField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-        passField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        passField.delegate = self;
-        passField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
-        passField.placeholder = @"Password";
-        passField.returnKeyType = UIReturnKeyDone;
-        passField.secureTextEntry = YES;
-        
-        NSString *password = credentials[(__bridge id)kSecValueData];
-        if ([password length]) {
-            passField.text = password;
-        }
-        
-        passField.frame = fieldFrame;
-        
-        self.passwordField = passField;
-        [passwordCell.contentView addSubview:passField];
-        
-        [cells setObject:passwordCell
-                  forKey:[NSIndexPath indexPathForRow:1 inSection:0]];
-    }
-    
-    {
-        UITableViewCell *buttonCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-        buttonCell.accessoryType = UITableViewCellAccessoryNone;
-        buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
-
-        buttonCell.textLabel.text = @"Log out of Touchstone";
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            buttonCell.textLabel.textAlignment = NSTextAlignmentLeft;
-            buttonCell.textLabel.textColor = [UIColor MITTintColor];
-        } else {
-            buttonCell.textLabel.textAlignment = NSTextAlignmentCenter;
-            buttonCell.textLabel.textColor = [UIColor blackColor];
-        }
-        
-        self.logoutCell = buttonCell;
-        
-        [self setLogOutButtonEnabled:NO];
-
-        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-        for (NSHTTPCookie *cookie in [cookieStore cookies]) {
-            if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                [self setLogOutButtonEnabled:YES];
-                break;
-            }
-        }
-        
-        [cells setObject:buttonCell
-                  forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
-    }
-
-    self.tableCells = cells;
+    return userField;
 }
 
-- (void)save:(id)sender
+- (UITextField*)passwordField
 {
-    NSString *username = self.usernameField.text;
-    NSString *password = self.passwordField.text;
+    UITextField *passwordField = _passwordField;
     
+    if (!passwordField) {
+        passwordField = [[UITextField alloc] init];
+        passwordField.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                          UIViewAutoresizingFlexibleWidth);
+        passwordField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        passwordField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        passwordField.delegate = self;
+        passwordField.placeholder = @"Password";
+        passwordField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
+        passwordField.returnKeyType = UIReturnKeyDone;
+        passwordField.secureTextEntry = YES;
+        passwordField.tag = MITTouchstoneLoginViewPasswordTag;
+        
+        _passwordField = passwordField;
+    }
+    
+    return passwordField;
+}
+
+- (UISwitch*)persistCredentialsSwitch
+{
+    UISwitch *persistCredentialsSwitch = _persistCredentialsSwitch;
+    if (!persistCredentialsSwitch) {
+        persistCredentialsSwitch = [[UISwitch alloc] init];
+        persistCredentialsSwitch.tag = MITTouchstoneLoginViewRememberMeTag;
+        [persistCredentialsSwitch addTarget:self
+                                     action:@selector(didChangeCredentialPersistence:)
+                           forControlEvents:UIControlEventValueChanged];
+        
+        _persistCredentialsSwitch = persistCredentialsSwitch;
+    }
+    
+    return persistCredentialsSwitch;
+}
+
+- (MITNavigationActivityView*)activityView
+{
+    MITNavigationActivityView *activityView = _activityView;
+    if (!activityView) {
+        activityView = [[MITNavigationActivityView alloc] init];
+        _activityView = activityView;
+    }
+    
+    return activityView;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor colorWithRed:0.843
+                                                     green:0.855
+                                                      blue:0.878
+                                                     alpha:1.0];
+    
+    self.title = @"Touchstone";
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                          target:self
+                                                                                          action:@selector(cancelButtonPressed:)];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.usernameField.text = _existingCredential.user;
+    self.passwordField.text = _existingCredential.password;
+    
+    [self setNeedsToValidateCredentials];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    NSOperation *currentOperation = self.currentOperation;
+    self.currentOperation = nil;
+    [currentOperation cancel];
+}
+
+#pragma mark IBAction Methods
+- (IBAction)saveItemWasTapped:(UIBarButtonItem*)sender
+{
+    [self setAuthenticating:YES animated:YES];
+
+    [[MITTouchstoneController sharedController] loginWithCredential:self.credential completion:^(BOOL success, NSError *error) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+}
+
+- (IBAction)cancelItemWasTapped:(UIBarButtonItem*)sender
+{
+    [self.currentOperation cancel];
+    self.currentOperation = nil;
+
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (IBAction)doneItemWasTapped:(UIBarButtonItem*)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (NSOperationQueue*)authenticationOperationQueue
+{
+    if (!_authenticationOperationQueue) {
+        _authenticationOperationQueue = [[NSOperationQueue alloc] init];
+        _authenticationOperationQueue.maxConcurrentOperationCount = 1;
+        _authenticationOperationQueue.name = @"edu.mit.mobile.touchstone-settings.request";
+    }
+
+    return _authenticationOperationQueue;
+}
+
+- (NSURLCredential*)credential
+{
+    NSURLCredentialPersistence persistenceType = NSURLCredentialPersistenceNone;
+    if (self.persistCredentialsSwitch.isOn) {
+        persistenceType = NSURLCredentialPersistencePermanent;
+    }
+    
+    return [[NSURLCredential alloc] initWithUser:_usernameField.text
+                                        password:_passwordField.text
+                                     persistence:persistenceType];
+}
+
+- (void)setNeedsToUpdateNavigationBarItems
+{
+    _needsToUpdateNavigationBarItems = YES;
+}
+
+- (void)updateNavigationBarButtonItemsIfNeeded
+{
+    if (_needsToUpdateNavigationBarItems) {
+        if (self.needsToValidateCredentials) {
+            self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelItemWasTapped:)];
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItemWasTapped:)];
+
+            if (self.currentOperation) {
+                self.navigationItem.rightBarButtonItem.enabled = NO;
+            }
+        } else {
+            self.navigationItem.leftBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneItemWasTapped:)];
+        }
+    }
+}
+
+- (void)setNeedsToValidateCredentials
+{
+    _needsToValidateCredentials = YES;
+}
+
+- (void)validateCredentialsIfNeeded
+{
+    if (self.needsToValidateCredentials) {
+        _needsToValidateCredentials = NO;
+        
+        NSURLCredential *credential = self.credential;
+        NSURLRequest *authRequest = [[NSURLRequest alloc] initWithURL:[MITTouchstoneController loginEntryPointURL]];
+        id<MITIdentityProvider> identityProvider = [MITTouchstoneController identityProviderForUser:credential.user];
+        
+        MITTouchstoneOperation *operation = [[MITTouchstoneOperation alloc] initWithRequest:authRequest
+                                                                           identityProvider:identityProvider
+                                                                                 credential:credential];
+        BOOL animated = YES;
+        
+        __weak SettingsTouchstoneViewController *weakSelf = self;
+        __weak MITTouchstoneOperation *weakOperation = operation;
+        operation.completionBlock = ^{
+            SettingsTouchstoneViewController *blockSelf = weakSelf;
+            if (blockSelf) {
+                MITTouchstoneOperation *blockOperation = weakOperation;
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (blockSelf.currentOperation == blockOperation) {
+                        blockSelf.currentOperation = nil;
+                        
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            if (blockOperation.isSuccess) {
+                                [self didSuccessfullyAuthenticateWithCredential:credential];
+                            } else {
+                                [self didFailToAuthenticateWithError:blockOperation.error];
+                            }
+                        }];
+                    }
+                }];
+            }
+        };
+        
+        [self setAuthenticating:YES animated:animated];
+        
+        [self.currentOperation cancel];
+        self.currentOperation = operation;
+        [self.authenticationOperationQueue addOperation:operation];
+    }
+}
+
+- (void)setAuthenticating:(BOOL)authenticating
+{
+    [self setAuthenticating:authenticating animated:NO];
+}
+
+- (void)setAuthenticating:(BOOL)authenticating animated:(BOOL)animated;
+{
+    if (_authenticating != authenticating) {
+        if (authenticating) {
+            [self willBeginAuthenticating:animated];
+        }
+        
+        _authenticating = authenticating;
+        
+        if (_authenticating) {
+            [self didBeginAuthenticating:animated];
+        } else {
+            [self didEndAuthenticating:animated];
+        }
+    }
+}
+
+- (void)willBeginAuthenticating:(BOOL)animated
+{
     [self.usernameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
-    self.navigationItem.rightBarButtonItem.enabled = NO;
+    self.tableView.userInteractionEnabled = NO;
+}
+
+- (void)didBeginAuthenticating:(BOOL)animated
+{
+    self.navigationItem.titleView = self.activityView;
+    [self.activityView startActivityWithTitle:@"Authenticating"];
+    [self updateLogInButtonState];
+}
+
+- (void)didEndAuthenticating:(BOOL)animated
+{
+    self.tableView.userInteractionEnabled = YES;
+    self.navigationItem.titleView = nil;
+}
+
+- (void)didSuccessfullyAuthenticateWithCredential:(NSURLCredential*)credential
+{
+    [self setAuthenticating:NO animated:YES];
+}
+
+- (void)didFailToAuthenticateWithError:(NSError*)error
+{
+    [self setAuthenticating:NO animated:YES];
     
-    if ([username length]) {
-        if (self.authenticationFailed) {
-            UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"You may not be able to login to Touchstone using the provided credentials. Are you sure you want to continue?"
-                                                                delegate:self
-                                                       cancelButtonTitle:@"Edit"
-                                                  destructiveButtonTitle:nil
-                                                       otherButtonTitles:@"Save",nil];
-            [sheet showInView:self.view];
-            self.navigationItem.rightBarButtonItem.enabled = YES;
-        } else if ([password length] == 0) {
-            [self saveWithUsername:username
-                          password:password];
-        } else if (!self.authOperation) {
-            [self clearTouchstoneLogin:nil];
-
-            MITNavigationActivityView *activityView = [[MITNavigationActivityView alloc] init];
-            self.navigationItem.titleView = activityView;
-            [activityView startActivityWithTitle:@"Verifying..."];
-            
-            MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                    command:@"getUserIdentity"
-                                                                                 parameters:nil];
-            
-            [operation authenticateUsingUsername:username
-                                        password:password];
-
-            __weak SettingsTouchstoneViewController *weakSelf = self;
-            operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-                SettingsTouchstoneViewController *blockSelf = weakSelf;
-                blockSelf.authOperation = nil;
-                blockSelf.navigationItem.titleView = nil;
-                if (error) {
-                    blockSelf.navigationItem.rightBarButtonItem.enabled = YES;
-                    blockSelf.authenticationFailed = YES;
-                    
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Touchstone Account"
-                                                                    message:@"Unable to verify Touchstone credentials."
-                                                                   delegate:nil
-                                                          cancelButtonTitle:nil
-                                                          otherButtonTitles:@"OK", nil];
-                    
-                    [alert show];
-                } else {
-                    [blockSelf saveWithUsername:username
-                                  password:password];
-                }
-            };
-
-            self.authOperation = operation;
-            [[MobileRequestOperation defaultQueue] addOperation:operation];
-        }
+    UIAlertView *alertView = nil;
+    if (error.code == NSURLErrorUserAuthenticationRequired) {
+        alertView = [[UIAlertView alloc] initWithTitle:@"Touchstone"
+                                               message:@"Invalid user or password"
+                                              delegate:self
+                                     cancelButtonTitle:nil
+                                     otherButtonTitles:@"OK",nil];
     } else {
-        DDLogVerbose(@"Saved Touchstone password has been cleared");
-        [self saveWithUsername:nil
-                      password:nil];
-    }
-}
-
-- (void)cancel:(id)sender
-{
-    [self.authOperation cancel];
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)saveWithUsername:(NSString*)username password:(NSString*)password
-{
-    if ([username length])
-    {
-        MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
-    }
-    else
-    {
-        MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+        alertView = [[UIAlertView alloc] initWithTitle:@"Touchstone"
+                                               message:[NSString stringWithFormat:@"%@",error]
+                                              delegate:self
+                                     cancelButtonTitle:nil
+                                     otherButtonTitles:@"OK",nil];
     }
     
-    [self.navigationController popViewControllerAnimated:YES];
+    alertView.delegate = self;
+    [alertView show];
 }
 
-- (BOOL)logOutButtonEnabled
+- (void)updateLogInButtonState
 {
-    return self.logoutCell.textLabel.enabled;
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITTouchstoneLoginLogInSectionIndex] withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)setLogOutButtonEnabled:(BOOL)enabled
+- (BOOL)isLogInButtonEnabled
 {
-    self.logoutCell.textLabel.enabled = enabled;
-    self.logoutCell.selectionStyle = (enabled) ? UITableViewCellSelectionStyleBlue : UITableViewCellSelectionStyleNone;
+    id<MITIdentityProvider> identityProvider = [MITTouchstoneController identityProviderForUser:self.usernameField.text];
+
+    return ([_usernameField.text length] &&
+            [_passwordField.text length] &&
+            identityProvider &&
+            [self needsToValidateCredentials]);
 }
 
-#pragma mark - UITableView Data Source
-- (UITableViewCell*)tableView:(UITableView *)tableView
-        cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.tableCells[indexPath];
+#pragma mark - Event Handlers
+- (IBAction)cancelButtonPressed:(id)sender {
+    [self.authenticationOperationQueue cancelAllOperations];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (IBAction)logInButtonPressed:(id)sender
 {
-    NSInteger maxSection = 0;
+    [self validateCredentialsIfNeeded];
+}
+
+- (IBAction)didChangeCredentialPersistence:(id)sender
+{
+    // Nothing to do here...
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
     
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section > maxSection)
-        {
-            maxSection = indexPath.section;
-        }
+    [super touchesBegan:touches withEvent:event];
+}
+
+#pragma mark - Private Methods
+
+
+
+#pragma mark - UITextField Delegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if ([string isEqualToString:@"\n"]) {
+        [textField resignFirstResponder];
+        return NO;
+    } else if ([string isEqualToString:@"\t"]) {
+        return NO;
     }
     
-    return (maxSection + 1);
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSInteger rowCount = 0;
+    [self setNeedsToValidateCredentials];
     
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section == section)
-        {
-            ++rowCount;
-        }
-    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self updateLogInButtonState];
+    }];
     
-    return rowCount;
-}
-
-#pragma mark - UITableView Delegate
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    
-    if (section == 0) {
-        UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
-
-        // TODO: move these user-visible strings out of code
-        NSString *labelText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
-
-        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
-        footerLabel.text = labelText;
-        footerLabel.accessoryView = secureIcon;
-        return footerLabel;
-    }
-    return nil;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    if (section == 0) {
-        NSString *labelText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
-        UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
-        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
-                                                          width:self.view.frame.size.width
-                                                            type:ExplanatorySectionFooter
-                                                   accessoryView:secureIcon];
-        return height;
-    }
-    return 0;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (self.tableCells[indexPath] == self.logoutCell && [self logOutButtonEnabled] == YES) {
-        [self clearTouchstoneLogin:nil];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-}
-
-#pragma mark - Notification Handlers
-- (void)keyboardDidShow:(NSNotification*)notification
-{
-    
-}
-
-- (void)keyboardDidHide:(NSNotification*)notification
-{
-    
-}
-
-- (IBAction)clearTouchstoneLogin:(id)sender
-{
-    [MobileRequestOperation clearAuthenticatedSession];
-    [self setLogOutButtonEnabled:NO];
-}
-
-#pragma mark - UITextField Delegate Methods
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    self.authenticationFailed = NO;
-    
-    if (self.navigationItem.rightBarButtonItem.tag == NSIntegerMax)
-    {
-        UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                                               target:self
-                                                                               action:@selector(save:)];
-        item.tag = 0;
-        [self.navigationItem setRightBarButtonItem:item
-                                          animated:YES];
-    }
     return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    [self updateLogInButtonState];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    
-    if ([textField isEqual:self.usernameField])
-    {
-        [self.passwordField becomeFirstResponder];
-    }
-    else
-    {
+    if ([textField isEqual:self.usernameField]) {
+        [[self.view nextResponder] becomeFirstResponder];
+    } else {
         [textField resignFirstResponder];
     }
     
     return NO;
 }
 
-#pragma mark - UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+#pragma mark - UIAlertView Delegate
+
+#pragma mark - UITableView Data Source
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    switch (indexPath.section) {
+        case MITTouchstoneLoginCredentialsSectionIndex: {
+            UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
+            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+                textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+            }
+            
+            NSString *identifier = nil;
+            if (indexPath.row == 0) {
+                identifier = @"TouchstoneLoginUserCell";
+            } else if (indexPath.row == 1) {
+                identifier = @"TouchstoneLoginPasswordCell";
+            }
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            }
+            
+            if ([identifier isEqualToString:@"TouchstoneLoginUserCell"]) {
+                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneLoginViewUserTag];
+                if (!textField) {
+                    textField = self.usernameField;
+                    textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
+                    [cell.contentView addSubview:textField];
+                }
+            } else if ([identifier isEqualToString:@"TouchstoneLoginPasswordCell"]) {
+                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneLoginViewPasswordTag];
+                if (!textField) {
+                    textField = self.passwordField;
+                    textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
+                    [cell.contentView addSubview:textField];
+                }
+            }
+            
+            return cell;
+        }
+            
+        case MITTouchstoneLoginLogInSectionIndex: {
+            NSString *identifier = nil;
+            if (indexPath.row == 0) {
+                identifier = @"TouchstoneLoginLogInCell";
+            }
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            }
+            
+            if ([identifier isEqualToString:@"TouchstoneLoginLogInCell"]) {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+                cell.editingAccessoryType = UITableViewCellAccessoryNone;
+                cell.textLabel.text = @"Log In";
+                
+                if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+                    cell.textLabel.textColor = [UIColor colorWithRed:0.639
+                                                               green:0.112
+                                                                blue:0.204
+                                                               alpha:1.];
+                    cell.textLabel.textAlignment = NSTextAlignmentLeft;
+                } else {
+                    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+                }
+                
+                cell.selectionStyle = ([self isLogInButtonEnabled] ? UITableViewCellSelectionStyleDefault : UITableViewCellSelectionStyleNone);
+                cell.textLabel.enabled = [self isLogInButtonEnabled];
+            }
+            
+            return cell;
+        }
+            
+        case MITTouchstoneLoginRememberMeSectionIndex: {
+            NSString *identifier = nil;
+            if (indexPath.row == 0) {
+                identifier = @"TouchstoneLoginRememberMeCell";
+            }
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            }
+            
+            if ([identifier isEqualToString:@"TouchstoneLoginRememberMeCell"]) {
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                cell.accessoryView = self.persistCredentialsSwitch;
+                cell.textLabel.text = @"Remember Login";
+                
+                if (_existingCredential) {
+                    self.persistCredentialsSwitch.on = (_existingCredential.persistence != NSURLCredentialPersistenceNone);
+                }
+            }
+            
+            return cell;
+        }
+    }
     
-    if ([buttonTitle caseInsensitiveCompare:@"Save"] == NSOrderedSame)
-    {
-        [self saveWithUsername:self.usernameField.text
-                      password:self.passwordField.text];
+    return nil;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 3;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch ((MITTouchstoneLoginSectionIndex)section) {
+        case MITTouchstoneLoginCredentialsSectionIndex:
+            return 2;
+        case MITTouchstoneLoginLogInSectionIndex:
+            return 1;
+        case MITTouchstoneLoginRememberMeSectionIndex:
+            return 1;
+    }
+    
+    return 0;
+}
+
+#pragma mark - UITableView Delegate
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == MITTouchstoneLoginLogInSectionIndex) {
+        return (indexPath.row == 0) && [self isLogInButtonEnabled];
+    } else {
+        return NO;
     }
 }
 
-#pragma mark - Touch Handlers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self.usernameField resignFirstResponder];
-    [self.passwordField resignFirstResponder];
-    [super touchesBegan:touches withEvent:event];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == MITTouchstoneLoginLogInSectionIndex) {
+        if ((indexPath.row == 0) && [self isLogInButtonEnabled]) {
+            [self setNeedsToValidateCredentials];
+            [self validateCredentialsIfNeeded];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
+    }
 }
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    if (section == MITTouchstoneLoginLogInSectionIndex) {
+        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
+        footerLabel.text = labelText;
+        return footerLabel;
+    } else {
+        return nil;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    // section 1 == log in button
+    if (section == 1) {
+        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
+        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
+        return height;
+    }
+    return 0;
+}
+
 @end

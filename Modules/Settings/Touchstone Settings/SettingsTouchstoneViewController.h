@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
+#import "MITTouchstoneDefaultLoginViewController.h"
 
-@interface SettingsTouchstoneViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIActionSheetDelegate>
-+ (NSString*)touchstoneUsername;
-
-
+@interface SettingsTouchstoneViewController : UITableViewController
+- (instancetype)init;
 @end
