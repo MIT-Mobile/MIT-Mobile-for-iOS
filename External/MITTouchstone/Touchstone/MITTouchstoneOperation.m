@@ -48,11 +48,6 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     return touchstoneOperationQueue;
 }
 
-- (instancetype)initWithRequestOperation:(AFURLConnectionOperation*)requestingOperation
-{
-    return [self initWithRequestOperation:requestingOperation identityProvider:nil credential:nil];
-}
-
 - (instancetype)initWithRequestOperation:(AFURLConnectionOperation*)requestingOperation identityProvider:(id<MITIdentityProvider>)identityProvider credential:(NSURLCredential*)credential
 {
     self = [super init];
@@ -65,12 +60,6 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     }
     
     return  self;
-}
-
-
-- (instancetype)initWithRequest:(NSURLRequest*)request
-{
-    return [self initWithRequest:request identityProvider:nil credential:nil];
 }
 
 - (instancetype)initWithRequest:(NSURLRequest*)request identityProvider:(id<MITIdentityProvider>)identityProvider credential:(NSURLCredential*)credential

@@ -17,9 +17,7 @@ extern NSString* const MITECPErrorDomain;
 @property (nonatomic,readonly,copy) NSData *responseData;
 
 - (instancetype)initWithRequestOperation:(AFURLConnectionOperation*)requestingOperation identityProvider:(id<MITIdentityProvider>)identityProvider credential:(NSURLCredential*)credential;
-- (instancetype)initWithRequestOperation:(AFURLConnectionOperation*)requestingOperation;
 
 - (instancetype)initWithRequest:(NSURLRequest*)request identityProvider:(id<MITIdentityProvider>)identityProvider credential:(NSURLCredential*)credential;
-- (instancetype)initWithRequest:(NSURLRequest*)request;
 
 @end
