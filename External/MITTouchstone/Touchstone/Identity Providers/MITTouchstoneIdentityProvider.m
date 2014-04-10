@@ -43,4 +43,30 @@
     }
 }
 
+
+- (NSString*)localUserForUser:(NSString*)user
+{
+    if (!user) {
+        return nil;
+    }
+
+    NSRange domainPartRange = [user rangeOfString:@"@" options:NSBackwardsSearch];
+
+    NSString *userPart = nil;
+    NSString *domainPart = nil;
+    if (domainPartRange.location != NSNotFound) {
+        domainPartRange.length = [user length] - domainPartRange.location;
+        domainPart = [[[user substringWithRange:domainPartRange] lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        userPart = [user substringWithRange:NSMakeRange(0, domainPartRange.location)];
+    } else {
+        userPart = user;
+    }
+
+    if (!domainPart || [domainPart hasSuffix:@"@mit.edu"]) {
+        return userPart;
+    } else {
+        return nil;
+    }
+}
+
 @end

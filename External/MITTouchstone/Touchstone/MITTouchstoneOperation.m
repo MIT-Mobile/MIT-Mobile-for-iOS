@@ -330,7 +330,19 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     
     if (enableHTTPAuth) {
-        requestOperation.credential = self.credential;
+        // If the IdP implements the localUserForUser: method, use that as a hint
+        // that it needs to do some mangling of the user in order to get things
+        // to work correctly when actually authenticating. At this point, this is
+        // primarily for supporting the MIT IdP (see the MITIdentityProvider header
+        // for more details as to why).
+        // [bskinner - 2014.04.08]
+        if ([self.identityProvider respondsToSelector:@selector(localUserForUser:)]) {
+            requestOperation.credential = [[NSURLCredential alloc] initWithUser:[self.identityProvider localUserForUser:self.credential.user]
+                                                                       password:self.credential.password
+                                                                    persistence:NSURLCredentialPersistenceNone];
+        } else {
+            requestOperation.credential = self.credential;
+        }
     }
     
     requestOperation.shouldUseCredentialStorage = NO;

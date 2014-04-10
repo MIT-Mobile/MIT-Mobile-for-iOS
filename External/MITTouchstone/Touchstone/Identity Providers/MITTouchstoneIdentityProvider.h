@@ -7,4 +7,5 @@
 @property (nonatomic,readonly,strong) NSURLProtectionSpace *protectionSpace;
 
 - (BOOL)canAuthenticateForUser:(NSString*)username;
+- (NSString*)localUserForUser:(NSString*)user;
 @end
