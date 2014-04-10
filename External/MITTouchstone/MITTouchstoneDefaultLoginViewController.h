@@ -14,7 +14,7 @@
 @end
 
 @protocol MITTouchstoneLoginViewControllerDelegate <NSObject>
-- (BOOL)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller canLoginWithCredential:(NSURLCredential*)credential;
+- (BOOL)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller canLoginForUser:(NSString*)user;
 - (void)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller didFinishWithCredential:(NSURLCredential*)credential;
 - (void)didCancelLoginViewController:(MITTouchstoneDefaultLoginViewController*)controller;
 @end
