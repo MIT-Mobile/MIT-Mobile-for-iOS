@@ -85,15 +85,6 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     return self;
 }
 
-#pragma mark Setup
-- (void)setCredential:(NSURLCredential*)credential withIdentityProvider:(id<MITIdentityProvider>)identityProvider
-{
-    if (![self isExecuting]) {
-        _credential = credential;
-        _identityProvider = identityProvider;
-    };
-}
-
 #pragma mark - NSOperation
 #pragma mark State
 - (BOOL)isConcurrent
@@ -189,9 +180,9 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     }
 }
 
-- (void)operationDidSucceed:(BOOL)success withResponse:(NSHTTPURLResponse*)response data:(NSData*)responseData
+- (void)operationDidSucceedWithResponse:(NSHTTPURLResponse*)response data:(NSData*)responseData
 {
-    self.success = success;
+    self.success = YES;
     self.error = nil;
     
     _response = response;
@@ -243,7 +234,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         [self handleResponseFromServiceProvider:response
                                withResponseData:responseData];
     } else {
-        [self operationDidSucceed:YES withResponse:response data:responseData];
+        [self operationDidSucceedWithResponse:response data:responseData];
     }
 }
 
@@ -323,7 +314,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
          allowAuthentication:NO
       advertiseShibbolethECP:NO
                   completion:^(NSHTTPURLResponse *response, NSData *responseData) {
-                      [self operationDidSucceed:YES withResponse:response data:responseData];
+                      [self operationDidSucceedWithResponse:response data:responseData];
                   }];
 }
 
@@ -362,7 +353,14 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
             if (blockSelf) {
                 NSHTTPURLResponse *response = operation.response;
                 if (response.statusCode == 401) {
-                    [self operationDidSucceed:NO withResponse:response data:nil];
+                    NSError *error = nil;
+                    if (operation.error.code != NSURLErrorUserAuthenticationRequired) {
+                        error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserAuthenticationRequired userInfo:nil];
+                    } else {
+                        error = operation.error;
+                    }
+
+                    [self operationDidFailWithError:error];
                 } else {
                     [self operationDidFailWithError:error];
                 }

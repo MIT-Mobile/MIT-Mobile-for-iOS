@@ -22,6 +22,4 @@ extern NSString* const MITECPErrorDomain;
 - (instancetype)initWithRequest:(NSURLRequest*)request identityProvider:(id<MITIdentityProvider>)identityProvider credential:(NSURLCredential*)credential;
 - (instancetype)initWithRequest:(NSURLRequest*)request;
 
-- (void)setCredential:(NSURLCredential*)credential withIdentityProvider:(id<MITIdentityProvider>)identityProvider;
-
 @end
