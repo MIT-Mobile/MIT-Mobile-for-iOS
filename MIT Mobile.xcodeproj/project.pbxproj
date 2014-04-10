@@ -35,7 +35,6 @@
 		2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C101A9716540A34000E40E3 /* ArcGIS.framework */; };
 		2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C101A9916540A5E000E40E3 /* ArcGIS.bundle */; };
 		2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101AC916552AF5000E40E3 /* MITMapView.m */; };
-		2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
 		2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15FCCF17C5868A00DC934C /* MITMultilineTableViewCell.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
@@ -87,8 +86,6 @@
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
 		2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
 		2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5DECDB13E9BEF400F9C089 /* libz.dylib */; };
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; };
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
@@ -536,8 +533,6 @@
 		2C101A9916540A5E000E40E3 /* ArcGIS.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = ArcGIS.bundle; path = "~/Library/SDKs/ArcGIS/iOS/ArcGIS.framework/Versions/Current/Resources/ArcGIS.bundle"; sourceTree = "<absolute>"; };
 		2C101AC816552AF5000E40E3 /* MITMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapView.h; sourceTree = "<group>"; };
 		2C101AC916552AF5000E40E3 /* MITMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapView.m; sourceTree = "<group>"; };
-		2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestAuthenticationTracker.h; sourceTree = "<group>"; };
-		2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestAuthenticationTracker.m; sourceTree = "<group>"; };
 		2C15EB7415A349B200C9C345 /* MITScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerViewController.h; sourceTree = "<group>"; };
 		2C15EB7515A349B200C9C345 /* MITScannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerViewController.m; sourceTree = "<group>"; };
 		2C15FCCE17C5868A00DC934C /* MITMultilineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMultilineTableViewCell.h; sourceTree = "<group>"; };
@@ -637,10 +632,7 @@
 		2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapPlaceContent.m; path = Model/MITMapPlaceContent.m; sourceTree = "<group>"; };
 		2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileKeychainServices.h; sourceTree = "<group>"; };
 		2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileKeychainServices.m; sourceTree = "<group>"; };
-		2C5DECCB13E9BABB00F9C089 /* MobileRequestLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestLoginViewController.h; sourceTree = "<group>"; };
-		2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestLoginViewController.m; sourceTree = "<group>"; };
 		2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestOperation.h; sourceTree = "<group>"; };
-		2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestOperation.m; sourceTree = "<group>"; };
 		2C5DECDB13E9BEF400F9C089 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2C603010139EA21700D34F1B /* FacilitiesRepairType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRepairType.h; sourceTree = "<group>"; };
 		2C603011139EA21700D34F1B /* FacilitiesRepairType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRepairType.m; sourceTree = "<group>"; };
@@ -1812,12 +1804,7 @@
 			children = (
 				2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */,
 				2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */,
-				2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */,
-				2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */,
-				2C5DECCB13E9BABB00F9C089 /* MobileRequestLoginViewController.h */,
-				2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */,
 				2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */,
-				2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */,
 				2CDE951714EAAA4D000271BD /* TouchstoneResponse.h */,
 				2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */,
 			);
@@ -3448,10 +3435,7 @@
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
-				2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */,
-				2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */,
 				2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */,
-				2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */,
 				4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */,
 				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
 				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
