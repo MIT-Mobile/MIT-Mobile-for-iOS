@@ -1,5 +1,10 @@
+#import <objc/runtime.h>
+
 #import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITMobileServerConfiguration.h"
+
+static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";
+static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMobileOperationParametersAssociatedObject";
 
 @implementation MITTouchstoneRequestOperation (LegacyCompatibility)
 + (id)operationWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
@@ -51,6 +56,30 @@
 {
     NSURLRequest *urlRequest = [self urlRequestWithURL:requestURL parameters:params];
     return [self initWithRequest:urlRequest];
+}
+
+- (void)setCommand:(NSString*)command
+{
+    if (![self.command isEqualToString:command]) {
+        objc_setAssociatedObject(self, (__bridge const void*)MITMobileOperationCommandAssociatedObjectKey, command, OBJC_ASSOCIATION_COPY);
+    }
+}
+
+- (NSString*)command
+{
+    return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationCommandAssociatedObjectKey);
+}
+
+- (void)setParameters:(NSArray*)parameters
+{
+    if (![self.parameters isEqual:parameters]) {
+        objc_setAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey, parameters, OBJC_ASSOCIATION_COPY);
+    }
+}
+
+- (NSArray*)parameters
+{
+    return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey);
 }
 
 - (NSURLRequest *)urlRequestWithURL:(NSURL*)URL parameters:(NSDictionary*)parameters

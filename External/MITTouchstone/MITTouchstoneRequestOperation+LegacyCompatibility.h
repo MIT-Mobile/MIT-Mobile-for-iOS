@@ -2,6 +2,11 @@
 
 @compatibility_alias MobileRequestOperation MITTouchstoneRequestOperation;
 
+@interface MITTouchstoneRequestOperation ()
+@property (nonatomic,copy) NSString *command;
+@property (nonatomic,copy) NSArray *parameters;
+@end
+
 @interface MITTouchstoneRequestOperation (LegacyCompatibility)
 + (id)operationWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
 + (id)operationWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params DEPRECATED_ATTRIBUTE;
