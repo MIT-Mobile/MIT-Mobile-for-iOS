@@ -6,37 +6,9 @@
 #import "MITTouchstoneController.h"
 #import "NSMutableURLRequest+ECP.h"
 #import "MITTouchstoneDefaultLoginViewController.h"
-
 #import "MITAdditions.h"
 
-//#define AFNETWORKING_20
-
-#if defined(AFNETWORKING_20)
-
-static dispatch_queue_t touchstone_request_operation_processing_queue() {
-    static dispatch_queue_t touchstone_request_operation_processing_queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        touchstone_request_operation_processing_queue = dispatch_queue_create("edu.mit.mobile.touchstone-request.processing", DISPATCH_QUEUE_CONCURRENT);
-    });
-
-    return touchstone_request_operation_processing_queue;
-}
-
-static dispatch_group_t touchstone_request_operation_completion_group() {
-    static dispatch_group_t touchstone_request_operation_completion_group;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        touchstone_request_operation_completion_group = dispatch_group_create();
-    });
-
-    return touchstone_request_operation_completion_group;
-}
-
-#endif //AFNETWORKING_20
-
 static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAgentKey";
-
 
 @interface AFURLConnectionOperation ()
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
@@ -110,6 +82,8 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 - (void)setCompletionBlockWithSuccess:(void (^)(MITTouchstoneRequestOperation *operation, id responseObject))success
                               failure:(void (^)(MITTouchstoneRequestOperation *operation, NSError *error))failure;
 {
+
+
     __weak MITTouchstoneRequestOperation *weakSelf = self;
     [super setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *data) {
         MITTouchstoneRequestOperation *blockSelf = weakSelf;
