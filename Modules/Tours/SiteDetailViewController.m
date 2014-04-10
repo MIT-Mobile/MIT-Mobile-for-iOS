@@ -215,11 +215,11 @@
             }
         };
         
-        request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
+        [request setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
             if (self.progressView) {
                 self.progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
             }
-        };
+        }];
         
         self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         self.progressView.frame = CGRectMake(200, 0, 120, 20);
