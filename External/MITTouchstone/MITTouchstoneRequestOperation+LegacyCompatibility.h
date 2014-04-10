@@ -4,7 +4,7 @@
 
 @interface MITTouchstoneRequestOperation ()
 @property (nonatomic,copy) NSString *command;
-@property (nonatomic,copy) NSArray *parameters;
+@property (nonatomic,copy) NSDictionary *parameters;
 @end
 
 @interface MITTouchstoneRequestOperation (LegacyCompatibility)

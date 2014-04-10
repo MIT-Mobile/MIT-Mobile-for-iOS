@@ -70,14 +70,14 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationCommandAssociatedObjectKey);
 }
 
-- (void)setParameters:(NSArray*)parameters
+- (void)setParameters:(NSDictionary*)parameters
 {
     if (![self.parameters isEqual:parameters]) {
         objc_setAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey, parameters, OBJC_ASSOCIATION_COPY);
     }
 }
 
-- (NSArray*)parameters
+- (NSDictionary*)parameters
 {
     return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey);
 }
