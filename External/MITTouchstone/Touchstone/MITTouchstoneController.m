@@ -6,6 +6,8 @@
 #import "MITTouchstoneDefaultLoginViewController.h"
 #import "MITTouchstoneOperation.h"
 
+#import "MITMobileServerConfiguration.h"
+
 #pragma mark - Globals
 static NSString* const MITTouchstoneLastLoggedInUserKey = @"MITTouchstoneLastLoggedInUser";
 static NSString* const MITTouchstoneLoginViewControllerAssociatedObjectKey = @"MITTouchstoneLoginViewControllerAssociatedObject";
@@ -21,15 +23,9 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 @property (nonatomic,readonly,strong) NSOperationQueue *loginRequestQueue;
 @property (nonatomic,readonly,strong) NSOperationQueue *loginCompletionQueue;
 
-// TODO: look into using a serializable object for this information.
-// It may not be needed since the lastLoggedInUser (may) be all that is important
-@property (nonatomic,copy) NSString *lastLoggedInUser;
-@property BOOL lastLoginDidSucceed;
-@property (strong) NSError *lastLoginError;
+@property (strong) NSError *loginError;
 
-@property (nonatomic,strong) NSURLCredential *credential;
 @property (nonatomic,strong) NSURLCredential *savedCredential;
-@property (nonatomic,strong) NSRecursiveLock *lock;
 
 - (BOOL)needsToPromptForCredential;
 @end
@@ -41,7 +37,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     __weak MITTouchstoneOperation *_loginRequestOperation;
 }
 
-@synthesize credential = _credential;
+@synthesize savedCredential = _savedCredential;
 @synthesize loginCompletionQueue = _loginCompletionQueue;
 @synthesize loginRequestQueue = _loginRequestQueue;
 
@@ -80,13 +76,11 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     return [NSArray arrayWithArray:identityProviders];
 }
 
-+ (id<MITIdentityProvider>)identityProviderForCredential:(NSURLCredential*)credential
++ (id<MITIdentityProvider>)identityProviderForUser:(NSString*)user
 {
-    if (!credential) {
+    if (!user) {
         return nil;
     }
-    
-    NSString *user = credential.user;
     
     __block id<MITIdentityProvider> selectedIdentityProvider = nil;
     [[self allIdentityProviders] enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
@@ -101,7 +95,9 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 
 + (NSURL*)loginEntryPointURL
 {
-    return [NSURL URLWithString:@"https://mobile-dev.mit.edu/api/?module=libraries&command=getUserIdentity"];
+    NSURL *currentServerURL = MITMobileWebGetCurrentServerURL();
+    return [NSURL URLWithString:@"/api/?module=libraries&command=getUserIdentity"
+                  relativeToURL:currentServerURL];
 }
 
 #pragma mark - Instance Methods
@@ -126,57 +122,81 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             [[NSURLCredentialStorage sharedCredentialStorage] removeCredential:credential forProtectionSpace:protectionSpace];
         }];
     }];
-}
-
-- (NSURLCredential*)credential
-{
-    if (!_credential) {
-        NSArray *identityProviders = [MITTouchstoneController allIdentityProviders];
-        
-        // Grab the first credential we find.
-        // Note: This will only work if we keep a single credential stored
-        __block NSURLCredential *storedCredential = nil;
-        [identityProviders enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
-            NSURLCredential *credential = [[NSURLCredentialStorage sharedCredentialStorage] defaultCredentialForProtectionSpace:identityProvider.protectionSpace];
-            
-            if (credential) {
-                storedCredential = credential;
-                (*stop) = YES;
-            }
-        }];
-        
-        _credential = storedCredential;
-    }
     
-    return _credential;
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITTouchstoneLastLoggedInUserKey];
 }
 
-- (void)setCredential:(NSURLCredential*)credential
+- (BOOL)hasSavedCredential
 {
-    if (![_credential isEqual:credential]) {
-        _credential = credential;
-    }
+    return (self.savedCredential != nil);
 }
 
-
-- (void)setSavedCredential:(NSURLCredential *)savedCredential
+- (void)loadSavedCredential
 {
-    NSAssert(NO, @"Not yet implemented");
+    NSString *lastLoggedInUser = [[NSUserDefaults standardUserDefaults] stringForKey:MITTouchstoneLastLoggedInUserKey];
+    NSURLCredentialStorage *sharedCredentialStorage = [NSURLCredentialStorage sharedCredentialStorage];
+    
+    __block NSURLCredential *savedCredential = nil;
+    [[MITTouchstoneController allIdentityProviders] enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
+        NSDictionary *credentials = [sharedCredentialStorage credentialsForProtectionSpace:identityProvider.protectionSpace];
+        
+        if ([credentials count] > 1) {
+            NSAssert([credentials count], @"expected to find zero or one credetials, found %d",[credentials count]);
+        }
+        
+        if (lastLoggedInUser && credentials[lastLoggedInUser]) {
+            savedCredential = credentials[lastLoggedInUser];
+            (*stop) = YES;
+        } else if ([identityProvider canAuthenticateForUser:lastLoggedInUser]) {
+            savedCredential = [NSURLCredential credentialWithUser:lastLoggedInUser password:nil persistence:NSURLCredentialPersistenceNone];
+            (*stop) = YES;
+        } else if ([credentials count] > 0) {
+            NSLog(@"found %d credentials but missing a value for %@",[credentials count],MITTouchstoneLastLoggedInUserKey);
+        }
+    }];
+    
+    _savedCredential = savedCredential;
 }
 
 - (NSURLCredential*)savedCredential
 {
-    NSAssert(NO, @"Not yet implemented");
+    if (!_savedCredential) {
+        [self loadSavedCredential];
+    }
 
-    NSString *lastLoggedInUser = [[NSUserDefaults standardUserDefaults] stringForKey:MITTouchstoneLastLoggedInUserKey];
-    NSURLCredentialStorage *credentialStorage = [NSURLCredentialStorage sharedCredentialStorage];
-    __block NSURLCredential *credential = nil;
-    
-    [[MITTouchstoneController allIdentityProviders] enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
+    return _savedCredential;
+}
+
+- (void)setSavedCredential:(NSURLCredential *)savedCredential
+{
+    if (![self.savedCredential isEqual:savedCredential]) {
+        NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
         
-    }];
+        if ([self hasSavedCredential]) {
+            NSURLCredential *existingCredential = self.savedCredential;
+            NSAssert(_savedCredential, @"hasSavedCredential returned YES but no saved credential found");
+            
+            id<MITIdentityProvider> existingIdentityProvider = [MITTouchstoneController identityProviderForUser:existingCredential.user];
+            [[NSURLCredentialStorage sharedCredentialStorage] removeCredential:existingCredential forProtectionSpace:existingIdentityProvider.protectionSpace];
+        }
+        
+        [standardUserDefaults removeObjectForKey:MITTouchstoneLastLoggedInUserKey];
+        
+        if (savedCredential && (savedCredential.persistence != NSURLCredentialPersistenceNone)) {
+            id<MITIdentityProvider> identityProvider = [MITTouchstoneController identityProviderForUser:savedCredential.user];
+            if (identityProvider) {
 
-    return nil;
+                [[NSURLCredentialStorage sharedCredentialStorage] setDefaultCredential:savedCredential forProtectionSpace:identityProvider.protectionSpace];
+                
+                [standardUserDefaults setObject:savedCredential.user forKey:MITTouchstoneLastLoggedInUserKey];
+            } else {
+                NSLog(@"No identity provider supports logging in with user %@",savedCredential.user);
+            }
+        }
+        
+        [standardUserDefaults synchronize];
+        _savedCredential = nil;
+    }
 }
 
 - (NSOperationQueue*)loginCompletionQueue
@@ -202,13 +222,11 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     return _loginRequestQueue;
 }
 
-#pragma mark _Private
+#pragma mark _Privateq
 - (void)_login:(void (^)(void))completion
 {
-    [self.lock lock];
-
     [self presentLoginViewControllerIfNeeded];
-    [self enqueueLoginRequestIfNeeded];
+    [self enqueueLoginRequestWithCredential:self.savedCredential];
 
     // Declared early on since this is used in both the operations below
     __weak MITTouchstoneController *weakSelf = self;
@@ -217,15 +235,11 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             MITTouchstoneController *blockSelf = weakSelf;
             if (blockSelf) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [blockSelf.lock lock];
-
-                    if (blockSelf.lastLoginDidSucceed) {
+                    if (!blockSelf.loginError) {
                         completion();
                     } else {
                         completion();
                     }
-
-                    [blockSelf.lock unlock];
                 }];
             } else {
                 NSLog(@"Touchstone controller was prematurely deallocated; be prepared for unforseen consequences.");
@@ -236,8 +250,6 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             }
         }];
     }
-    
-    [self.lock unlock];
 }
 
 - (void)setNeedsToSendLoginRequest
@@ -250,91 +262,98 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     return !_loginRequestOperation || _needsToSendLoginRequest;
 }
 
-- (void)enqueueLoginRequestIfNeeded
+- (void)enqueueLoginRequestWithCredential:(NSURLCredential*)credential
 {
-    [self.lock lock];
+    // Immediately suspend the queue for dispatching the completion blocks
+    //  (login parameter). This will be resumed after the MITTouchstoneOperation
+    //  completes and any waiting connections will be allowed to continue.
+    // If this queue is already suspended, this will effectively be a NOP
+    self.loginCompletionQueue.suspended = YES;
 
-    if ([self needsToSendLoginRequest]) {
-        // Immediately suspend the queue for dispatching the completion blocks
-        //  (login parameter). This will be resumed after the MITTouchstoneOperation
-        //  completes and any waiting connections will be allowed to continue.
-        // If this queue is already suspended, this will effectively be a NOP
-        self.loginCompletionQueue.suspended = YES;
-
-        // Cancel the pending operation and clear out the login request
-        //  tracking ivar. This should stop the operation dead in its tracks
-        //  if it hasn't completed yet and, if it has completed, then clearing out
-        //  the loginRequestOperation ivar should prevent it from triggering
-        //  the side-effects in the completion block (the locking is important here!)
-        // Again, if there is no current request operation, this should be a NOP and
-        //  not change any of the below behavior.
-        NSOperation *currentRequestOperation = _loginRequestOperation;
-        _loginRequestOperation = nil;
-        [currentRequestOperation cancel];
+    // Cancel the pending operation and clear out the login request
+    //  tracking ivar. This should stop the operation dead in its tracks
+    //  if it hasn't completed yet and, if it has completed, then clearing out
+    //  the loginRequestOperation ivar should prevent it from triggering
+    //  the side-effects in the completion block (the locking is important here!)
+    // Again, if there is no current request operation, this should be a NOP and
+    //  not change any of the below behavior.
+    NSOperation *currentRequestOperation = _loginRequestOperation;
+    _loginRequestOperation = nil;
+    [currentRequestOperation cancel];
 
 
-        NSURLRequest *loginRequest = [[NSURLRequest alloc] initWithURL:[MITTouchstoneController loginEntryPointURL]
-                                                           cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                                       timeoutInterval:60.];
+    NSURLRequest *loginRequest = [[NSURLRequest alloc] initWithURL:[MITTouchstoneController loginEntryPointURL]
+                                                       cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                                   timeoutInterval:60.];
 
-        NSURLCredential *credential = self.credential;
-        MITTouchstoneOperation *operation = [[MITTouchstoneOperation alloc] initWithRequest:loginRequest
-                                                                           identityProvider:[MITTouchstoneController identityProviderForCredential:credential]
-                                                                                 credential:credential];
-        _loginRequestOperation = operation;
+    MITTouchstoneOperation *operation = [[MITTouchstoneOperation alloc] initWithRequest:loginRequest
+                                                                       identityProvider:[MITTouchstoneController identityProviderForUser:credential.user]
+                                                                             credential:credential];
+    _loginRequestOperation = operation;
 
-        __weak MITTouchstoneController *weakSelf = self;
-        __weak MITTouchstoneOperation *weakOperation = operation;
-        operation.completionBlock = ^{
-            MITTouchstoneController *blockSelf = weakSelf;
-            MITTouchstoneOperation *blockOperation = weakOperation;
+    __weak MITTouchstoneController *weakSelf = self;
+    __weak MITTouchstoneOperation *weakOperation = operation;
+    operation.completionBlock = ^{
+        MITTouchstoneController *blockSelf = weakSelf;
+        MITTouchstoneOperation *blockOperation = weakOperation;
 
-            if (blockSelf) {
-                [blockSelf.lock lock];
+        // Assume last
+        if (blockSelf) {
+            if (blockSelf->_loginRequestOperation == blockOperation) {
+                if (blockOperation.isSuccess) {
+                    NSError *error = nil;
+                    NSDictionary *userInformation = [NSJSONSerialization JSONObjectWithData:blockOperation.responseData options:0 error:&error];
 
-                if (blockSelf->_loginRequestOperation == blockOperation) {
-                    if (blockOperation.isSuccess) {
-                        NSError *error = nil;
-                        NSDictionary *userInformation = [NSJSONSerialization JSONObjectWithData:blockOperation.responseData options:0 error:&error];
-
-                        if (error) {
-                            NSLog(@"failed to parse user information from request %@: %@",loginRequest,error);
-                        } else {
-                            blockSelf.userInformation = userInformation;
-                        }
-
-                        NSLog(@"successful login as %@",blockOperation.credential.user);
-                        blockSelf.lastLoggedInUser = blockOperation.credential.user;
-                        blockSelf.lastLoginError = nil;
-                        blockSelf.lastLoginDidSucceed = YES;
-                    } else {
-                        NSLog(@"login attempt failed as %@",blockOperation.credential.user);
-                        blockSelf.lastLoginError = blockOperation.error;
-                        blockSelf.lastLoginDidSucceed = NO;
+                    if (error) {
+                        NSLog(@"failed to parse user information from request %@: %@",loginRequest,error);
                     }
 
-                    blockSelf->_loginRequestOperation = nil;
-                    blockSelf.loginCompletionQueue.suspended = NO;
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [blockSelf loginDidSucceedWithCredential:credential userInformation:userInformation];
+                    }];
+
+                } else {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [blockSelf loginDidFailWithError:blockOperation.error];
+                    }];
                 }
 
-                [blockSelf.lock unlock];
+                _loginRequestOperation = nil;
             }
-        };
+        }
+    };
 
-        [self.loginRequestQueue addOperation:operation];
-    }
+    [self.loginRequestQueue addOperation:operation];
+}
 
-    [self.lock unlock];
+- (void)loginDidSucceedWithCredential:(NSURLCredential*)credential userInformation:(NSDictionary*)userInformation
+{
+    NSLog(@"successful login as %@",credential.user);
+
+    self.loginError = nil;
+    self.savedCredential = credential;
+
+    self.loginCompletionQueue.suspended = NO;
+}
+
+- (void)loginDidFailWithError:(NSError*)error
+{
+    NSLog(@"login attempt failed");
+    self.loginError = error;
+
+    self.loginCompletionQueue.suspended = NO;
 }
 
 - (BOOL)needsToPromptForCredential
 {
-    NSURLCredential *credential = self.credential;
-    
-    // Should only be true if the credential is invalid (either self.credential
-    // is nil, the user is nil, or the password is nil) and we aren't already prompting
-    // the user for their input.
-    return !(credential.user && credential.password) || !self.lastLoginDidSucceed;
+    if (self.loginError) {
+        return YES;
+    } else if (![self hasSavedCredential]) {
+        return YES;
+    } else {
+        NSURLCredential *savedCredential = self.savedCredential;
+        return !(savedCredential.user && [savedCredential hasPassword]);
+    }
 }
 
 /** Sends a message to the authenticationDelegate to present
@@ -345,11 +364,10 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
  */
 - (void)presentLoginViewControllerIfNeeded
 {
-    [self.lock lock];
     if (!_touchstoneLoginViewController && [self needsToPromptForCredential]) {
         self.loginRequestQueue.suspended = YES;
         
-        MITTouchstoneDefaultLoginViewController *touchstoneViewController = [[MITTouchstoneDefaultLoginViewController alloc] initWithCredential:self.credential];
+        MITTouchstoneDefaultLoginViewController *touchstoneViewController = [[MITTouchstoneDefaultLoginViewController alloc] initWithCredential:self.savedCredential];
         touchstoneViewController.delegate = self;
         _touchstoneLoginViewController = touchstoneViewController;
         
@@ -367,8 +385,6 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             }
         }];
     }
-    
-    [self.lock unlock];
 }
 
 /** Sends a message to the authenticationDelegate that it should dismiss the
@@ -377,61 +393,49 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
  */
 - (void)dismissLoginViewController
 {
-    [self.lock lock];
-    
     if (_touchstoneLoginViewController) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.authenticationDelegate dismissViewControllerForTouchstoneController:self completion:^{
-                _touchstoneLoginViewController = nil;
-                self.loginRequestQueue.suspended = NO;
-            }];
+        [self.authenticationDelegate dismissViewControllerForTouchstoneController:self completion:^{
+            _touchstoneLoginViewController = nil;
+            self.loginRequestQueue.suspended = NO;
         }];
     }
-    
-    [self.lock unlock];
 }
 
 #pragma mark _Public
 - (void)logout
 {
-    NSAssert(NO, @"Not yet implemented");
     [self clearAllCredentials];
 }
 
-- (void)login:(void (^)(void))completed
+- (void)login:(void (^)(void))completion
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self _login:completed];
+        [self _login:completion];
     }];
 }
 
 
 #pragma mark _Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
-- (BOOL)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller canLoginWithCredential:(NSURLCredential*)credential
+- (BOOL)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller canLoginForUser:(NSString*)user
 {
-    return ([MITTouchstoneController identityProviderForCredential:credential] != nil);
+    return ([MITTouchstoneController identityProviderForUser:user] != nil);
 }
 
 - (void)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller didFinishWithCredential:(NSURLCredential*)credential
 {
-    [self.lock lock];
-    
-    self.credential = credential;
-
-    // Our credentials have changed! This will force the controller
-    // to enqueue another
-    [self setNeedsToSendLoginRequest];
-    [self enqueueLoginRequestIfNeeded];
-
-    [self dismissLoginViewController];
-    
-    [self.lock unlock];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self setNeedsToSendLoginRequest];
+        [self enqueueLoginRequestWithCredential:credential];
+        [self dismissLoginViewController];
+    }];
 }
 
 - (void)didCancelLoginViewController:(MITTouchstoneDefaultLoginViewController*)controller
 {
-    [self dismissLoginViewController];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self dismissLoginViewController];
+    }];
 }
 
 @end

@@ -12,7 +12,7 @@
 
 + (NSArray*)allIdentityProviders;
 + (NSURL*)loginEntryPointURL;
-+ (id<MITIdentityProvider>)identityProviderForCredential:(NSURLCredential*)credential;
++ (id<MITIdentityProvider>)identityProviderForUser:(NSString*)user;
 
 - (void)logout;
 - (void)login:(void (^)(void))completed;
