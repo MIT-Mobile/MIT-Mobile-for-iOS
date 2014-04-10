@@ -177,7 +177,7 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
             NSLog(@"initiating Touchstone login");
 
             __weak MITTouchstoneRequestOperation *weakSelf = self;
-            [[MITTouchstoneController sharedController] login:^{
+            [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
                 MITTouchstoneRequestOperation *blockSelf = weakSelf;
                 if (blockSelf) {
                     // Ensure that the operation is out of the paused state

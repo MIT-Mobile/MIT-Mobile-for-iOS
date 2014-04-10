@@ -15,7 +15,7 @@
 + (id<MITIdentityProvider>)identityProviderForUser:(NSString*)user;
 
 - (void)logout;
-- (void)login:(void (^)(void))completed;
+- (void)login:(void (^)(BOOL success, NSError *error))completion;
 @end
 
 @protocol MITTouchstoneAuthenticationDelegate <NSObject>

@@ -223,7 +223,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 }
 
 #pragma mark _Privateq
-- (void)_login:(void (^)(void))completion
+- (void)_login:(void (^)(BOOL success, NSError *error))completion
 {
     [self presentLoginViewControllerIfNeeded];
     [self enqueueLoginRequestWithCredential:self.savedCredential];
@@ -236,16 +236,16 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             if (blockSelf) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     if (!blockSelf.loginError) {
-                        completion();
+                        completion(YES,nil);
                     } else {
-                        completion();
+                        completion(NO,blockSelf.loginError);
                     }
                 }];
             } else {
                 NSLog(@"Touchstone controller was prematurely deallocated; be prepared for unforseen consequences.");
 
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    completion();
+                    completion(NO,nil);
                 }];
             }
         }];
@@ -407,7 +407,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     [self clearAllCredentials];
 }
 
-- (void)login:(void (^)(void))completion
+- (void)login:(void (^)(BOOL success, NSError *error))completion
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self _login:completion];
