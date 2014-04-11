@@ -214,33 +214,8 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 }
 
 #pragma mark _Private
-- (void)_loginWithCredential:(NSURLCredential*)credential completion:(void (^)(BOOL success, NSError *error))completion
+- (void)enqueueLoginCompletionBlock:(void (^)(BOOL success, NSError *error))completion
 {
-    // Immediately suspend the queue for dispatching the completion blocks
-    //  (login parameter). This will be resumed after a login completes (successfuly or not)
-    //  completes and any waiting connections will be allowed to continue.
-    // If this queue is already suspended, this will effectively be a NOP
-    //
-    // The queue is resumed from the loginDidFailWithError: and loginDidSucceedWithCredential: methods
-    self.loginCompletionQueue.suspended = YES;
-
-    if (credential) {
-        credential = [NSURLCredential credentialWithUser:credential.user
-                                                password:@"asdfkljbnaspiufhawb"
-                                             persistence:NSURLCredentialPersistenceNone];
-
-        [self enqueueLoginRequestWithCredential:credential success:^(NSURLCredential *credential, NSDictionary *userInformation) {
-            self.loginCompletionQueue.suspended = NO;
-        } failure:^(NSError *error) {
-            [self presentLoginViewControllerIfNeeded];
-        }];
-    } else {
-        // The login view controller *must* call loginWithCredential:completion: at some point before
-        // it is dismissed otherwise things will just not work
-        [self presentLoginViewControllerIfNeeded];
-    }
-
-    // Declared early on since this is used in both the operations below
     __weak MITTouchstoneController *weakSelf = self;
     if (completion) {
         [self.loginCompletionQueue addOperationWithBlock:^{
@@ -255,7 +230,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
                 }];
             } else {
                 NSLog(@"Touchstone controller was prematurely deallocated; be prepared for unforseen consequences.");
-
+                
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     completion(NO,nil);
                 }];
@@ -408,14 +383,60 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 - (void)login:(void (^)(BOOL success, NSError *error))completion
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self _loginWithCredential:self.storedCredential completion:completion];
+        NSURLCredential *credential = self.storedCredential;
+        
+        // Immediately suspend the queue for dispatching the completion blocks
+        //  (login parameter). This will be resumed after a login completes (successfuly or not)
+        //  completes and any waiting connections will be allowed to continue.
+        // If this queue is already suspended, this will effectively be a NOP
+        self.loginCompletionQueue.suspended = YES;
+        
+        if (credential) {
+            [self enqueueLoginRequestWithCredential:credential success:^(NSURLCredential *credential, NSDictionary *userInformation) {
+                self.loginCompletionQueue.suspended = NO;
+            } failure:^(NSError *error) {
+                [self presentLoginViewControllerIfNeeded];
+            }];
+        } else {
+            [self presentLoginViewControllerIfNeeded];
+        }
+        
+        [self enqueueLoginCompletionBlock:completion];
     }];
 }
 
+/**
+ *  Attempt to login with the given credential.
+ *  If the credential is nil or the credential is invalid
+ *  the user will not be prompted to re-enter their credential
+ *  and the login attempt will be considered a failure.
+ *
+ *  If the login attempt succeeds, the given credential will be saved according
+ *  to the persistenceType.
+ *
+ *  This method is thread-safe and may be called from any queue.
+ */
 - (void)loginWithCredential:(NSURLCredential*)credential completion:(void(^)(BOOL success, NSError *error))completion
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self _loginWithCredential:credential completion:completion];
+        // Immediately suspend the queue for dispatching the completion blocks
+        //  (login parameter). This will be resumed after a login completes (successfuly or not)
+        //  completes and any waiting connections will be allowed to continue.
+        // If this queue is already suspended, this will effectively be a NOP
+        self.loginCompletionQueue.suspended = YES;
+        
+        if (credential) {
+            [self enqueueLoginRequestWithCredential:credential success:^(NSURLCredential *credential, NSDictionary *userInformation) {
+                self.loginCompletionQueue.suspended = NO;
+            } failure:^(NSError *error) {
+                self.loginCompletionQueue.suspended = NO;
+            }];
+        } else {
+            [self loginDidFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserAuthenticationRequired userInfo:nil]];
+            self.loginCompletionQueue.suspended = NO;
+        }
+        
+        [self enqueueLoginCompletionBlock:completion];
     }];
 }
 
