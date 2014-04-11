@@ -69,10 +69,11 @@
 
 - (NSURLRequest*)nextRequestWithURL:(NSURL*)url;
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest touchstoneRequestWithURL:url];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60.];
     request.HTTPMethod = @"POST";
     request.HTTPShouldHandleCookies = YES;
     
+    [request setAdvertisesECP];
     [request setValue:MITECPMIMEType forHTTPHeaderField:@"Content-Type"];
     
     return request;

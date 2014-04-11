@@ -31,8 +31,9 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 
 - (instancetype)initWithRequest:(NSURLRequest *)urlRequest
 {
-    NSMutableURLRequest *touchstoneRequest = [urlRequest mutableCopyTouchstoneAdvertised];
-
+    NSMutableURLRequest *touchstoneRequest = [urlRequest mutableCopy];
+    [touchstoneRequest setAdvertisesECP];
+    
     if ([MITTouchstoneRequestOperation userAgent]) {
         [touchstoneRequest setValue:[MITTouchstoneRequestOperation userAgent] forKey:@"User-Agent"];
     }

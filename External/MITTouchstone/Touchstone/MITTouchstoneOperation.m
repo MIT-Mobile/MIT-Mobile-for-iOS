@@ -148,9 +148,8 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         
         if (request) {
             initialOperation = [NSBlockOperation blockOperationWithBlock:^{
-                [self dispatchURLRequest:request
+                [self dispatchURLRequest:mutableRequest
                      allowAuthentication:NO
-                  advertiseShibbolethECP:YES
                               completion:^(NSHTTPURLResponse *response, NSData *responseData) {
                                   [self handleInitiatingResponseFromServiceProvider:response
                                                                    withResponseData:responseData];
@@ -261,7 +260,6 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     NSURLRequest *identityProviderRequest = [serviceProviderMessage nextRequestWithURL:self.identityProvider.URL];
     [self dispatchURLRequest:identityProviderRequest
          allowAuthentication:YES
-      advertiseShibbolethECP:NO
                   completion:^(NSHTTPURLResponse *response, NSData *responseData) {
                       [self handleResponseFromIdentityProvider:response withResponseData:responseData serviceProviderMessage:serviceProviderMessage];
                   }];
@@ -301,21 +299,15 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
 
     [self dispatchURLRequest:spRequest
          allowAuthentication:NO
-      advertiseShibbolethECP:NO
                   completion:^(NSHTTPURLResponse *response, NSData *responseData) {
                       [self operationDidSucceedWithResponse:response data:responseData];
                   }];
 }
 
 
-- (void)dispatchURLRequest:(NSURLRequest*)request allowAuthentication:(BOOL)enableHTTPAuth advertiseShibbolethECP:(BOOL)advertiseECP completion:(void (^)(NSHTTPURLResponse *response, NSData *responseData))completion
+- (void)dispatchURLRequest:(NSURLRequest*)request allowAuthentication:(BOOL)enableHTTPAuth completion:(void (^)(NSHTTPURLResponse *response, NSData *responseData))completion
 {
     NSParameterAssert(request);
-    
-    if (advertiseECP) {
-        request = [request mutableCopyTouchstoneAdvertised];
-    }
-    
     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     
     if (enableHTTPAuth) {
