@@ -147,6 +147,15 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         }
         
         if (request) {
+            NSMutableURLRequest *mutableRequest = [request mutableCopy];
+            [mutableRequest setAdvertisesECP];
+            
+            // Make sure we ignore any existing cookies on this initial request
+            // so we can be certain that we are performing a new login and not
+            // just re-using an existing one. We don't want to use
+            // HTTPShouldHandleCookies because we need any cookies in the response
+            // to be processed
+            [mutableRequest setValue:@"" forHTTPHeaderField:@"Cookie"];
             initialOperation = [NSBlockOperation blockOperationWithBlock:^{
                 [self dispatchURLRequest:mutableRequest
                      allowAuthentication:NO
