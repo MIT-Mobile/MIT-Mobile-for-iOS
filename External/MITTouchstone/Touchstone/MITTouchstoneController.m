@@ -131,25 +131,31 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     NSURLCredentialStorage *sharedCredentialStorage = [NSURLCredentialStorage sharedCredentialStorage];
     
     __block NSURLCredential *storedCredential = nil;
+    __block NSURLCredential *fallbackCredential = nil;
     [[MITTouchstoneController allIdentityProviders] enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
         NSDictionary *credentials = [sharedCredentialStorage credentialsForProtectionSpace:identityProvider.protectionSpace];
         
         if ([credentials count] > 1) {
-            NSAssert([credentials count], @"expected to find zero or one credetials, found %d",[credentials count]);
+            DDLogWarn(@"expected to find zero or one credetials, found %d",[credentials count]);
         }
         
         if (lastLoggedInUser && credentials[lastLoggedInUser]) {
             storedCredential = credentials[lastLoggedInUser];
             (*stop) = YES;
-        } else if ([identityProvider canAuthenticateForUser:lastLoggedInUser]) {
-            storedCredential = [NSURLCredential credentialWithUser:lastLoggedInUser password:nil persistence:NSURLCredentialPersistenceNone];
-            (*stop) = YES;
+        } else if (!fallbackCredential) {
+            if ([identityProvider canAuthenticateForUser:lastLoggedInUser]) {
+                fallbackCredential = [NSURLCredential credentialWithUser:lastLoggedInUser password:nil persistence:NSURLCredentialPersistenceNone];
+            }
         } else if ([credentials count] > 0) {
-            NSLog(@"found %d credentials but missing a value for %@",[credentials count],MITTouchstoneLastLoggedInUserKey);
+            DDLogWarn(@"found %d credentials but missing a value for %@",[credentials count],MITTouchstoneLastLoggedInUserKey);
         }
     }];
     
-    _storedCredential = storedCredential;
+    if (storedCredential) {
+        _storedCredential = storedCredential;
+    } else {
+        _storedCredential = fallbackCredential;
+    }
 }
 
 - (NSURLCredential*)storedCredential
@@ -375,8 +381,15 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 }
 
 #pragma mark _Public
+- (BOOL)isLoggedIn
+{
+    return (self.storedCredential != nil);
+}
+
 - (void)logout
 {
+    self.userInformation = nil;
+    self.storedCredential = nil;
     [self clearAllCredentials];
 }
 

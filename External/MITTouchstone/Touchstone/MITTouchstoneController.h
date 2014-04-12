@@ -5,6 +5,7 @@
 
 @interface MITTouchstoneController : NSObject
 @property (nonatomic,weak) id<MITTouchstoneAuthenticationDelegate> authenticationDelegate;
+@property (nonatomic,readonly,strong) NSURLCredential *storedCredential;
 @property (nonatomic,readonly,copy) NSDictionary *userInformation;
 
 + (MITTouchstoneController*)sharedController;
