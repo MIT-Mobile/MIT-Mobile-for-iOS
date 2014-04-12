@@ -135,8 +135,8 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     
     if (self.requestingOperation.response && self.requestingOperation.responseData) {
         initialOperation = [NSBlockOperation blockOperationWithBlock:^{
-            [self handleInitiatingResponseFromServiceProvider:(NSHTTPURLResponse*)self.requestingOperation.response
-                                             withResponseData:self.requestingOperation.responseData];
+            [self handleServiceProviderResponse:(NSHTTPURLResponse*)self.requestingOperation.response
+                                   responseData:self.requestingOperation.responseData];
         }];
     } else {
         NSURLRequest *request = nil;
@@ -160,8 +160,8 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
                 [self dispatchURLRequest:mutableRequest
                      allowAuthentication:NO
                               completion:^(NSHTTPURLResponse *response, NSData *responseData) {
-                                  [self handleInitiatingResponseFromServiceProvider:response
-                                                                   withResponseData:responseData];
+                                  [self handleServiceProviderResponse:response
+                                                         responseData:responseData];
                 }];
             }];
         }
@@ -217,7 +217,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     return _requestOperationQueue;
 }
 
-- (void)handleInitiatingResponseFromServiceProvider:(NSHTTPURLResponse*)response withResponseData:(NSData*)responseData
+- (void)handleServiceProviderResponse:(NSHTTPURLResponse*)response responseData:(NSData*)responseData
 {
     NSDictionary *responseHeaders = [response allHeaderFields];
     NSRange matchingRange = [responseHeaders[@"Content-Type"] rangeOfString:MITECPMIMEType options:NSCaseInsensitiveSearch];
@@ -228,14 +228,14 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
                                                         userInfo:nil]];
         return;
     } else if (matchingRange.location != NSNotFound) {
-        [self handleResponseFromServiceProvider:response
-                               withResponseData:responseData];
+        [self handleECPAuthnRequestWithResponse:response
+                                   responseData:responseData];
     } else {
         [self operationDidSucceedWithResponse:response data:responseData];
     }
 }
 
-- (void)handleResponseFromServiceProvider:(NSHTTPURLResponse*)response withResponseData:(NSData*)responseData
+- (void)handleECPAuthnRequestWithResponse:(NSHTTPURLResponse*)response responseData:(NSData*)responseData
 {
     NSParameterAssert(response);
     NSParameterAssert(responseData);
@@ -270,11 +270,11 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
     [self dispatchURLRequest:identityProviderRequest
          allowAuthentication:YES
                   completion:^(NSHTTPURLResponse *response, NSData *responseData) {
-                      [self handleResponseFromIdentityProvider:response withResponseData:responseData serviceProviderMessage:serviceProviderMessage];
+                      [self handleECPResponseWithResponse:response responseData:responseData authnRequest:serviceProviderMessage];
                   }];
 }
 
-- (void)handleResponseFromIdentityProvider:(NSHTTPURLResponse*)response withResponseData:(NSData*)responseData serviceProviderMessage:(MITECPServiceProviderResponse*)serviceProviderMessage;
+- (void)handleECPResponseWithResponse:(NSHTTPURLResponse*)response responseData:(NSData*)responseData authnRequest:(MITECPServiceProviderResponse*)serviceProviderMessage;
 {
     NSAssert(serviceProviderMessage, @"fatal error: ECP messages out of order");
     
@@ -333,6 +333,9 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         } else {
             requestOperation.credential = self.credential;
         }
+    } else {
+        requestOperation.shouldUseCredentialStorage = NO;
+        requestOperation.credential = nil;
     }
     
     requestOperation.shouldUseCredentialStorage = NO;
