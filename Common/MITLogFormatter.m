@@ -28,6 +28,10 @@
             levelName = @"V";
             break;
         
+        case LOG_LEVEL_DEBUG:
+            levelName = @"D";
+            break;
+            
         case LOG_LEVEL_INFO:
             levelName = @"I";
             break;
