@@ -1,7 +1,6 @@
 #import "NewsModule.h"
 
 #import "MITNewsViewController.h"
-#import "StoryListViewController.h"
 
 #import "MITModule+Protected.h"
 
@@ -20,15 +19,6 @@
 - (UIViewController*)moduleHomeController
 {
     return [self instantiateRootViewController];
-}
-
-- (StoryListViewController*)storyListChannelController
-{
-    if ([self.moduleHomeController isKindOfClass:[StoryListViewController class]]) {
-        return (StoryListViewController*)self.moduleHomeController;
-    }
-    
-    return nil;
 }
 
 - (UIViewController*)instantiateRootViewController
