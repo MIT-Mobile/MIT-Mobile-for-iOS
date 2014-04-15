@@ -626,8 +626,8 @@ typedef enum
     if (self.usePOST)
     {
         request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                      timeoutInterval:5.0];
+                                          cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                      timeoutInterval:60.];
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
         [request setValue:@"application/x-www-form-urlencoded"
@@ -662,8 +662,8 @@ typedef enum
         }
         
         request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                      timeoutInterval:5.0];
+                                          cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                      timeoutInterval:60.];
         [request setHTTPMethod:@"GET"];
     }
     
@@ -742,7 +742,6 @@ typedef enum
         DDLogVerbose(@"\tFor URL:\n\t\t:%@", request.URL);
         
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
-        mutableRequest.timeoutInterval = 10.0;
         [mutableRequest addValue:[MobileRequestOperation userAgent]
               forHTTPHeaderField:@"User-Agent"];
         
