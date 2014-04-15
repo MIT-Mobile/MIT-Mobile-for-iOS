@@ -7,10 +7,12 @@
 #import "MITTouchstoneOperation.h"
 
 #import "MITMobileServerConfiguration.h"
+#import "MobileKeychainServices.h"
 
 #pragma mark - Globals
 static NSString* const MITTouchstoneLastLoggedInUserKey = @"MITTouchstoneLastLoggedInUser";
 static NSString* const MITTouchstoneLoginViewControllerAssociatedObjectKey = @"MITTouchstoneLoginViewControllerAssociatedObject";
+static NSString* const MITTouchstoneKeychainCredentialMigratedKey = @"MITMobileOperationKeychainCredentialMigrated";
 
 #pragma mark - Static
 static __weak MITTouchstoneController *_sharedTouchstonController = nil;
@@ -28,6 +30,15 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 
 @property (nonatomic,strong) NSURLCredential *storedCredential;
 
+
+/* Migrates any saved credentials saved by MobileRequestOperation
+ *  to the NSURLCredential store. By default, the credentials will be
+ *  saved using the NSURLCredentialPersistencePermanent persistence type.
+ *
+ *  This was added in for version 3.5.2 and should be removed once we are sure
+ *  no one is still upgrading from the pre-3.5.2 versions
+ */
+- (void)migrateCredentialsFromKeychain DEPRECATED_ATTRIBUTE;
 - (BOOL)needsToPromptForCredential;
 @end
 
@@ -104,10 +115,29 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 {
     self = [super init];
     if (self) {
-
+        [self migrateCredentialsFromKeychain];
     }
     
     return self;
+}
+
+- (void)migrateCredentialsFromKeychain
+{
+    id guard = [[NSUserDefaults standardUserDefaults] objectForKey:MITTouchstoneKeychainCredentialMigratedKey];
+    if (!guard) {
+        NSDictionary *savedCredential = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
+        if (savedCredential) {
+            DDLogInfo(@"migrating saved Touchstone credential for user %@", savedCredential[(__bridge id)kSecAttrAccount]);
+
+            NSURLCredential *credential = [[NSURLCredential alloc] initWithUser:savedCredential[(__bridge id)kSecAttrAccount]
+                                                                       password:savedCredential[(__bridge id)kSecValueData]
+                                                                    persistence:NSURLCredentialPersistencePermanent];
+            self.storedCredential = credential;
+            MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+        }
+
+        [[NSUserDefaults standardUserDefaults] setObject:@(YES) forKey:MITTouchstoneKeychainCredentialMigratedKey];
+    }
 }
 
 #pragma mark _Properties

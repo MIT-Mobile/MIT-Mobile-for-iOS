@@ -1,7 +1,9 @@
 #import <objc/runtime.h>
+#import "MITTouchstoneController.h"
 
 #import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITMobileServerConfiguration.h"
+#import "MobileKeychainServices.h"
 
 static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";
 static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMobileOperationParametersAssociatedObject";
@@ -139,8 +141,5 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     }];
 }
 
-- (void)migrateLegacyStoredCredentialsIfNeeded
-{
-    NSAssert(NO, @"Not yet implemented");
-}
+
 @end
