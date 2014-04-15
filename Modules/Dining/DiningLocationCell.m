@@ -121,7 +121,7 @@ static CGFloat textWidth = 180;
     
     CGFloat height = titleLabelSizeThatFits.height + subtitleLabelSizeThatFits.height - titleOffset - subtitleOffset + (3 * 10); // 30 is padding between text and top and bottom edges
     
-    return MAX(54, height);
+    return MAX(54, ceil(height));
 }
 
 @end
