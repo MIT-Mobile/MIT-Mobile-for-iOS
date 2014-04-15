@@ -6,18 +6,21 @@
 
 #import "ExplanatorySectionLabel.h"
 #import "MITNavigationActivityView.h"
+#import "MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, MITTouchstoneSettingsViewTag) {
-    MITTouchstoneLoginViewUserTag = 0x49485400,
-    MITTouchstoneLoginViewPasswordTag,
-    MITTouchstoneLoginViewRememberMeTag,
-    MITTouchstoneLoginViewLogInTag
+    MITTouchstoneSettingsViewUserTag = 0x49485400,
+    MITTouchstoneSettingsViewPasswordTag,
+    MITTouchstoneSettingsViewRememberMeTag,
+    MITTouchstoneSettingsViewLogInTag
 };
 
-typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
-    MITTouchstoneLoginCredentialsSectionIndex = 0,
-    MITTouchstoneLoginLogInSectionIndex
+typedef NS_ENUM(NSInteger, MITTouchstoneSettingsSectionIndex) {
+    MITTouchstoneSettingsCredentialsSectionIndex = 0,
+    MITTouchstoneSettingsLogInSectionIndex
 };
+
+static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
 
 @interface SettingsTouchstoneViewController () <UITextFieldDelegate>
 @property (nonatomic,weak) IBOutlet UITextField *usernameField;
@@ -28,7 +31,6 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 @property (nonatomic,weak) NSOperation *currentOperation;
 
 @property (nonatomic,getter=isAuthenticating) BOOL authenticating;
-@property (nonatomic,readonly) BOOL needsToValidateCredentials;
 
 - (void)setNeedsToValidateCredentials;
 - (void)validateCredentialsIfNeeded;
@@ -38,7 +40,9 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 - (IBAction)didChangeCredentialPersistence:(id)sender;
 @end
 
-@implementation SettingsTouchstoneViewController
+@implementation SettingsTouchstoneViewController {
+    BOOL _needsToValidateCredentials;
+}
 
 @synthesize authenticationOperationQueue = _authenticationOperationQueue;
 
@@ -77,7 +81,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
         userField.textAlignment = NSTextAlignmentLeft;
-        userField.tag = MITTouchstoneLoginViewUserTag;
+        userField.tag = MITTouchstoneSettingsViewUserTag;
         
         _usernameField = userField;
     }
@@ -100,7 +104,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
         passwordField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         passwordField.returnKeyType = UIReturnKeyDone;
         passwordField.secureTextEntry = YES;
-        passwordField.tag = MITTouchstoneLoginViewPasswordTag;
+        passwordField.tag = MITTouchstoneSettingsViewPasswordTag;
         
         _passwordField = passwordField;
     }
@@ -123,10 +127,8 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
     [super viewDidLoad];
     
     self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor colorWithRed:0.843
-                                                     green:0.855
-                                                      blue:0.878
-                                                     alpha:1.0];
+    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.scrollEnabled = NO;
     
     self.title = @"Touchstone";
 }
@@ -187,12 +189,12 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 
 - (void)reloadCredentialViews
 {
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITTouchstoneLoginCredentialsSectionIndex] withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITTouchstoneSettingsCredentialsSectionIndex] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (NSURLCredential*)credential
 {
-    if (self.needsToValidateCredentials) {
+    if (_needsToValidateCredentials) {
         return [[NSURLCredential alloc] initWithUser:_usernameField.text
                                             password:_passwordField.text
                                          persistence:NSURLCredentialPersistencePermanent];
@@ -203,11 +205,9 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 
 - (void)refreshNavigationBarItems
 {
-    if (!self.navigationItem.rightBarButtonItem) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItemWasTapped:)];
-    }
-    
-    if (self.needsToValidateCredentials) {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItemWasTapped:)];
+        
+    if (_needsToValidateCredentials) {
         self.navigationItem.rightBarButtonItem.enabled = YES;
     } else {
         self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -222,7 +222,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 
 - (void)validateCredentialsIfNeeded
 {
-    if (self.needsToValidateCredentials) {
+    if (_needsToValidateCredentials) {
         // Order is important for these next two lines.
         // The -credential method uses -needsToValidateCredentials
         // as a guard to see if it should spit back the currently saved credentials or
@@ -310,7 +310,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
                                      otherButtonTitles:@"OK",nil];
     } else {
         alertView = [[UIAlertView alloc] initWithTitle:@"Touchstone"
-                                               message:[NSString stringWithFormat:@"%@",error]
+                                               message:@"Unable to verify Touchstone credentials"
                                               delegate:self
                                      cancelButtonTitle:nil
                                      otherButtonTitles:@"OK",nil];
@@ -382,7 +382,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.section) {
-        case MITTouchstoneLoginCredentialsSectionIndex: {
+        case MITTouchstoneSettingsCredentialsSectionIndex: {
             UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
             if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
                 textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
@@ -401,14 +401,14 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
             }
             
             if ([identifier isEqualToString:@"TouchstoneLoginUserCell"]) {
-                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneLoginViewUserTag];
+                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneSettingsViewUserTag];
                 if (!textField) {
                     textField = self.usernameField;
                     textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
                     [cell.contentView addSubview:textField];
                 }
             } else if ([identifier isEqualToString:@"TouchstoneLoginPasswordCell"]) {
-                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneLoginViewPasswordTag];
+                UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneSettingsViewPasswordTag];
                 if (!textField) {
                     textField = self.passwordField;
                     textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
@@ -419,7 +419,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
             return cell;
         }
             
-        case MITTouchstoneLoginLogInSectionIndex: {
+        case MITTouchstoneSettingsLogInSectionIndex: {
             NSString *identifier = nil;
             if (indexPath.row == 0) {
                 identifier = @"TouchstoneLoginLogOutCell";
@@ -437,10 +437,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
                 cell.textLabel.enabled = [[MITTouchstoneController sharedController] isLoggedIn];
                 
                 if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-                    cell.textLabel.textColor = [UIColor colorWithRed:0.639
-                                                               green:0.112
-                                                                blue:0.204
-                                                               alpha:1.];
+                    cell.textLabel.textColor = [UIColor MITTintColor];
                     cell.textLabel.textAlignment = NSTextAlignmentLeft;
                 } else {
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -461,10 +458,10 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch ((MITTouchstoneLoginSectionIndex)section) {
-        case MITTouchstoneLoginCredentialsSectionIndex:
+    switch ((MITTouchstoneSettingsSectionIndex)section) {
+        case MITTouchstoneSettingsCredentialsSectionIndex:
             return 2;
-        case MITTouchstoneLoginLogInSectionIndex:
+        case MITTouchstoneSettingsLogInSectionIndex:
             return 1;
     }
     
@@ -474,7 +471,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 #pragma mark - UITableView Delegate
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == MITTouchstoneLoginLogInSectionIndex) {
+    if (indexPath.section == MITTouchstoneSettingsLogInSectionIndex) {
         if (indexPath.row == 0) {
             return [[MITTouchstoneController sharedController] isLoggedIn];
         }
@@ -485,25 +482,27 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == MITTouchstoneLoginLogInSectionIndex) {
+    if (indexPath.section == MITTouchstoneSettingsLogInSectionIndex) {
         if (indexPath.row == 0) {
-            [[MITTouchstoneController sharedController] logout];
+            if ([[MITTouchstoneController sharedController] isLoggedIn]) {
+                [[MITTouchstoneController sharedController] logout];
             
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            self.usernameField.text = nil;
-            self.passwordField.text = nil;
-            [tableView reloadData];
-            
-            [self refreshNavigationBarItems];
+                [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                self.usernameField.text = nil;
+                self.passwordField.text = nil;
+                [tableView reloadData];
+
+                [self refreshNavigationBarItems];
+            }
         }
     }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    if (section == MITTouchstoneLoginLogInSectionIndex) {
-        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
+    if (section == MITTouchstoneSettingsLogInSectionIndex) {
         ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
-        footerLabel.text = labelText;
+        footerLabel.text = MITTouchstoneSettingsLockIconExplanationText;
+        footerLabel.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];;
         return footerLabel;
     } else {
         return nil;
@@ -511,11 +510,11 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    if (section == MITTouchstoneLoginLogInSectionIndex) {
-        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
-        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText
-                                                           width:self.view.frame.size.width
-                                                            type:ExplanatorySectionFooter];
+    if (section == MITTouchstoneSettingsLogInSectionIndex) {
+        CGFloat height = [ExplanatorySectionLabel heightWithText:MITTouchstoneSettingsLockIconExplanationText
+                                                           width:CGRectGetWidth(tableView.bounds)
+                                                            type:ExplanatorySectionFooter
+                                                   accessoryView:[UIImageView accessoryViewWithMITType:MITAccessoryViewSecure]];
         return height;
     }
     
