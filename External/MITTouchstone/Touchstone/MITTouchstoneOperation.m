@@ -246,7 +246,9 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
                                                         userInfo:nil]];
         return;
     }
-    
+
+// warning added by bskinner - 2014.04.15
+#warning The flow here does not match the ECP spec. Any errors should be forwarded back to the SP as a SOAP fault
     MITECPAuthnRequestMessage *serviceProviderMessage = [[MITECPAuthnRequestMessage alloc] initWithData:responseData];
     
     if (!serviceProviderMessage || serviceProviderMessage.error) {
