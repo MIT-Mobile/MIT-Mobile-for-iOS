@@ -1,6 +1,6 @@
 #import "MITTouchstoneMessage.h"
 
-@interface MITECPServiceProviderResponse : MITTouchstoneMessage
+@interface MITECPAuthnRequestMessage : MITTouchstoneMessage
 @property (nonatomic,readonly) xmlNodePtr relayState;
 @property (nonatomic,readonly,strong) NSURL *responseConsumerURL;
 

@@ -1,7 +1,7 @@
-#import "MITECPServiceProviderResponse.h"
+#import "MITECPAuthnRequestMessage.h"
 #import "MITTouchstoneConstants.h"
 
-@implementation MITECPServiceProviderResponse
+@implementation MITECPAuthnRequestMessage
 @synthesize relayState = _relayState;
 @synthesize responseConsumerURL = _responseConsumerURL;
 
@@ -88,7 +88,7 @@
         // Now that we have a copy of the SP's original response, we need to
         // find the SOAP header (if present) and remove it before creating
         // the payload for the IdP
-        xpathContext = [MITECPServiceProviderResponse createXPathContextForDocument:idpPayload];
+        xpathContext = [MITECPAuthnRequestMessage createXPathContextForDocument:idpPayload];
         if (xpathContext) {
             xpathResult = xmlXPathEval((const xmlChar*)[MITSOAPHeaderXPath UTF8String], xpathContext);
             if (xpathResult) {

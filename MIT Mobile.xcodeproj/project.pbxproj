@@ -42,8 +42,8 @@
 		2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808E718F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m */; };
 		2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+LegacyCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808E918F33B95008F9775 /* MITTouchstoneRequestOperation+LegacyCompatibility.m */; };
 		2C18090418F33B95008F9775 /* MITTouchstoneRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808EB18F33B95008F9775 /* MITTouchstoneRequestOperation.m */; };
-		2C18090518F33B95008F9775 /* MITECPIdentityProviderResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808EF18F33B95008F9775 /* MITECPIdentityProviderResponse.m */; };
-		2C18090618F33B95008F9775 /* MITECPServiceProviderResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808F118F33B95008F9775 /* MITECPServiceProviderResponse.m */; };
+		2C18090518F33B95008F9775 /* MITECPResponseMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808EF18F33B95008F9775 /* MITECPResponseMessage.m */; };
+		2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808F118F33B95008F9775 /* MITECPAuthnRequestMessage.m */; };
 		2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808F318F33B95008F9775 /* MITTouchstoneMessage.m */; };
 		2C18090818F33B95008F9775 /* NSMutableURLRequest+ECP.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808F518F33B95008F9775 /* NSMutableURLRequest+ECP.m */; };
 		2C18090918F33B95008F9775 /* MITTouchstoneIdentityProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808F918F33B95008F9775 /* MITTouchstoneIdentityProvider.m */; };
@@ -547,10 +547,10 @@
 		2C1808E918F33B95008F9775 /* MITTouchstoneRequestOperation+LegacyCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MITTouchstoneRequestOperation+LegacyCompatibility.m"; sourceTree = "<group>"; };
 		2C1808EA18F33B95008F9775 /* MITTouchstoneRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTouchstoneRequestOperation.h; sourceTree = "<group>"; };
 		2C1808EB18F33B95008F9775 /* MITTouchstoneRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTouchstoneRequestOperation.m; sourceTree = "<group>"; };
-		2C1808EE18F33B95008F9775 /* MITECPIdentityProviderResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITECPIdentityProviderResponse.h; sourceTree = "<group>"; };
-		2C1808EF18F33B95008F9775 /* MITECPIdentityProviderResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITECPIdentityProviderResponse.m; sourceTree = "<group>"; };
-		2C1808F018F33B95008F9775 /* MITECPServiceProviderResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITECPServiceProviderResponse.h; sourceTree = "<group>"; };
-		2C1808F118F33B95008F9775 /* MITECPServiceProviderResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITECPServiceProviderResponse.m; sourceTree = "<group>"; };
+		2C1808EE18F33B95008F9775 /* MITECPResponseMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITECPResponseMessage.h; sourceTree = "<group>"; };
+		2C1808EF18F33B95008F9775 /* MITECPResponseMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITECPResponseMessage.m; sourceTree = "<group>"; };
+		2C1808F018F33B95008F9775 /* MITECPAuthnRequestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITECPAuthnRequestMessage.h; sourceTree = "<group>"; };
+		2C1808F118F33B95008F9775 /* MITECPAuthnRequestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITECPAuthnRequestMessage.m; sourceTree = "<group>"; };
 		2C1808F218F33B95008F9775 /* MITTouchstoneMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTouchstoneMessage.h; sourceTree = "<group>"; };
 		2C1808F318F33B95008F9775 /* MITTouchstoneMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTouchstoneMessage.m; sourceTree = "<group>"; };
 		2C1808F418F33B95008F9775 /* NSMutableURLRequest+ECP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+ECP.h"; sourceTree = "<group>"; };
@@ -1612,10 +1612,10 @@
 		2C1808ED18F33B95008F9775 /* ECP */ = {
 			isa = PBXGroup;
 			children = (
-				2C1808EE18F33B95008F9775 /* MITECPIdentityProviderResponse.h */,
-				2C1808EF18F33B95008F9775 /* MITECPIdentityProviderResponse.m */,
-				2C1808F018F33B95008F9775 /* MITECPServiceProviderResponse.h */,
-				2C1808F118F33B95008F9775 /* MITECPServiceProviderResponse.m */,
+				2C1808EE18F33B95008F9775 /* MITECPResponseMessage.h */,
+				2C1808EF18F33B95008F9775 /* MITECPResponseMessage.m */,
+				2C1808F018F33B95008F9775 /* MITECPAuthnRequestMessage.h */,
+				2C1808F118F33B95008F9775 /* MITECPAuthnRequestMessage.m */,
 				2C1808F218F33B95008F9775 /* MITTouchstoneMessage.h */,
 				2C1808F318F33B95008F9775 /* MITTouchstoneMessage.m */,
 				2C1808F418F33B95008F9775 /* NSMutableURLRequest+ECP.h */,
@@ -3281,7 +3281,7 @@
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
 				EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
-				2C18090618F33B95008F9775 /* MITECPServiceProviderResponse.m in Sources */,
+				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
 				EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */,
@@ -3344,7 +3344,7 @@
 				EB7F328110CD6C5B00188BCD /* PersonDetails.m in Sources */,
 				2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */,
 				2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */,
-				2C18090518F33B95008F9775 /* MITECPIdentityProviderResponse.m in Sources */,
+				2C18090518F33B95008F9775 /* MITECPResponseMessage.m in Sources */,
 				2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CF89EAD18A41A6A00ABFE03 /* MITNewsImageViewController.m in Sources */,

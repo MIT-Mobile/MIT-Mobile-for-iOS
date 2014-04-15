@@ -4,8 +4,8 @@
 #import "NSMutableURLRequest+ECP.h"
 #import "MITTouchstoneConstants.h"
 
-#import "MITECPIdentityProviderResponse.h"
-#import "MITECPServiceProviderResponse.h"
+#import "MITECPResponseMessage.h"
+#import "MITECPAuthnRequestMessage.h"
 
 NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
 
@@ -247,7 +247,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         return;
     }
     
-    MITECPServiceProviderResponse *serviceProviderMessage = [[MITECPServiceProviderResponse alloc] initWithData:responseData];
+    MITECPAuthnRequestMessage *serviceProviderMessage = [[MITECPAuthnRequestMessage alloc] initWithData:responseData];
     
     if (!serviceProviderMessage || serviceProviderMessage.error) {
         [self operationDidFailWithError:serviceProviderMessage.error];
@@ -274,7 +274,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
                   }];
 }
 
-- (void)handleECPResponseWithResponse:(NSHTTPURLResponse*)response responseData:(NSData*)responseData authnRequest:(MITECPServiceProviderResponse*)serviceProviderMessage;
+- (void)handleECPResponseWithResponse:(NSHTTPURLResponse*)response responseData:(NSData*)responseData authnRequest:(MITECPAuthnRequestMessage*)serviceProviderMessage;
 {
     NSAssert(serviceProviderMessage, @"fatal error: ECP messages out of order");
     
@@ -285,7 +285,7 @@ NSString* const MITECPErrorDomain = @"MITECPErrorDomain";
         return;
     }
     
-    MITECPIdentityProviderResponse *identityProviderMessage = [[MITECPIdentityProviderResponse alloc] initWithData:responseData
+    MITECPResponseMessage *identityProviderMessage = [[MITECPResponseMessage alloc] initWithData:responseData
                                                                                                         relayState:serviceProviderMessage.relayState];
     if (!identityProviderMessage || identityProviderMessage.error) {
         [self operationDidFailWithError:identityProviderMessage.error];

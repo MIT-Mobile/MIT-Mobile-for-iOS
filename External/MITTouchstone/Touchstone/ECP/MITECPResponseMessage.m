@@ -1,7 +1,7 @@
-#import "MITECPIdentityProviderResponse.h"
+#import "MITECPResponseMessage.h"
 #import "MITTouchstoneConstants.h"
 
-@implementation MITECPIdentityProviderResponse
+@implementation MITECPResponseMessage
 @synthesize relayState = _relayState;
 @synthesize assertionConsumerServiceURL = _assertionConsumerServiceURL;
 
@@ -69,7 +69,7 @@
 
         // Find the SOAP header, remove all its children and then
         // insert the relay state
-        xpathContext = [MITECPIdentityProviderResponse createXPathContextForDocument:spPayload];
+        xpathContext = [MITECPResponseMessage createXPathContextForDocument:spPayload];
         if (xpathContext) {
             xpathResult = xmlXPathEval((const xmlChar*)[MITSOAPHeaderXPath UTF8String], xpathContext);
             if (xpathResult) {
