@@ -383,11 +383,47 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 #pragma mark _Public
 - (BOOL)isLoggedIn
 {
-    return (self.storedCredential != nil);
+
+    NSArray *identityProviders = [MITTouchstoneController allIdentityProviders];
+    NSMutableSet *idpHosts = [[NSMutableSet alloc] init];
+    [identityProviders enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
+        [idpHosts addObject:identityProvider.URL.host];
+    }];
+
+    NSHTTPCookieStorage *sharedCookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    __block BOOL hasCookiesFromIdentityProvider = NO;
+    [[sharedCookieStorage cookies] enumerateObjectsUsingBlock:^(NSHTTPCookie *cookie, NSUInteger idx, BOOL *stop) {
+        if ([idpHosts containsObject:cookie.domain]) {
+            hasCookiesFromIdentityProvider = YES;
+            (*stop) = YES;
+        }
+    }];
+
+
+    // These are ordered from least-expensive to most-expensive operation
+    return (hasCookiesFromIdentityProvider ||
+            self.userInformation ||
+            self.storedCredential);
 }
 
 - (void)logout
 {
+
+    NSArray *identityProviders = [MITTouchstoneController allIdentityProviders];
+    NSMutableSet *idpHosts = [[NSMutableSet alloc] init];
+    [identityProviders enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
+        [idpHosts addObject:identityProvider.URL.host];
+    }];
+
+    NSHTTPCookieStorage *sharedCookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    [[sharedCookieStorage cookies] enumerateObjectsUsingBlock:^(NSHTTPCookie *cookie, NSUInteger idx, BOOL *stop) {
+        if ([idpHosts containsObject:cookie.domain]) {
+            [sharedCookieStorage deleteCookie:cookie];
+        } else if ([cookie.domain isEqualToString:MITMobileWebGetCurrentServerURL().host]) {
+            [sharedCookieStorage deleteCookie:cookie];
+        }
+    }];
+
     self.userInformation = nil;
     self.storedCredential = nil;
     [self clearAllCredentials];
