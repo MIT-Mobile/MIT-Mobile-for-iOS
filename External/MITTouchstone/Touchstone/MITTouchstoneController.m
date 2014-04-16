@@ -183,8 +183,10 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     
     if (storedCredential) {
         _storedCredential = storedCredential;
-    } else {
+    } else if (fallbackCredential) {
         _storedCredential = fallbackCredential;
+    } else {
+        _storedCredential = nil;
     }
 }
 
@@ -219,10 +221,11 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             } else {
                 NSLog(@"No identity provider supports logging in with user %@",storedCredential.user);
             }
+            
+            _storedCredential = storedCredential;
         }
         
         [standardUserDefaults synchronize];
-        _storedCredential = nil;
     }
 }
 
