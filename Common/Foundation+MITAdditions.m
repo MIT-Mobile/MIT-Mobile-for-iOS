@@ -300,7 +300,7 @@ error:
     if (document) xmlFreeDoc(document);
     xmlCleanupParser();
     
-    return resultString;
+    return [resultString stringByDecodingXMLEntities];
 }
 
 - (NSString *)substringToMaxIndex:(NSUInteger)to {
