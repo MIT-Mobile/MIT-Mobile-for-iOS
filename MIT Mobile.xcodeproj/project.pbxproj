@@ -151,7 +151,6 @@
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
 		2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */; };
-		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */; };
@@ -758,8 +757,6 @@
 		2CDB025015D0404500436B59 /* MITScannerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerImage.m; sourceTree = "<group>"; };
 		2CDE4EFB17A3057F00F40598 /* NSTimer+MITBlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSTimer+MITBlockTimer.h"; path = "Categories/NSTimer+MITBlockTimer.h"; sourceTree = "<group>"; };
 		2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSTimer+MITBlockTimer.m"; path = "Categories/NSTimer+MITBlockTimer.m"; sourceTree = "<group>"; };
-		2CDE951714EAAA4D000271BD /* TouchstoneResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchstoneResponse.h; sourceTree = "<group>"; };
-		2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchstoneResponse.m; sourceTree = "<group>"; };
 		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
 		2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryData.h; sourceTree = "<group>"; };
 		2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryData.m; sourceTree = "<group>"; };
@@ -1805,8 +1802,6 @@
 				2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */,
 				2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */,
 				2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */,
-				2CDE951714EAAA4D000271BD /* TouchstoneResponse.h */,
-				2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */,
 			);
 			path = "Mobile Web API";
 			sourceTree = "<group>";
@@ -3483,7 +3478,6 @@
 				2C9BAFC218A01D6B003B9AD0 /* MITNewsStoryViewController.m in Sources */,
 				DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */,
 				DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */,
-				2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
 				2C040E1617EBA20A00A603A6 /* MITCampusMapViewController.m in Sources */,
