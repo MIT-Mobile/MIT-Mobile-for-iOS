@@ -223,6 +223,8 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             }
             
             _storedCredential = storedCredential;
+        } else {
+            _storedCredential = nil;
         }
         
         [standardUserDefaults synchronize];
@@ -441,7 +443,6 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 
 - (void)logout
 {
-
     NSArray *identityProviders = [MITTouchstoneController allIdentityProviders];
     NSMutableSet *idpHosts = [[NSMutableSet alloc] init];
     [identityProviders enumerateObjectsUsingBlock:^(id<MITIdentityProvider> identityProvider, NSUInteger idx, BOOL *stop) {
