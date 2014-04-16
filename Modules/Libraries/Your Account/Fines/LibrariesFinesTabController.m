@@ -1,10 +1,11 @@
 #import "LibrariesFinesTabController.h"
 #import "MITLoadingActivityView.h"
-#import "MobileRequestOperation.h"
 #import "LibrariesFinesTableViewCell.h"
 #import "LibrariesDetailViewController.h"
 #import "LibrariesAccountViewController.h"
 #import "UIKit+MITAdditions.h"
+
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface LibrariesFinesTabController ()
 @property (nonatomic,weak) MITLoadingActivityView *loadingView;

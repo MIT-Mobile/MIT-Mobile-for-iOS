@@ -140,11 +140,12 @@
         params[@"image"] = [pictureData base64EncodingWithLineLength:64];
         params[@"imageFormat"] = @"image/jpeg";
     }
-    
+
+    NSAssert(NO,@"POST legacy interface is not yet implemented");
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
                                                                               command:@"upload"
                                                                            parameters:params];
-    request.usePOST = YES;
+    //request.usePOST = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && 
             [jsonResult respondsToSelector:@selector(objectForKey:)] &&

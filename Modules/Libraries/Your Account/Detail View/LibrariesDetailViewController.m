@@ -2,9 +2,10 @@
 #import "LibrariesDetailLabel.h"
 #import "LibrariesRenewResultViewController.h"
 #import "UIKit+MITAdditions.h"
-#import "MobileRequestOperation.h"
 #import "MITNavigationActivityView.h"
 #import "Foundation+MITAdditions.h"
+
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface LibrariesDetailViewController ()
 @property (nonatomic, weak) UIButton *renewButton;

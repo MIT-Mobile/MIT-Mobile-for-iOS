@@ -33,6 +33,8 @@
 #import "ShuttleModule.h"
 #import "ToursModule.h"
 
+#import "MITTouchstoneController.h"
+
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
@@ -40,7 +42,8 @@
 - (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
 @end
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate>
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
+@property (strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
@@ -91,6 +94,7 @@
     //  The property getters are lazy and will load in the proper order.
     //  This is done to clearly illustrate the order in which they
     //  should be setup.
+    [self loadTouchstoneController];
     [self loadManagedObjectModel];
     [self loadCoreDataController];
     [self loadRemoteObjectManager];
@@ -396,6 +400,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 }
 
 #pragma mark Property load methods
+- (void)loadTouchstoneController
+{
+    MITTouchstoneController *touchstoneController = [[MITTouchstoneController alloc] init];
+    touchstoneController.authenticationDelegate = self;
+    self.sharedTouchstoneController = touchstoneController;
+    [MITTouchstoneController setSharedController:touchstoneController];
+}
+
 - (void)loadCoreDataController
 {
     _coreDataController = [[MITCoreDataController alloc] initWithManagedObjectModel:self.managedObjectModel];
@@ -533,6 +545,18 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
 	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
+
+#pragma mark MITTouchstoneAuthentication delegation
+- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
+{
+    [[self.window rootViewController] presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
+{
+    [[self.window rootViewController] dismissViewControllerAnimated:YES completion:completion];
+}
+
 @end
 
 
