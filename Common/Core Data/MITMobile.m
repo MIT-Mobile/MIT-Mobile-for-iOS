@@ -4,6 +4,7 @@
 #import "MITMapModelController.h"
 #import "MITMobileResource.h"
 #import "MITMobileServerConfiguration.h"
+#import "MITTouchstoneRequestOperation.h"
 
 typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error);
 
@@ -145,7 +146,14 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 {
     RKObjectManager *objectManager = self.objectManagers[url];
     if (!objectManager) {
-        objectManager = [RKObjectManager managerWithBaseURL:url];
+        
+#warning Incompatible with AFNetworking 2.0
+        AFHTTPClient *httpClient = [AFHTTPClient clientWithBaseURL:url];
+        [httpClient registerHTTPOperationClass:[MITTouchstoneRequestOperation class]];
+        objectManager = [[RKObjectManager alloc] initWithHTTPClient:httpClient];
+        [objectManager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
+        objectManager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
+        [objectManager registerRequestOperationClass:[MITTouchstoneRequestOperation class]];
 
         RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
         [errorMapping addPropertyMapping: [RKAttributeMapping attributeMappingFromKeyPath:@"error" toKeyPath:@"errorMessage"]];
