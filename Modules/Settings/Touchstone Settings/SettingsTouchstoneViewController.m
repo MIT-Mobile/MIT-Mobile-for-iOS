@@ -31,6 +31,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 @property (nonatomic,weak) NSOperation *currentOperation;
 
 @property (nonatomic,getter=isAuthenticating) BOOL authenticating;
+@property (nonatomic) BOOL needsToValidateCredentials;
 
 - (void)setNeedsToValidateCredentials;
 - (void)validateCredentialsIfNeeded;
@@ -40,10 +41,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 - (IBAction)didChangeCredentialPersistence:(id)sender;
 @end
 
-@implementation SettingsTouchstoneViewController {
-    BOOL _needsToValidateCredentials;
-}
-
+@implementation SettingsTouchstoneViewController
 @synthesize authenticationOperationQueue = _authenticationOperationQueue;
 
 - (instancetype)init
@@ -136,14 +134,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     [self refreshNavigationBarItems];
-
-    NSURLCredential *credential = [self credential];
-    if (credential) {
-        self.usernameField.text = credential.user;
-        self.passwordField.text = credential.password;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -194,7 +185,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 
 - (NSURLCredential*)credential
 {
-    if (_needsToValidateCredentials) {
+    if (self.needsToValidateCredentials) {
         return [[NSURLCredential alloc] initWithUser:_usernameField.text
                                             password:_passwordField.text
                                          persistence:NSURLCredentialPersistencePermanent];
@@ -207,7 +198,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItemWasTapped:)];
         
-    if (_needsToValidateCredentials) {
+    if (self.needsToValidateCredentials) {
         self.navigationItem.rightBarButtonItem.enabled = YES;
     } else {
         self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -216,19 +207,26 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 
 - (void)setNeedsToValidateCredentials
 {
-    _needsToValidateCredentials = YES;
-    [self refreshNavigationBarItems];
+    self.needsToValidateCredentials = YES;
+}
+
+- (void)setNeedsToValidateCredentials:(BOOL)needsToValidateCredentials
+{
+    if (_needsToValidateCredentials != needsToValidateCredentials) {
+        _needsToValidateCredentials = needsToValidateCredentials;
+        [self refreshNavigationBarItems];
+    }
 }
 
 - (void)validateCredentialsIfNeeded
 {
-    if (_needsToValidateCredentials) {
+    if (self.needsToValidateCredentials) {
         // Order is important for these next two lines.
         // The -credential method uses -needsToValidateCredentials
         // as a guard to see if it should spit back the currently saved credentials or
         // one formed from the contents of the user and password fields.
         NSURLCredential *credential = [self credential];
-        _needsToValidateCredentials = NO;
+        self.needsToValidateCredentials = NO;
 
         [self setAuthenticating:YES animated:YES];
         
@@ -407,12 +405,20 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
                     textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
                     [cell.contentView addSubview:textField];
                 }
+                
+                if (!self.needsToValidateCredentials) {
+                    textField.text = [self credential].user;
+                }
             } else if ([identifier isEqualToString:@"TouchstoneLoginPasswordCell"]) {
                 UITextField *textField = (UITextField*)[cell.contentView viewWithTag:MITTouchstoneSettingsViewPasswordTag];
                 if (!textField) {
                     textField = self.passwordField;
                     textField.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds,textCellInsets);
                     [cell.contentView addSubview:textField];
+                }
+                
+                if (!self.needsToValidateCredentials) {
+                    textField.text = [self credential].password;
                 }
             }
             
