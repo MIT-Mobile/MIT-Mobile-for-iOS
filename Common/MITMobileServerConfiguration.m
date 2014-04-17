@@ -6,10 +6,6 @@
 #import "MITMobileServerConfiguration.h"
 #import "Secret.h"
 
-#ifndef MobileAPI_DefaultServerIndex
-    #define MobileAPI_DefaultServerIndex 0
-#endif
-
 NSArray* MITMobileWebGetAPIServerList( void ) {
     static NSMutableArray* array = nil;
     
@@ -33,7 +29,7 @@ NSArray* MITMobileWebGetAPIServerList( void ) {
 
 
 NSURL* MITMobileWebGetDefaultServerURL( void ) {
-    return [[[MITMobileWebGetAPIServerList() objectAtIndex:MobileAPI_DefaultServerIndex] copy] autorelease];
+    return [[[MITMobileWebGetAPIServerList() objectAtIndex:MITMobileServerConfigurationDefaultIndex] copy] autorelease];
 }
 
 
