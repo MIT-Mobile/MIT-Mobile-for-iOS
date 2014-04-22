@@ -74,6 +74,11 @@ typedef enum {
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
 - (void)loadBookDetails {
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
                                                                              command:@"detail"

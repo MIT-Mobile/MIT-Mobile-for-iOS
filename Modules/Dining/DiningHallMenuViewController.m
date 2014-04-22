@@ -228,9 +228,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
     if (self.comparisonVC) {
-        return UIInterfaceOrientationMaskLandscape;
+        return UIInterfaceOrientationLandscapeLeft;
     } else {
-        return UIInterfaceOrientationMaskPortrait;
+        return UIInterfaceOrientationPortrait;
     }
 }
 
