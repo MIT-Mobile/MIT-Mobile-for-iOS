@@ -6,7 +6,7 @@
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
 #import "MITUIConstants.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface FacilitiesSubmitViewController ()
 - (void)setStatusText:(NSString *)string;
@@ -137,32 +137,32 @@
     
     NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
     if (pictureData) {
-        params[@"image"] = [pictureData base64EncodingWithLineLength:64];
+        params[@"image"] = [[pictureData base64EncodingWithLineLength:64] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         params[@"imageFormat"] = @"image/jpeg";
     }
 
-    NSAssert(NO,@"POST legacy interface is not yet implemented");
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
-                                                                              command:@"upload"
-                                                                           parameters:params];
-    //request.usePOST = YES;
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && 
-            [jsonResult respondsToSelector:@selector(objectForKey:)] &&
-            [[jsonResult objectForKey:@"success"] boolValue] == YES)
-        {
-            [self showSuccess];
-        } else {
-            [self showFailure];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"facilities" command:@"upload" parameters:params method:@"POST"];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    
+    __weak FacilitiesSubmitViewController *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *responseObject) {
+        if ([responseObject[@"success"] boolValue]) {
+            [weakSelf showSuccess];
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        [weakSelf showFailure];
+    }];
+    
+    [requestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        weakSelf.progressView.progress = totalBytesWritten / totalBytesExpectedToWrite;
+    }];
     
     [self.progressView setProgress:0.0];
     self.progressView.hidden = NO;
     self.completeButton.hidden = YES;
     [self setStatusText:@"Uploading report..."];
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
