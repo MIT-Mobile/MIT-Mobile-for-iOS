@@ -3,8 +3,14 @@
 @compatibility_alias MobileRequestOperation MITTouchstoneRequestOperation;
 
 @interface MITTouchstoneRequestOperation ()
-@property (nonatomic,copy) NSString *command;
-@property (nonatomic,copy) NSDictionary *parameters;
+@property (nonatomic,readonly) NSString *module;
+@property (nonatomic,readonly) NSString *command;
+@property (nonatomic,readonly) NSDictionary *parameters;
+@end
+
+@interface NSURLRequest (LegacyCompatibiltiy)
++ (instancetype)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod;
++ (instancetype)requestWithURL:(NSURL *)URL parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod;
 @end
 
 @interface MITTouchstoneRequestOperation (LegacyCompatibility)

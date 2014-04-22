@@ -4,6 +4,7 @@
 #import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITMobileServerConfiguration.h"
 #import "MobileKeychainServices.h"
+#import "MITAdditions.h"
 
 static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";
 static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMobileOperationParametersAssociatedObject";
@@ -29,99 +30,30 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
 
 - (id)initWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
 {
-    NSURL *baseURL = MITMobileWebGetCurrentServerURL();
-
-    if ([[baseURL absoluteString] hasSuffix:@"/"] == NO) {
-        baseURL = [NSURL URLWithString:[[baseURL absoluteString] stringByAppendingString:@"/"]];
-    }
-
-    if ([aModule length] || [theCommand length]) {
-        NSMutableArray *coreParams = [NSMutableArray array];
-
-        if ([aModule length]) {
-            [coreParams addObject:[NSString stringWithFormat:@"module=%@",[aModule stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-        }
-
-        if ([theCommand length]) {
-            [coreParams addObject:[NSString stringWithFormat:@"command=%@",[theCommand stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-        }
-
-        NSString *urlString = [NSString stringWithFormat:@"%@?%@", [baseURL absoluteString], [coreParams componentsJoinedByString:@"&"]];
-        baseURL = [NSURL URLWithString:urlString];
-        NSLog(@"Initialized module request with URL '%@'", urlString);
-    }
-
-    return [self initWithURL:baseURL parameters:params];
+    NSURLRequest *urlRequest = [NSURLRequest requestForModule:aModule command:theCommand parameters:params method:@"GET"];
+    
+    return [self initWithRequest:urlRequest];
 }
 
 - (id)initWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
-    NSURLRequest *urlRequest = [self urlRequestWithURL:requestURL parameters:params];
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:requestURL parameters:params method:@"GET"];
     return [self initWithRequest:urlRequest];
 }
 
-- (void)setCommand:(NSString*)command
+- (NSString*)module
 {
-    if (![self.command isEqualToString:command]) {
-        objc_setAssociatedObject(self, (__bridge const void*)MITMobileOperationCommandAssociatedObjectKey, command, OBJC_ASSOCIATION_COPY);
-    }
+    return [self parameters][@"module"];
 }
 
 - (NSString*)command
 {
-    return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationCommandAssociatedObjectKey);
-}
-
-- (void)setParameters:(NSDictionary*)parameters
-{
-    if (![self.parameters isEqual:parameters]) {
-        objc_setAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey, parameters, OBJC_ASSOCIATION_COPY);
-    }
+    return [self parameters][@"command"];
 }
 
 - (NSDictionary*)parameters
 {
-    return objc_getAssociatedObject(self, (__bridge const void*)MITMobileOperationParametersAssociatedObjectKey);
-}
-
-- (NSURLRequest *)urlRequestWithURL:(NSURL*)URL parameters:(NSDictionary*)parameters
-{
-    NSMutableString *urlString = [NSMutableString stringWithString:[URL absoluteString]];
-    NSMutableArray *params = [NSMutableArray arrayWithCapacity:[parameters count]];
-
-    [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *name, id value, BOOL *stop) {
-        if ([value isKindOfClass:[NSString class]]) {
-            [params addObject:[NSString stringWithFormat:@"%@=%@",[name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-                                                                  [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-        } else if ([value respondsToSelector:@selector(stringValue)]) {
-            [params addObject:[NSString stringWithFormat:@"%@=%@",[name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-                                                                  [[value stringValue] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-        }
-    }];
-
-    if ([params count]) {
-        NSString *paramString = [params componentsJoinedByString:@"&"];
-
-        // Assume that the URL is properly formed. In that case,
-        // the parameters should come after the '?' and there shouldn't
-        // be any stray '?' characters as they are reserved
-        NSRange matchingRange = [urlString rangeOfString:@"?" options:NSBackwardsSearch];
-
-        if (matchingRange.location != NSNotFound) {
-            if ([urlString hasSuffix:@"?"]) {
-                // Assume the URL is of the format '.../someResource/?...' or '.../someResource?...'
-                [urlString appendFormat:@"%@", paramString];
-            } else {
-                // Assume the url is of the format '...?(parameters*)'
-                [urlString appendFormat:@"&%@", paramString];
-            }
-        } else {
-            // Assume the URL is of the format '.../someResource/' or '.../someResource'
-            [urlString appendFormat:@"?%@", paramString];
-        }
-    }
-
-    return [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    return [self.request.URL queryDictionary];
 }
 
 - (void)setCompleteBlock:(void (^)(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error))block
@@ -141,5 +73,101 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     }];
 }
 
+@end
+
+
+@implementation NSURLRequest (LegacyCompatibiltiy)
++ (instancetype)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
+{
+    NSURL *baseURL = MITMobileWebGetCurrentServerURL();
+    
+    NSString *urlString = [baseURL absoluteString];
+    if ([urlString hasSuffix:@"/"] == NO) {
+        baseURL = [NSURL URLWithString:[urlString stringByAppendingString:@"/"]];
+    }
+    
+    
+    NSMutableArray *queryParameters = [[NSMutableArray alloc] init];
+    if (module) {
+        NSString *parameterString = [NSString stringWithFormat:@"module=%@",[module stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        [queryParameters addObject:parameterString];
+    }
+    
+    if (command) {
+        NSString *parameterString = [NSString stringWithFormat:@"command=%@",[command stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        [queryParameters addObject:parameterString];
+    }
+    
+    if ([queryParameters count]) {
+        NSString *queryString = [queryParameters componentsJoinedByString:@"&"];
+        NSString *urlString = [NSString stringWithFormat:@"%@?%@", [baseURL absoluteString], queryString];
+        baseURL = [NSURL URLWithString:urlString];
+    }
+    
+    return [self requestWithURL:baseURL parameters:parameters method:HTTPMethod];
+}
+
++ (instancetype)requestWithURL:(NSURL *)URL parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
+{
+    NSMutableArray *urlParameters = [NSMutableArray arrayWithCapacity:[parameters count]];
+    
+    [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *name, id value, BOOL *stop) {
+        NSString *encodedName = [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *encodedValue = nil;
+        
+        if ([value isKindOfClass:[NSString class]]) {
+            encodedValue = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        } else if ([value respondsToSelector:@selector(stringValue)]) {
+            encodedValue = [[value stringValue] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        }
+        
+        if (encodedValue) {
+            [urlParameters addObject:[NSString stringWithFormat:@"%@=%@",encodedName,encodedValue]];
+        } else {
+            [urlParameters addObject:encodedName];
+        }
+    }];
+    
+    
+    NSURL *targetURL = URL;
+    NSData *requestData = nil;
+    if ([urlParameters count]) {
+        NSString *paramString = [urlParameters componentsJoinedByString:@"&"];
+        
+        if ([HTTPMethod caseInsensitiveCompare:@"POST"] == NSOrderedSame) {
+            requestData = [paramString dataUsingEncoding:NSUTF8StringEncoding];
+        } else {
+            NSMutableString *urlString = [NSMutableString stringWithString:[URL absoluteString]];
+            
+            // Assume that the URL is properly formed. In that case,
+            // the parameters should come after the '?' and there shouldn't
+            // be any stray '?' characters as they are reserved
+            NSRange matchingRange = [urlString rangeOfString:@"?" options:NSBackwardsSearch];
+            
+            if (matchingRange.location != NSNotFound) {
+                if ([urlString hasSuffix:@"?"]) {
+                    // Assume the URL is of the format '.../someResource/?...' or '.../someResource?...'
+                    [urlString appendFormat:@"%@", paramString];
+                } else {
+                    // Assume the url is of the format '...?(parameters*)'
+                    [urlString appendFormat:@"&%@", paramString];
+                }
+            } else {
+                // Assume the URL is of the format '.../someResource/' or '.../someResource'
+                [urlString appendFormat:@"?%@", paramString];
+            }
+            
+            targetURL = [NSURL URLWithString:urlString];
+            requestData = nil;
+        }
+    }
+    
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:targetURL];
+    request.HTTPBody = requestData;
+    request.HTTPMethod = HTTPMethod;
+    
+    return request;
+}
 
 @end
