@@ -10,6 +10,15 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path;
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path query:(NSString *)query;
 
+/** Returns a set of key-value pairs for all parameters
+ *  in the query string. Any singleton parameters (for example
+ *  ...?parameter&...) will be included in the dictionary but
+ *  have a value of [NSNull null]
+ *
+ * @returns A dictionary of parameter key/value pairs or nil if -query is nil or empty
+ * @see -[NSURL query]
+ */
+- (NSDictionary*)queryDictionary;
 @end
 
 @interface NSArray (MITAdditions)

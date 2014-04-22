@@ -33,6 +33,29 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
                                     path:path];
 }
 
+- (NSDictionary*)queryDictionary
+{
+    NSArray *queryParameters = [[self query] componentsSeparatedByString:@"&"];
+    
+    if (![queryParameters count]) {
+        return nil;
+    }
+    
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+    [queryParameters enumerateObjectsUsingBlock:^(NSString *queryPair, NSUInteger idx, BOOL *stop) {
+        NSArray *parameter = [queryPair componentsSeparatedByString:@"="];
+        
+        if ([parameter count] == 1) {
+            // This is a singlet parameter. Mark this using [NSNull null] for now
+            parameters[parameter[0]] = [NSNull null];
+        } else if ([parameter count] == 2) {
+            parameters[parameter[0]] = parameter[1];
+        }
+    }];
+    
+    return parameters;
+}
+
 @end
 
 @implementation NSArray (MITAdditions)
