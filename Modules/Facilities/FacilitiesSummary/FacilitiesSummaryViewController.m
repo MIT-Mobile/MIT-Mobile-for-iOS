@@ -250,6 +250,11 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
 - (void)setAttachedImage:(UIImage *)image {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
     if (self.imageData) {

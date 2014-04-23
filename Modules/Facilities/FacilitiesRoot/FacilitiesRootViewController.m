@@ -60,6 +60,10 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
 
 #pragma mark - UITableViewDelegate Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

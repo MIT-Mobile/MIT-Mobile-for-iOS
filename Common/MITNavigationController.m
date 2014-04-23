@@ -17,8 +17,8 @@
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    if ([self visibleViewController]) {
-        return [[self visibleViewController] preferredInterfaceOrientationForPresentation];
+    if ([self topViewController]) {
+        return [[self topViewController] preferredInterfaceOrientationForPresentation];
     } else {
         return [super preferredInterfaceOrientationForPresentation];
     }
@@ -26,8 +26,8 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    if ([self visibleViewController]) {
-        return [[self visibleViewController] supportedInterfaceOrientations];
+    if ([self topViewController]) {
+        return [[self topViewController] supportedInterfaceOrientations];
     } else {
         return [super supportedInterfaceOrientations];
     }
@@ -35,8 +35,8 @@
 
 - (BOOL)shouldAutorotate
 {
-    if ([self visibleViewController]) {
-        return [[self visibleViewController] shouldAutorotate];
+    if ([self topViewController]) {
+        return [[self topViewController] shouldAutorotate];
     } else {
         return [self shouldAutorotate];
     }
