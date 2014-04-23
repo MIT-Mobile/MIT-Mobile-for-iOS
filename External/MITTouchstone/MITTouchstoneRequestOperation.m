@@ -1,4 +1,5 @@
 #import <objc/runtime.h>
+#import <RestKit/RKHTTPUtilities.h>
 
 #import "MITTouchstoneRequestOperation.h"
 #import "MITTouchstoneOperation.h"
@@ -10,6 +11,8 @@
 
 static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAgentKey";
 
+// Find a way around this. Even though nearly all of the ancestors of this
+// class do this as well, it is a *really* bad practice.
 @interface AFURLConnectionOperation ()
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
@@ -41,7 +44,7 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
     self = [super initWithRequest:touchstoneRequest];
 
     if (self) {
-        
+        [self setAcceptableStatusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     }
 
     return self;
