@@ -7,7 +7,6 @@
 #import "UIImage+Resize.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MFMailComposeViewController+RFC2368.h"
-#import "NSData+MGTwitterBase64.h"
 #import "NSMutableAttributedString+MITAdditions.h"
 #import "NSTimer+MITBlockTimer.h"
 #import "CoreData+MITAdditions.h"

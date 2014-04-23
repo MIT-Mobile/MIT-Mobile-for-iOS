@@ -115,11 +115,16 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
         NSString *encodedName = [name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         NSString *encodedValue = nil;
         
-        if ([value isKindOfClass:[NSString class]]) {
-            encodedValue = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        if ([value isKindOfClass:[NSData class]]) {
+            NSData *data = (NSData*)value;
+            encodedValue = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+        } else if ([value isKindOfClass:[NSString class]]) {
+            encodedValue = (NSString*)[value copy];
         } else if ([value respondsToSelector:@selector(stringValue)]) {
-            encodedValue = [[value stringValue] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            encodedValue = [value stringValue];
         }
+        
+        encodedValue = [encodedValue urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
         
         if (encodedValue) {
             [urlParameters addObject:[NSString stringWithFormat:@"%@=%@",encodedName,encodedValue]];
@@ -166,6 +171,10 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:targetURL];
     request.HTTPBody = requestData;
     request.HTTPMethod = HTTPMethod;
+    
+    if ([HTTPMethod caseInsensitiveCompare:@"POST"] == NSOrderedSame) {
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    }
     
     return request;
 }

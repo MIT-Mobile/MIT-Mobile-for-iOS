@@ -1,7 +1,6 @@
 #import "FacilitiesSubmitViewController.h"
 #import "FacilitiesRootViewController.h"
 #import "FacilitiesConstants.h"
-#import "NSData+MGTwitterBase64.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
@@ -135,9 +134,9 @@
     
     params[@"message"] = self.reportDictionary[FacilitiesRequestUserDescriptionKey];
     
-    NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
+    NSData *pictureData = self.reportDictionary[FacilitiesRequestImageDataKey];
     if (pictureData) {
-        params[@"image"] = [[pictureData base64EncodingWithLineLength:64] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        params[@"image"] = pictureData;
         params[@"imageFormat"] = @"image/jpeg";
     }
 
