@@ -94,18 +94,15 @@
     //  The property getters are lazy and will load in the proper order.
     //  This is done to clearly illustrate the order in which they
     //  should be setup.
-    [self loadTouchstoneController];
-    [self loadManagedObjectModel];
-    [self loadCoreDataController];
-    [self loadRemoteObjectManager];
+    //[self loadTouchstoneController];
+    //[self loadManagedObjectModel];
+    //[self loadCoreDataController];
+    //[self loadRemoteObjectManager];
 
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
     [self updateBasicServerInfo];
-    
-    // Initialize all modules
-    [self loadModules];
 
     // TODO: don't store state like this when we're using a springboard.
 	// set modules state
@@ -116,9 +113,6 @@
 		aModule.currentQuery = pathAndQuery[@"query"];
 	}
     
-    [self loadWindow];
-    DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
-
     // Override point for customization after view hierarchy is set
     for (MITModule *aModule in self.modules) {
         [aModule applicationDidFinishLaunching];
@@ -143,6 +137,7 @@
 	}
     
     [self.window makeKeyAndVisible];
+    DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
 
     return YES;
 }
