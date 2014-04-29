@@ -147,6 +147,8 @@
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *responseObject) {
         if ([responseObject[@"success"] boolValue]) {
             [weakSelf showSuccess];
+        } else {
+            [weakSelf showFailure];
         }
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         [weakSelf showFailure];
