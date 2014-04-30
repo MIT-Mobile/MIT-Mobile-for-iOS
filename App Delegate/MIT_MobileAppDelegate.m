@@ -102,6 +102,11 @@
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
+    // Create the default Touchstone controller and set it.
+    // -sharedTouchstoneController is a lazy method and it should create
+    // a default controller here if needed.
+    [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
+    
     [self updateBasicServerInfo];
 
     // TODO: don't store state like this when we're using a springboard.
@@ -400,7 +405,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITTouchstoneController *touchstoneController = [[MITTouchstoneController alloc] init];
     touchstoneController.authenticationDelegate = self;
     self.sharedTouchstoneController = touchstoneController;
-    [MITTouchstoneController setSharedController:touchstoneController];
 }
 
 - (void)loadCoreDataController
