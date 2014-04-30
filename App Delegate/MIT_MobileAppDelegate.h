@@ -13,10 +13,10 @@
 @property (nonatomic,weak) MITSpringboard *springboardController;
 @property (nonatomic,strong) NSData *deviceToken;
 
-@property (nonatomic,readonly) NSArray *modules;
-@property (nonatomic,readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic,readonly) MITCoreDataController *coreDataController;
-@property (nonatomic,readonly) MITMobile *remoteObjectManager;
+@property (nonatomic,readonly,copy) NSArray *modules;
+@property (nonatomic,readonly,strong) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic,readonly,strong) MITCoreDataController *coreDataController;
+@property (nonatomic,readonly,strong) MITMobile *remoteObjectManager;
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
 + (MITModule *)moduleForTag:(NSString *)aTag;

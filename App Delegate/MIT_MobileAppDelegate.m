@@ -1,4 +1,3 @@
-
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
@@ -43,7 +42,7 @@
 @end
 
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
-@property (strong) MITTouchstoneController *sharedTouchstoneController;
+@property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
@@ -340,32 +339,46 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 }
 
 #pragma mark - Lazy property getters
+- (MITTouchstoneController*)sharedTouchstoneController
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self loadTouchstoneController];
+        NSAssert(_sharedTouchstoneController && [MITTouchstoneController sharedController], @"failed to load Touchstone authentication controller");
+    });
+    
+    return _sharedTouchstoneController;
+}
+
 - (MITMobile*)remoteObjectManager
 {
-    if (!_remoteObjectManager) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         [self loadRemoteObjectManager];
         NSAssert(_remoteObjectManager, @"failed to initalize the persitence stack");
-    }
+    });
 
     return _remoteObjectManager;
 }
 
 - (NSManagedObjectModel*)managedObjectModel
 {
-    if (!_managedObjectModel) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         [self loadManagedObjectModel];
         NSAssert(_managedObjectModel, @"failed to create the managed object model");
-    }
+    });
 
     return _managedObjectModel;
 }
 
 - (MITCoreDataController*)coreDataController
 {
-    if (!_coreDataController) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         [self loadCoreDataController];
         NSAssert(_coreDataController, @"failed to load CoreData store controller");
-    }
+    });
 
     return _coreDataController;
 }
@@ -405,6 +418,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITTouchstoneController *touchstoneController = [[MITTouchstoneController alloc] init];
     touchstoneController.authenticationDelegate = self;
     self.sharedTouchstoneController = touchstoneController;
+    [MITTouchstoneController setSharedController:touchstoneController];
 }
 
 - (void)loadCoreDataController
