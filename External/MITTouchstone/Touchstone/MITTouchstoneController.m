@@ -29,6 +29,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 @property (strong) NSError *loginError;
 
 @property (nonatomic,strong) NSURLCredential *storedCredential;
+@property (nonatomic, copy) NSString *userEmailAddress;
 
 
 /* Migrates any saved credentials saved by MobileRequestOperation
@@ -50,6 +51,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 @synthesize storedCredential = _storedCredential;
 @synthesize loginCompletionQueue = _loginCompletionQueue;
 @synthesize loginRequestQueue = _loginRequestQueue;
+@synthesize userEmailAddress = _userEmailAddress;
 
 #pragma mark Class
 + (instancetype)sharedController
@@ -349,6 +351,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     NSLog(@"successful login as %@",credential.user);
 
     self.loginError = nil;
+    self.userEmailAddress = nil; // reset cached value for userEmailAddress
     self.storedCredential = credential;
 }
 
@@ -460,6 +463,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 
     self.userInformation = nil;
     self.storedCredential = nil;
+    self.userEmailAddress = nil;
     [self clearAllCredentials];
 }
 
@@ -523,6 +527,20 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     }];
 }
 
+- (NSString *) userEmailAddress
+{
+    if( !_userEmailAddress )
+    {
+        _userEmailAddress = self.storedCredential.user;
+        
+        if( _userEmailAddress && [_userEmailAddress rangeOfString:@"@"].location == NSNotFound )
+        {
+            _userEmailAddress = [NSString stringWithFormat:@"%@@mit.edu", _userEmailAddress];
+        }
+    }
+    
+    return _userEmailAddress;
+}
 
 #pragma mark _Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
