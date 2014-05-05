@@ -5,6 +5,7 @@
 + (NSString*)userAgent;
 
 - (instancetype)initWithRequest:(NSURLRequest*)request;
+
 - (void)setCompletionBlockWithSuccess:(void (^)(MITTouchstoneRequestOperation *operation, id responseObject))success
                               failure:(void (^)(MITTouchstoneRequestOperation *operation, NSError *error))failure;
 @end

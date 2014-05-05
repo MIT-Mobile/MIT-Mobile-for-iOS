@@ -50,47 +50,31 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
     return self;
 }
 
-
-#if defined(AFNETWORKING_20)
-- (void)setCompletionBlockWithSuccess:(void (^)(MITTouchstoneRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(MITTouchstoneRequestOperation *operation, NSError *error))failure;
-{
-    __weak MITTouchstoneRequestOperation *weakSelf = self;
-    [super setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        MITTouchstoneRequestOperation *blockSelf = weakSelf;
-        if (!blockSelf) {
-            return;
-        } else if (success) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                // If all else fails, just send back the data
-                // object we got.
-                success(blockSelf,responseObject);
-            }];
-        }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        MITTouchstoneRequestOperation *blockSelf = weakSelf;
-        if (!blockSelf) {
-            return;
-        } else if (failure) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                // If all else fails, just send back the data
-                // object we got.
-                failure(blockSelf,error);
-            }];
-        }
-    }];
-}
-
-#else
-
 - (void)setCompletionBlockWithSuccess:(void (^)(MITTouchstoneRequestOperation *operation, id responseObject))success
                               failure:(void (^)(MITTouchstoneRequestOperation *operation, NSError *error))failure;
 {
 
+    // Wrap the failure and success blocks so we don't have a ton of unnecessary if(failure) and if(success)
+    // statements in the setCompletionBlock... call below
+    void (^safeSuccessBlock)(MITTouchstoneRequestOperation*, id) = ^(MITTouchstoneRequestOperation *operation, id responseObject) {
+        if (success) {
+            success(operation,responseObject);
+        }
+    };
+
+    void (^safeFailureBlock)(MITTouchstoneRequestOperation*, NSError*) = ^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogWarn(@"request to '%@' failed with error: %@", operation.request.URL, [error localizedDescription]);
+
+        if (failure) {
+            failure(operation,error);
+        }
+    };
 
     __weak MITTouchstoneRequestOperation *weakSelf = self;
     [super setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *data) {
         MITTouchstoneRequestOperation *blockSelf = weakSelf;
+        MITBlockAssert(blockSelf,(data == nil) || [data isKindOfClass:[NSData class]],@"expected response object of type %@ but got %@. Something is doing some unexpected preprocessing of the responseObject",NSStringFromClass([NSData class]),NSStringFromClass([data class]));
+
         if (!blockSelf) {
             return;
         } else {
@@ -103,34 +87,28 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
             // If the content type says the response was JSON and it doesn't parse
             // consider this request a failure and spit back the JSON error.
             if (jsonDataExpected && jsonError) {
-                if (failure) {
-                    failure(blockSelf,jsonError);
-                }
+                safeFailureBlock(blockSelf,jsonError);
             } else if (jsonObject) {
                 // If our response was successfully parsed as JSON, give it back!
                 // Note: This behavior is required at the moment since the pre-V3
                 // Mobile API did not properly set its content types and older
                 // code depends on this behavior
-                if (success) {
-                    success(blockSelf,jsonObject);
-                }
-            } else if (success) {
+                safeSuccessBlock(blockSelf,jsonObject);
+            } else {
                 // If all else fails, just send back the data
                 // object we got.
-                success(blockSelf,data);
+                safeSuccessBlock(blockSelf,data);
             }
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         MITTouchstoneRequestOperation *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
-        } else if (failure) {
-            failure(blockSelf,error);
+        } else {
+            safeFailureBlock(blockSelf,error);
         }
     }];
 }
-
-#endif
 
 - (void)pause:(BOOL)useHTTPRange
 {
