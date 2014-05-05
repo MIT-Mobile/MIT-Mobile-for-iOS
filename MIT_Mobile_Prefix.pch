@@ -1,6 +1,7 @@
 //
 // Prefix header for all source files of the 'MIT Mobile' target in the 'MIT Mobile' project
 //
+#import <Foundation/Foundation.h>
 #import <Availability.h>
 
 #ifndef __IPHONE_4_0
@@ -25,3 +26,23 @@
 #   endif
 #endif
 
+#if !defined(NS_BLOCK_ASSERTIONS)
+#   if !defined(MITBlockAssert)
+#       define MITBlockAssert(selfObject,condition,desc,...) \
+            do { \
+                __PRAGMA_PUSH_NO_EXTRA_ARG_WARNINGS \
+                if (!(condition)) { \
+                    [[NSAssertionHandler currentHandler] handleFailureInMethod:_cmd \
+                                                                        object:selfObject\
+                                                                          file:[NSString stringWithUTF8String:__FILE__] \
+                                                                    lineNumber:__LINE__ \
+                                                                   description:(desc), ##__VA_ARGS__]; \
+                } \
+                __PRAGMA_POP_NO_EXTRA_ARG_WARNINGS \
+            } while(0)
+#   endif //MITBlockAssert
+#else
+#   if !defined(MITBlockAssert)
+#       define MITBlockAssert(selfObject,condition,desc,...)
+#   endif //MITBlockAssert
+#endif //NS_BLOCK_ASSERTIONS
