@@ -79,8 +79,8 @@
 	if(shouldOpen) {
 		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
-        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        
+        [[MIT_MobileAppDelegate applicationDelegate] showModuleForTag:self.tag];
 	}
     
 	return YES;

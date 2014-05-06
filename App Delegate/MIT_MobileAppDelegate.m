@@ -3,7 +3,6 @@
 #import "MITDeviceRegistration.h"
 #import "MITUnreadNotifications.h"
 #import "AudioToolbox/AudioToolbox.h"
-#import "MITSpringboard.h"
 #import "ModuleVersions.h"
 #import "MITLogging.h"
 #import "Secret.h"
@@ -554,11 +553,24 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleForTag:(NSString *)tag
 {
+    [self showModuleForTag:tag animated:YES];
+}
+
+- (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
+{
     MITModule *module = [self moduleForTag:tag];
     
     if (module) {
         if (self.rootNavigationController) {
-            [self.rootNavigationController pushViewController:module.rootViewController animated:YES];
+            UIViewController *homeController = module.moduleHomeController;
+
+            NSUInteger index = [self.rootNavigationController.viewControllers indexOfObject:homeController];
+            if (index != NSNotFound) {
+                [self.rootNavigationController popToViewController:homeController animated:animated];
+            } else {
+                [self.rootNavigationController popToRootViewControllerAnimated:NO];
+                [self.rootNavigationController pushViewController:homeController animated:animated];
+            }
         }
     } else {
         DDLogWarn(@"unable to locate module with tag %@",tag);

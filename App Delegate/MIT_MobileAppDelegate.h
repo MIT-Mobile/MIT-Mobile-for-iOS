@@ -1,5 +1,3 @@
-#import "MITSpringboard.h"
-
 @class MITModule;
 @class MIT_MobileAppDelegate;
 @class MITCoreDataController;
@@ -10,7 +8,6 @@
 @interface MIT_MobileAppDelegate : UIResponder <UIApplicationDelegate>
 @property (nonatomic,strong) IBOutlet UIWindow *window;
 @property (nonatomic,weak) UINavigationController *rootNavigationController;
-@property (nonatomic,weak) MITSpringboard *springboardController;
 @property (nonatomic,strong) NSData *deviceToken;
 
 @property (nonatomic,readonly,copy) NSArray *modules;

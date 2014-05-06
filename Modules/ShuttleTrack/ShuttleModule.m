@@ -64,12 +64,7 @@
 }
 
 - (BOOL) handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    if ([[[MITAppDelegate() rootNavigationController] viewControllers] containsObject:self.moduleHomeController]) {
-        [[MITAppDelegate() rootNavigationController] popToViewController:self.moduleHomeController animated:NO];
-    } else {
-        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag animated:NO];
-    }
+    [[MIT_MobileAppDelegate applicationDelegate] showModuleForTag:self.tag];
     
     if ([localPath length] == 0) {
 		return YES;

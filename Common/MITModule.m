@@ -9,14 +9,13 @@
             iconName,
             pushNotificationSupported,
             pushNotificationEnabled,
-            springboardButton;
+            badgeValue;
 
 @synthesize hasLaunchedBegun,
             currentPath,
             currentQuery;
 
-@dynamic badgeValue,
-            isLoaded,
+@dynamic isLoaded,
             moduleHomeController;
 
 #pragma mark -
@@ -131,14 +130,6 @@
 #pragma mark -
 #pragma mark Use, but don't override
 
-- (NSString *)badgeValue {
-    return self.springboardButton.badgeValue;
-}
-
-- (void)setBadgeValue:(NSString *)newBadgeValue {
-    self.springboardButton.badgeValue = newBadgeValue;
-}
-
 - (UIImage *)icon {
     UIImage *result = nil;
     if (self.iconName) {
@@ -164,15 +155,6 @@
         result = [UIImage imageNamed:iconPath];
     }
     return result;
-}
-
-- (void)becomeActiveModule {
-	UIViewController *visibleController = [[MITAppDelegate() rootNavigationController] visibleViewController];
-    
-    if (visibleController != self.moduleHomeController)
-    {
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
-    }
 }
 
 // all notifications are enabled by default

@@ -372,7 +372,6 @@
 		EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C31BA1280AA9600058748 /* TourSiteOrRoute.m */; };
 		EB4C34FA1281FCBD00058748 /* tours in Resources */ = {isa = PBXBuildFile; fileRef = EB4C34F81281FCBD00058748 /* tours */; };
 		EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A091283698000058748 /* TourOverviewViewController.m */; };
-		EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A8A1283812A00058748 /* MITSpringboard.m */; };
 		EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4C3A92128456DB00058748 /* TourOverviewViewController.xib */; };
 		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; };
@@ -1217,8 +1216,6 @@
 		EB4C34F81281FCBD00058748 /* tours */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tours; path = Resources/tours; sourceTree = "<group>"; };
 		EB4C3A081283698000058748 /* TourOverviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourOverviewViewController.h; sourceTree = "<group>"; };
 		EB4C3A091283698000058748 /* TourOverviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourOverviewViewController.m; sourceTree = "<group>"; };
-		EB4C3A891283812A00058748 /* MITSpringboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITSpringboard.h; path = "App Delegate/MITSpringboard.h"; sourceTree = "<group>"; };
-		EB4C3A8A1283812A00058748 /* MITSpringboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITSpringboard.m; path = "App Delegate/MITSpringboard.m"; sourceTree = "<group>"; };
 		EB4C3A92128456DB00058748 /* TourOverviewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TourOverviewViewController.xib; sourceTree = "<group>"; };
 		EB4C40D41288988900058748 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		EB4C42DD1289CC8000058748 /* MITMapRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRoute.m; sourceTree = "<group>"; };
@@ -2732,8 +2729,6 @@
 		DE783C9810C8651300931EC5 /* App Delegate */ = {
 			isa = PBXGroup;
 			children = (
-				EB4C3A891283812A00058748 /* MITSpringboard.h */,
-				EB4C3A8A1283812A00058748 /* MITSpringboard.m */,
 				2978864110F03656002670CC /* MITDeviceRegistration.h */,
 				2978864210F03656002670CC /* MITDeviceRegistration.m */,
 				2978864310F03656002670CC /* MITUnreadNotifications.h */,
@@ -3334,7 +3329,6 @@
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
 				2C8E2B4B18206989002752F0 /* MITMapPlacesViewController.m in Sources */,
 				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
-				EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */,
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2CF61DCA18898C7E00D43381 /* MITNewsModelController.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,

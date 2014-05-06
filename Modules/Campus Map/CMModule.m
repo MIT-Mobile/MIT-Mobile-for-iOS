@@ -72,7 +72,7 @@
     MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
 	
 	if (localPath.length == 0) {
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        [[MIT_MobileAppDelegate applicationDelegate] showModuleForTag:self.tag];
         
 		if (regionDictionary != nil) {
 			// if the only user preset is the map's region, set it.	

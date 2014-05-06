@@ -108,7 +108,7 @@ static NSString * const PeopleStateDetail = @"detail";
 	}
     
     if (didHandle && pushHomeController) {
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        [[MIT_MobileAppDelegate applicationDelegate] showModuleForTag:self.tag];
     }
 	
     return didHandle;

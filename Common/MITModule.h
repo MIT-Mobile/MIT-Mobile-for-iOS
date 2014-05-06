@@ -3,7 +3,6 @@
 #import "MITUnreadNotifications.h"
 
 @class MIT_MobileAppDelegate;
-@class SpringboardIcon;
 
 @interface MITModule : NSObject {
 
@@ -36,7 +35,6 @@
 	NSString *currentQuery; // query of the URL representing current module state
     
     UIViewController* _moduleHomeController;
-    SpringboardIcon *springboardButton;
 }
 
 #pragma mark Required methods (must override in subclass)
@@ -58,11 +56,6 @@
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen:(BOOL)shouldOpen; // Called when a push notification arrives
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
 
-// This will push the moduleHomeController onto the
-// navigation stack of it isn't already the top-most
-// view controller.
-- (void)becomeActiveModule;
-
 #pragma mark tabNavController methods
 
 - (void) popToRootViewController;
@@ -70,9 +63,6 @@
 
 - (void) pushViewController: (UIViewController *)viewController;
 - (UIViewController *) parentForViewController:(UIViewController *)viewController;
-
-
-
 
 @property (nonatomic,readonly) BOOL isLoaded;
 
@@ -86,7 +76,6 @@
 
 @property (nonatomic, retain) NSString *badgeValue;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
 @property (nonatomic, readonly) UIImage *springboardIcon;
-@property (nonatomic, retain) SpringboardIcon *springboardButton;
 
 @property (nonatomic) BOOL hasLaunchedBegun;
 @property (nonatomic, retain) NSString *currentPath;
