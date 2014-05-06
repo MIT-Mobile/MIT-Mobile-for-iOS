@@ -1,5 +1,6 @@
 #import "MITLauncherViewController.h"
 #import "MITLauncherViewCell.h"
+#import "MITAdditions.h"
 
 static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
 
@@ -15,18 +16,17 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
     UICollectionViewLayout *layout = nil;
     
     switch (style) {
-        case MITLauncherStyleGrid:
-            layout = [[UICollectionViewFlowLayout alloc] init];
-            break;
+        case MITLauncherStyleGrid: {
+            UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+            layout = flowLayout;
+        } break;
             
         case MITLauncherStyleList: {
             NSAssert(NO,@"Not implemented yet");
-        } // Fall Through
-        case MITLauncherStyleCustom:
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"initWithStyle: does not support the use of MITLauncherStyleCustom. If you wish to use your own layout, call initWithCollectionViewLayout:" userInfo:nil];
+        } break;
     }
     
-    self = [sup initWithCollectionViewLayout:nil];
+    self = [super initWithCollectionViewLayout:layout];
     if (self) {
         _style = style;
     }
@@ -34,23 +34,40 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
     return self;
 }
 
-- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout*)layout
-{
-    self = [super initWithCollectionViewLayout:layout];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    if (_style == MITLauncherStyleGrid) {
-        [self.collectionView registerNib:[UINib nibWithNibName:@"LauncherModuleGridCell" bundle:nil] forCellWithReuseIdentifier:MITLauncherCellIdentifier];
-    } else {
+
+    if (_style == MITLauncherStyleList) {
         [self.collectionView registerNib:[UINib nibWithNibName:@"LauncherModuleListCell" bundle:nil] forCellWithReuseIdentifier:MITLauncherCellIdentifier];
+    } else if (_style == MITLauncherStyleGrid) {
+        [self.collectionView registerNib:[UINib nibWithNibName:@"LauncherModuleGridCell" bundle:nil] forCellWithReuseIdentifier:MITLauncherCellIdentifier];
     }
-    
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    self.collectionView.collectionViewLayout = layout;
+
+    self.collectionView.contentInset = UIEdgeInsetsMake(8.,8.,0.,8.);
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    if (self.style == MITLauncherStyleGrid) {
+        UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+        flowLayout.itemSize = CGSizeMake(72., 86.);
+        flowLayout.minimumLineSpacing = 6.;
+        flowLayout.minimumInteritemSpacing = 4.;
+    } else {
+        UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+        flowLayout.itemSize = CGSizeMake(CGRectGetWidth(self.collectionView.bounds), 60.);
+    }
+
+    // This is called last since viewWillAppear: will reload the
+    // collection view and we need to ensure the sizes are setup
+    // correctly before trying to show anything.
+    [super viewWillAppear:animated];
+
+
+    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -77,6 +94,11 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
     
     if ([cell isKindOfClass:[MITLauncherViewCell class]]) {
         MITLauncherViewCell *launcherCell = (MITLauncherViewCell*)cell;
+
+        if (self.style == MITLauncherStyleGrid) {
+            launcherCell.shouldUseShortModuleNames = YES;
+        }
+
         MITModule *module = [self.dataSource launcher:self moduleAtIndexPath:indexPath];
         launcherCell.module = module;
     }
@@ -88,11 +110,6 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.delegate launcher:self didSelectModuleAtIndexPath:indexPath];
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CGSizeMake(72.,82.);
 }
 
 @end

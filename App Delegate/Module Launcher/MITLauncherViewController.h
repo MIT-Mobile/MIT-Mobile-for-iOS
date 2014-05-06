@@ -8,8 +8,7 @@
 #pragma mark Types & Statics
 typedef NS_ENUM(NSInteger, MITLauncherStyle) {
     MITLauncherStyleGrid,
-    MITLauncherStyleList,
-    MITLauncherStyleCustom
+    MITLauncherStyleList
 };
 
 #pragma mark Interfaces & Protocols
