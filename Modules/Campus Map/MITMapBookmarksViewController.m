@@ -1,5 +1,4 @@
 #import "MITMapBookmarksViewController.h"
-#import "CampusMapViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMapModel.h"
 #import "MITCoreDataController.h"

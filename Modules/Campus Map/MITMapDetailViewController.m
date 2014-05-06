@@ -1,7 +1,6 @@
 #import <MapKit/MapKit.h>
 #import "MITMapDetailViewController.h"
 #import "TabViewControl.h"
-#import "CampusMapViewController.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITMapAnnotationView.h"

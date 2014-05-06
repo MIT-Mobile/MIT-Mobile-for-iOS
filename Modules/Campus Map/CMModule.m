@@ -1,6 +1,5 @@
 #import "CMModule.h"
 
-#import "CampusMapViewController.h"
 #import "MITMapDetailViewController.h"
 #import "MITCampusMapViewController.h"
 #import "MITModule+Protected.h"
@@ -16,9 +15,8 @@
         self.shortName = @"Map";
         self.longName = @"Campus Map";
         self.iconName = @"map";
-        
-        self.campusMapVC.title = self.longName;
     }
+
     return self;
 }
 
@@ -76,8 +74,9 @@
         
 		if (regionDictionary != nil) {
 			// if the only user preset is the map's region, set it.	
-			self.campusMapVC.mapView.region = region;
+			//self.campusMapVC.mapView.region = region;
 		}
+
 		return YES;
 	} else {
         if ([localPath hasPrefix:@"search"]) {
