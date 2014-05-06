@@ -33,6 +33,7 @@
 #import "ToursModule.h"
 
 #import "MITTouchstoneController.h"
+#import "MITLauncherViewController.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
@@ -41,7 +42,9 @@
 - (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
 @end
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,MITLauncherDataSource,MITLauncherDelegate>
+@property (nonatomic,strong) MITLauncherViewController *launcherViewController;
+
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
@@ -89,15 +92,7 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-    // The below load* methods called here are not necessary.
-    //  The property getters are lazy and will load in the proper order.
-    //  This is done to clearly illustrate the order in which they
-    //  should be setup.
-    //[self loadTouchstoneController];
-    //[self loadManagedObjectModel];
-    //[self loadCoreDataController];
-    //[self loadRemoteObjectManager];
-
+    
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
@@ -508,11 +503,26 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));
     
-    MITSpringboard *springboard = [[MITSpringboard alloc] init];
-    springboard.primaryModules = self.modules;
-    self.springboardController = springboard;
+    //MITSpringboard *springboard = [[MITSpringboard alloc] init];
+    //springboard.primaryModules = self.modules;
+    //self.springboardController = springboard;
     
-    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:springboard];
+    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleGrid];
+    launcherViewController.dataSource = self;
+    launcherViewController.delegate = self;
+    
+    NSString *logoName;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        logoName = @"global/navbar_mit_logo_light";
+    } else {
+        logoName = @"global/navbar_mit_logo_dark";
+    }
+    
+    UIImage *logoView = [UIImage imageNamed:logoName];
+    launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
+    launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
+    
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:launcherViewController];
     navigationController.navigationBarHidden = NO;
     
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
@@ -531,17 +541,28 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 }
 
 #pragma mark Application modules helper methods
-- (MITModule *)moduleForTag:(NSString *)aTag {
-    for (MITModule *aModule in self.modules) {
-        if ([aModule.tag isEqual:aTag]) {
-            return aModule;
+- (MITModule *)moduleForTag:(NSString *)tag
+{
+    for (MITModule *module in self.modules) {
+        if ([module.tag isEqual:tag]) {
+            return module;
         }
     }
+    
     return nil;
 }
 
-- (void)showModuleForTag:(NSString *)tag {
-    [self.springboardController pushModuleWithTag:tag];
+- (void)showModuleForTag:(NSString *)tag
+{
+    MITModule *module = [self moduleForTag:tag];
+    
+    if (module) {
+        if (self.rootNavigationController) {
+            [self.rootNavigationController pushViewController:module.rootViewController animated:YES];
+        }
+    } else {
+        DDLogWarn(@"unable to locate module with tag %@",tag);
+    }
 }
 
 #pragma mark Preferences
@@ -568,6 +589,25 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
 {
     [[self.window rootViewController] dismissViewControllerAnimated:YES completion:completion];
+}
+
+
+#pragma mark MITLauncherDataSource
+- (NSUInteger)numberOfItemsInLauncher:(MITLauncherViewController *)launcher
+{
+    return [self.modules count];
+}
+
+- (MITModule*)launcher:(MITLauncherViewController *)launcher moduleAtIndexPath:(NSIndexPath *)index
+{
+    return self.modules[index.row];
+}
+
+#pragma mark MITLauncherDelegate
+- (void)launcher:(MITLauncherViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITModule *module = self.modules[indexPath.row];
+    [self showModuleForTag:module.tag];
 }
 
 @end
