@@ -1,10 +1,16 @@
 #import "MITThumbnailView.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
+#import "MITTouchstoneRequestOperation.h"
+
+@interface MITThumbnailView ()
+- (BOOL)displayImage:(UIImage*)image;
+- (BOOL)displayImageWithData:(NSData*)data;
+@end
 
 @implementation MITThumbnailView
 
-@synthesize imageURL, connection, imageData, loadingView, imageView, delegate;
+@synthesize imageURL, imageData, loadingView, imageView, delegate;
 
 + (UIImage *)placeholderImage {
     // TODO: allow placeholders image to be set
@@ -19,7 +25,6 @@
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self != nil) {
-        connection = nil;
         imageURL = nil;
         imageData = nil;
         loadingView = nil;
@@ -34,22 +39,19 @@
 - (void)loadImage {
     // show cached image if available
     if (self.imageData) {
-        [self displayImage];
-    }
-    // otherwise try to fetch the image from
-    else {
+        [self displayImageWithData:self.imageData];
+    } else {
         [self requestImage];
     }
 }
 
-- (BOOL)displayImage {
+- (BOOL)displayImage:(UIImage*)image
+{
     BOOL wasSuccessful = NO;
-    
+
     [loadingView stopAnimating];
     loadingView.hidden = YES;
-    
-    UIImage *image = [[UIImage alloc] initWithData:self.imageData];
-    
+
     // don't show imageView if imageData isn't actually a valid image
     if (image && image.size.width > 0 && image.size.height > 0) {
         if (!imageView) {
@@ -59,7 +61,7 @@
             imageView.contentMode = UIViewContentModeScaleAspectFill;
             imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
         }
-        
+
         imageView.image = image;
         imageView.hidden = NO;
         wasSuccessful = YES;
@@ -67,10 +69,25 @@
     } else {
         self.backgroundColor = [UIColor colorWithPatternImage:[MITThumbnailView placeholderImage]];
     }
+
     [self setNeedsLayout];
-    
+
     [image release];
     return wasSuccessful;
+}
+
+- (BOOL)displayImageWithData:(NSData*)data
+{
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+
+    if (!data) {
+        return [self displayImage:nil];
+    } else if (image) {
+        self.imageData = data;
+        return [self displayImage:image];
+    } else {
+        return NO;
+    }
 }
 
 - (void)requestImage {
@@ -84,16 +101,43 @@
         self.backgroundColor = [UIColor colorWithPatternImage:[MITThumbnailView placeholderImage]];
         return;
     }
-    
-    if ([self.connection isConnected]) {
-        return;
-    }
-    
-    if (!self.connection) {
-        self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    }
-    [self.connection requestDataFromURL:[NSURL URLWithString:self.imageURL] allowCachedResponse:YES];
-    
+
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:self.imageURL]];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak MITThumbnailView *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSData *data) {
+        MITThumbnailView *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if ([data isKindOfClass:[NSData class]]) {
+            UIImage *image = [UIImage imageWithData:data scale:1.0];
+
+            if (image) {
+                blockSelf.imageData = data;
+
+                BOOL validImage = [blockSelf displayImage:image];
+                if (validImage) {
+                    [self.delegate thumbnail:blockSelf didLoadData:data];
+                }
+
+                MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+                [appDelegate hideNetworkActivityIndicator];
+            }
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        MITThumbnailView *blockSelf = weakSelf;
+
+        if (blockSelf) {
+            blockSelf.imageData = nil;
+            [blockSelf displayImageWithData:nil]; // will fail to load the image, displays placeholder thumbnail instead
+
+            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+            [appDelegate hideNetworkActivityIndicator];
+        }
+    }];
+
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate showNetworkActivityIndicator];
     
@@ -104,39 +148,13 @@
         [self addSubview:self.loadingView];
         loadingView.center = self.center;
     }
+
     imageView.hidden = YES;
     loadingView.hidden = NO;
     [loadingView startAnimating];
 }
 
-// ConnectionWrapper delegate
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    // TODO: If memory usage becomes a concern, convert images to PNG using UIImagePNGRepresentation(). PNGs use considerably less RAM.
-    self.imageData = data;
-    BOOL validImage = [self displayImage];
-    if (validImage) {
-        [self.delegate thumbnail:self didLoadData:data];
-    }
-    
-    self.connection = nil;
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    self.imageData = nil;
-    [self displayImage]; // will fail to load the image, displays placeholder thumbnail instead
-    self.connection = nil;
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
-
 - (void)dealloc {
-	[connection cancel];
-    [connection release];
-    connection = nil;
     [imageData release];
     imageData = nil;
     [loadingView release];

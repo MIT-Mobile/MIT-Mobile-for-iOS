@@ -9,10 +9,9 @@
 
 @end
 
-
-@interface MITThumbnailView : UIView <ConnectionWrapperDelegate> {
+DEPRECATED_ATTRIBUTE
+@interface MITThumbnailView : UIView {
     NSString *imageURL;
-    ConnectionWrapper *connection;
     NSData *imageData;
     UIActivityIndicatorView *loadingView;
     UIImageView *imageView;
@@ -21,12 +20,10 @@
 
 - (void)loadImage;
 - (void)requestImage;
-- (BOOL)displayImage;
 + (UIImage *)placeholderImage;
 
 @property (nonatomic, assign) id<MITThumbnailDelegate> delegate;
 @property (nonatomic, retain) NSString *imageURL;
-@property (nonatomic, retain) ConnectionWrapper *connection;
 @property (nonatomic, retain) NSData *imageData;
 @property (nonatomic, retain) UIActivityIndicatorView *loadingView;
 @property (nonatomic, retain) UIImageView *imageView;
