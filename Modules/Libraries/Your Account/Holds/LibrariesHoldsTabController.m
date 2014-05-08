@@ -112,18 +112,22 @@
 
 - (void)updateLoanData
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"holds"
-                                                                         parameters:@{@"limit" : [@(NSIntegerMax) stringValue]}];
-    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        if (self.loadingView) {
-            [self.loadingView removeFromSuperview];
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libaries" command:@"holds" parameters:@{@"limit":@(NSIntegerMax)}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibrariesHoldsTabController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+        LibrariesHoldsTabController *blockSelf = weakSelf;
+
+        if (blockSelf.loadingView) {
+            [blockSelf.loadingView removeFromSuperview];
+            blockSelf.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         }
-        
-        if (error) {
-            [self.parentController reportError:error
-                                       fromTab:self];
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            [self.parentController reportError:error fromTab:self];
         } else {
             self.loanData = (NSDictionary*)content;
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
@@ -137,9 +141,8 @@
     };
     
     
-    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
-    {
-        [self.parentController.requestOperations addOperation:operation];
+    if ([self.parentController.requestOperations.operations containsObject:requestOperation] == NO) {
+        [self.parentController.requestOperations addOperation:requestOperation];
     }
 }
 

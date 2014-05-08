@@ -16,7 +16,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITMapAnnotationView.h"
 
 #define WEB_VIEW_TAG 646
@@ -43,6 +43,8 @@
 @property(nonatomic,strong) TourSiteOrRoute *lastSite;
 @property(nonatomic,strong) AVAudioPlayer *audioPlayer;
 @property(nonatomic,strong) UIProgressView *progressView;
+
+@property(nonatomic,weak) MITTouchstoneRequestOperation *audioRequestOperation;
 
 //- (void)setupIntroScreenForward:(BOOL)forward;
 - (void)setupBottomToolBar;
@@ -171,53 +173,64 @@
         TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
         
         NSURL *audioURL = [NSURL URLWithString:component.audioURL];
-        
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil];
-        request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
-            TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-            
-            if (error) {
+        NSURLRequest *request = [NSURLRequest requestWithURL:audioURL];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+        __weak SiteDetailViewController *weakSelf = self;
+        requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSData *data, NSString *contentType, NSError *error) {
+            SiteDetailViewController *blockSelf = weakSelf;
+
+            if (!blockSelf) {
+                return;
+            } else if (blockSelf.audioRequestOperation != operation) {
+                return;
+            } else if (error) {
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
                                                                     message:@"Audio could not be loaded"
-                                                                   delegate:self
+                                                                   delegate:blockSelf
                                                           cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 alertView.tag = CONNECTION_FAILED_TAG;
                 [alertView show];
-                
             } else {
+                TourComponent *component = nil;
+                if (blockSelf.sideTrip) {
+                    component = blockSelf.siteOrRoute;
+                } else {
+                    component = blockSelf.sideTrip;
+                }
+
                 if ([[audioURL absoluteString] isEqualToString:component.audioURL]) {
-                    
                     [data writeToFile:component.audioFile atomically:YES];
-                    
+
                     NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
-                    
+
                     NSError *error;
-                    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
+                    blockSelf.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
                                                                               error:&error];
-                    [self.audioPlayer prepareToPlay];
-                    if (!self.audioPlayer) {
+                    [blockSelf.audioPlayer prepareToPlay];
+                    if (!blockSelf.audioPlayer) {
                         DDLogError(@"%@", [error description]);
                     }
-                    
-                    self.progressView.progress = 1.0;
+
+                    blockSelf.progressView.progress = 1.0;
                     [UIView beginAnimations:@"fadeProgressView" context:nil];
                     [UIView setAnimationDelegate:self];
                     [UIView setAnimationDelay:0.3];
                     [UIView setAnimationDuration:0.5];
-                    
-                    if (self.audioPlayer) {
+
+                    if (blockSelf.audioPlayer) {
                         [UIView setAnimationDidStopSelector:@selector(playAudio)];
                     }
-                    
-                    self.progressView.alpha = 0.0;
+
+                    blockSelf.progressView.alpha = 0.0;
                     [UIView commitAnimations];
                 }
             }
         };
         
-        [request setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-            if (self.progressView) {
-                self.progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
+        [requestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+            if (weakSelf.progressView) {
+                weakSelf.progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
             }
         }];
         
@@ -225,7 +238,7 @@
         self.progressView.frame = CGRectMake(200, 0, 120, 20);
         [self.view addSubview:self.progressView];
         
-        [[NSOperationQueue mainQueue] addOperation:request];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
 
@@ -529,30 +542,37 @@
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                     photoFile = @"tours/tour_photo_loading_animation.gif";
-                    
-                    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL]
-                                                                                       parameters:nil];
-                    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
-                        if (error) {
-                            
+
+                    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:component.photoURL]];
+                    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+                    __weak SiteDetailViewController *weakSelf = self;
+                    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSData *data, NSString *contentType, NSError *error) {
+                        SiteDetailViewController *blockSelf = weakSelf;
+
+                        if (!blockSelf) {
+                            return;
+                        } else if (error) {
+                            DDLogWarn(@"site detail image request failed with error %@",error);
+                        } else if (![data isKindOfClass:[NSData class]]) {
+                            return;
                         } else {
                             [data writeToFile:component.photoFile atomically:YES];
                             NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
                                             "img.src = \"%@\";\n", component.photoFile];
-                            UIWebView *webView = (UIWebView *)[self.incomingSlidingView viewWithTag:WEB_VIEW_TAG];
+                            UIWebView *webView = (UIWebView *)[blockSelf.incomingSlidingView viewWithTag:WEB_VIEW_TAG];
                             [webView stringByEvaluatingJavaScriptFromString:js];
                         }
                     };
-                    [[NSOperationQueue mainQueue] addOperation:request];
+
+                    [[NSOperationQueue mainQueue] addOperation:requestOperation];
                 }
                 
                 TourSiteOrRoute *nextComponent = self.siteOrRoute.nextComponent;
-                
                 nextStopPhoto = [NSString stringWithFormat:@"<div class=\"photo\"><img id=\"directionsphoto\" src=\"%@\" width=\"%d\" height=\"%d\">%@</div>",
                                  photoFile, imageWidth, imageHeight,
                                  nextComponent.title];
             }
-            
         } else {
             self.navigationItem.title = @"Detail";
         }

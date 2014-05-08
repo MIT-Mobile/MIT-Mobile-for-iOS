@@ -26,7 +26,7 @@
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C040E1617EBA20A00A603A6 /* MITCampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C040E1517EBA20A00A603A6 /* MITCampusMapViewController.m */; };
-		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */; };
 		2C101A801653F054000E40E3 /* MGSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A751653F054000E40E3 /* MGSLayer.m */; };
@@ -65,6 +65,7 @@
 		2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */; };
 		2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */; };
 		2C276713184CC90E00E53E9F /* MITMobileResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C276712184CC90E00E53E9F /* MITMobileResource.m */; };
+		2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2523127A0E8F00058748 /* MITThumbnailView.m */; };
 		2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
@@ -366,7 +367,6 @@
 		EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C22651278BD6E00058748 /* CampusTour.m */; };
 		EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C23AC1279E89A00058748 /* SiteDetailViewController.m */; };
 		EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4C23AF1279E8DD00058748 /* SiteDetailViewController.xib */; };
-		EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2523127A0E8F00058748 /* MITThumbnailView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB4C2914127B224800058748 /* IconGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2912127B224800058748 /* IconGrid.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C31BA1280AA9600058748 /* TourSiteOrRoute.m */; };
 		EB4C34FA1281FCBD00058748 /* tours in Resources */ = {isa = PBXBuildFile; fileRef = EB4C34F81281FCBD00058748 /* tours */; };
@@ -3283,7 +3283,6 @@
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
 				2C8E2B4B18206989002752F0 /* MITMapPlacesViewController.m in Sources */,
 				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
-				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2CF61DCA18898C7E00D43381 /* MITNewsModelController.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
 				2C18090418F33B95008F9775 /* MITTouchstoneRequestOperation.m in Sources */,
@@ -3331,6 +3330,7 @@
 				DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */,
 				DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */,
 				2C18090818F33B95008F9775 /* NSMutableURLRequest+ECP.m in Sources */,
+				2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */,
 				EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */,
 				EB86944D115120C4003AEDFA /* ShuttleRouteStop.m in Sources */,
 				2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */,

@@ -4,7 +4,7 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 typedef enum 
 {
@@ -62,11 +62,10 @@ LocationsHoursTableRows;
 
     if (![self.library hasDetails]) {
         self.librariesDetailStatus = LibrariesDetailStatusLoading;
-        
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
-                                                                                  command:@"locationDetail"
-                                                                              parameters:@{@"library" : self.library.title}];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"locationDetail" parameters:@{@"library":self.library.title}];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
                 [self.tableView reloadData];
@@ -78,8 +77,7 @@ LocationsHoursTableRows;
             }
         };
         
-        [[NSOperationQueue mainQueue] addOperation:request];
-        
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     } else {
         self.librariesDetailStatus = LibrariesDetailStatusLoaded;
     }

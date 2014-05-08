@@ -7,7 +7,7 @@
 #import "URLShortener.h"
 #import "CalendarDataManager.h"
 #import <EventKit/EventKit.h>
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
@@ -115,27 +115,24 @@
         return;
     }
 
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                             command:@"detail"
-                                                                          parameters:@{@"id" : [self.event.eventID description]}];
-
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:@"detail" parameters:@{@"id":[self.event.eventID stringValue]}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *jsonResult) {
         self.loading = NO;
-        
-        if (error) {
-            DDLogVerbose(@"Calendar 'detail' request failed: %@",error);
-        } else {
-            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-                if ([jsonResult[@"id"] integerValue] == [self.event.eventID integerValue]) {
-                    [self.event updateWithDict:jsonResult];
-                    [self reloadEvent];
-                }
+
+        if ([jsonResult isKindOfClass:[NSDictionary class]]) {
+            if ([jsonResult[@"id"] integerValue] == [self.event.eventID integerValue]) {
+                [self.event updateWithDict:jsonResult];
+                [self reloadEvent];
             }
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        self.loading = NO;
+        DDLogVerbose(@"Calendar 'detail' request failed: %@",[error localizedDescription]);
+    }];
 
     self.loading = YES;
-    [[MobileRequestOperation defaultQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (void)reloadEvent

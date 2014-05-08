@@ -16,7 +16,8 @@
 @property (copy) NSDictionary *loanData;
 @property (retain) NSMutableIndexSet *renewItems;
 
-@property (strong) MobileRequestOperation *renewOperation;
+@property (nonatomic,weak) MITTouchstoneRequestOperation *renewOperation;
+@property (nonatomic,weak) MITTouchstoneRequestOperation *loanRequestOperation;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -192,38 +193,43 @@
 #pragma mark -
 - (void)updateLoanData
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"loans"
-                                                                         parameters:nil];
-    
-    self.headerView.renewButton.enabled = ([self.loanData[@"items"] count] > 0);
-    
-    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        if ([self.loadingView isDescendantOfView:self.tableView]) {
-            [self.loadingView removeFromSuperview];
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        }
-        
-        if (error) {
-            [self.parentController reportError:error
-                                       fromTab:self];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"loans" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibrariesLoanTabController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *content, NSString *contentType, NSError *error) {
+        LibrariesLoanTabController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (blockSelf.loanRequestOperation != operation) {
+            return;
         } else {
-            self.loanData = (NSDictionary*)content;
-            self.headerView.renewButton.enabled = ([self.loanData[@"items"] count] > 0);
-            self.headerView.accountDetails = (NSDictionary *)self.loanData;
-            [self.headerView sizeToFit];
-            [self.tableView reloadData];
-            if (self.parentController.activeTabController == self)
-            {
-                [self.parentController forceTabLayout];
+            if ([blockSelf.loadingView isDescendantOfView:blockSelf.tableView]) {
+                [blockSelf.loadingView removeFromSuperview];
+                blockSelf.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+            }
+
+            if (error || ![content isKindOfClass:[NSDictionary class]]) {
+                [blockSelf.parentController reportError:error fromTab:blockSelf];
+            } else {
+                blockSelf.loanData = (NSDictionary*)content;
+                blockSelf.headerView.renewButton.enabled = ([blockSelf.loanData[@"items"] count] > 0);
+                blockSelf.headerView.accountDetails = blockSelf.loanData;
+                [blockSelf.headerView sizeToFit];
+                [blockSelf.tableView reloadData];
+                if (blockSelf.parentController.activeTabController == blockSelf) {
+                    [blockSelf.parentController forceTabLayout];
+                }
             }
         }
     };
-    
-    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
-    {
-        [self.parentController.requestOperations addOperation:operation];
-    }
+
+    self.headerView.renewButton.enabled = ([self.loanData[@"items"] count] > 0);
+
+    [self.loanRequestOperation cancel];
+    self.loanRequestOperation = requestOperation;
+    [self.parentController.requestOperations addOperation:requestOperation];
 }
 
 
@@ -295,31 +301,33 @@
     self.cancelBarItem.enabled = NO;
     self.renewBarItem.enabled = NO;
 
-    NSDictionary *params = [NSDictionary dictionaryWithObject:[barcodes componentsJoinedByString:@" "]
-                                                       forKey:@"barcodes"];
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"renewBooks"
-                                                                         parameters:params];
-    [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        self.renewOperation = nil;
-        
-        if (error)
-        {
-            [self.parentController reportError:error fromTab:self];
-            self.renewBarItem.enabled = YES;
-            self.cancelBarItem.enabled = YES;
-        }
-        else
-        {
+    NSDictionary *parameters = @{@"barcodes" : [barcodes componentsJoinedByString:@" "]};
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"renewBooks" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibrariesLoanTabController *weakSelf = self;
+    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *content, NSString *contentType, NSError *error) {
+        LibrariesLoanTabController *blockSelf = weakSelf;
+        blockSelf.renewOperation = nil;
+
+        if (!blockSelf) {
+            return;
+        } else if (blockSelf.renewOperation != operation) {
+            return;
+        } else if (error || ![content isKindOfClass:[NSArray class]]) {
+            [blockSelf.parentController reportError:error fromTab:blockSelf];
+            blockSelf.renewBarItem.enabled = YES;
+            blockSelf.cancelBarItem.enabled = YES;
+        } else {
             LibrariesRenewResultViewController *vc = [[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content];
-            [self.parentController.navigationController pushViewController:vc
-                                                                  animated:YES];
+            [blockSelf.parentController.navigationController pushViewController:vc animated:YES];
         }
 
     }];
-    
-    self.renewOperation = operation;
-    [self.parentController.requestOperations addOperation:operation];
+
+    [self.renewOperation cancel];
+    self.renewOperation = requestOperation;
+    [self.parentController.requestOperations addOperation:requestOperation];
 }
 
 - (IBAction)cancelRenew:(id)sender

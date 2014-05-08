@@ -9,26 +9,15 @@
 @end
 
 @implementation MITThumbnailView
-
-@synthesize imageURL, imageData, loadingView, imageView, delegate;
-
 + (UIImage *)placeholderImage {
     // TODO: allow placeholders image to be set
     static NSString * const placeholderImageName = @"news/news-placeholder.png";
-    static UIImage *placeholderImage = nil;
-    if (!placeholderImage) {
-        placeholderImage = [[UIImage imageNamed:placeholderImageName] retain];
-    }
-    return placeholderImage;
+    return [UIImage imageNamed:placeholderImageName];
 }
 
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
-    if (self != nil) {
-        imageURL = nil;
-        imageData = nil;
-        loadingView = nil;
-        imageView = nil;
+    if (self) {
         self.opaque = YES;
         self.clipsToBounds = YES;
         self.backgroundColor = [UIColor colorWithPatternImage:[MITThumbnailView placeholderImage]];
@@ -49,36 +38,34 @@
 {
     BOOL wasSuccessful = NO;
 
-    [loadingView stopAnimating];
-    loadingView.hidden = YES;
+    [self.loadingView stopAnimating];
+    self.loadingView.hidden = YES;
 
     // don't show imageView if imageData isn't actually a valid image
     if (image && image.size.width > 0 && image.size.height > 0) {
-        if (!imageView) {
-            imageView = [[UIImageView alloc] initWithImage:nil]; // image is set below
-            [self addSubview:imageView];
-            imageView.frame = self.bounds;
-            imageView.contentMode = UIViewContentModeScaleAspectFill;
-            imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+        if (!self.imageView) {
+            self.imageView = [[UIImageView alloc] initWithImage:nil]; // image is set below
+            [self addSubview:self.imageView];
+            self.imageView.frame = self.bounds;
+            self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+            self.imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
         }
 
-        imageView.image = image;
-        imageView.hidden = NO;
+        self.imageView.image = image;
+        self.imageView.hidden = NO;
         wasSuccessful = YES;
-        [imageView setNeedsLayout];
+        [self.imageView setNeedsLayout];
     } else {
         self.backgroundColor = [UIColor colorWithPatternImage:[MITThumbnailView placeholderImage]];
     }
 
     [self setNeedsLayout];
-
-    [image release];
     return wasSuccessful;
 }
 
 - (BOOL)displayImageWithData:(NSData*)data
 {
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    UIImage *image = [[UIImage alloc] initWithData:data];
 
     if (!data) {
         return [self displayImage:nil];
@@ -108,6 +95,7 @@
     __weak MITThumbnailView *weakSelf = self;
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSData *data) {
         MITThumbnailView *blockSelf = weakSelf;
+        [[MIT_MobileAppDelegate applicationDelegate] hideNetworkActivityIndicator];
 
         if (!blockSelf) {
             return;
@@ -119,12 +107,15 @@
 
                 BOOL validImage = [blockSelf displayImage:image];
                 if (validImage) {
-                    [self.delegate thumbnail:blockSelf didLoadData:data];
+                    [blockSelf.delegate thumbnail:blockSelf didLoadData:data];
                 }
 
-                MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-                [appDelegate hideNetworkActivityIndicator];
+            } else {
+                [blockSelf displayImageWithData:nil];
             }
+
+        } else {
+            [blockSelf displayImageWithData:nil]; // will fail to load the image, displays placeholder thumbnail instead
         }
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         MITThumbnailView *blockSelf = weakSelf;
@@ -133,35 +124,24 @@
             blockSelf.imageData = nil;
             [blockSelf displayImageWithData:nil]; // will fail to load the image, displays placeholder thumbnail instead
 
-            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-            [appDelegate hideNetworkActivityIndicator];
+            [[MIT_MobileAppDelegate applicationDelegate] hideNetworkActivityIndicator];
         }
     }];
 
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate showNetworkActivityIndicator];
-    
     self.imageData = nil;
     
     if (!self.loadingView) {
-        loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        self.loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         [self addSubview:self.loadingView];
-        loadingView.center = self.center;
+        self.loadingView.center = self.center;
     }
 
-    imageView.hidden = YES;
-    loadingView.hidden = NO;
-    [loadingView startAnimating];
-}
+    self.imageView.hidden = YES;
+    self.loadingView.hidden = NO;
+    [self.loadingView startAnimating];
 
-- (void)dealloc {
-    [imageData release];
-    imageData = nil;
-    [loadingView release];
-    [imageView release];
-    [imageURL release];
-    self.delegate = nil;
-    [super dealloc];
+    [[MIT_MobileAppDelegate applicationDelegate] showNetworkActivityIndicator];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 @end

@@ -7,7 +7,7 @@
 #import "MorseCodePattern.h"
 #import "TourStartLocation.h"
 #import "TourLink.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface ToursDataManager (Private)
 
@@ -326,11 +326,9 @@ static ToursDataManager *s_toursDataManager = nil;
 #pragma mark API Requests
 
 - (void)requestTourList {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"tours"
-                                                                              command:@"toursList"
-                                                                           parameters:nil];
-
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"tours" command:@"toursList" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
         NSMutableSet *oldTourKeys = [NSMutableSet setWithArray:[_tours allKeys]];
         
@@ -384,16 +382,15 @@ static ToursDataManager *s_toursDataManager = nil;
     }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (void)requestTour:(NSString *)tourID {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourId", nil];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"tours"
-                                                                              command:@"tourDetails"
-                                                                           parameters:params];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSDictionary *params = @{@"tourId":tourID};
+    NSURLRequest *request = [NSURLRequest requestForModule:@"tours" command:@"tourDetails" parameters:params];
+
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsFailedToLoadNotification 
                                                             object:self 
@@ -480,7 +477,7 @@ static ToursDataManager *s_toursDataManager = nil;
         }
     };
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 #pragma mark -

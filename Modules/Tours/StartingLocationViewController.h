@@ -1,13 +1,10 @@
 #import <UIKit/UIKit.h>
 #import "MITThumbnailView.h"
-#import "ConnectionWrapper.h"
 
 @class TourStartLocation;
 @class TourOverviewViewController;
 
-@interface StartingLocationViewController : UIViewController <UIWebViewDelegate, ConnectionWrapperDelegate> {
-    NSMutableArray *_connections;
-}
+@interface StartingLocationViewController : UIViewController <UIWebViewDelegate>
 
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, copy) NSArray *startingLocations;

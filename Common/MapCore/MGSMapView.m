@@ -8,7 +8,7 @@
 #import "MGSGeometry.h"
 #import "MGSLayer.h"
 
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
@@ -793,32 +793,42 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self addSubview:view];
             self.mapView = view;
         }
-        
-        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                                command:@"bootstrap"
-                                                                             parameters:nil];
-        [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
-            if (error) {
-                DDLogError(@"failed to load basemap definitions: %@", error);
-                if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
-                    [self.delegate mapView:self
-                          didFailWithError:error];
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"map" command:@"bootstrap" parameters:nil];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+        __weak MGSMapView *weakSelf = self;
+        [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation* operation, NSDictionary *content, NSString* contentType, NSError* error) {
+            MGSMapView *blockSelf = weakSelf;
+
+            if (!blockSelf) {
+                return;
+            } else if (error || ![content isKindOfClass:[NSDictionary class]]) {
+                NSError *localError = error;
+                if (!localError) {
+                    NSString *message = [NSString stringWithFormat:@"invalid response from server"];
+                    localError = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:message}];
                 }
-            } else if ([content isKindOfClass:[NSDictionary class]]) {
-                NSDictionary* response = (NSDictionary*) content;
-                self.baseMapGroups = response[@"basemaps"];
-                
-                NSString* defaultSetName = response[@"defaultBasemap"];
-                
+
+                DDLogError(@"failed to load basemap definitions: %@", [localError localizedDescription]);
+                if ([blockSelf.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
+                    [blockSelf.delegate mapView:self
+                          didFailWithError:localError];
+                }
+            } else {
+                blockSelf.baseMapGroups = content[@"basemaps"];
+
+                NSString* defaultSetName = content[@"defaultBasemap"];
+
                 if ([defaultSetName length] == 0) {
-                    defaultSetName = [[self.baseMapGroups allKeys] objectAtIndex:0];
+                    defaultSetName = [[blockSelf.baseMapGroups allKeys] objectAtIndex:0];
                 }
-                
-                self.activeMapSet = defaultSetName;
+
+                blockSelf.activeMapSet = defaultSetName;
             }
         }];
         
-        [[NSOperationQueue mainQueue] addOperation:operation];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
     
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];

@@ -8,7 +8,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
 #import "ModuleVersions.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface DiningData ()
 
@@ -53,8 +53,9 @@
 }
 
 - (void)reloadAndCompleteWithBlock:(void (^)(NSError *error))completionBlock {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"dining" command:nil parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"dining" command:nil parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             DDLogInfo(@"Dining data failed to load. Error: %@", [error debugDescription]);
             if (completionBlock) {
@@ -75,7 +76,8 @@
             }
         }
     };
-    [[NSOperationQueue mainQueue] addOperation:request];
+    
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 /** Loads the data from the specified dictionary into the CoreData model and then

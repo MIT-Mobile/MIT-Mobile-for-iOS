@@ -1,5 +1,5 @@
 #import "CalendarCategoriesViewController.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "UIKit+MITAdditions.h"
 
 @implementation CalendarCategoriesViewController
@@ -7,20 +7,24 @@
     [super viewDidLoad];
 
 	self.categories = nil;
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"calendar"
-                                                                              command:@"categories"
-                                                                           parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"calendar" command:@"categories" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *responseObject) {
+        if ([responseObject isKindOfClass:[NSArray class]]) {
+            self.categories = responseObject;
+            [self.tableView reloadData];
+        } else {
+            DDLogVerbose(@"calendar categories request failed, expected an NSArray but got a %@", NSStringFromClass([responseObject class]));
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         if (error) {
             DDLogVerbose(@"calendar categories request failed: %@", error);
-        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
-            self.categories = jsonResult;
-            [self.tableView reloadData];
         }
-    };
+    }];
     
-    [[MobileRequestOperation defaultQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 // Override to allow orientations other than the default portrait orientation.

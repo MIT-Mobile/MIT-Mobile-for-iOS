@@ -30,7 +30,6 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
 @property (nonatomic, copy) NSArray *events;
-@property (nonatomic, copy) NSString *lastSearchTerm;
 
 @property (nonatomic) BOOL showScroller;
 @property (nonatomic) BOOL showList;

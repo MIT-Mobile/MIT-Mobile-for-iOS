@@ -1,5 +1,5 @@
 #import "MITDeviceRegistration.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 static NSString * const MITDeviceTypeKey = @"device_type";
 static NSString * const MITDeviceTypeApple = @"apple";
@@ -35,29 +35,23 @@ static NSString * const MITDeviceTypeApple = @"apple";
 + (void)registerNewDeviceWithToken: (NSData *)deviceToken {
 	NSMutableDictionary *parameters = [@{MITDeviceTypeKey : MITDeviceTypeApple} mutableCopy];
 	if(deviceToken) {		
-		[parameters setObject:[self stringFromToken:deviceToken] forKey:@"device_token"];
-		[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
+		parameters[@"device_token"] = [self stringFromToken:deviceToken];
+		parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
 	}		
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"register"
-                                                                           parameters:parameters];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            DDLogError(@"device registration failed: %@", error);
-        } else {
-            [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
-            
-            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *jsonDict = jsonResult;
-                [[NSUserDefaults standardUserDefaults] setObject:jsonDict[MITDeviceIdKey] forKey:MITDeviceIdKey];
-                [[NSUserDefaults standardUserDefaults] setObject:jsonDict[MITPassCodeKey] forKey:MITPassCodeKey];
-            }
-        }
-    };
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"register" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registerObject) {
+        if ([registerObject isKindOfClass:[NSDictionary class]]) {
+            [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITDeviceIdKey] forKey:MITDeviceIdKey];
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITPassCodeKey] forKey:MITPassCodeKey];
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogError(@"device registration failed: %@", [error localizedDescription]);
+    }];
+
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 + (void)registerDeviceWithToken:(NSData*)deviceToken registered:(void (^)(MITIdentity *identity,NSError *error))block
@@ -69,34 +63,34 @@ static NSString * const MITDeviceTypeApple = @"apple";
 		parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
 	}
 
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"register"
-                                                                           parameters:parameters];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"register" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registerObject) {
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error) {
+        if ([registerObject isKindOfClass:[NSDictionary class]]) {
             [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITDeviceIdKey] forKey:MITDeviceIdKey];
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITPassCodeKey] forKey:MITPassCodeKey];
 
-            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *jsonDict = jsonResult;
-
-                [[NSUserDefaults standardUserDefaults] setObject:jsonDict[MITDeviceIdKey]
-                                                          forKey:MITDeviceIdKey];
-                [[NSUserDefaults standardUserDefaults] setObject:jsonDict[MITPassCodeKey]
-                                                          forKey:MITPassCodeKey];
-            } else {
-                error = [NSError errorWithDomain:NSURLErrorDomain
-                                            code:NSURLErrorBadServerResponse
-                                        userInfo:@{NSLocalizedDescriptionKey : @"unable to register device, invalid response from server"}];
+            if (block) {
+                block([MITDeviceRegistration identity],nil);
+            }
+        } else {
+            if (block) {
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                     code:NSURLErrorBadServerResponse
+                                                 userInfo:@{NSLocalizedDescriptionKey : @"unable to register device, invalid response from server"}];
+                block([MITDeviceRegistration identity], error);
             }
         }
 
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         if (block) {
             block([MITDeviceRegistration identity], error);
         }
-    };
+    }];
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 + (void)newDeviceToken:(NSData *)deviceToken {
@@ -107,26 +101,23 @@ static NSString * const MITDeviceTypeApple = @"apple";
 		parameters[@"device_token"] = [self stringFromToken:deviceToken];
 		parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
 	}
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"newDeviceToken"
-                                                                           parameters:parameters];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"newDeviceToken" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
-        } else {
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registerObject) {
+        [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
+
+        if ([registerObject isKindOfClass:[NSDictionary class]]) {
             [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
-            
-            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *jsonDict = jsonResult;
-                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITDeviceIdKey] forKey:MITDeviceIdKey];
-                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITPassCodeKey] forKey:MITPassCodeKey];
-            }
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITDeviceIdKey] forKey:MITDeviceIdKey];
+            [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITPassCodeKey] forKey:MITPassCodeKey];
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogError(@"device registration failed: %@", [error localizedDescription]);
+    }];
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 + (void)clearIdentity

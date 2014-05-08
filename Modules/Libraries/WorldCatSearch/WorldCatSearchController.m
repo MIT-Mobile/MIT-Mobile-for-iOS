@@ -2,7 +2,7 @@
 #import "WorldCatBook.h"
 #import "LibrariesModule.h"
 #import "LibrariesBookDetailViewController.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
@@ -80,56 +80,62 @@ typedef enum {
     } else {
         parameters = @{@"q" : self.searchTerms};
     }
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
-                                                                             command:@"search"
-                                                                          parameters:parameters];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"search" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak WorldCatSearchController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+        WorldCatSearchController *blockSelf = weakSelf;
+
         UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
         [loadingView removeFromSuperview];
         
         self.lastSearchAttempt = [[NSDate date] timeIntervalSince1970];
-        if (error) {
+        if (!blockSelf) {
+            return;
+        } else if (error) {
             DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
-            [self showSearchError];
-            self.searchingStatus = BooksSearchingStatusFailed;
-            [self.searchResultsTableView reloadData];
+            [blockSelf showSearchError];
+            blockSelf.searchingStatus = BooksSearchingStatusFailed;
+            [blockSelf.searchResultsTableView reloadData];
         } else {
-            self.nextIndex = [self getNumberFromDict:content forKey:@"nextIndex" required:NO];
-            self.totalResultsCount = [self getNumberFromDict:content forKey:@"totalResultsCount" required:YES];
+            blockSelf.nextIndex = [self getNumberFromDict:content forKey:@"nextIndex" required:NO];
+            blockSelf.totalResultsCount = [self getNumberFromDict:content forKey:@"totalResultsCount" required:YES];
             if (self.parseError) {
                 DDLogWarn(@"World cat parse error parsing nextIndex or totalResultsCount");
-                self.searchingStatus = BooksSearchingStatusFailed;
-                [self.searchResultsTableView reloadData];
-                [self showSearchError];
+                blockSelf.searchingStatus = BooksSearchingStatusFailed;
+                [blockSelf.searchResultsTableView reloadData];
+                [blockSelf showSearchError];
                 return;
             }
             
-            id items = content[@"items"];
+            NSArray *items = content[@"items"];
             if ([items isKindOfClass:[NSArray class]]) {
                 NSMutableArray *temporarySearchResults = [NSMutableArray array];
                 for (NSDictionary *dict in items) {
                     WorldCatBook *book = [[WorldCatBook alloc] initWithDictionary:dict];
                     if (book.parseFailure) {
-                        self.searchingStatus = BooksSearchingStatusFailed;
-                        [self.searchResultsTableView reloadData];
-                        [self showSearchError];
+                        blockSelf.searchingStatus = BooksSearchingStatusFailed;
+                        [blockSelf.searchResultsTableView reloadData];
+                        [blockSelf showSearchError];
                         return;
                     }
+
                     [temporarySearchResults addObject:book];
                 }
-                self.searchingStatus = BooksSearchingStatusLoaded;
-                if (!self.searchResults) {
-                    self.searchResults = [NSMutableArray array];
+
+                blockSelf.searchingStatus = BooksSearchingStatusLoaded;
+                if (!blockSelf.searchResults) {
+                    blockSelf.searchResults = [NSMutableArray array];
                 }
-                [self.searchResults addObjectsFromArray:temporarySearchResults];                
-                [self.searchResultsTableView reloadData];
+                [blockSelf.searchResults addObjectsFromArray:temporarySearchResults];
+                [blockSelf.searchResultsTableView reloadData];
             } else {
                 DDLogWarn(@"World cat result not an array");
-                self.searchingStatus = BooksSearchingStatusFailed;
-                [self.searchResultsTableView reloadData];
-                [self showSearchError];
+                blockSelf.searchingStatus = BooksSearchingStatusFailed;
+                [blockSelf.searchResultsTableView reloadData];
+                [blockSelf showSearchError];
             }            
         }
     };
@@ -142,7 +148,7 @@ typedef enum {
     }
     
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-    [librariesModule.requestQueue addOperation:request];
+    [librariesModule.requestQueue addOperation:requestOperation];
     self.searchingStatus = BooksSearchingStatusLoading;
 }
 

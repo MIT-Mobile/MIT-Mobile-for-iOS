@@ -9,17 +9,19 @@
 #import "MIT_MobileAppDelegate.h"
 #import "CampusTour.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 #define START_LOCATION_ROW_HEIGHT 100.0f
 
-@implementation StartingLocationViewController
+@implementation StartingLocationViewController{
+    NSHashTable *_connections;
+}
 
 - (void)cancelButtonTapped:(id)sender {
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
 }
 
-#pragma mark -
-#pragma mark View lifecycle
+#pragma mark - View lifecycle
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -33,6 +35,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    _connections = [NSHashTable weakObjectsHashTable];
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
@@ -59,23 +63,51 @@
     static NSString *itemTemplate = @"<li><a href=\"%@\">%@<strong>%@:</strong> %@</a></li>";
     BOOL floatLeft = YES;
     NSInteger count = 0;
-    
-    _connections = [[NSMutableArray alloc] init];
+
     for (TourStartLocation *startLocation in self.startingLocations) {
-        
         NSString *photoString = @"";
+
         if (startLocation.photoURL) {
             NSString *photoFile = startLocation.photoFile;
             if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                 photoFile = @"tours/tour_photo_loading_animation.gif";
+
+                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:startLocation.photoURL]];
+                MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+                __weak StartingLocationViewController *weakSelf = self;
+                [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSData *responseData) {
+                    StartingLocationViewController *blockSelf = weakSelf;
+
+                    [[MIT_MobileAppDelegate applicationDelegate] hideNetworkActivityIndicator];
+                    [_connections removeObject:operation];
+
+                    if (!blockSelf) {
+                        return;
+                    } else if (![responseData isKindOfClass:[NSData class]]) {
+                        return;
+                    } else {
+                        for (TourStartLocation *startLocation in self.startingLocations) {
+                            if ([startLocation.photoURL isEqualToString:[operation.request.URL absoluteString]]) {
+                                [responseData writeToFile:startLocation.photoFile atomically:YES];
+                                NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"%@\");\n"
+                                                "img.src = \"%@\";\n", startLocation.componentID, startLocation.photoFile];
+                                [self.webView stringByEvaluatingJavaScriptFromString:js];
+                            }
+                        }
+                    }
+                } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+                    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
+                    [_connections removeObject:operation];
+                }];
+
                 [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                ConnectionWrapper *connection = [[ConnectionWrapper alloc] initWithDelegate:self];
-                [_connections addObject:connection];
-                [connection requestDataFromURL:[NSURL URLWithString:startLocation.photoURL]];
+                [_connections addObject:requestOperation];
+                [[NSOperationQueue mainQueue] addOperation:requestOperation];
             }
+
             NSString *altText = [[startLocation.componentID componentsSeparatedByString:@"-"] lastObject];
             NSString *floatClass = [NSString stringWithFormat:@"%@%@", floatLeft ? @"floatleft" : @"floatright", count ? @" padtop" : @""];
-            
             
             photoString = [NSString stringWithFormat:@"<img src=\"%@\" id=\"%@\" alt=\"%@\" width=\"160\" height=\"100\" border=\"0\" class=\"%@\">",
                            photoFile, startLocation.componentID, altText, floatClass];
@@ -98,29 +130,7 @@
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
 }
 
-#pragma mark ConnectionWrapper
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    for (TourStartLocation *startLocation in self.startingLocations) {
-        if ([startLocation.photoURL isEqualToString:[wrapper.theURL absoluteString]]) {
-            [data writeToFile:startLocation.photoFile atomically:YES];
-            NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"%@\");\n"
-                            "img.src = \"%@\";\n", startLocation.componentID, startLocation.photoFile];
-            [self.webView stringByEvaluatingJavaScriptFromString:js];
-        }
-    }
-    
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    [_connections removeObject:wrapper];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    [_connections removeObject:wrapper];
-}
-
-#pragma mark -
-#pragma mark UIWebViewDelegate
+#pragma mark - UIWebViewDelegate
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     TourStartLocation *location = nil;
@@ -156,9 +166,10 @@
 
 
 - (void)dealloc {
-    for (ConnectionWrapper *wrapper in _connections) {
-        wrapper.delegate = nil;
+    for (MITTouchstoneRequestOperation *connection in _connections) {
+        [connection cancel];
     }
+
     self.webView = nil;
     self.startingLocations = nil;
     self.overviewController = nil;

@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "ConnectionWrapper.h"
 
 @class MITThumbnailView;
 
@@ -10,22 +9,15 @@
 @end
 
 DEPRECATED_ATTRIBUTE
-@interface MITThumbnailView : UIView {
-    NSString *imageURL;
-    NSData *imageData;
-    UIActivityIndicatorView *loadingView;
-    UIImageView *imageView;
-    id<MITThumbnailDelegate> delegate;
-}
-
+@interface MITThumbnailView : UIView
 - (void)loadImage;
 - (void)requestImage;
 + (UIImage *)placeholderImage;
 
 @property (nonatomic, assign) id<MITThumbnailDelegate> delegate;
-@property (nonatomic, retain) NSString *imageURL;
-@property (nonatomic, retain) NSData *imageData;
-@property (nonatomic, retain) UIActivityIndicatorView *loadingView;
-@property (nonatomic, retain) UIImageView *imageView;
+@property (nonatomic, copy) NSString *imageURL;
+@property (nonatomic, copy) NSData *imageData;
+@property (nonatomic, strong) UIActivityIndicatorView *loadingView;
+@property (nonatomic, strong) UIImageView *imageView;
 
 @end

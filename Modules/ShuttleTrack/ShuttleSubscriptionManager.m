@@ -2,7 +2,7 @@
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
 #import "MITDeviceRegistration.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITUIConstants.h"
 
 @implementation ShuttleSubscriptionManager
@@ -15,12 +15,10 @@
 	NSInteger unixtime_int = round([time timeIntervalSince1970]);
 	NSString *unixtime_string = [NSString stringWithFormat:@"%i", unixtime_int];	
 	[parameters setObject:unixtime_string forKey:@"time"];	
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"subscribe"
-                                                                           parameters:parameters];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"shuttles" command:@"subscribe" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
             [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
@@ -40,19 +38,17 @@
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 + (void) unsubscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object {
 	NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
 	[parameters setObject:routeID forKey:@"route"];
 	[parameters setObject:stopID forKey:@"stop"];
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"unsubscribe"
-                                                                           parameters:parameters] ;
 
-	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"shuttles" command:@"unsubscribe" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+	requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
             [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
@@ -63,7 +59,7 @@
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 	
 + (BOOL) hasSubscription: (NSString *)routeID atStop: (NSString *)stopID scheduleTime: (NSDate *)time {

@@ -4,7 +4,7 @@
 #import "LibrariesAccountViewController.h"
 #import "LibrariesAskUsTableViewController.h"
 #import "LibrariesTellUsViewController.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "UIKit+MITAdditions.h"
 
 // links expiration time 10 days
@@ -281,7 +281,6 @@
     
 }
 
-
 - (void)loadLinksFromUserDefaults {
     self.links = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey];
     self.linksStatus = LinksStatusLoaded;
@@ -289,11 +288,9 @@
 }
 
 - (void)loadLinksFromServer {
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
-                                                                             command:@"links"
-                                                                          parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"links" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             // look for old cached version of links
             
@@ -326,7 +323,8 @@
             [self.tableView reloadData];
         }
     };
-    [[NSOperationQueue mainQueue] addOperation:request];
+    
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 
     self.linksStatus = LinksStatusLoading;
 }

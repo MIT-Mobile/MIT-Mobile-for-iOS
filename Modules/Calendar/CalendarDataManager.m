@@ -2,7 +2,7 @@
 #import "MITConstants.h"
 #import "CoreDataManager.h"
 #import "MITEventList.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
@@ -58,51 +58,40 @@ NSString * const CalendarEventAPISearch = @"search";
 	}
     
 	self.staticEventListIDs = staticEvents;
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                             command:@"extraTopLevels"
-                                                                          parameters:@{@"version" : @"2"}];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            if ([[CoreDataManager managedObjectContext] hasChanges]) {
-                [[CoreDataManager managedObjectContext] rollback];
-            }
-            
-            if ([self.delegate respondsToSelector:@selector(calendarListsFailedToLoad)]) {
-                [self.delegate calendarListsFailedToLoad];
-            }
-        } else {
+
+    NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:@"extraTopLevels" parameters:@{@"version" : @(2)}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *eventLists) {
+        if ([eventLists isKindOfClass:[NSArray class]]) {
             NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
-            if ([jsonResult isKindOfClass:[NSArray class]]) {
-                NSArray *eventLists = (NSArray*)jsonResult;
-                [eventLists enumerateObjectsUsingBlock:^(NSDictionary *eventList, NSUInteger idx, BOOL *stop) {
-                    MITEventList *eventListObject = [CalendarDataManager eventListWithID:eventList[@"type"]];
-                    eventListObject.title = eventList[@"shortName"];
-                    eventListObject.sortOrder = @(idx + 1);
-                    [newLists addObject:eventListObject];
-                }];
-            }
-            
+
+            [eventLists enumerateObjectsUsingBlock:^(NSDictionary *eventList, NSUInteger idx, BOOL *stop) {
+                MITEventList *eventListObject = [CalendarDataManager eventListWithID:eventList[@"type"]];
+                eventListObject.title = eventList[@"shortName"];
+                eventListObject.sortOrder = @(idx + 1);
+                [newLists addObject:eventListObject];
+            }];
+
             NSSet *newEventLists = [NSSet setWithArray:newLists];
             NSSet *currentEventLists = [NSSet setWithArray:self.eventLists];
             if (![currentEventLists isEqualToSet:newEventLists]) {
                 DDLogVerbose(@"event lists have changed");
                 [CoreDataManager saveData];
-                
+
                 // check for deleted categories
                 NSMutableSet *newEventListIDs = [[NSMutableSet alloc] init];
-                
+
                 for (MITEventList *newEventList in newLists) {
                     [newEventListIDs addObject:newEventList.listID];
                 }
-                
+
                 for (MITEventList *oldEventList in self.eventLists) {
                     if (![newEventListIDs containsObject:oldEventList.listID]) {
                         DDLogVerbose(@"deleting old list %@", [oldEventList description]);
                         [CoreDataManager deleteObject:oldEventList];
                     }
                 }
-                
+
                 NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
                 self.eventLists = [newLists sortedArrayUsingDescriptors:@[sort]];
                 if ([self.delegate respondsToSelector:@selector(calendarListsLoaded)]) {
@@ -110,9 +99,17 @@ NSString * const CalendarEventAPISearch = @"search";
                 }
             }
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        if ([[CoreDataManager managedObjectContext] hasChanges]) {
+            [[CoreDataManager managedObjectContext] rollback];
+        }
+
+        if ([self.delegate respondsToSelector:@selector(calendarListsFailedToLoad)]) {
+            [self.delegate calendarListsFailedToLoad];
+        }
+    }];
     
-    [[MobileRequestOperation defaultQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (BOOL)isDailyEvent:(MITEventList *)listType {

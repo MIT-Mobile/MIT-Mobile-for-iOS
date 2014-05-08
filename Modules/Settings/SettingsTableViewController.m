@@ -10,7 +10,7 @@
 #import "MobileKeychainServices.h"
 #import "MITConstants.h"
 #import "SettingsTouchstoneViewController.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 NSString * const MITSettingsSectionTitleKey = @"MITSettingsSectionTitle";
 NSString * const MITSettingsSectionDetailKey = @"MITSettingsSectionDetail";
@@ -359,10 +359,10 @@ enum {
         parameters[@"module_name"] = tag;
         parameters[@"enabled"] = (enabled ? @"1" : @"0");
 
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                                 command:@"moduleSetting"
-                                                                              parameters:parameters];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
+        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+        requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
             if (![jsonResult isKindOfClass:[NSDictionary class]]) {
                 DDLogError(@"fatal error: invalid response for push configuration");
             } else if ([jsonResult[@"success"] boolValue]) {
@@ -380,7 +380,7 @@ enum {
             }
         };
         
-        [[MobileRequestOperation defaultQueue] addOperation:request];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
 

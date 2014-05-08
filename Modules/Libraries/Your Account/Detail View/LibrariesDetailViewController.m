@@ -9,7 +9,7 @@
 
 @interface LibrariesDetailViewController ()
 @property (nonatomic, weak) UIButton *renewButton;
-@property (strong) MobileRequestOperation *request;
+@property (nonatomic,weak) MITTouchstoneRequestOperation *requestOperation;
 @property (copy) NSDictionary *details;
 @property LibrariesDetailType type;
 @end
@@ -40,7 +40,7 @@
 
 - (void)dealloc
 {
-    [self.request cancel];
+    [self.requestOperation cancel];
 }
 
 #pragma mark - View lifecycle
@@ -291,32 +291,39 @@
     self.navigationItem.titleView = activityView;
     [activityView startActivityWithTitle:@"Renewing..."];
     self.renewButton.enabled = NO;
-    
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"renewBooks"
-                                                                         parameters:@{@"barcodes" : self.details[@"barcode"]}];
-    [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        self.request = nil;
-        self.navigationItem.titleView = nil;
-        self.renewButton.enabled = YES;
 
-        if (error) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Renew"
-                                                             message:[error localizedDescription]
-                                                            delegate:nil
-                                                   cancelButtonTitle:nil
-                                                   otherButtonTitles:@"OK", nil];
-            [alert show];
-        } else {
-            LibrariesRenewResultViewController *vc = [[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content];
-            [self.navigationController pushViewController:vc
-                                                 animated:YES];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"renewBooks" parameters:@{@"barcodes":self.details[@"barcode"]}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibrariesDetailViewController *weakSelf = self;
+    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *content, NSString *contentType, NSError *error) {
+        LibrariesDetailViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (!(blockSelf.requestOperation == operation)) {
+            return;
+        } else  {
+            blockSelf.navigationItem.titleView = nil;
+            blockSelf.renewButton.enabled = YES;
+
+            if (error || [content isKindOfClass:[NSArray class]]) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Renew"
+                                                                message:[error localizedDescription]
+                                                               delegate:nil
+                                                      cancelButtonTitle:nil
+                                                      otherButtonTitles:@"OK", nil];
+                [alert show];
+            } else {
+                LibrariesRenewResultViewController *vc = [[LibrariesRenewResultViewController alloc] initWithItems:content];
+                [blockSelf.navigationController pushViewController:vc animated:YES];
+            }
         }
-
     }];
 
-    self.request = operation;
-    [[MobileRequestOperation defaultQueue] addOperation:operation];
+    [self.requestOperation cancel];
+    self.requestOperation = requestOperation;
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 @end

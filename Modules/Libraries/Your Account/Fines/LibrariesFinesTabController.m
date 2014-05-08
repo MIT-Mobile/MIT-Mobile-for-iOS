@@ -111,13 +111,11 @@
 
 - (void)updateLoanData
 {
-    NSString *limitString = [NSString stringWithFormat:@"%ld", NSIntegerMax];
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"fines"
-                                                                         parameters:@{@"limit" : limitString}];
-    
+    NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"fines" parameters:@{@"limit" : @(NSIntegerMax)}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
     __weak LibrariesFinesTabController *weakSelf = self;
-    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         LibrariesFinesTabController *blockSelf = weakSelf;
         if (blockSelf) {
             if (blockSelf.loadingView) {
@@ -126,23 +124,21 @@
             }
             
             if (error) {
-                [blockSelf.parentController reportError:error
-                                           fromTab:self];
+                [blockSelf.parentController reportError:error fromTab:self];
             } else {
                 blockSelf.loanData = (NSDictionary*)content;
                 blockSelf.headerView.accountDetails = (NSDictionary *)blockSelf.loanData;
                 [blockSelf.headerView sizeToFit];
                 [blockSelf.tableView reloadData];
-                if (blockSelf.parentController.activeTabController == self)
-                {
+                if (blockSelf.parentController.activeTabController == self) {
                     [blockSelf.parentController forceTabLayout];
                 }
             }
         }
     };
     
-    if ([self.parentController.requestOperations.operations containsObject:operation] == NO) {
-        [self.parentController.requestOperations addOperation:operation];
+    if ([self.parentController.requestOperations.operations containsObject:requestOperation] == NO) {
+        [self.parentController.requestOperations addOperation:requestOperation];
     }
 }
 

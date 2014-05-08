@@ -4,8 +4,7 @@
 #import "LibrariesLocationsHours.h"
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
-#import "MobileRequestOperation.h"
-#import "MITMobileWebAPI.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface LibrariesLocationsHoursViewController ()
 @property (nonatomic, weak) UIView *loadingView;
@@ -43,11 +42,10 @@
             self.loadingView = loadingView;
             [self.view addSubview:self.loadingView];
         }
-        
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
-                                                                                 command:@"locations"
-                                                                              parameters:nil];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSArray *libraryItems, NSString *contentType, NSError *error) {
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"locations" parameters:nil];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSArray *libraryItems, NSString *contentType, NSError *error) {
             if (error) {
                 [UIAlertView alertViewForError:error withTitle:@"Libraries" alertViewDelegate:self];
             } else {
@@ -67,7 +65,7 @@
             }
         };
 
-        [[NSOperationQueue mainQueue] addOperation:request];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
     
     

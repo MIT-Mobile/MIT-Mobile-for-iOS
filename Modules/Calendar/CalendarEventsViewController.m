@@ -8,7 +8,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MITEventList.h"
 #import "CoreDataManager.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITMapAnnotationView.h"
 #import "Foundation+MITAdditions.h"
 
@@ -21,15 +21,13 @@
 // (bskinner - 2013.08)
 // These really should be weak but the current code depends on having strong
 // references and breaks badly when weak is used.
-@property (nonatomic, strong) MITScrollingNavigationBar *scrollingNavBar;
+@property (nonatomic,strong) MITScrollingNavigationBar *scrollingNavBar;
 @property (nonatomic,strong) UISearchBar *searchBar;
 @property (nonatomic,strong) UIView *datePicker;
 @property (nonatomic,strong) MITSearchDisplayController *searchController;
 @property (nonatomic,strong) UIView *loadingIndicator;
 @property (nonatomic,strong) EventListTableView *searchResultsTableView;
 @property (nonatomic,strong) CalendarMapView *searchResultsMapView;
-
-@property (nonatomic,weak) MobileRequestOperation *activeRequest;
 
 @property BOOL dateRangeDidChange;
 @property NSInteger loadingIndicatorCount;
@@ -61,7 +59,12 @@
 @end
 
 
-@implementation CalendarEventsViewController
+@implementation CalendarEventsViewController {
+    __weak MITTouchstoneRequestOperation *_searchRequestOperation;
+    __weak MITTouchstoneRequestOperation *_categoriesRequestOperation;
+    __weak MITTouchstoneRequestOperation *_eventsRequestOperation;
+    NSString *_lastSearchTerm;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -736,60 +739,71 @@
 
 - (void)makeSearchRequest:(NSString *)searchTerms
 {
-    if (searchTerms.length) {
-        self.lastSearchTerm = searchTerms;
-        
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                                  command:@"search"
-                                                                              parameters:@{@"q":searchTerms}];
-        
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-            if ([searchTerms isEqualToString:self.lastSearchTerm]) {
-                if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-                        NSArray *resultEvents = jsonResult[@"events"];
-                        NSString *resultSpan = jsonResult[@"span"];
-                        
-                        NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
-                        
-                        for (NSDictionary *eventDict in resultEvents) {
-                            MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
-                            [arrayForTable addObject:event];
-                        }
-                        
-                        if ([resultEvents count] > 0) {
-                            NSArray *eventsArray = [NSArray arrayWithArray:arrayForTable];
-                            self.searchResultsMapView.events = eventsArray;
-                            self.searchResultsTableView.events = eventsArray;
-                            self.searchResultsTableView.searchSpan = resultSpan;
-                            self.searchResultsTableView.searchResults = YES;
-                            [self.searchResultsTableView reloadData];
-                            
-                            if (self.showList) {
-                                [self showSearchResultsTableView];
-                            } else {
-                                [self showSearchResultsMapView];
-                            }
-                            
-                        } else {
-                            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-                                                                                message:NSLocalizedString(@"Nothing found.", nil)
-                                                                               delegate:self
-                                                                      cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                            [alertView show];
-                        }
-                        
-                } else {
-                    if (error) {
-                        DDLogVerbose(@"Calendar 'search' failed with error '%@'",error);
-                    } else {
-                        DDLogVerbose(@"Calendar 'search' failed with result type '%@'", NSStringFromClass([jsonResult class]));
-                    }
+    // Intentially using != here. This should trigger whenever
+    //  searchTerms and _lastSearchTerm point at different NSString
+    //  objects, not just different string values
+    if (searchTerms != _lastSearchTerm) {
+        _lastSearchTerm = [searchTerms copy];
+    }
+
+    [_searchRequestOperation cancel];
+    _searchRequestOperation = nil;
+
+    if ([searchTerms length] > 0) {
+        NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:@"search" parameters:@{@"q":searchTerms}];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+        __weak CalendarEventsViewController *weakSelf = self;
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *searchResults) {
+            CalendarEventsViewController *blockSelf = self;
+            if (!blockSelf) {
+                return;
+            } else if (![operation isEqual:blockSelf->_searchRequestOperation]) {
+                // Another operation was dispatched after this one, which means
+                // this operation probably got a -[NSOperation cancel] a bit too late.
+                // Don't bother processing the returned data.
+                return;
+            } else if (![searchResults isKindOfClass:[NSDictionary class]]) {
+                NSArray *resultEvents = searchResults[@"events"];
+                NSString *resultSpan = searchResults[@"span"];
+
+                NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
+
+                for (NSDictionary *eventDict in resultEvents) {
+                    MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                    [arrayForTable addObject:event];
                 }
-                
-                [self removeLoadingIndicator];
+
+                if ([resultEvents count] > 0) {
+                    NSArray *eventsArray = [NSArray arrayWithArray:arrayForTable];
+                    blockSelf.searchResultsMapView.events = eventsArray;
+                    blockSelf.searchResultsTableView.events = eventsArray;
+                    blockSelf.searchResultsTableView.searchSpan = resultSpan;
+                    blockSelf.searchResultsTableView.searchResults = YES;
+                    [blockSelf.searchResultsTableView reloadData];
+
+                    if (blockSelf.showList) {
+                        [blockSelf showSearchResultsTableView];
+                    } else {
+                        [blockSelf showSearchResultsMapView];
+                    }
+                } else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+                                                                        message:NSLocalizedString(@"Nothing found.", nil)
+                                                                       delegate:blockSelf
+                                                              cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                    [alertView show];
+                }
+            } else {
+                DDLogVerbose(@"Calendar 'search' failed with result type '%@'", NSStringFromClass([searchResults class]));
             }
-        };
-        
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            CalendarEventsViewController *blockSelf = self;
+
+            DDLogVerbose(@"Calendar 'search' failed with error '%@'",error);
+            [blockSelf removeLoadingIndicator];
+        }];
+
         if (self.showList) {
             self.searchResultsTableView.events = nil;
             self.searchResultsTableView.searchResults = NO;
@@ -799,54 +813,56 @@
             self.searchResultsMapView.events = nil;
             [self showSearchResultsMapView];
         }
-        
+
         [self addLoadingIndicatorForSearch:YES];
-        
-        [[MobileRequestOperation defaultQueue] addOperation:request];
+
+        _searchRequestOperation = requestOperation;
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
 
 - (void)makeCategoriesRequest
 {
+    [_categoriesRequestOperation cancel];
+    _categoriesRequestOperation = nil;
+
 	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
     NSString *command = [CalendarDataManager apiCommandForEventType:categories];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            
-        } else {
-            for (NSDictionary *catDict in jsonResult) {
-                [CalendarDataManager categoryWithDict:catDict forListID:nil]; // save this to core data
-                [CoreDataManager saveData];
-            }
-            
-            if ([self.activeEventList.listID isEqualToString:@"categories"]) {
-                [(EventCategoriesTableView *)self.tableView setCategories:[CalendarDataManager topLevelCategories]];
-                [self.tableView reloadData];
-            }
+
+    NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:command parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak CalendarEventsViewController *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *categoryObjects) {
+        CalendarEventsViewController *blockSelf = weakSelf;
+
+        for (NSDictionary *categoryObject in categoryObjects) {
+            [CalendarDataManager categoryWithDict:categoryObject forListID:nil]; // save this to core data
+            [CoreDataManager saveData];
         }
+
+        if ([blockSelf.activeEventList.listID isEqualToString:@"categories"]) {
+            EventCategoriesTableView *categoriesTableView = (EventCategoriesTableView*)blockSelf.tableView;
+            [categoriesTableView setCategories:[CalendarDataManager topLevelCategories]];
+            [blockSelf.tableView reloadData];
+        }
+
         [self removeLoadingIndicator];
-    };
-    
-    [[NSOperationQueue mainQueue] addOperation:request];
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogVerbose(@"request for v2:%@/%@ failed with error %@",CalendarTag,command,[error localizedDescription]);
+        [self removeLoadingIndicator];
+    }];
+
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (void)makeRequest
 {
-    MobileRequestOperation *request = nil;
-
-    // Clear out the active request. We're going to be sending a new one anyway
-    // at this point so we should be ignoring whatever request is currently
-    // processing (if there is one). The request is not being canceled here
-    // because, at the moment, MobileRequestOperation becomes extremely
-    // unhappy if the request is canceled.
-    // (bskinner - 2014.03.13)
-    if (!self.activeRequest) {
+    if (!_eventsRequestOperation) {
         [self addLoadingIndicatorForSearch:NO];
-    } else {
-        self.activeRequest = nil;
     }
-    
+
+    NSURLRequest *request = nil;
 	if ([[CalendarDataManager sharedManager] isDailyEvent:self.activeEventList]) {
 		NSTimeInterval interval = [self.startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
@@ -859,14 +875,13 @@
             if(self.category.listID) {
                 params[@"type"] = self.category.listID;
             }
-            
-            request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params];
 
+            request = [NSURLRequest requestForModule:CalendarTag command:@"category" parameters:params];
 		} else {
             NSDictionary *params = @{@"type" : self.activeEventList.listID,
                                      @"time" : timeString};
             NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
-            request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
+            request = [NSURLRequest requestForModule:CalendarTag command:command parameters:params];
 		}
     
     } else if ([@[@"academic",@"holidays"] containsObject:self.activeEventList.listID]) {
@@ -879,57 +894,61 @@
         NSDictionary *params = @{@"year" : year,
                                  @"month" : month};
         NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
-        request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
+        request = [NSURLRequest requestForModule:CalendarTag command:command parameters:params];
 	} else {
         NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
-        request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
+        request = [NSURLRequest requestForModule:CalendarTag command:command parameters:nil];
 	}
 
-    self.activeRequest = request;
-    __weak CalendarEventsViewController *weakSelf = self;
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        CalendarEventsViewController *blockSelf = weakSelf;
-        if (!blockSelf || (blockSelf.activeRequest != operation)) {
-            // Either the view controller was popped or the request that we launch earlier
-            // has finished after we already dispatched another one. We are returning immediately
-            // here because the -makeRequest method only increments the status bar activity
-            // indicator if there is not a request currently in progress. If we let this go all the
-            // way through, we'd end up decrementing the counter too much.
-            // (bskinner - 2014.03.13)
-            return;
-        } else if (error) {
-            // Should be doing something but we aren't doing anything...
-            // Don't return immediately because we need to hit the removeLoadingIndicator
-            // method below to keep the accounting balanced
-        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
-            NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
-            EventCategory *category = nil;
-            
-            if ([blockSelf.activeEventList.listID isEqualToString:@"Exhibits"]) {
-                category = [CalendarDataManager categoryForExhibits];
+    [_eventsRequestOperation cancel];
+    _eventsRequestOperation = nil;
+
+    if (request) {
+        __weak CalendarEventsViewController *weakSelf = self;
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *eventObjects) {
+            CalendarEventsViewController *blockSelf = weakSelf;
+            NSAssert([[NSThread currentThread] isMainThread], @"block requires execution on the main thread");
+
+            if (!blockSelf) {
+                return;
+            } else if (_eventsRequestOperation != operation) {
+                return;
+            } else if (![eventObjects isKindOfClass:[NSArray class]]) {
+                [blockSelf removeLoadingIndicator];
+                return;
             } else {
-                category = blockSelf.category;
-            }
-            
-            for (NSDictionary *eventDict in jsonResult) {
-                MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
-                // assign a category if we know already what it is
-                if (category != nil) {
-                    [event addCategoriesObject:category];
+                NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
+                EventCategory *category = nil;
+
+                if ([blockSelf.activeEventList.listID isEqualToString:@"Exhibits"]) {
+                    category = [CalendarDataManager categoryForExhibits];
+                } else {
+                    category = blockSelf.category;
                 }
-                [blockSelf.activeEventList addEventsObject:event];
-                [CoreDataManager saveData]; // save now to preserve many-many relationships
-                [arrayForTable addObject:event];
+
+                for (NSDictionary *eventDict in eventObjects) {
+                    MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                    // assign a category if we know already what it is
+                    if (category != nil) {
+                        [event addCategoriesObject:category];
+                    }
+                    [blockSelf.activeEventList addEventsObject:event];
+                    [CoreDataManager saveData]; // save now to preserve many-many relationships
+                    [arrayForTable addObject:event];
+                }
+
+                blockSelf.events = arrayForTable;
+                [blockSelf.tableView reloadData];
+                [blockSelf removeLoadingIndicator];
             }
-            
-            blockSelf.events = arrayForTable;
-            [blockSelf.tableView reloadData];
-        }
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            [weakSelf removeLoadingIndicator];
+            DDLogWarn(@"request for v2:%@/%@ failed with error %@",operation.module, operation.command, [error localizedDescription]);
+        }];
 
-        [blockSelf removeLoadingIndicator];
-    };
-
-    [[MobileRequestOperation defaultQueue] addOperation:request];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
+    }
 }
 
 - (void)addLoadingIndicatorForSearch:(BOOL)isSearch

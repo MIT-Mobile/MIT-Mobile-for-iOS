@@ -3,7 +3,7 @@
 #import "LibrariesModule.h"
 #import "LibraryFormElements.h"
 
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITUIConstants.h"
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"
@@ -94,19 +94,26 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     MITLoadingActivityView *loginLoadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
     loginLoadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.tableView addSubview:loginLoadingView];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                             command:@"getUserIdentity"
-                                                                          parameters:nil];
-    
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        [self.loadingView removeFromSuperview];
-        
-        if (error && (error.code != NSUserCancelledError)) {
-            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]); 
-            [UIAlertView alertViewForError:nil withTitle:@"Login" alertViewDelegate:self];
-        } else if (!content) {
-            [self.navigationController popViewControllerAnimated:YES];    
+
+    NSURLRequest *request = [NSURLRequest requestForModule:LibrariesTag command:@"getUserIdentity" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibraryEmailFormViewController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *content, NSString *contentType, NSError *error) {
+        LibraryEmailFormViewController *blockSelf = weakSelf;
+        [blockSelf.loadingView removeFromSuperview];
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            if ((error.code == NSURLErrorUserAuthenticationRequired) || (error.code == NSURLErrorUserCancelledAuthentication)) {
+                [self.navigationController popViewControllerAnimated:YES];
+            } else {
+                DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
+                [UIAlertView alertViewForError:nil withTitle:@"Login" alertViewDelegate:self];
+            }
+        } else if (![content isKindOfClass:[NSDictionary class]]) {
+            return;
         } else {
             NSNumber *isMITIdentity = content[@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
@@ -122,7 +129,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-    [librariesModule.requestQueue addOperation:request];
+    [librariesModule.requestQueue addOperation:requestOperation];
 }
 
 - (NSArray *)visibleFormGroups {
@@ -450,32 +457,45 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 - (void)submitForm:(NSDictionary *)parameters {
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                             command:[self command]
-                                                                          parameters:parameters];
-    
+
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";
     [self.navigationController pushViewController:thanksController animated:YES];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        NSDictionary *jsonDict = content;
-        BOOL success = [jsonDict[@"success"] boolValue];
-        if (error || !success) {
+
+
+    NSURLRequest *request = [NSURLRequest requestForModule:LibrariesTag command:[self command] parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibraryEmailFormViewController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *content, NSString *contentType, NSError *error) {
+        LibraryEmailFormViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
             DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
+        } else if (![content isKindOfClass:[NSDictionary class]]) {
+            [self.navigationController popViewControllerAnimated:NO];
+            [self showErrorSubmittingForm];
         } else {
-            NSDictionary *resultsDict = jsonDict[@"results"];
-            NSString *text = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.",resultsDict[@"thank_you_text"],resultsDict[@"email"]];
-            
-            thanksController.title = @"Thank You";
-            thanksController.message = text;
+            BOOL success = [content[@"success"] boolValue];
+            if (!success) {
+                DDLogVerbose(@"server reported an error for request v2:%@/%@",operation.module,operation.command);
+                [self.navigationController popViewControllerAnimated:NO];
+                [self showErrorSubmittingForm];
+            } else {
+                NSDictionary *resultsDict = content[@"results"];
+                NSString *text = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.",resultsDict[@"thank_you_text"],resultsDict[@"email"]];
+
+                thanksController.title = @"Thank You";
+                thanksController.message = text;
+            }
         }
     };
 
-    [librariesModule.requestQueue addOperation:request];
+    [librariesModule.requestQueue addOperation:requestOperation];
 }
 
 - (LibraryFormElementGroup *)groupForName:(NSString *)name {

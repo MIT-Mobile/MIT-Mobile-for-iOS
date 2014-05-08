@@ -1,6 +1,5 @@
 #import "LibrariesBookDetailViewController.h"
-#import "MobileRequestOperation.h"
-#import "MITMobileWebAPI.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITUIConstants.h"
 #import "LibrariesModule.h"
 #import "Foundation+MITAdditions.h"
@@ -80,19 +79,25 @@ typedef enum {
 }
 
 - (void)loadBookDetails {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                             command:@"detail"
-                                                                          parameters:@{@"id" : self.book.identifier}];
-    
     self.loadingStatus = BookLoadingStatusPartial;
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        [self.activityView removeFromSuperview];
-        
-        if (error) {
+
+    NSURLRequest *request = [NSURLRequest requestForModule:LibrariesTag command:@"detail" parameters:@{@"id":self.book.identifier}];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LibrariesBookDetailViewController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSDictionary *content, NSString *contentType, NSError *error) {
+        LibrariesBookDetailViewController *blockSelf = weakSelf;
+
+        [blockSelf.activityView removeFromSuperview];
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
             [UIAlertView alertViewForError:error withTitle:@"WorldCat Book Details" alertViewDelegate:nil];
             self.loadingStatus = BookLoadingStatusFailed;
-
+            return;
+        } else if (![content isKindOfClass:[NSDictionary class]]) {
+            return;
         } else {
             [self.book updateDetailsWithDictionary:content];
             
@@ -149,7 +154,7 @@ typedef enum {
     
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-    [librariesModule.requestQueue addOperation:request];
+    [librariesModule.requestQueue addOperation:requestOperation];
 }
 
 #pragma mark - UITableView Data Source

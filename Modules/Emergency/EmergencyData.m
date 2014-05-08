@@ -4,7 +4,7 @@
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 #import "EmergencyModule.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 @interface EmergencyData ()
 @property (nonatomic,copy) NSArray *allPhoneNumbers;
@@ -137,50 +137,73 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 // Send request
 - (void)checkForEmergencies {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"emergency" command:nil parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
+    __weak EmergencyData *weakSelf = self;
+    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *emergencyObjects, NSString *contentType, NSError *error) {
+        EmergencyData *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            DDLogWarn(@"request for v2:%@ failed with error %@",@"emergency",[error localizedDescription]);
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
+        } else if (![emergencyObjects isKindOfClass:[NSArray class]]) {
+            NSString *message = [NSString stringWithFormat:@"request for v2:%@ failed, got response object of class %@, expected %@",@"emergency",NSStringFromClass([emergencyObjects class]),NSStringFromClass([NSArray class])];
+            DDLogWarn(@"%@",message);
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
         } else {
-            if (![jsonResult isKindOfClass:[NSArray class]]) {
-                DDLogError(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
-            } else {
-                NSDictionary *response = [(NSArray *)jsonResult lastObject];
-                
-                NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
-                NSDate *previouslyUpdated = [self.info valueForKey:@"lastUpdated"];
-                
-                if (!previouslyUpdated) { // user has never opened the app, set a baseline date
-                    [self setLastRead:[NSDate date]];
-                }
-                
-                if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                    [self.info setValue:lastUpdated forKey:@"lastUpdated"];
-                    [self.info setValue:[NSDate date] forKey:@"lastFetched"];
-                    [self.info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
-                    [CoreDataManager saveData];
-                    
-                    [self fetchEmergencyInfo];
-                    // notify listeners that this is a new emergency
-                    
-                    //[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
-                }
-                // notify listeners that the info is done loading, regardless of whether it's changed
-                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];
+            NSArray *sortedEmergencyObjects = [emergencyObjects sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *object1, NSDictionary *object2) {
+
+                NSNumber *lastUpdated1 = object1[@"unixtime"];
+                NSNumber *lastUpdated2 = object2[@"unixtime"];
+
+                return [lastUpdated1 compare:lastUpdated2];
+            }];
+
+            NSDictionary *mostRecentEmergency = [sortedEmergencyObjects lastObject];
+            NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[mostRecentEmergency[@"unixtime"] doubleValue]];
+            NSDate *previouslyUpdated = [blockSelf.info valueForKey:@"lastUpdated"];
+
+            if (!previouslyUpdated) { // user has never opened the app, set a baseline date
+                [blockSelf setLastRead:[NSDate date]];
             }
+
+            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
+                [blockSelf.info setValue:lastUpdated forKey:@"lastUpdated"];
+                [blockSelf.info setValue:[NSDate date] forKey:@"lastFetched"];
+                [blockSelf.info setValue:mostRecentEmergency[@"text"] forKey:@"htmlString"];
+                [CoreDataManager saveData];
+
+                [blockSelf fetchEmergencyInfo];
+                // notify listeners that this is a new emergency
+                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:blockSelf];
+            }
+
+            // notify listeners that the info is done loading, regardless of whether it's changed
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:blockSelf];
         }
-    };
-    [[NSOperationQueue mainQueue] addOperation:request];
+    }];
+
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 // request contacts
 - (void)reloadContacts {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"emergency"
-                                                                             command:@"contacts"
-                                                                          parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contacts, NSString *contentType, NSError *error) {
-        if (!error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"emergency" command:@"contacts" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak EmergencyData *weakSelf = self;
+    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *contacts, NSString *contentType, NSError *error) {
+        EmergencyData *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            DDLogWarn(@"request failed for v2:%@/%@ with error %@",@"emergency",@"contacts",[error localizedDescription]);
+        } else if (![contacts isKindOfClass:[NSArray class]]) {
+            DDLogWarn(@"request failed for v2:%@/%@: z",@"emergency",@"contacts");
+        } else {
             // delete all of the old numbers
             NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
             if ([oldContacts count]) {
@@ -198,11 +221,10 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
             [CoreDataManager saveData];
             [self fetchContacts];
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
-        } else {
-            DDLogError(@"request failed for 'emergency' contacts: %@", error);
         }
-    };
-    [[MobileRequestOperation defaultQueue] addOperation:request];
+    }];
+
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 
 }
 

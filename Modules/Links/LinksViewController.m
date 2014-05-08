@@ -9,6 +9,7 @@
 
 @property (nonatomic,weak) MITLoadingActivityView *loadingView;
 @property (nonatomic,weak) UILabel *errorLabel;
+@property (nonatomic,weak) MITTouchstoneRequestOperation *linksRequestOperation;
 @end
 
 static NSString* const MITLinksDataCacheName = @"links_cache.plist";
@@ -130,25 +131,31 @@ static NSString* const MITLinksDataTitleKey = @"name";
 #pragma mark - Connection
 - (void)queryForLinks
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
-                                                                            command:nil
-                                                                         parameters:nil];
-    
-    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error)
-    {
-        if (!error && jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
-            [self updateLinksIfNeeded:(NSArray *)jsonResult];
-        } else {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"links" command:nil parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak LinksViewController *weakSelf = self;
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSArray *jsonResult, NSString *contentType, NSError *error) {
+        LinksViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (blockSelf.linksRequestOperation != operation) {
+            return;
+        } else if (error || ![jsonResult isKindOfClass:[NSArray class]]) {
             // If there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache.
             // If there is no cache, report the error.
-            if (!self.linkResults || [self.linkResults count] == 0) {
+            if ([blockSelf.linkResults count] == 0) {
                 [self displayLoadingError];
             }
+        } else {
+            [self updateLinksIfNeeded:jsonResult];
         }
-        
     };
-    
-    [[MobileRequestOperation defaultQueue] addOperation:operation];
+
+    [self.linksRequestOperation cancel];
+    self.linksRequestOperation = requestOperation;
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (void)displayLoadingError {

@@ -2,7 +2,7 @@
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 #define TAB_COUNT 4
 
@@ -69,38 +69,42 @@
 }
 		
 
-+ (MobileRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:command
-                                                                           parameters:params] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
-            NSMutableArray *notifications = [NSMutableArray array];
-            for(NSString *noticeString in (NSArray *)jsonResult) {
-                [notifications addObject:[MITNotification fromString:noticeString]];
-            }
-            
-            [MITUnreadNotifications saveUnreadNotifications:notifications];
-            [MITUnreadNotifications updateUI];
-            
-            // since receiving the unread notices from the server is asynchrous event
-            // we want all the modules to know that this data may have changed
-            // so we pass of the new version of the data to each module
-            NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
-            for (MITModule *module in modules) {
-                NSMutableArray *moduleNotifications = [NSMutableArray array];
-                
-                for (MITNotification *notification in notifications) {
-                    if([notification.moduleName isEqualToString:module.tag]) {
-                        [moduleNotifications addObject:notification];
-                    }
-                }
-                [module handleUnreadNotificationsSync:moduleNotifications];
-            }
-        }
-    };
++ (MITTouchstoneRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:command parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
-    return request;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *notices) {
+        NSAssert([notices isKindOfClass:[NSArray class]], @"expected an instance of NSArray, got %@", NSStringFromClass([notices class]));
+
+        NSMutableArray *notifications = [NSMutableArray array];
+        for(NSString *notice in notices) {
+            [notifications addObject:[MITNotification fromString:notice]];
+        }
+
+        [MITUnreadNotifications saveUnreadNotifications:notifications];
+        [MITUnreadNotifications updateUI];
+
+        // since receiving the unread notices from the server is asynchrous event
+        // we want all the modules to know that this data may have changed
+        // so we pass of the new version of the data to each module
+        NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
+        for (MITModule *module in modules) {
+            NSMutableArray *moduleNotifications = [NSMutableArray array];
+
+            for (MITNotification *notification in notifications) {
+                if([notification.moduleName isEqualToString:module.tag]) {
+                    [moduleNotifications addObject:notification];
+                }
+            }
+
+            [module handleUnreadNotificationsSync:moduleNotifications];
+        }
+
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
+    }];
+
+    return requestOperation;
 }
 
 // this method will get the most recent unread data from the MIT server
@@ -110,14 +114,14 @@
 	
 	if(identity) {
 		NSMutableDictionary *parameters = [identity mutableDictionary];
-        MobileRequestOperation *request = [[self class] requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
+        MITTouchstoneRequestOperation *request = [MITUnreadNotifications requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
         [[NSOperationQueue mainQueue] addOperation:request];
 	}
 }
 
 // method calls MIT to tell it to remove the notification
 // then syncs with the data MIT returns
-+ (void) removeNotifications: (NSArray *)notifications {
++ (void)removeNotifications: (NSArray *)notifications {
 	if([notifications count]) {
 		MITIdentity *identity = [MITDeviceRegistration identity];
 		
@@ -132,8 +136,9 @@
             NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
             parameters[@"tags"] = [[[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding] autorelease];
 
-            MobileRequestOperation *request = [[self class] requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
-            [[NSOperationQueue mainQueue] addOperation:request];
+            MITTouchstoneRequestOperation *requestOperation = [MITUnreadNotifications requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
+
+            [[NSOperationQueue mainQueue] addOperation:requestOperation];
 		}
         
         [MITUnreadNotifications updateUI];

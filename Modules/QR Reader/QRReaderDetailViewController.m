@@ -2,7 +2,7 @@
 
 #import "QRReaderDetailViewController.h"
 #import "QRReaderResult.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 #import "MITLoadingActivityView.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "UIKit+MITAdditions.h"
@@ -99,18 +99,19 @@
     // Check for any available code => URL mappings from
     // the mobile server
     {
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
-                                                                                command:nil
-                                                                             parameters:@{@"q" : self.scanResult.text}];
+        NSURLRequest *request = [NSURLRequest requestForModule:@"qr" command:nil parameters:@{@"q" : self.scanResult.text}];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+        __weak QRReaderDetailViewController *weakSelf = self;
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *codeInfo) {
+            [weakSelf handleScanInfoResponse:codeInfo error:nil];
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            [weakSelf handleScanInfoResponse:nil error:error];
+        }];
+
+        self.urlMappingOperation = requestOperation;
         
-        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error) {
-            [self handleScanInfoResponse:codeInfo
-                                   error:error];
-        };
-        
-        self.urlMappingOperation = operation;
-        
-        [[MobileRequestOperation defaultQueue] addOperation:operation];
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
 

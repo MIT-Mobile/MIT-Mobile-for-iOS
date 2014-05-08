@@ -4,7 +4,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
-#import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
 @class MITMapView;

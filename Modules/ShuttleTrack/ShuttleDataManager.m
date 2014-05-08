@@ -5,7 +5,7 @@
 #import "ShuttleStopLocation.h"
 #import "CoreDataManager.h"
 #import "MITConstants.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 
 static ShuttleDataManager* s_dataManager = nil;
 
@@ -199,12 +199,11 @@ NSString * const shuttlePathExtension = @"shuttles/";
 
 -(void) requestRoutes
 {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:@"true", @"compact", nil];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"routes"
-                                                                           parameters:params];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSDictionary *params = @{@"compact":@"true"};
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"shuttles" command:@"routes" parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
             BOOL routesChanged = NO;
@@ -268,22 +267,19 @@ NSString * const shuttlePathExtension = @"shuttles/";
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 
 -(void) requestStop:(NSString*)stopID
 {
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:stopID, @"id", nil];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"stopInfo"
-                                                                           parameters:params];
-
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"shuttles" command:@"stopInfo" parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
             NSArray* routesAtStop = jsonResult[@"stops"]; // the api should've called this "routes", this is confusing
-            
             NSMutableArray* schedules = [NSMutableArray arrayWithCapacity:[routesAtStop count]];
             
             for (NSDictionary* routeAtStop in routesAtStop) 
@@ -317,17 +313,16 @@ NSString * const shuttlePathExtension = @"shuttles/";
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 -(void) requestRoute:(NSString*)routeID
 {
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:routeID, @"id", @"true", @"full", nil];
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"routeInfo"
-                                                                           parameters:params];
+    NSURLRequest *request = [NSURLRequest requestForModule:@"shuttles" command:@"routeInfo" parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
             NSString *routeID = jsonResult[@"route_id"];
@@ -352,7 +347,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 #pragma mark Delegate Message distribution

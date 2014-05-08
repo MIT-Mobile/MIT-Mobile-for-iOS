@@ -4,7 +4,7 @@
 #import "PeopleRecentsData.h"
 #import "MIT_MobileAppDelegate.h"
 #import "ConnectionDetector.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
 // common UI elements
 #import "MITLoadingActivityView.h"
 // external modules
