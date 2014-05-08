@@ -188,7 +188,6 @@
 		3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */; };
 		3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3AA219501039D74700DB7637 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AA2194F1039D74700DB7637 /* CoreData.framework */; };
-		3AA21C531039DDE000DB7637 /* ConnectionWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA21C511039DDE000DB7637 /* ConnectionWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA21C551039DDEA00DB7637 /* CoreDataManager.m */; };
 		4420F23110E9513700A8CD05 /* ShuttleDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F23010E9513700A8CD05 /* ShuttleDataManager.m */; };
 		4420F31B10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */; };
@@ -474,7 +473,6 @@
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileWebAPI.h; sourceTree = "<group>"; };
 		296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2978864110F03656002670CC /* MITDeviceRegistration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDeviceRegistration.h; path = "App Delegate/MITDeviceRegistration.h"; sourceTree = "<group>"; };
 		2978864210F03656002670CC /* MITDeviceRegistration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDeviceRegistration.m; path = "App Delegate/MITDeviceRegistration.m"; sourceTree = "<group>"; };
@@ -633,7 +631,6 @@
 		2C5D7881191828E700ECB388 /* LauncherModuleListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LauncherModuleListCell.xib; path = "App Delegate/Module Launcher/LauncherModuleListCell.xib"; sourceTree = "<group>"; };
 		2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileKeychainServices.h; sourceTree = "<group>"; };
 		2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileKeychainServices.m; sourceTree = "<group>"; };
-		2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestOperation.h; sourceTree = "<group>"; };
 		2C5DECDB13E9BEF400F9C089 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2C603010139EA21700D34F1B /* FacilitiesRepairType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRepairType.h; sourceTree = "<group>"; };
 		2C603011139EA21700D34F1B /* FacilitiesRepairType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRepairType.m; sourceTree = "<group>"; };
@@ -819,8 +816,6 @@
 		3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionDetector.m; sourceTree = "<group>"; };
 		3A827170103DBC6F00BB4109 /* ConnectionDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionDetector.h; sourceTree = "<group>"; };
 		3AA2194F1039D74700DB7637 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		3AA21C501039DDE000DB7637 /* ConnectionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionWrapper.h; sourceTree = "<group>"; };
-		3AA21C511039DDE000DB7637 /* ConnectionWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionWrapper.m; sourceTree = "<group>"; };
 		3AA21C541039DDEA00DB7637 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		3AA21C551039DDEA00DB7637 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 		4420F22F10E9513700A8CD05 /* ShuttleDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleDataManager.h; sourceTree = "<group>"; };
@@ -1367,7 +1362,6 @@
 				EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */,
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
-				296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */,
 				2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */,
 				DE715347102FC897005E6111 /* MITModule.h */,
 				DE715348102FC897005E6111 /* MITModule.m */,
@@ -1794,7 +1788,6 @@
 			children = (
 				2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */,
 				2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */,
-				2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */,
 			);
 			path = "Mobile Web API";
 			sourceTree = "<group>";
@@ -2180,8 +2173,6 @@
 			children = (
 				3A827170103DBC6F00BB4109 /* ConnectionDetector.h */,
 				3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */,
-				3AA21C501039DDE000DB7637 /* ConnectionWrapper.h */,
-				3AA21C511039DDE000DB7637 /* ConnectionWrapper.m */,
 				3A82707F103DAA0500BB4109 /* Reachability.h */,
 				3A827080103DAA0500BB4109 /* Reachability.m */,
 			);
@@ -3242,7 +3233,6 @@
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
 				EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */,
 				3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */,
-				3AA21C531039DDE000DB7637 /* ConnectionWrapper.m in Sources */,
 				3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */,
 				2C18090D18F33B95008F9775 /* MITTouchstoneOperation.m in Sources */,
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,

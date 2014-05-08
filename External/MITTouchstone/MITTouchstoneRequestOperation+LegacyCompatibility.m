@@ -10,36 +10,9 @@ static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobil
 static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMobileOperationParametersAssociatedObject";
 
 @implementation MITTouchstoneRequestOperation (LegacyCompatibility)
-+ (id)operationWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
-{
-    return [[self alloc] initWithURL:requestURL
-                          parameters:params];
-}
-
-+ (id)operationWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
-{
-    return [[self alloc] initWithModule:aModule
-                                command:theCommand
-                             parameters:params];
-}
-
-+ (NSOperationQueue*)defaultQueue
-{
-    return [NSOperationQueue mainQueue];
-}
-
-- (id)initWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
-{
-    NSURLRequest *urlRequest = [NSURLRequest requestForModule:aModule command:theCommand parameters:params method:@"GET"];
-    
-    return [self initWithRequest:urlRequest];
-}
-
-- (id)initWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
-{
-    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:requestURL parameters:params method:@"GET"];
-    return [self initWithRequest:urlRequest];
-}
+@dynamic module;
+@dynamic command;
+@dynamic parameters;
 
 - (NSString*)module
 {
@@ -56,7 +29,7 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     return [self.request.URL queryDictionary];
 }
 
-- (void)setCompleteBlock:(void (^)(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error))block
+- (void)setCompleteBlock:(void (^)(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error))block
 {
     [self setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -77,8 +50,15 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
 
 
 @implementation NSURLRequest (LegacyCompatibiltiy)
-+ (instancetype)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
++ (NSURLRequest*)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters
 {
+    return [self requestForModule:module command:command parameters:parameters method:@"GET"];
+}
+
++ (NSURLRequest*)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
+{
+    NSParameterAssert(HTTPMethod);
+
     NSURL *baseURL = MITMobileWebGetCurrentServerURL();
     
     NSString *urlString = [baseURL absoluteString];
@@ -107,7 +87,7 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
     return [self requestWithURL:baseURL parameters:parameters method:HTTPMethod];
 }
 
-+ (instancetype)requestWithURL:(NSURL *)URL parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
++ (NSURLRequest*)requestWithURL:(NSURL *)URL parameters:(NSDictionary*)parameters method:(NSString*)HTTPMethod
 {
     NSMutableArray *urlParameters = [NSMutableArray arrayWithCapacity:[parameters count]];
     
