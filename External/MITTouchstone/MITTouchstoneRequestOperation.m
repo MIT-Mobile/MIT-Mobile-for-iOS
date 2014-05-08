@@ -144,7 +144,7 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 
     NSError *error = nil;
 
-    if (matchingRange.location != NSNotFound) {
+    if (contentType && matchingRange.location != NSNotFound) {
         if (_isRetryingRequestAfterLoginAttempt) {
             // Just fail, we already tried to log in once
             error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserAuthenticationRequired userInfo:nil];
