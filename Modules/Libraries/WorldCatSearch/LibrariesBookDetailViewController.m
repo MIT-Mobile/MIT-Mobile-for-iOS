@@ -1,5 +1,5 @@
 #import "LibrariesBookDetailViewController.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITUIConstants.h"
 #import "LibrariesModule.h"
 #import "Foundation+MITAdditions.h"

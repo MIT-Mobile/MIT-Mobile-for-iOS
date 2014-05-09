@@ -1,5 +1,5 @@
 #import "CalendarCategoriesViewController.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "UIKit+MITAdditions.h"
 
 @implementation CalendarCategoriesViewController

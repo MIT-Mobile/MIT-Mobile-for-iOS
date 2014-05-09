@@ -10,7 +10,7 @@
 #import "ConnectionDetector.h"
 #import "FacilitiesRepairType.h"
 #import "ModuleVersions.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 

@@ -1,5 +1,5 @@
 #import "MITDeviceRegistration.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 static NSString * const MITDeviceTypeKey = @"device_type";
 static NSString * const MITDeviceTypeApple = @"apple";

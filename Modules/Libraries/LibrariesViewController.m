@@ -4,7 +4,7 @@
 #import "LibrariesAccountViewController.h"
 #import "LibrariesAskUsTableViewController.h"
 #import "LibrariesTellUsViewController.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "UIKit+MITAdditions.h"
 
 // links expiration time 10 days

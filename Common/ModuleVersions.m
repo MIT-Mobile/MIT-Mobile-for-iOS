@@ -1,5 +1,5 @@
 #import "ModuleVersions.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface ModuleVersions ()
 @property (nonatomic,strong) NSDictionary *moduleDates;

@@ -1,7 +1,7 @@
 #import <objc/runtime.h>
 #import "MITTouchstoneController.h"
 
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMobileServerConfiguration.h"
 #import "MobileKeychainServices.h"
 #import "MITAdditions.h"
@@ -9,7 +9,7 @@
 static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";
 static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMobileOperationParametersAssociatedObject";
 
-@implementation MITTouchstoneRequestOperation (LegacyCompatibility)
+@implementation MITTouchstoneRequestOperation (MITMobileV2)
 @dynamic module;
 @dynamic command;
 @dynamic parameters;
@@ -49,7 +49,7 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
 @end
 
 
-@implementation NSURLRequest (LegacyCompatibiltiy)
+@implementation NSURLRequest (MITMobileV2)
 + (NSURLRequest*)requestForModule:(NSString*)module command:(NSString*)command parameters:(NSDictionary*)parameters
 {
     return [self requestForModule:module command:command parameters:parameters method:@"GET"];

@@ -8,7 +8,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MITEventList.h"
 #import "CoreDataManager.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMapAnnotationView.h"
 #import "Foundation+MITAdditions.h"
 

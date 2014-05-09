@@ -2,7 +2,7 @@
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
 #import "MITDeviceRegistration.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITUIConstants.h"
 
 @implementation ShuttleSubscriptionManager

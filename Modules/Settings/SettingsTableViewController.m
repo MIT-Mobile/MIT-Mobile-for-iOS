@@ -10,7 +10,7 @@
 #import "MobileKeychainServices.h"
 #import "MITConstants.h"
 #import "SettingsTouchstoneViewController.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 NSString * const MITSettingsSectionTitleKey = @"MITSettingsSectionTitle";
 NSString * const MITSettingsSectionDetailKey = @"MITSettingsSectionDetail";
@@ -73,7 +73,7 @@ enum {
         // Reload the server table just in case it was changed outside the settings
         // module
         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
-                      withRowAnimation:UITableViewRowAnimationRight];
+                      withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 

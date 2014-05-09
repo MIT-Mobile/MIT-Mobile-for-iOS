@@ -5,7 +5,7 @@
 #import "LibrariesAccountViewController.h"
 #import "UIKit+MITAdditions.h"
 
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface LibrariesFinesTabController ()
 @property (nonatomic,weak) MITLoadingActivityView *loadingView;

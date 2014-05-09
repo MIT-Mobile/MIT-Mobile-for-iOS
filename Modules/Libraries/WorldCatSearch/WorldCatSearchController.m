@@ -2,7 +2,7 @@
 #import "WorldCatBook.h"
 #import "LibrariesModule.h"
 #import "LibrariesBookDetailViewController.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"

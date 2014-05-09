@@ -16,7 +16,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMapAnnotationView.h"
 
 #define WEB_VIEW_TAG 646

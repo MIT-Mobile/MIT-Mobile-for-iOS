@@ -7,7 +7,7 @@
 #import "MorseCodePattern.h"
 #import "TourStartLocation.h"
 #import "TourLink.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface ToursDataManager (Private)
 

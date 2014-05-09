@@ -9,7 +9,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "CampusTour.h"
 #import "UIKit+MITAdditions.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 #define START_LOCATION_ROW_HEIGHT 100.0f
 

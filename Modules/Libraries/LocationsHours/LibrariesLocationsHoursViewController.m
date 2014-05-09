@@ -4,7 +4,7 @@
 #import "LibrariesLocationsHours.h"
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface LibrariesLocationsHoursViewController ()
 @property (nonatomic, weak) UIView *loadingView;

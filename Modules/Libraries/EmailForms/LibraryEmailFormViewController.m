@@ -3,7 +3,7 @@
 #import "LibrariesModule.h"
 #import "LibraryFormElements.h"
 
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITUIConstants.h"
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"

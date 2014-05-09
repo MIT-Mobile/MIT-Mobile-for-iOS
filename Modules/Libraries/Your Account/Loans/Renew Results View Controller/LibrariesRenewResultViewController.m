@@ -1,6 +1,6 @@
 #import "LibrariesRenewResultViewController.h"
 #import "LibrariesLoanTableViewCell.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITTabHeaderView.h"
 #import "UIKit+MITAdditions.h"
 

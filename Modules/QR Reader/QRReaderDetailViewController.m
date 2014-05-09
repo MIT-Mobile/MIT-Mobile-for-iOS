@@ -2,7 +2,7 @@
 
 #import "QRReaderDetailViewController.h"
 #import "QRReaderResult.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITLoadingActivityView.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "UIKit+MITAdditions.h"

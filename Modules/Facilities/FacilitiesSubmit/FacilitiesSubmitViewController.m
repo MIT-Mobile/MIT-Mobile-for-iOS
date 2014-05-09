@@ -5,7 +5,7 @@
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
 #import "MITUIConstants.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface FacilitiesSubmitViewController ()
 - (void)setStatusText:(NSString *)string;

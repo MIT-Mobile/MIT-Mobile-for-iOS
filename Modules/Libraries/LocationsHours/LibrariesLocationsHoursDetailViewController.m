@@ -4,7 +4,7 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 typedef enum 
 {

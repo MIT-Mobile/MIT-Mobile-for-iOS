@@ -8,7 +8,7 @@
 #import "MGSGeometry.h"
 #import "MGSLayer.h"
 
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"

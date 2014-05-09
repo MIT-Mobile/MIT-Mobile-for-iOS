@@ -8,7 +8,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
 #import "ModuleVersions.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface DiningData ()
 

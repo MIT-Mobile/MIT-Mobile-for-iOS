@@ -2,7 +2,7 @@
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 #define TAB_COUNT 4
 

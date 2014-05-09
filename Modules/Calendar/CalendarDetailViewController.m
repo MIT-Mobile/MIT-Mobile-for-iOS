@@ -7,7 +7,7 @@
 #import "URLShortener.h"
 #import "CalendarDataManager.h"
 #import <EventKit/EventKit.h>
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516

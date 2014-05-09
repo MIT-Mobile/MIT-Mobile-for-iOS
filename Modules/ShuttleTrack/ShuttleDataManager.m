@@ -5,7 +5,7 @@
 #import "ShuttleStopLocation.h"
 #import "CoreDataManager.h"
 #import "MITConstants.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 static ShuttleDataManager* s_dataManager = nil;
 

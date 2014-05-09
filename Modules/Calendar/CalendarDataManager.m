@@ -2,7 +2,7 @@
 #import "MITConstants.h"
 #import "CoreDataManager.h"
 #import "MITEventList.h"
-#import "MITTouchstoneRequestOperation+LegacyCompatibility.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
