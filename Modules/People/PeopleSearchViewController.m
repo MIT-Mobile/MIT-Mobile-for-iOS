@@ -127,6 +127,15 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	[self performSearch];
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
+{
+    self.searchTerms = nil;
+    self.searchTokens = nil;
+    self.searchResults = nil;
+    
+    [self.searchDisplayController.searchResultsTableView reloadData];
+}
+
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
 	self.searchTerms = externalSearchTerms;
