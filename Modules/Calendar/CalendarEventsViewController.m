@@ -942,11 +942,24 @@
                 [blockSelf.tableView reloadData];
                 [blockSelf removeLoadingIndicator];
             }
+            
+            _eventsRequestOperation = nil;
         } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-            [weakSelf removeLoadingIndicator];
+            CalendarEventsViewController *blockSelf = weakSelf;
             DDLogWarn(@"request for v2:%@/%@ failed with error %@",operation.module, operation.command, [error localizedDescription]);
+            if (!blockSelf) {
+                return;
+            } else if (_eventsRequestOperation != operation) {
+                return;
+            } else {
+                [blockSelf removeLoadingIndicator];
+                blockSelf->_eventsRequestOperation = nil;
+            }
+            
         }];
 
+        [_eventsRequestOperation cancel];
+        _eventsRequestOperation = requestOperation;
         [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
