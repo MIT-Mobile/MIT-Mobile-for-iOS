@@ -30,13 +30,28 @@ extern NSString * const NewsOfficeTag;
 extern NSString * const DirectoryTag;
 extern NSString * const ShuttleTag;
 extern NSString * const ToursTag;
-extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
 extern NSString * const LinksTag;
 extern NSString * const QRReaderTag;
 extern NSString * const FacilitiesTag;
 extern NSString * const LibrariesTag;
+
+// module tags
+extern NSString * const MITModuleTagCalendar;
+extern NSString * const MITModuleTagEmergency;
+extern NSString * const MITModuleTagCampusMap;
+extern NSString * const MITModuleTagDining;
+extern NSString * const MITModuleTagNewsOffice;
+extern NSString * const MITModuleTagDirectory;
+extern NSString * const MITModuleTagShuttle;
+extern NSString * const MITModuleTagTours;
+extern NSString * const MITModuleTagSettings;
+extern NSString * const MITModuleTagAbout;
+extern NSString * const MITModuleTagLinks;
+extern NSString * const MITModuleTagQRReader;
+extern NSString * const MITModuleTagFacilities;
+extern NSString * const MITModuleTagLibraries;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;

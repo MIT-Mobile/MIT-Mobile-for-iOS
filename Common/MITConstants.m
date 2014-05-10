@@ -29,13 +29,28 @@ NSString * const NewsOfficeTag = @"newsoffice";
 NSString * const DirectoryTag  = @"people";
 NSString * const ShuttleTag    = @"shuttletrack";
 NSString * const ToursTag      = @"tours";
-NSString * const MobileWebTag  = @"mobileweb";
 NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
 NSString * const LinksTag      = @"links";
 NSString * const QRReaderTag    = @"qrreader";
 NSString * const FacilitiesTag    = @"facilities";
 NSString * const LibrariesTag   = @"libraries";
+
+NSString * const MITModuleTagCalendar   = @"calendar";
+NSString * const MITModuleTagEmergency  = @"emergencyinfo";
+NSString * const MITModuleTagCampusMap  = @"map";
+NSString * const MITModuleTagDining     = @"dining";
+NSString * const MITModuleTagNewsOffice = @"newsoffice";
+NSString * const MITModuleTagDirectory  = @"people";
+NSString * const MITModuleTagShuttle    = @"shuttletrack";
+NSString * const MITModuleTagTours      = @"tours";
+NSString * const MITModuleTagSettings   = @"settings";
+NSString * const MITModuleTagAbout      = @"about";
+NSString * const MITModuleTagLinks      = @"links";
+NSString * const MITModuleTagQRReader   = @"qrreader";
+NSString * const MITModuleTagFacilities = @"facilities";
+NSString * const MITModuleTagLibraries  = @"libraries";
+
 
 // notification names
 NSString * const EmergencyInfoDidLoadNotification = @"MITEmergencyInfoDidLoadNotification";
