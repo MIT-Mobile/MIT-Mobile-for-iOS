@@ -22,7 +22,8 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
         } break;
             
         case MITLauncherStyleList: {
-            NSAssert(NO,@"Not implemented yet");
+            UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+            layout = flowLayout;
         } break;
     }
     
@@ -56,7 +57,8 @@ static NSString* const MITLauncherCellIdentifier = @"LauncherCellIdentifier";
         flowLayout.minimumInteritemSpacing = 4.;
     } else {
         UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
-        flowLayout.itemSize = CGSizeMake(CGRectGetWidth(self.collectionView.bounds), 60.);
+        CGRect collectionViewBounds = UIEdgeInsetsInsetRect(self.collectionView.bounds,flowLayout.sectionInset);
+        flowLayout.itemSize = CGSizeMake(CGRectGetWidth(collectionViewBounds) - 32., 60.);
     }
 
     // This is called last since viewWillAppear: will reload the
