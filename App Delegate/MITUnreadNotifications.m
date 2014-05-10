@@ -134,7 +134,7 @@
 			NSMutableDictionary *parameters = [identity mutableDictionary];
 
             NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
-            parameters[@"tags"] = [[[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding] autorelease];
+            parameters[@"tags"] = [[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding];
 
             MITTouchstoneRequestOperation *requestOperation = [MITUnreadNotifications requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
 
@@ -183,17 +183,14 @@
 	// a colon is used to seperate the moduleName from the notification id
 	NSRange colonRange = [noticeString rangeOfString:@":"];
 	
-	return [[[self alloc] 
-		initWithModuleName:[noticeString substringToIndex:colonRange.location] 
-		noticeId:[noticeString substringFromIndex:(colonRange.location+1)]]
-			autorelease];
+	return [[self alloc] initWithModuleName:[noticeString substringToIndex:colonRange.location] noticeId:[noticeString substringFromIndex:(colonRange.location+1)]];
 }
 	
 - (id) initWithModuleName: (NSString *)aModuleName noticeId: (NSString *)anId {
 	self = [super init];
 	if (self) {
-		moduleName = [aModuleName retain];
-		noticeId = [anId retain];
+		moduleName = [aModuleName copy];
+		noticeId = [anId copy];
 	}
 	return self;
 }
