@@ -1,86 +1,154 @@
 #import "MITModule.h"
-#import "MITModule+Protected.h"
+
 #import "Foundation+MITAdditions.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
+
+@interface MITModule ()
+
+@end
 
 @implementation MITModule
-@synthesize tag,
-            shortName, 
-            longName,
-            iconName,
-            pushNotificationSupported,
-            pushNotificationEnabled,
-            badgeValue;
-
-@synthesize hasLaunchedBegun,
-            currentPath,
-            currentQuery;
-
-@dynamic isLoaded,
-            moduleHomeController;
+@synthesize moduleHomeController = _moduleHomeController;
 
 #pragma mark -
-#pragma mark Required
+- (instancetype)init
+{
+    return [self initWithTag:nil];
+}
 
-- (id) init
+- (instancetype)initWithTag:(NSString *)tag
 {
     self = [super init];
-    if (self != nil) {
-        // Lazily load and prepare modules. that means:
-        // Things that can wait until a module is made visible should go into a viewcontroller's -viewDidLoad or -viewWillAppear/-viewDidAppear.
-        // Things that must happen at launch time go in -init -> basic properties like name and root view controller. Any loading and processing should be spawned off as an asynchronous action, in order to keep the app responsive.
-        // Things that must happen at launch time but require a populated tabbar should go into -applicationDidFinishLaunching.
-        
-        
-        self.tag = @"foo";
-        self.shortName = @"foo";
-        self.longName = @"Override -init!";
-        self.iconName = nil;
-		
-		// state related properties
-		self.hasLaunchedBegun = NO;
-		self.currentPath = nil;
-		self.currentQuery = nil;
-		
-        self.pushNotificationSupported = NO;
+    if (self) {
+        _tag = [tag copy];
     }
+
     return self;
+}
+
+#pragma mark Setting up the module's main view controller
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+{
+    if (idiom == UIUserInterfaceIdiomPhone) {
+        if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+- (UIViewController*)homeViewController
+{
+    return [self homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+}
+
+- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+{
+    if (idiom == UIUserInterfaceIdiomPad) {
+        return [self createHomeViewControllerForPadIdiom];
+    } else if (idiom == UIUserInterfaceIdiomPhone) {
+        return [self createHomeViewControllerForPhoneIdiom];
+    } else {
+        return nil;
+    }
+}
+
+- (UIViewController*)createHomeViewControllerForPadIdiom
+{
+    return nil;
+}
+
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
+{
+    if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
+        return self.moduleHomeController;
+    } else {
+        return nil;
+    }
+}
+
+- (UIViewController*)moduleHomeController
+{
+    if (!_moduleHomeController) {
+        if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
+            [self loadModuleHomeController];
+        } else {
+            UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+            _moduleHomeController = [self homeViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
+        }
+        
+        NSAssert(_moduleHomeController,@"failed to create home UIViewController for module %@",self.tag);
+    }
+
+    return _moduleHomeController;
 }
 
 - (void)loadModuleHomeController
 {
-    DDLogVerbose(@"home controller not defined for module %@", self.tag);
+    _moduleHomeController = nil;
+    return;
 }
 
-
-#pragma mark - Dynamic Properties
-- (BOOL)isLoaded
+#pragma mark Handling Notifications
+- (void)setPushNotificationEnabled:(BOOL)enabled completion:(void (^)(void))block
 {
-    return (_moduleHomeController != nil);
+    _pushNotificationEnabled = enabled;
+/*
+    MITModule *module = [MITAppDelegate() moduleForTag:tag];
+    NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+    parameters[@"module_name"] = tag;
+    parameters[@"enabled"] = (enabled ? @"1" : @"0");
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push"
+                                                   command:@"moduleSetting"
+                                                parameters:parameters
+                                                    method:@"GET"];
+
+    // If we don't have an identity, don't even try to enable (or disable) notifications,
+    // just leave everything as-is
+    if (!self.canRegisterForNotifications) {
+        if (block) {
+            block();
+        }
+
+        return;
+    } else {
+
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                                 command:@"moduleSetting"
+                                                                              parameters:parameters];
+        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
+            if (![jsonResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"fatal error: invalid response for push configuration");
+            } else if ([jsonResult[@"success"] boolValue]) {
+                module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
+            } else {
+                if (error) {
+                    [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];
+                } else if (jsonResult[@"error"]) {
+                    DDLogError(@"%@ notifications change request failed: %@",tag,error);
+                }
+            }
+
+            if (block) {
+                block();
+            }
+        };
+
+        [[MobileRequestOperation defaultQueue] addOperation:request];
+    }*/
 }
 
-- (void)setModuleHomeController:(UIViewController *)moduleHomeController
+
+#pragma mark
+- (NSString *)description
 {
-    [_moduleHomeController release];
-    _moduleHomeController = [moduleHomeController retain];
+    return [NSString stringWithFormat:@"%@ <%@>",self.tag,_homeViewController];
 }
 
-- (UIViewController *)moduleHomeController {
-    if ([self isLoaded] == NO) {
-        [self loadModuleHomeController];
-    }
-    
-    return _moduleHomeController;
-}
-
-#pragma mark -
-#pragma mark Optional
-
-- (NSString *)description {
-    // put whatever you think will be helpful for debugging in here
-    return [NSString stringWithFormat:@"%@, an instance of %@", self.tag, NSStringFromClass([self class])];
-}
-
-- (void)applicationDidFinishLaunching {
+- (void)applicationDidFinishLaunching
+{
     // Override in subclass to perform tasks after app is setup and all modules have been instantiated.
     // Make sure to call [super applicationDidFinishLaunching]!
     // Avoid using this if possible. Use -init instead, and remember to do time consuming things in a non-blocking way.
@@ -127,82 +195,17 @@
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications {
 }
 
-#pragma mark -
-#pragma mark Use, but don't override
-
-- (UIImage *)icon {
-    UIImage *result = nil;
-    if (self.iconName) {
-        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/module-", self.iconName, @".png"];
-        result = [UIImage imageNamed:iconPath];
-    }
-    return result;
+#pragma mark Internals
+- (UIImage *)icon
+{
+    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/module-", self.iconName, @".png"];
+    return [UIImage imageNamed:iconPath];
 }
 
-- (UIImage *)springboardIcon {
-    UIImage *result = nil;
-    if (self.iconName) {
-        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/home-", self.iconName, @".png"];
-        result = [UIImage imageNamed:iconPath];
-    }
-    return result;
-}
-
-- (UIImage *)tabBarIcon {
-    UIImage *result = nil;
-    if (self.iconName) {
-        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"/icons/tab-", self.iconName, @".png"];
-        result = [UIImage imageNamed:iconPath];
-    }
-    return result;
-}
-
-// all notifications are enabled by default
-// so we just store which modules are disabled
-- (void)setPushNotificationEnabled:(BOOL)enabled; {
-	NSMutableDictionary *pushDisabledSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:PushNotificationSettingsKey] mutableCopy];
-	if (!pushDisabledSettings) {
-        pushDisabledSettings = [[NSMutableDictionary alloc] init];
-    }
-    pushNotificationEnabled = enabled;
-    
-	if(enabled) {
-		[pushDisabledSettings removeObjectForKey:self.tag];
-	} else {
-		[pushDisabledSettings setObject:@"disabled" forKey:self.tag];
-	}
-    
-    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
-	[d setObject:pushDisabledSettings forKey:PushNotificationSettingsKey];
-    [d synchronize];
-    [pushDisabledSettings release];
-}
-
-#pragma mark tabNavController methods
-// these methods make sure to pop and push from the current UINavigationController
-// which may not be the same as self.tabNavController
-- (void) popToRootViewController {
-	[[self rootViewController].navigationController popToViewController:[self rootViewController] animated:NO];
-}
-
-- (UIViewController *) rootViewController {
-	return self.moduleHomeController;
-}
-		 
-- (void) pushViewController: (UIViewController *)viewController {
-	[[self rootViewController].navigationController pushViewController:viewController animated:NO];
-}
-
-- (UIViewController *) parentForViewController:(UIViewController *)viewController {
-	UIViewController *previousViewController = nil;
-	NSArray *viewControllers = viewController.navigationController.viewControllers;
-
-	for (UIViewController *currentViewController in viewControllers) {
-		if (currentViewController == viewController) {
-			return previousViewController;
-		}
-	}
-	return nil;
+- (UIImage *)springboardIcon
+{
+    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/home-", self.iconName, @".png"];
+    return [UIImage imageNamed:iconPath];
 }
 
 @end

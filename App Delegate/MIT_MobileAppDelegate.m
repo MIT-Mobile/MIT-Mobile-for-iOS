@@ -48,17 +48,24 @@
 @property NSInteger networkActivityCounter;
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
+@property (nonatomic,weak) MITModule *activeModule;
+@property (nonatomic,strong) NSMutableArray *mutableModules;
+@property (nonatomic,strong) NSMutableDictionary *viewControllersByTag;
+@property (nonatomic,strong) NSMutableDictionary *modulesByTag;
+
+@property (nonatomic,strong) NSRecursiveLock *lock;
+
 - (void)updateBasicServerInfo;
 @end
 
 @implementation MIT_MobileAppDelegate {
     MITCoreDataController *_coreDataController;
     NSManagedObjectModel *_managedObjectModel;
-    NSArray *_modules;
     MITMobile *_remoteObjectManager;
 }
 
-@dynamic coreDataController,managedObjectModel,modules,remoteObjectManager;
+@synthesize rootViewController = _rootViewController;
+@dynamic coreDataController,managedObjectModel,remoteObjectManager;
 
 + (void)initialize
 {
@@ -278,6 +285,15 @@
 
 #pragma mark -
 #pragma mark Push notifications
+- (BOOL)notificationsEnabled
+{
+    return (BOOL)[[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
+}
+
+- (void)setNotificationsEnabled:(BOOL)notificationsEnabled
+{
+
+}
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[MITUnreadNotifications updateUI];
@@ -333,47 +349,73 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 }
 
 #pragma mark - Lazy property getters
+- (NSRecursiveLock*)lock
+{
+    if (!_lock) {
+        @synchronized([self class]) {
+            if (!_lock) {
+                _lock = [[NSRecursiveLock alloc] init];
+            }
+        }
+    }
+    
+    return _lock;
+}
+
 - (MITTouchstoneController*)sharedTouchstoneController
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+    
+    if (!_sharedTouchstoneController) {
         [self loadTouchstoneController];
         NSAssert(_sharedTouchstoneController && [MITTouchstoneController sharedController], @"failed to load Touchstone authentication controller");
-    });
+    }
+    
+    [self.lock unlock];
     
     return _sharedTouchstoneController;
 }
 
 - (MITMobile*)remoteObjectManager
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+    
+    if (!_remoteObjectManager) {
+        
         [self loadRemoteObjectManager];
         NSAssert(_remoteObjectManager, @"failed to initalize the persitence stack");
-    });
-
+    }
+    
+    [self.lock unlock];
+    
     return _remoteObjectManager;
 }
 
 - (NSManagedObjectModel*)managedObjectModel
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+    
+    if (!_managedObjectModel) {
         [self loadManagedObjectModel];
         NSAssert(_managedObjectModel, @"failed to create the managed object model");
-    });
-
+    }
+    
+    [self.lock unlock];
+    
     return _managedObjectModel;
 }
 
 - (MITCoreDataController*)coreDataController
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+    
+    if (!_coreDataController) {
         [self loadCoreDataController];
         NSAssert(_coreDataController, @"failed to load CoreData store controller");
-    });
-
+    }
+    
+    [self.lock unlock];
+    
     return _coreDataController;
 }
 
@@ -387,14 +429,20 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return _window;
 }
 
+- (UIViewController*)rootViewController
+{
+    UIUserInterfaceIdiom *userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    return [self rootViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
+}
+
 - (NSArray*)modules
 {
-    if (!_modules) {
+    if (!_mutableModules) {
         [self loadModules];
-        NSAssert(_modules,@"failed to load application modules");
+        NSAssert(_mutableModules,@"failed to load application modules");
     }
     
-    return _modules;
+    return [NSArray arrayWithArray:_mutableModules];
 }
 
 - (NSMutableSet*)pendingNotifications
@@ -448,20 +496,50 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)loadModules {
     // add your MITModule subclass here by adding it to the below
-    _modules = @[[[NewsModule alloc] init],
-                 [[ShuttleModule alloc] init],
-                 [[CMModule alloc] init],
-                 [[CalendarModule alloc] init],
-                 [[PeopleModule alloc] init],
-                 [[ToursModule alloc] init],
-                 [[EmergencyModule alloc] init],
-                 [[LibrariesModule alloc] init],
-                 [[FacilitiesModule alloc] init],
-                 [[DiningModule alloc] init],
-                 [[QRReaderModule alloc] init],
-                 [[LinksModule alloc] init],
-                 [[SettingsModule alloc] init],
-                 [[AboutModule alloc] init]];
+    // Modules are listed in the order they are added here. If two modules are
+    // added with the same tag, the first module will be removed and then the
+    // second module will be added.
+    _mutableModules = [[NSMutableArray alloc] init];
+    _modulesByTag = [[NSMutableDictionary alloc] init];
+    
+    NewsModule *newsModule = [[NewsModule alloc] init];
+    [self registerModule:newsModule forTag:MITModuleTagNewsOffice];
+    
+    ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
+    [self registerModule:shuttlesModule forTag:MITModuleTagShuttle];
+    
+    CMModule *campusMapModule = [[CMModule alloc] init];
+    [self registerModule:campusMapModule forTag:MITModuleTagCampusMap];
+    
+    CalendarModule *calendarModule = [[CalendarModule alloc] init];
+    [self registerModule:calendarModule forTag:MITModuleTagCalendar];
+    
+    PeopleModule *peopleModule = [[PeopleModule alloc] init];
+    [self registerModule:peopleModule forTag:MITModuleTagDirectory];
+    
+    ToursModule *toursModule = [[ToursModule alloc] init];
+    [self registerModule:toursModule forTag:MITModuleTagTours];
+    
+    LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
+    [self registerModule:librariesModule forTag:MITModuleTagLibraries];
+    
+    FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
+    [self registerModule:facilitiesModule forTag:MITModuleTagFacilities];
+    
+    DiningModule *diningModule = [[DiningModule alloc] init];
+    [self registerModule:diningModule forTag:MITModuleTagDining];
+    
+    QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
+    [self registerModule:qrReaderModule forTag:MITModuleTagQRReader];
+    
+    LinksModule *linksModule = [[LinksModule alloc] init];
+    [self registerModule:linksModule forTag:MITModuleTagLinks];
+    
+    SettingsModule *settingsModule = [[SettingsModule alloc] init];
+    [self registerModule:settingsModule forTag:MITModuleTagSettings];
+    
+    AboutModule *aboutModule = [[AboutModule alloc] init];
+    [self registerModule:aboutModule forTag:MITModuleTagAbout];
 }
 
 - (void)loadRemoteObjectManager
@@ -501,15 +579,16 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     if ([window respondsToSelector:@selector(setTintColor:)]) {
         window.tintColor = [UIColor mit_tintColor];
     }
-    }
     
-    DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));
+    UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    window.rootViewController = [self rootViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
     
-    //MITSpringboard *springboard = [[MITSpringboard alloc] init];
-    //springboard.primaryModules = self.modules;
-    //self.springboardController = springboard;
-    
-    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleGrid];
+    self.window = window;
+}
+
+- (UIViewController*)createRootViewControllerForPadIdiom
+{
+    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleList];
     launcherViewController.dataSource = self;
     launcherViewController.delegate = self;
     
@@ -526,6 +605,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:launcherViewController];
     navigationController.navigationBarHidden = NO;
+    navigationController.toolbarHidden = YES;
     
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         navigationController.navigationBar.barStyle = UIBarStyleDefault;
@@ -536,22 +616,94 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
     
     navigationController.delegate = self;
-    self.rootNavigationController = navigationController;
     
-    window.rootViewController = navigationController;
-    self.window = window;
+    return navigationController;
+}
+
+- (UINavigationController*)createRootViewControllerForPhoneIdiom
+{
+    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleGrid];
+    launcherViewController.dataSource = self;
+    launcherViewController.delegate = self;
+    
+    NSString *logoName;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        logoName = @"global/navbar_mit_logo_light";
+    } else {
+        logoName = @"global/navbar_mit_logo_dark";
+    }
+    UIImage *logoView = [UIImage imageNamed:logoName];
+    launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
+    launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
+    
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:launcherViewController];
+    navigationController.navigationBarHidden = NO;
+    navigationController.toolbarHidden = YES;
+    
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        navigationController.navigationBar.barStyle = UIBarStyleDefault;
+        navigationController.navigationBar.translucent = YES;
+    } else {
+        navigationController.navigationBar.barStyle = UIBarStyleBlack;
+        navigationController.navigationBar.translucent = NO;
+    }
+    
+    navigationController.delegate = self;
+    
+    return navigationController;
 }
 
 #pragma mark Application modules helper methods
-- (MITModule *)moduleForTag:(NSString *)tag
+- (UIViewController*)rootViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
 {
-    for (MITModule *module in self.modules) {
-        if ([module.tag isEqual:tag]) {
-            return module;
+    if (!_rootViewController) {
+        if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            _rootViewController = [self createRootViewControllerForPadIdiom];
+        } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+            _rootViewController = [self createRootViewControllerForPhoneIdiom];
         }
     }
     
-    return nil;
+    return _rootViewController;
+}
+
+- (void)registerModule:(MITModule*)module forTag:(NSString*)tag
+{
+    if ([module supportsUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]]) {
+        MITModule *oldModule = self.modulesByTag[tag];
+        if (oldModule) {
+            [self.mutableModules removeObject:oldModule];
+            [self.modulesByTag removeObjectForKey:tag];
+        }
+        
+        if (module) {
+            self.modulesByTag[tag] = module;
+            [self.mutableModules addObject:module];
+        } else {
+            [self.modulesByTag removeObjectForKey:tag];
+        }
+    }
+}
+
+- (MITModule *)moduleForTag:(NSString *)tag
+{
+    return self.modulesByTag[tag];
+}
+
+- (UIViewController*)homeViewControllerForModuleWithTag:(NSString*)tag
+{
+    UIViewController *viewController = self.viewControllersByTag[tag];
+    
+    if (!viewController) {
+        MITModule *module = self.modulesByTag[tag];
+        viewController = [module homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+        
+        if (viewController) {
+            self.viewControllersByTag[tag] = viewController;
+        }
+    }
+    
+    return viewController;
 }
 
 - (void)showModuleForTag:(NSString *)tag
@@ -564,19 +716,67 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITModule *module = [self moduleForTag:tag];
     
     if (module) {
-        if (self.rootNavigationController) {
-            UIViewController *homeController = module.moduleHomeController;
-
-            NSUInteger index = [self.rootNavigationController.viewControllers indexOfObject:homeController];
-            if (index != NSNotFound) {
-                [self.rootNavigationController popToViewController:homeController animated:animated];
-            } else {
-                [self.rootNavigationController popToRootViewControllerAnimated:NO];
-                [self.rootNavigationController pushViewController:homeController animated:animated];
-            }
+        UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            [self showModuleForTagUsingPadIdiom:tag animated:animated];
+        } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+            [self showModuleForTagUsingPhoneIdiom:tag animated:animated];
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"unknown user interface idiom %d",userInterfaceIdiom];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
         }
-    } else {
-        DDLogWarn(@"unable to locate module with tag %@",tag);
+    }
+}
+
+- (void)showModuleForTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated
+{
+    MITModule *module = [self moduleForTag:tag];
+    
+    if (!module) {
+        DDLogWarn(@"failed to show module: no registered module for tag %@",tag);
+        return;
+    }
+    
+    UIViewController *rootViewController = [self rootViewControllerForUserInterfaceIdiom:UIUserInterfaceIdiomPad];
+    
+    if ([rootViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *rootNavigationController = (UINavigationController*)rootViewController;
+        UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
+        
+        if ([rootNavigationController.viewControllers containsObject:homeViewController]) {
+            [rootNavigationController popToViewController:homeViewController animated:animated];
+        } else {
+            [rootNavigationController popToRootViewControllerAnimated:NO];
+            [rootNavigationController pushViewController:homeViewController animated:animated];
+        }
+        
+        self.activeModule = module;
+    }
+}
+
+- (void)showModuleForTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated
+{
+    MITModule *module = [self moduleForTag:tag];
+    
+    if (!module) {
+        DDLogWarn(@"failed to show module: no registered module for tag %@",tag);
+        return;
+    }
+    
+    UIViewController *rootViewController = [self rootViewControllerForUserInterfaceIdiom:UIUserInterfaceIdiomPhone];
+    
+    if ([rootViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *rootNavigationController = (UINavigationController*)rootViewController;
+        UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
+        
+        if ([rootNavigationController.viewControllers containsObject:homeViewController]) {
+            [rootNavigationController popToViewController:homeViewController animated:animated];
+        } else {
+            [rootNavigationController popToRootViewControllerAnimated:NO];
+            [rootNavigationController pushViewController:homeViewController animated:animated];
+        }
+        
+        self.activeModule = module;
     }
 }
 
@@ -595,7 +795,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
 
-#pragma mark MITTouchstoneAuthentication delegation
+#pragma mark - Delegates
+#pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
 {
     [[self.window rootViewController] presentViewController:viewController animated:YES completion:nil];

@@ -16,12 +16,12 @@
     return self;
 }
 
-- (UIViewController*)moduleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    return [self instantiateRootViewController];
+    return YES;
 }
 
-- (UIViewController*)instantiateRootViewController
+- (UIViewController*)createHomeViewControllerForPadIdiom
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
@@ -30,4 +30,12 @@
     return controller;
 }
 
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    
+    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
+    return controller;
+}
 @end

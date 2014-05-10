@@ -72,7 +72,7 @@
 	
 	NSArray *components = [localPath pathComponents];
 	NSString *pathRoot = components[0];
-	UINavigationController *navigationController = [self rootViewController].navigationController;
+	UINavigationController *navigationController = [self moduleHomeController].navigationController;
 	 
 	if ([pathRoot isEqualToString:@"route-list"] || [pathRoot isEqualToString:@"route-map"]) {
 		NSString *routeID = components[1];

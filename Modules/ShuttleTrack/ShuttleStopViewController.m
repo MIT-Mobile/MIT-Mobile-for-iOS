@@ -185,7 +185,7 @@
 -(void) viewDidAppear:(BOOL)animated 
 {
 	[super viewDidAppear:animated];
-	
+	/*
 	// get the parent, and it it is the ShuttleRouteViewController, we can set the url.
 	UIViewController *parentController = (ShuttleRouteViewController *)[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] parentForViewController:self];
 	ShuttleRouteViewController *shuttleVC = (ShuttleRouteViewController*) parentController;
@@ -193,6 +193,7 @@
 	NSString *root = [shuttleVC.url.path componentsSeparatedByString:@"/"][0];
 	[url setPath:[NSString stringWithFormat:@"%@/%@/%@/stops", root, routeID, self.shuttleStop.stopID] query:nil];
 	[url setAsModulePath];
+     */
 }
 
 -(IBAction) mapThumbnailPressed:(id)sender
