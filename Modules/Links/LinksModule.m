@@ -2,7 +2,7 @@
 #import "LinksModule.h"
 #import "LinksViewController.h"
 
-#import "MITModule+Protected.h"
+
 
 @implementation LinksModule
 

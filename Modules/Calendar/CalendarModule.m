@@ -5,7 +5,7 @@
 #import "MITModuleURL.h"
 #import "CalendarEventMapAnnotation.h"
 #import "MITEventList.h"
-#import "MITModule+Protected.h"
+
 
 @implementation CalendarModule
 @dynamic calendarVC;

@@ -3,7 +3,7 @@
 #import "DiningData.h"
 #import "DiningDietaryFlag.h"
 
-#import "MITModule+Protected.h"
+
 
 @implementation DiningModule
 

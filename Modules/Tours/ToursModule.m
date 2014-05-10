@@ -1,7 +1,7 @@
 #import "ToursModule.h"
 #import "MITModule.h"
 #import "CampusTourHomeController.h"
-#import "MITModule+Protected.h"
+
 
 @implementation ToursModule
 

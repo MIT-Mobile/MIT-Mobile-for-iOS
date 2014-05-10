@@ -3,7 +3,6 @@
 #import "EmergencyData.h"
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
-#import "MITModule+Protected.h"
 
 @interface EmergencyModule ()
 @property BOOL emergencyMessageLoaded;

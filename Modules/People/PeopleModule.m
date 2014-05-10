@@ -5,7 +5,7 @@
 #import "PeopleRecentsData.h"
 #import "PersonDetails.h"
 
-#import "MITModule+Protected.h"
+
 
 static NSString * const PeopleStateSearchBegin = @"search-begin";
 static NSString * const PeopleStateSearchComplete = @"search-complete";

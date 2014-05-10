@@ -1,7 +1,7 @@
 #import "SettingsModule.h"
 
 #import "MITModule.h"
-#import "MITModule+Protected.h"
+
 #import "SettingsTableViewController.h"
 
 @implementation SettingsModule

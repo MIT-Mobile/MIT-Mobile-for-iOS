@@ -1,8 +1,6 @@
 #import "AboutModule.h"
 #import "AboutTableViewController.h"
 
-#import "MITModule+Protected.h"
-
 @implementation AboutModule
 
 - (id) init {

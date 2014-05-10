@@ -1,6 +1,6 @@
 #import "LibrariesModule.h"
 #import "LibrariesViewController.h"
-#import "MITModule+Protected.h"
+
 
 @implementation LibrariesModule
 - (id) init

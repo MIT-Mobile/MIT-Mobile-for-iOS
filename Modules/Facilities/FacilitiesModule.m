@@ -2,7 +2,7 @@
 #import "MITConstants.h"
 #import "FacilitiesRootViewController.h"
 
-#import "MITModule+Protected.h"
+
 
 @implementation FacilitiesModule
 - (id) init {

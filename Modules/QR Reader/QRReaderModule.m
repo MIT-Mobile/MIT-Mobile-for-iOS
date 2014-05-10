@@ -1,6 +1,6 @@
 #import "QRReaderModule.h"
 
-#import "MITModule+Protected.h"
+
 #import "MITScannerViewController.h"
 
 

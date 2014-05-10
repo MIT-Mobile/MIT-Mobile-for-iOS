@@ -2,7 +2,7 @@
 
 #import "MITMapDetailViewController.h"
 #import "MITCampusMapViewController.h"
-#import "MITModule+Protected.h"
+
 #import "MITMapPlace.h"
 
 @implementation CMModule

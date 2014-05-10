@@ -2,7 +2,7 @@
 
 #import "MITNewsViewController.h"
 
-#import "MITModule+Protected.h"
+
 
 @implementation NewsModule
 - (id) init {

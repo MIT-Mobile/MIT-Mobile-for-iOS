@@ -5,7 +5,7 @@
 #import "ShuttleSubscriptionManager.h"
 #import "ShuttleStopMapAnnotation.h"
 
-#import "MITModule+Protected.h"
+
 
 @implementation ShuttleModule
 
