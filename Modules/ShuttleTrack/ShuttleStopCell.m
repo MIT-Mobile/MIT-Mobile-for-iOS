@@ -58,7 +58,7 @@
 	if (shuttleStop.upcoming) 
 	{
 		self.shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;
-		self.shuttleTimeLabel.textColor = [UIColor MITTintColor];
+		self.shuttleTimeLabel.textColor = [UIColor mit_tintColor];
         self.shuttleTimeLabel.font = [UIFont boldSystemFontOfSize:16.0];
 		
 	}

@@ -58,7 +58,7 @@
         self.edgesForExtendedLayout = UIRectEdgeNone;
     } else {
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
-        self.searchBar.tintColor = [UIColor MITTintColor];
+        self.searchBar.tintColor = [UIColor mit_tintColor];
     }
     self.searchBar.delegate = self;
     self.searchDisplayController.delegate = self;

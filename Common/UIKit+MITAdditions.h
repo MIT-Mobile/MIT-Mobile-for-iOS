@@ -17,7 +17,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @interface UIColor (MITUIAdditions)
 + (UIColor*)mit_backgroundColor;
-+ (UIColor *)MITTintColor;
++ (UIColor *)mit_tintColor;
 
 /*!
  * Creates and returns a color object using the specified hexadecimal string.

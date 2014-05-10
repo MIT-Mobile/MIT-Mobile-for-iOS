@@ -65,7 +65,7 @@
             [self.completeButton setBackgroundImage:image forState:UIControlStateHighlighted];
             
             self.completeButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-            [self.completeButton setTitleColor:[UIColor MITTintColor] forState:UIControlStateNormal];
+            [self.completeButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
             
             CGRect frame = self.completeButton.frame;
             frame.origin.x = CGRectGetMinX(self.view.bounds);

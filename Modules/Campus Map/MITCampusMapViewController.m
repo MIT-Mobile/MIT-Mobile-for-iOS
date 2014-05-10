@@ -85,7 +85,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     [searchBar sizeToFit];
     
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        searchBar.tintColor = [UIColor MITTintColor];
+        searchBar.tintColor = [UIColor mit_tintColor];
         self.navigationController.toolbar.barStyle = UIBarStyleBlack;
     }
 

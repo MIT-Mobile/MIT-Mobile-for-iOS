@@ -114,7 +114,7 @@
             [self.imageButton setBackgroundImage:image forState:UIControlStateHighlighted];
             
             self.imageButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-            [self.imageButton setTitleColor:[UIColor MITTintColor] forState:UIControlStateNormal];
+            [self.imageButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
 
             CGRect frame = self.imageButton.frame;
             frame.origin.x = CGRectGetMinX(self.view.bounds);

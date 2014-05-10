@@ -63,7 +63,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         self.tableView.backgroundView = nil;
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
 
-        self.searchBar.tintColor = [UIColor MITTintColor];
+        self.searchBar.tintColor = [UIColor mit_tintColor];
     }
 }
 

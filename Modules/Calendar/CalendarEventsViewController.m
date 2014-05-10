@@ -215,7 +215,7 @@
     [searchButton addTarget:self action:@selector(showSearchBar) forControlEvents:UIControlEventTouchUpInside];
     searchButton.adjustsImageWhenHighlighted = YES;
     searchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    searchButton.tintColor = [UIColor MITTintColor];
+    searchButton.tintColor = [UIColor mit_tintColor];
     searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with event list types
     return searchButton;
 }

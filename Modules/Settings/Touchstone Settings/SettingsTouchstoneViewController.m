@@ -443,7 +443,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
                 cell.textLabel.enabled = [[MITTouchstoneController sharedController] isLoggedIn];
                 
                 if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-                    cell.textLabel.textColor = [UIColor MITTintColor];
+                    cell.textLabel.textColor = [UIColor mit_tintColor];
                     cell.textLabel.textAlignment = NSTextAlignmentLeft;
                 } else {
                     cell.textLabel.textAlignment = NSTextAlignmentCenter;

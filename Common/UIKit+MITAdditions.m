@@ -75,7 +75,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     return [UIColor colorWithHexString:@"d7dae0"];
 }
 
-+ (UIColor *)MITTintColor
++ (UIColor *)mit_tintColor
 {
     return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
 }

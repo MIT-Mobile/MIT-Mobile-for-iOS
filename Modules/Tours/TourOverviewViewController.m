@@ -323,7 +323,7 @@ enum {
     self.mapListToggle.selectedSegmentIndex = showMap ? MapListSegmentMap : MapListSegmentList;
     
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.toolBar.tintColor = [UIColor MITTintColor];
+        self.toolBar.tintColor = [UIColor mit_tintColor];
     }
     
     if (showMap) {

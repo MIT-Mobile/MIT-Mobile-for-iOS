@@ -492,12 +492,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)loadWindow
 {
+    DDLogVerbose(@"creating window for application frame %@", NSStringFromCGRect([[UIScreen mainScreen] applicationFrame]));
+    
     UIWindow *window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.backgroundColor = [UIColor mit_backgroundColor];
     
     // iOS 6's UIWindow doesn't do tintColor
     if ([window respondsToSelector:@selector(setTintColor:)]) {
-        window.tintColor = [UIColor MITTintColor];
+        window.tintColor = [UIColor mit_tintColor];
+    }
     }
     
     DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));

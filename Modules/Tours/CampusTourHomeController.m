@@ -208,7 +208,7 @@
     
     switch (indexPath.section) {
         case 0:
-            cell.backgroundColor = [[UIColor MITTintColor] colorWithAlphaComponent:0.75];
+            cell.backgroundColor = [[UIColor mit_tintColor] colorWithAlphaComponent:0.75];
             cell.textLabel.textColor = [UIColor whiteColor];
             
             if (self.tours) {

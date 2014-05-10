@@ -36,7 +36,7 @@
                 image = [UIImage imageNamed:@"libraries/cell-selected"];
             } else {
                 image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                self.selectionView.tintColor = [UIColor MITTintColor];
+                self.selectionView.tintColor = [UIColor mit_tintColor];
             }
 
             self.selectionView.image = image;
