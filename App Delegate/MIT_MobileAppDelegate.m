@@ -56,6 +56,8 @@
 @property (nonatomic,strong) NSRecursiveLock *lock;
 
 - (void)updateBasicServerInfo;
+- (void)showModuleForTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated;
+- (void)showModuleForTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated;
 @end
 
 @implementation MIT_MobileAppDelegate {
@@ -498,43 +500,46 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     _modulesByTag = [[NSMutableDictionary alloc] init];
     
     NewsModule *newsModule = [[NewsModule alloc] init];
-    [self registerModule:newsModule forTag:MITModuleTagNewsOffice];
+    [self registerModule:newsModule];
     
     ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
-    [self registerModule:shuttlesModule forTag:MITModuleTagShuttle];
+    [self registerModule:shuttlesModule];
     
     CMModule *campusMapModule = [[CMModule alloc] init];
-    [self registerModule:campusMapModule forTag:MITModuleTagCampusMap];
+    [self registerModule:campusMapModule];
     
     CalendarModule *calendarModule = [[CalendarModule alloc] init];
-    [self registerModule:calendarModule forTag:MITModuleTagCalendar];
+    [self registerModule:calendarModule];
     
     PeopleModule *peopleModule = [[PeopleModule alloc] init];
-    [self registerModule:peopleModule forTag:MITModuleTagDirectory];
+    [self registerModule:peopleModule];
     
     ToursModule *toursModule = [[ToursModule alloc] init];
-    [self registerModule:toursModule forTag:MITModuleTagTours];
+    [self registerModule:toursModule];
+    
+    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
+    [self registerModule:emergencyModule];
     
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
-    [self registerModule:librariesModule forTag:MITModuleTagLibraries];
+    [self registerModule:librariesModule];
     
     FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
-    [self registerModule:facilitiesModule forTag:MITModuleTagFacilities];
+    [self registerModule:facilitiesModule];
     
     DiningModule *diningModule = [[DiningModule alloc] init];
-    [self registerModule:diningModule forTag:MITModuleTagDining];
+    [self registerModule:diningModule];
     
     QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
-    [self registerModule:qrReaderModule forTag:MITModuleTagQRReader];
+    [self registerModule:qrReaderModule];
     
     LinksModule *linksModule = [[LinksModule alloc] init];
-    [self registerModule:linksModule forTag:MITModuleTagLinks];
+    [self registerModule:linksModule];
     
     SettingsModule *settingsModule = [[SettingsModule alloc] init];
-    [self registerModule:settingsModule forTag:MITModuleTagSettings];
+    [self registerModule:settingsModule];
     
     AboutModule *aboutModule = [[AboutModule alloc] init];
-    [self registerModule:aboutModule forTag:MITModuleTagAbout];
+    [self registerModule:aboutModule];
 }
 
 - (void)loadRemoteObjectManager
@@ -627,6 +632,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     } else {
         logoName = @"global/navbar_mit_logo_dark";
     }
+    
     UIImage *logoView = [UIImage imageNamed:logoName];
     launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
@@ -662,8 +668,10 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return _rootViewController;
 }
 
-- (void)registerModule:(MITModule*)module forTag:(NSString*)tag
+- (void)registerModule:(MITModule*)module
 {
+    NSString *tag = module.tag;
+    
     if ([module supportsUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]]) {
         MITModule *oldModule = self.modulesByTag[tag];
         if (oldModule) {
@@ -682,7 +690,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (MITModule *)moduleForTag:(NSString *)tag
 {
-    return self.modulesByTag[tag];
+    __block MITModule *moduleForTag = nil;
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module.tag isEqualToString:tag]) {
+            moduleForTag = module;
+            (*stop) = YES;
+        }
+    }];
+    
+    return moduleForTag;
 }
 
 - (UIViewController*)homeViewControllerForModuleWithTag:(NSString*)tag

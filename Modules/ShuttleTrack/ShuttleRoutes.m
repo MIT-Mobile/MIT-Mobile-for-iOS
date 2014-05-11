@@ -99,7 +99,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] resetURL];
+	[[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:ShuttleTag] resetURL];
 }
 
 - (void)didReceiveMemoryWarning {

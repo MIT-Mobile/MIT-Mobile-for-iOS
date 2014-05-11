@@ -152,7 +152,7 @@ typedef enum {
         }
     };
     
-    LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
+    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:LibrariesTag];
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     [librariesModule.requestQueue addOperation:requestOperation];
 }

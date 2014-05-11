@@ -33,7 +33,7 @@
         [[EmergencyData sharedData] reloadContacts];
     }
 	
-	[MIT_MobileAppDelegate moduleForTag:EmergencyTag].currentPath = @"contacts";
+	[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:EmergencyTag].currentPath = @"contacts";
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

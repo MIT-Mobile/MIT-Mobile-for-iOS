@@ -40,7 +40,7 @@
 }
 	
 - (void) setPathWithViewController:(UIViewController *)viewController extension:(NSString *)extension {
-	UIViewController *parentController = [[MIT_MobileAppDelegate moduleForTag:moduleTag] parentForViewController:viewController];
+	UIViewController *parentController = [[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:moduleTag] parentForViewController:viewController];
 	MITModuleURL *parentURL = ((id<MITModuleURLContainer>)parentController).url;
     if (parentURL) {
         [self setPath:[NSString stringWithFormat:@"%@/%@", parentURL.path, extension] query:nil];
@@ -50,7 +50,7 @@
 }
 	
 - (void) setAsModulePath {
-	MITModule *module = [MIT_MobileAppDelegate moduleForTag:moduleTag];
+	MITModule *module = [[MIT_MobileAppDelegate applicationDelegate] moduleForTag:moduleTag];
 	module.currentPath = path;
 	module.currentQuery = query;
 	DDLogVerbose(@"Just saved module state: %@, %@  for module: %@", module.currentPath, module.currentQuery, module);

@@ -187,7 +187,7 @@
 	[super viewDidAppear:animated];
 	/*
 	// get the parent, and it it is the ShuttleRouteViewController, we can set the url.
-	UIViewController *parentController = (ShuttleRouteViewController *)[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] parentForViewController:self];
+	UIViewController *parentController = (ShuttleRouteViewController *)[[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:ShuttleTag] parentForViewController:self];
 	ShuttleRouteViewController *shuttleVC = (ShuttleRouteViewController*) parentController;
 	NSString *routeID = shuttleVC.route.routeID;
 	NSString *root = [shuttleVC.url.path componentsSeparatedByString:@"/"][0];

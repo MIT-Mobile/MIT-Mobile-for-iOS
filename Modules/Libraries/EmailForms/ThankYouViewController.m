@@ -129,7 +129,7 @@
 
 #pragma mark Actions
 - (IBAction)returnToHomeButtonTapped:(id)sender {
-    LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
+    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:LibrariesTag];
     [self.navigationController popToViewController:librariesModule.moduleHomeController animated:YES];
 }
 

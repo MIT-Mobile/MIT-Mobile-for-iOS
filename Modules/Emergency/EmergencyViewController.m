@@ -70,7 +70,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	}
     
     [[EmergencyData sharedData] setLastRead:[NSDate date]];
-	EmergencyModule *emergencyModule = (EmergencyModule *)[MIT_MobileAppDelegate moduleForTag:EmergencyTag];
+	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
 	[emergencyModule resetURL];
 }
@@ -275,7 +275,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     
     if (self.navigationController.visibleViewController == self) {
         [[EmergencyData sharedData] setLastRead:[NSDate date]];
-        EmergencyModule *emergencyModule = (EmergencyModule *)[MIT_MobileAppDelegate moduleForTag:EmergencyTag];
+        EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
 }

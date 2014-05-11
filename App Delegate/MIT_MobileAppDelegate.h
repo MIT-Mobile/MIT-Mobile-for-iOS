@@ -20,7 +20,6 @@
 @property (nonatomic,assign,getter=isNotificationsEnabled) BOOL notificationsEnabled;
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
-+ (MITModule *)moduleForTag:(NSString *)aTag;
 
 - (void)showNetworkActivityIndicator;
 - (void)hideNetworkActivityIndicator;
@@ -36,7 +35,9 @@
 
 - (MITModule *)moduleForTag:(NSString *)aTag;
 - (void)showModuleForTag:(NSString *)tag;
-- (void)saveModulesState;
+- (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated;
+
+- (void)saveModulesState DEPRECATED_ATTRIBUTE;
 
 - (UINavigationController*)rootNavigationController;
 @end
