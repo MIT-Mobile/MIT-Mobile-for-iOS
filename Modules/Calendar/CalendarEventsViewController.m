@@ -755,7 +755,7 @@
 
         __weak CalendarEventsViewController *weakSelf = self;
         [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *searchResults) {
-            CalendarEventsViewController *blockSelf = self;
+            CalendarEventsViewController *blockSelf = weakSelf;
             if (!blockSelf) {
                 return;
             } else if (![operation isEqual:blockSelf->_searchRequestOperation]) {
@@ -798,7 +798,7 @@
                 DDLogVerbose(@"Calendar 'search' failed with result type '%@'", NSStringFromClass([searchResults class]));
             }
         } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-            CalendarEventsViewController *blockSelf = self;
+            CalendarEventsViewController *blockSelf = weakSelf;
 
             DDLogVerbose(@"Calendar 'search' failed with error '%@'",error);
             [blockSelf removeLoadingIndicator];
