@@ -763,7 +763,7 @@
                 // this operation probably got a -[NSOperation cancel] a bit too late.
                 // Don't bother processing the returned data.
                 return;
-            } else if (![searchResults isKindOfClass:[NSDictionary class]]) {
+            } else if ([searchResults isKindOfClass:[NSDictionary class]]) {
                 NSArray *resultEvents = searchResults[@"events"];
                 NSString *resultSpan = searchResults[@"span"];
 
