@@ -6,13 +6,13 @@
 
 @implementation NewsModule
 - (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = NewsOfficeTag;
+    self = [super initWithTag:MITModuleTagNewsOffice];
+    if (self) {
         self.shortName = @"News";
         self.longName = @"News Office";
         self.iconName = @"news";
     }
+    
     return self;
 }
 

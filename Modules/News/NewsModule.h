@@ -6,4 +6,9 @@
 
 @interface NewsModule : MITModule
 @property (nonatomic, readonly) StoryListViewController *storyListChannelController;
+
+- (instancetype)init;
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
+- (UIViewController*)createHomeViewControllerForPadIdiom;
+- (UIViewController*)createHomeViewControllerForPhoneIdiom;
 @end
