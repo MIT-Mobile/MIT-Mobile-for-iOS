@@ -31,6 +31,7 @@
 #import "ShuttleModule.h"
 #import "ToursModule.h"
 
+#import "ECSlidingViewController.h"
 #import "MITTouchstoneController.h"
 #import "MITLauncherViewController.h"
 
@@ -597,13 +598,24 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         logoName = @"global/navbar_mit_logo_light";
     } else {
         logoName = @"global/navbar_mit_logo_dark";
+        launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
     }
     
     UIImage *logoView = [UIImage imageNamed:logoName];
     launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
     
-    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:launcherViewController];
+    
+    
+    // configure top view controller
+    UIViewController *topViewController = [[UIViewController alloc] init];
+    topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
+    
+    UIImage *barButtonIcon = [UIImage imageNamed:@"global/menu"];
+    UIBarButtonItem *anchorLeftButton = [[UIBarButtonItem alloc] initWithImage:barButtonIcon style:UIBarButtonItemStylePlain target:self action:@selector(anchorRight)];
+    topViewController.navigationItem.leftBarButtonItem = anchorLeftButton;
+    
+    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:topViewController];
     navigationController.navigationBarHidden = NO;
     navigationController.toolbarHidden = YES;
     
@@ -617,7 +629,25 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     navigationController.delegate = self;
     
-    return navigationController;
+    ECSlidingViewController *slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:navigationController];
+    slidingViewController.underLeftViewController = launcherViewController;
+    slidingViewController.anchorRightRevealAmount = 280.;
+    
+    UISwipeGestureRecognizer *gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(anchorRight)];
+    gestureRecognizer.numberOfTouchesRequired = 2;
+    gestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [topViewController.view addGestureRecognizer:gestureRecognizer];
+    
+    return slidingViewController;
+}
+
+- (void)anchorRight
+{
+    UIViewController *rootViewController = self.rootViewController;
+    if ([rootViewController isKindOfClass:[ECSlidingViewController class]]) {
+        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)rootViewController;
+        [slidingViewController anchorTopViewToRightAnimated:YES];
+    }
 }
 
 - (UINavigationController*)createRootViewControllerForPhoneIdiom

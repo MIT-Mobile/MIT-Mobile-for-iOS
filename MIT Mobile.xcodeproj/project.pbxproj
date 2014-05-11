@@ -81,6 +81,12 @@
 		2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53491896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib */; };
 		2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */; };
 		2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
+		2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D83191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m */; };
+		2C3C5D90191F076800D59D33 /* ECSlidingAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D85191F076800D59D33 /* ECSlidingAnimationController.m */; };
+		2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D88191F076800D59D33 /* ECSlidingInteractiveTransition.m */; };
+		2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8A191F076800D59D33 /* ECSlidingSegue.m */; };
+		2C3C5D93191F076800D59D33 /* ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8C191F076800D59D33 /* ECSlidingViewController.m */; };
+		2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8E191F076800D59D33 /* UIViewController+ECSlidingViewController.m */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A5C161887296B0013981A /* MITNewsViewController.m */; };
@@ -606,6 +612,19 @@
 		2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsStoryExternalTableCell.xib; sourceTree = "<group>"; };
 		2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryTableCell.xib; path = Views/NewsStoryTableCell.xib; sourceTree = "<group>"; };
 		2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsCategoryHeaderView.xib; path = Views/NewsCategoryHeaderView.xib; sourceTree = "<group>"; };
+		2C3C5D82191F076800D59D33 /* ECPercentDrivenInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECPercentDrivenInteractiveTransition.h; sourceTree = "<group>"; };
+		2C3C5D83191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECPercentDrivenInteractiveTransition.m; sourceTree = "<group>"; };
+		2C3C5D84191F076800D59D33 /* ECSlidingAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingAnimationController.h; sourceTree = "<group>"; };
+		2C3C5D85191F076800D59D33 /* ECSlidingAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingAnimationController.m; sourceTree = "<group>"; };
+		2C3C5D86191F076800D59D33 /* ECSlidingConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingConstants.h; sourceTree = "<group>"; };
+		2C3C5D87191F076800D59D33 /* ECSlidingInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingInteractiveTransition.h; sourceTree = "<group>"; };
+		2C3C5D88191F076800D59D33 /* ECSlidingInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingInteractiveTransition.m; sourceTree = "<group>"; };
+		2C3C5D89191F076800D59D33 /* ECSlidingSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingSegue.h; sourceTree = "<group>"; };
+		2C3C5D8A191F076800D59D33 /* ECSlidingSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingSegue.m; sourceTree = "<group>"; };
+		2C3C5D8B191F076800D59D33 /* ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSlidingViewController.h; sourceTree = "<group>"; };
+		2C3C5D8C191F076800D59D33 /* ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSlidingViewController.m; sourceTree = "<group>"; };
+		2C3C5D8D191F076800D59D33 /* UIViewController+ECSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ECSlidingViewController.h"; sourceTree = "<group>"; };
+		2C3C5D8E191F076800D59D33 /* UIViewController+ECSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ECSlidingViewController.m"; sourceTree = "<group>"; };
 		2C3FB1D51808810300F23D40 /* CampusMap v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v2.xcdatamodel"; sourceTree = "<group>"; };
 		2C432E3218BCFC8D00A109B5 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
 		2C432E3318BCFC8D00A109B5 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
@@ -1673,6 +1692,27 @@
 			path = Layers;
 			sourceTree = "<group>";
 		};
+		2C3C5D81191F076800D59D33 /* ECSlidingViewController */ = {
+			isa = PBXGroup;
+			children = (
+				2C3C5D82191F076800D59D33 /* ECPercentDrivenInteractiveTransition.h */,
+				2C3C5D83191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m */,
+				2C3C5D84191F076800D59D33 /* ECSlidingAnimationController.h */,
+				2C3C5D85191F076800D59D33 /* ECSlidingAnimationController.m */,
+				2C3C5D86191F076800D59D33 /* ECSlidingConstants.h */,
+				2C3C5D87191F076800D59D33 /* ECSlidingInteractiveTransition.h */,
+				2C3C5D88191F076800D59D33 /* ECSlidingInteractiveTransition.m */,
+				2C3C5D89191F076800D59D33 /* ECSlidingSegue.h */,
+				2C3C5D8A191F076800D59D33 /* ECSlidingSegue.m */,
+				2C3C5D8B191F076800D59D33 /* ECSlidingViewController.h */,
+				2C3C5D8C191F076800D59D33 /* ECSlidingViewController.m */,
+				2C3C5D8D191F076800D59D33 /* UIViewController+ECSlidingViewController.h */,
+				2C3C5D8E191F076800D59D33 /* UIViewController+ECSlidingViewController.m */,
+			);
+			name = ECSlidingViewController;
+			path = External/ECSlidingViewController/ECSlidingViewController;
+			sourceTree = "<group>";
+		};
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -2390,11 +2430,12 @@
 			isa = PBXGroup;
 			children = (
 				2C0454C218F33D8A0018073D /* AFNetworking */,
-				2C1808E518F33B95008F9775 /* MITTouchstone */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
+				2C3C5D81191F076800D59D33 /* ECSlidingViewController */,
 				2C7EDD8F1656CD2E001684E1 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
+				2C1808E518F33B95008F9775 /* MITTouchstone */,
 				DE654505173D90A900562C20 /* SDWebImage */,
 				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
@@ -3237,6 +3278,7 @@
 				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
 				EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */,
+				2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
@@ -3402,6 +3444,7 @@
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */,
 				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
+				2C3C5D93191F076800D59D33 /* ECSlidingViewController.m in Sources */,
 				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
 				4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */,
 				4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */,
@@ -3453,6 +3496,8 @@
 				2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */,
 				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
 				2C18090918F33B95008F9775 /* MITTouchstoneIdentityProvider.m in Sources */,
+				2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */,
+				2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */,
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
@@ -3461,6 +3506,7 @@
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
+				2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */,
 				2C6528F217906DBD00BED0DF /* Secret.m in Sources */,
 				2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */,
 				2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */,
@@ -3521,6 +3567,7 @@
 				DE654523173D90A900562C20 /* UIButton+WebCache.m in Sources */,
 				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
 				DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */,
+				2C3C5D90191F076800D59D33 /* ECSlidingAnimationController.m in Sources */,
 				48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */,
 				2C9146F517ECFFAC007130D8 /* MITMapCategoriesViewController.m in Sources */,
 				48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */,
@@ -3572,7 +3619,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
@@ -3598,7 +3645,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/External/ZBarSDK",
@@ -3708,7 +3755,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/External/ZBarSDK",
