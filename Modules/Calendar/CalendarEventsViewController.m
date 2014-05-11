@@ -816,6 +816,7 @@
 
         [self addLoadingIndicatorForSearch:YES];
 
+        [_searchRequestOperation cancel];
         _searchRequestOperation = requestOperation;
         [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
@@ -823,8 +824,6 @@
 
 - (void)makeCategoriesRequest
 {
-    [_categoriesRequestOperation cancel];
-    _categoriesRequestOperation = nil;
 
 	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
     NSString *command = [CalendarDataManager apiCommandForEventType:categories];
@@ -852,7 +851,9 @@
         DDLogVerbose(@"request for v2:%@/%@ failed with error %@",CalendarTag,command,[error localizedDescription]);
         [self removeLoadingIndicator];
     }];
-
+    
+    [_categoriesRequestOperation cancel];
+    _categoriesRequestOperation = requestOperation;
     [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
@@ -901,7 +902,6 @@
 	}
 
     [_eventsRequestOperation cancel];
-    _eventsRequestOperation = nil;
 
     if (request) {
         __weak CalendarEventsViewController *weakSelf = self;
@@ -912,7 +912,7 @@
 
             if (!blockSelf) {
                 return;
-            } else if (_eventsRequestOperation != operation) {
+            } else if (blockSelf->_eventsRequestOperation != operation) {
                 return;
             } else if (![eventObjects isKindOfClass:[NSArray class]]) {
                 [blockSelf removeLoadingIndicator];
@@ -942,25 +942,23 @@
                 [blockSelf.tableView reloadData];
                 [blockSelf removeLoadingIndicator];
             }
-            
-            _eventsRequestOperation = nil;
         } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
             CalendarEventsViewController *blockSelf = weakSelf;
             DDLogWarn(@"request for v2:%@/%@ failed with error %@",operation.module, operation.command, [error localizedDescription]);
             if (!blockSelf) {
                 return;
-            } else if (_eventsRequestOperation != operation) {
+            } else if (blockSelf->_eventsRequestOperation != operation) {
                 return;
             } else {
                 [blockSelf removeLoadingIndicator];
-                blockSelf->_eventsRequestOperation = nil;
             }
             
         }];
 
-        [_eventsRequestOperation cancel];
         _eventsRequestOperation = requestOperation;
         [[NSOperationQueue mainQueue] addOperation:requestOperation];
+    } else {
+        _eventsRequestOperation = nil;
     }
 }
 
