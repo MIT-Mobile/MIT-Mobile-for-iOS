@@ -13,3 +13,6 @@
 [submodule "External/RestKit"]
 	path = External/RestKit
 	url = git@github.com:RestKit/RestKit.git
+[submodule "External/ECSlidingViewController"]
+	path = External/ECSlidingViewController
+	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
