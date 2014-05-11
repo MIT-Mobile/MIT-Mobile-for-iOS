@@ -290,11 +290,6 @@
     return (BOOL)[[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 }
 
-- (void)setNotificationsEnabled:(BOOL)notificationsEnabled
-{
-
-}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[MITUnreadNotifications updateUI];
 	

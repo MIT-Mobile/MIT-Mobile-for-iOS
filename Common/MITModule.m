@@ -91,53 +91,25 @@
 }
 
 #pragma mark Handling Notifications
-- (void)setPushNotificationEnabled:(BOOL)enabled completion:(void (^)(void))block
-{
+// all notifications are enabled by default
+// so we just store which modules are disabled
+- (void)setPushNotificationEnabled:(BOOL)enabled; {
+	NSMutableDictionary *pushDisabledSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:PushNotificationSettingsKey] mutableCopy];
+	if (!pushDisabledSettings) {
+        pushDisabledSettings = [[NSMutableDictionary alloc] init];
+    }
+    
     _pushNotificationEnabled = enabled;
-/*
-    MITModule *module = [MITAppDelegate() moduleForTag:tag];
-    NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-    parameters[@"module_name"] = tag;
-    parameters[@"enabled"] = (enabled ? @"1" : @"0");
-
-    NSURLRequest *request = [NSURLRequest requestForModule:@"push"
-                                                   command:@"moduleSetting"
-                                                parameters:parameters
-                                                    method:@"GET"];
-
-    // If we don't have an identity, don't even try to enable (or disable) notifications,
-    // just leave everything as-is
-    if (!self.canRegisterForNotifications) {
-        if (block) {
-            block();
-        }
-
-        return;
-    } else {
-
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                                 command:@"moduleSetting"
-                                                                              parameters:parameters];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
-            if (![jsonResult isKindOfClass:[NSDictionary class]]) {
-                DDLogError(@"fatal error: invalid response for push configuration");
-            } else if ([jsonResult[@"success"] boolValue]) {
-                module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
-            } else {
-                if (error) {
-                    [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];
-                } else if (jsonResult[@"error"]) {
-                    DDLogError(@"%@ notifications change request failed: %@",tag,error);
-                }
-            }
-
-            if (block) {
-                block();
-            }
-        };
-
-        [[MobileRequestOperation defaultQueue] addOperation:request];
-    }*/
+    
+	if(enabled) {
+		[pushDisabledSettings removeObjectForKey:self.tag];
+	} else {
+		[pushDisabledSettings setObject:@"disabled" forKey:self.tag];
+	}
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	[userDefaults setObject:pushDisabledSettings forKey:PushNotificationSettingsKey];
+    [userDefaults synchronize];
 }
 
 

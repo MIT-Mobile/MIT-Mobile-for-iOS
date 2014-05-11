@@ -9,22 +9,20 @@
 @property (nonatomic,weak) UIViewController *summaryViewController;
 
 @property (nonatomic, copy) NSString *tag;
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) UIImage *icons;
+@property (nonatomic, copy) NSString *shortName;
+@property (nonatomic, copy) NSString *longName;
+@property (nonatomic,readonly) UIImage *springboardIcon;
 
 @property (nonatomic, assign) BOOL pushNotificationEnabled;
+@property (nonatomic, assign) BOOL pushNotificationSupported;
 
 // Older properties, no longer used.
 @property (nonatomic,readonly) BOOL isLoaded DEPRECATED_ATTRIBUTE;
 
 @property (nonatomic, strong) UIViewController *moduleHomeController DEPRECATED_ATTRIBUTE;
-@property (nonatomic, copy) NSString *shortName DEPRECATED_ATTRIBUTE;
-@property (nonatomic, copy) NSString *longName DEPRECATED_ATTRIBUTE;
 @property (nonatomic, copy) NSString *iconName DEPRECATED_ATTRIBUTE;
-@property (nonatomic, assign) BOOL pushNotificationSupported DEPRECATED_ATTRIBUTE;
 
 @property (nonatomic, retain) NSString *badgeValue DEPRECATED_ATTRIBUTE;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
-@property (nonatomic, readonly) UIImage *springboardIcon DEPRECATED_ATTRIBUTE;
 
 @property (nonatomic) BOOL hasLaunchedBegun DEPRECATED_ATTRIBUTE;
 @property (nonatomic, retain) NSString *currentPath DEPRECATED_ATTRIBUTE;
@@ -32,7 +30,6 @@
 
 #pragma mark Required methods (must override in subclass)
 - (instancetype)initWithTag:(NSString*)tag;
-- (instancetype)init;
 
 - (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
 - (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
