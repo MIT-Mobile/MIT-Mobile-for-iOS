@@ -5,8 +5,7 @@
 @class MIT_MobileAppDelegate;
 
 @interface MITModule : NSObject
-@property (nonatomic,weak) UIViewController *homeViewController;
-@property (nonatomic,weak) UIViewController *summaryViewController;
+@property (nonatomic,readonly,weak) UIViewController *homeViewController;
 
 @property (nonatomic, copy) NSString *tag;
 @property (nonatomic, copy) NSString *shortName;
@@ -16,7 +15,7 @@
 @property (nonatomic, assign) BOOL pushNotificationEnabled;
 @property (nonatomic, assign) BOOL pushNotificationSupported;
 
-// Older properties, no longer used.
+
 @property (nonatomic,readonly) BOOL isLoaded DEPRECATED_ATTRIBUTE;
 
 @property (nonatomic, strong) UIViewController *moduleHomeController DEPRECATED_ATTRIBUTE;
@@ -31,9 +30,37 @@
 #pragma mark Required methods (must override in subclass)
 - (instancetype)initWithTag:(NSString*)tag;
 
+#pragma mark iDevice support
+/** Indicates support for a specific user interface idiom.
+ *  Returns 'NO' by default.
+ *
+ *  In order to support existing modules, if the module subclass
+ *  responds to loadModuleHomeController and the current interface idiom is
+ *  equal to UIUserInterfaceIdiomPhone, then this method will return YES.
+ *  This behavior should be considered deprecated.
+ *
+ * @return YES if the passes idiom is supported.
+ * @see UIUserInterfaceIdiom
+ */
 - (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
+
 - (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
+
+/** Create an iPad compatible home view controller for the module.
+ */
 - (UIViewController*)createHomeViewControllerForPadIdiom;
+
+
+/** Create an iPad compatible home view controller for the module.
+ *
+ *  In order to support existing modules, if the module subclass
+ *  responds to loadModuleHomeController, it and the other moduleHomeController
+ *  methods will be used to create and manage the view controller.
+ *  This behavior should be considered deprecated.
+ *
+ * @related homeViewControllerForUserInterfaceIdiom:
+ * @see createHomeViewControllerForPadIdiom
+ */
 - (UIViewController*)createHomeViewControllerForPhoneIdiom;
 
 #pragma mark Optional methods

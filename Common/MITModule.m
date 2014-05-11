@@ -9,6 +9,7 @@
 
 @implementation MITModule
 @synthesize moduleHomeController = _moduleHomeController;
+@synthesize homeViewController = _homeViewController;
 
 #pragma mark -
 - (instancetype)init
@@ -45,13 +46,15 @@
 
 - (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
+    UIViewController *viewController = nil;
     if (idiom == UIUserInterfaceIdiomPad) {
-        return [self createHomeViewControllerForPadIdiom];
+        viewController = [self createHomeViewControllerForPadIdiom];
     } else if (idiom == UIUserInterfaceIdiomPhone) {
-        return [self createHomeViewControllerForPhoneIdiom];
-    } else {
-        return nil;
+        viewController = [self createHomeViewControllerForPhoneIdiom];
     }
+    
+    _homeViewController = viewController;
+    return viewController;
 }
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
