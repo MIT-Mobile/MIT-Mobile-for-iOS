@@ -14,6 +14,7 @@
 #import "FacilitiesSubmitViewController.h"
 #import "PlaceholderTextView.h"
 #import "MITUIConstants.h"
+#import "MITTouchstoneController.h"
 
 @interface FacilitiesSummaryViewController ()
 @property (nonatomic,assign) UIResponder *firstResponder;
@@ -189,6 +190,8 @@
     }
     
     self.problemLabel.text = text;
+    
+    self.emailField.text = [[MITTouchstoneController sharedController] userEmailAddress];
     
     CGRect frame = self.problemLabel.frame;
     CGSize fittedSize = [self.problemLabel sizeThatFits:CGSizeMake(frame.size.width, 2000.0)];
