@@ -21,6 +21,8 @@
 #import "UITableView+DynamicSizing.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
+static NSUInteger MITNewsViewControllerHeightOffset = 64;
+static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCachedLayoutCells";
 static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryFeaturedStoriesRequest";
 
@@ -128,6 +130,10 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlWasTriggered:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
+    
+    // adding an empty header to set the white margin for the first header section.
+    UIView *tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, MITNewsViewControllerTableViewHeaderHeight)];
+    [self.tableView setTableHeaderView:tableHeaderView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -539,6 +545,54 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     /* Do Nothing. Here to enabled NSFRC's change tracking */
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self refreshSectionHeaders];
+}
+
+- (void) refreshSectionHeaders
+{
+    NSInteger sectionNumber = 0;
+    
+    /*
+     * Retriving number of sections in order to iterate through them and update bg color.
+     *
+     * Could be optimized by going through only those sections that belong to visibleCells
+     */
+    NSInteger numberOfSections = [self.tableView numberOfSections];
+    
+    while ( sectionNumber < numberOfSections )
+    {
+        UIView *aView = [self.tableView headerViewForSection:sectionNumber];
+        
+        // safety check in case a header could be a different class
+        if( ![aView isKindOfClass:[MITDisclosureHeaderView class]] )
+        {
+            sectionNumber++;
+            continue;
+        }
+        
+        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
+        
+        CGRect headerRect = [self.tableView convertRect:[self.tableView rectForHeaderInSection:sectionNumber]
+                                                 toView:[self.tableView superview]];
+        
+        if( headerRect.origin.y <= MITNewsViewControllerHeightOffset )
+        {
+            // grey color
+            headerView.containerView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1];
+        }
+        else
+        {
+            headerView.containerView.backgroundColor = [UIColor whiteColor];
+        }
+        
+        sectionNumber++;
+    }
 }
 
 #pragma mark - UITableView
