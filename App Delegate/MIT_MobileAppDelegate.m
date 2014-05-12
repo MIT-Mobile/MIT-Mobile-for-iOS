@@ -52,7 +52,6 @@
 @property (nonatomic,weak) MITModule *activeModule;
 @property (nonatomic,strong) NSMutableArray *mutableModules;
 @property (nonatomic,strong) NSMutableDictionary *viewControllersByTag;
-@property (nonatomic,strong) NSMutableDictionary *modulesByTag;
 
 @property (nonatomic,strong) NSRecursiveLock *lock;
 
@@ -498,7 +497,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     // added with the same tag, the first module will be removed and then the
     // second module will be added.
     _mutableModules = [[NSMutableArray alloc] init];
-    _modulesByTag = [[NSMutableDictionary alloc] init];
     
     NewsModule *newsModule = [[NewsModule alloc] init];
     [self registerModule:newsModule];
@@ -700,18 +698,16 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 {
     NSString *tag = module.tag;
     
-    if ([module supportsUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]]) {
-        MITModule *oldModule = self.modulesByTag[tag];
+    if (!tag) {
+        return;
+    } else if ([module supportsUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]]) {
+        MITModule *oldModule = [self moduleForTag:tag];
         if (oldModule) {
             [self.mutableModules removeObject:oldModule];
-            [self.modulesByTag removeObjectForKey:tag];
         }
         
         if (module) {
-            self.modulesByTag[tag] = module;
             [self.mutableModules addObject:module];
-        } else {
-            [self.modulesByTag removeObjectForKey:tag];
         }
     }
 }
@@ -732,9 +728,13 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (UIViewController*)homeViewControllerForModuleWithTag:(NSString*)tag
 {
     UIViewController *viewController = self.viewControllersByTag[tag];
+ 
+    if (!_viewControllersByTag) {
+        self.viewControllersByTag = [[NSMutableDictionary alloc] init];
+    }
     
     if (!viewController) {
-        MITModule *module = self.modulesByTag[tag];
+        MITModule *module = [self moduleForTag:tag];
         viewController = [module homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
         
         if (viewController) {
