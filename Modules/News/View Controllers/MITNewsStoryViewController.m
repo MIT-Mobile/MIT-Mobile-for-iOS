@@ -176,17 +176,30 @@
     return _story;
 }
 
+// Strip HTML tags (supports both iOS6 and iOS7)
 - (NSString *)stringFromHtmlString:(NSString *)htmlString
 {
-    NSDictionary *dict = @{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType,
-                           NSCharacterEncodingDocumentAttribute:[NSNumber numberWithInt:NSUTF8StringEncoding]};
+    if( !htmlString || htmlString.length == 0 )
+    {
+        return @"";
+    }
     
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithData:[htmlString dataUsingEncoding:NSUTF8StringEncoding]
-                                                                      options:dict
-                                                           documentAttributes:nil
-                                                                        error:nil];
-    return [attrString string];
+    NSScanner *theScanner;
+    NSString *text = nil;
+    theScanner = [NSScanner scannerWithString:htmlString];
+    
+    while ([theScanner isAtEnd] == NO) {
+        
+        [theScanner scanUpToString:@"<" intoString:NULL] ;
+        
+        [theScanner scanUpToString:@">" intoString:&text] ;
+        
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>", text] withString:@""];
+    }
+
+    return [htmlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
+
 
 - (NSString*)htmlBody
 {
