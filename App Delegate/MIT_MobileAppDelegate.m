@@ -78,7 +78,7 @@
 + (MIT_MobileAppDelegate*)applicationDelegate
 {
     id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
-
+    
     if ([appDelegate isKindOfClass:[MIT_MobileAppDelegate class]]) {
         return (MIT_MobileAppDelegate*)appDelegate;
     } else {
@@ -111,7 +111,7 @@
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
     
     [self updateBasicServerInfo];
-
+    
     // TODO: don't store state like this when we're using a springboard.
 	// set modules state
 	NSDictionary *modulesState = [[NSUserDefaults standardUserDefaults] objectForKey:MITModulesSavedStateKey];
@@ -146,7 +146,7 @@
     
     [self.window makeKeyAndVisible];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
-
+    
     return YES;
 }
 
@@ -193,7 +193,7 @@
             DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
         }
     }
-
+    
     return canHandle;
 }
 
@@ -302,7 +302,7 @@
 	// display the notification in an alert
     APNSUIDelegate *notificationHelper = [[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self];
     [self.pendingNotifications addObject:notificationHelper];
-
+    
 	UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
                                                               message:userInfo[@"aps"][@"alert"]
                                                              delegate:notificationHelper
@@ -311,7 +311,7 @@
 	[notificationView show];
 }
 
-- (void)application:(UIApplication *)application 
+- (void)application:(UIApplication *)application
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
@@ -328,10 +328,10 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	}
 }
 
-- (void)application:(UIApplication *)application 
+- (void)application:(UIApplication *)application
 didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogWarn(@"%@", [error localizedDescription]);
-
+    
     if ([error code] == 3010) {
         // Running the simulator and, since the simulator can't register for notifications
         // just kill our device ID so a nil identity is returned whenever we are asked
@@ -448,7 +448,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     if (!_pendingNotifications) {
         _pendingNotifications = [[NSMutableSet alloc] init];
     }
-
+    
     return _pendingNotifications;
 }
 
@@ -556,7 +556,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     MITMobileResource *newsStories = [[MITNewsStoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsStories];
-
+    
     MITMobileResource *newsCategories = [[MITNewsCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsCategories];
     
@@ -606,8 +606,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
     
     
-    
-    // configure top view controller
     UIViewController *topViewController = [[UIViewController alloc] init];
     topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
     
@@ -871,28 +869,28 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 
 @implementation APNSUIDelegate
-- (id) initWithApnsDictionary: (NSDictionary *)apns appDelegate: (MIT_MobileAppDelegate *)delegate;
+- (id)initWithApnsDictionary: (NSDictionary *)apns appDelegate: (MIT_MobileAppDelegate *)delegate;
 {
-	self = [super init];
-	if (self != nil) {
-		_apnsDictionary = apns;
-		_appDelegate = delegate;
-	}
+    self = [super init];
+    if (self != nil) {
+        _apnsDictionary = apns;
+        _appDelegate = delegate;
+    }
     
-	return self;
+    return self;
 }
 
 // this is the delegate method for responding to the push notification UIAlertView
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	
-	MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
-
-	BOOL shouldOpen = (buttonIndex == 1);
-	if (shouldOpen) {
-		[self.appDelegate dismissAppModalViewControllerAnimated:YES];
-	}
-
-	[[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
+    
+    MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
+    
+    BOOL shouldOpen = (buttonIndex == 1);
+    if (shouldOpen) {
+        [self.appDelegate dismissAppModalViewControllerAnimated:YES];
+    }
+    
+    [[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
