@@ -607,10 +607,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     UIViewController *topViewController = [[UIViewController alloc] init];
     topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
     
-    UIImage *barButtonIcon = [UIImage imageNamed:@"global/menu"];
-    UIBarButtonItem *anchorLeftButton = [[UIBarButtonItem alloc] initWithImage:barButtonIcon style:UIBarButtonItemStylePlain target:self action:@selector(anchorRight)];
-    topViewController.navigationItem.leftBarButtonItem = anchorLeftButton;
-    
     UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:topViewController];
     navigationController.navigationBarHidden = NO;
     navigationController.toolbarHidden = YES;
@@ -632,18 +628,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     UISwipeGestureRecognizer *gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(anchorRight)];
     gestureRecognizer.numberOfTouchesRequired = 2;
     gestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-    [topViewController.view addGestureRecognizer:gestureRecognizer];
+    [navigationController.view addGestureRecognizer:gestureRecognizer];
+    
+    _topNavigationController = navigationController;
+    _slidingViewController = slidingViewController;
+    
+    MITModule *topModule = [self.modules firstObject];
+    [self showModuleForTag:topModule.tag];
     
     return slidingViewController;
-}
-
-- (void)anchorRight
-{
-    UIViewController *rootViewController = self.rootViewController;
-    if ([rootViewController isKindOfClass:[ECSlidingViewController class]]) {
-        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)rootViewController;
-        [slidingViewController anchorTopViewToRightAnimated:YES];
-    }
 }
 
 - (UINavigationController*)createRootViewControllerForPhoneIdiom
@@ -677,6 +670,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     navigationController.delegate = self;
     
+    _topNavigationController = navigationController;
     return navigationController;
 }
 
@@ -776,20 +770,34 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         return;
     }
     
-    UIViewController *rootViewController = [self rootViewControllerForUserInterfaceIdiom:UIUserInterfaceIdiomPad];
-    
-    if ([rootViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *rootNavigationController = (UINavigationController*)rootViewController;
-        UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
-        
-        if ([rootNavigationController.viewControllers containsObject:homeViewController]) {
-            [rootNavigationController popToViewController:homeViewController animated:animated];
-        } else {
-            [rootNavigationController popToRootViewControllerAnimated:NO];
-            [rootNavigationController pushViewController:homeViewController animated:animated];
+    void (^showModuleBlock)(void) = ^{
+        if (self.topNavigationController) {
+            UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
+            
+            UIImage *barButtonIcon = [UIImage imageNamed:@"global/menu"];
+            UIBarButtonItem *anchorLeftButton = [[UIBarButtonItem alloc] initWithImage:barButtonIcon style:UIBarButtonItemStylePlain target:self action:@selector(anchorRight:)];
+            homeViewController.navigationItem.leftBarButtonItem = anchorLeftButton;
+            
+            self.activeModule = module;
+            if (self.topNavigationController.topViewController == homeViewController) {
+                // Absolutely nothing to do, just exit here
+                return;
+            } else if ([self.topNavigationController.viewControllers containsObject:homeViewController]) {
+                [self.topNavigationController popToViewController:homeViewController animated:animated];
+            } else {
+                [self.topNavigationController popToRootViewControllerAnimated:NO];
+                [self.topNavigationController pushViewController:homeViewController animated:YES];
+            }
+            
         }
-        
-        self.activeModule = module;
+    };
+    
+    if (self.slidingViewController && (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered)) {
+        [self.slidingViewController resetTopViewAnimated:YES onComplete:^{
+            showModuleBlock();
+        }];
+    } else {
+        showModuleBlock();
     }
 }
 
@@ -802,17 +810,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         return;
     }
     
-    UIViewController *rootViewController = [self rootViewControllerForUserInterfaceIdiom:UIUserInterfaceIdiomPhone];
-    
-    if ([rootViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *rootNavigationController = (UINavigationController*)rootViewController;
+    if (self.topNavigationController) {
         UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
         
-        if ([rootNavigationController.viewControllers containsObject:homeViewController]) {
-            [rootNavigationController popToViewController:homeViewController animated:animated];
+        if ([self.topNavigationController.viewControllers containsObject:homeViewController]) {
+            [self.topNavigationController popToViewController:homeViewController animated:animated];
         } else {
-            [rootNavigationController popToRootViewControllerAnimated:NO];
-            [rootNavigationController pushViewController:homeViewController animated:animated];
+            [self.topNavigationController popToRootViewControllerAnimated:NO];
+            [self.topNavigationController pushViewController:homeViewController animated:animated];
         }
         
         self.activeModule = module;
@@ -821,19 +826,28 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 #pragma mark Preferences
 - (void)saveModulesState {
-	NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
+    NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
     for (MITModule *aModule in self.modules) {
-		if (aModule.currentPath && aModule.currentQuery) {
+        if (aModule.currentPath && aModule.currentQuery) {
             NSDictionary *moduleState = @{@"path" : aModule.currentPath,
                                           @"query" : aModule.currentQuery};
             [modulesSavedState setObject:moduleState
                                   forKey:aModule.tag];
-		}
-	}
+        }
+    }
     
-	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
+    [[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
 
+#pragma mark - UIActions
+- (IBAction)anchorRight:(id)sender
+{
+    UIViewController *rootViewController = self.rootViewController;
+    if ([rootViewController isKindOfClass:[ECSlidingViewController class]]) {
+        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)rootViewController;
+        [slidingViewController anchorTopViewToRightAnimated:YES];
+    }
+}
 #pragma mark - Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController

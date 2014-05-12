@@ -4,6 +4,7 @@
 @class MIT_MobileAppDelegate;
 @class MITCoreDataController;
 @class MITMobile;
+@class ECSlidingViewController;
 
 #define MITAppDelegate() ([MIT_MobileAppDelegate applicationDelegate])
 
@@ -18,6 +19,10 @@
 @property (nonatomic,readonly,strong) MITCoreDataController *coreDataController;
 @property (nonatomic,readonly,strong) MITMobile *remoteObjectManager;
 @property (nonatomic,assign,getter=isNotificationsEnabled) BOOL notificationsEnabled;
+
+@property (nonatomic,readonly,weak) UINavigationController *topNavigationController;
+@property (nonatomic,readonly,weak) ECSlidingViewController *slidingViewController;
+
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
 
