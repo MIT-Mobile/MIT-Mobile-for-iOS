@@ -33,7 +33,8 @@
 
 #import "ECSlidingViewController.h"
 #import "MITTouchstoneController.h"
-#import "MITLauncherViewController.h"
+#import "MITLauncherGridViewController.h"
+#import "MITLauncherListViewController.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
@@ -43,7 +44,7 @@
 @end
 
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,MITLauncherDataSource,MITLauncherDelegate>
-@property (nonatomic,strong) MITLauncherViewController *launcherViewController;
+@property (nonatomic,strong) MITLauncherGridViewController *launcherViewController;
 
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
@@ -587,7 +588,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (UIViewController*)createRootViewControllerForPadIdiom
 {
-    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleList];
+    MITLauncherListViewController *launcherViewController = [[MITLauncherListViewController alloc] init];
     launcherViewController.dataSource = self;
     launcherViewController.delegate = self;
     
@@ -641,7 +642,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (UINavigationController*)createRootViewControllerForPhoneIdiom
 {
-    MITLauncherViewController *launcherViewController = [[MITLauncherViewController alloc] initWithStyle:MITLauncherStyleGrid];
+    MITLauncherGridViewController *launcherViewController = [[MITLauncherGridViewController alloc] init];
     launcherViewController.dataSource = self;
     launcherViewController.delegate = self;
     
@@ -862,18 +863,18 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 
 #pragma mark MITLauncherDataSource
-- (NSUInteger)numberOfItemsInLauncher:(MITLauncherViewController *)launcher
+- (NSUInteger)numberOfItemsInLauncher:(MITLauncherGridViewController *)launcher
 {
     return [self.modules count];
 }
 
-- (MITModule*)launcher:(MITLauncherViewController *)launcher moduleAtIndexPath:(NSIndexPath *)index
+- (MITModule*)launcher:(MITLauncherGridViewController *)launcher moduleAtIndexPath:(NSIndexPath *)index
 {
     return self.modules[index.row];
 }
 
 #pragma mark MITLauncherDelegate
-- (void)launcher:(MITLauncherViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
+- (void)launcher:(MITLauncherGridViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
 {
     MITModule *module = self.modules[indexPath.row];
     [self showModuleForTag:module.tag];

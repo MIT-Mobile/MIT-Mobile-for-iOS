@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="UKu-0i-7Kn" customClass="MITLauncherViewCell">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="UKu-0i-7Kn" customClass="MITLauncherGridViewCell">
             <rect key="frame" x="0.0" y="0.0" width="72" height="85"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -44,8 +44,8 @@ lonme string</string>
             </constraints>
             <size key="customSize" width="72" height="85"/>
             <connections>
-                <outlet property="imageView" destination="BvS-ur-Abm" id="64m-HM-bEq"/>
-                <outlet property="titleLabel" destination="lAw-R5-GF9" id="BwR-v0-bKx"/>
+                <outlet property="imageView" destination="BvS-ur-Abm" id="f8t-js-EEX"/>
+                <outlet property="titleLabel" destination="lAw-R5-GF9" id="ec7-qN-SNZ"/>
             </connections>
         </collectionViewCell>
     </objects>

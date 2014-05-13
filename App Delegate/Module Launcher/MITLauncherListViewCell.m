@@ -1,7 +1,7 @@
-#import "MITLauncherViewCell.h"
+#import "MITLauncherListViewCell.h"
 #import "MITModule.h"
 
-@implementation MITLauncherViewCell
+@implementation MITLauncherListViewCell
 - (void)awakeFromNib
 {
     
@@ -11,7 +11,7 @@
 {
     if (_shouldUseShortModuleNames != shouldUseShortModuleNames) {
         _shouldUseShortModuleNames = shouldUseShortModuleNames;
-
+        
         if (_module) {
             // if the value of shouldUseShortModuleNames changed and a module has
             // already been set, we need to force an update to the UI so the change is reflected
@@ -26,12 +26,12 @@
 {
     _module = module;
     
-    self.imageView.image = module.springboardIcon;
-
+    self.moduleImageView.image = module.springboardIcon;
+    
     if (self.shouldUseShortModuleNames) {
-        self.titleLabel.text = module.shortName;
+        self.moduleNameLabel.text = module.shortName;
     } else {
-        self.titleLabel.text = module.longName;
+        self.moduleNameLabel.text = module.longName;
     }
 }
 

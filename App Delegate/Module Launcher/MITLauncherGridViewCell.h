@@ -2,7 +2,7 @@
 
 @class MITModule;
 
-@interface MITLauncherViewCell : UICollectionViewCell
+@interface MITLauncherGridViewCell : UICollectionViewCell
 @property (nonatomic,assign) BOOL shouldUseShortModuleNames;
 
 @property (nonatomic,weak) IBOutlet UIImageView *imageView;
