@@ -16,7 +16,7 @@
 #import "MITModuleURL.h"
 #import "MITMapAnnotationView.h"
 
-#define kSearchBarWidth 270
+#define kSearchBarWidth 270.
 #define kSearchBarCancelWidthDiff 28
 
 #define kAPISearch @"Search"
@@ -50,7 +50,6 @@
 @property (nonatomic, assign) SEL searchFilter;
 @property (nonatomic, assign) BOOL displayShuttles;
 
-@property (nonatomic) BOOL trackingUserLocation;
 
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
@@ -73,8 +72,7 @@
     UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), NAVIGATION_BAR_HEIGHT)];
     searchBarView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"global/toolbar-background"]];
     {
-        UIToolbar *geoToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
-        geoToolbar.translucent = NO;
+        UIToolbar *geoToolbar = [[UIToolbar alloc] init];
         geoToolbar.tintColor = SEARCH_BAR_TINT_COLOR;
         [geoToolbar setBackgroundImage:[UIImage imageNamed:@"global/toolbar-background"]
                     forToolbarPosition:UIToolbarPositionAny
@@ -172,21 +170,21 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.title = @"Campus Map";
+    [self didChangeTrackingUserLocation];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
+
     self.mapView.showsUserLocation = YES;
-
-    self.mapView.stayCenteredOnUserLocation = self.trackingUserLocation;
-
+    self.mapView.stayCenteredOnUserLocation = self.isTrackingUserLocation;
+    
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
     self.mapView.showsUserLocation = NO;
-    self.trackingUserLocation = self.mapView.stayCenteredOnUserLocation;
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -298,8 +296,7 @@
         self.mapView.region = [self.mapView regionForAnnotations:searchResults];
 
 		// turn off locate me
-		self.geoButton.style = UIBarButtonItemStyleBordered;
-		self.mapView.stayCenteredOnUserLocation = NO;
+		self.trackingUserLocation = NO;
         [self saveRegion];
 	}
 
@@ -404,25 +401,29 @@
 
 -(void) geoLocationTouched:(id)sender
 {
-    if ([self.userLocation isNearCampus]) {
-        self.mapView.stayCenteredOnUserLocation = YES;
-    } else {
-        // messages to be shown when user taps locate me button off campus
-        NSString *message = nil;
-        if (arc4random() & 1) {
-            message = NSLocalizedString(@"Off Campus Warning 1", nil);
+    if (!self.isTrackingUserLocation) {
+        if (self.userLocation && [self.userLocation isNearCampus]) {
+            self.trackingUserLocation = YES;
         } else {
-            message = NSLocalizedString(@"Off Campus Warning 2", nil);
+            // messages to be shown when user taps locate me button off campus
+            NSString *message = nil;
+            if (arc4random() & 1) {
+                message = NSLocalizedString(@"Off Campus Warning 1", nil);
+            } else {
+                message = NSLocalizedString(@"Off Campus Warning 2", nil);
+            }
+            
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Off Campus", nil)
+                                                            message:message
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:nil];
+            [alert show];
+            
+            self.trackingUserLocation = NO;
         }
-
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Off Campus", nil)
-                                                        message:message
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                              otherButtonTitles:nil];
-        [alert show];
-
-        self.mapView.showsUserLocation = NO; // turn off location updating
+    } else {
+        self.trackingUserLocation = NO;
     }
 
 	[self setURLPathUserLocation];
@@ -808,14 +809,57 @@
 
 -(void) locateUserFailed:(MITMapView *)mapView
 {
-	if (self.mapView.stayCenteredOnUserLocation)
-	{
-		[self.geoButton setStyle:UIBarButtonItemStyleBordered];
-	}
+    self.trackingUserLocation = NO;
 }
 
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {
     self.userLocation = userLocation;
+
+    if (!mapView.stayCenteredOnUserLocation) {
+        self.trackingUserLocation = NO;
+    }
+}
+
+- (void)setTrackingUserLocation:(BOOL)trackingUserLocation
+{
+    if (_trackingUserLocation != trackingUserLocation) {
+        _trackingUserLocation = trackingUserLocation;
+        self.mapView.stayCenteredOnUserLocation = _trackingUserLocation;
+
+        [self didChangeTrackingUserLocation];
+    }
+}
+
+- (void)didChangeTrackingUserLocation
+{
+    UIBarButtonItem *geotrackingItem = nil;
+    if (self.isTrackingUserLocation && self.mapView.stayCenteredOnUserLocation) {
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_button_icon_locate"]
+                                                           style:UIBarButtonItemStyleDone
+                                                          target:self
+                                                          action:@selector(geoLocationTouched:)];
+    } else {
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_button_icon_locate"]
+                                                           style:UIBarButtonItemStyleBordered
+                                                          target:self
+                                                          action:@selector(geoLocationTouched:)];
+    }
+
+    geotrackingItem.width = 32.;
+
+    NSArray *toolbarItems = nil;
+    if ([[[UIDevice currentDevice] systemVersion] doubleValue] < 7.) {
+        toolbarItems = @[geotrackingItem];
+    } else {
+        // Fine tuning the spacing for iOS 7 devices
+        UIBarButtonItem *leadingSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        leadingSpace.width = -2.;
+
+        toolbarItems = @[leadingSpace,geotrackingItem];
+    }
+
+    self.geoButton = geotrackingItem;
+    [self.geoToolbar setItems:toolbarItems];
 }
 
 #pragma mark JSONLoadedDelegate

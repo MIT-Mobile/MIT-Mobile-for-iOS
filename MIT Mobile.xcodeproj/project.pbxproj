@@ -3656,7 +3656,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "1B640798-3EF9-4A58-B610-9E9E11D12D7E";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -3682,7 +3682,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "4F6856BA-03E9-4906-A3D5-B49E0C37235A";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -3712,7 +3712,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "2D09D2D7-0CB3-49AE-8B3C-49FDF6B406F3";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
