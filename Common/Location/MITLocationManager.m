@@ -1,0 +1,94 @@
+//
+//  MITLocationManager.m
+//  MIT Mobile
+//
+//  Created by Mark Daigneault on 5/15/14.
+//
+//
+
+#import "MITLocationManager.h"
+
+static const double kMilesPerMeter = 0.000621371;
+static const int kDistanceFilterMeters = 100;
+
+NSString * const kLocationManagerDidUpdateLocationNotification = @"kLocationManagerDidUpdateLocationNotification";
+NSString * const kLocationManagerDidFailNotification = @"kLocationManagerDidFailNotification";
+NSString * const kLocationManagerDidFailErrorKey = @"kLocationManagerDidFailErrorKey";
+
+@interface MITLocationManager()
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
+
+@end
+
+@implementation MITLocationManager
+
++ (MITLocationManager *)sharedManager
+{
+    static MITLocationManager *_sharedManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedManager = [[self alloc] init];
+    });
+    return _sharedManager;
+}
+
+#pragma mark - Init
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self setupLocationManager];
+    }
+    return self;
+}
+
+#pragma mark - Setup
+
+- (void)setupLocationManager
+{
+    CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    locationManager.distanceFilter = kDistanceFilterMeters;
+    self.locationManager = locationManager;
+}
+
+#pragma mark - Public Methods
+
+- (void)startUpdatingLocation
+{
+    [self.locationManager startUpdatingLocation];
+}
+
+- (void)stopUpdatingLocation
+{
+    [self.locationManager stopUpdatingLocation];
+}
+
+- (CLLocation *)currentLocation
+{
+    return self.locationManager.location;
+}
+
+- (double)milesFromCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    CLLocation *currentLocation = [self currentLocation];
+    CLLocation *targetLocation = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+    return kMilesPerMeter * [currentLocation distanceFromLocation:targetLocation];
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidUpdateLocationNotification object:nil];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidFailNotification object:nil userInfo:@{kLocationManagerDidFailErrorKey: error}];
+}
+
+@end
