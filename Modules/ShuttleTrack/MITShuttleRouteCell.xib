@@ -10,11 +10,11 @@
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="KGk-i7-Jjw" customClass="MITShuttleRouteCell">
             <rect key="frame" x="0.0" y="0.0" width="320" height="62"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+            <tableViewCellContentView key="contentView" opaque="NO" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="287" height="61"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="shuttle.png" translatesAutoresizingMaskIntoConstraints="NO" id="Dhg-Ns-r0K">
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="shuttle/shuttle.png" translatesAutoresizingMaskIntoConstraints="NO" id="Dhg-Ns-r0K">
                         <rect key="frame" x="14" y="18" width="18" height="25"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <constraints>
@@ -32,7 +32,7 @@
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="15"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L6y-z9-UDX">
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L6y-z9-UDX">
                                 <rect key="frame" x="0.0" y="18" width="245" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -75,15 +75,27 @@
                             <constraint firstAttribute="bottom" secondItem="L6y-z9-UDX" secondAttribute="bottom" id="sWp-0M-qIU"/>
                         </constraints>
                     </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sPe-aq-meH" userLabel="View - Separator">
+                        <rect key="frame" x="0.0" y="61" width="320" height="1"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="0.80399445564516125" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="Fz1-xU-baA"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="sPe-aq-meH" secondAttribute="trailing" constant="-33" id="6bb-vF-E8L"/>
                     <constraint firstItem="Dhg-Ns-r0K" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="8HM-4b-rl6"/>
+                    <constraint firstItem="sPe-aq-meH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="8l1-N8-uk6"/>
+                    <constraint firstAttribute="bottom" secondItem="sPe-aq-meH" secondAttribute="bottom" constant="-1" id="SFF-M2-qiY"/>
                     <constraint firstItem="sMV-uS-dG2" firstAttribute="leading" secondItem="Dhg-Ns-r0K" secondAttribute="trailing" constant="10" id="gIj-na-Bwl"/>
                     <constraint firstItem="Dhg-Ns-r0K" firstAttribute="centerY" secondItem="sMV-uS-dG2" secondAttribute="centerY" id="goW-PP-ko8"/>
                     <constraint firstAttribute="centerY" secondItem="Dhg-Ns-r0K" secondAttribute="centerY" id="iAv-ED-Zim"/>
                     <constraint firstAttribute="trailing" secondItem="sMV-uS-dG2" secondAttribute="trailing" id="z0g-CU-aGn"/>
                 </constraints>
             </tableViewCellContentView>
+            <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
                 <outlet property="alertContainerViewHeightConstraint" destination="F3m-Jr-Yr5" id="Ucm-Kc-MGa"/>
                 <outlet property="alertIconImageView" destination="wF8-ft-wbO" id="1KO-RT-JJV"/>
@@ -94,6 +106,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="shuttle.png" width="18" height="19"/>
+        <image name="shuttle/shuttle.png" width="320" height="568"/>
     </resources>
 </document>

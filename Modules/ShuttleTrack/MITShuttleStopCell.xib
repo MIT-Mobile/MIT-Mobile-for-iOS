@@ -22,7 +22,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="17m" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="slk-Tt-Bvg">
-                        <rect key="frame" x="277" y="12" width="33" height="20"/>
+                        <rect key="frame" x="272" y="12" width="33" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -42,11 +42,12 @@
                     <constraint firstItem="QqE-dC-b3a" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Iw8-nZ-k5Q"/>
                     <constraint firstAttribute="bottom" secondItem="QqE-dC-b3a" secondAttribute="bottom" constant="-1" id="Nkj-7x-P0M"/>
                     <constraint firstItem="8gO-hD-pxv" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="42" id="VRj-WC-LcK"/>
-                    <constraint firstAttribute="trailing" secondItem="slk-Tt-Bvg" secondAttribute="trailing" constant="10" id="eyC-EL-V4a"/>
+                    <constraint firstAttribute="trailing" secondItem="slk-Tt-Bvg" secondAttribute="trailing" constant="15" id="eyC-EL-V4a"/>
                     <constraint firstItem="slk-Tt-Bvg" firstAttribute="centerY" secondItem="8gO-hD-pxv" secondAttribute="centerY" id="rVL-Ul-8pj"/>
                     <constraint firstItem="QqE-dC-b3a" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="wYx-m8-Pez"/>
                 </constraints>
             </tableViewCellContentView>
+            <inset key="separatorInset" minX="42" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
                 <outlet property="nameLabel" destination="8gO-hD-pxv" id="Y6q-v7-6IY"/>
                 <outlet property="routeIndicatorImageView" destination="QqE-dC-b3a" id="Dm2-Zi-280"/>

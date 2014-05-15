@@ -11,8 +11,8 @@
 static const CGFloat kCellHeightNoAlert = 45.0;
 static const CGFloat kCellHeightAlert = 62.0;
 
-static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible = 1000;
-static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden = 1;
+static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden = 1000;
+static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible = 1;
 
 @interface MITShuttleRouteCell()
 
@@ -28,7 +28,7 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden 
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    self.alertContainerViewHeightConstraint.priority = kAlertContainerViewHeightConstraintPriorityHidden;
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
@@ -50,7 +50,7 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden 
 
 + (CGFloat)cellHeightForRoute:(id)route
 {
-    
+    return kCellHeightNoAlert;
 }
 
 @end

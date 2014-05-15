@@ -2,6 +2,8 @@
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleStopCell.h"
 
+#import "UIKit+MITAdditions.h"
+
 static NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
 static NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
 
@@ -17,12 +19,15 @@ static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
 static const NSInteger kRouteCellRow = 0;
 
 static const NSInteger kResourceSectionCount = 2;
-static const CGFloat kResourceSectionHeaderHeight = 32.0;
-static const CGFloat kDefaultSectionHeaderHeight = CGFLOAT_MIN;
+
+static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
+static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
+
+static const CGFloat kContactInformationCellHeight = 60.0;
 
 typedef enum {
-    MITShuttleResourceSectionContactInformation = 1,
-    MITShuttleResourceSectionMBTAInformation = 2
+    MITShuttleResourceSectionContactInformation = 0,
+    MITShuttleResourceSectionMBTAInformation = 1
 } MITShuttleResourceSection;
 
 @interface MITShuttleHomeViewController ()
@@ -44,7 +49,8 @@ typedef enum {
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        self.title = @"Shuttles";
+        self.routes = @[@0, @1, @2, @3];
     }
     return self;
 }
@@ -54,6 +60,7 @@ typedef enum {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self setupRoutesTableView];
 }
 
@@ -87,8 +94,14 @@ typedef enum {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
+        return 2;
+    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+        return 3;
+    } else {
 #warning TODO: data source - return 1 for route with no stops, or 3 for route with two nearest stops
-    return 1;
+        return 3;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -135,9 +148,11 @@ typedef enum {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITShuttlePhoneNumberCellIdentifier];
     }
-#warning TODO: set title and phone number
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"action-phone"]];
+#warning TODO: set title and phone number
+    cell.textLabel.text = @"Parking Office";
+    cell.detailTextLabel.text = @"617.258.6510";
+    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
     return cell;
 }
 
@@ -148,7 +163,8 @@ typedef enum {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITShuttleURLCellIdentifier];
     }
 #warning TODO: set title
-    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"action-external"]];
+    cell.textLabel.text = @"Real-time Bus Arrivals";
+    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     return cell;
 }
 
@@ -168,23 +184,42 @@ typedef enum {
 {
     if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation] ||
         section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
-        return kResourceSectionHeaderHeight;
+        return tableView.sectionHeaderHeight;
     }
-    return kDefaultSectionHeaderHeight;
+    return kRouteSectionHeaderHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    NSInteger lastRouteSection = [self.routes count] - 1;
+    if (section < lastRouteSection) {
+        return kRouteSectionFooterHeight;
+    } else {
+        return tableView.sectionFooterHeight;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.row) {
-        case kRouteCellRow:
-            return [MITShuttleRouteCell cellHeightForRoute:nil];
-        default:
-            return tableView.rowHeight;
+    NSInteger section = indexPath.section;
+    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
+        return kContactInformationCellHeight;
+    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+        return tableView.rowHeight;
+    } else {
+        switch (indexPath.row) {
+            case kRouteCellRow:
+                return [MITShuttleRouteCell cellHeightForRoute:nil];
+            default:
+                return tableView.rowHeight;
+        }
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
     NSInteger section = indexPath.section;
     if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
         NSString *phoneNumber;
