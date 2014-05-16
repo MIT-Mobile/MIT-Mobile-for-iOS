@@ -1,11 +1,3 @@
-//
-//  MITShuttleVehicleList.m
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/16/14.
-//
-//
-
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
 

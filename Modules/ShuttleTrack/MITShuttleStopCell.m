@@ -1,11 +1,3 @@
-//
-//  MITShuttleStopCell.m
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/14/14.
-//
-//
-
 #import "MITShuttleStopCell.h"
 
 static NSString * const kTimeUnavailableText = @"--";

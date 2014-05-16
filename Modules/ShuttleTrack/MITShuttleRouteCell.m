@@ -1,11 +1,3 @@
-//
-//  MITShuttleRouteCell.m
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/13/14.
-//
-//
-
 #import "MITShuttleRouteCell.h"
 
 static const CGFloat kCellHeightNoAlert = 45.0;

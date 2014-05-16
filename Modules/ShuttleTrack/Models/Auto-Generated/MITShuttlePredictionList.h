@@ -1,11 +1,3 @@
-//
-//  MITShuttlePredictionList.h
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/16/14.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 

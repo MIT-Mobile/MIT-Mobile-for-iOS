@@ -1,11 +1,3 @@
-//
-//  MITShuttlePrediction.m
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/16/14.
-//
-//
-
 #import "MITShuttlePrediction.h"
 #import "MITShuttlePredictionList.h"
 #import "MITShuttleStop.h"
