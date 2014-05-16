@@ -33,6 +33,8 @@
 
 #import "ECSlidingViewController.h"
 #import "MITTouchstoneController.h"
+
+#import "MITLauncher.h"
 #import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
 

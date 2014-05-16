@@ -274,7 +274,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             cell = [tableView dequeueReusableCellWithIdentifier:clearRecentsCellID forIndexPath:indexPath];
             
             cell.textLabel.text = @"Clear Recents";
-            [cell.textLabel setTextColor:[UIColor MITTintColor]];
+            [cell.textLabel setTextColor:[UIColor mit_tintColor]];
         }
 
         return cell;
