@@ -8,6 +8,5 @@
 - (void)performSearch;
 - (void)showLoadingView;
 - (void)phoneIconTapped;
-- (void)showActionSheet;
 
 @end

@@ -191,6 +191,12 @@
                                       constrainedToSize:CGSizeMake(CGRectGetMaxX(statusContentFrame) - CGRectGetMaxX(iconFrame),
                                                                    CGRectGetMaxY(statusContentFrame))
                                           lineBreakMode:statusLabel.lineBreakMode];
+            
+            // make sure that label's total width + initial X position doesn't go over the main screen frame.
+            if( (statusFrame.size.width + statusFrame.origin.x) >= mainFrame.size.width )
+            {
+               statusFrame.size.width -= statusFrame.origin.x;
+            }
 
             statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
             statusLabel.frame = statusFrame;
