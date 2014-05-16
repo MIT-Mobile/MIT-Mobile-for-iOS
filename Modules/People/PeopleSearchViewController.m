@@ -461,14 +461,16 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     
     if( updatedNumberOfRecentPeople == 0 )
     {
-        // animate deletion of a section
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
-                      withRowAnimation:UITableViewRowAnimationAutomatic];
+        //  need to delete both "clear recent" and "recently viewed" sections
+        [self.tableView reloadData];
+        
+        [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
     }
     else
     {
-        // animate deltion of a row
-        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        // deletition of a row. Visually performs better with a tableView deleteRows api vs reloadData.
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
 
@@ -520,7 +522,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
             [indexSet addIndex:MITPeopleSearchTableViewSectionClearRecentlyViewed];
             [indexSet addIndex:MITPeopleSearchTableViewSectionRecentlyViewed];
-            [self.tableView deleteSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.tableView deleteSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+            
+            [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
         }
         else
         {
