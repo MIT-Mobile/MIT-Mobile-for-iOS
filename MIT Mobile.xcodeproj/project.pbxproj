@@ -290,6 +290,13 @@
 		5E8CE40A1922B12E00703920 /* MITShuttleHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */; };
 		5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */; };
 		5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */; };
+		5EC89F591926514800E06204 /* MITShuttleDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */; };
+		5EC89F5C1926517100E06204 /* MITShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F5B1926517100E06204 /* MITShuttleRoute.m */; };
+		5EC89F5F1926517200E06204 /* MITShuttleVehicle.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */; };
+		5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F611926517200E06204 /* MITShuttlePrediction.m */; };
+		5EC89F651926517200E06204 /* MITShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F641926517200E06204 /* MITShuttleStop.m */; };
+		5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F671926517200E06204 /* MITShuttleVehicleList.m */; };
+		5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1035,6 +1042,19 @@
 		5E8CE40B1922BBE900703920 /* MITShuttleRouteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteCell.h; sourceTree = "<group>"; };
 		5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteCell.m; sourceTree = "<group>"; };
 		5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteCell.xib; sourceTree = "<group>"; };
+		5EC89F581926514800E06204 /* MITShuttleDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITShuttleDataModel.xcdatamodel; sourceTree = "<group>"; };
+		5EC89F5A1926517100E06204 /* MITShuttleRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRoute.h; sourceTree = "<group>"; };
+		5EC89F5B1926517100E06204 /* MITShuttleRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRoute.m; sourceTree = "<group>"; };
+		5EC89F5D1926517200E06204 /* MITShuttleVehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleVehicle.h; sourceTree = "<group>"; };
+		5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleVehicle.m; sourceTree = "<group>"; };
+		5EC89F601926517200E06204 /* MITShuttlePrediction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlePrediction.h; sourceTree = "<group>"; };
+		5EC89F611926517200E06204 /* MITShuttlePrediction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePrediction.m; sourceTree = "<group>"; };
+		5EC89F631926517200E06204 /* MITShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStop.h; sourceTree = "<group>"; };
+		5EC89F641926517200E06204 /* MITShuttleStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStop.m; sourceTree = "<group>"; };
+		5EC89F661926517200E06204 /* MITShuttleVehicleList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleVehicleList.h; sourceTree = "<group>"; };
+		5EC89F671926517200E06204 /* MITShuttleVehicleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleVehicleList.m; sourceTree = "<group>"; };
+		5EC89F691926517200E06204 /* MITShuttlePredictionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlePredictionList.h; sourceTree = "<group>"; };
+		5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePredictionList.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
@@ -2548,6 +2568,67 @@
 			path = Location;
 			sourceTree = "<group>";
 		};
+		5E6DEDF41925646100BA54BE /* Old */ = {
+			isa = PBXGroup;
+			children = (
+				DE6D332910346F6D008A5823 /* ShuttleRoutes.h */,
+				DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */,
+				44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */,
+				44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */,
+				DE71F6E1104234F900661DED /* ShuttleRouteViewController.h */,
+				DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */,
+				448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */,
+				442C192710F3AE3400CB44EC /* RouteMapViewController.h */,
+				442C192810F3AE3400CB44EC /* RouteMapViewController.m */,
+				442C192910F3AE3400CB44EC /* RouteMapViewController.xib */,
+				4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */,
+				4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */,
+				44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */,
+				44BF601F11050AC000E150D5 /* ShuttleStopCell.m */,
+				44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */,
+				EBDB0C4711483FE3008AAE42 /* Model */,
+				DE705490103FB792003B5F41 /* ShuttleRoute.h */,
+				DE705491103FB792003B5F41 /* ShuttleRoute.m */,
+				DE71F7D310424E3400661DED /* ShuttleStop.h */,
+				DE71F7D410424E3400661DED /* ShuttleStop.m */,
+				4420F22F10E9513700A8CD05 /* ShuttleDataManager.h */,
+				4420F23010E9513700A8CD05 /* ShuttleDataManager.m */,
+				442C1CA110F4FE8900CB44EC /* ShuttleLocation.h */,
+				442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */,
+				29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */,
+				29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */,
+			);
+			name = Old;
+			sourceTree = "<group>";
+		};
+		5EC89F5519264B6F00E06204 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */,
+				5EC89F5619264DE700E06204 /* Auto-Generated */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5EC89F5619264DE700E06204 /* Auto-Generated */ = {
+			isa = PBXGroup;
+			children = (
+				5EC89F691926517200E06204 /* MITShuttlePredictionList.h */,
+				5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */,
+				5EC89F661926517200E06204 /* MITShuttleVehicleList.h */,
+				5EC89F671926517200E06204 /* MITShuttleVehicleList.m */,
+				5EC89F631926517200E06204 /* MITShuttleStop.h */,
+				5EC89F641926517200E06204 /* MITShuttleStop.m */,
+				5EC89F601926517200E06204 /* MITShuttlePrediction.h */,
+				5EC89F611926517200E06204 /* MITShuttlePrediction.m */,
+				5EC89F5D1926517200E06204 /* MITShuttleVehicle.h */,
+				5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */,
+				5EC89F5A1926517100E06204 /* MITShuttleRoute.h */,
+				5EC89F5B1926517100E06204 /* MITShuttleRoute.m */,
+			);
+			path = "Auto-Generated";
+			sourceTree = "<group>";
+		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -2737,32 +2818,8 @@
 				5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */,
 				5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */,
 				5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */,
-				DE6D332910346F6D008A5823 /* ShuttleRoutes.h */,
-				DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */,
-				44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */,
-				44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */,
-				DE71F6E1104234F900661DED /* ShuttleRouteViewController.h */,
-				DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */,
-				448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */,
-				442C192710F3AE3400CB44EC /* RouteMapViewController.h */,
-				442C192810F3AE3400CB44EC /* RouteMapViewController.m */,
-				442C192910F3AE3400CB44EC /* RouteMapViewController.xib */,
-				4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */,
-				4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */,
-				44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */,
-				44BF601F11050AC000E150D5 /* ShuttleStopCell.m */,
-				44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */,
-				EBDB0C4711483FE3008AAE42 /* Model */,
-				DE705490103FB792003B5F41 /* ShuttleRoute.h */,
-				DE705491103FB792003B5F41 /* ShuttleRoute.m */,
-				DE71F7D310424E3400661DED /* ShuttleStop.h */,
-				DE71F7D410424E3400661DED /* ShuttleStop.m */,
-				4420F22F10E9513700A8CD05 /* ShuttleDataManager.h */,
-				4420F23010E9513700A8CD05 /* ShuttleDataManager.m */,
-				442C1CA110F4FE8900CB44EC /* ShuttleLocation.h */,
-				442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */,
-				29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */,
-				29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */,
+				5EC89F5519264B6F00E06204 /* Models */,
+				5E6DEDF41925646100BA54BE /* Old */,
 			);
 			path = ShuttleTrack;
 			sourceTree = "<group>";
@@ -3326,6 +3383,7 @@
 				3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */,
 				3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */,
 				2C18090D18F33B95008F9775 /* MITTouchstoneOperation.m in Sources */,
+				5EC89F651926517200E06204 /* MITShuttleStop.m in Sources */,
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,
 				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
@@ -3349,6 +3407,7 @@
 				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
 				DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */,
 				2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */,
+				5EC89F591926514800E06204 /* MITShuttleDataModel.xcdatamodeld in Sources */,
 				2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
 				2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */,
@@ -3380,6 +3439,7 @@
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
 				2C18090418F33B95008F9775 /* MITTouchstoneRequestOperation.m in Sources */,
 				2C5D7875191817F500ECB388 /* MITLauncherGridViewController.m in Sources */,
+				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
@@ -3518,11 +3578,13 @@
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
+				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
 				DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */,
 				DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */,
 				DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */,
 				DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */,
 				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
+				5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
 				DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */,
@@ -3563,6 +3625,7 @@
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
 				2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */,
+				5EC89F5C1926517100E06204 /* MITShuttleRoute.m in Sources */,
 				2C6528F217906DBD00BED0DF /* Secret.m in Sources */,
 				2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */,
 				2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */,
@@ -3609,6 +3672,7 @@
 				DED41FE117385A730048376F /* DiningDay.m in Sources */,
 				2C2CB48F19229A6300FCC056 /* MITLauncherListViewController.m in Sources */,
 				DED41FE417385A850048376F /* DiningMealItem.m in Sources */,
+				5EC89F5F1926517200E06204 /* MITShuttleVehicle.m in Sources */,
 				DED41FE717385A860048376F /* DiningDietaryFlag.m in Sources */,
 				DED41FEA17385A860048376F /* DiningMeal.m in Sources */,
 				484748BF173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m in Sources */,
@@ -3891,6 +3955,16 @@
 			currentVersion = 4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */;
 			name = LibrariesLocationsHours.xcdatamodeld;
 			path = LocationsHours/LibrariesLocationsHours.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5EC89F581926514800E06204 /* MITShuttleDataModel.xcdatamodel */,
+			);
+			currentVersion = 5EC89F581926514800E06204 /* MITShuttleDataModel.xcdatamodel */;
+			path = MITShuttleDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
