@@ -120,7 +120,14 @@
 }
 
 - (NSString *)hoursToday {
-    RetailDay *today = [self dayForDate:[NSDate date]];
+    NSDate *date = [NSDate date];
+    RetailDay *yesterday = [self dayForDate:[date dayBefore]];
+    if ([yesterday.endTime compare:date] == NSOrderedDescending) {
+        // yesterday's ours end today
+        return [yesterday hoursSummary];
+    }
+    
+    RetailDay *today = [self dayForDate:date];
     return [today hoursSummary];
 }
 

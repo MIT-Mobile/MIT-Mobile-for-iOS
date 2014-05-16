@@ -290,8 +290,8 @@
     } else {
         if (indexPath.row == 0) {
             FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
-            vc.userData = [NSDictionary dictionaryWithObject: self.searchString
-                                                      forKey: FacilitiesRequestLocationUserBuildingKey];
+            vc.userData = @{FacilitiesRequestLocationUserBuildingKey : self.searchString, FacilitiesRequestLocationUserRoomKey : @""};
+            
             nextViewController = vc;
         } else {
             

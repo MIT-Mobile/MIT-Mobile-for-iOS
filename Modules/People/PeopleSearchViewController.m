@@ -16,7 +16,8 @@
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
     MITPeopleSearchTableViewSectionContacts = 1,
-    MITPeopleSearchTableViewSectionRecentlyViewed = 2
+    MITPeopleSearchTableViewSectionRecentlyViewed = 2,
+    MITPeopleSearchTableViewSectionClearRecentlyViewed = 3
 };
 
 // Hard-code this for now, should be pulled from the API in the future
@@ -126,6 +127,15 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	[self performSearch];
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
+{
+    self.searchTerms = nil;
+    self.searchTokens = nil;
+    self.searchResults = nil;
+    
+    [self.searchDisplayController.searchResultsTableView reloadData];
+}
+
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
 	self.searchTerms = externalSearchTerms;
@@ -177,7 +187,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (tableView == self.tableView) {
         if ([[[PeopleRecentsData sharedData] recents] count] > 0) {
-            return 3; // Examples + Directory Assistance/Contacts + Recents
+            return 4; // Examples + Directory Assistance/Contacts + Recents + Clear Recents
         } else {
             return 2; // Examples + Directory Assistance/Contacts, no recents
         }
@@ -198,6 +208,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 				return 2;
 			case MITPeopleSearchTableViewSectionRecentlyViewed: // recently viewed
 				return [[[PeopleRecentsData sharedData] recents] count];
+            case MITPeopleSearchTableViewSectionClearRecentlyViewed: // clear recently viewed
+                return 1;
 			default:
 				return 0;
 		}
@@ -210,7 +222,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *recentCellID = @"RecentCell";
-    static NSString * directoryAssistanceID = @"DirectoryAssistanceCell";
+    static NSString *directoryAssistanceID = @"DirectoryAssistanceCell";
+    static NSString *clearRecentsCellID = @"ClearRecents";
 
     UITableViewCell *cell = nil;
 
@@ -257,6 +270,11 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                     }
                 }
             }
+        } else if( MITPeopleSearchTableViewSectionClearRecentlyViewed == indexPath.section) {
+            cell = [tableView dequeueReusableCellWithIdentifier:clearRecentsCellID forIndexPath:indexPath];
+            
+            cell.textLabel.text = @"Clear Recents";
+            [cell.textLabel setTextColor:[UIColor MITTintColor]];
         }
 
         return cell;
@@ -335,7 +353,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                      // There shouldn't be anything else in this section but, just in case
                     return UITableViewAutomaticDimension;
             }
-        } else if (MITPeopleSearchTableViewSectionRecentlyViewed == section) {
+        } else if (MITPeopleSearchTableViewSectionRecentlyViewed == section ||
+                   MITPeopleSearchTableViewSectionClearRecentlyViewed == section)
+        {
             return UITableViewAutomaticDimension;
         }
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
@@ -358,16 +378,23 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     return nil;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView == self.tableView) {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.tableView)
+    {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        
         if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
             switch (indexPath.row) {
                 case 0:
                     // Call directory assistance!
                     [self phoneIconTapped];
-                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
                     break;
             }
+        }
+        else if( MITPeopleSearchTableViewSectionClearRecentlyViewed == indexPath.section )
+        {
+            [self showActionSheet];
         }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
 		PersonDetails *personDetails = nil;
@@ -384,6 +411,67 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 		vc.personDetails = personDetails;
 		[self.navigationController pushViewController:vc animated:YES];
 	}
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if( MITPeopleSearchTableViewSectionRecentlyViewed == indexPath.section )
+    {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle != UITableViewCellEditingStyleDelete)
+    {
+        return;
+    }
+    
+    NSArray *recentPeople = [[PeopleRecentsData sharedData] recents];
+    
+    NSUInteger numberOfRecentPeople = [recentPeople count];
+    
+    // shouldn't ever happen, but just a precaution to avoid any crashes in case of an error.
+    if( indexPath.row >= numberOfRecentPeople )
+    {
+        return;
+    }
+    
+    PersonDetails *recent = recentPeople[indexPath.row];
+    
+    [PeopleRecentsData erasePerson:recent.uid];
+    
+    NSUInteger updatedNumberOfRecentPeople = [[[PeopleRecentsData sharedData] recents] count];
+    
+    //  a safety check to make sure deletion was successful
+    if( updatedNumberOfRecentPeople >= numberOfRecentPeople )
+    {
+        // deletion failed.. just reload the tableview.
+        [self.tableView reloadData];
+        return;
+    }
+    
+    if( updatedNumberOfRecentPeople == 0 )
+    {
+        //  need to delete both "clear recent" and "recently viewed" sections
+        [self.tableView reloadData];
+        
+        [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
+    }
+    else
+    {
+        // deletition of a row. Visually performs better with a tableView deleteRows api vs reloadData.
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 #pragma mark - Connection methods
@@ -428,9 +516,21 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
 	if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Clear"]) {
 		[PeopleRecentsData eraseAll];
-		self.tableView.tableFooterView.hidden = YES;
-		[self.tableView reloadData];
-		[self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
+
+        if( [[[PeopleRecentsData sharedData] recents] count] == 0 )
+        {
+            NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+            [indexSet addIndex:MITPeopleSearchTableViewSectionClearRecentlyViewed];
+            [indexSet addIndex:MITPeopleSearchTableViewSectionRecentlyViewed];
+            [self.tableView deleteSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+            
+            [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
+        }
+        else
+        {
+            // erase didn't quite work.. just reload the tableView
+            [self.tableView reloadData];
+        }
 	}
 }
 
