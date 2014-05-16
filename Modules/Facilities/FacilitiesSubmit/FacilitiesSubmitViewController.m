@@ -108,7 +108,11 @@
 
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
     params[@"name"] = @"";
-    params[@"email"] = self.reportDictionary[FacilitiesRequestUserEmailKey];
+    
+    if( self.reportDictionary[FacilitiesRequestUserEmailKey] )
+    {
+        params[@"email"] = self.reportDictionary[FacilitiesRequestUserEmailKey];        
+    }
     
     FacilitiesLocation *location = self.reportDictionary[FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = self.reportDictionary[FacilitiesRequestLocationRoomKey];
@@ -120,19 +124,23 @@
         params[@"locationName"] = location.name;
         params[@"buildingNumber"] = location.number;
         params[@"location"] = location.uid;
-    } else {
+    } else if( customLocation ) {
         params[@"locationNameByUser"] = customLocation;
     }
     
     if (room) {
         params[@"roomName"] = room.number;
-    } else {
+    } else if( customRoom ) {
         params[@"roomNameByUser"] = customRoom;
     }
     
-    params[@"problemType"] = type.name;
+    if( type.name ) {
+        params[@"problemType"] = type.name;
+    }
     
-    params[@"message"] = self.reportDictionary[FacilitiesRequestUserDescriptionKey];
+    if( self.reportDictionary[FacilitiesRequestUserDescriptionKey] ) {
+        params[@"message"] = self.reportDictionary[FacilitiesRequestUserDescriptionKey];
+    }
     
     NSData *pictureData = self.reportDictionary[FacilitiesRequestImageDataKey];
     if (pictureData) {

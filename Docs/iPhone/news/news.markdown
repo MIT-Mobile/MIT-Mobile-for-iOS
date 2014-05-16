@@ -84,7 +84,7 @@ Modal state of [Top List](#toplist) and [Category List](#categorylist) screens.
 
 Not in storyboard. Needs to added in code.
 
-A search in Top List searches all categories at once and returns all results mixed into a single section. A search from Category List searches just that category.
+A search in Top List searches all categories at once and returns all results mixed into a single section. A search from Category List searches all categories at once and returns all results mixed into a single section.
 
 Results are loaded 20 at a time. More can be loaded from the "Load more..." row at the bottom of the table, just as in Category List.
 
