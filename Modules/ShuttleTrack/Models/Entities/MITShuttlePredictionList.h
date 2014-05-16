@@ -1,23 +1,22 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
-@class MITShuttlePrediction, MITShuttleRoute;
+@class MITShuttlePrediction;
 
-@interface MITShuttleStop : NSManagedObject
+@interface MITShuttlePredictionList : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSString * identifier;
-@property (nonatomic, retain) NSNumber * latitude;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSString * predictionsURL;
-@property (nonatomic, retain) NSString * shortTitle;
-@property (nonatomic, retain) NSString * stopNumber;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * url;
+@property (nonatomic, retain) NSString * routeId;
+@property (nonatomic, retain) NSString * routeTitle;
+@property (nonatomic, retain) NSString * routeURL;
+@property (nonatomic, retain) NSString * stopId;
+@property (nonatomic, retain) NSString * stopTitle;
+@property (nonatomic, retain) NSString * stopURL;
 @property (nonatomic, retain) NSOrderedSet *predictions;
-@property (nonatomic, retain) MITShuttleRoute *route;
 @end
 
-@interface MITShuttleStop (CoreDataGeneratedAccessors)
+@interface MITShuttlePredictionList (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(MITShuttlePrediction *)value inPredictionsAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromPredictionsAtIndex:(NSUInteger)idx;

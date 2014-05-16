@@ -1,9 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITShuttleStop, MITShuttleVehicle;
 
-@interface MITShuttleRoute : NSManagedObject
+@interface MITShuttleRoute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * agency;
 @property (nonatomic, retain) NSString * identifier;

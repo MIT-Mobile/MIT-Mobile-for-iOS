@@ -1,9 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITShuttleRoute, MITShuttleVehicleList;
 
-@interface MITShuttleVehicle : NSManagedObject
+@interface MITShuttleVehicle : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSNumber * heading;
 @property (nonatomic, retain) NSString * identifier;

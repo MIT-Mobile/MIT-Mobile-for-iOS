@@ -2605,28 +2605,28 @@
 			isa = PBXGroup;
 			children = (
 				5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */,
-				5EC89F5619264DE700E06204 /* Auto-Generated */,
+				5EC89F5619264DE700E06204 /* Entities */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		5EC89F5619264DE700E06204 /* Auto-Generated */ = {
+		5EC89F5619264DE700E06204 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				5EC89F691926517200E06204 /* MITShuttlePredictionList.h */,
-				5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */,
-				5EC89F661926517200E06204 /* MITShuttleVehicleList.h */,
-				5EC89F671926517200E06204 /* MITShuttleVehicleList.m */,
-				5EC89F631926517200E06204 /* MITShuttleStop.h */,
-				5EC89F641926517200E06204 /* MITShuttleStop.m */,
-				5EC89F601926517200E06204 /* MITShuttlePrediction.h */,
-				5EC89F611926517200E06204 /* MITShuttlePrediction.m */,
-				5EC89F5D1926517200E06204 /* MITShuttleVehicle.h */,
-				5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */,
 				5EC89F5A1926517100E06204 /* MITShuttleRoute.h */,
 				5EC89F5B1926517100E06204 /* MITShuttleRoute.m */,
+				5EC89F631926517200E06204 /* MITShuttleStop.h */,
+				5EC89F641926517200E06204 /* MITShuttleStop.m */,
+				5EC89F5D1926517200E06204 /* MITShuttleVehicle.h */,
+				5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */,
+				5EC89F661926517200E06204 /* MITShuttleVehicleList.h */,
+				5EC89F671926517200E06204 /* MITShuttleVehicleList.m */,
+				5EC89F691926517200E06204 /* MITShuttlePredictionList.h */,
+				5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */,
+				5EC89F601926517200E06204 /* MITShuttlePrediction.h */,
+				5EC89F611926517200E06204 /* MITShuttlePrediction.m */,
 			);
-			path = "Auto-Generated";
+			path = Entities;
 			sourceTree = "<group>";
 		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
