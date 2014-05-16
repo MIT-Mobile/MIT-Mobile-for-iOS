@@ -53,6 +53,23 @@
     [self sharedData].recents = [[NSArray alloc] init];
 }
 
++ (void) erasePerson:(NSString *)uid
+{
+    NSMutableArray *updatedRecents = [[self sharedData].recents mutableCopy];
+    
+    [[self sharedData].recents enumerateObjectsUsingBlock:^(PersonDetails *person, NSUInteger idx, BOOL *stop) {
+        if ([[person valueForKey:@"uid"] isEqualToString:uid]) {
+			[updatedRecents removeObjectAtIndex:idx];
+            [CoreDataManager deleteObject:person];
+			(*stop) = YES;
+		}
+    }];
+    
+    [self sharedData].recents = updatedRecents;
+    
+    [CoreDataManager saveData];
+}
+
 + (PersonDetails *)updatePerson:(PersonDetails *)personDetails
 {
 	[personDetails setValue:[NSDate date] forKey:@"lastUpdate"];
