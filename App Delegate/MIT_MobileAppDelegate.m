@@ -479,6 +479,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"News",
                             @"QRReaderResult",
                             @"ShuttleTrack",
+                            @"MITShuttleDataModel",
                             @"Tours",
                             @"PeopleDataModel"];
     
@@ -567,6 +568,21 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:peopleResource];
     
+    MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRoutesResource];
+    
+    MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRouteDetailResource];
+
+    MITMobileResource *shuttleStopDetailResource = [[MITShuttleStopDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleStopDetailResource];
+
+    MITMobileResource *shuttlePredictionsResource = [[MITShuttlePredictionsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttlePredictionsResource];
+
+    MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleVehiclesResource];
+
     _remoteObjectManager = remoteObjectManager;
 }
 

@@ -89,6 +89,14 @@ FOUNDATION_EXTERN NSString* const MITShuttlesStopsPathPattern;
 FOUNDATION_EXTERN NSString* const MITShuttlesStopResourceName;
 FOUNDATION_EXTERN NSString* const MITShuttlesStopPathPattern;
 
+#pragma mark shuttles/predictions
+FOUNDATION_EXTERN NSString* const MITShuttlesPredictionsResourceName;
+FOUNDATION_EXTERN NSString* const MITShuttlesPredictionsPathPattern;
+
+#pragma mark shuttles/vehicles
+FOUNDATION_EXTERN NSString* const MITShuttlesVehiclesResourceName;
+FOUNDATION_EXTERN NSString* const MITShuttlesVehiclesPathPattern;
+
 #pragma mark techcash
 FOUNDATION_EXTERN NSString* const MITTechcashResourceName;
 FOUNDATION_EXTERN NSString* const MITTechcashPathPattern;

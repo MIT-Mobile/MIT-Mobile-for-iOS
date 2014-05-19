@@ -283,6 +283,8 @@
 		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC3421282ADCE00BA0794 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3411282ADCE00BA0794 /* libiconv.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		56D7DF52128854DF00E9E5C9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56D7DF51128854DF00E9E5C9 /* MapKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5E617F0E1926693F00091656 /* MITShuttleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F0D1926693F00091656 /* MITShuttleController.m */; };
+		5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F10192688E700091656 /* MITShuttlesResource.m */; };
 		5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */; };
 		5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */; };
 		5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDF21924F49100BA54BE /* MITLocationManager.m */; };
@@ -1031,6 +1033,10 @@
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		569DC3411282ADCE00BA0794 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		56D7DF51128854DF00E9E5C9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		5E617F0C1926693F00091656 /* MITShuttleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleController.h; sourceTree = "<group>"; };
+		5E617F0D1926693F00091656 /* MITShuttleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleController.m; sourceTree = "<group>"; };
+		5E617F0F192688E700091656 /* MITShuttlesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlesResource.h; sourceTree = "<group>"; };
+		5E617F10192688E700091656 /* MITShuttlesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlesResource.m; sourceTree = "<group>"; };
 		5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopCell.h; sourceTree = "<group>"; };
 		5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopCell.m; sourceTree = "<group>"; };
 		5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopCell.xib; sourceTree = "<group>"; };
@@ -1996,6 +2002,8 @@
 				48BB1A3E1884B3C000852645 /* MITPersonResource.m */,
 				48D9C1D11885935D00CB3F15 /* MITPeopleResource.h */,
 				48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */,
+				5E617F0F192688E700091656 /* MITShuttlesResource.h */,
+				5E617F10192688E700091656 /* MITShuttlesResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2605,6 +2613,8 @@
 			isa = PBXGroup;
 			children = (
 				5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */,
+				5E617F0C1926693F00091656 /* MITShuttleController.h */,
+				5E617F0D1926693F00091656 /* MITShuttleController.m */,
 				5EC89F5619264DE700E06204 /* Entities */,
 			);
 			path = Models;
@@ -2809,6 +2819,7 @@
 			children = (
 				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
 				DE6D32F510346D02008A5823 /* ShuttleModule.m */,
+				5EC89F5519264B6F00E06204 /* Models */,
 				5E8CE4061922B12E00703920 /* MITShuttleHomeViewController.h */,
 				5E8CE4071922B12E00703920 /* MITShuttleHomeViewController.m */,
 				5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */,
@@ -2818,7 +2829,6 @@
 				5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */,
 				5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */,
 				5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */,
-				5EC89F5519264B6F00E06204 /* Models */,
 				5E6DEDF41925646100BA54BE /* Old */,
 			);
 			path = ShuttleTrack;
@@ -3409,6 +3419,7 @@
 				2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */,
 				5EC89F591926514800E06204 /* MITShuttleDataModel.xcdatamodeld in Sources */,
 				2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */,
+				5E617F0E1926693F00091656 /* MITShuttleController.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
 				2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */,
 				2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */,
@@ -3438,6 +3449,7 @@
 				2CF61DCA18898C7E00D43381 /* MITNewsModelController.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
 				2C18090418F33B95008F9775 /* MITTouchstoneRequestOperation.m in Sources */,
+				5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */,
 				2C5D7875191817F500ECB388 /* MITLauncherGridViewController.m in Sources */,
 				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
