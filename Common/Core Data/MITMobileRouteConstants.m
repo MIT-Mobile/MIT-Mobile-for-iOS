@@ -95,7 +95,7 @@ NSString* const MITShuttlesPredictionsPathPattern = @"apis/shuttles/predictions/
 
 #pragma mark shuttles/vehicles
 NSString* const MITShuttlesVehiclesResourceName = @"MITShuttlesVehiclesResourceName";
-NSString* const MITShuttlesVehiclesPathPattern = @"apis/shuttles/vehicles/";
+NSString* const MITShuttlesVehiclesPathPattern = @"apis/shuttles/vehicles";
 
 #pragma mark techcash
 NSString* const MITTechcashResourceName = @"MITTechcashResourceName";

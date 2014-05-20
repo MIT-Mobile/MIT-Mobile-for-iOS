@@ -4,8 +4,8 @@
 #import "MITMobileRouteConstants.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
-#import "MITShuttlePrediction.h"
-#import "MITShuttleVehicle.h"
+#import "MITShuttlePredictionList.h"
+#import "MITShuttleVehicleList.h"
 
 @implementation MITShuttleRoutesResource
 
@@ -61,7 +61,7 @@
 {
     self = [super initWithName:MITShuttlesPredictionsResourceName pathPattern:MITShuttlesPredictionsPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttlePrediction objectMapping]
+        [self addMapping:[MITShuttlePredictionList objectMapping]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
@@ -77,7 +77,7 @@
 {
     self = [super initWithName:MITShuttlesVehiclesResourceName pathPattern:MITShuttlesVehiclesPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttleVehicle objectMapping]
+        [self addMapping:[MITShuttleVehicleList objectMapping]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }

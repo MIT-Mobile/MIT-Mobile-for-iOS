@@ -116,6 +116,12 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     NSMutableString *path = [NSMutableString stringWithFormat:@"%@?%@",[url path],[url query]];
     [path replaceOccurrencesOfString:@"/" withString:@"" options:0 range:NSMakeRange(0, 1)];
     
+    // For URLs with a trailing '/' before the query component, path matching will fail here
+    // unless we manually add the '/'
+    if ([url.absoluteString rangeOfString:@"/?"].length > 0) {
+        [path replaceOccurrencesOfString:@"?" withString:@"/?" options:0 range:NSMakeRange(0, path.length)];
+    }
+    
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
     [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
         NSDictionary *parameters = nil;

@@ -5,6 +5,8 @@
 #import "MITLocationManager.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
+#import "MITShuttlePredictionList.h"
+#import "MITShuttlePrediction.h"
 #import "UIKit+MITAdditions.h"
 
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
@@ -47,6 +49,7 @@ typedef enum {
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 
 @property (copy, nonatomic) NSArray *routes;
+@property (strong, nonatomic) NSMutableSet *predictionLists;
 @property (copy, nonatomic) NSDictionary *nearestStops;
 
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
@@ -75,7 +78,7 @@ typedef enum {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.nearestStops = [NSMutableDictionary dictionary];
+    self.predictionLists = [NSMutableSet set];
     [self setupRoutesTableView];
 }
 
@@ -159,18 +162,26 @@ typedef enum {
             self.routes = routes;
             self.nearestStops = [self nearestStopsForRoutes:routes];
             [self.routesTableView reloadData];
-//            if (!self.predictionsRefreshTimer.isValid) {
-//                [self startRefreshingPredictions];
-//            }
+            if (!self.predictionsRefreshTimer.isValid) {
+                [self startRefreshingPredictions];
+            }
         }
     }];
 }
 
 - (void)loadPredictions
 {
-    [[MITShuttleController sharedController] getPredictionsForStops:[self allNearestStops] completion:^(NSArray *predictions, NSError *error) {
-        [self.routesTableView reloadData];
-    }];
+    for (MITShuttleRoute *route in self.routes) {
+        if ([route.scheduled boolValue] && [route.predictable boolValue]) {
+            [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
+                if (predictions) {
+                    [self.predictionLists addObjectsFromArray:predictions];
+                    NSInteger routeIndex = [self.routes indexOfObject:route];
+                    [self.routesTableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
+                }
+            }];
+        }
+    }
 }
 
 - (void)beginRefreshing
@@ -284,6 +295,16 @@ typedef enum {
     return nil;
 }
 
+- (MITShuttlePrediction *)predictionForStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
+{
+    for (MITShuttlePredictionList *predictionList in self.predictionLists) {
+        if ([predictionList.stopId isEqualToString:stop.identifier] && [predictionList.routeId isEqualToString:route.identifier]) {
+            return [predictionList.predictions firstObject];
+        }
+    }
+    return nil;
+}
+
 #pragma mark - Resource Section Helpers
 
 - (NSInteger)sectionIndexForResourceSection:(MITShuttleResourceSection)section
@@ -305,9 +326,12 @@ typedef enum {
     } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
         return 3;
     } else {
-        NSInteger defaultRouteSectionCount = 1;
+        NSInteger count = 1;    // always show at least the route cell
         MITShuttleRoute *route = self.routes[section];
-        return defaultRouteSectionCount + [self.nearestStops[route.identifier] count];
+        if ([route.scheduled boolValue]) {
+            count += [self.nearestStops[route.identifier] count];
+        }
+        return count;
     }
 }
 
@@ -345,7 +369,10 @@ typedef enum {
     MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
     NSInteger routeIndex = indexPath.section;
     NSInteger stopIndex = indexPath.row - 1;
-    [cell setStop:[self nearestStopForRoute:self.routes[routeIndex] atIndex:stopIndex]];
+    MITShuttleRoute *route = self.routes[routeIndex];
+    MITShuttleStop *stop = [self nearestStopForRoute:self.routes[routeIndex] atIndex:stopIndex];
+    MITShuttlePrediction *prediction = [self predictionForStop:stop inRoute:route];
+    [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];
     return cell;
 }

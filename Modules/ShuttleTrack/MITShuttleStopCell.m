@@ -1,5 +1,6 @@
 #import "MITShuttleStopCell.h"
 #import "MITShuttleStop.h"
+#import "MITShuttlePrediction.h"
 
 static NSString * const kTimeUnavailableText = @"--";
 
@@ -30,10 +31,15 @@ static NSString * const kTimeUnavailableText = @"--";
     self.routeIndicatorImageView.hidden = (cellType == MITShuttleStopCellTypeRouteList);
 }
 
-- (void)setStop:(MITShuttleStop *)stop
+- (void)setStop:(MITShuttleStop *)stop prediction:(MITShuttlePrediction *)prediction
 {
     self.nameLabel.text = stop.title;
-    self.timeLabel.text = kTimeUnavailableText;
+    if (prediction) {
+        NSInteger minutes = floor([prediction.seconds doubleValue] / 60);
+        self.timeLabel.text = [NSString stringWithFormat:@"%dm", minutes];
+    } else {
+        self.timeLabel.text = kTimeUnavailableText;
+    }
 }
 
 @end

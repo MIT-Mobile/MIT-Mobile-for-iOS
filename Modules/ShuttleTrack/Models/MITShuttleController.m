@@ -55,126 +55,71 @@
 
 - (void)getRouteDetail:(MITShuttleRoute *)route completion:(MITShuttleRouteDetailCompletionBlock)completion
 {
-    NSDictionary *parameters = @{@"route": route.identifier};
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRouteResourceName
-                                                parameters:parameters
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion([objects firstObject], nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
-                                                }];
+    [self getObjectForURL:[NSURL URLWithString:route.url] completion:completion];
 }
 
 - (void)getStopDetail:(MITShuttleStop *)stop completion:(MITShuttleStopDetailCompletionBlock)completion
 {
-    NSDictionary *parameters = @{@"route": stop.route.identifier, @"stop": stop.identifier};
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesStopResourceName
-                                                parameters:parameters
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion([objects firstObject], nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
-                                                }];
+    [self getObjectForURL:[NSURL URLWithString:stop.url] completion:completion];
 }
 
 #pragma mark - Predictions
 
-- (void)getPredictionsForStops:(NSArray *)stops completion:(MITShuttlePredictionsCompletionBlock)completion
+- (void)getPredictionsForRoute:(MITShuttleRoute *)route completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    NSString *agency;
-    NSMutableString *stopsString = [NSMutableString string];
-    for (MITShuttleStop *stop in stops) {
-        if (!agency) {
-            agency = stop.route.agency;
-        }
-        [stopsString appendFormat:@"%@,%@", stop.route.identifier, stop.identifier];
-        if (stop != stops.lastObject) {
-            [stopsString appendString:@";"];
-        }
-    }
-    NSDictionary *parameters = @{@"agency": agency, @"stops": stopsString};
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
-                                                parameters:parameters
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion(objects, nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
-                                                }];
+    [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:completion];
 }
 
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    NSDictionary *parameters = @{@"agency": stop.route.agency, @"stopNumber": stop.stopNumber};
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
-                                                parameters:parameters
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion(objects, nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
-                                                }];
+    [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:completion];
 }
 
 #pragma mark - Vehicles
 
-- (void)getVehiclesForRoutes:(NSArray *)routes completion:(MITShuttleVehiclesCompletionBlock)completion
+- (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion
 {
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
-                                                parameters:nil
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion(objects, nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
-                                                }];
+    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:completion];
+}
+
+#pragma mark - Helper Methods
+
+- (void)getObjectForURL:(NSURL *)url completion:(void (^)(id object, NSError *error))completion
+{
+    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (!error) {
+                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                if (completion) {
+                    completion([objects firstObject], nil);
+                }
+            } else {
+                if (completion) {
+                    completion(nil, error);
+                }
+            }
+        }];
+    }];
+}
+
+- (void)getObjectsForURL:(NSURL *)url completion:(void (^)(NSArray *objects, NSError *error))completion
+{
+    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (!error) {
+                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                if (completion) {
+                    completion(objects, nil);
+                }
+            } else {
+                if (completion) {
+                    completion(nil, error);
+                }
+            }
+        }];
+    }];
 }
 
 @end
