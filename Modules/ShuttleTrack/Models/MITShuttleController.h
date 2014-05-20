@@ -6,7 +6,7 @@
 
 typedef void(^MITShuttleRoutesCompletionBlock)(NSArray *routes, NSError *error);
 typedef void(^MITShuttleRouteDetailCompletionBlock)(MITShuttleRoute *route, NSError *error);
-typedef void(^MITShuttleStopDetailCompletionBlock)(MITShuttleStop *route, NSError *error);
+typedef void(^MITShuttleStopDetailCompletionBlock)(MITShuttleStop *stop, NSError *error);
 typedef void(^MITShuttlePredictionsCompletionBlock)(NSArray *predictions, NSError *error);
 typedef void(^MITShuttleVehiclesCompletionBlock)(NSArray *vehicles, NSError *error);
 
@@ -20,7 +20,9 @@ typedef void(^MITShuttleVehiclesCompletionBlock)(NSArray *vehicles, NSError *err
 
 - (void)getPredictionsForRoute:(MITShuttleRoute *)route completion:(MITShuttlePredictionsCompletionBlock)completion;
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion;
+- (void)getPredictionsForStops:(NSArray *)stops completion:(MITShuttlePredictionsCompletionBlock)completion;
 
+- (void)getVehicles:(MITShuttleVehiclesCompletionBlock)completion;
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion;
 
 @end
