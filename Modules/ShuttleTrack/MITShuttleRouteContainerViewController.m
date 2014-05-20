@@ -164,9 +164,6 @@ typedef enum {
 {
     [self addChildViewController:childViewController];
     childViewController.view.frame = view.bounds;
-    if ([childViewController isKindOfClass:[MITShuttleStopViewController class]]) {
-        childViewController.view.backgroundColor = [self randomColor];
-    }
     [view addSubview:childViewController.view];
     [childViewController didMoveToParentViewController:self];
 }

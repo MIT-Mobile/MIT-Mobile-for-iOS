@@ -125,6 +125,13 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     }
 
     __block MITMobileResource *targetResource = nil;
+    
+    // For URLs with a trailing '/' before the query component, path matching will fail here
+    // unless we manually add the '/'
+    if ([url.absoluteString rangeOfString:@"/?"].length > 0) {
+        [path replaceOccurrencesOfString:@"?" withString:@"/?" options:0 range:NSMakeRange(0, path.length)];
+    }
+    
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
     [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
         BOOL pathMatchesPattern = [pathMatcher matchesPattern:resource.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
