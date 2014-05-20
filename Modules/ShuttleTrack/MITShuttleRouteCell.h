@@ -1,9 +1,11 @@
 #import <UIKit/UIKit.h>
 
+@class MITShuttleRoute;
+
 @interface MITShuttleRouteCell : UITableViewCell
 
-- (void)setRoute:(id)route;
+- (void)setRoute:(MITShuttleRoute *)route;
 
-+ (CGFloat)cellHeightForRoute:(id)route;
++ (CGFloat)cellHeightForRoute:(MITShuttleRoute *)route;
 
 @end

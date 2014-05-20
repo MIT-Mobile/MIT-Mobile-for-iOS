@@ -4,6 +4,7 @@
 #import "ShuttleRouteViewController.h"
 #import "ShuttleSubscriptionManager.h"
 #import "ShuttleStopMapAnnotation.h"
+#import "MITShuttleHomeViewController.h"
 
 
 
@@ -23,7 +24,8 @@
 
 - (void)loadModuleHomeController
 {
-    [self setModuleHomeController:[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped]];
+    [self setModuleHomeController:[[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil]];
+//    [self setModuleHomeController:[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped]];
 }
 
 - (void) didAppear {

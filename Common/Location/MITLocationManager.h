@@ -11,7 +11,10 @@
 
 extern NSString * const kLocationManagerDidUpdateLocationNotification;
 extern NSString * const kLocationManagerDidFailNotification;
-extern NSString * const kLocationManagerDidFailErrorKey;
+extern NSString * const kLocationManagerDidUpdateAuthorizationStatusNotification;
+
+extern NSString * const kLocationManagerErrorKey;
+extern NSString * const kLocationManagerAuthorizationStatusKey;
 
 @interface MITLocationManager : NSObject <CLLocationManagerDelegate>
 
@@ -22,5 +25,7 @@ extern NSString * const kLocationManagerDidFailErrorKey;
 
 - (CLLocation *)currentLocation;
 - (double)milesFromCoordinate:(CLLocationCoordinate2D)coordinate;
+
++ (BOOL)locationServicesEnabled;
 
 @end

@@ -1,8 +1,14 @@
 #import "MITShuttleHomeViewController.h"
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleStopCell.h"
-
+#import "MITShuttleController.h"
+#import "MITLocationManager.h"
+#import "MITShuttleRoute.h"
+#import "MITShuttleStop.h"
 #import "UIKit+MITAdditions.h"
+
+static const NSTimeInterval kRoutesRefreshInterval = 60.0;
+static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
 static NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
@@ -17,6 +23,8 @@ static NSString * const kContactInformationHeaderTitle = @"Contact Information";
 static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
 
 static const NSInteger kRouteCellRow = 0;
+
+static const NSInteger kNearestStopDisplayCount = 2;
 
 static const NSInteger kResourceSectionCount = 2;
 
@@ -36,8 +44,15 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 
 @property (copy, nonatomic) NSArray *routes;
+@property (copy, nonatomic) NSDictionary *nearestStops;
+
+@property (strong, nonatomic) NSDate *lastUpdatedDate;
+
+@property (strong, nonatomic) NSTimer *routesRefreshTimer;
+@property (strong, nonatomic) NSTimer *predictionsRefreshTimer;
 
 @end
 
@@ -50,7 +65,6 @@ typedef enum {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = @"Shuttles";
-        self.routes = @[@0, @1, @2, @3];
     }
     return self;
 }
@@ -61,7 +75,22 @@ typedef enum {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.nearestStops = [NSMutableDictionary dictionary];
     [self setupRoutesTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self startRefreshingRoutes];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self stopRefreshingData];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -76,6 +105,183 @@ typedef enum {
 {
     [self.routesTableView registerNib:[UINib nibWithNibName:kMITShuttleRouteCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleRouteCellIdentifier];
     [self.routesTableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
+    [self.routesTableView insertSubview:refreshControl atIndex:0];
+    self.refreshControl = refreshControl;
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlActivated:(id)sender
+{
+    [self stopRefreshingData];
+    [self startRefreshingRoutes];
+}
+
+#pragma mark - Data Refresh Timers
+
+- (void)startRefreshingRoutes
+{
+    [self loadRoutes];
+    self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRoutesRefreshInterval
+                                                               target:self
+                                                             selector:@selector(loadRoutes)
+                                                             userInfo:nil
+                                                              repeats:YES];
+}
+
+- (void)startRefreshingPredictions
+{
+    [self loadPredictions];
+    self.predictionsRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kPredictionsRefreshInterval
+                                                                    target:self
+                                                                  selector:@selector(loadPredictions)
+                                                                  userInfo:nil
+                                                                   repeats:YES];
+}
+
+- (void)stopRefreshingData
+{
+    [self.routesRefreshTimer invalidate];
+    [self.predictionsRefreshTimer invalidate];
+}
+
+#pragma mark - Data Refresh
+
+- (void)loadRoutes
+{
+    [self beginRefreshing];
+    [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
+        [self endRefreshing];
+        if (routes) {
+            self.routes = routes;
+            self.nearestStops = [self nearestStopsForRoutes:routes];
+            [self.routesTableView reloadData];
+//            if (!self.predictionsRefreshTimer.isValid) {
+//                [self startRefreshingPredictions];
+//            }
+        }
+    }];
+}
+
+- (void)loadPredictions
+{
+    [[MITShuttleController sharedController] getPredictionsForStops:[self allNearestStops] completion:^(NSArray *predictions, NSError *error) {
+        [self.routesTableView reloadData];
+    }];
+}
+
+- (void)beginRefreshing
+{
+    [self.refreshControl beginRefreshing];
+    [self refreshLastUpdatedLabel];
+}
+
+- (void)endRefreshing
+{
+    [self.refreshControl endRefreshing];
+    self.lastUpdatedDate = [NSDate date];
+    [self refreshLastUpdatedLabel];
+}
+
+#pragma mark - Toolbar Labels
+
+- (void)refreshLastUpdatedLabel
+{
+    NSString *lastUpdatedText;
+    if (self.refreshControl.isRefreshing) {
+        lastUpdatedText = @"Updating...";
+    } else {
+        NSTimeInterval secondsSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.lastUpdatedDate];
+        if (secondsSinceLastUpdate < 60) {
+            lastUpdatedText = @"Updated just now";
+        } else if (secondsSinceLastUpdate < 60 * 10) {
+            NSInteger minutesSinceLastUpdate = floor(secondsSinceLastUpdate / 60);
+            lastUpdatedText = [NSString stringWithFormat:@"Updated %d minute%@ ago", minutesSinceLastUpdate, (minutesSinceLastUpdate > 1) ? @"s" : @""];
+        } else {
+            NSString *timeString = [[[self dateFormatter] stringFromDate:self.lastUpdatedDate] lowercaseString];
+            lastUpdatedText = [NSString stringWithFormat:@"Last updated at %@", timeString];
+        }
+    }
+    self.lastUpdatedLabel.text = lastUpdatedText;
+}
+
+- (NSDateFormatter *)dateFormatter
+{
+    static NSDateFormatter *_dateFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    });
+    return _dateFormatter;
+}
+
+- (void)refreshLocationStatusLabel
+{
+    self.locationStatusLabel.text = [MITLocationManager locationServicesEnabled] ? @"Showing nearest stops" : @"Location couldn't be determined";
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    [self refreshLocationStatusLabel];
+}
+
+#pragma mark - Route Data Helpers
+
+- (NSDictionary *)nearestStopsForRoutes:(NSArray *)routes
+{
+    NSMutableDictionary *mutableStopsDictionary = [NSMutableDictionary dictionary];
+    for (MITShuttleRoute *route in routes) {
+        NSArray *sortedStops = [route.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            MITShuttleStop *stop1 = (MITShuttleStop *)obj1;
+            MITShuttleStop *stop2 = (MITShuttleStop *)obj2;
+            
+            CLLocationCoordinate2D coordinate1 = CLLocationCoordinate2DMake([[stop1 latitude] doubleValue], [[stop1 longitude] doubleValue]);
+            CLLocationCoordinate2D coordinate2 = CLLocationCoordinate2DMake([[stop2 latitude] doubleValue], [[stop2 longitude] doubleValue]);
+
+            MITLocationManager *locationManager = [MITLocationManager sharedManager];
+            if ([locationManager milesFromCoordinate:coordinate1] < [locationManager milesFromCoordinate:coordinate2]) {
+                return NSOrderedAscending;
+            } else if ([locationManager milesFromCoordinate:coordinate1] > [locationManager milesFromCoordinate:coordinate2]) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        }];
+        NSMutableArray *mutableNearestStops = [NSMutableArray arrayWithCapacity:kNearestStopDisplayCount];
+        for (NSInteger stopIndex = 0; stopIndex < kNearestStopDisplayCount; ++stopIndex) {
+            if (stopIndex < [sortedStops count]) {
+                [mutableNearestStops addObject:sortedStops[stopIndex]];
+            }
+        }
+        mutableStopsDictionary[route.identifier] = [NSArray arrayWithArray:mutableNearestStops];
+    }
+    return [NSDictionary dictionaryWithDictionary:mutableStopsDictionary];
+}
+
+- (NSArray *)allNearestStops
+{
+    NSMutableArray *mutableNearestStops = [NSMutableArray array];
+    for (NSString *key in [self.nearestStops allKeys]) {
+        [mutableNearestStops addObjectsFromArray:self.nearestStops[key]];
+    }
+    return [NSArray arrayWithArray:mutableNearestStops];
+}
+
+- (MITShuttleStop *)nearestStopForRoute:(MITShuttleRoute *)route atIndex:(NSInteger)index
+{
+    if (index < kNearestStopDisplayCount) {
+        NSArray *stops = self.nearestStops[route.identifier];
+        if (index < [stops count]) {
+            return stops[index];
+        }
+    }
+    return nil;
 }
 
 #pragma mark - Resource Section Helpers
@@ -99,8 +305,9 @@ typedef enum {
     } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
         return 3;
     } else {
-#warning TODO: data source - return 1 for route with no stops, or 3 for route with two nearest stops
-        return 3;
+        NSInteger defaultRouteSectionCount = 1;
+        MITShuttleRoute *route = self.routes[section];
+        return defaultRouteSectionCount + [self.nearestStops[route.identifier] count];
     }
 }
 
@@ -128,16 +335,17 @@ typedef enum {
 - (UITableViewCell *)tableView:(UITableView *)tableView routeCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITShuttleRouteCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleRouteCellIdentifier forIndexPath:indexPath];
-#warning TODO: set route item on cell
-    [cell setRoute:nil];
+    NSInteger routeIndex = indexPath.section;
+    [cell setRoute:self.routes[routeIndex]];
     return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView stopCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
-#warning TODO: set stop item on cell
-    [cell setStop:nil];
+    NSInteger routeIndex = indexPath.section;
+    NSInteger stopIndex = indexPath.row - 1;
+    [cell setStop:[self nearestStopForRoute:self.routes[routeIndex] atIndex:stopIndex]];
     [cell setCellType:MITShuttleStopCellTypeRouteList];
     return cell;
 }

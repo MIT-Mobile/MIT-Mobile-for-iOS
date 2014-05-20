@@ -13,7 +13,10 @@ static const int kDistanceFilterMeters = 100;
 
 NSString * const kLocationManagerDidUpdateLocationNotification = @"kLocationManagerDidUpdateLocationNotification";
 NSString * const kLocationManagerDidFailNotification = @"kLocationManagerDidFailNotification";
-NSString * const kLocationManagerDidFailErrorKey = @"kLocationManagerDidFailErrorKey";
+NSString * const kLocationManagerDidUpdateAuthorizationStatusNotification = @"kLocationManagerDidUpdateAuthorizationStatusNotification";
+
+NSString * const kLocationManagerErrorKey = @"error";
+NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus";
 
 @interface MITLocationManager()
 
@@ -79,6 +82,11 @@ NSString * const kLocationManagerDidFailErrorKey = @"kLocationManagerDidFailErro
     return kMilesPerMeter * [currentLocation distanceFromLocation:targetLocation];
 }
 
++ (BOOL)locationServicesEnabled
+{
+    return [CLLocationManager locationServicesEnabled];
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
@@ -88,7 +96,12 @@ NSString * const kLocationManagerDidFailErrorKey = @"kLocationManagerDidFailErro
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidFailNotification object:nil userInfo:@{kLocationManagerDidFailErrorKey: error}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidFailNotification object:nil userInfo:@{kLocationManagerErrorKey: error}];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil userInfo:@{kLocationManagerAuthorizationStatusKey: @(status)}];
 }
 
 @end

@@ -1,4 +1,5 @@
 #import "MITShuttleStopCell.h"
+#import "MITShuttleStop.h"
 
 static NSString * const kTimeUnavailableText = @"--";
 
@@ -29,8 +30,9 @@ static NSString * const kTimeUnavailableText = @"--";
     self.routeIndicatorImageView.hidden = (cellType == MITShuttleStopCellTypeRouteList);
 }
 
-- (void)setStop:(id)stop
+- (void)setStop:(MITShuttleStop *)stop
 {
+    self.nameLabel.text = stop.title;
     self.timeLabel.text = kTimeUnavailableText;
 }
 

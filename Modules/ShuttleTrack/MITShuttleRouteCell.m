@@ -1,4 +1,5 @@
 #import "MITShuttleRouteCell.h"
+#import "MITShuttleRoute.h"
 
 static const CGFloat kCellHeightNoAlert = 45.0;
 static const CGFloat kCellHeightAlert = 62.0;
@@ -35,13 +36,20 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible
 
 }
 
-- (void)setRoute:(id)route
+- (void)setRoute:(MITShuttleRoute *)route
 {
-    
+    if ([route.scheduled boolValue]) {
+        self.statusIconImageView.image = [route.predictable boolValue] ? [UIImage imageNamed:@"shuttle/shuttle"] : [UIImage imageNamed:@""];
+    } else {
+        self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle-off"];
+    }
+    self.nameLabel.text = route.title;
+#warning TODO: alerts
 }
 
-+ (CGFloat)cellHeightForRoute:(id)route
++ (CGFloat)cellHeightForRoute:(MITShuttleRoute *)route
 {
+#warning TODO: check alert and use appropriate cell height
     return kCellHeightNoAlert;
 }
 

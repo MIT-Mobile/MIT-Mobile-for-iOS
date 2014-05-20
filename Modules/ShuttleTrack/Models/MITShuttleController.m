@@ -37,11 +37,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.array, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion(objects, nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 
@@ -51,11 +59,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRouteResourceName
                                                 parameters:parameters
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.firstObject, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion([objects firstObject], nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 
@@ -65,11 +81,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesStopResourceName
                                                 parameters:parameters
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.firstObject, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion([objects firstObject], nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 
@@ -92,11 +116,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
                                                 parameters:parameters
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.array, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion(objects, nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 
@@ -106,11 +138,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
                                                 parameters:parameters
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.array, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion(objects, nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 
@@ -121,11 +161,19 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (error) {
-                                                        completion(nil, error);
-                                                    } else {
-                                                        completion(result.array, nil);
-                                                    }
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+                                                            if (completion) {
+                                                                completion(objects, nil);
+                                                            }
+                                                        } else {
+                                                            if (completion) {
+                                                                completion(nil, error);
+                                                            }
+                                                        }
+                                                    }];
                                                 }];
 }
 

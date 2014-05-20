@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 
+@class MITShuttleStop;
+
 typedef enum {
     MITShuttleStopCellTypeRouteList,
     MITShuttleStopCellTypeRouteDetail
@@ -8,6 +10,6 @@ typedef enum {
 @interface MITShuttleStopCell : UITableViewCell
 
 - (void)setCellType:(MITShuttleStopCellType)cellType;
-- (void)setStop:(id)stop;
+- (void)setStop:(MITShuttleStop *)stop;
 
 @end
