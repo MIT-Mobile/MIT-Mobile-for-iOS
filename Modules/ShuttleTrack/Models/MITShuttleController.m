@@ -66,6 +66,14 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 }
 
 #pragma mark - Vehicles
+- (void)getVehicles:(MITShuttleVehiclesCompletionBlock)completion
+{
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    [self handleResult:result error:error completion:completion];
+                                                }];
+}
 
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion
 {
