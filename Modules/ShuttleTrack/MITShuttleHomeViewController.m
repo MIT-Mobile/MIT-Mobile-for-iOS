@@ -46,11 +46,9 @@ typedef enum {
 
 @interface MITShuttleHomeViewController ()
 
-@property (weak, nonatomic) IBOutlet UITableView *routesTableView;
-@property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UIView *toolbarLabelView;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
-@property (strong, nonatomic) UIRefreshControl *refreshControl;
 
 @property (strong, nonatomic) NSFetchedResultsController *routesFetchedResultsController;
 @property (nonatomic, readonly) NSArray *routes;
@@ -131,13 +129,15 @@ typedef enum {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    [self setupRoutesTableView];
+    [self setupTableView];
+    [self setupToolbar];
     [self setupResourceData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:NO animated:animated];
     [self startRefreshingRoutes];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
@@ -145,6 +145,7 @@ typedef enum {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
     [self stopRefreshingData];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
@@ -157,15 +158,20 @@ typedef enum {
 
 #pragma mark - Setup
 
-- (void)setupRoutesTableView
+- (void)setupTableView
 {
-    [self.routesTableView registerNib:[UINib nibWithNibName:kMITShuttleRouteCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleRouteCellIdentifier];
-    [self.routesTableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleRouteCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleRouteCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
-    [self.routesTableView insertSubview:refreshControl atIndex:0];
     self.refreshControl = refreshControl;
+}
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
 - (void)setupResourceData
@@ -238,7 +244,7 @@ typedef enum {
                 [self.routesFetchedResultsController performFetch:nil];
             }
             [self refreshNearestStops];
-            [self.routesTableView reloadData];
+            [self.tableView reloadData];
             if (!self.predictionsRefreshTimer.isValid) {
                 [self startRefreshingPredictions];
             }
@@ -256,7 +262,7 @@ typedef enum {
                         [self.predictionListsFetchedResultsController performFetch:nil];
                     }
                     NSInteger routeIndex = [self.routes indexOfObject:route];
-                    [self.routesTableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
+                    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
                 }
             }];
         }
