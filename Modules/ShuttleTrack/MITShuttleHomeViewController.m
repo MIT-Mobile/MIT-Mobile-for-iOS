@@ -34,6 +34,11 @@ static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
 
 static const CGFloat kContactInformationCellHeight = 60.0;
 
+static NSString * const kResourceDescriptionKey = @"description";
+static NSString * const kResourcePhoneNumberKey = @"phoneNumber";
+static NSString * const kResourceFormattedPhoneNumberKey = @"formattedPhoneNumber";
+static NSString * const kResourceURLKey = @"url";
+
 typedef enum {
     MITShuttleResourceSectionContactInformation = 0,
     MITShuttleResourceSectionMBTAInformation = 1
@@ -59,6 +64,9 @@ typedef enum {
 
 @property (strong, nonatomic) NSTimer *routesRefreshTimer;
 @property (strong, nonatomic) NSTimer *predictionsRefreshTimer;
+
+@property (copy, nonatomic) NSArray *contactInformation;
+@property (copy, nonatomic) NSArray *mbtaInformation;
 
 @end
 
@@ -124,6 +132,7 @@ typedef enum {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self setupRoutesTableView];
+    [self setupResourceData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -157,6 +166,28 @@ typedef enum {
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     [self.routesTableView insertSubview:refreshControl atIndex:0];
     self.refreshControl = refreshControl;
+}
+
+- (void)setupResourceData
+{
+    // TODO: these phone numbers and links should be provided by the server, not hardcoded
+	self.contactInformation = @[
+                                @{kResourceDescriptionKey:          @"Parking Office",
+                                  kResourcePhoneNumberKey:          @"16172586510",
+                                  kResourceFormattedPhoneNumberKey: @"617.258.6510"},
+                                @{kResourceDescriptionKey:          @"Saferide",
+                                  kResourcePhoneNumberKey:          @"16172532997",
+                                  kResourceFormattedPhoneNumberKey: @"617.253.2997"}
+                                ];
+	
+    self.mbtaInformation = @[
+                             @{kResourceDescriptionKey: @"Real-time Bus Arrivals",
+                               kResourceURLKey:         @"http://www.nextbus.com/webkit"},
+                             @{kResourceDescriptionKey: @"Real-time Train Arrivals",
+                               kResourceURLKey:         @"http://www.mbtainfo.com/"},
+                             @{kResourceDescriptionKey: @"Google Transit",
+                               kResourceURLKey:         @"http://www.google.com/transit"}
+                             ];
 }
 
 #pragma mark - Refresh Control
@@ -400,11 +431,11 @@ typedef enum {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITShuttlePhoneNumberCellIdentifier];
     }
-    cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-#warning TODO: set title and phone number
-    cell.textLabel.text = @"Parking Office";
-    cell.detailTextLabel.text = @"617.258.6510";
+    NSDictionary *resource = self.contactInformation[indexPath.row];
+    cell.textLabel.text = resource[kResourceDescriptionKey];
+    cell.detailTextLabel.text = resource[kResourceFormattedPhoneNumberKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+    cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
     return cell;
 }
 
@@ -414,8 +445,8 @@ typedef enum {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITShuttleURLCellIdentifier];
     }
-#warning TODO: set title
-    cell.textLabel.text = @"Real-time Bus Arrivals";
+    NSDictionary *resource = self.mbtaInformation[indexPath.row];
+    cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     return cell;
 }
@@ -474,13 +505,15 @@ typedef enum {
 
     NSInteger section = indexPath.section;
     if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
-        NSString *phoneNumber;
+        NSDictionary *resource = self.contactInformation[indexPath.row];
+        NSString *phoneNumber = resource[kResourcePhoneNumberKey];
 		NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
 		if ([[UIApplication sharedApplication] canOpenURL:phoneNumberURL]) {
 			[[UIApplication sharedApplication] openURL:phoneNumberURL];
         }
     } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
-        NSString *urlString;
+        NSDictionary *resource = self.mbtaInformation[indexPath.row];
+        NSString *urlString = resource[kResourceURLKey];
         NSURL *url = [NSURL URLWithString:urlString];
 		if ([[UIApplication sharedApplication] canOpenURL:url]) {
 			[[UIApplication sharedApplication] openURL:url];
