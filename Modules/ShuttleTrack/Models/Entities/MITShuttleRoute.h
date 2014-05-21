@@ -9,6 +9,7 @@
 
 @property (nonatomic, retain) NSString * agency;
 @property (nonatomic, retain) NSString * identifier;
+@property (nonatomic, retain) NSNumber * order;
 @property (nonatomic, retain) id pathBoundingBox;
 @property (nonatomic, retain) id pathSegments;
 @property (nonatomic, retain) NSNumber * predictable;
@@ -20,6 +21,9 @@
 @property (nonatomic, retain) NSString * vehiclesURL;
 @property (nonatomic, retain) NSOrderedSet *stops;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
+
+- (NSArray *)nearestStopsWithCount:(NSInteger)count;
+
 @end
 
 @interface MITShuttleRoute (CoreDataGeneratedAccessors)

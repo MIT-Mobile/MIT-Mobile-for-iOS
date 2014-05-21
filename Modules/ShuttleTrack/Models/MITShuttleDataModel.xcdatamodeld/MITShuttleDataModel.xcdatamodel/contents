@@ -19,6 +19,7 @@
     <entity name="ShuttleRoute" representedClassName="MITShuttleRoute" syncable="YES">
         <attribute name="agency" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="order" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="pathBoundingBox" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="pathSegments" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="predictable" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -63,7 +64,7 @@
     <elements>
         <element name="ShuttlePrediction" positionX="-36" positionY="99" width="128" height="120"/>
         <element name="ShuttlePredictionList" positionX="-18" positionY="108" width="128" height="148"/>
-        <element name="ShuttleRoute" positionX="-63" positionY="-18" width="128" height="238"/>
+        <element name="ShuttleRoute" positionX="-63" positionY="-18" width="128" height="253"/>
         <element name="ShuttleStop" positionX="-54" positionY="63" width="128" height="193"/>
         <element name="ShuttleVehicle" positionX="0" positionY="144" width="128" height="163"/>
         <element name="ShuttleVehicleList" positionX="18" positionY="171" width="128" height="118"/>

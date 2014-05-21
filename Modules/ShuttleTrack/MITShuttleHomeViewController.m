@@ -25,7 +25,6 @@ static NSString * const kContactInformationHeaderTitle = @"Contact Information";
 static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
 
 static const NSInteger kRouteCellRow = 0;
-
 static const NSInteger kNearestStopDisplayCount = 2;
 
 static const NSInteger kResourceSectionCount = 2;
@@ -48,8 +47,12 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 
-@property (copy, nonatomic) NSArray *routes;
-@property (strong, nonatomic) NSMutableSet *predictionLists;
+@property (strong, nonatomic) NSFetchedResultsController *routesFetchedResultsController;
+@property (nonatomic, readonly) NSArray *routes;
+
+@property (strong, nonatomic) NSFetchedResultsController *predictionListsFetchedResultsController;
+@property (nonatomic, readonly) NSArray *predictionLists;
+
 @property (copy, nonatomic) NSDictionary *nearestStops;
 
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
@@ -60,6 +63,48 @@ typedef enum {
 @end
 
 @implementation MITShuttleHomeViewController
+
+#pragma mark - Getters
+
+- (NSFetchedResultsController *)routesFetchedResultsController
+{
+    if (!_routesFetchedResultsController) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+        
+        _routesFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                              managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
+                                                                                sectionNameKeyPath:nil
+                                                                                         cacheName:nil];
+        _routesFetchedResultsController.delegate = self;
+    }
+    return _routesFetchedResultsController;
+}
+
+- (NSArray *)routes
+{
+    return [self.routesFetchedResultsController fetchedObjects];
+}
+
+- (NSFetchedResultsController *)predictionListsFetchedResultsController
+{
+    if (!_predictionListsFetchedResultsController) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttlePredictionList entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"routeId" ascending:YES]];
+        
+        _predictionListsFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                       managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
+                                                                                         sectionNameKeyPath:nil
+                                                                                                  cacheName:nil];
+        _predictionListsFetchedResultsController.delegate = self;
+    }
+    return _predictionListsFetchedResultsController;
+}
+
+- (NSArray *)predictionLists
+{
+    return [self.predictionListsFetchedResultsController fetchedObjects];
+}
 
 #pragma mark - Init
 
@@ -78,7 +123,6 @@ typedef enum {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.predictionLists = [NSMutableSet set];
     [self setupRoutesTableView];
 }
 
@@ -158,9 +202,11 @@ typedef enum {
     [self beginRefreshing];
     [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
         [self endRefreshing];
-        if (routes) {
-            self.routes = routes;
-            self.nearestStops = [self nearestStopsForRoutes:routes];
+        if (!error) {
+            if ([self.routes count] == 0) {
+                [self.routesFetchedResultsController performFetch:nil];
+            }
+            [self refreshNearestStops];
             [self.routesTableView reloadData];
             if (!self.predictionsRefreshTimer.isValid) {
                 [self startRefreshingPredictions];
@@ -174,8 +220,10 @@ typedef enum {
     for (MITShuttleRoute *route in self.routes) {
         if ([route.scheduled boolValue] && [route.predictable boolValue]) {
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
-                if (predictions) {
-                    [self.predictionLists addObjectsFromArray:predictions];
+                if (!error) {
+                    if ([self.predictionLists count] == 0) {
+                        [self.predictionListsFetchedResultsController performFetch:nil];
+                    }
                     NSInteger routeIndex = [self.routes indexOfObject:route];
                     [self.routesTableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
                 }
@@ -244,44 +292,13 @@ typedef enum {
 
 #pragma mark - Route Data Helpers
 
-- (NSDictionary *)nearestStopsForRoutes:(NSArray *)routes
+- (void)refreshNearestStops
 {
     NSMutableDictionary *mutableStopsDictionary = [NSMutableDictionary dictionary];
-    for (MITShuttleRoute *route in routes) {
-        NSArray *sortedStops = [route.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            MITShuttleStop *stop1 = (MITShuttleStop *)obj1;
-            MITShuttleStop *stop2 = (MITShuttleStop *)obj2;
-            
-            CLLocationCoordinate2D coordinate1 = CLLocationCoordinate2DMake([[stop1 latitude] doubleValue], [[stop1 longitude] doubleValue]);
-            CLLocationCoordinate2D coordinate2 = CLLocationCoordinate2DMake([[stop2 latitude] doubleValue], [[stop2 longitude] doubleValue]);
-
-            MITLocationManager *locationManager = [MITLocationManager sharedManager];
-            if ([locationManager milesFromCoordinate:coordinate1] < [locationManager milesFromCoordinate:coordinate2]) {
-                return NSOrderedAscending;
-            } else if ([locationManager milesFromCoordinate:coordinate1] > [locationManager milesFromCoordinate:coordinate2]) {
-                return NSOrderedDescending;
-            } else {
-                return NSOrderedSame;
-            }
-        }];
-        NSMutableArray *mutableNearestStops = [NSMutableArray arrayWithCapacity:kNearestStopDisplayCount];
-        for (NSInteger stopIndex = 0; stopIndex < kNearestStopDisplayCount; ++stopIndex) {
-            if (stopIndex < [sortedStops count]) {
-                [mutableNearestStops addObject:sortedStops[stopIndex]];
-            }
-        }
-        mutableStopsDictionary[route.identifier] = [NSArray arrayWithArray:mutableNearestStops];
+    for (MITShuttleRoute *route in self.routes) {
+        mutableStopsDictionary[route.identifier] = [route nearestStopsWithCount:kNearestStopDisplayCount];
     }
-    return [NSDictionary dictionaryWithDictionary:mutableStopsDictionary];
-}
-
-- (NSArray *)allNearestStops
-{
-    NSMutableArray *mutableNearestStops = [NSMutableArray array];
-    for (NSString *key in [self.nearestStops allKeys]) {
-        [mutableNearestStops addObjectsFromArray:self.nearestStops[key]];
-    }
-    return [NSArray arrayWithArray:mutableNearestStops];
+    self.nearestStops = [NSDictionary dictionaryWithDictionary:mutableStopsDictionary];
 }
 
 - (MITShuttleStop *)nearestStopForRoute:(MITShuttleRoute *)route atIndex:(NSInteger)index
