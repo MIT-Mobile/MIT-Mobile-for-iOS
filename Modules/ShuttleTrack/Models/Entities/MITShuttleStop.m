@@ -14,7 +14,7 @@
 @dynamic title;
 @dynamic url;
 @dynamic predictions;
-@dynamic route;
+@dynamic routes;
 
 + (RKMapping *)objectMapping
 {

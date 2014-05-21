@@ -16,7 +16,7 @@
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSOrderedSet *predictions;
-@property (nonatomic, retain) MITShuttleRoute *route;
+@property (nonatomic, retain) NSOrderedSet *routes;
 @end
 
 @interface MITShuttleStop (CoreDataGeneratedAccessors)
@@ -31,4 +31,14 @@
 - (void)removePredictionsObject:(MITShuttlePrediction *)value;
 - (void)addPredictions:(NSOrderedSet *)values;
 - (void)removePredictions:(NSOrderedSet *)values;
+- (void)insertObject:(MITShuttleRoute *)value inRoutesAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromRoutesAtIndex:(NSUInteger)idx;
+- (void)insertRoutes:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeRoutesAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInRoutesAtIndex:(NSUInteger)idx withObject:(MITShuttleRoute *)value;
+- (void)replaceRoutesAtIndexes:(NSIndexSet *)indexes withRoutes:(NSArray *)values;
+- (void)addRoutesObject:(MITShuttleRoute *)value;
+- (void)removeRoutesObject:(MITShuttleRoute *)value;
+- (void)addRoutes:(NSOrderedSet *)values;
+- (void)removeRoutes:(NSOrderedSet *)values;
 @end

@@ -28,7 +28,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vehiclesURL" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleStop" inverseName="route" inverseEntity="ShuttleStop" syncable="YES"/>
+        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleStop" inverseName="routes" inverseEntity="ShuttleStop" syncable="YES"/>
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="route" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <entity name="ShuttleStop" representedClassName="MITShuttleStop" syncable="YES">
@@ -41,7 +41,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttlePrediction" inverseName="stop" inverseEntity="ShuttlePrediction" syncable="YES"/>
-        <relationship name="route" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRoute" inverseName="stops" inverseEntity="ShuttleRoute" syncable="YES"/>
+        <relationship name="routes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleRoute" inverseName="stops" inverseEntity="ShuttleRoute" syncable="YES"/>
     </entity>
     <entity name="ShuttleVehicle" representedClassName="MITShuttleVehicle" syncable="YES">
         <attribute name="heading" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
