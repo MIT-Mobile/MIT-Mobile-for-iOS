@@ -19,7 +19,8 @@
                                                   @"route_url": @"routeURL",
                                                   @"route_title": @"routeTitle",
                                                   @"stop_id": @"stopId",
-                                                  @"stop_url": @"stopURL"}];
+                                                  @"stop_url": @"stopURL",
+                                                  @"stop_title": @"stopTitle"}];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMapping]]];
     [mapping setIdentificationAttributes:@[@"routeId", @"stopId"]];
     return mapping;

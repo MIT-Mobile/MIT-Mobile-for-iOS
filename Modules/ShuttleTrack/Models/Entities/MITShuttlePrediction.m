@@ -17,6 +17,7 @@
     [mapping addAttributeMappingsFromDictionary:@{@"vehicle_id": @"vehicleId",
                                                   @"timestamp": @"timestamp",
                                                   @"seconds": @"seconds"}];
+    [mapping setIdentificationAttributes:@[@"vehicleId", @"timestamp"]];
     return mapping;
 }
 

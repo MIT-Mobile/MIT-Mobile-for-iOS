@@ -5,6 +5,8 @@
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 
+typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
+
 @implementation MITShuttleController
 
 #pragma mark - Singleton Instance
@@ -37,19 +39,7 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        if (!error) {
-                                                            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                                                            if (completion) {
-                                                                completion(objects, nil);
-                                                            }
-                                                        } else {
-                                                            if (completion) {
-                                                                completion(nil, error);
-                                                            }
-                                                        }
-                                                    }];
+                                                    [self handleResult:result error:error completion:completion];
                                                 }];
 }
 
@@ -84,41 +74,38 @@
 
 #pragma mark - Helper Methods
 
-- (void)getObjectForURL:(NSURL *)url completion:(void (^)(id object, NSError *error))completion
+- (void)getObjectForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (!error) {
-                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                if (completion) {
-                    completion([objects firstObject], nil);
-                }
-            } else {
-                if (completion) {
-                    completion(nil, error);
-                }
-            }
-        }];
+        [self handleResult:result error:error completion:completion];
     }];
 }
 
-- (void)getObjectsForURL:(NSURL *)url completion:(void (^)(NSArray *objects, NSError *error))completion
+- (void)getObjectsForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (!error) {
-                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-                NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-                if (completion) {
+        [self handleResult:result error:error completion:completion];
+    }];
+}
+
+- (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITShuttleCompletionBlock)completion
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!error) {
+            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+            if (completion) {
+                if ([objects count] > 1) {
                     completion(objects, nil);
-                }
-            } else {
-                if (completion) {
-                    completion(nil, error);
+                } else {
+                    completion([objects firstObject], nil);
                 }
             }
-        }];
+        } else {
+            if (completion) {
+                completion(nil, error);
+            }
+        }
     }];
 }
 
