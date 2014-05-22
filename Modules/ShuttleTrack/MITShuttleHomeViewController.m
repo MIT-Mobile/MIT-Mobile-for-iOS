@@ -246,9 +246,7 @@ typedef enum {
     [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
         [self endRefreshing];
         if (!error) {
-            if ([self.routes count] == 0) {
-                [self.routesFetchedResultsController performFetch:nil];
-            }
+            [self.routesFetchedResultsController performFetch:nil];
             [self refreshNearestStops];
             [self.tableView reloadData];
             if (!self.predictionsRefreshTimer.isValid) {
@@ -264,9 +262,7 @@ typedef enum {
         if ([route.scheduled boolValue] && [route.predictable boolValue]) {
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
                 if (!error) {
-                    if ([self.predictionLists count] == 0) {
-                        [self.predictionListsFetchedResultsController performFetch:nil];
-                    }
+                    [self.predictionListsFetchedResultsController performFetch:nil];
                     NSInteger routeIndex = [self.routes indexOfObject:route];
                     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
                 }
