@@ -82,9 +82,9 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     return kMilesPerMeter * [currentLocation distanceFromLocation:targetLocation];
 }
 
-+ (BOOL)locationServicesEnabled
++ (BOOL)locationServicesAuthorized
 {
-    return [CLLocationManager locationServicesEnabled];
+    return [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized;
 }
 
 #pragma mark - CLLocationManagerDelegate

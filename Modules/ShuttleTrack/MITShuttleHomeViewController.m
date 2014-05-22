@@ -325,7 +325,7 @@ typedef enum {
 
 - (void)refreshLocationStatusLabel
 {
-    self.locationStatusLabel.text = [MITLocationManager locationServicesEnabled] ? @"Showing nearest stops" : @"Location couldn't be determined";
+    self.locationStatusLabel.text = [MITLocationManager locationServicesAuthorized] ? @"Showing nearest stops" : @"Location couldn't be determined";
 }
 
 #pragma mark - Location Notifications
@@ -338,7 +338,11 @@ typedef enum {
 
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
+    if ([MITLocationManager locationServicesAuthorized]) {
+        [self refreshNearestStops];
+    }
     [self refreshLocationStatusLabel];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Route Data Helpers
@@ -433,7 +437,7 @@ typedef enum {
 - (NSInteger)numberOfRowsInSectionWithRoute:(MITShuttleRoute *)route
 {
     NSInteger count = kRouteSectionMinimumNumberOfRows;    // always show at least the route cell
-    if ([route.scheduled boolValue]) {
+    if ([MITLocationManager locationServicesAuthorized] && [route.scheduled boolValue]) {
         count += [self.nearestStops[route.identifier] count];
     }
     return count;

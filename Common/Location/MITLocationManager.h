@@ -26,6 +26,6 @@ extern NSString * const kLocationManagerAuthorizationStatusKey;
 - (CLLocation *)currentLocation;
 - (double)milesFromCoordinate:(CLLocationCoordinate2D)coordinate;
 
-+ (BOOL)locationServicesEnabled;
++ (BOOL)locationServicesAuthorized;
 
 @end
