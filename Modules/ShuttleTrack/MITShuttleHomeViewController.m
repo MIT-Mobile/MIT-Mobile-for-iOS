@@ -138,7 +138,9 @@ typedef enum {
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
+    [[MITLocationManager sharedManager] startUpdatingLocation];
     [self startRefreshingRoutes];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
 
@@ -146,7 +148,9 @@ typedef enum {
 {
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
+    [[MITLocationManager sharedManager] stopUpdatingLocation];
     [self stopRefreshingData];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
 
@@ -321,6 +325,12 @@ typedef enum {
 }
 
 #pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateLocation:(NSNotification *)notification
+{
+    [self refreshNearestStops];
+    [self.tableView reloadData];
+}
 
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
