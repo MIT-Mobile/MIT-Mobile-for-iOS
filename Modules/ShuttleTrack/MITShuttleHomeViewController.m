@@ -24,6 +24,7 @@ static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
 static NSString * const kContactInformationHeaderTitle = @"Contact Information";
 static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
 
+static const NSInteger kRouteSectionMinimumNumberOfRows = 1;
 static const NSInteger kRouteCellRow = 0;
 static const NSInteger kNearestStopDisplayCount = 2;
 
@@ -58,6 +59,7 @@ typedef enum {
 
 @property (copy, nonatomic) NSDictionary *nearestStops;
 
+@property (nonatomic, getter = isUpdating) BOOL updating;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 
 @property (strong, nonatomic) NSTimer *routesRefreshTimer;
@@ -275,12 +277,14 @@ typedef enum {
 
 - (void)beginRefreshing
 {
+    self.updating = YES;
     [self.refreshControl beginRefreshing];
     [self refreshLastUpdatedLabel];
 }
 
 - (void)endRefreshing
 {
+    self.updating = NO;
     [self.refreshControl endRefreshing];
     self.lastUpdatedDate = [NSDate date];
     [self refreshLastUpdatedLabel];
@@ -291,7 +295,7 @@ typedef enum {
 - (void)refreshLastUpdatedLabel
 {
     NSString *lastUpdatedText;
-    if (self.refreshControl.isRefreshing) {
+    if (self.isUpdating) {
         lastUpdatedText = @"Updating...";
     } else {
         NSTimeInterval secondsSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.lastUpdatedDate];
@@ -376,6 +380,16 @@ typedef enum {
     return [self.routes count] + section;
 }
 
+- (BOOL)isContactInformationSection:(NSInteger)section
+{
+    return (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]);
+}
+
+- (BOOL)isMBTAInformationSection:(NSInteger)section
+{
+    return (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]);
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -385,26 +399,22 @@ typedef enum {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
-        return 2;
-    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
-        return 3;
+    if ([self isContactInformationSection:section]) {
+        return [self.contactInformation count];
+    } else if ([self isMBTAInformationSection:section]) {
+        return [self.mbtaInformation count];
     } else {
-        NSInteger count = 1;    // always show at least the route cell
         MITShuttleRoute *route = self.routes[section];
-        if ([route.scheduled boolValue]) {
-            count += [self.nearestStops[route.identifier] count];
-        }
-        return count;
+        return [self numberOfRowsInSectionWithRoute:route];
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger section = indexPath.section;
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
+    if ([self isContactInformationSection:section]) {
         return [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
-    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+    } else if ([self isMBTAInformationSection:section]) {
         return [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
     } else {
         switch (indexPath.row) {
@@ -419,6 +429,15 @@ typedef enum {
 }
 
 #pragma mark - UITableViewDataSource Helpers
+
+- (NSInteger)numberOfRowsInSectionWithRoute:(MITShuttleRoute *)route
+{
+    NSInteger count = kRouteSectionMinimumNumberOfRows;    // always show at least the route cell
+    if ([route.scheduled boolValue]) {
+        count += [self.nearestStops[route.identifier] count];
+    }
+    return count;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView routeCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -471,9 +490,9 @@ typedef enum {
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
+    if ([self isContactInformationSection:section]) {
         return kContactInformationHeaderTitle;
-    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+    } else if ([self isMBTAInformationSection:section]) {
         return kMBTAInformationHeaderTitle;
     }
     return nil;
@@ -481,8 +500,7 @@ typedef enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation] ||
-        section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+    if ([self isContactInformationSection:section] || [self isMBTAInformationSection:section]) {
         return tableView.sectionHeaderHeight;
     }
     return kRouteSectionHeaderHeight;
@@ -501,9 +519,9 @@ typedef enum {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger section = indexPath.section;
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
+    if ([self isContactInformationSection:section]) {
         return kContactInformationCellHeight;
-    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
+    } else if ([self isMBTAInformationSection:section]) {
         return tableView.rowHeight;
     } else {
         switch (indexPath.row) {
@@ -520,23 +538,50 @@ typedef enum {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     NSInteger section = indexPath.section;
-    if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]) {
-        NSDictionary *resource = self.contactInformation[indexPath.row];
-        NSString *phoneNumber = resource[kResourcePhoneNumberKey];
-		NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
-		if ([[UIApplication sharedApplication] canOpenURL:phoneNumberURL]) {
-			[[UIApplication sharedApplication] openURL:phoneNumberURL];
-        }
-    } else if (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]) {
-        NSDictionary *resource = self.mbtaInformation[indexPath.row];
-        NSString *urlString = resource[kResourceURLKey];
-        NSURL *url = [NSURL URLWithString:urlString];
-		if ([[UIApplication sharedApplication] canOpenURL:url]) {
-			[[UIApplication sharedApplication] openURL:url];
-        }
+    if ([self isContactInformationSection:section]) {
+        [self phoneNumberResourceSelected:self.contactInformation[indexPath.row]];
+    } else if ([self isMBTAInformationSection:section]) {
+        [self urlResourceSelected:self.mbtaInformation[indexPath.row]];
     } else {
-#warning TODO: push route/stop view controller
+        MITShuttleRoute *route = self.routes[section];
+        if (indexPath.row == kRouteCellRow) {
+            [self routeSelected:route];
+        } else {
+            NSInteger stopIndex = indexPath.row - 1;
+            MITShuttleStop *stop = [self nearestStopForRoute:route atIndex:stopIndex];
+            [self stopSelected:stop];
+        }
     }
+}
+
+#pragma mark - UITableViewDelegate Helpers
+
+- (void)phoneNumberResourceSelected:(NSDictionary *)resource
+{
+    NSString *phoneNumber = resource[kResourcePhoneNumberKey];
+    NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
+    if ([[UIApplication sharedApplication] canOpenURL:phoneNumberURL]) {
+        [[UIApplication sharedApplication] openURL:phoneNumberURL];
+    }
+}
+
+- (void)urlResourceSelected:(NSDictionary *)resource
+{
+    NSString *urlString = resource[kResourceURLKey];
+    NSURL *url = [NSURL URLWithString:urlString];
+    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
+- (void)routeSelected:(MITShuttleRoute *)route
+{
+#warning TODO: push route view controller in route state
+}
+
+- (void)stopSelected:(MITShuttleStop *)stop
+{
+#warning TODO: push route view controller in stop state
 }
 
 @end
