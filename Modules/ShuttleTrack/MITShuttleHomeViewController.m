@@ -7,6 +7,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePredictionList.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttleRouteContainerViewController.h"
 #import "UIKit+MITAdditions.h"
 
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
@@ -117,6 +118,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = @"Shuttles";
+        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStyleBordered target:nil action:nil];
     }
     return self;
 }
@@ -145,7 +147,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES animated:animated];
     [[MITLocationManager sharedManager] stopUpdatingLocation];
     [self stopRefreshingData];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateLocationNotification object:nil];
@@ -582,12 +583,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
     switch (indexPath.section) {
         case MITShuttleSectionRoutes: {
+            MITShuttleRoute *route;
+            MITShuttleStop *stop;
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                [self routeSelected:object];
+                route = object;
             } else {
-                [self stopSelected:object];
+                stop = object;
+                route = [self routeForStopAtIndexInFlatRouteArray:indexPath.row];
             }
+            MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];
+            [self.navigationController pushViewController:routeContainerViewController animated:YES];
             break;
         }
         case MITShuttleSectionContactInformation:
@@ -618,16 +624,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
     }
-}
-
-- (void)routeSelected:(MITShuttleRoute *)route
-{
-#warning TODO: push route view controller in route state
-}
-
-- (void)stopSelected:(MITShuttleStop *)stop
-{
-#warning TODO: push route view controller in stop state
 }
 
 @end
