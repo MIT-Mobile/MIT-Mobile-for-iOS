@@ -12,6 +12,7 @@
 #import "UIKit+MITAdditions.h"
 
 #import "MITPeopleResource.h"
+#import "PeopleSearchHandler.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -28,13 +29,13 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 @property (nonatomic,weak) UITableView *searchResultsTableView;
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
 
-@property (nonatomic,copy) NSString *searchTerms;
-@property (nonatomic,copy) NSArray *searchTokens;
-
-@property BOOL searchCancelled;
 @end
 
 @implementation PeopleSearchViewController
+{
+    PeopleSearchHandler *searchHandler;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil
                bundle:(NSBundle *)nibBundleOrNil
 {
@@ -66,6 +67,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
         self.searchBar.tintColor = [UIColor mit_tintColor];
     }
+    
+    searchHandler = [PeopleSearchHandler new];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -86,8 +89,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 #pragma mark UISearchDisplay Delegate
 - (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
-    if (self.searchTerms) {
-        controller.searchBar.text = self.searchTerms;
+    if (searchHandler.searchTerms) {
+        controller.searchBar.text = searchHandler.searchTerms;
         [self performSearch];
     }
 }
@@ -104,9 +107,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
-    self.searchTerms = nil;
-    self.searchTokens = nil;
-    self.searchResults = nil;
+    searchHandler.searchTerms = nil;
+    searchHandler.searchTokens = nil;
+    searchHandler.searchResults = nil;
     [self.searchResultsLoadingView removeFromSuperview];
 }
 
@@ -114,31 +117,31 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchBar.text length] <= 0) {
-        self.searchResults = nil;
-        self.searchTerms = nil;
-        self.searchCancelled = YES;
+        searchHandler.searchResults = nil;
+        searchHandler.searchTerms = nil;
+        searchHandler.searchCancelled = YES;
         [self.searchDisplayController.searchResultsTableView reloadData];
     }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-	self.searchTerms = searchBar.text;
+	searchHandler.searchTerms = searchBar.text;
 	[self performSearch];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
 {
-    self.searchTerms = nil;
-    self.searchTokens = nil;
-    self.searchResults = nil;
+    searchHandler.searchTerms = nil;
+    searchHandler.searchTokens = nil;
+    searchHandler.searchResults = nil;
     
     [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
-	self.searchTerms = externalSearchTerms;
+	searchHandler.searchTerms = externalSearchTerms;
 
     if ([self.searchDisplayController isActive]) {
         self.searchDisplayController.searchBar.text = externalSearchTerms;
@@ -151,35 +154,19 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)performSearch
 {
-	// save search tokens for drawing table cells
-    NSString *searchQuery = [self.searchTerms lowercaseString];
-    NSArray *searchTokens = [searchQuery componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    searchTokens = [searchTokens sortedArrayUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
-        return [@([string1 length]) compare:@([string2 length])];
-    }];
-
-	self.searchTokens = searchTokens;
-	self.searchCancelled = NO;
-
-    NSString *currentQueryString = self.searchTerms;
     __weak PeopleSearchViewController *weakSelf = self;
-    [MITPeopleResource peopleMatchingQuery:currentQueryString loaded:^(NSArray *objects, NSError *error) {
-        PeopleSearchViewController *blockSelf = weakSelf;
-        if (blockSelf) {
-            if (error) {
-                blockSelf.searchResults = nil;
-                [blockSelf.searchDisplayController.searchResultsTableView reloadData];
-
-            } else if (!blockSelf.searchCancelled && (blockSelf.searchTerms == currentQueryString)) {
-                blockSelf.searchResults = objects;
-                [blockSelf.searchDisplayController.searchResultsTableView reloadData];
-            }
-
-            [blockSelf.searchResultsLoadingView removeFromSuperview];
-        }
+    [searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
+    {
+        [weakSelf.searchDisplayController.searchResultsTableView reloadData];
+        [weakSelf.searchResultsLoadingView removeFromSuperview];
     }];
-
+    
     [self showLoadingView];
+}
+
+- (NSArray *)searchResults
+{
+    return searchHandler.searchResults;
 }
 
 #pragma mark - Table view methods
@@ -214,7 +201,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 				return 0;
 		}
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		return ([self.searchResults count] ? [self.searchResults count] : 1); //Force a single row
+		return ([searchHandler.searchResults count] ? [searchHandler.searchResults count] : 1); //Force a single row
 	} else {
         return 0;
     }
@@ -291,8 +278,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         //  returns a minimum value of 1 (even if there are no actual results). If the table
         //  view is asking for a cell and we don't have anything to display, just return a blank cell
         // (bskinner - 2014.02.27)
-        if (indexPath.row < [self.searchResults count]) {
-            PersonDetails *searchResult = self.searchResults[indexPath.row];
+        if (indexPath.row < [searchHandler.searchResults count]) {
+            PersonDetails *searchResult = searchHandler.searchResults[indexPath.row];
             NSString *fullname = searchResult.name;
 
             if (searchResult.title) {
@@ -309,7 +296,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
 
             __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:fullname];
-            [self.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
+            [searchHandler.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
                 NSRange boldRange = [fullname rangeOfString:token options:NSCaseInsensitiveSearch];
 
                 if (boldRange.location != NSNotFound) {
@@ -359,7 +346,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             return UITableViewAutomaticDimension;
         }
 	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([self.searchResults count]) {
+        if ([searchHandler.searchResults count]) {
             return 60.;
         }
 	}
@@ -403,7 +390,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
         PeopleDetailsViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"PeopleDetailsVC"];
 		if (tableView == self.searchDisplayController.searchResultsTableView) {
-			personDetails = self.searchResults[indexPath.row];
+			personDetails = searchHandler.searchResults[indexPath.row];
 		} else {
 			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
 		}

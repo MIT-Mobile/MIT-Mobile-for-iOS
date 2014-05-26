@@ -25,7 +25,7 @@
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
+                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
                             <rect key="frame" x="100" y="16" width="11" height="11"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
