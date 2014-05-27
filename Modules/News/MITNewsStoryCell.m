@@ -87,27 +87,8 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             }
         }];
         
-        if (title) {
-            NSError *error = nil;
-            NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-            if (!titleContent) {
-                DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
-                titleContent = title;
-            }
-            
-            self.titleLabel.text = titleContent;
-        }
-        
-        if (dek) {
-            NSError *error = nil;
-            NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-            if (error) {
-                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
-                dekContent = dek;
-            }
-            
-            self.dekLabel.text = dekContent;
-        }
+        self.titleLabel.text = story.titleText;
+        self.dekLabel.text = story.dekText;
         
         if (imageURL) {
             MITNewsStory *currentStory = self.story;
