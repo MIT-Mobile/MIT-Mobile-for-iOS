@@ -3,6 +3,9 @@
 @class MITShuttleStop;
 @class MITShuttlePrediction;
 
+extern NSString * const kMITShuttleStopCellNibName;
+extern NSString * const kMITShuttleStopCellIdentifier;
+
 typedef enum {
     MITShuttleStopCellTypeRouteList,
     MITShuttleStopCellTypeRouteDetail

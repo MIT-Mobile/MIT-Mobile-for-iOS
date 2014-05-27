@@ -2,6 +2,9 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
 
+NSString * const kMITShuttleStopCellNibName = @"MITShuttleStopCell";
+NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";
+
 static NSString * const kTimeUnavailableText = @"--";
 
 @interface MITShuttleStopCell()

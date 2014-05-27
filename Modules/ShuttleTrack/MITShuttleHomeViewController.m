@@ -13,12 +13,6 @@
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
 static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
 
-static NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
-static NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
-
-static NSString * const kMITShuttleStopCellNibName = @"MITShuttleStopCell";
-static NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";
-
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
 static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
 

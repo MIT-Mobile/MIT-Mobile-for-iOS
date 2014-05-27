@@ -1,6 +1,9 @@
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleRoute.h"
 
+NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
+NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
+
 static const CGFloat kCellHeightNoAlert = 45.0;
 static const CGFloat kCellHeightAlert = 62.0;
 
