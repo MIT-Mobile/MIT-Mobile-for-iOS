@@ -20,6 +20,10 @@
 #import "UIScrollView+SVPullToRefresh.h"
 #import "UITableView+DynamicSizing.h"
 
+// The view needs a bit more fine tuning before they fit in
+// properly so just disable them for now.
+#define DISABLE_SHADED_SECTION_HEADERS
+
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerHeightOffset = 64;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
@@ -550,12 +554,16 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
 
 #pragma mark - UIScrollViewDelegate
 
-- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+#if !defined(DISABLE_SHADED_SECTION_HEADERS)
     [self refreshSectionHeaders];
+#else
+#   warning table section header shading is disabled
+#endif
 }
 
-- (void) refreshSectionHeaders
+- (void)refreshSectionHeaders
 {
     NSInteger sectionNumber = 0;
     
