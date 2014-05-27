@@ -15,6 +15,7 @@
 @implementation MITNewsStoryViewController {
     NSManagedObjectID *_storyObjectID;
 }
+
 @synthesize story = _story;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -95,7 +96,7 @@
 {
     if (self.story)
     {
-        NSString *emailBodyText = [self stringFromHtmlString:self.story.dek];
+        NSString *emailBodyText = self.story.titleText;
         MITNewsStoryActivityItemProvider *itemProvider = [[MITNewsStoryActivityItemProvider alloc] initWithEmailBodyText:emailBodyText];
         
         NSMutableArray *items = [NSMutableArray arrayWithObject:self];
@@ -175,31 +176,6 @@
     
     return _story;
 }
-
-// Strip HTML tags (supports both iOS6 and iOS7)
-- (NSString *)stringFromHtmlString:(NSString *)htmlString
-{
-    if( !htmlString || htmlString.length == 0 )
-    {
-        return @"";
-    }
-    
-    NSScanner *theScanner;
-    NSString *text = nil;
-    theScanner = [NSScanner scannerWithString:htmlString];
-    
-    while ([theScanner isAtEnd] == NO) {
-        
-        [theScanner scanUpToString:@"<" intoString:NULL] ;
-        
-        [theScanner scanUpToString:@">" intoString:&text] ;
-        
-        htmlString = [htmlString stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>", text] withString:@""];
-    }
-
-    return [htmlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-}
-
 
 - (NSString*)htmlBody
 {
