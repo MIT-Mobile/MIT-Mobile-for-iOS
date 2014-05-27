@@ -5,6 +5,7 @@
 #import "MITMobileResource.h"
 #import "MITMobileServerConfiguration.h"
 #import "MITTouchstoneRequestOperation.h"
+#import "MITAdditions.h"
 
 typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error);
 
@@ -109,29 +110,41 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 - (void)getObjectsForURL:(NSURL*)url completion:(MITResourceLoadedBlock)block
 {
     __block MITMobileResource *targetResource = nil;
-    __block NSDictionary *queryParameters = nil;
-    
-    // TODO: Check to see if -[NSURL query] is URLEncoded or not
-    // bskinner - 2014.20.01
-    NSMutableString *path = [NSMutableString stringWithFormat:@"%@?%@",[url path],[url query]];
+
+    NSMutableString *path = [NSMutableString stringWithFormat:@"%@",[url path]];
+    NSDictionary *queryParameters = [url queryDictionary];
+
     [path replaceOccurrencesOfString:@"/" withString:@"" options:0 range:NSMakeRange(0, 1)];
     
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
     [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
-        NSDictionary *parameters = nil;
-        
-        BOOL pathMatchesPattern = [pathMatcher matchesPattern:resource.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+        BOOL pathMatchesPattern = [pathMatcher matchesPattern:resource.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
         if (pathMatchesPattern) {
             targetResource = resource;
-            queryParameters = parameters;
             (*stop) = YES;
         }
     }];
 
     if (targetResource) {
-        [self getObjectsForResourceNamed:targetResource.name
-                              parameters:queryParameters
-                              completion:block];
+        // Trim off any additional paths. Right now, the API prefix (for the Mobile v3, '/apis')
+        // is included in the route name but the current server URL defaults to a path of '/api'.
+        // Passing the current server URL directly into the routing subsystem confuses it.
+        NSURL *serverURL = [[NSURL URLWithString:@"/"
+                                   relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
+
+        RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
+        [objectManager getObjectsAtPath:path
+                             parameters:queryParameters
+                                success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                                    if (block) {
+                                        block(mappingResult,operation.HTTPRequestOperation.response,nil);
+                                    }
+                                }
+                                failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                                    if (block) {
+                                        block(nil,operation.HTTPRequestOperation.response,error);
+                                    }
+                                }];
     } else {
         NSString *reason = [NSString stringWithFormat:@"'%@' does not match any registered resources",[url path]];
         NSError *error = [NSError errorWithDomain:MITMobileErrorDomain
