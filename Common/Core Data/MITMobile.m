@@ -109,13 +109,12 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 
 - (void)getObjectsForURL:(NSURL*)url completion:(MITResourceLoadedBlock)block
 {
-    __block MITMobileResource *targetResource = nil;
+    NSParameterAssert(url);
 
-    NSMutableString *path = [NSMutableString stringWithFormat:@"%@",[url path]];
-    NSDictionary *queryParameters = [url queryDictionary];
-
+    NSMutableString *path = [[NSMutableString alloc] initWithString:[url path]];
     [path replaceOccurrencesOfString:@"/" withString:@"" options:0 range:NSMakeRange(0, 1)];
-    
+
+    __block MITMobileResource *targetResource = nil;
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
     [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
         BOOL pathMatchesPattern = [pathMatcher matchesPattern:resource.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
@@ -133,6 +132,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                                    relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
 
         RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
+        NSDictionary *queryParameters = [url queryDictionary];
         [objectManager getObjectsAtPath:path
                              parameters:queryParameters
                                 success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
