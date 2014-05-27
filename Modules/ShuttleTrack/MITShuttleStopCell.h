@@ -3,12 +3,15 @@
 @class MITShuttleStop;
 @class MITShuttlePrediction;
 
+extern const CGFloat kStopCellDefaultSeparatorLeftInset;
+
+extern NSString * const kMITShuttleStopCellNibName;
+extern NSString * const kMITShuttleStopCellIdentifier;
+
 typedef enum {
     MITShuttleStopCellTypeRouteList,
     MITShuttleStopCellTypeRouteDetail
 } MITShuttleStopCellType;
-
-extern const CGFloat kStopCellDefaultSeparatorLeftInset;
 
 @interface MITShuttleStopCell : UITableViewCell
 
