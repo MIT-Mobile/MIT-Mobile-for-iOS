@@ -93,10 +93,15 @@
 
 - (IBAction)shareButtonTapped:(id)sender
 {
-    if (self.story) {
+    if (self.story)
+    {
+        NSString *emailBodyText = [self stringFromHtmlString:self.story.dek];
+        MITNewsStoryActivityItemProvider *itemProvider = [[MITNewsStoryActivityItemProvider alloc] initWithEmailBodyText:emailBodyText];
+        
         NSMutableArray *items = [NSMutableArray arrayWithObject:self];
         [self.managedObjectContext performBlockAndWait:^{
-                [items addObject:self.story.sourceURL];
+            [items addObject:self.story.sourceURL];
+            [items addObject:itemProvider];
         }];
 
         UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
@@ -170,6 +175,31 @@
     
     return _story;
 }
+
+// Strip HTML tags (supports both iOS6 and iOS7)
+- (NSString *)stringFromHtmlString:(NSString *)htmlString
+{
+    if( !htmlString || htmlString.length == 0 )
+    {
+        return @"";
+    }
+    
+    NSScanner *theScanner;
+    NSString *text = nil;
+    theScanner = [NSScanner scannerWithString:htmlString];
+    
+    while ([theScanner isAtEnd] == NO) {
+        
+        [theScanner scanUpToString:@"<" intoString:NULL] ;
+        
+        [theScanner scanUpToString:@">" intoString:&text] ;
+        
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>", text] withString:@""];
+    }
+
+    return [htmlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 
 - (NSString*)htmlBody
 {
@@ -292,9 +322,54 @@
     DDLogVerbose(@"Activity type: %@", activityType);
     if ([activityType isEqualToString:@"com.apple.UIKit.activity.CopyToPasteboard"]) {
         return self.story.sourceURL;
-    } else {
-        return self.story.title;
+    } else if( [activityType isEqualToString:UIActivityTypeMail] ){
+        return @"";
     }
+    
+    return self.story.title;
+}
+
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController
+              subjectForActivityType:(NSString *)activityType
+{
+    if( [activityType isEqualToString:UIActivityTypeMail] )
+    {
+        return [NSString stringWithFormat:@"MIT News: %@", self.story.title];
+    }
+    
+    return @"";
+}
+
+@end
+
+
+@interface MITNewsStoryActivityItemProvider()
+
+@property (nonatomic, copy) NSString *emailBodyText;
+
+@end
+
+@implementation MITNewsStoryActivityItemProvider
+
+- (id) initWithEmailBodyText:(NSString *)emailBodyText
+{
+    self = [super init];
+    if( self )
+    {
+        _emailBodyText = emailBodyText;
+    }
+    
+    return self;
+}
+
+- (id) item
+{
+    if( [self.activityType isEqualToString:UIActivityTypeMail] )
+    {
+        return [NSString stringWithFormat:@"\n\n%@", self.emailBodyText];
+    }
+    
+    return self.placeholderItem;
 }
 
 @end

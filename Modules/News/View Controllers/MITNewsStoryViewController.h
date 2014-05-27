@@ -17,3 +17,9 @@
 - (void)setStory:(MITNewsStory*)story;
 
 @end
+
+@interface MITNewsStoryActivityItemProvider : UIActivityItemProvider
+
+- (id) initWithEmailBodyText:(NSString *)emailBodyText;
+
+@end
