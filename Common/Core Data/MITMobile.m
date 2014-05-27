@@ -136,14 +136,20 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
         [objectManager getObjectsAtPath:path
                              parameters:queryParameters
                                 success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                    if (block) {
-                                        block(mappingResult,operation.HTTPRequestOperation.response,nil);
-                                    }
+                                    NSHTTPURLResponse *response = operation.HTTPRequestOperation.response;
+                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                        if (block) {
+                                            block(mappingResult,response,nil);
+                                        }
+                                    }];
                                 }
                                 failure:^(RKObjectRequestOperation *operation, NSError *error) {
-                                    if (block) {
-                                        block(nil,operation.HTTPRequestOperation.response,error);
-                                    }
+                                    NSHTTPURLResponse *response = operation.HTTPRequestOperation.response;
+                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                        if (block) {
+                                            block(nil,response,error);
+                                        }
+                                    }];
                                 }];
     } else {
         NSString *reason = [NSString stringWithFormat:@"'%@' does not match any registered resources",[url path]];
