@@ -5,6 +5,12 @@
 
 @class MITShuttleStop, MITShuttleVehicle;
 
+typedef enum {
+    MITShuttleRouteStatusNotInService = 0,
+    MITShuttleRouteStatusInService,
+    MITShuttleRouteStatusPredictionsUnavailable
+} MITShuttleRouteStatus;
+
 @interface MITShuttleRoute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * agency;
@@ -23,6 +29,7 @@
 @property (nonatomic, retain) NSOrderedSet *vehicles;
 
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
+- (MITShuttleRouteStatus)status;
 
 @end
 

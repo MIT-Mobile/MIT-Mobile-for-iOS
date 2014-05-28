@@ -176,9 +176,13 @@
 {
     switch (state) {
         case MITShuttleRouteContainerStateRoute:
+            self.routeContainerView.hidden = NO;
+            self.stopsScrollView.hidden = YES;
             [self.navigationController setToolbarHidden:NO animated:animated];
             break;
         case MITShuttleRouteContainerStateStop:
+            self.routeContainerView.hidden = YES;
+            self.stopsScrollView.hidden = NO;
             [self.navigationController setToolbarHidden:YES animated:animated];
             break;
         case MITShuttleRouteContainerStateMap:

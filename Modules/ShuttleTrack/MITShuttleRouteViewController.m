@@ -2,16 +2,19 @@
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleStopCell.h"
+#import "MITShuttleRouteStatusCell.h"
 
 static const NSInteger kRouteStatusCellRow = 0;
 static const NSInteger kRouteStatusCellCount = 1;
 
-static const CGFloat kRouteStatusCellHeight = 60.0;
+static const CGFloat kRouteStatusCellEstimatedHeight = 60.0;
 static const CGFloat kStopCellHeight = 45.0;
+
+static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
 @interface MITShuttleRouteViewController ()
 
-@property (strong, nonatomic) UITableViewCell *routeStatusCell;
+@property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 
 @end
 
@@ -47,10 +50,11 @@ static const CGFloat kStopCellHeight = 45.0;
 
 #pragma mark - Route Status Cell
 
-- (UITableViewCell *)routeStatusCell
+- (MITShuttleRouteStatusCell *)routeStatusCell
 {
     if (!_routeStatusCell) {
-        _routeStatusCell = [[UITableViewCell alloc] init];
+        _routeStatusCell = [[NSBundle mainBundle] loadNibNamed:kMITShuttleRouteStatusCellNibName owner:self options:nil][0];
+        [_routeStatusCell setRoute:self.route];
     }
     return _routeStatusCell;
 }
@@ -73,6 +77,9 @@ static const CGFloat kStopCellHeight = 45.0;
         return self.routeStatusCell;
     } else {
         MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
+        NSInteger stopIndex = indexPath.row - 1;
+        MITShuttleStop *stop = self.route.stops[stopIndex];
+        [cell setStop:stop prediction:nil];
         [cell setCellType:MITShuttleStopCellTypeRouteDetail];
         return cell;
     }
@@ -83,7 +90,18 @@ static const CGFloat kStopCellHeight = 45.0;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == kRouteStatusCellRow) {
-        return kRouteStatusCellHeight;
+        CGFloat height = [self.routeStatusCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+        ++height;   // add pt for cell separator;
+        return height;
+    } else {
+        return kStopCellHeight;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == kRouteStatusCellRow) {
+        return kRouteStatusCellEstimatedHeight;
     } else {
         return kStopCellHeight;
     }
