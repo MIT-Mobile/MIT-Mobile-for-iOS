@@ -6,7 +6,7 @@
 #import "MITShuttleStop.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITShuttleRouteContainerViewController ()
+@interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
 
 @property (strong, nonatomic) MITShuttleMapViewController *mapViewController;
 @property (strong, nonatomic) MITShuttleRouteViewController *routeViewController;
@@ -83,8 +83,15 @@
 - (void)setupChildViewControllers
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithRoute:self.route];
-    self.routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:self.route];
+    [self setupRouteViewController];
     [self setupStopViewControllers];
+}
+
+- (void)setupRouteViewController
+{
+    self.routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:self.route];
+    self.routeViewController.dataSource = self;
+    self.routeViewController.delegate = self;
 }
 
 - (void)setupStopViewControllers
@@ -107,7 +114,7 @@
 
 - (void)displayAllChildViewControllers
 {
-    [self addViewOfChildViewController:self.mapViewController toView:self.mapContainerView];
+//    [self addViewOfChildViewController:self.mapViewController toView:self.mapContainerView];
     [self addViewOfChildViewController:self.routeViewController toView:self.routeContainerView];
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         [self addViewOfChildViewController:stopViewController toView:self.stopsScrollView];
@@ -118,7 +125,7 @@
 {
     [self addChildViewController:childViewController];
     childViewController.view.frame = view.bounds;
-    childViewController.view.backgroundColor = [self randomColor];
+//    childViewController.view.backgroundColor = [self randomColor];
     [view addSubview:childViewController.view];
     [childViewController didMoveToParentViewController:self];
 }
@@ -192,6 +199,37 @@
             break;
     }
 }
+
+#pragma mark - MITShuttleRouteViewControllerDataSource
+
+- (BOOL)isMapEmbeddedInRouteViewController:(MITShuttleRouteViewController *)routeViewController
+{
+    return self.state == MITShuttleRouteContainerStateRoute && UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+}
+
+- (CGFloat)embeddedMapHeightForRouteViewController:(MITShuttleRouteViewController *)routeViewController
+{
+    return self.mapContainerView.frame.size.height;
+}
+
+#pragma mark - MITShuttleRouteViewControllerDelegate
+
+- (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop
+{
+    self.stop = stop;
+    [self configureLayoutForState:MITShuttleRouteContainerStateStop animated:YES];
+}
+
+- (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset
+{
+    if ([self isMapEmbeddedInRouteViewController:self.routeViewController]) {
+        CGRect frame = self.mapContainerView.frame;
+        frame.origin.y = -contentOffset.y;
+        self.mapContainerView.frame = frame;
+    }
+}
+
+#pragma mark - Test code - to be removed
 
 - (UIColor *)randomColor
 {
