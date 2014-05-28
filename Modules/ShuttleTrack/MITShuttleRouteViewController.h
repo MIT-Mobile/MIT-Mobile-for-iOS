@@ -25,10 +25,11 @@
 
 @protocol MITShuttleRouteViewControllerDelegate <NSObject>
 
-- (void)routeViewControllerDidRefresh:(MITShuttleRouteViewController *)routeViewController;
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop;
 
 @optional
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset;
+- (void)routeViewControllerDidBeginRefreshing:(MITShuttleRouteViewController *)routeViewController;
+- (void)routeViewControllerDidEndRefreshing:(MITShuttleRouteViewController *)routeViewController;
 
 @end
