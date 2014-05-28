@@ -9,6 +9,7 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleRouteContainerViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "NSDateFormatter+RelativeString.h"
 
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
 static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
@@ -289,29 +290,11 @@ typedef enum {
     if (self.isUpdating) {
         lastUpdatedText = @"Updating...";
     } else {
-        NSTimeInterval secondsSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.lastUpdatedDate];
-        if (secondsSinceLastUpdate < 60) {
-            lastUpdatedText = @"Updated just now";
-        } else if (secondsSinceLastUpdate < 60 * 10) {
-            NSInteger minutesSinceLastUpdate = floor(secondsSinceLastUpdate / 60);
-            lastUpdatedText = [NSString stringWithFormat:@"Updated %d minute%@ ago", minutesSinceLastUpdate, (minutesSinceLastUpdate > 1) ? @"s" : @""];
-        } else {
-            NSString *timeString = [[[self dateFormatter] stringFromDate:self.lastUpdatedDate] lowercaseString];
-            lastUpdatedText = [NSString stringWithFormat:@"Last updated at %@", timeString];
-        }
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
+                                                                            toDate:[NSDate date]];
+        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
     }
     self.lastUpdatedLabel.text = lastUpdatedText;
-}
-
-- (NSDateFormatter *)dateFormatter
-{
-    static NSDateFormatter *_dateFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _dateFormatter = [[NSDateFormatter alloc] init];
-        _dateFormatter.timeStyle = NSDateFormatterShortStyle;
-    });
-    return _dateFormatter;
 }
 
 - (void)refreshLocationStatusLabel

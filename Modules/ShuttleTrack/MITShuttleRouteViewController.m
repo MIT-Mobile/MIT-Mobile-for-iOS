@@ -3,6 +3,9 @@
 #import "MITShuttleStop.h"
 #import "MITShuttleStopCell.h"
 #import "MITShuttleRouteStatusCell.h"
+#import "MITShuttleController.h"
+
+static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
 static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 
@@ -16,10 +19,13 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 @property (strong, nonatomic) UITableViewCell *embeddedMapPlaceholderCell;
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
+@property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
 @end
 
 @implementation MITShuttleRouteViewController
+
+#pragma mark - Init
 
 - (instancetype)initWithRoute:(MITShuttleRoute *)route
 {
@@ -30,10 +36,24 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     return self;
 }
 
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [self setupTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self startRefreshingRoute];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self stopRefreshingRoute];
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,8 +78,51 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)refreshControlActivated:(id)sender
 {
-    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-        [self.delegate routeViewControllerDidRefresh:self];
+    [self stopRefreshingRoute];
+    [self startRefreshingRoute];
+}
+
+#pragma mark - Data Refresh Timers
+
+- (void)startRefreshingRoute
+{
+    [self loadRoute];
+    self.routeRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteRefreshInterval
+                                                               target:self
+                                                             selector:@selector(loadRoute)
+                                                             userInfo:nil
+                                                              repeats:YES];
+}
+
+- (void)stopRefreshingRoute
+{
+    [self.routeRefreshTimer invalidate];
+}
+
+#pragma mark - Load Route
+
+- (void)loadRoute
+{
+    [self beginRefreshing];
+    [[MITShuttleController sharedController] getRouteDetail:self.route completion:^(MITShuttleRoute *route, NSError *error) {
+        [self endRefreshing];
+        [self.tableView reloadData];
+    }];
+}
+
+- (void)beginRefreshing
+{
+    [self.refreshControl beginRefreshing];
+    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidBeginRefreshing:)]) {
+        [self.delegate routeViewControllerDidBeginRefreshing:self];
+    }
+}
+
+- (void)endRefreshing
+{
+    [self.refreshControl endRefreshing];
+    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidEndRefreshing:)]) {
+        [self.delegate routeViewControllerDidEndRefreshing:self];
     }
 }
 
