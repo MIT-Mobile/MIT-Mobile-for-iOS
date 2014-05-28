@@ -5,6 +5,7 @@
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 #import "UIKit+MITAdditions.h"
+#import "NSDateFormatter+RelativeString.h"
 
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
 
@@ -17,6 +18,10 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *stopsScrollView;
 @property (strong, nonatomic) IBOutlet UIView *toolbarLabelView;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
+
+@property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
+@property (strong, nonatomic) NSDate *lastUpdatedDate;
+@property (nonatomic) BOOL isUpdating;
 
 @end
 
@@ -31,6 +36,7 @@
         _route = route;
         _stop = stop;
         _state = stop ? MITShuttleRouteContainerStateStop : MITShuttleRouteContainerStateRoute;
+        _nibInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
         [self setupChildViewControllers];
     }
     return self;
@@ -75,6 +81,7 @@
     [self hideAllChildViewControllers];
     NSString *nibname = [self nibNameForInterfaceOrientation:toInterfaceOrientation];
     [[NSBundle mainBundle] loadNibNamed:nibname owner:self options:nil];
+    self.nibInterfaceOrientation = toInterfaceOrientation;
     [self viewDidLoad];
 }
 
@@ -146,6 +153,21 @@
     [childViewController removeFromParentViewController];
 }
 
+#pragma mark - Last Updated
+
+- (void)refreshLastUpdatedLabel
+{
+    NSString *lastUpdatedText;
+    if (self.isUpdating) {
+        lastUpdatedText = @"Updating...";
+    } else {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
+                                                                            toDate:[NSDate date]];
+        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    }
+    self.lastUpdatedLabel.text = lastUpdatedText;
+}
+
 #pragma mark - Stop View Layout
 
 - (void)layoutStopViews
@@ -204,7 +226,7 @@
 
 - (BOOL)isMapEmbeddedInRouteViewController:(MITShuttleRouteViewController *)routeViewController
 {
-    return self.state == MITShuttleRouteContainerStateRoute && UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+    return self.state == MITShuttleRouteContainerStateRoute && UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation);
 }
 
 - (CGFloat)embeddedMapHeightForRouteViewController:(MITShuttleRouteViewController *)routeViewController
@@ -227,6 +249,19 @@
         frame.origin.y = -contentOffset.y;
         self.mapContainerView.frame = frame;
     }
+}
+
+- (void)routeViewControllerDidBeginRefreshing:(MITShuttleRouteViewController *)routeViewController
+{
+    self.isUpdating = YES;
+    [self refreshLastUpdatedLabel];
+}
+
+- (void)routeViewControllerDidEndRefreshing:(MITShuttleRouteViewController *)routeViewController
+{
+    self.isUpdating = NO;
+    self.lastUpdatedDate = [NSDate date];
+    [self refreshLastUpdatedLabel];
 }
 
 #pragma mark - Test code - to be removed
