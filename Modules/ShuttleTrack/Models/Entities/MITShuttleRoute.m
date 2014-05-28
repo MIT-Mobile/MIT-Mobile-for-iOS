@@ -69,4 +69,13 @@
     return [NSArray arrayWithArray:mutableNearestStops];
 }
 
+- (MITShuttleRouteStatus)status
+{
+    if ([self.scheduled boolValue]) {
+        return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
+    } else {
+        return MITShuttleRouteStatusNotInService;
+    }
+}
+
 @end

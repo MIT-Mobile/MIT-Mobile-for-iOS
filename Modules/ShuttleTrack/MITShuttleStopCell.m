@@ -11,7 +11,8 @@ static NSString * const kTimeUnavailableText = @"--";
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *routeIndicatorImageView;
+@property (weak, nonatomic) IBOutlet UIView *routeIndicatorView;
+@property (weak, nonatomic) IBOutlet UIView *routeIndicatorCircleView;
 
 @end
 
@@ -19,7 +20,7 @@ static NSString * const kTimeUnavailableText = @"--";
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    self.routeIndicatorCircleView.layer.cornerRadius = self.routeIndicatorCircleView.frame.size.width / 2;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -31,7 +32,7 @@ static NSString * const kTimeUnavailableText = @"--";
 
 - (void)setCellType:(MITShuttleStopCellType)cellType
 {
-    self.routeIndicatorImageView.hidden = (cellType == MITShuttleStopCellTypeRouteList);
+    self.routeIndicatorView.hidden = (cellType == MITShuttleStopCellTypeRouteList);
 }
 
 - (void)setStop:(MITShuttleStop *)stop prediction:(MITShuttlePrediction *)prediction
