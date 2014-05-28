@@ -3575,7 +3575,6 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3604,7 +3603,6 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -3630,7 +3628,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "1B640798-3EF9-4A58-B610-9E9E11D12D7E";
+				PROVISIONING_PROFILE = "18521489-C3D2-4499-AB04-FB3D58C0B765";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -3656,7 +3654,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "4F6856BA-03E9-4906-A3D5-B49E0C37235A";
+				PROVISIONING_PROFILE = "0EE265C3-83C5-4858-8029-A88DE91AEC40";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -3686,7 +3684,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "2D09D2D7-0CB3-49AE-8B3C-49FDF6B406F3";
+				PROVISIONING_PROFILE = "CB9BFAD5-B541-43BB-879B-7DD11DF670C2";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3716,7 +3714,6 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 			};
 			name = TestFlight;
 		};
