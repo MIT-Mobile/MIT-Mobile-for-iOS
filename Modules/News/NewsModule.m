@@ -26,7 +26,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
-    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
+    UIViewController *controller = [storyboard instantiateInitialViewController];
     return controller;
 }
 
