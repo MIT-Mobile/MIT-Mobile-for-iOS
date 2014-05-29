@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttleRoute, MITShuttleVehicleList;
+@class MITShuttleRoute, MITShuttleVehicleList, MITShuttlePrediction;
 
 @interface MITShuttleVehicle : MITManagedObject <MITMappedObject>
 
@@ -15,5 +15,14 @@
 @property (nonatomic, retain) NSNumber * speedKph;
 @property (nonatomic, retain) MITShuttleRoute *route;
 @property (nonatomic, retain) MITShuttleVehicleList *vehicleList;
+@property (nonatomic, retain) NSSet *predictions;
+
+@end
+
+@interface MITShuttleVehicle (CoreDataGeneratedAccessors)
+- (void)addPredictionsObject:(MITShuttlePrediction *)value;
+- (void)removePredictionsObject:(MITShuttlePrediction *)value;
+- (void)addPredictions:(NSSet *)value;
+- (void)removePredictions:(NSSet *)value;
 
 @end

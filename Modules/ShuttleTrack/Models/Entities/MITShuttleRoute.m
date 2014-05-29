@@ -2,6 +2,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttleVehicle.h"
 #import "MITLocationManager.h"
+#import "MITShuttlePrediction.h"
 #import <CoreLocation/CoreLocation.h>
 
 @implementation MITShuttleRoute
@@ -76,6 +77,31 @@
     } else {
         return MITShuttleRouteStatusNotInService;
     }
+}
+
+- (BOOL)isNextStop:(MITShuttleStop *)stop
+{
+    if (self.status == MITShuttleRouteStatusInService) {
+        for (MITShuttleVehicle *vehicle in self.vehicles) {
+            NSArray *sortedStops = [self.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                MITShuttlePrediction *prediction1 = [(MITShuttleStop *)obj1 nextPredictionForVehicle:vehicle];
+                MITShuttlePrediction *prediction2 = [(MITShuttleStop *)obj2 nextPredictionForVehicle:vehicle];
+                if (prediction1 && prediction2) {
+                    return [prediction1.timestamp compare:prediction2.timestamp];
+                } else if (prediction1) {
+                    return NSOrderedAscending;
+                } else if (prediction2) {
+                    return NSOrderedDescending;
+                } else {
+                    return NSOrderedSame;
+                }
+            }];
+            if ([stop isEqual:[sortedStops firstObject]]) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 @end

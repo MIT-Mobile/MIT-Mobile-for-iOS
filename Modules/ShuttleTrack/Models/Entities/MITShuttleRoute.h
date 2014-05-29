@@ -30,6 +30,7 @@ typedef enum {
 
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
 - (MITShuttleRouteStatus)status;
+- (BOOL)isNextStop:(MITShuttleStop *)stop;
 
 @end
 

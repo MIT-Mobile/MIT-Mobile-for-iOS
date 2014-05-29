@@ -6,6 +6,7 @@
         <attribute name="vehicleId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttlePredictionList" inverseName="predictions" inverseEntity="ShuttlePredictionList" syncable="YES"/>
         <relationship name="stop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleStop" inverseName="predictions" inverseEntity="ShuttleStop" syncable="YES"/>
+        <relationship name="vehicle" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleVehicle" inverseName="predictions" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <entity name="ShuttlePredictionList" representedClassName="MITShuttlePredictionList" syncable="YES">
         <attribute name="routeId" optional="YES" attributeType="String" syncable="YES"/>
@@ -51,6 +52,7 @@
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="secondsSinceReport" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="speedKph" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ShuttlePrediction" inverseName="vehicle" inverseEntity="ShuttlePrediction" syncable="YES"/>
         <relationship name="route" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRoute" inverseName="vehicles" inverseEntity="ShuttleRoute" syncable="YES"/>
         <relationship name="vehicleList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleVehicleList" inverseName="vehicles" inverseEntity="ShuttleVehicleList" syncable="YES"/>
     </entity>
@@ -62,11 +64,11 @@
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="vehicleList" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ShuttlePrediction" positionX="-36" positionY="99" width="128" height="120"/>
+        <element name="ShuttlePrediction" positionX="-36" positionY="99" width="128" height="133"/>
         <element name="ShuttlePredictionList" positionX="-18" positionY="108" width="128" height="148"/>
         <element name="ShuttleRoute" positionX="-63" positionY="-18" width="128" height="253"/>
         <element name="ShuttleStop" positionX="-54" positionY="63" width="128" height="193"/>
-        <element name="ShuttleVehicle" positionX="0" positionY="144" width="128" height="163"/>
+        <element name="ShuttleVehicle" positionX="0" positionY="144" width="128" height="180"/>
         <element name="ShuttleVehicleList" positionX="18" positionY="171" width="128" height="118"/>
     </elements>
 </model>

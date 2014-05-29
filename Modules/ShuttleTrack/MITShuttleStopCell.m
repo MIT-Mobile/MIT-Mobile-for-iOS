@@ -1,6 +1,7 @@
 #import "MITShuttleStopCell.h"
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
+#import "UIKit+MITAdditions.h"
 
 const CGFloat kStopCellDefaultSeparatorLeftInset = 42.0;
 
@@ -46,6 +47,11 @@ static NSString * const kTimeUnavailableText = @"--";
     } else {
         self.timeLabel.text = kTimeUnavailableText;
     }
+}
+
+- (void)setIsNextStop:(BOOL)isNextStop
+{
+    self.routeIndicatorCircleView.backgroundColor = isNextStop ? [UIColor mit_tintColor] : [UIColor colorWithWhite:0.8 alpha:1.0];
 }
 
 @end

@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttlePrediction, MITShuttleRoute;
+@class MITShuttlePrediction, MITShuttleRoute, MITShuttleVehicle;
 
 @interface MITShuttleStop : MITManagedObject <MITMappedObject>
 
@@ -17,6 +17,10 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSOrderedSet *predictions;
 @property (nonatomic, retain) NSOrderedSet *routes;
+
+- (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route;
+- (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle;
+
 @end
 
 @interface MITShuttleStop (CoreDataGeneratedAccessors)
