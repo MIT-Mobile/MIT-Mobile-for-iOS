@@ -23,7 +23,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
     UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
@@ -32,7 +32,7 @@
 
 - (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News_iPhone" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
     UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
