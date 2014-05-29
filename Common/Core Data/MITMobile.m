@@ -114,6 +114,16 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     NSMutableString *path = [[NSMutableString alloc] initWithString:[url path]];
     [path replaceOccurrencesOfString:@"/" withString:@"" options:0 range:NSMakeRange(0, 1)];
 
+    // Some resources in the MIT Mobile API have a required trailing slash and NSURL seems to silently discard
+    //  it when asking for the path. When this happens, the path matching fails and everything barfs.
+    //  This code checks to see if the last path component of the url ends in a '/' and, if it does,
+    //  appends a '/' to the end of the path
+    NSString *lastPathComponent = [NSString stringWithFormat:@"%@/",[url lastPathComponent]];
+    NSRange queryRange = [[url absoluteString] rangeOfString:lastPathComponent];
+    if ((queryRange.location != NSNotFound)) {
+        [path appendString:@"/"];
+    }
+
     __block MITMobileResource *targetResource = nil;
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
     [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
@@ -152,7 +162,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                                     }];
                                 }];
     } else {
-        NSString *reason = [NSString stringWithFormat:@"'%@' does not match any registered resources",[url path]];
+        NSString *reason = [NSString stringWithFormat:@"'%@' does not match any registered resources",path];
         NSError *error = [NSError errorWithDomain:MITMobileErrorDomain
                                              code:MITMobileResourceNotFound
                                          userInfo:@{NSLocalizedDescriptionKey : reason}];
