@@ -7,6 +7,8 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
+static const NSTimeInterval kStopStateTransitionDuration = 0.5;
+
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
 
 @property (strong, nonatomic) MITShuttleMapViewController *mapViewController;
@@ -132,7 +134,9 @@
 {
     [self addChildViewController:childViewController];
     childViewController.view.frame = view.bounds;
-//    childViewController.view.backgroundColor = [self randomColor];
+    if ([childViewController isKindOfClass:[MITShuttleStopViewController class]]) {
+        childViewController.view.backgroundColor = [self randomColor];
+    }
     [view addSubview:childViewController.view];
     [childViewController didMoveToParentViewController:self];
 }
@@ -204,19 +208,42 @@
 - (void)configureLayoutForState:(MITShuttleRouteContainerState)state animated:(BOOL)animated
 {
     switch (state) {
-        case MITShuttleRouteContainerStateRoute:
+        case MITShuttleRouteContainerStateRoute: {
             self.routeContainerView.hidden = NO;
             self.stopsScrollView.hidden = YES;
             [self.navigationController setToolbarHidden:NO animated:animated];
             break;
-        case MITShuttleRouteContainerStateStop:
-            self.routeContainerView.hidden = YES;
+        }
+        case MITShuttleRouteContainerStateStop: {
+            [self selectStop:self.stop];
             self.stopsScrollView.hidden = NO;
             [self.navigationController setToolbarHidden:YES animated:animated];
+
+            dispatch_block_t animationBlock = ^{
+                CGRect routeContainerViewFrame = self.routeContainerView.frame;
+                routeContainerViewFrame.origin.y = CGRectGetMaxY(self.view.frame);
+                self.routeContainerView.frame = routeContainerViewFrame;
+            };
+            
+            void (^completionBlock)(BOOL) = ^(BOOL finished) {
+                self.routeContainerView.hidden = YES;
+            };
+            
+            if (animated) {
+                [UIView animateWithDuration:kStopStateTransitionDuration
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseOut
+                                 animations:animationBlock
+                                 completion:completionBlock];
+            } else {
+                completionBlock(YES);
+            }
             break;
-        case MITShuttleRouteContainerStateMap:
+        }
+        case MITShuttleRouteContainerStateMap: {
             [self.navigationController setToolbarHidden:YES animated:animated];
             break;
+        }
         default:
             break;
     }
@@ -239,7 +266,7 @@
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop
 {
     self.stop = stop;
-    [self configureLayoutForState:MITShuttleRouteContainerStateStop animated:YES];
+    [self setState:MITShuttleRouteContainerStateStop animated:YES];
 }
 
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset
