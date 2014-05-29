@@ -31,5 +31,6 @@
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset;
 - (void)routeViewControllerDidBeginRefreshing:(MITShuttleRouteViewController *)routeViewController;
 - (void)routeViewControllerDidEndRefreshing:(MITShuttleRouteViewController *)routeViewController;
+- (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController;
 
 @end

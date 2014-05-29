@@ -135,6 +135,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         _embeddedMapPlaceholderCell.backgroundColor = [UIColor clearColor];
         _embeddedMapPlaceholderCell.textLabel.text = nil;
         _embeddedMapPlaceholderCell.separatorInset = UIEdgeInsetsMake(0, _embeddedMapPlaceholderCell.frame.size.width, 0, 0);
+        _embeddedMapPlaceholderCell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return _embeddedMapPlaceholderCell;
 }
@@ -218,14 +219,18 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return indexPath.row > [self rowIndexForRouteStatusCell];
+    return indexPath.row != [self rowIndexForRouteStatusCell];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if ([self.delegate respondsToSelector:@selector(routeViewController:didSelectStop:)]) {
+    if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
+        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidSelectMapPlaceholderCell:)]) {
+            [self.delegate routeViewControllerDidSelectMapPlaceholderCell:self];
+        }
+    } else if ([self.delegate respondsToSelector:@selector(routeViewController:didSelectStop:)]) {
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
         [self.delegate routeViewController:self didSelectStop:stop];
