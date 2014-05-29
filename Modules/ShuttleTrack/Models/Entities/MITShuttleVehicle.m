@@ -1,6 +1,7 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicleList.h"
+#import "MITShuttlePrediction.h"
 
 
 @implementation MITShuttleVehicle
@@ -13,6 +14,7 @@
 @dynamic speedKph;
 @dynamic route;
 @dynamic vehicleList;
+@dynamic predictions;
 
 + (RKMapping *)objectMapping
 {
