@@ -1,0 +1,16 @@
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
+
+@class MITShuttlePredictionList, MITShuttleStop;
+
+@interface MITShuttlePrediction : MITManagedObject <MITMappedObject>
+
+@property (nonatomic, retain) NSNumber * seconds;
+@property (nonatomic, retain) NSNumber * timestamp;
+@property (nonatomic, retain) NSString * vehicleId;
+@property (nonatomic, retain) MITShuttlePredictionList *list;
+@property (nonatomic, retain) MITShuttleStop *stop;
+
+@end

@@ -75,7 +75,7 @@ NSString* const MITPersonPathPattern = @"apis/people/:person";
 
 #pragma mark shuttles/routes
 NSString* const MITShuttlesRoutesResourceName = @"MITShuttlesRoutesResourceName";
-NSString* const MITShuttlesRoutesPathPattern = @"apis/shuttles/routes";
+NSString* const MITShuttlesRoutesPathPattern = @"apis/shuttles/routes/";
 
 #pragma mark shuttles/routes/:route
 NSString* const MITShuttlesRouteResourceName = @"MITShuttlesRouteResourceName";
@@ -83,11 +83,19 @@ NSString* const MITShuttlesRoutePathPattern = @"apis/shuttles/routes/:route";
 
 #pragma mark shuttles/routes/:route/stops
 NSString* const MITShuttlesStopsResourceName = @"MITShuttlesStopsResourceName";
-NSString* const MITShuttlesStopsPathPattern = @"apis/shuttles/routes/:route/stops";
+NSString* const MITShuttlesStopsPathPattern = @"apis/shuttles/routes/:route/stops/";
 
 #pragma mark shuttles/routes/:route/stops/:stop
 NSString* const MITShuttlesStopResourceName = @"MITShuttlesStopResourceName";
 NSString* const MITShuttlesStopPathPattern = @"apis/shuttles/routes/:route/stops/:stop";
+
+#pragma mark shuttles/predictions
+NSString* const MITShuttlesPredictionsResourceName = @"MITShuttlesPredictionsResourceName";
+NSString* const MITShuttlesPredictionsPathPattern = @"apis/shuttles/predictions/";
+
+#pragma mark shuttles/vehicles
+NSString* const MITShuttlesVehiclesResourceName = @"MITShuttlesVehiclesResourceName";
+NSString* const MITShuttlesVehiclesPathPattern = @"apis/shuttles/vehicles";
 
 #pragma mark techcash
 NSString* const MITTechcashResourceName = @"MITTechcashResourceName";
