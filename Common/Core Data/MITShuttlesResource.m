@@ -43,7 +43,7 @@
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
-    self = [super initWithName:MITShuttlesStopResourceName pathPattern:MITShuttlesStopsPathPattern managedObjectModel:managedObjectModel];
+    self = [super initWithName:MITShuttlesStopResourceName pathPattern:MITShuttlesStopPathPattern managedObjectModel:managedObjectModel];
     if (self) {
         [self addMapping:[MITShuttleStop objectMapping]
                atKeyPath:nil
