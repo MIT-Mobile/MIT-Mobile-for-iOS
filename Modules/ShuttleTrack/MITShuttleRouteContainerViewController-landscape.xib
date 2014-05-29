@@ -3,14 +3,15 @@
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITShuttleRouteContainerViewController">
             <connections>
                 <outlet property="lastUpdatedLabel" destination="ov7-dh-z7C" id="NTE-bT-atv"/>
                 <outlet property="mapContainerView" destination="5gJ-YO-gaQ" id="sBF-yd-GhG"/>
+                <outlet property="mapContainerViewLandscapeWidthConstraint" destination="YHh-op-ZNH" id="xg9-U8-JwI"/>
                 <outlet property="routeContainerView" destination="6fA-Uj-MMs" id="Llh-m9-7jy"/>
+                <outlet property="routeContainerViewTopSpaceConstraint" destination="1h2-fe-vWS" id="Q4R-gS-7ac"/>
                 <outlet property="stopsScrollView" destination="Sqv-Qr-FD3" id="NmK-jl-ydM"/>
                 <outlet property="toolbarLabelView" destination="vMR-It-BL2" id="XuS-xY-0p4"/>
                 <outlet property="view" destination="XdD-eg-puq" id="bGG-dl-EAU"/>
@@ -22,16 +23,23 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5gJ-YO-gaQ" userLabel="View - Map">
-                    <rect key="frame" x="0.0" y="0.0" width="318" height="256"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="256"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="320" id="YHh-op-ZNH"/>
+                    </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="2hH-L0-FvN" appends="YES" id="yu5-Mu-Q1u"/>
+                    </connections>
                 </view>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sqv-Qr-FD3" userLabel="Scroll View - Stop">
-                    <rect key="frame" x="318" y="0.0" width="250" height="256"/>
+                    <rect key="frame" x="320" y="0.0" width="248" height="256"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6fA-Uj-MMs" userLabel="View - Route">
-                    <rect key="frame" x="318" y="0.0" width="250" height="256"/>
+                    <rect key="frame" x="320" y="0.0" width="248" height="256"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </view>
             </subviews>
@@ -39,7 +47,6 @@
             <constraints>
                 <constraint firstItem="Sqv-Qr-FD3" firstAttribute="leading" secondItem="5gJ-YO-gaQ" secondAttribute="trailing" id="1e9-cT-7aM"/>
                 <constraint firstItem="6fA-Uj-MMs" firstAttribute="top" secondItem="XdD-eg-puq" secondAttribute="top" id="1h2-fe-vWS"/>
-                <constraint firstItem="5gJ-YO-gaQ" firstAttribute="width" secondItem="6fA-Uj-MMs" secondAttribute="width" multiplier="5:4" constant="5" id="63R-Oc-BTn"/>
                 <constraint firstItem="6fA-Uj-MMs" firstAttribute="leading" secondItem="5gJ-YO-gaQ" secondAttribute="trailing" id="Dcu-EX-BHM"/>
                 <constraint firstAttribute="bottom" secondItem="6fA-Uj-MMs" secondAttribute="bottom" id="HTc-QK-vy9"/>
                 <constraint firstItem="5gJ-YO-gaQ" firstAttribute="top" secondItem="XdD-eg-puq" secondAttribute="top" id="a6v-wp-Wc0"/>
@@ -72,5 +79,10 @@
                 <constraint firstAttribute="centerX" secondItem="ov7-dh-z7C" secondAttribute="centerX" id="jJU-ls-cFx"/>
             </constraints>
         </view>
+        <tapGestureRecognizer id="2hH-L0-FvN">
+            <connections>
+                <action selector="mapContainerViewTapped:" destination="-1" id="WP7-uw-xQJ"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
 </document>

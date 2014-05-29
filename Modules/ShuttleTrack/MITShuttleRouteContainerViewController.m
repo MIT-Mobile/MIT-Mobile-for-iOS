@@ -7,7 +7,11 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
-static const NSTimeInterval kStopStateTransitionDuration = 0.5;
+static const NSTimeInterval kStateTransitionDurationPortrait = 0.5;
+static const NSTimeInterval kStateTransitionDurationLandscape = 0.3;
+
+static const CGFloat kMapContainerViewEmbeddedHeightPortrait = 190.0;
+static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.0;
 
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
 
@@ -21,9 +25,15 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
 @property (strong, nonatomic) IBOutlet UIView *toolbarLabelView;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewTopSpaceConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewPortraitHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewLandscapeWidthConstraint;
+
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
+
+@property (nonatomic) MITShuttleRouteContainerState previousState;
 
 @end
 
@@ -77,6 +87,7 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation) && UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
         return;
     }
@@ -85,6 +96,12 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
     [[NSBundle mainBundle] loadNibNamed:nibname owner:self options:nil];
     self.nibInterfaceOrientation = toInterfaceOrientation;
     [self viewDidLoad];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self configureLayoutForState:self.state animated:NO];
 }
 
 #pragma mark - Setup
@@ -192,6 +209,17 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
     [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:NO];
 }
 
+#pragma mark - Map Tap Gesture Recognizer (TEMP)
+
+- (IBAction)mapContainerViewTapped:(id)sender
+{
+    if (self.state == MITShuttleRouteContainerStateMap) {
+        [self setState:self.previousState animated:YES];
+    } else {
+        [self setState:MITShuttleRouteContainerStateMap animated:YES];
+    }
+}
+
 #pragma mark - State Configuration
 
 - (void)setState:(MITShuttleRouteContainerState)state
@@ -202,51 +230,131 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
 - (void)setState:(MITShuttleRouteContainerState)state animated:(BOOL)animated
 {
     [self configureLayoutForState:state animated:animated];
+    _previousState = _state;
     _state = state;
 }
 
 - (void)configureLayoutForState:(MITShuttleRouteContainerState)state animated:(BOOL)animated
 {
     switch (state) {
-        case MITShuttleRouteContainerStateRoute: {
-            self.routeContainerView.hidden = NO;
-            self.stopsScrollView.hidden = YES;
-            [self.navigationController setToolbarHidden:NO animated:animated];
+        case MITShuttleRouteContainerStateRoute:
+            [self configureLayoutForRouteStateAnimated:animated];
             break;
-        }
-        case MITShuttleRouteContainerStateStop: {
-            [self selectStop:self.stop];
-            self.stopsScrollView.hidden = NO;
-            [self.navigationController setToolbarHidden:YES animated:animated];
-
-            dispatch_block_t animationBlock = ^{
-                CGRect routeContainerViewFrame = self.routeContainerView.frame;
-                routeContainerViewFrame.origin.y = CGRectGetMaxY(self.view.frame);
-                self.routeContainerView.frame = routeContainerViewFrame;
-            };
-            
-            void (^completionBlock)(BOOL) = ^(BOOL finished) {
-                self.routeContainerView.hidden = YES;
-            };
-            
-            if (animated) {
-                [UIView animateWithDuration:kStopStateTransitionDuration
-                                      delay:0
-                                    options:UIViewAnimationOptionCurveEaseOut
-                                 animations:animationBlock
-                                 completion:completionBlock];
-            } else {
-                completionBlock(YES);
-            }
+        case MITShuttleRouteContainerStateStop:
+            [self configureLayoutForStopStateAnimated:animated];
             break;
-        }
-        case MITShuttleRouteContainerStateMap: {
-            [self.navigationController setToolbarHidden:YES animated:animated];
+        case MITShuttleRouteContainerStateMap:
+            [self configureLayoutForMapStateAnimated:animated];
             break;
-        }
         default:
             break;
     }
+}
+
+- (void)configureLayoutForRouteStateAnimated:(BOOL)animated
+{
+    [self.navigationController setToolbarHidden:NO animated:animated];
+    self.routeContainerView.hidden = NO;
+    [self.view sendSubviewToBack:self.mapContainerView];
+    
+    self.routeContainerViewTopSpaceConstraint.constant = 0;
+    if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+        self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
+    } else {
+        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
+    }
+
+    dispatch_block_t animationBlock = ^{
+        [self.view layoutIfNeeded];
+    };
+    
+    void (^completionBlock)(BOOL) = ^(BOOL finished) {
+        self.stopsScrollView.hidden = YES;
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:[self stateTransitionDuration]
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:animationBlock
+                         completion:completionBlock];
+    } else {
+        animationBlock();
+        completionBlock(YES);
+    }
+}
+
+- (void)configureLayoutForStopStateAnimated:(BOOL)animated
+{
+    [self selectStop:self.stop];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+    self.stopsScrollView.hidden = NO;
+    
+    if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+        [self.view sendSubviewToBack:self.mapContainerView];
+        self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
+    } else {
+        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.stopsScrollView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
+    }
+    self.routeContainerViewTopSpaceConstraint.constant = CGRectGetMaxY(self.stopsScrollView.frame);
+
+    dispatch_block_t animationBlock = ^{
+        [self.view layoutIfNeeded];
+    };
+    
+    void (^completionBlock)(BOOL) = ^(BOOL finished) {
+        self.routeContainerView.hidden = YES;
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:[self stateTransitionDuration]
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:animationBlock
+                         completion:completionBlock];
+    } else {
+        animationBlock();
+        completionBlock(YES);
+    }
+    
+}
+
+- (void)configureLayoutForMapStateAnimated:(BOOL)animated
+{
+    [self.navigationController setToolbarHidden:YES animated:animated];
+    [self.view bringSubviewToFront:self.mapContainerView];
+    
+    if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+        self.routeContainerViewTopSpaceConstraint.constant = CGRectGetHeight(self.view.frame) - kMapContainerViewEmbeddedHeightPortrait;
+        self.mapContainerViewPortraitHeightConstraint.constant = CGRectGetHeight(self.view.frame);
+    } else {
+        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame);
+    }
+
+    dispatch_block_t animationBlock = ^{
+        [self.view layoutIfNeeded];
+    };
+    
+    void (^completionBlock)(BOOL) = ^(BOOL finished) {
+        self.routeContainerView.hidden = YES;
+        self.stopsScrollView.hidden = YES;
+    };
+
+    if (animated) {
+        [UIView animateWithDuration:[self stateTransitionDuration]
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:animationBlock
+                         completion:completionBlock];
+    } else {
+        animationBlock();
+        completionBlock(YES);
+    }
+}
+
+- (NSTimeInterval)stateTransitionDuration
+{
+    return UIInterfaceOrientationIsLandscape(self.nibInterfaceOrientation) ? kStateTransitionDurationLandscape : kStateTransitionDurationPortrait;
 }
 
 #pragma mark - MITShuttleRouteViewControllerDataSource
@@ -289,6 +397,11 @@ static const NSTimeInterval kStopStateTransitionDuration = 0.5;
     self.isUpdating = NO;
     self.lastUpdatedDate = [NSDate date];
     [self refreshLastUpdatedLabel];
+}
+
+- (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController
+{
+    [self mapContainerViewTapped:nil];
 }
 
 #pragma mark - Test code - to be removed

@@ -9,7 +9,9 @@
             <connections>
                 <outlet property="lastUpdatedLabel" destination="2IF-Bq-gql" id="o3R-QF-2z1"/>
                 <outlet property="mapContainerView" destination="GKm-8L-Pgv" id="QZP-Ib-Q0w"/>
+                <outlet property="mapContainerViewPortraitHeightConstraint" destination="nfh-k8-pGg" id="zo2-ow-7ZT"/>
                 <outlet property="routeContainerView" destination="mcQ-I2-FK8" id="b1l-lA-kD9"/>
+                <outlet property="routeContainerViewTopSpaceConstraint" destination="Hog-ae-7mc" id="MRw-vq-jxo"/>
                 <outlet property="stopsScrollView" destination="D9V-gA-fOK" id="kkb-t6-vfh"/>
                 <outlet property="toolbarLabelView" destination="hHD-72-WBX" id="mvA-YJ-vfm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -24,9 +26,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="190"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <gestureRecognizers/>
                     <constraints>
                         <constraint firstAttribute="height" constant="190" id="nfh-k8-pGg"/>
                     </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="RC7-J3-7Q4" appends="YES" id="HZM-cY-QZy"/>
+                    </connections>
                 </view>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D9V-gA-fOK" userLabel="Scroll View - Stop">
                     <rect key="frame" x="0.0" y="190" width="320" height="314"/>
@@ -73,5 +79,10 @@
                 <constraint firstAttribute="centerX" secondItem="2IF-Bq-gql" secondAttribute="centerX" id="WoP-Ta-wHw"/>
             </constraints>
         </view>
+        <tapGestureRecognizer id="RC7-J3-7Q4">
+            <connections>
+                <action selector="mapContainerViewTapped:" destination="-1" id="7Uf-aw-TeO"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
 </document>
