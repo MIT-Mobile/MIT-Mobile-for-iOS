@@ -112,6 +112,7 @@
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C75D20A16C975D100DD5350 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C75D20916C975D100DD5350 /* libc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
+		2C7A58BD1937C44C0041DBFC /* News~ipad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C7A58BC1937C44C0041DBFC /* News~ipad.storyboard */; };
 		2C7DA7EB18D226B100260352 /* MITEventListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */; };
 		2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */; };
 		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -698,6 +699,7 @@
 		2C75D20916C975D100DD5350 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
+		2C7A58BC1937C44C0041DBFC /* News~ipad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "News~ipad.storyboard"; sourceTree = "<group>"; };
 		2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventListTableViewCell.m; sourceTree = "<group>"; };
 		2C7DA7E918D226B100260352 /* MITEventListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventListTableViewCell.h; sourceTree = "<group>"; };
 		2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventListTableViewCell.xib; sourceTree = "<group>"; };
@@ -2875,6 +2877,7 @@
 				DE81CF6110C6BC390085573D /* NewsModule.m */,
 				DE4AAFAC10ED4E63007476D9 /* Model */,
 				2C3C53431896A7D300D1F9B5 /* News~iphone.storyboard */,
+				2C7A58BC1937C44C0041DBFC /* News~ipad.storyboard */,
 				2C5A5C11188727E40013981A /* View Controllers */,
 				DE2A458A1885AF83002DE0EA /* Views */,
 			);
@@ -3300,6 +3303,7 @@
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
+				2C7A58BD1937C44C0041DBFC /* News~ipad.storyboard in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News~iphone.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
