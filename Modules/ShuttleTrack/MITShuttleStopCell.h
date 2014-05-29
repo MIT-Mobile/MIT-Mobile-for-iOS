@@ -17,5 +17,6 @@ typedef enum {
 
 - (void)setCellType:(MITShuttleStopCellType)cellType;
 - (void)setStop:(MITShuttleStop *)stop prediction:(MITShuttlePrediction *)prediction;
+- (void)setIsNextStop:(BOOL)isNextStop;
 
 @end

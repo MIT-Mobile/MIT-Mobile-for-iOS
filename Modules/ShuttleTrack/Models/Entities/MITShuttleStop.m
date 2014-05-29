@@ -1,6 +1,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleRoute.h"
+#import "MITShuttleVehicle.h"
 
 
 @implementation MITShuttleStop
@@ -30,6 +31,26 @@
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMapping]]];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
+}
+
+- (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route
+{
+    for (MITShuttlePrediction *prediction in self.predictions) {
+        if ([route.vehicles containsObject:prediction.vehicle]) {
+            return prediction;
+        }
+    }
+    return nil;
+}
+
+- (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
+{
+    for (MITShuttlePrediction *prediction in self.predictions) {
+        if ([vehicle isEqual:prediction.vehicle]) {
+            return prediction;
+        }
+    }
+    return nil;
 }
 
 @end

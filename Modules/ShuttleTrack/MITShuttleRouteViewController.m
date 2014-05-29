@@ -185,7 +185,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
-        [cell setStop:stop prediction:nil];
+        MITShuttlePrediction *prediction = [stop nextPredictionForRoute:self.route];
+        [cell setStop:stop prediction:prediction];
+        [cell setIsNextStop:(self.route.status == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
         [cell setCellType:MITShuttleStopCellTypeRouteDetail];
         return cell;
     }

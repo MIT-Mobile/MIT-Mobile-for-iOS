@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttlePredictionList, MITShuttleStop;
+@class MITShuttlePredictionList, MITShuttleStop, MITShuttleVehicle;
 
 @interface MITShuttlePrediction : MITManagedObject <MITMappedObject>
 
@@ -12,5 +12,6 @@
 @property (nonatomic, retain) NSString * vehicleId;
 @property (nonatomic, retain) MITShuttlePredictionList *list;
 @property (nonatomic, retain) MITShuttleStop *stop;
+@property (nonatomic, retain) MITShuttleVehicle *vehicle;
 
 @end
