@@ -79,7 +79,7 @@
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
 		2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3AFD30166518CB00392AE3 /* MGSUtility.m */; };
-		2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53431896A7D300D1F9B5 /* News.storyboard */; };
+		2C3C53451896A7D300D1F9B5 /* News~iphone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53431896A7D300D1F9B5 /* News~iphone.storyboard */; };
 		2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53491896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib */; };
 		2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */; };
 		2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
@@ -630,7 +630,7 @@
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		2C3AFD2F166518CB00392AE3 /* MGSUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSUtility.h; sourceTree = "<group>"; };
 		2C3AFD30166518CB00392AE3 /* MGSUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSUtility.m; sourceTree = "<group>"; };
-		2C3C53441896A7D300D1F9B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = Resources/en.lproj/News.storyboard; sourceTree = SOURCE_ROOT; };
+		2C3C53441896A7D300D1F9B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = "Resources/en.lproj/News~iphone.storyboard"; sourceTree = SOURCE_ROOT; };
 		2C3C53491896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsStoryNoDekTableCell.xib; sourceTree = "<group>"; };
 		2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsStoryExternalTableCell.xib; sourceTree = "<group>"; };
 		2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryTableCell.xib; path = Views/NewsStoryTableCell.xib; sourceTree = "<group>"; };
@@ -2874,7 +2874,7 @@
 				DE81CF6010C6BC390085573D /* NewsModule.h */,
 				DE81CF6110C6BC390085573D /* NewsModule.m */,
 				DE4AAFAC10ED4E63007476D9 /* Model */,
-				2C3C53431896A7D300D1F9B5 /* News.storyboard */,
+				2C3C53431896A7D300D1F9B5 /* News~iphone.storyboard */,
 				2C5A5C11188727E40013981A /* View Controllers */,
 				DE2A458A1885AF83002DE0EA /* Views */,
 			);
@@ -3300,7 +3300,7 @@
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
-				2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */,
+				2C3C53451896A7D300D1F9B5 /* News~iphone.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3726,12 +3726,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		2C3C53431896A7D300D1F9B5 /* News.storyboard */ = {
+		2C3C53431896A7D300D1F9B5 /* News~iphone.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				2C3C53441896A7D300D1F9B5 /* en */,
 			);
-			name = News.storyboard;
+			name = "News~iphone.storyboard";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
