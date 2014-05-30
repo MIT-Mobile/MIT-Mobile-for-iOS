@@ -87,11 +87,13 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)startRefreshingRoute
 {
     [self loadRoute];
-    self.routeRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteRefreshInterval
+    NSTimer *routeRefreshTimer = [NSTimer timerWithTimeInterval:kRouteRefreshInterval
                                                                target:self
                                                              selector:@selector(loadRoute)
                                                              userInfo:nil
                                                               repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:routeRefreshTimer forMode:NSRunLoopCommonModes];
+    self.routeRefreshTimer = routeRefreshTimer;
 }
 
 - (void)stopRefreshingRoute
