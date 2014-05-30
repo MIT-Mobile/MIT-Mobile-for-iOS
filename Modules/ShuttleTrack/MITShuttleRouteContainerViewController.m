@@ -254,7 +254,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 - (void)configureLayoutForRouteStateAnimated:(BOOL)animated
 {
     [self.navigationController setToolbarHidden:NO animated:animated];
-    self.routeContainerView.hidden = NO;
+    [self setRouteViewHidden:NO];
     [self.view sendSubviewToBack:self.mapContainerView];
     
     self.routeContainerViewTopSpaceConstraint.constant = 0;
@@ -269,7 +269,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
     };
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
-        self.stopsScrollView.hidden = YES;
+        [self setStopViewHidden:YES];
     };
     
     if (animated) {
@@ -288,7 +288,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 {
     [self selectStop:self.stop];
     [self.navigationController setToolbarHidden:YES animated:animated];
-    self.stopsScrollView.hidden = NO;
+    [self setStopViewHidden:NO];
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
         [self.view sendSubviewToBack:self.mapContainerView];
@@ -303,7 +303,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
     };
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
-        self.routeContainerView.hidden = YES;
+        [self setRouteViewHidden:YES];
     };
     
     if (animated) {
@@ -336,8 +336,8 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
     };
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
-        self.routeContainerView.hidden = YES;
-        self.stopsScrollView.hidden = YES;
+        [self setRouteViewHidden:YES];
+        [self setStopViewHidden:YES];
     };
 
     if (animated) {
@@ -349,6 +349,25 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
     } else {
         animationBlock();
         completionBlock(YES);
+    }
+}
+
+// In order for scrollsToTop to work with in a container view controller,
+// only one instance of UIScrollView may be in the view hierarchy and visible.
+// Note: hidden property of scroll view's parent view does not matter,
+// scroll view itself must be hidden
+
+- (void)setRouteViewHidden:(BOOL)hidden
+{
+    self.routeContainerView.hidden =
+    self.routeViewController.tableView.hidden = hidden;
+}
+
+- (void)setStopViewHidden:(BOOL)hidden
+{
+    self.stopsScrollView.hidden = hidden;
+    for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
+        stopViewController.tableView.hidden = hidden;
     }
 }
 
