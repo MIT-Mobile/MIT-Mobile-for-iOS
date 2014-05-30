@@ -211,21 +211,25 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)startRefreshingRoutes
 {
     [self loadRoutes];
-    self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRoutesRefreshInterval
-                                                               target:self
-                                                             selector:@selector(loadRoutes)
-                                                             userInfo:nil
-                                                              repeats:YES];
+    NSTimer *routesRefreshTimer = [NSTimer timerWithTimeInterval:kRoutesRefreshInterval
+                                                          target:self
+                                                        selector:@selector(loadRoutes)
+                                                        userInfo:nil
+                                                         repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:routesRefreshTimer forMode:NSRunLoopCommonModes];
+    self.routesRefreshTimer = routesRefreshTimer;
 }
 
 - (void)startRefreshingPredictions
 {
     [self loadPredictions];
-    self.predictionsRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kPredictionsRefreshInterval
-                                                                    target:self
-                                                                  selector:@selector(loadPredictions)
-                                                                  userInfo:nil
-                                                                   repeats:YES];
+    NSTimer *predictionsRefreshTimer = [NSTimer timerWithTimeInterval:kPredictionsRefreshInterval
+                                                               target:self
+                                                             selector:@selector(loadPredictions)
+                                                             userInfo:nil
+                                                              repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:predictionsRefreshTimer forMode:NSRunLoopCommonModes];
+    self.predictionsRefreshTimer = predictionsRefreshTimer;
 }
 
 - (void)stopRefreshingData
