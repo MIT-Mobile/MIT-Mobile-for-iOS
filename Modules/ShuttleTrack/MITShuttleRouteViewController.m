@@ -9,8 +9,8 @@ static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
 static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 
-static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 100.0;
-static const CGFloat kRouteStatusCellEstimatedHeight = 60.0;
+static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
+static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
