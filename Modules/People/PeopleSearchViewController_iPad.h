@@ -7,7 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PersonDetails.h"
 
-@interface PeopleSearchViewController_iPad : UIViewController
+@protocol PeopleSearchViewControllerDelegate
+
+- (void) didSelectPerson:(PersonDetails *)person;
+
+@end
+
+@interface PeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate>
 
 @end

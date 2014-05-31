@@ -34,9 +34,26 @@
         else if (!self.searchCancelled && (self.searchTerms == currentQueryString))
         {
             self.searchResults = objects;
-            
+        }
+        
+        if( completionHandler ) completionHandler( self.searchResults != nil );
+    }];
+}
+
+- (NSMutableAttributedString *) hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont
+{
+    UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
+    
+    __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:searchResultStr];
+    [self.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
+        NSRange boldRange = [searchResultStr rangeOfString:token options:NSCaseInsensitiveSearch];
+        
+        if (boldRange.location != NSNotFound) {
+            [attributeString setAttributes:@{NSFontAttributeName : boldFont} range:boldRange];
         }
     }];
+    
+    return attributeString;
 }
 
 @end

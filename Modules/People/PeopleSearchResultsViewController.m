@@ -7,8 +7,11 @@
 //
 
 #import "PeopleSearchResultsViewController.h"
+#import "PersonDetails.h"
 
 @interface PeopleSearchResultsViewController ()
+
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @end
 
@@ -34,6 +37,97 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (void) didMoveToParentViewController:(UIViewController *)parent
+{
+    if( parent )
+    {
+        CGFloat top = parent.topLayoutGuide.length;
+        CGFloat bottom = parent.bottomLayoutGuide.length;
+        
+        if( self.tableView.contentInset.top != top )
+        {
+            UIEdgeInsets newInsets = UIEdgeInsetsMake(top, 0, bottom, 0);
+            self.tableView.contentInset = newInsets;
+            self.tableView.scrollIndicatorInsets = newInsets;
+        }
+    }
+    
+    [self adjustViewHeight];
+    
+    [super didMoveToParentViewController:parent];
+}
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self adjustViewHeight];
+}
+
+- (void) adjustViewHeight
+{
+    self.tableView.frame = CGRectMake(self.tableView.frame.origin.x,
+                                      self.tableView.frame.origin.y,
+                                      self.tableView.frame.size.width,
+                                      self.parentViewController.view.frame.size.height);
+}
+
+#pragma mark - Table view methods
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return [self.searchHandler.searchResults count] > 0 ? 1 : 0;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.searchHandler.searchResults count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"SearchResultsCell"];
+    
+    if( indexPath.row < [self.searchHandler.searchResults count] )
+    {
+        PersonDetails *searchResult = self.searchHandler.searchResults[indexPath.row];
+        NSString *fullname = searchResult.name;
+        
+        if (searchResult.title) {
+            cell.detailTextLabel.text = searchResult.title;
+        } else if (searchResult.dept) {
+            cell.detailTextLabel.text = searchResult.dept;
+        } else {
+            cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
+        }
+        
+        // in this section we try to highlight the parts of the results that match the search terms
+        cell.textLabel.attributedText = [self.searchHandler hightlightSearchTokenWithinString:fullname
+                                                                             currentFont:cell.textLabel.font];
+    } else {
+        // Clear out the text fields in the event of cell reuse
+        // Needs to be done if there is not a valid person object for this row
+        // because we may be displaying an empty cell (for example, in search results
+        // to suppress the "No Results" text)
+        cell.textLabel.text = nil;
+        cell.detailTextLabel.text = nil;
+        cell.hidden = YES;
+    }
+    
+    return cell;
+}
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PersonDetails *searchResult = self.searchHandler.searchResults[indexPath.row];
+    
+    [self.delegate didSelectPerson:searchResult];
+}
+
+- (void) reload
+{
+    [self.tableView reloadData];
+}
+
 
 /*
 #pragma mark - Navigation

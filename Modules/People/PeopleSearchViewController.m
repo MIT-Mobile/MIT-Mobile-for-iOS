@@ -291,20 +291,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             }
             
             
-            // in this section we try to highlight the parts of the results that match the search terms
-            UIFont *labelFont = cell.textLabel.font;
-            UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
-
-            __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:fullname];
-            [searchHandler.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
-                NSRange boldRange = [fullname rangeOfString:token options:NSCaseInsensitiveSearch];
-
-                if (boldRange.location != NSNotFound) {
-                    [attributeString setAttributes:@{NSFontAttributeName : boldFont} range:boldRange];
-                }
-            }];
-            
-            cell.textLabel.attributedText = attributeString;
+            // in this section we try to highlight the parts of the results that match the search terms            
+            cell.textLabel.attributedText = [searchHandler hightlightSearchTokenWithinString:fullname
+                                                                                 currentFont:cell.textLabel.font];
         } else {
             // Clear out the text fields in the event of cell reuse
             // Needs to be done if there is not a valid person object for this row

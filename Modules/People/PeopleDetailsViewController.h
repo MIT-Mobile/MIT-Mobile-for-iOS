@@ -14,5 +14,7 @@
 - (void)phoneIconTapped:(NSString *)phone;
 - (void)emailIconTapped:(NSString *)email;
 
+- (void) reloadDataIfNeeded;
+
 @end
 

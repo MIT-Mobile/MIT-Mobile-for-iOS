@@ -44,7 +44,12 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     
     [self updateTableViewHeaderView];
 	
-	// if lastUpdate is sufficiently long ago, issue a background search
+    [self reloadDataIfNeeded];
+}
+
+- (void) reloadDataIfNeeded
+{
+    // if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
     // TODO: let Cache-Control headers from API response determine how long data is fresh
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing

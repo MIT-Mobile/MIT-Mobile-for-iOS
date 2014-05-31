@@ -18,4 +18,6 @@
 
 - (void)performSearchWithCompletionHandler:(void(^)(BOOL isSuccess))completionHandler;
 
+- (NSMutableAttributedString *) hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont;
+
 @end
