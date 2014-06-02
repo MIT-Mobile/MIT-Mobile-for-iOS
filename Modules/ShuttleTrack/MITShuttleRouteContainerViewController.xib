@@ -40,6 +40,9 @@
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D9V-gA-fOK" userLabel="Scroll View - Stop">
                     <rect key="frame" x="0.0" y="190" width="320" height="314"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="3aq-x9-aV3"/>
+                    </connections>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mcQ-I2-FK8" userLabel="View - Route">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>

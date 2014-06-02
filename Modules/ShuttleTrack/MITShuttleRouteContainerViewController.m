@@ -13,6 +13,8 @@ static const NSTimeInterval kStateTransitionDurationLandscape = 0.3;
 static const CGFloat kMapContainerViewEmbeddedHeightPortrait = 190.0;
 static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.0;
 
+static const CGFloat kStopSubtitleAnimationSpan = 40.0;
+
 typedef enum {
     MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
     MITShuttleStopSubtitleLabelAnimationTypeForward,
@@ -75,7 +77,6 @@ typedef enum {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = self.route.title;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self displayAllChildViewControllers];
     [self layoutStopViews];
@@ -193,47 +194,60 @@ typedef enum {
     self.title = route.title;
 }
 
-- (void)setTitleForStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
+- (void)setTitleForRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
     self.navigationItem.titleView = self.stopTitleView;
-    self.stopTitleLabel.text = stop.title;
-    [self setStopStateRoute:route animationType:MITShuttleStopSubtitleLabelAnimationTypeNone];
+    self.stopTitleLabel.text = route.title;
+    [self setStopSubtitleWithStop:stop animationType:MITShuttleStopSubtitleLabelAnimationTypeNone];
 }
 
-- (void)setStopStateRoute:(MITShuttleRoute *)route animationType:(MITShuttleStopSubtitleLabelAnimationType)animationType
+- (void)setStopSubtitleWithStop:(MITShuttleStop *)stop animationType:(MITShuttleStopSubtitleLabelAnimationType)animationType
 {
     if (animationType == MITShuttleStopSubtitleLabelAnimationTypeNone) {
-        self.stopSubtitleLabel.text = route.title;
+        self.stopSubtitleLabel.text = stop.title;
     } else {
-        UILabel *animationLabel = [self.stopSubtitleLabel copy];
-        animationLabel.text = route.title;
-        CGFloat stopTitleViewWidth = self.stopTitleView.frame.size.width;
-        CGRect centerLabelFrame = self.stopSubtitleLabel.frame;
+        CGPoint stopSubtitleLabelCenter = self.stopSubtitleLabel.center;
+        self.stopSubtitleLabel.translatesAutoresizingMaskIntoConstraints = YES;
         
-        CGRect initialAnimationLabelFrame;
-        CGRect finalSubtitleLabelFrame;
+        CGPoint initialTempLabelCenter;
+        CGPoint finalSubtitleLabelCenter;
         switch (animationType) {
             case MITShuttleStopSubtitleLabelAnimationTypeForward:
-                initialAnimationLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, -stopTitleViewWidth, 0);
-                finalSubtitleLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, stopTitleViewWidth, 0);
+                initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
+                                                                     CGAffineTransformMakeTranslation(kStopSubtitleAnimationSpan, 0));
+                finalSubtitleLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
+                                                                       CGAffineTransformMakeTranslation(-kStopSubtitleAnimationSpan, 0));
                 break;
             case MITShuttleStopSubtitleLabelAnimationTypeBackward:
-                initialAnimationLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, stopTitleViewWidth, 0);
-                finalSubtitleLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, -stopTitleViewWidth, 0);
+                initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
+                                                                     CGAffineTransformMakeTranslation(-kStopSubtitleAnimationSpan, 0));
+                finalSubtitleLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
+                                                                       CGAffineTransformMakeTranslation(kStopSubtitleAnimationSpan, 0));
                 break;
             default:
                 break;
         }
-        animationLabel.frame = initialAnimationLabelFrame;
-        animationLabel.alpha = 0;
-        [self.stopTitleView addSubview:animationLabel];
+        UILabel *tempLabel = [[UILabel alloc] initWithFrame:self.stopSubtitleLabel.frame];
+        tempLabel.backgroundColor = [UIColor clearColor];
+        tempLabel.textAlignment = NSTextAlignmentCenter;
+        tempLabel.textColor = self.stopSubtitleLabel.textColor;
+        tempLabel.font = self.stopSubtitleLabel.font;
+        tempLabel.text = stop.title;
+        [tempLabel sizeToFit];
+        tempLabel.center = initialTempLabelCenter;
+        tempLabel.alpha = 0;
+        [self.stopTitleView addSubview:tempLabel];
         [UIView animateWithDuration:0.3 animations:^{
-            animationLabel.frame = centerLabelFrame;
-            animationLabel.alpha = 1;
-            self.stopSubtitleLabel.frame = finalSubtitleLabelFrame;
+            tempLabel.center = stopSubtitleLabelCenter;
+            tempLabel.alpha = 1;
+            self.stopSubtitleLabel.center = finalSubtitleLabelCenter;
             self.stopSubtitleLabel.alpha = 0;
         } completion:^(BOOL finished) {
-            self.stopSubtitleLabel = animationLabel;
+            [tempLabel removeFromSuperview];
+            self.stopSubtitleLabel.text = stop.title;
+            [self.stopSubtitleLabel sizeToFit];
+            self.stopSubtitleLabel.center = stopSubtitleLabelCenter;
+            self.stopSubtitleLabel.alpha = 1;
         }];
     }
 }
@@ -351,7 +365,7 @@ typedef enum {
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
 {
-    [self setTitleForStop:self.stop route:self.route];
+    [self setTitleForRoute:self.route stop:self.stop];
     [self selectStop:self.stop];
     [self.navigationController setToolbarHidden:YES animated:animated];
     [self setStopViewHidden:NO];
@@ -487,6 +501,42 @@ typedef enum {
 - (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController
 {
     [self mapContainerViewTapped:nil];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self scrollViewMovementDidEnd];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollViewMovementDidEnd];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        [self scrollViewMovementDidEnd];
+    }
+}
+
+- (void)scrollViewMovementDidEnd
+{
+    NSInteger stopIndex = self.stopsScrollView.contentOffset.x / self.stopsScrollView.frame.size.width;
+    MITShuttleStop *stop = self.route.stops[stopIndex];
+    MITShuttleStopSubtitleLabelAnimationType animationType;
+    NSInteger previousStopIndex = [self.route.stops indexOfObject:self.stop];
+    if (previousStopIndex < stopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
+    } else if (previousStopIndex > stopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
+    } else {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeNone;
+    }
+    [self setStopSubtitleWithStop:stop animationType:animationType];
+    self.stop = stop;
 }
 
 #pragma mark - Test code - to be removed
