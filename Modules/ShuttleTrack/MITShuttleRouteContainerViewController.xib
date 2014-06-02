@@ -12,6 +12,9 @@
                 <outlet property="mapContainerViewPortraitHeightConstraint" destination="nfh-k8-pGg" id="zo2-ow-7ZT"/>
                 <outlet property="routeContainerView" destination="mcQ-I2-FK8" id="b1l-lA-kD9"/>
                 <outlet property="routeContainerViewTopSpaceConstraint" destination="Hog-ae-7mc" id="MRw-vq-jxo"/>
+                <outlet property="stopSubtitleLabel" destination="03V-0v-K5P" id="njZ-oh-10I"/>
+                <outlet property="stopTitleLabel" destination="Igc-GJ-ngV" id="fte-BL-aUN"/>
+                <outlet property="stopTitleView" destination="6et-md-XXK" id="NTK-3t-hdT"/>
                 <outlet property="stopsScrollView" destination="D9V-gA-fOK" id="kkb-t6-vfh"/>
                 <outlet property="toolbarLabelView" destination="hHD-72-WBX" id="mvA-YJ-vfm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -84,5 +87,30 @@
                 <action selector="mapContainerViewTapped:" destination="-1" id="7Uf-aw-TeO"/>
             </connections>
         </tapGestureRecognizer>
+        <view contentMode="scaleToFill" id="6et-md-XXK">
+            <rect key="frame" x="0.0" y="0.0" width="195" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Igc-GJ-ngV">
+                    <rect key="frame" x="53" y="4" width="88" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Route Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="03V-0v-K5P">
+                    <rect key="frame" x="54" y="22" width="86" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Igc-GJ-ngV" firstAttribute="top" secondItem="6et-md-XXK" secondAttribute="top" constant="4" id="GmI-vv-Vgm"/>
+                <constraint firstAttribute="centerX" secondItem="03V-0v-K5P" secondAttribute="centerX" constant="0.5" id="Odw-Ss-gPT"/>
+                <constraint firstAttribute="bottom" secondItem="03V-0v-K5P" secondAttribute="bottom" constant="4" id="amr-tc-n5e"/>
+                <constraint firstAttribute="centerX" secondItem="Igc-GJ-ngV" secondAttribute="centerX" constant="0.5" id="tQe-CC-Sgy"/>
+            </constraints>
+        </view>
     </objects>
 </document>

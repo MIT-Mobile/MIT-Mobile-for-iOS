@@ -13,6 +13,12 @@ static const NSTimeInterval kStateTransitionDurationLandscape = 0.3;
 static const CGFloat kMapContainerViewEmbeddedHeightPortrait = 190.0;
 static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.0;
 
+typedef enum {
+    MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
+    MITShuttleStopSubtitleLabelAnimationTypeForward,
+    MITShuttleStopSubtitleLabelAnimationTypeBackward
+} MITShuttleStopSubtitleLabelAnimationType;
+
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
 
 @property (strong, nonatomic) MITShuttleMapViewController *mapViewController;
@@ -22,8 +28,13 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 @property (weak, nonatomic) IBOutlet UIView *mapContainerView;
 @property (weak, nonatomic) IBOutlet UIView *routeContainerView;
 @property (weak, nonatomic) IBOutlet UIScrollView *stopsScrollView;
+
 @property (strong, nonatomic) IBOutlet UIView *toolbarLabelView;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
+
+@property (strong, nonatomic) IBOutlet UIView *stopTitleView;
+@property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *stopSubtitleLabel;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewTopSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewPortraitHeightConstraint;
@@ -64,6 +75,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = self.route.title;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self displayAllChildViewControllers];
     [self layoutStopViews];
@@ -174,6 +186,58 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
     [childViewController removeFromParentViewController];
 }
 
+#pragma mark - Navigation Bar Title
+
+- (void)setTitleForRoute:(MITShuttleRoute *)route
+{
+    self.title = route.title;
+}
+
+- (void)setTitleForStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
+{
+    self.navigationItem.titleView = self.stopTitleView;
+    self.stopTitleLabel.text = stop.title;
+    [self setStopStateRoute:route animationType:MITShuttleStopSubtitleLabelAnimationTypeNone];
+}
+
+- (void)setStopStateRoute:(MITShuttleRoute *)route animationType:(MITShuttleStopSubtitleLabelAnimationType)animationType
+{
+    if (animationType == MITShuttleStopSubtitleLabelAnimationTypeNone) {
+        self.stopSubtitleLabel.text = route.title;
+    } else {
+        UILabel *animationLabel = [self.stopSubtitleLabel copy];
+        animationLabel.text = route.title;
+        CGFloat stopTitleViewWidth = self.stopTitleView.frame.size.width;
+        CGRect centerLabelFrame = self.stopSubtitleLabel.frame;
+        
+        CGRect initialAnimationLabelFrame;
+        CGRect finalSubtitleLabelFrame;
+        switch (animationType) {
+            case MITShuttleStopSubtitleLabelAnimationTypeForward:
+                initialAnimationLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, -stopTitleViewWidth, 0);
+                finalSubtitleLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, stopTitleViewWidth, 0);
+                break;
+            case MITShuttleStopSubtitleLabelAnimationTypeBackward:
+                initialAnimationLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, stopTitleViewWidth, 0);
+                finalSubtitleLabelFrame = CGRectOffset(self.stopSubtitleLabel.frame, -stopTitleViewWidth, 0);
+                break;
+            default:
+                break;
+        }
+        animationLabel.frame = initialAnimationLabelFrame;
+        animationLabel.alpha = 0;
+        [self.stopTitleView addSubview:animationLabel];
+        [UIView animateWithDuration:0.3 animations:^{
+            animationLabel.frame = centerLabelFrame;
+            animationLabel.alpha = 1;
+            self.stopSubtitleLabel.frame = finalSubtitleLabelFrame;
+            self.stopSubtitleLabel.alpha = 0;
+        } completion:^(BOOL finished) {
+            self.stopSubtitleLabel = animationLabel;
+        }];
+    }
+}
+
 #pragma mark - Last Updated
 
 - (void)refreshLastUpdatedLabel
@@ -253,6 +317,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 
 - (void)configureLayoutForRouteStateAnimated:(BOOL)animated
 {
+    [self setTitleForRoute:self.route];
     [self.navigationController setToolbarHidden:NO animated:animated];
     [self setRouteViewHidden:NO];
     [self.view sendSubviewToBack:self.mapContainerView];
@@ -286,6 +351,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
 {
+    [self setTitleForStop:self.stop route:self.route];
     [self selectStop:self.stop];
     [self.navigationController setToolbarHidden:YES animated:animated];
     [self setStopViewHidden:NO];
