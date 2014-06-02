@@ -9,7 +9,7 @@ typedef enum {
     MITShuttleRouteContainerStateMap
 } MITShuttleRouteContainerState;
 
-@interface MITShuttleRouteContainerViewController : UIViewController
+@interface MITShuttleRouteContainerViewController : UIViewController <UIScrollViewDelegate>
 
 - (instancetype)initWithRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop;
 
