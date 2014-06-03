@@ -39,7 +39,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [self handleResult:result error:error completion:completion];
+                                                    [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
 
@@ -62,7 +62,11 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:completion];
+    if (stop.predictionsURL) {
+        [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:completion];
+    } else {
+        completion(nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil]);
+    }
 }
 
 #pragma mark - Vehicles
@@ -71,7 +75,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [self handleResult:result error:error completion:completion];
+                                                    [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
 
@@ -85,25 +89,25 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 - (void)getObjectForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [self handleResult:result error:error completion:completion];
+        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:NO];
     }];
 }
 
 - (void)getObjectsForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [self handleResult:result error:error completion:completion];
+        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
     }];
 }
 
-- (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITShuttleCompletionBlock)completion
+- (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITShuttleCompletionBlock)completion returnObjectShouldBeArray:(BOOL)alwaysReturnArray
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if (!error) {
             NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
             NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
             if (completion) {
-                if ([objects count] > 1) {
+                if ([objects count] > 1 || alwaysReturnArray) {
                     completion(objects, nil);
                 } else {
                     completion([objects firstObject], nil);

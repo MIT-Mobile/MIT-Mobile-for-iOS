@@ -93,6 +93,11 @@
     return [[self applicationDelegate] moduleForTag:aTag];
 }
 
+#warning Ross: I added this because the header declares it, but it wasn't implemented, and was causing crashes.
+- (UINavigationController*)rootNavigationController {
+    return nil;
+}
+
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

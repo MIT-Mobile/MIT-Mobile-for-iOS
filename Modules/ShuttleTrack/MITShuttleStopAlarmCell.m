@@ -8,14 +8,19 @@
 
 #import "MITShuttleStopAlarmCell.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttleStopNotificationManager.h"
 
 NSString * const kMITShuttleStopAlarmCellNibName = @"MITShuttleStopAlarmCell";
 
 @interface MITShuttleStopAlarmCell ()
 
+@property (nonatomic, strong) MITShuttlePrediction *prediction;
+@property (nonatomic, strong) MITShuttleStop *stop;
 @property (nonatomic, weak) IBOutlet UILabel *timeRemainingLabel;
 @property (nonatomic, weak) IBOutlet UILabel *clockTimeLabel;
 @property (nonatomic, weak) IBOutlet UIButton *alertButton;
+
+- (IBAction)notificationButtonPressed:(id)sender;
 
 @end
 
@@ -33,10 +38,25 @@ NSString * const kMITShuttleStopAlarmCellNibName = @"MITShuttleStopAlarmCell";
     // Configure the view for the selected state
 }
 
-//- (NSDateFormatter)
-
-- (void)setPrediction:(MITShuttlePrediction *)prediction
+- (IBAction)notificationButtonPressed:(id)sender
 {
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[self.prediction.timestamp doubleValue]];
+    UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForStop:self.stop nearTime:predictionDate];
+    if (scheduledNotification) {
+        [[UIApplication sharedApplication] cancelLocalNotification:scheduledNotification];
+    } else {
+        // Use 10 minutes variance. Using the length of the route loop isn't accurate since there can be multiple shuttles on a route. 10 minutes is a "best-guess" scenario unless we can find a better way or add support in the api
+        [[MITShuttleStopNotificationManager sharedManager] scheduleNotificationForStop:self.stop fromPredictionTime:predictionDate withVariance:600];
+    }
+    
+    [self updateNotificationButton];
+}
+
+- (void)updateUIWithPrediction:(MITShuttlePrediction *)prediction atStop:(MITShuttleStop *)stop
+{
+    self.prediction = prediction;
+    self.stop = stop;
+    
     if (!prediction) {
         self.timeRemainingLabel.text = @"";
         self.clockTimeLabel.text = @"";
@@ -58,12 +78,23 @@ NSString * const kMITShuttleStopAlarmCellNibName = @"MITShuttleStopAlarmCell";
     self.clockTimeLabel.text = [formatter stringFromDate:predictionDate];
     
     NSLog(@"timestamp: %@, date: %@", prediction.timestamp, predictionDate);
+    
+    [self updateNotificationButton];
 }
 
-- (void)setNotInService
+- (void)updateNotificationButton
 {
-    self.timeRemainingLabel.text = @"";
-    self.clockTimeLabel.text = @"";
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[self.prediction.timestamp doubleValue]];
+    UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForStop:self.stop nearTime:predictionDate];
+    if (scheduledNotification) {
+        [self.alertButton setImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on"] forState:UIControlStateNormal];
+        self.alertButton.hidden = NO;
+    } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
+        self.alertButton.hidden = YES;
+    } else {
+        [self.alertButton setImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-off"] forState:UIControlStateNormal];
+        self.alertButton.hidden = NO;
+    }
 }
 
 @end

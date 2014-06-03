@@ -312,6 +312,7 @@
 		A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */; };
 		A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */; };
 		A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */; };
+		A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1095,6 +1096,8 @@
 		A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopAlarmCell.h; sourceTree = "<group>"; };
 		A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopAlarmCell.m; sourceTree = "<group>"; };
 		A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopAlarmCell.xib; sourceTree = "<group>"; };
+		A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopNotificationManager.h; sourceTree = "<group>"; };
+		A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopNotificationManager.m; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
 		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
@@ -2692,6 +2695,8 @@
 				5E617F0C1926693F00091656 /* MITShuttleController.h */,
 				5E617F0D1926693F00091656 /* MITShuttleController.m */,
 				5EC89F5619264DE700E06204 /* Entities */,
+				A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */,
+				A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3254,7 +3259,7 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = A35W4MM59Y;
+						DevelopmentTeam = THP5EV5EJ9;
 					};
 				};
 			};
@@ -3547,6 +3552,7 @@
 				2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */,
 				2C18090518F33B95008F9775 /* MITECPResponseMessage.m in Sources */,
 				2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */,
+				A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CF89EAD18A41A6A00ABFE03 /* MITNewsImageViewController.m in Sources */,
 				2C2CB4961922B45100FCC056 /* MITLauncherListViewCell.m in Sources */,
@@ -3825,6 +3831,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3842,6 +3849,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "18E1365E-436B-43FE-AE50-1930D63D06C7";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -3853,6 +3861,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3963,6 +3972,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
