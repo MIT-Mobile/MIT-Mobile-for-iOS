@@ -2,18 +2,27 @@
 #import "MITShuttleStop.h"
 #import "MITShuttleStopAlarmCell.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttlePredictionList.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicle.h"
 #import "MITShuttleController.h"
 #import "MITShuttleVehicleList.h"
+#import "MITShuttleRouteNoDataCell.h"
+#import "NSDateFormatter+RelativeString.h"
+#import "MITShuttleStopNotificationManager.h"
 
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
+NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMITShuttleStopViewControllerNoDataCellReuseIdentifier";
+
+static const NSTimeInterval kStopRefreshInterval = 10.0;
 
 @interface MITShuttleStopViewController ()
 
 @property (nonatomic, retain) NSDictionary *predictionsByRoute;
 @property (nonatomic, retain) NSArray *vehicles;
 @property (nonatomic, retain) UILabel *statusFooterLabel;
+@property (strong, nonatomic) NSTimer *stopRefreshTimer;
+@property (nonatomic, strong) NSDate *lastUpdatedDate;
 
 @end
 
@@ -32,15 +41,11 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopAlarmCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleRouteNoDataCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier];
     
-    [self reloadPredictions];
+    [self startRefreshingData];
     [self setupHelpAndStatusFooter];
 }
 
@@ -71,50 +76,51 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
     self.tableView.tableFooterView = helpAndStatusFooter;
 }
 
+- (void)startRefreshingData {
+    [self reloadPredictions];
+//    self.stopRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kStopRefreshInterval
+//                                                             target:self
+//                                                           selector:@selector(reloadPredictions)
+//                                                           userInfo:nil
+//                                                            repeats:YES];
+}
+
 - (void)reloadPredictions {
-    for (MITShuttlePrediction *prediction in self.stop.predictions) {
-        NSLog(@"prediction1: %@", prediction);
-    }
-    [[MITShuttleController sharedController] getStopDetail:self.stop completion:^(MITShuttleStop *stop, NSError *error) {
+    [self updateStatusLabel];
+
+    [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictions, NSError *error) {
         if (error) {
-#warning Handle error condition
+            // Nothing to do, simply do not update the status label and the UI will be correct
         } else {
-            self.stop = stop;
+            self.lastUpdatedDate = [NSDate date];
+            [[MITShuttleStopNotificationManager sharedManager] updateNotificationsForStop:self.stop];
             
-            for (MITShuttlePrediction *prediction in self.stop.predictions) {
-                NSLog(@"prediction2: %@", prediction);
-            }
-            
-            [[MITShuttleController sharedController] getVehicles:^(NSArray *vehicles, NSError *error) {
-                if (error) {
-#warning Handle error condition
-                } else {
-                    self.vehicles = vehicles;
-                    [self createPredictionsByRoute:self.stop.predictions];
-                    [self.tableView reloadData];
-                }
-            }];
+            [self createPredictionsByRoute:predictions];
+            [self.tableView reloadData];
+            [self updateStatusLabel];
         }
     }];
 }
 
-- (void)createPredictionsByRoute:(NSOrderedSet *)predictions {
+- (void)updateStatusLabel {
+    if (self.lastUpdatedDate) {
+        self.statusFooterLabel.text = [NSString stringWithFormat:@"Updated %@", [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate toDate:[NSDate date]]];
+    }
+}
+
+- (void)createPredictionsByRoute:(NSArray *)predictions {
     NSMutableDictionary *newPredictionsByRoute = [NSMutableDictionary dictionary];
-    NSMutableOrderedSet *newRoutes = [NSMutableOrderedSet orderedSet];
     
     for (MITShuttleRoute *route in self.stop.routes) {
         NSMutableArray *predictionsArrayForRoute = [NSMutableArray array];
         
-        for (MITShuttleVehicleList *vehicleList in self.vehicles) {
-            if ([vehicleList.routeId isEqualToString:route.identifier]) {
-                for (MITShuttlePrediction *prediction in predictions) {
-                    for (MITShuttleVehicle *vehicle in vehicleList.vehicles) {
-                        if ([prediction.vehicleId isEqualToString:vehicle.identifier]) {
-                            [predictionsArrayForRoute addObject:prediction];
-                            [newPredictionsByRoute setObject:predictionsArrayForRoute forKey:route.identifier];
-                        }
-                    }
-                    
+        for (MITShuttlePredictionList *predictionList in predictions) {
+            if ([predictionList.routeId isEqualToString:route.identifier] && [predictionList.stopId isEqualToString:self.stop.identifier]) {
+                for (MITShuttlePrediction *prediction in predictionList.predictions) {
+                    [predictionsArrayForRoute addObject:prediction];
+                }
+                if (predictionsArrayForRoute.count > 0) {
+                    [newPredictionsByRoute setObject:predictionsArrayForRoute forKey:route.identifier];
                 }
             }
         }
@@ -139,22 +145,26 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITShuttleStopAlarmCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
-    
     MITShuttleRoute *route = self.stop.routes[indexPath.section];
     NSArray *predictionsArray = self.predictionsByRoute[route.identifier];
     MITShuttlePrediction *prediction = nil;
     
-    if (!route.scheduled) {
-        [cell setNotInService];
-    } else if (!route.predictable || !predictionsArray) {
-        [cell setPrediction:nil];
+    if (![route.scheduled boolValue]) {
+        MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
+        [cell setNotInService:route];
+        return cell;
+    } else if (![route.predictable boolValue] || !predictionsArray) {
+        MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
+        [cell setNoPredictions:route];
+        return cell;
     } else {
+        MITShuttleStopAlarmCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
         prediction = predictionsArray[indexPath.row];
-        [cell setPrediction:prediction];
+        [cell updateUIWithPrediction:prediction atStop:self.stop];
+        return cell;
     }
     
-    return cell;
+    return [UITableViewCell new];
 }
 
 #pragma mark - UITableViewDelegate
@@ -176,54 +186,5 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
     
     return headerContainer;
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
