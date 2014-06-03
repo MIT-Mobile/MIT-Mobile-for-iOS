@@ -34,6 +34,9 @@
                         <state key="normal" image="shuttle/shuttle-alert-toggle-off.png">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
+                        <connections>
+                            <action selector="notificationButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="NOv-yX-p4d"/>
+                        </connections>
                     </button>
                 </subviews>
             </tableViewCellContentView>

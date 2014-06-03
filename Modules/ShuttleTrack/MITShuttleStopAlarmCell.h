@@ -7,7 +7,6 @@ FOUNDATION_EXTERN NSString * const kMITShuttleStopAlarmCellNibName;
 
 @interface MITShuttleStopAlarmCell : UITableViewCell
 
-- (void)setPrediction:(MITShuttlePrediction *)prediction;
-- (void)setNotInService;
+- (void)updateUIWithPrediction:(MITShuttlePrediction *)prediction atStop:(MITShuttleStop *)stop;
 
 @end
