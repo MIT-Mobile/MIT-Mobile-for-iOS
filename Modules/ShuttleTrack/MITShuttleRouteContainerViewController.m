@@ -321,6 +321,33 @@ typedef enum {
     [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:NO];
 }
 
+- (void)didScrollToStop:(MITShuttleStop *)stop
+{
+    MITShuttleStopSubtitleLabelAnimationType animationType;
+    NSInteger previousStopIndex = [self.route.stops indexOfObject:self.stop];
+    NSInteger newStopIndex = [self.route.stops indexOfObject:stop];
+    if (previousStopIndex < newStopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
+    } else if (previousStopIndex > newStopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
+    } else {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeNone;
+    }
+    [self setStopSubtitleWithStop:stop animationType:animationType];
+    
+    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
+    for (NSInteger i = 0; i < self.stopViewControllers.count; i++) {
+        MITShuttleStopViewController *stopVC = self.stopViewControllers[i];
+        if (i == stopIndex) {
+            stopVC.shouldRefreshData = YES;
+        } else {
+            stopVC.shouldRefreshData = NO;
+        }
+    }
+    
+    self.stop = stop;
+}
+
 #pragma mark - Map Tap Gesture Recognizer (TEMP)
 
 - (IBAction)mapContainerViewTapped:(id)sender
@@ -420,6 +447,7 @@ typedef enum {
     };
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
+        [self layoutStopViews];
         [self setRouteViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
     };
@@ -566,46 +594,12 @@ typedef enum {
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    [self scrollViewMovementDidEnd];
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-    [self scrollViewMovementDidEnd];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    if (!decelerate) {
-        [self scrollViewMovementDidEnd];
-    }
-}
-
-- (void)scrollViewMovementDidEnd
-{
-    NSInteger stopIndex = self.stopsScrollView.contentOffset.x / self.stopsScrollView.frame.size.width;
-    MITShuttleStop *stop = self.route.stops[stopIndex];
-    MITShuttleStopSubtitleLabelAnimationType animationType;
-    NSInteger previousStopIndex = [self.route.stops indexOfObject:self.stop];
-    if (previousStopIndex < stopIndex) {
-        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
-    } else if (previousStopIndex > stopIndex) {
-        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
-    } else {
-        animationType = MITShuttleStopSubtitleLabelAnimationTypeNone;
-    }
-    [self setStopSubtitleWithStop:stop animationType:animationType];
-    self.stop = stop;
-    
-    for (NSInteger i = 0; i < self.stopViewControllers.count; i++) {
-        MITShuttleStopViewController *stopVC = self.stopViewControllers[i];
-        if (i == stopIndex) {
-            stopVC.shouldRefreshData = YES;
-        } else {
-            stopVC.shouldRefreshData = NO;
-        }
+    if (scrollView == self.stopsScrollView) {
+        NSInteger stopIndex = (*targetContentOffset).x / self.stopsScrollView.frame.size.width;
+        MITShuttleStop *stop = self.route.stops[stopIndex];
+        [self didScrollToStop:stop];
     }
 }
 
