@@ -10,6 +10,7 @@
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
 @property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 @property (nonatomic) BOOL hasSetUpMapRect;
+@property (nonatomic, strong) MKPolyline *routeLineOverlay;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -32,6 +33,7 @@
     [super viewDidLoad];
 
     self.hasSetUpMapRect = NO;
+    self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
     
     self.currentLocationButton.layer.borderWidth = 1;
@@ -47,7 +49,8 @@
     [self setState:self.state animated:NO];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     if (!self.hasSetUpMapRect) {
@@ -58,6 +61,8 @@
         
         [self.mapView setCenterCoordinate:centerCoordinate];
         
+        [self setupRouteOverlay];
+        
         self.hasSetUpMapRect = YES;
     }
 }
@@ -67,6 +72,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Custom Accessors
 
 - (void)setState:(MITShuttleMapState)state
 {
@@ -109,6 +116,8 @@
     }
 }
 
+#pragma mark - IBActions
+
 - (IBAction)currentLocationButtonTapped:(id)sender
 {
     [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
@@ -118,6 +127,42 @@
 {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
         [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
+    }
+}
+
+#pragma mark - Private Methods
+
+- (void)setupRouteOverlay
+{
+    CLLocationCoordinate2D coordinateArray[self.route.stops.count + 1];
+    
+    for (NSInteger i = 0; i < self.route.stops.count; i++) {
+        MITShuttleStop *stop = self.route.stops[i];
+        coordinateArray[i] = CLLocationCoordinate2DMake([stop.latitude doubleValue], [stop.longitude doubleValue]);
+    }
+    
+    // Add the first stop as the last point as well, thus closing the line
+    MITShuttleStop *firstStop = self.route.stops[0];
+    coordinateArray[self.route.stops.count] = CLLocationCoordinate2DMake([firstStop.latitude doubleValue], [firstStop.longitude doubleValue]);
+    
+    self.routeLineOverlay = [MKPolyline polylineWithCoordinates:coordinateArray count:self.route.stops.count + 1];
+    
+    [self.mapView addOverlay:self.routeLineOverlay];
+}
+
+#pragma mark - MKMapViewDelegate Methods
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+    if ([overlay isEqual:self.routeLineOverlay]) {
+        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:self.routeLineOverlay];
+        renderer.lineWidth = 2.5;
+        renderer.fillColor = [UIColor darkGrayColor];
+        renderer.strokeColor = [UIColor darkGrayColor];
+        
+        return renderer;
+    } else {
+        return nil;
     }
 }
 
