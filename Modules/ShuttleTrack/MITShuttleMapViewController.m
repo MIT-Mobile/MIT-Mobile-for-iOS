@@ -3,6 +3,8 @@
 #import "MITShuttleStop.h"
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
+#import "MITShuttlePrediction.h"
+#import "MITShuttleVehicle.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 
@@ -209,10 +211,38 @@ typedef enum {
 - (void)refreshAnnotations {
     NSMutableArray *newAnnotations = [NSMutableArray array];
     
+    NSMutableArray *nextStops = [NSMutableArray array];
+    for (MITShuttleVehicle *vehicle in self.route.vehicles) {
+        NSNumber *leastSecondsRemaining = nil;
+        MITShuttleStop *nextStop = nil;
+        
+        for (MITShuttleStop *stop in self.route.stops) {
+            for (MITShuttlePrediction *prediction in stop.predictions) {
+                if ([prediction.vehicleId isEqualToString:vehicle.identifier]) {
+                    if (nextStop == nil || [leastSecondsRemaining compare:prediction.seconds] == NSOrderedDescending) {
+                        leastSecondsRemaining = prediction.seconds;
+                        nextStop = stop;
+                    }
+                }
+            }
+        }
+        
+        if (nextStop != nil) {
+            [nextStops addObject:nextStop];
+        }
+    }
+    
     for (MITShuttleStop *stop in self.route.stops) {
         MITShuttleMapAnnotation *annotation = [[MITShuttleMapAnnotation alloc] init];
         annotation.coordinate = CLLocationCoordinate2DMake([stop.latitude doubleValue], [stop.longitude doubleValue]);
+        
         annotation.type = MITShuttleMapAnnotationTypeStop;
+        for (MITShuttleStop *nextStop in nextStops) {
+            if ([nextStop.identifier isEqualToString:stop.identifier]) {
+                annotation.type = MITShuttleMapAnnotationTypeNextStop;
+            }
+        }
+        
         [newAnnotations addObject:annotation];
     }
     
