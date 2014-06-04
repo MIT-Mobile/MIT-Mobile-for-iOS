@@ -90,12 +90,18 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     helpLabel.textAlignment = NSTextAlignmentCenter;
     helpLabel.text = @"Tap bell to be notified 5 min. before arrival";
     [helpAndStatusFooter addSubview:helpLabel];
+    helpLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[helpLabel]" options:0 metrics:nil views:@{@"helpLabel": helpLabel}]];
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[helpLabel]|" options:0 metrics:nil views:@{@"helpLabel": helpLabel}]];
     
     self.statusFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, 320, 30)];
     self.statusFooterLabel.font = [UIFont systemFontOfSize:14];
     self.statusFooterLabel.textColor = [UIColor blackColor];
     self.statusFooterLabel.textAlignment = NSTextAlignmentCenter;
     [helpAndStatusFooter addSubview:self.statusFooterLabel];
+    self.statusFooterLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[statusFooterLabel]" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[statusFooterLabel]|" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
     
     self.tableView.tableFooterView = helpAndStatusFooter;
 }
