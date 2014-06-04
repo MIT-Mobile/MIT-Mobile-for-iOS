@@ -33,9 +33,6 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
 @property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 @property (nonatomic) BOOL hasSetUpMapRect;
-@property (nonatomic, strong) MKPolyline *routeLineOverlay;
-@property (nonatomic, strong) MKTileOverlay *MITTileOverlay;
-@property (nonatomic, strong) MKTileOverlay *baseTileOverlay;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -166,20 +163,49 @@ typedef enum {
 
 - (void)setupRouteOverlay
 {
-    CLLocationCoordinate2D coordinateArray[self.route.stops.count + 1];
-    
-    for (NSInteger i = 0; i < self.route.stops.count; i++) {
-        MITShuttleStop *stop = self.route.stops[i];
-        coordinateArray[i] = CLLocationCoordinate2DMake([stop.latitude doubleValue], [stop.longitude doubleValue]);
+    if (![self.route.pathSegments isKindOfClass:[NSArray class]]) {
+        if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
+            return;
+        }
     }
     
-    // Add the first stop as the last point as well, thus closing the line
-    MITShuttleStop *firstStop = self.route.stops[0];
-    coordinateArray[self.route.stops.count] = CLLocationCoordinate2DMake([firstStop.latitude doubleValue], [firstStop.longitude doubleValue]);
+    NSArray *pathSegments = [self.route.pathSegments isKindOfClass:[NSArray class]] ? self.route.pathSegments : nil;
     
-    self.routeLineOverlay = [MKPolyline polylineWithCoordinates:coordinateArray count:self.route.stops.count + 1];
+    NSMutableArray *segmentPolylines = [NSMutableArray array];
     
-    [self.mapView addOverlay:self.routeLineOverlay];
+    if (pathSegments) {
+        for (NSInteger i = 0; i < pathSegments.count; i++) {
+            NSArray *pathSegment = [pathSegments[i] isKindOfClass:[NSArray class]] ? pathSegments[i] : nil;
+            
+            if (pathSegment) {
+                CLLocationCoordinate2D segmentPoints[pathSegment.count];
+                
+                for (NSInteger j = 0; j < pathSegment.count; j++) {
+                    NSArray *pathCoordinateArray = [pathSegment[j] isKindOfClass:[NSArray class]] ? pathSegment[j] : nil;
+                    
+                    if (pathCoordinateArray && pathCoordinateArray.count > 1) {
+                        NSNumber *longitude = pathCoordinateArray[0];
+                        NSNumber *latitude = pathCoordinateArray[1];
+                        
+                        CLLocationCoordinate2D pathPointCoordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
+                        segmentPoints[j] = pathPointCoordinate;
+                    }
+                }
+                
+                MKPolyline *segmentPolyline = [MKPolyline polylineWithCoordinates:segmentPoints count:pathSegment.count];
+                [segmentPolylines addObject:segmentPolyline];
+            }
+        }
+    }
+    
+    // If we got nothing, its broken somehow so don't show anything
+    if (segmentPolylines.count < 1) {
+        return;
+    }
+    
+    for (MKPolyline *polyline in segmentPolylines) {
+        [self.mapView addOverlay:polyline];
+    }
 }
 
 - (void)setupTileOverlays
@@ -192,20 +218,20 @@ typedef enum {
 {
     static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
     
-    self.MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
-    self.MITTileOverlay.canReplaceMapContent = YES;
+    MKTileOverlay *MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
+    MITTileOverlay.canReplaceMapContent = YES;
     
-    [self.mapView addOverlay:self.MITTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.mapView addOverlay:MITTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 - (void)setupBaseTileOverlay
 {
     static NSString * const template = @"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
     
-    self.baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
-    self.baseTileOverlay.canReplaceMapContent = YES;
+    MKTileOverlay *baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
+    baseTileOverlay.canReplaceMapContent = YES;
     
-    [self.mapView addOverlay:self.baseTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 - (void)refreshAnnotations {
@@ -252,7 +278,8 @@ typedef enum {
 
 #pragma mark - MKMapViewDelegate Methods
 
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
     if ([annotation isKindOfClass:[MKUserLocation class]]) {
         return nil;
     }
@@ -274,6 +301,7 @@ typedef enum {
             break;
         }
         case MITShuttleMapAnnotationTypeBus: {
+            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle"];
             break;
         }
     }
@@ -283,8 +311,8 @@ typedef enum {
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
-    if ([overlay isEqual:self.routeLineOverlay]) {
-        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:self.routeLineOverlay];
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
         renderer.lineWidth = 2.5;
         renderer.fillColor = [UIColor darkGrayColor];
         renderer.strokeColor = [UIColor darkGrayColor];
