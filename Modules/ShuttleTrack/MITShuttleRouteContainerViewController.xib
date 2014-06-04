@@ -10,6 +10,8 @@
                 <outlet property="lastUpdatedLabel" destination="2IF-Bq-gql" id="o3R-QF-2z1"/>
                 <outlet property="mapContainerView" destination="GKm-8L-Pgv" id="QZP-Ib-Q0w"/>
                 <outlet property="mapContainerViewPortraitHeightConstraint" destination="nfh-k8-pGg" id="zo2-ow-7ZT"/>
+                <outlet property="navigationBarExtensionView" destination="P2M-3z-edw" id="uki-A4-e73"/>
+                <outlet property="navigationBarExtensionViewHeightConstraint" destination="ESS-M2-hYa" id="ohQ-M0-zOA"/>
                 <outlet property="routeContainerView" destination="mcQ-I2-FK8" id="b1l-lA-kD9"/>
                 <outlet property="routeContainerViewTopSpaceConstraint" destination="Hog-ae-7mc" id="MRw-vq-jxo"/>
                 <outlet property="stopSubtitleLabel" destination="03V-0v-K5P" id="njZ-oh-10I"/>
@@ -25,6 +27,13 @@
             <rect key="frame" x="0.0" y="64" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P2M-3z-edw">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" id="ESS-M2-hYa"/>
+                    </constraints>
+                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GKm-8L-Pgv" userLabel="View - Map">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="190"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -52,17 +61,20 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="P2M-3z-edw" secondAttribute="trailing" id="34R-Tv-cgL"/>
                 <constraint firstItem="GKm-8L-Pgv" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="BSh-rn-fGa"/>
                 <constraint firstAttribute="bottom" secondItem="mcQ-I2-FK8" secondAttribute="bottom" id="CvY-n2-6p8"/>
                 <constraint firstItem="mcQ-I2-FK8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Hog-ae-7mc"/>
+                <constraint firstItem="P2M-3z-edw" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="HuP-9z-kjT"/>
                 <constraint firstItem="D9V-gA-fOK" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="S4p-pZ-2qw"/>
                 <constraint firstAttribute="trailing" secondItem="GKm-8L-Pgv" secondAttribute="trailing" id="ZF1-6b-fLX"/>
-                <constraint firstItem="GKm-8L-Pgv" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="axW-ph-eZa"/>
                 <constraint firstItem="mcQ-I2-FK8" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kmj-2C-0Bl"/>
                 <constraint firstAttribute="bottom" secondItem="D9V-gA-fOK" secondAttribute="bottom" id="l5c-N6-50v"/>
                 <constraint firstAttribute="trailing" secondItem="D9V-gA-fOK" secondAttribute="trailing" id="mVS-11-Yf1"/>
+                <constraint firstItem="P2M-3z-edw" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="pEK-dJ-iTr"/>
                 <constraint firstItem="D9V-gA-fOK" firstAttribute="top" secondItem="GKm-8L-Pgv" secondAttribute="bottom" id="rZ6-ys-EMb"/>
                 <constraint firstAttribute="trailing" secondItem="mcQ-I2-FK8" secondAttribute="trailing" id="wGK-Cg-8sU"/>
+                <constraint firstItem="GKm-8L-Pgv" firstAttribute="top" secondItem="P2M-3z-edw" secondAttribute="bottom" id="xGt-78-qsl"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
@@ -91,17 +103,17 @@
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" id="6et-md-XXK">
-            <rect key="frame" x="0.0" y="0.0" width="195" height="44"/>
+            <rect key="frame" x="0.0" y="0.0" width="195" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Igc-GJ-ngV">
-                    <rect key="frame" x="53" y="4" width="88" height="21"/>
+                    <rect key="frame" x="54" y="20" width="88" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Route Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="03V-0v-K5P">
-                    <rect key="frame" x="54" y="22" width="86" height="18"/>
+                    <rect key="frame" x="55" y="40" width="86" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <nil key="highlightedColor"/>
@@ -109,10 +121,10 @@
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="Igc-GJ-ngV" firstAttribute="top" secondItem="6et-md-XXK" secondAttribute="top" constant="4" id="GmI-vv-Vgm"/>
-                <constraint firstAttribute="centerX" secondItem="03V-0v-K5P" secondAttribute="centerX" constant="0.5" id="Odw-Ss-gPT"/>
-                <constraint firstAttribute="bottom" secondItem="03V-0v-K5P" secondAttribute="bottom" constant="4" id="amr-tc-n5e"/>
-                <constraint firstAttribute="centerX" secondItem="Igc-GJ-ngV" secondAttribute="centerX" constant="0.5" id="tQe-CC-Sgy"/>
+                <constraint firstItem="Igc-GJ-ngV" firstAttribute="top" secondItem="6et-md-XXK" secondAttribute="top" constant="20" id="GmI-vv-Vgm"/>
+                <constraint firstAttribute="centerX" secondItem="03V-0v-K5P" secondAttribute="centerX" constant="-0.5" id="Odw-Ss-gPT"/>
+                <constraint firstAttribute="bottom" secondItem="03V-0v-K5P" secondAttribute="bottom" constant="2" id="amr-tc-n5e"/>
+                <constraint firstAttribute="centerX" secondItem="Igc-GJ-ngV" secondAttribute="centerX" constant="-0.5" id="tQe-CC-Sgy"/>
             </constraints>
         </view>
     </objects>
