@@ -151,7 +151,11 @@ typedef enum {
 
 - (IBAction)currentLocationButtonTapped:(id)sender
 {
-    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:nil message:@"Turn on Location Services to Allow Shuttles to Determine Your Location." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
 }
 
 - (IBAction)exitMapStateButtonTapped:(id)sender
