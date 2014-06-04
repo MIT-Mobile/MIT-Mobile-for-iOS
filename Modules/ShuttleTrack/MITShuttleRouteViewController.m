@@ -88,18 +88,23 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)startRefreshingRoute
 {
     [self loadRoute];
-    NSTimer *routeRefreshTimer = [NSTimer timerWithTimeInterval:kRouteRefreshInterval
-                                                               target:self
-                                                             selector:@selector(loadRoute)
-                                                             userInfo:nil
-                                                              repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:routeRefreshTimer forMode:NSRunLoopCommonModes];
-    self.routeRefreshTimer = routeRefreshTimer;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.routeRefreshTimer invalidate];
+        NSTimer *routeRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteRefreshInterval
+                                                             target:self
+                                                           selector:@selector(loadRoute)
+                                                           userInfo:nil
+                                                            repeats:YES];
+        self.routeRefreshTimer = routeRefreshTimer;
+    });
 }
 
 - (void)stopRefreshingRoute
 {
-    [self.routeRefreshTimer invalidate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.routeRefreshTimer invalidate];
+        self.routeRefreshTimer = nil;
+    });
 }
 
 #pragma mark - Load Route
