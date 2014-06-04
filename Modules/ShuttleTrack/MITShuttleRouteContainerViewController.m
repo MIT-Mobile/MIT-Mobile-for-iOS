@@ -15,6 +15,8 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 
 static const CGFloat kStopSubtitleAnimationSpan = 40.0;
 
+static const CGFloat kNavigationBarStopStateExtension = 16.0;
+
 typedef enum {
     MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
     MITShuttleStopSubtitleLabelAnimationTypeForward,
@@ -37,16 +39,20 @@ typedef enum {
 @property (strong, nonatomic) IBOutlet UIView *stopTitleView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *stopSubtitleLabel;
+@property (weak, nonatomic) IBOutlet UIView *navigationBarExtensionView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewTopSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewPortraitHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewLandscapeWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewHeightConstraint;
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
 
 @property (nonatomic) MITShuttleRouteContainerState previousState;
+
+@property (nonatomic, strong) UIImage *navigationBarShadowImage;
 
 @end
 
@@ -80,6 +86,7 @@ typedef enum {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self displayAllChildViewControllers];
     [self layoutStopViews];
+    [self setupNavigationBarExtension];
     [self setupToolbar];
     [self configureLayoutForState:self.state animated:NO];
 }
@@ -88,6 +95,12 @@ typedef enum {
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:(self.state != MITShuttleRouteContainerStateRoute) animated:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self setNavigationBarExtended:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -149,6 +162,12 @@ typedef enum {
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
 }
 
+- (void)setupNavigationBarExtension
+{
+    self.navigationBarShadowImage = self.navigationController.navigationBar.shadowImage;
+    self.navigationBarExtensionView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:242.0/255 alpha:1];
+}
+
 - (void)setupToolbar
 {
     UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
@@ -198,11 +217,17 @@ typedef enum {
     self.navigationItem.titleView = nil;
 }
 
-- (void)setTitleForRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
+- (void)setTitleForRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
     self.navigationItem.titleView = self.stopTitleView;
     self.stopTitleLabel.text = route.title;
     [self setStopSubtitleWithStop:stop animationType:MITShuttleStopSubtitleLabelAnimationTypeNone];
+    if (animated) {
+        self.stopSubtitleLabel.alpha = 0;
+        [UIView animateWithDuration:[self stateTransitionDuration] animations:^{
+            self.stopSubtitleLabel.alpha = 1;
+        }];
+    }
 }
 
 - (void)setTitleForStop:(MITShuttleStop *)stop {
@@ -349,8 +374,9 @@ typedef enum {
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
     }
-
+    
     dispatch_block_t animationBlock = ^{
+        [self setNavigationBarExtended:NO];
         [self.view layoutIfNeeded];
     };
     
@@ -375,7 +401,7 @@ typedef enum {
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
 {
-    [self setTitleForRoute:self.route stop:self.stop];
+    [self setTitleForRoute:self.route stop:self.stop animated:animated];
     [self selectStop:self.stop];
     [self.navigationController setToolbarHidden:YES animated:animated];
     [self setStopViewHidden:NO];
@@ -387,8 +413,9 @@ typedef enum {
         self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.stopsScrollView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
     }
     self.routeContainerViewTopSpaceConstraint.constant = CGRectGetMaxY(self.stopsScrollView.frame);
-
+    
     dispatch_block_t animationBlock = ^{
+        [self setNavigationBarExtended:YES];
         [self.view layoutIfNeeded];
     };
     
@@ -423,8 +450,9 @@ typedef enum {
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame);
     }
-
+    
     dispatch_block_t animationBlock = ^{
+        [self setNavigationBarExtended:NO];
         [self.view layoutIfNeeded];
     };
     
@@ -467,6 +495,20 @@ typedef enum {
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         stopViewController.tableView.hidden = hidden;
     }
+}
+
+#pragma mark - Navigation Bar Extension
+
+- (void)setNavigationBarExtended:(BOOL)extended
+{
+    self.navigationBarExtensionViewHeightConstraint.constant = extended ? kNavigationBarStopStateExtension : 0;
+    
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    UIView *navigationBarBackgroundView = navigationBar.subviews[0];
+    CGFloat navigationBarMaxY = CGRectGetMaxY(navigationBar.frame);
+    CGRect frame = navigationBarBackgroundView.frame;
+    frame.size.height = extended ? navigationBarMaxY + kNavigationBarStopStateExtension : navigationBarMaxY;
+    navigationBarBackgroundView.frame = frame;
 }
 
 - (NSTimeInterval)stateTransitionDuration
