@@ -4,8 +4,9 @@
 
 @interface MITShuttleStopViewController : UITableViewController
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop;
-
 @property (strong, nonatomic) MITShuttleStop *stop;
+@property (nonatomic) BOOL shouldRefreshData;
+
+- (instancetype)initWithStop:(MITShuttleStop *)stop;
 
 @end

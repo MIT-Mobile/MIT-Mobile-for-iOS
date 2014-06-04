@@ -140,7 +140,11 @@ typedef enum {
     NSArray *stops = [self.route.stops array];
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[stops count]];
     for (MITShuttleStop *stop in stops) {
-        [stopViewControllers addObject:[[MITShuttleStopViewController alloc] initWithStop:stop]];
+        MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStop:stop];
+        if ([stop.identifier isEqualToString:self.stop.identifier]) {
+            stopVC.shouldRefreshData = YES;
+        }
+        [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
 }
@@ -191,6 +195,7 @@ typedef enum {
 - (void)setTitleForRoute:(MITShuttleRoute *)route
 {
     self.title = route.title;
+    self.navigationItem.titleView = nil;
 }
 
 - (void)setTitleForRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
@@ -439,7 +444,7 @@ typedef enum {
         completionBlock(YES);
     }
     
-    [self setTitleForStop:self.stop];
+    [self setTitleForRoute:self.route];
 }
 
 // In order for scrollsToTop to work with in a container view controller,
@@ -506,6 +511,7 @@ typedef enum {
     self.isUpdating = NO;
     self.lastUpdatedDate = [NSDate date];
     [self refreshLastUpdatedLabel];
+    [self.mapViewController routeUpdated];
 }
 
 - (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController
@@ -547,11 +553,21 @@ typedef enum {
     }
     [self setStopSubtitleWithStop:stop animationType:animationType];
     self.stop = stop;
+    
+    for (NSInteger i = 0; i < self.stopViewControllers.count; i++) {
+        MITShuttleStopViewController *stopVC = self.stopViewControllers[i];
+        if (i == stopIndex) {
+            stopVC.shouldRefreshData = YES;
+        } else {
+            stopVC.shouldRefreshData = NO;
+        }
+    }
 }
 
 #pragma mark - MITShuttleMapViewControllerDelegate Methods
 
-- (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController {
+- (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController
+{
     if (self.state == MITShuttleRouteContainerStateMap) {
         [self setState:self.previousState animated:YES];
     }

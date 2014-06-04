@@ -83,11 +83,19 @@ typedef enum {
         
         [self.mapView setCenterCoordinate:centerCoordinate];
         
-        [self setupOverlays];
-        [self refreshAnnotations];
-        
         self.hasSetUpMapRect = YES;
     }
+    
+    [self setupOverlays];
+    [self refreshAnnotations];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    // This seems to prevent a crash with a VKRasterOverlayTileSource being deallocated and sent messages
+    [self.mapView removeOverlays:self.mapView.overlays];
+    
+    [super viewWillDisappear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -151,6 +159,13 @@ typedef enum {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
         [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
     }
+}
+
+#pragma mark - Public Methods
+
+- (void)routeUpdated
+{
+    
 }
 
 #pragma mark - Private Methods
@@ -256,6 +271,11 @@ typedef enum {
         if (nextStop != nil) {
             [nextStops addObject:nextStop];
         }
+        
+        MITShuttleMapAnnotation *annotation = [[MITShuttleMapAnnotation alloc] init];
+        annotation.coordinate = CLLocationCoordinate2DMake([vehicle.latitude doubleValue], [vehicle.longitude doubleValue]);
+        annotation.type = MITShuttleMapAnnotationTypeBus;
+        [newAnnotations addObject:annotation];
     }
     
     for (MITShuttleStop *stop in self.route.stops) {

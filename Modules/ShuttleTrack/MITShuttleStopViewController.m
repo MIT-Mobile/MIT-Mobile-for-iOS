@@ -55,9 +55,33 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Public Methods
+
+- (void)startRefreshingData
+{
+    [self reloadPredictions];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.stopRefreshTimer invalidate];
+        self.stopRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kStopRefreshInterval
+                                                                 target:self
+                                                               selector:@selector(reloadPredictions)
+                                                               userInfo:nil
+                                                                repeats:YES];
+    });
+}
+
+- (void)stopRefreshingData
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.stopRefreshTimer invalidate];
+        self.stopRefreshTimer = nil;
+    });
+}
+
 #pragma mark - Private Methods
 
-- (void)setupHelpAndStatusFooter {
+- (void)setupHelpAndStatusFooter
+{
     UIView *helpAndStatusFooter = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
     
     UILabel *helpLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, 320, 30)];
@@ -76,17 +100,12 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     self.tableView.tableFooterView = helpAndStatusFooter;
 }
 
-- (void)startRefreshingData {
-    [self reloadPredictions];
-//    self.stopRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kStopRefreshInterval
-//                                                             target:self
-//                                                           selector:@selector(reloadPredictions)
-//                                                           userInfo:nil
-//                                                            repeats:YES];
-}
-
 - (void)reloadPredictions {
     [self updateStatusLabel];
+    
+    if (!self.shouldRefreshData) {
+        return;
+    }
 
     [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictions, NSError *error) {
         if (error) {
