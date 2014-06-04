@@ -11,6 +11,8 @@
 @property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) MKPolyline *routeLineOverlay;
+@property (nonatomic, strong) MKTileOverlay *MITTileOverlay;
+@property (nonatomic, strong) MKTileOverlay *baseTileOverlay;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -61,7 +63,7 @@
         
         [self.mapView setCenterCoordinate:centerCoordinate];
         
-        [self setupRouteOverlay];
+        [self setupOverlays];
         
         self.hasSetUpMapRect = YES;
     }
@@ -132,6 +134,12 @@
 
 #pragma mark - Private Methods
 
+- (void)setupOverlays
+{
+    [self setupTileOverlays];
+    [self setupRouteOverlay];
+}
+
 - (void)setupRouteOverlay
 {
     CLLocationCoordinate2D coordinateArray[self.route.stops.count + 1];
@@ -150,6 +158,32 @@
     [self.mapView addOverlay:self.routeLineOverlay];
 }
 
+- (void)setupTileOverlays
+{
+    [self setupBaseTileOverlay];
+    [self setupMITTileOverlay];
+}
+
+- (void)setupMITTileOverlay
+{
+    static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
+    
+    self.MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
+    self.MITTileOverlay.canReplaceMapContent = YES;
+    
+    [self.mapView addOverlay:self.MITTileOverlay level:MKOverlayLevelAboveLabels];
+}
+
+- (void)setupBaseTileOverlay
+{
+    static NSString * const template = @"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
+    
+    self.baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
+    self.baseTileOverlay.canReplaceMapContent = YES;
+    
+    [self.mapView addOverlay:self.baseTileOverlay level:MKOverlayLevelAboveLabels];
+}
+
 #pragma mark - MKMapViewDelegate Methods
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
@@ -161,6 +195,8 @@
         renderer.strokeColor = [UIColor darkGrayColor];
         
         return renderer;
+    } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     } else {
         return nil;
     }
