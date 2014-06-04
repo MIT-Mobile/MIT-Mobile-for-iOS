@@ -21,7 +21,7 @@ typedef enum {
     MITShuttleStopSubtitleLabelAnimationTypeBackward
 } MITShuttleStopSubtitleLabelAnimationType;
 
-@interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate>
+@interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate>
 
 @property (strong, nonatomic) MITShuttleMapViewController *mapViewController;
 @property (strong, nonatomic) MITShuttleRouteViewController *routeViewController;
@@ -122,6 +122,8 @@ typedef enum {
 - (void)setupChildViewControllers
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithRoute:self.route];
+    self.mapViewController.delegate = self;
+    [self.mapViewController setState:MITShuttleMapStateContracted];
     [self setupRouteViewController];
     [self setupStopViewControllers];
 }
@@ -153,7 +155,7 @@ typedef enum {
 
 - (void)displayAllChildViewControllers
 {
-//    [self addViewOfChildViewController:self.mapViewController toView:self.mapContainerView];
+    [self addViewOfChildViewController:self.mapViewController toView:self.mapContainerView];
     [self addViewOfChildViewController:self.routeViewController toView:self.routeContainerView];
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         [self addViewOfChildViewController:stopViewController toView:self.stopsScrollView];
@@ -196,6 +198,11 @@ typedef enum {
     self.navigationItem.titleView = self.stopTitleView;
     self.stopTitleLabel.text = route.title;
     [self setStopSubtitleWithStop:stop animationType:MITShuttleStopSubtitleLabelAnimationTypeNone];
+}
+
+- (void)setTitleForStop:(MITShuttleStop *)stop {
+    self.title = stop.title;
+    self.navigationItem.titleView = nil;
 }
 
 - (void)setStopSubtitleWithStop:(MITShuttleStop *)stop animationType:(MITShuttleStopSubtitleLabelAnimationType)animationType
@@ -288,9 +295,7 @@ typedef enum {
 
 - (IBAction)mapContainerViewTapped:(id)sender
 {
-    if (self.state == MITShuttleRouteContainerStateMap) {
-        [self setState:self.previousState animated:YES];
-    } else {
+    if (self.state != MITShuttleRouteContainerStateMap) {
         [self setState:MITShuttleRouteContainerStateMap animated:YES];
     }
 }
@@ -344,6 +349,8 @@ typedef enum {
         [self.view layoutIfNeeded];
     };
     
+    [self.mapViewController setState:MITShuttleMapStateContracted];
+    
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setStopViewHidden:YES];
     };
@@ -383,6 +390,8 @@ typedef enum {
         [self setRouteViewHidden:YES];
     };
     
+    [self.mapViewController setState:MITShuttleMapStateContracted];
+    
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
                               delay:0
@@ -417,6 +426,8 @@ typedef enum {
         [self setStopViewHidden:YES];
     };
 
+    [self.mapViewController setState:MITShuttleMapStateExpanded];
+    
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
                               delay:0
@@ -427,6 +438,8 @@ typedef enum {
         animationBlock();
         completionBlock(YES);
     }
+    
+    [self setTitleForStop:self.stop];
 }
 
 // In order for scrollsToTop to work with in a container view controller,
@@ -534,6 +547,14 @@ typedef enum {
     }
     [self setStopSubtitleWithStop:stop animationType:animationType];
     self.stop = stop;
+}
+
+#pragma mark - MITShuttleMapViewControllerDelegate Methods
+
+- (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController {
+    if (self.state == MITShuttleRouteContainerStateMap) {
+        [self setState:self.previousState animated:YES];
+    }
 }
 
 #pragma mark - Test code - to be removed
