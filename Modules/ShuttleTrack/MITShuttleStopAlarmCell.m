@@ -70,14 +70,11 @@ NSString * const kMITShuttleStopAlarmCellNibName = @"MITShuttleStopAlarmCell";
     static NSDateFormatter *formatter = nil;
     if (!formatter) {
         formatter = [[NSDateFormatter alloc] init];
-//        [formatter setDateFormat:[[NSCalendar currentCalendar] dateFormat]];
         [formatter setTimeStyle:NSDateFormatterShortStyle];
     }
     
     NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
     self.clockTimeLabel.text = [formatter stringFromDate:predictionDate];
-    
-    NSLog(@"timestamp: %@, date: %@", prediction.timestamp, predictionDate);
     
     [self updateNotificationButton];
 }
