@@ -4,6 +4,27 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
+NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
+
+#pragma mark - MITShuttleMapAnnotation Class Definition
+
+typedef enum {
+    MITShuttleMapAnnotationTypeStop,
+    MITShuttleMapAnnotationTypeNextStop,
+    MITShuttleMapAnnotationTypeBus
+} MITShuttleMapAnnotationType;
+
+@interface MITShuttleMapAnnotation : NSObject <MKAnnotation>
+
+@property (nonatomic) CLLocationCoordinate2D coordinate;
+@property (nonatomic) MITShuttleMapAnnotationType type;
+
+@end
+
+@implementation MITShuttleMapAnnotation
+
+@end
+
 @interface MITShuttleMapViewController () <MKMapViewDelegate>
 
 @property (nonatomic, weak) IBOutlet MKMapView *mapView;
@@ -64,6 +85,7 @@
         [self.mapView setCenterCoordinate:centerCoordinate];
         
         [self setupOverlays];
+        [self refreshAnnotations];
         
         self.hasSetUpMapRect = YES;
     }
@@ -184,7 +206,50 @@
     [self.mapView addOverlay:self.baseTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
+- (void)refreshAnnotations {
+    NSMutableArray *newAnnotations = [NSMutableArray array];
+    
+    for (MITShuttleStop *stop in self.route.stops) {
+        MITShuttleMapAnnotation *annotation = [[MITShuttleMapAnnotation alloc] init];
+        annotation.coordinate = CLLocationCoordinate2DMake([stop.latitude doubleValue], [stop.longitude doubleValue]);
+        annotation.type = MITShuttleMapAnnotationTypeStop;
+        [newAnnotations addObject:annotation];
+    }
+    
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    [self.mapView addAnnotations:newAnnotations];
+}
+
 #pragma mark - MKMapViewDelegate Methods
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    if ([annotation isKindOfClass:[MKUserLocation class]]) {
+        return nil;
+    }
+    
+    MITShuttleMapAnnotation *typedAnnotation = (MITShuttleMapAnnotation *)annotation;
+    
+    MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
+    if (annotationView == nil) {
+        annotationView = [[MKAnnotationView alloc] initWithAnnotation:typedAnnotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
+    }
+    
+    switch (typedAnnotation.type) {
+        case MITShuttleMapAnnotationTypeStop: {
+            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot"];
+            break;
+        }
+        case MITShuttleMapAnnotationTypeNextStop: {
+            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next"];
+            break;
+        }
+        case MITShuttleMapAnnotationTypeBus: {
+            break;
+        }
+    }
+    
+    return annotationView;
+}
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
