@@ -354,11 +354,12 @@ typedef enum {
         [self.view layoutIfNeeded];
     };
     
-    [self.mapViewController setState:MITShuttleMapStateContracted];
-    
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setStopViewHidden:YES];
+        [self.mapViewController setState:MITShuttleMapStateContracted];
     };
+    
+    [self.mapViewController setState:MITShuttleMapStateContracting];
     
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
@@ -393,9 +394,10 @@ typedef enum {
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setRouteViewHidden:YES];
+        [self.mapViewController setState:MITShuttleMapStateContracted];
     };
     
-    [self.mapViewController setState:MITShuttleMapStateContracted];
+    [self.mapViewController setState:MITShuttleMapStateContracting];
     
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
@@ -429,9 +431,10 @@ typedef enum {
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setRouteViewHidden:YES];
         [self setStopViewHidden:YES];
+        [self.mapViewController setState:MITShuttleMapStateExpanded];
     };
 
-    [self.mapViewController setState:MITShuttleMapStateExpanded];
+    [self.mapViewController setState:MITShuttleMapStateExpanding];
     
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
