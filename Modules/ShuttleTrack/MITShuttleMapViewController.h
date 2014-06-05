@@ -7,7 +7,9 @@
 
 typedef enum {
     MITShuttleMapStateContracted = 0,
-    MITShuttleMapStateExpanded
+    MITShuttleMapStateContracting,
+    MITShuttleMapStateExpanded,
+    MITShuttleMapStateExpanding
 } MITShuttleMapState;
 
 @interface MITShuttleMapViewController : UIViewController
