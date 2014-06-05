@@ -71,12 +71,12 @@ typedef enum {
     [self setState:self.state animated:NO];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewWillAppear:animated];
     
     if (!self.hasSetUpMapRect) {
-        [self setupMapBoundingBox];
+        [self setupMapBoundingBoxWithAnimation:NO];
     }
     
     [self setupOverlays];
@@ -109,7 +109,7 @@ typedef enum {
     _state = state;
     
     switch (state) {
-        case MITShuttleMapStateContracted: {
+        case MITShuttleMapStateContracting: {
             dispatch_block_t animationBlock = ^{
                 self.currentLocationButton.alpha = 0;
                 self.exitMapStateButton.alpha = 0;
@@ -121,9 +121,12 @@ typedef enum {
                 animationBlock();
             }
             
+            self.mapView.scrollEnabled = NO;
+            self.mapView.zoomEnabled = NO;
+            
             break;
         }
-        case MITShuttleMapStateExpanded: {
+        case MITShuttleMapStateExpanding: {
             dispatch_block_t animationBlock = ^{
                 self.currentLocationButton.alpha = 1;
                 self.exitMapStateButton.alpha = 1;
@@ -135,6 +138,18 @@ typedef enum {
                 animationBlock();
             }
             
+            self.mapView.scrollEnabled = YES;
+            self.mapView.zoomEnabled = YES;
+            
+            break;
+        }
+            
+        case MITShuttleMapStateContracted: {
+            [self setupMapBoundingBoxWithAnimation:animated];
+            break;
+        }
+        case MITShuttleMapStateExpanded: {
+            // Noop
             break;
         }
     }
@@ -167,7 +182,7 @@ typedef enum {
 
 #pragma mark - Private Methods
 
-- (void)setupMapBoundingBox
+- (void)setupMapBoundingBoxWithAnimation:(BOOL)animated
 {
     if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
         NSNumber *bottomLeftLongitude = self.route.pathBoundingBox[0];
@@ -186,13 +201,13 @@ typedef enum {
         
         MKCoordinateSpan boundingBoxSpan = MKCoordinateSpanMake(latitudeDelta + latitudePadding, longitudeDelta + longitudePadding);
         MKCoordinateRegion boundingBox = MKCoordinateRegionMake(centerCoordinate, boundingBoxSpan);
-        [self.mapView setRegion:boundingBox];
+        [self.mapView setRegion:boundingBox animated:animated];
     } else {
         // Center on the MIT Campus with custom map tiles
         CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(42.357353, -71.095098);
         MKMapPoint point = MKMapPointForCoordinate(centerCoordinate);
         
-        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, 10240.740226, 10240.740226) animated:NO];
+        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, 10240.740226, 10240.740226) animated:animated];
         [self.mapView setCenterCoordinate:centerCoordinate];
     }
     
