@@ -407,7 +407,7 @@ typedef enum {
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
-        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
+        self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateRoute];
     }
     
     dispatch_block_t animationBlock = ^{
@@ -444,7 +444,7 @@ typedef enum {
         [self.view sendSubviewToBack:self.mapContainerView];
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
-        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.stopsScrollView.frame) * kMapContainerViewEmbeddedWidthRatioLandscape;
+        self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateStop];
     }
     self.routeContainerViewTopSpaceConstraint.constant = CGRectGetMaxY(self.stopsScrollView.frame);
     
@@ -483,7 +483,7 @@ typedef enum {
         self.routeContainerViewTopSpaceConstraint.constant = CGRectGetHeight(self.view.frame) - kMapContainerViewEmbeddedHeightPortrait;
         self.mapContainerViewPortraitHeightConstraint.constant = CGRectGetHeight(self.view.frame);
     } else {
-        self.mapContainerViewLandscapeWidthConstraint.constant = CGRectGetMaxX(self.routeContainerView.frame);
+        self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateMap];
     }
     
     dispatch_block_t animationBlock = ^{
@@ -529,6 +529,21 @@ typedef enum {
     self.stopsScrollView.hidden = hidden;
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         stopViewController.tableView.hidden = hidden;
+    }
+}
+
+- (CGFloat)mapContainerViewLandscapeWidthForState:(MITShuttleRouteContainerState)state
+{
+    switch (state) {
+        case MITShuttleRouteContainerStateMap:
+            return CGRectGetMaxX(self.routeContainerView.frame);
+        case MITShuttleRouteContainerStateRoute:
+        case MITShuttleRouteContainerStateStop: {
+            CGSize screenSize = [UIScreen mainScreen].bounds.size;
+            return MAX(screenSize.width, screenSize.height) * kMapContainerViewEmbeddedWidthRatioLandscape;
+        }
+        default:
+            return 0;
     }
 }
 
