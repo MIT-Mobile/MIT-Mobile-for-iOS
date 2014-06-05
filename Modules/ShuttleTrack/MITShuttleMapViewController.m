@@ -76,14 +76,7 @@ typedef enum {
     [super viewDidAppear:animated];
     
     if (!self.hasSetUpMapRect) {
-        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(42.357353, -71.095098);
-        
-        MKMapPoint point = MKMapPointForCoordinate(centerCoordinate);
-        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, 10240.740226, 10240.740226) animated:NO];
-        
-        [self.mapView setCenterCoordinate:centerCoordinate];
-        
-        self.hasSetUpMapRect = YES;
+        [self setupMapBoundingBox];
     }
     
     [self setupOverlays];
@@ -173,6 +166,38 @@ typedef enum {
 }
 
 #pragma mark - Private Methods
+
+- (void)setupMapBoundingBox
+{
+    if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
+        NSNumber *bottomLeftLongitude = self.route.pathBoundingBox[0];
+        NSNumber *bottomLeftLatitude = self.route.pathBoundingBox[1];
+        NSNumber *topRightLongitude = self.route.pathBoundingBox[2];
+        NSNumber *topRightLatitude = self.route.pathBoundingBox[3];
+        
+        CLLocationDegrees latitudeDelta = fabs([topRightLatitude doubleValue] - [bottomLeftLatitude doubleValue]);
+        CLLocationDegrees longitudeDelta = fabs([topRightLongitude doubleValue] - [bottomLeftLongitude doubleValue]);
+        CLLocationDegrees latitudePadding = 0.1 * latitudeDelta;
+        CLLocationDegrees longitudePadding = 0.1 * longitudeDelta;
+        
+        CLLocationDegrees middleLatitude = ([topRightLatitude doubleValue] + [bottomLeftLatitude doubleValue]) / 2;
+        CLLocationDegrees middleLongitude = ([topRightLongitude doubleValue] + [bottomLeftLongitude doubleValue]) / 2;
+        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(middleLatitude, middleLongitude);
+        
+        MKCoordinateSpan boundingBoxSpan = MKCoordinateSpanMake(latitudeDelta + latitudePadding, longitudeDelta + longitudePadding);
+        MKCoordinateRegion boundingBox = MKCoordinateRegionMake(centerCoordinate, boundingBoxSpan);
+        [self.mapView setRegion:boundingBox];
+    } else {
+        // Center on the MIT Campus with custom map tiles
+        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(42.357353, -71.095098);
+        MKMapPoint point = MKMapPointForCoordinate(centerCoordinate);
+        
+        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, 10240.740226, 10240.740226) animated:NO];
+        [self.mapView setCenterCoordinate:centerCoordinate];
+    }
+    
+    self.hasSetUpMapRect = YES;
+}
 
 - (void)setupOverlays
 {
