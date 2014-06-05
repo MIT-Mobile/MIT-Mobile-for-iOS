@@ -111,7 +111,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Route Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GKR-Nx-YOc">
-                    <rect key="frame" x="117" y="31" width="86" height="18"/>
+                    <rect key="frame" x="117" y="30" width="86" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <nil key="highlightedColor"/>
@@ -120,7 +120,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="centerX" secondItem="GKR-Nx-YOc" secondAttribute="centerX" constant="0.5" id="GPg-ox-2Ue"/>
-                <constraint firstAttribute="bottom" secondItem="GKR-Nx-YOc" secondAttribute="bottom" constant="-1" id="RbI-qE-39J"/>
+                <constraint firstAttribute="bottom" secondItem="GKR-Nx-YOc" secondAttribute="bottom" id="RbI-qE-39J"/>
                 <constraint firstAttribute="centerX" secondItem="cP8-Hc-Iwq" secondAttribute="centerX" constant="0.5" id="dQr-le-3gw"/>
                 <constraint firstItem="cP8-Hc-Iwq" firstAttribute="top" secondItem="G0b-yZ-Yeg" secondAttribute="top" constant="13" id="eYX-Yf-5wF"/>
             </constraints>
