@@ -52,8 +52,6 @@ typedef enum {
 
 @property (nonatomic) MITShuttleRouteContainerState previousState;
 
-@property (nonatomic, strong) UIImage *navigationBarShadowImage;
-
 @end
 
 @implementation MITShuttleRouteContainerViewController
@@ -164,7 +162,6 @@ typedef enum {
 
 - (void)setupNavigationBarExtension
 {
-    self.navigationBarShadowImage = self.navigationController.navigationBar.shadowImage;
     self.navigationBarExtensionView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:242.0/255 alpha:1];
 }
 
@@ -348,7 +345,7 @@ typedef enum {
     self.stop = stop;
 }
 
-#pragma mark - Map Tap Gesture Recognizer (TEMP)
+#pragma mark - Map Tap Gesture Recognizer
 
 - (IBAction)mapContainerViewTapped:(id)sender
 {
@@ -610,16 +607,6 @@ typedef enum {
     if (self.state == MITShuttleRouteContainerStateMap) {
         [self setState:self.previousState animated:YES];
     }
-}
-
-#pragma mark - Test code - to be removed
-
-- (UIColor *)randomColor
-{
-    CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
-    CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
-    CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
-    return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
 }
 
 @end
