@@ -15,7 +15,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 
 static const CGFloat kStopSubtitleAnimationSpan = 40.0;
 
-static const CGFloat kNavigationBarStopStateExtension = 16.0;
+static const CGFloat kNavigationBarStopStateExtension = 14.0;
 
 typedef enum {
     MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
@@ -51,6 +51,7 @@ typedef enum {
 @property (nonatomic) BOOL isUpdating;
 
 @property (nonatomic) MITShuttleRouteContainerState previousState;
+@property (nonatomic, getter = isRotating) BOOL rotating;
 
 @end
 
@@ -115,6 +116,7 @@ typedef enum {
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation) && UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
         return;
     }
+    self.rotating = YES;
     [self hideAllChildViewControllers];
     NSString *nibname = [self nibNameForInterfaceOrientation:toInterfaceOrientation];
     [[NSBundle mainBundle] loadNibNamed:nibname owner:self options:nil];
@@ -125,6 +127,7 @@ typedef enum {
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    self.rotating = NO;
     [self configureLayoutForState:self.state animated:NO];
 }
 
@@ -528,12 +531,22 @@ typedef enum {
 {
     self.navigationBarExtensionViewHeightConstraint.constant = extended ? kNavigationBarStopStateExtension : 0;
     
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    UIView *navigationBarBackgroundView = navigationBar.subviews[0];
-    CGFloat navigationBarMaxY = CGRectGetMaxY(navigationBar.frame);
-    CGRect frame = navigationBarBackgroundView.frame;
-    frame.size.height = extended ? navigationBarMaxY + kNavigationBarStopStateExtension : navigationBarMaxY;
-    navigationBarBackgroundView.frame = frame;
+    dispatch_block_t frameAdjustmentBlock = ^{
+        UINavigationBar *navigationBar = self.navigationController.navigationBar;
+        UIView *navigationBarBackgroundView = navigationBar.subviews[0];
+        CGFloat navigationBarMaxY = CGRectGetMaxY(navigationBar.frame);
+        CGRect frame = navigationBarBackgroundView.frame;
+        frame.size.height = extended ? navigationBarMaxY + kNavigationBarStopStateExtension : navigationBarMaxY;
+        navigationBarBackgroundView.frame = frame;
+    };
+    
+    if (extended && self.isRotating) {
+        // Wait until UINavigationBar frame adjustments are made as a result of the rotation
+        // Otherwise, bottom shadow will appear in the middle of the extended bar during rotation
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), frameAdjustmentBlock);
+    } else {
+        frameAdjustmentBlock();
+    }
 }
 
 - (NSTimeInterval)stateTransitionDuration

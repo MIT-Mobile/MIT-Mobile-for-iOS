@@ -112,7 +112,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Route Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="03V-0v-K5P">
-                    <rect key="frame" x="55" y="40" width="86" height="18"/>
+                    <rect key="frame" x="55" y="39" width="86" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <nil key="highlightedColor"/>
@@ -122,7 +122,7 @@
             <constraints>
                 <constraint firstItem="Igc-GJ-ngV" firstAttribute="top" secondItem="6et-md-XXK" secondAttribute="top" constant="20" id="GmI-vv-Vgm"/>
                 <constraint firstAttribute="centerX" secondItem="03V-0v-K5P" secondAttribute="centerX" constant="-0.5" id="Odw-Ss-gPT"/>
-                <constraint firstAttribute="bottom" secondItem="03V-0v-K5P" secondAttribute="bottom" constant="2" id="amr-tc-n5e"/>
+                <constraint firstAttribute="bottom" secondItem="03V-0v-K5P" secondAttribute="bottom" constant="3" id="amr-tc-n5e"/>
                 <constraint firstAttribute="centerX" secondItem="Igc-GJ-ngV" secondAttribute="centerX" constant="-0.5" id="tQe-CC-Sgy"/>
             </constraints>
         </view>
