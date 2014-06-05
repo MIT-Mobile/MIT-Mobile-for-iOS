@@ -14,6 +14,7 @@ static const CGFloat kMapContainerViewEmbeddedHeightPortrait = 190.0;
 static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.0;
 
 static const CGFloat kStopSubtitleAnimationSpan = 40.0;
+static const NSTimeInterval kStopSubtitleAnimationDuration = 0.3;
 
 static const CGFloat kNavigationBarStopStateExtension = 14.0;
 
@@ -85,7 +86,6 @@ typedef enum {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self displayAllChildViewControllers];
     [self layoutStopViews];
-    [self setupNavigationBarExtension];
     [self setupToolbar];
     [self configureLayoutForState:self.state animated:NO];
 }
@@ -135,11 +135,16 @@ typedef enum {
 
 - (void)setupChildViewControllers
 {
+    [self setupMapViewController];
+    [self setupRouteViewController];
+    [self setupStopViewControllers];
+}
+
+- (void)setupMapViewController
+{
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithRoute:self.route];
     self.mapViewController.delegate = self;
     [self.mapViewController setState:MITShuttleMapStateContracted];
-    [self setupRouteViewController];
-    [self setupStopViewControllers];
 }
 
 - (void)setupRouteViewController
@@ -161,11 +166,6 @@ typedef enum {
         [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
-}
-
-- (void)setupNavigationBarExtension
-{
-    self.navigationBarExtensionView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:242.0/255 alpha:1];
 }
 
 - (void)setupToolbar
@@ -261,17 +261,13 @@ typedef enum {
             default:
                 break;
         }
-        UILabel *tempLabel = [[UILabel alloc] initWithFrame:self.stopSubtitleLabel.frame];
-        tempLabel.backgroundColor = [UIColor clearColor];
-        tempLabel.textAlignment = NSTextAlignmentCenter;
-        tempLabel.textColor = self.stopSubtitleLabel.textColor;
-        tempLabel.font = self.stopSubtitleLabel.font;
-        tempLabel.text = stop.title;
-        [tempLabel sizeToFit];
+        
+        UILabel *tempLabel = [self tempStopSubtitleLabelWithStop:stop];
         tempLabel.center = initialTempLabelCenter;
         tempLabel.alpha = 0;
         [self.stopTitleView addSubview:tempLabel];
-        [UIView animateWithDuration:0.3 animations:^{
+        
+        [UIView animateWithDuration:kStopSubtitleAnimationDuration animations:^{
             tempLabel.center = stopSubtitleLabelCenter;
             tempLabel.alpha = 1;
             self.stopSubtitleLabel.center = finalSubtitleLabelCenter;
@@ -284,6 +280,18 @@ typedef enum {
             self.stopSubtitleLabel.alpha = 1;
         }];
     }
+}
+
+- (UILabel *)tempStopSubtitleLabelWithStop:(MITShuttleStop *)stop
+{
+    UILabel *tempLabel = [[UILabel alloc] initWithFrame:self.stopSubtitleLabel.frame];
+    tempLabel.backgroundColor = [UIColor clearColor];
+    tempLabel.textAlignment = NSTextAlignmentCenter;
+    tempLabel.textColor = self.stopSubtitleLabel.textColor;
+    tempLabel.font = self.stopSubtitleLabel.font;
+    tempLabel.text = stop.title;
+    [tempLabel sizeToFit];
+    return tempLabel;
 }
 
 #pragma mark - Last Updated
@@ -413,7 +421,6 @@ typedef enum {
     };
     
     [self.mapViewController setState:MITShuttleMapStateContracting];
-    
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
                               delay:0
@@ -506,7 +513,7 @@ typedef enum {
     [self setTitleForRoute:self.route];
 }
 
-// In order for scrollsToTop to work with in a container view controller,
+// In order for scrollsToTop to work within a container view controller,
 // only one instance of UIScrollView may be in the view hierarchy and visible.
 // Note: hidden property of scroll view's parent view does not matter,
 // scroll view itself must be hidden
@@ -523,6 +530,11 @@ typedef enum {
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         stopViewController.tableView.hidden = hidden;
     }
+}
+
+- (NSTimeInterval)stateTransitionDuration
+{
+    return UIInterfaceOrientationIsLandscape(self.nibInterfaceOrientation) ? kStateTransitionDurationLandscape : kStateTransitionDurationPortrait;
 }
 
 #pragma mark - Navigation Bar Extension
@@ -547,11 +559,6 @@ typedef enum {
     } else {
         frameAdjustmentBlock();
     }
-}
-
-- (NSTimeInterval)stateTransitionDuration
-{
-    return UIInterfaceOrientationIsLandscape(self.nibInterfaceOrientation) ? kStateTransitionDurationLandscape : kStateTransitionDurationPortrait;
 }
 
 #pragma mark - MITShuttleRouteViewControllerDataSource
