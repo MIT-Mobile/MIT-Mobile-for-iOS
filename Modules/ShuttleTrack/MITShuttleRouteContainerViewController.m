@@ -356,6 +356,16 @@ typedef enum {
     self.stop = stop;
 }
 
+- (MITShuttleStopViewController *)stopViewControllerForStop:(MITShuttleStop *)stop
+{
+    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
+    if (stopIndex >= 0 && stopIndex < [self.stopViewControllers count]) {
+        return self.stopViewControllers[stopIndex];
+    } else {
+        return nil;
+    }
+}
+
 #pragma mark - Map Tap Gesture Recognizer
 
 - (IBAction)mapContainerViewTapped:(id)sender
@@ -431,6 +441,8 @@ typedef enum {
         animationBlock();
         completionBlock(YES);
     }
+    
+    [self.routeViewController.tableView reloadData];
 }
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
@@ -472,6 +484,8 @@ typedef enum {
         completionBlock(YES);
     }
     
+    MITShuttleStopViewController *stopViewController = [self stopViewControllerForStop:self.stop];
+    [stopViewController.tableView reloadData];
 }
 
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
