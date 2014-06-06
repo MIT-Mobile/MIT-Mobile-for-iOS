@@ -5,27 +5,51 @@
 #import <MapKit/MapKit.h>
 #import "MITShuttlePrediction.h"
 #import "MITShuttleVehicle.h"
+#import "MITShuttleMapBusAnnotationView.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
-
-#pragma mark - MITShuttleMapAnnotation Class Definition
+NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
 typedef enum {
     MITShuttleMapAnnotationTypeStop,
     MITShuttleMapAnnotationTypeNextStop,
-    MITShuttleMapAnnotationTypeBus
 } MITShuttleMapAnnotationType;
 
-@interface MITShuttleMapAnnotation : NSObject <MKAnnotation>
+#pragma mark - MITShuttleMapAnnotation Class
 
-@property (nonatomic) CLLocationCoordinate2D coordinate;
+@interface MITShuttleMapStopAnnotation : NSObject <MKAnnotation>
+
 @property (nonatomic) MITShuttleMapAnnotationType type;
+@property (nonatomic, strong) MITShuttleStop *stop;
 
 @end
 
-@implementation MITShuttleMapAnnotation
+@implementation MITShuttleMapStopAnnotation
+
+- (CLLocationCoordinate2D)coordinate {
+    return CLLocationCoordinate2DMake([self.stop.latitude doubleValue], [self.stop.longitude doubleValue]);
+}
 
 @end
+
+#pragma mark - MITShuttleMapBusAnnotation Class
+
+@interface MITShuttleMapBusAnnotation : NSObject <MKAnnotation>
+
+@property (nonatomic) MITShuttleMapAnnotationType type;
+@property (nonatomic, strong) MITShuttleVehicle *vehicle;
+
+@end
+
+@implementation MITShuttleMapBusAnnotation
+
+- (CLLocationCoordinate2D)coordinate {
+    return CLLocationCoordinate2DMake([self.vehicle.latitude doubleValue], [self.vehicle.longitude doubleValue]);
+}
+
+@end
+
+#pragma mark - MITShuttleMapViewController Class
 
 @interface MITShuttleMapViewController () <MKMapViewDelegate>
 
@@ -33,6 +57,9 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
 @property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 @property (nonatomic) BOOL hasSetUpMapRect;
+@property (nonatomic, strong) NSArray *busAnnotations;
+@property (nonatomic, strong) NSDictionary *busAnnotationViewsByVehicleId;
+@property (nonatomic, strong) NSArray *stopAnnotations;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -76,11 +103,12 @@ typedef enum {
     [super viewWillAppear:animated];
     
     if (!self.hasSetUpMapRect) {
-        [self setupMapBoundingBoxWithAnimation:NO];
+        [self setupMapBoundingBoxAnimated:NO];
     }
     
     [self setupOverlays];
-    [self refreshAnnotations];
+    [self createStopsAnnotations];
+    [self refreshBusAnnotationsAnimated:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -89,12 +117,6 @@ typedef enum {
     [self.mapView removeOverlays:self.mapView.overlays];
     
     [super viewWillDisappear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Custom Accessors
@@ -145,7 +167,7 @@ typedef enum {
         }
             
         case MITShuttleMapStateContracted: {
-            [self setupMapBoundingBoxWithAnimation:animated];
+            [self setupMapBoundingBoxAnimated:animated];
             break;
         }
         case MITShuttleMapStateExpanded: {
@@ -177,12 +199,12 @@ typedef enum {
 
 - (void)routeUpdated
 {
-    
+    [self refreshAnnotationsAnimated:YES];
 }
 
 #pragma mark - Private Methods
 
-- (void)setupMapBoundingBoxWithAnimation:(BOOL)animated
+- (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
         NSNumber *bottomLeftLongitude = self.route.pathBoundingBox[0];
@@ -293,10 +315,104 @@ typedef enum {
     [self.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
-- (void)refreshAnnotations {
-    NSMutableArray *newAnnotations = [NSMutableArray array];
+- (void)refreshBusAnnotationsAnimated:(BOOL)animated
+{
+    NSMutableArray *newBusAnnotations = [NSMutableArray array];
     
+    NSMutableArray *annotationsToUpdate = [NSMutableArray array];
+    NSMutableArray *annotationsToAdd = [NSMutableArray array];
+    NSMutableArray *annotationsToRemove = [NSMutableArray array];
+    
+    for (MITShuttleVehicle *vehicle in self.route.vehicles) {
+        NSUInteger indexOfAnnotationForThisVehicle = [self.busAnnotations indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            MITShuttleMapBusAnnotation *annotation = obj;
+            if ([annotation.vehicle.identifier isEqualToString:vehicle.identifier]) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }];
+        
+        if (indexOfAnnotationForThisVehicle == NSNotFound || self.busAnnotations == nil) {
+            MITShuttleMapBusAnnotation *annotation = [[MITShuttleMapBusAnnotation alloc] init];
+            annotation.vehicle = vehicle;
+            [annotationsToAdd addObject:annotation];
+        } else {
+            [annotationsToUpdate addObject:self.busAnnotations[indexOfAnnotationForThisVehicle]];
+        }
+    }
+    
+    for (MITShuttleMapBusAnnotation *annotation in self.busAnnotations) {
+        NSUInteger indexOfVehicleForThisAnnotation = [self.route.vehicles indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            MITShuttleVehicle *vehicle = obj;
+            if ([annotation.vehicle.identifier isEqualToString:vehicle.identifier]) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }];
+        
+        if (indexOfVehicleForThisAnnotation == NSNotFound) {
+            [annotationsToRemove addObject:annotation];
+        }
+    }
+    
+    NSMutableDictionary *newBusAnnotationViewsByVehicleId = [NSMutableDictionary dictionaryWithDictionary:self.busAnnotationViewsByVehicleId];
+    
+    for (MITShuttleMapBusAnnotation *annotation in annotationsToRemove) {
+        [newBusAnnotationViewsByVehicleId removeObjectForKey:annotation.vehicle.identifier];
+    }
+    
+    for (MITShuttleMapBusAnnotation *annotation in annotationsToAdd) {
+        MITShuttleMapBusAnnotationView *newAnnotationView = [[MITShuttleMapBusAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"none"];
+        newAnnotationView.mapView = self.mapView;
+        newAnnotationView.image = [UIImage imageNamed:@"shuttle/shuttle"];
+        [newBusAnnotationViewsByVehicleId setObject:newAnnotationView forKey:annotation.vehicle.identifier];
+    }
+    
+    self.busAnnotationViewsByVehicleId = [NSDictionary dictionaryWithDictionary:newBusAnnotationViewsByVehicleId];
+    
+    for (MITShuttleMapBusAnnotation *annotation in annotationsToUpdate) {
+        MITShuttleMapBusAnnotationView *annotationView = self.busAnnotationViewsByVehicleId[annotation.vehicle.identifier];
+        [annotationView updateVehicle:annotation.vehicle animated:animated];
+    }
+    
+    [self.mapView removeAnnotations:annotationsToRemove];
+    [self.mapView addAnnotations:annotationsToAdd];
+    
+    [newBusAnnotations addObjectsFromArray:annotationsToUpdate];
+    [newBusAnnotations addObjectsFromArray:annotationsToAdd];
+    self.busAnnotations = [NSArray arrayWithArray:newBusAnnotations];
+}
+
+- (void)refreshNextStopAnnotations
+{
+    for (MITShuttleMapStopAnnotation *annotation in self.stopAnnotations) {
+        NSUInteger indexOfNextStopForThisAnnotation = [[self nextStopsArray] indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            MITShuttleStop *shuttleStop = obj;
+            if ([annotation.stop.identifier isEqualToString:shuttleStop.identifier]) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }];
+        
+        if (indexOfNextStopForThisAnnotation == NSNotFound && annotation.type != MITShuttleMapAnnotationTypeStop) {
+            annotation.type = MITShuttleMapAnnotationTypeStop;
+            [self.mapView removeAnnotation:annotation];
+            [self.mapView addAnnotation:annotation];
+        } else if (indexOfNextStopForThisAnnotation != NSNotFound && annotation.type != MITShuttleMapAnnotationTypeNextStop) {
+            annotation.type = MITShuttleMapAnnotationTypeNextStop;
+            [self.mapView removeAnnotation:annotation];
+            [self.mapView addAnnotation:annotation];
+        }
+    }
+}
+
+- (NSArray *)nextStopsArray
+{
     NSMutableArray *nextStops = [NSMutableArray array];
+    
     for (MITShuttleVehicle *vehicle in self.route.vehicles) {
         NSNumber *leastSecondsRemaining = nil;
         MITShuttleStop *nextStop = nil;
@@ -315,29 +431,52 @@ typedef enum {
         if (nextStop != nil) {
             [nextStops addObject:nextStop];
         }
-        
-        MITShuttleMapAnnotation *annotation = [[MITShuttleMapAnnotation alloc] init];
-        annotation.coordinate = CLLocationCoordinate2DMake([vehicle.latitude doubleValue], [vehicle.longitude doubleValue]);
-        annotation.type = MITShuttleMapAnnotationTypeBus;
-        [newAnnotations addObject:annotation];
     }
     
+    return nextStops;
+}
+
+- (void)createStopsAnnotations
+{
+    NSMutableArray *newStopAnnotations = [NSMutableArray array];
+    
     for (MITShuttleStop *stop in self.route.stops) {
-        MITShuttleMapAnnotation *annotation = [[MITShuttleMapAnnotation alloc] init];
-        annotation.coordinate = CLLocationCoordinate2DMake([stop.latitude doubleValue], [stop.longitude doubleValue]);
-        
+        MITShuttleMapStopAnnotation *annotation = [[MITShuttleMapStopAnnotation alloc] init];
+        annotation.stop = stop;
         annotation.type = MITShuttleMapAnnotationTypeStop;
-        for (MITShuttleStop *nextStop in nextStops) {
+        for (MITShuttleStop *nextStop in [self nextStopsArray]) {
             if ([nextStop.identifier isEqualToString:stop.identifier]) {
                 annotation.type = MITShuttleMapAnnotationTypeNextStop;
             }
         }
         
-        [newAnnotations addObject:annotation];
+        [newStopAnnotations addObject:annotation];
     }
     
-    [self.mapView removeAnnotations:self.mapView.annotations];
-    [self.mapView addAnnotations:newAnnotations];
+    [self.mapView removeAnnotations:self.stopAnnotations];
+    self.stopAnnotations = [NSArray arrayWithArray:newStopAnnotations];
+    [self.mapView addAnnotations:self.stopAnnotations];
+}
+
+- (void)refreshAnnotationsAnimated:(BOOL)animated
+{
+    [self refreshBusAnnotationsAnimated:animated];
+    [self refreshNextStopAnnotations];
+    
+}
+
+- (UIImage *)imageForAnnotationType:(MITShuttleMapAnnotationType)type
+{
+    switch (type) {
+        case MITShuttleMapAnnotationTypeStop: {
+            return [UIImage imageNamed:@"shuttle/shuttle-stop-dot"];
+            break;
+        }
+        case MITShuttleMapAnnotationTypeNextStop: {
+            return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next"];
+            break;
+        }
+    }
 }
 
 #pragma mark - MKMapViewDelegate Methods
@@ -346,31 +485,25 @@ typedef enum {
 {
     if ([annotation isKindOfClass:[MKUserLocation class]]) {
         return nil;
+    } else if ([annotation isKindOfClass:[MITShuttleMapStopAnnotation class]]) {
+        MITShuttleMapStopAnnotation *typedAnnotation = (MITShuttleMapStopAnnotation *)annotation;
+        
+        MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
+        if (annotationView == nil) {
+            annotationView = [[MKAnnotationView alloc] initWithAnnotation:typedAnnotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
+        }
+        
+        annotationView.image = [self imageForAnnotationType:typedAnnotation.type];
+        
+        return annotationView;
+    } else if ([annotation isKindOfClass:[MITShuttleMapBusAnnotation class]]) {
+        MITShuttleMapBusAnnotation *typedAnnotation = (MITShuttleMapBusAnnotation *)annotation;
+        MITShuttleMapBusAnnotationView *annotationView = self.busAnnotationViewsByVehicleId[typedAnnotation.vehicle.identifier];
+        
+        return annotationView;
     }
     
-    MITShuttleMapAnnotation *typedAnnotation = (MITShuttleMapAnnotation *)annotation;
-    
-    MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
-    if (annotationView == nil) {
-        annotationView = [[MKAnnotationView alloc] initWithAnnotation:typedAnnotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
-    }
-    
-    switch (typedAnnotation.type) {
-        case MITShuttleMapAnnotationTypeStop: {
-            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot"];
-            break;
-        }
-        case MITShuttleMapAnnotationTypeNextStop: {
-            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next"];
-            break;
-        }
-        case MITShuttleMapAnnotationTypeBus: {
-            annotationView.image = [UIImage imageNamed:@"shuttle/shuttle"];
-            break;
-        }
-    }
-    
-    return annotationView;
+    return nil;
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
