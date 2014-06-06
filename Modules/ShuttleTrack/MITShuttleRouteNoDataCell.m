@@ -1,11 +1,3 @@
-//
-//  MITShuttleRouteNoDataCell.m
-//  MIT Mobile
-//
-//  Created by Ross LeBeau on 5/29/14.
-//
-//
-
 #import "MITShuttleRouteNoDataCell.h"
 #import "MITShuttleRoute.h"
 

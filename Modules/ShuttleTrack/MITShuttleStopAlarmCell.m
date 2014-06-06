@@ -1,11 +1,3 @@
-//
-//  MITShuttleStopAlarmCell.m
-//  MIT Mobile
-//
-//  Created by Ross LeBeau on 5/27/14.
-//
-//
-
 #import "MITShuttleStopAlarmCell.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStopNotificationManager.h"

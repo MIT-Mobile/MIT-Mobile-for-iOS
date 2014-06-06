@@ -1,11 +1,3 @@
-//
-//  MITShuttleStopNotificationManager.m
-//  MIT Mobile
-//
-//  Created by Ross LeBeau on 6/3/14.
-//
-//
-
 #import "MITShuttleStopNotificationManager.h"
 #import "MITShuttleStop.h"
 
