@@ -144,6 +144,7 @@ typedef enum {
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithRoute:self.route];
     self.mapViewController.delegate = self;
+    self.mapViewController.stop = self.stop;
     [self.mapViewController setState:MITShuttleMapStateContracted];
 }
 
@@ -311,6 +312,12 @@ typedef enum {
 
 #pragma mark - Stop View Layout
 
+- (void)setStop:(MITShuttleStop *)stop
+{
+    self.mapViewController.stop = stop;
+    _stop = stop;
+}
+
 - (void)layoutStopViews
 {
     CGSize stopViewSize = self.stopsScrollView.frame.size;
@@ -352,7 +359,6 @@ typedef enum {
             stopVC.shouldRefreshData = NO;
         }
     }
-    self.mapViewController.stop = stop;
     self.stop = stop;
 }
 
