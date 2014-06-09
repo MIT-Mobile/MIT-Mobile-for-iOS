@@ -1,5 +1,5 @@
 #import "MITShuttleMapViewController.h"
-#import "MITShuttleRoute.h"
+#import "MITShuttleRoute+MapKit.h"
 #import "MITShuttleStop.h"
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
@@ -9,6 +9,13 @@
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
+
+static const CLLocationCoordinate2D kMITShuttleDefaultMapCenter = {42.357353, -71.095098};
+static const CLLocationDistance kMITShuttleDefaultMapSpan = 10240.740226;
+static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
+
+static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
+static const NSTimeInterval kMapContractingAnimationDuration = 0.4;
 
 typedef enum {
     MITShuttleMapAnnotationTypeStop,
@@ -60,6 +67,7 @@ typedef enum {
 @property (nonatomic, strong) NSArray *busAnnotations;
 @property (nonatomic, strong) NSDictionary *busAnnotationViewsByVehicleId;
 @property (nonatomic, strong) NSArray *stopAnnotations;
+@property (nonatomic) BOOL shouldAnimateBusUpdate;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -109,6 +117,8 @@ typedef enum {
     [self setupOverlays];
     [self createStopsAnnotations];
     [self refreshBusAnnotationsAnimated:NO];
+    
+    self.shouldAnimateBusUpdate = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -138,7 +148,7 @@ typedef enum {
             };
             
             if (animated) {
-                [UIView animateWithDuration:0.4 animations:animationBlock];
+                [UIView animateWithDuration:kMapContractingAnimationDuration animations:animationBlock];
             } else {
                 animationBlock();
             }
@@ -155,7 +165,7 @@ typedef enum {
             };
             
             if (animated) {
-                [UIView animateWithDuration:0.5 animations:animationBlock];
+                [UIView animateWithDuration:kMapExpandingAnimationDuration animations:animationBlock];
             } else {
                 animationBlock();
             }
@@ -207,29 +217,14 @@ typedef enum {
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
-        NSNumber *bottomLeftLongitude = self.route.pathBoundingBox[0];
-        NSNumber *bottomLeftLatitude = self.route.pathBoundingBox[1];
-        NSNumber *topRightLongitude = self.route.pathBoundingBox[2];
-        NSNumber *topRightLatitude = self.route.pathBoundingBox[3];
-        
-        CLLocationDegrees latitudeDelta = fabs([topRightLatitude doubleValue] - [bottomLeftLatitude doubleValue]);
-        CLLocationDegrees longitudeDelta = fabs([topRightLongitude doubleValue] - [bottomLeftLongitude doubleValue]);
-        CLLocationDegrees latitudePadding = 0.1 * latitudeDelta;
-        CLLocationDegrees longitudePadding = 0.1 * longitudeDelta;
-        
-        CLLocationDegrees middleLatitude = ([topRightLatitude doubleValue] + [bottomLeftLatitude doubleValue]) / 2;
-        CLLocationDegrees middleLongitude = ([topRightLongitude doubleValue] + [bottomLeftLongitude doubleValue]) / 2;
-        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(middleLatitude, middleLongitude);
-        
-        MKCoordinateSpan boundingBoxSpan = MKCoordinateSpanMake(latitudeDelta + latitudePadding, longitudeDelta + longitudePadding);
-        MKCoordinateRegion boundingBox = MKCoordinateRegionMake(centerCoordinate, boundingBoxSpan);
+        MKCoordinateRegion boundingBox = [self.route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
         [self.mapView setRegion:boundingBox animated:animated];
     } else {
         // Center on the MIT Campus with custom map tiles
-        CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(42.357353, -71.095098);
+        CLLocationCoordinate2D centerCoordinate = kMITShuttleDefaultMapCenter;
         MKMapPoint point = MKMapPointForCoordinate(centerCoordinate);
         
-        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, 10240.740226, 10240.740226) animated:animated];
+        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, kMITShuttleDefaultMapSpan, kMITShuttleDefaultMapSpan) animated:animated];
         [self.mapView setCenterCoordinate:centerCoordinate];
     }
     
@@ -460,9 +455,10 @@ typedef enum {
 
 - (void)refreshAnnotationsAnimated:(BOOL)animated
 {
-    [self refreshBusAnnotationsAnimated:animated];
+    BOOL shouldAnimatedBusAnnotations = animated && self.shouldAnimateBusUpdate;
+    [self refreshBusAnnotationsAnimated:shouldAnimatedBusAnnotations];
     [self refreshNextStopAnnotations];
-    
+    self.shouldAnimateBusUpdate = YES;
 }
 
 - (UIImage *)imageForAnnotationType:(MITShuttleMapAnnotationType)type
