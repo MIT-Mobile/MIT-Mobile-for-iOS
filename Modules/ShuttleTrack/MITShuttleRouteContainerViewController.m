@@ -161,9 +161,6 @@ typedef enum {
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[stops count]];
     for (MITShuttleStop *stop in stops) {
         MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStop:stop];
-        if ([stop.identifier isEqualToString:self.stop.identifier]) {
-            stopVC.shouldRefreshData = YES;
-        }
         [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
@@ -314,8 +311,9 @@ typedef enum {
 
 - (void)setStop:(MITShuttleStop *)stop
 {
-    self.mapViewController.stop = stop;
     _stop = stop;
+    self.mapViewController.stop = stop;
+    [self configureStopViewControllerRefreshing];
 }
 
 - (void)layoutStopViews
@@ -349,16 +347,6 @@ typedef enum {
         animationType = MITShuttleStopSubtitleLabelAnimationTypeNone;
     }
     [self setStopSubtitleWithStop:stop animationType:animationType];
-    
-    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
-    for (NSInteger i = 0; i < self.stopViewControllers.count; i++) {
-        MITShuttleStopViewController *stopVC = self.stopViewControllers[i];
-        if (i == stopIndex) {
-            stopVC.shouldRefreshData = YES;
-        } else {
-            stopVC.shouldRefreshData = NO;
-        }
-    }
     self.stop = stop;
 }
 
@@ -370,6 +358,24 @@ typedef enum {
     } else {
         return nil;
     }
+}
+
+#pragma mark - Stop Refreshing
+
+- (void)configureStopViewControllerRefreshing
+{
+    for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
+        NSInteger index = [self.stopViewControllers indexOfObject:stopViewController];
+        MITShuttleStop *stop = self.route.stops[index];
+        stopViewController.shouldRefreshData = [self shouldRefreshStop:stop];
+    }
+}
+
+- (BOOL)shouldRefreshStop:(MITShuttleStop *)stop
+{
+    NSInteger currentStopIndex = [self.route.stops indexOfObject:self.stop];
+    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
+    return (ABS(currentStopIndex - stopIndex) <= 1);
 }
 
 #pragma mark - Map Tap Gesture Recognizer
