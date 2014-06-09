@@ -540,7 +540,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     } else if (state == MITShuttleStopStateSelected) {
         return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-selected"] ;
     } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-selected-next"];
+        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next-selected"];
     }
     return nil;
 }
