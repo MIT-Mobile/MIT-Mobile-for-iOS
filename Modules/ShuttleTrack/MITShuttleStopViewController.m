@@ -57,6 +57,14 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
 
 #pragma mark - Public Methods
 
+- (void)setShouldRefreshData:(BOOL)shouldRefreshData
+{
+    _shouldRefreshData = shouldRefreshData;
+    if (shouldRefreshData) {
+        [self startRefreshingData];
+    }
+}
+
 - (void)startRefreshingData
 {
     [self reloadPredictions];
@@ -194,22 +202,10 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 44;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     MITShuttleRoute *route = self.stop.routes[section];
-    
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 320, 44)];
-    headerLabel.textColor = [UIColor darkGrayColor];
-    headerLabel.font = [UIFont systemFontOfSize:16];
-    headerLabel.text = route.title;
-    
-    UIView *headerContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    [headerContainer addSubview:headerLabel];
-    
-    return headerContainer;
+    return [route.title uppercaseString];
 }
 
 @end
