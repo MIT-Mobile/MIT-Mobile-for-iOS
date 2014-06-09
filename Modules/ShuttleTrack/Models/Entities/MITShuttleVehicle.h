@@ -2,10 +2,13 @@
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
+#import <MapKit/MapKit.h>
 
 @class MITShuttleRoute, MITShuttleVehicleList, MITShuttlePrediction;
 
-@interface MITShuttleVehicle : MITManagedObject <MITMappedObject>
+extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
+
+@interface MITShuttleVehicle : MITManagedObject <MITMappedObject, MKAnnotation>
 
 @property (nonatomic, retain) NSNumber * heading;
 @property (nonatomic, retain) NSString * identifier;
@@ -16,6 +19,8 @@
 @property (nonatomic, retain) MITShuttleRoute *route;
 @property (nonatomic, retain) MITShuttleVehicleList *vehicleList;
 @property (nonatomic, retain) NSSet *predictions;
+
+- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;
 
 @end
 
