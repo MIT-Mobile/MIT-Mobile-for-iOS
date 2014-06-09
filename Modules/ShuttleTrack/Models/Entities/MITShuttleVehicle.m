@@ -3,6 +3,7 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttlePrediction.h"
 
+NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttleVehicleCoordinateUpdatedNotification";
 
 @implementation MITShuttleVehicle
 
@@ -27,6 +28,23 @@
                                                   @"seconds_since_report": @"secondsSinceReport"}];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
+}
+
+#pragma mark - MKAnnotation
+
+- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMITShuttleVehicleCoordinateUpdatedNotification object:self];
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+}
+
+- (NSString *)title
+{
+    return self.route.title;
 }
 
 @end

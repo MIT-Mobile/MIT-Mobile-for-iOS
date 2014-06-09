@@ -3,18 +3,61 @@
 
 @implementation MITShuttleMapBusAnnotationView
 
-- (id)initWithFrame:(CGRect)frame
+#pragma mark - Init
+
+- (id)initWithAnnotation:(id<MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
+        self.image = [UIImage imageNamed:@"shuttle/shuttle"];
+        self.canShowCallout = NO;
     }
     return self;
 }
 
-#pragma mark - Public Methods
+#pragma mark - Animations
 
-- (void)updateVehicle:(MITShuttleVehicle *)vehicle animated:(BOOL)animated {
+- (void)startAnimating
+{
+    [self startAnimatingWithAnnotation:self.annotation];
+}
+
+- (void)startAnimatingWithAnnotation:(MITShuttleVehicle *)annotation
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMoveAnnotation:) name:kMITShuttleVehicleCoordinateUpdatedNotification object:annotation];
+}
+
+- (void)stopAnimating
+{
+    [self cleanup];
+}
+
+- (void)setAnnotation:(id <MKAnnotation>)anAnnotation
+{
+    if (anAnnotation) {
+        if (anAnnotation != self.annotation) {
+            [self startAnimatingWithAnnotation:anAnnotation];
+        }
+    } else {
+        [self cleanup];
+    }
+    
+    [super setAnnotation:anAnnotation];
+    
+    if (self.mapView && anAnnotation) {
+        [self updateVehicle:(MITShuttleVehicle *)anAnnotation animated:NO];
+    }
+}
+
+- (void)didMoveAnnotation:(NSNotification *)notification
+{
+    [self updateVehicle:[notification object] animated:YES];
+}
+
+- (void)updateVehicle:(MITShuttleVehicle *)vehicle animated:(BOOL)animated
+{
+    [self.superview bringSubviewToFront:self];
+    
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([vehicle.latitude doubleValue], [vehicle.longitude doubleValue]);
     
     if (CLLocationCoordinate2DIsValid(coordinate)) {
@@ -38,6 +81,19 @@
             }
         }
     }
+}
+
+- (void)cleanup
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.layer removeAllAnimations];
+}
+
+#pragma mark - Dealloc
+
+- (void)dealloc
+{
+    [self cleanup];
 }
 
 @end

@@ -10,9 +10,9 @@
 @dynamic latitude;
 @dynamic longitude;
 @dynamic predictionsURL;
-@dynamic shortTitle;
+@dynamic shortName;
 @dynamic stopNumber;
-@dynamic title;
+@dynamic name;
 @dynamic url;
 @dynamic predictions;
 @dynamic routes;
@@ -22,8 +22,8 @@
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     [mapping addAttributeMappingsFromDictionary:@{@"id": @"identifier",
                                                   @"url": @"url",
-                                                  @"title": @"title",
-                                                  @"short_title": @"shortTitle",
+                                                  @"title": @"name",
+                                                  @"short_title": @"shortName",
                                                   @"stop_number": @"stopNumber",
                                                   @"lat": @"latitude",
                                                   @"lon": @"longitude",
@@ -51,6 +51,18 @@
         }
     }
     return nil;
+}
+
+#pragma mark - MKAnnotation
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+}
+
+- (NSString *)title
+{
+    return self.name;
 }
 
 @end

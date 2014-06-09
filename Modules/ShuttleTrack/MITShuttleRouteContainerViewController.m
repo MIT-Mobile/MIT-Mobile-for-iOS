@@ -352,7 +352,7 @@ typedef enum {
             stopVC.shouldRefreshData = NO;
         }
     }
-    
+    self.mapViewController.stop = stop;
     self.stop = stop;
 }
 
