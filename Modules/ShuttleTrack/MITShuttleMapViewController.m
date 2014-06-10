@@ -242,7 +242,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)stopsFetchedResultsController
 {
     if (!_stopsFetchedResultsController) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.stops];
+        NSPredicate *predicate;
+        if (self.route) {
+            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.stops];
+        }
         _stopsFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleStop" predicate:predicate];
     }
     return _stopsFetchedResultsController;
@@ -251,7 +254,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)vehiclesFetchedResultsController
 {
     if (!_vehiclesFetchedResultsController) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.vehicles];
+        NSPredicate *predicate;
+        if (self.route) {
+            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.vehicles];
+        }
         _vehiclesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleVehicle" predicate:predicate];
     }
     return _vehiclesFetchedResultsController;
