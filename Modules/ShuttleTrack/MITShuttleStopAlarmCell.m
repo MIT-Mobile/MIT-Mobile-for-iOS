@@ -2,8 +2,6 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStopNotificationManager.h"
 
-NSString * const kMITShuttleStopAlarmCellNibName = @"MITShuttleStopAlarmCell";
-
 @interface MITShuttleStopAlarmCell ()
 
 @property (nonatomic, strong) MITShuttlePrediction *prediction;

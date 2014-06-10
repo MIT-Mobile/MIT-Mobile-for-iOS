@@ -1,7 +1,5 @@
 #import <UIKit/UIKit.h>
 
-FOUNDATION_EXTERN NSString * const kMITShuttleStopAlarmCellNibName;
-
 @class MITShuttleStop;
 @class MITShuttlePrediction;
 
