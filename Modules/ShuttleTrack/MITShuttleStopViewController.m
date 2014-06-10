@@ -42,9 +42,7 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
-    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopAlarmCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleRouteNoDataCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier];
-    
+    [self setupTableView];
     [self startRefreshingData];
     [self setupHelpAndStatusFooter];
 }
@@ -86,7 +84,25 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     });
 }
 
+#pragma mark - Refresh Control
+
+- (void)refreshControlActivated:(id)sender
+{
+    [self stopRefreshingData];
+    [self startRefreshingData];
+}
+
 #pragma mark - Private Methods
+
+- (void)setupTableView
+{
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleStopAlarmCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteNoDataCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier];
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+}
 
 - (void)setupHelpAndStatusFooter
 {
@@ -120,8 +136,10 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     if (!self.shouldRefreshData) {
         return;
     }
-
+    
+    [self.refreshControl beginRefreshing];
     [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictions, NSError *error) {
+        [self.refreshControl endRefreshing];
         if (error) {
             // Nothing to do, simply do not update the status label and the UI will be correct
         } else {

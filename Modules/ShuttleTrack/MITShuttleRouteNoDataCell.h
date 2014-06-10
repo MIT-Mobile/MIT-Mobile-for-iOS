@@ -1,7 +1,5 @@
 #import <UIKit/UIKit.h>
 
-FOUNDATION_EXTERN NSString * const kMITShuttleRouteNoDataCellNibName;
-
 @class MITShuttleRoute;
 
 @interface MITShuttleRouteNoDataCell : UITableViewCell

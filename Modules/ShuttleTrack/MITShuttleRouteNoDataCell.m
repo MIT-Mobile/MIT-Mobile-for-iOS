@@ -1,8 +1,6 @@
 #import "MITShuttleRouteNoDataCell.h"
 #import "MITShuttleRoute.h"
 
-NSString * const kMITShuttleRouteNoDataCellNibName = @"MITShuttleRouteNoDataCell";
-
 @interface MITShuttleRouteNoDataCell ()
 
 @property (nonatomic, weak) IBOutlet UIImageView *leftImageView;
