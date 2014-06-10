@@ -22,7 +22,7 @@
     [self startAnimatingWithAnnotation:self.annotation];
 }
 
-- (void)startAnimatingWithAnnotation:(MITShuttleVehicle *)annotation
+- (void)startAnimatingWithAnnotation:(id<MKAnnotation>)annotation
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMoveAnnotation:) name:kMITShuttleVehicleCoordinateUpdatedNotification object:annotation];
 }
