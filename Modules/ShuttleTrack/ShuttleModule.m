@@ -1,6 +1,6 @@
 #import "ShuttleModule.h"
 #import "MITShuttleHomeViewController.h"
-
+#import "MITShuttleRootViewController.h"
 
 
 @implementation ShuttleModule
@@ -17,15 +17,19 @@
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    [self setModuleHomeController:[[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil]];
-//    [self setModuleHomeController:[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped]];
+    return YES;
 }
 
-- (void) didAppear {
-	// for now mark all shuttle notifications as read as soon as the module appears to the user
-	[MITUnreadNotifications removeNotifications:[MITUnreadNotifications unreadNotificationsForModuleTag:self.tag]];
+- (UIViewController*)createHomeViewControllerForPadIdiom
+{
+    return [[MITShuttleRootViewController alloc] initWithNibName:nil bundle:nil];
 }
 
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
+{
+    return [[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil];
+}
+	
 @end
