@@ -652,6 +652,25 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    id<MKAnnotation> annotation = view.annotation;
+    if ([annotation isKindOfClass:[MITShuttleStop class]]) {
+        MITShuttleStop *stop = (MITShuttleStop *)annotation;
+        // TODO: show popover from stop annotation
+        if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
+            [self.delegate shuttleMapViewController:self didSelectStop:stop];
+        }
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
+        [self.delegate shuttleMapViewController:self didSelectStop:nil];
+    }
+}
+
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
     if ([overlay isKindOfClass:[MKPolyline class]]) {

@@ -27,6 +27,8 @@ typedef enum {
 
 @protocol MITShuttleMapViewControllerDelegate <NSObject>
 
+@optional
 - (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController;
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop;
 
 @end
