@@ -15,6 +15,7 @@ typedef enum {
 @interface MITShuttleMapViewController : UIViewController
 
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
+- (void)setRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop;
 - (void)routeUpdated;
 
 @property (strong, nonatomic) MITShuttleRoute *route;

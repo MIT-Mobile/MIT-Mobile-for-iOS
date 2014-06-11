@@ -3,7 +3,7 @@
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
 
-@interface MITShuttleRootViewController ()
+@interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) UISplitViewController *splitViewController;
 
@@ -71,9 +71,14 @@
 - (void)setupHomeViewController
 {
     self.homeViewController = [[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil];
-    UIBarButtonItem *menuButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"] style:UIBarButtonItemStylePlain target:self.navigationItem.leftBarButtonItem.target action:self.navigationItem.leftBarButtonItem.action];
-    self.homeViewController.navigationItem.leftBarButtonItem = menuButtonItem;
+    self.homeViewController.delegate = self;
+    self.homeViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"]
+                                                                                                style:UIBarButtonItemStylePlain
+                                                                                               target:self.navigationItem.leftBarButtonItem.target
+                                                                                               action:self.navigationItem.leftBarButtonItem.action];
+    
     self.masterNavigationController = [[UINavigationController alloc] initWithRootViewController:self.homeViewController];
+    self.masterNavigationController.delegate = self;
 }
 
 - (void)setupMapViewController
@@ -101,11 +106,49 @@
     [self.splitViewController.view addSubview:overlayView];
 }
 
+#pragma mark - MITShuttleMapViewController
+
+- (void)setMapViewControllerRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
+{
+    [self.mapViewController setRoute:route stop:stop];
+}
+
 #pragma mark - UISplitViewControllerDelegate
 
 - (BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation
 {
     return NO;  // show both view controllers in all orientations
+}
+
+#pragma mark - MITShuttleHomeViewControllerDelegate
+
+- (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
+{
+    if (!stop) {
+        MITShuttleRouteViewController *routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:route];
+        routeViewController.delegate = self;
+        [self.masterNavigationController pushViewController:routeViewController animated:YES];
+    }
+    [self setMapViewControllerRoute:route stop:stop];
+}
+
+#pragma mark - MITShuttleRouteViewControllerDelegate
+
+- (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop
+{
+    [self setMapViewControllerRoute:routeViewController.route stop:stop];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if (navigationController == self.masterNavigationController) {
+        // If popping back to home view controller, clear route and stop state from map
+        if (viewController == self.homeViewController) {
+            [self setMapViewControllerRoute:nil stop:nil];
+        }
+    }
 }
 
 @end

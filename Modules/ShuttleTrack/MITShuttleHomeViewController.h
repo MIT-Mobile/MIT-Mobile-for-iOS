@@ -15,7 +15,6 @@
 @protocol MITShuttleHomeViewControllerDelegate <NSObject>
 
 @optional
-- (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route;
-- (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectStop:(MITShuttleStop *)stop;
+- (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop;
 
 @end
