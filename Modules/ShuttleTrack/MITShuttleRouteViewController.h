@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UIView *toolbarLabelView;
 
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
+- (void)highlightStop:(MITShuttleStop *)stop;
 
 @end
 

@@ -132,7 +132,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [self beginRefreshing];
     [[MITShuttleController sharedController] getRouteDetail:self.route completion:^(MITShuttleRoute *route, NSError *error) {
         [self endRefreshing];
+        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         [self.tableView reloadData];
+        [self.tableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
 }
 
@@ -154,6 +156,17 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     
     if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
         [self.delegate routeViewControllerDidRefresh:self];
+    }
+}
+
+#pragma mark - Stop Highlighting
+
+- (void)highlightStop:(MITShuttleStop *)stop
+{
+    if (stop) {
+        [self.tableView selectRowAtIndexPath:[self indexPathForStop:stop] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    } else {
+        [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
     }
 }
 
@@ -207,6 +220,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (NSInteger)rowIndexForRouteStatusCell
 {
     return [self.dataSource isMapEmbeddedInRouteViewController:self] ? 1 : 0;
+}
+
+- (NSIndexPath *)indexPathForStop:(MITShuttleStop *)stop
+{
+    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
+    return [NSIndexPath indexPathForRow:stopIndex + [self headerCellCount] inSection:0];
 }
 
 #pragma mark - UITableViewDataSource

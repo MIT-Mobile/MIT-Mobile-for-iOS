@@ -3,14 +3,17 @@
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
 
-@interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate, UINavigationControllerDelegate>
+@interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) UISplitViewController *splitViewController;
 
 @property (nonatomic, strong) UINavigationController *masterNavigationController;
 @property (nonatomic, strong) UINavigationController *detailNavigationController;
 
+@property (nonatomic, readonly) UIViewController *masterViewController;
+
 @property (nonatomic, strong) MITShuttleHomeViewController *homeViewController;
+@property (nonatomic, weak) MITShuttleRouteViewController *routeViewController;
 @property (nonatomic, strong) MITShuttleMapViewController *mapViewController;
 
 @end
@@ -84,6 +87,7 @@
 - (void)setupMapViewController
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithNibName:nil bundle:nil];
+    self.mapViewController.delegate = self;
     self.detailNavigationController = [[UINavigationController alloc] initWithRootViewController:self.mapViewController];
 }
 
@@ -104,6 +108,13 @@
     UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 1, 64)];
     overlayView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:242.0/255 alpha:1];
     [self.splitViewController.view addSubview:overlayView];
+}
+
+#pragma mark - Master View Controller
+
+- (UIViewController *)masterViewController
+{
+    return self.masterNavigationController.topViewController;
 }
 
 #pragma mark - MITShuttleMapViewController
@@ -128,6 +139,7 @@
         MITShuttleRouteViewController *routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:route];
         routeViewController.delegate = self;
         [self.masterNavigationController pushViewController:routeViewController animated:YES];
+        self.routeViewController = routeViewController;
     }
     [self setMapViewControllerRoute:route stop:stop];
 }
@@ -137,6 +149,18 @@
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop
 {
     [self setMapViewControllerRoute:routeViewController.route stop:stop];
+}
+
+#pragma mark - MITShuttleMapViewControllerDelegate
+
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop
+{
+    UIViewController *masterViewController = self.masterViewController;
+    if (masterViewController == self.homeViewController) {
+        // TODO: determine behavior here. should we only mark selection if a "nearest stop" was selected? how do we know route context?
+    } else if (masterViewController == self.routeViewController) {
+        [self.routeViewController highlightStop:stop];
+    }
 }
 
 #pragma mark - UINavigationControllerDelegate
