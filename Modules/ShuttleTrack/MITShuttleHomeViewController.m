@@ -8,6 +8,7 @@
 #import "MITShuttlePredictionList.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleRouteContainerViewController.h"
+#import "MITShuttleRouteViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
@@ -577,8 +578,22 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 stop = object;
                 route = [self routeForStopAtIndexInFlatRouteArray:indexPath.row];
             }
-            MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];
-            [self.navigationController pushViewController:routeContainerViewController animated:YES];
+            if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+                if (stop) {
+                    if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectStop:)]) {
+                        [self.delegate shuttleHomeViewController:self didSelectStop:stop];
+                    }
+                    return;
+                } else {
+                    if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectRoute:)]) {
+                        [self.delegate shuttleHomeViewController:self didSelectRoute:route];
+                    }
+                    [self.navigationController pushViewController:[[MITShuttleRouteViewController alloc] initWithRoute:route] animated:YES];
+                }
+            } else {
+                MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];
+                [self.navigationController pushViewController:routeContainerViewController animated:YES];
+            }
             break;
         }
         case MITShuttleSectionContactInformation:
@@ -589,6 +604,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         default:
             break;
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UITableViewDelegate Helpers

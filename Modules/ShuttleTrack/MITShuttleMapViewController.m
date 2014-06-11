@@ -7,6 +7,7 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleMapBusAnnotationView.h"
 #import "MITCoreDataController.h"
+#import "MITShuttleController.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -17,6 +18,8 @@ static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
 
 static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
 static const NSTimeInterval kMapContractingAnimationDuration = 0.4;
+
+static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
 typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateDefault  = 0,
@@ -38,6 +41,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, readonly) NSArray *stops;
 @property (nonatomic, readonly) NSArray *vehicles;
 
+@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) NSArray *routeSegmentPolylines;
 @property (nonatomic, strong) NSArray *busAnnotations;
@@ -108,6 +112,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         [self setupMapBoundingBoxAnimated:NO];
     }
     
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self startRefreshingVehicles];
+    }
+
     [self setupTileOverlays];
     self.shouldAnimateBusUpdate = NO;
     [self performFetch];
@@ -117,6 +125,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     // This seems to prevent a crash with a VKRasterOverlayTileSource being deallocated and sent messages
     [self.mapView removeOverlays:self.mapView.overlays];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self stopRefreshingVehicles];
+    }
 }
 
 #pragma mark - Notifications
@@ -129,6 +141,39 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     [self prepareForViewDisappearance];
+}
+
+#pragma mark - Vehicles Refresh Timer
+
+- (void)startRefreshingVehicles
+{
+    [self loadVehicles];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.vehiclesRefreshTimer invalidate];
+        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kVehiclesRefreshInterval
+                                                                      target:self
+                                                                    selector:@selector(loadVehicles)
+                                                                    userInfo:nil
+                                                                     repeats:YES];
+        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
+    });
+}
+
+- (void)stopRefreshingVehicles
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.vehiclesRefreshTimer invalidate];
+        self.vehiclesRefreshTimer = nil;
+    });
+}
+
+#pragma mark - Load Route
+
+- (void)loadVehicles
+{
+    [[MITShuttleController sharedController] getVehicles:^(NSArray *vehicles, NSError *error) {
+        self.shouldAnimateBusUpdate = YES;
+    }];
 }
 
 #pragma mark - Custom Accessors
@@ -340,7 +385,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             if (self.shouldAnimateBusUpdate) {
                 [anObject setCoordinate:((MITShuttleVehicle *)anObject).coordinate];
             } else {
-                self.shouldAnimateBusUpdate = YES;
+                if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+                    self.shouldAnimateBusUpdate = YES;
+                }
                 [self removeObject:anObject];
                 [self addObject:anObject];
             }
