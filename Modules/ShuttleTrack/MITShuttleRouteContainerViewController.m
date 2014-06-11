@@ -34,9 +34,6 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *routeContainerView;
 @property (weak, nonatomic) IBOutlet UIScrollView *stopsScrollView;
 
-@property (strong, nonatomic) IBOutlet UIView *toolbarLabelView;
-@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-
 @property (strong, nonatomic) IBOutlet UIView *stopTitleView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *stopSubtitleLabel;
@@ -48,8 +45,6 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewHeightConstraint;
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
-@property (strong, nonatomic) NSDate *lastUpdatedDate;
-@property (nonatomic) BOOL isUpdating;
 
 @property (nonatomic) MITShuttleRouteContainerState previousState;
 @property (nonatomic, getter = isRotating) BOOL rotating;
@@ -168,8 +163,10 @@ typedef enum {
 
 - (void)setupToolbar
 {
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
+    if ([self.toolbarItems count] == 0) {
+        UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.routeViewController.toolbarLabelView];
+        [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
+    }
 }
 
 #pragma mark - Child View Controllers
@@ -290,21 +287,6 @@ typedef enum {
     tempLabel.text = stop.title;
     [tempLabel sizeToFit];
     return tempLabel;
-}
-
-#pragma mark - Last Updated
-
-- (void)refreshLastUpdatedLabel
-{
-    NSString *lastUpdatedText;
-    if (self.isUpdating) {
-        lastUpdatedText = @"Updating...";
-    } else {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
-                                                                            toDate:[NSDate date]];
-        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    }
-    self.lastUpdatedLabel.text = lastUpdatedText;
 }
 
 #pragma mark - Stop View Layout
@@ -631,17 +613,8 @@ typedef enum {
     }
 }
 
-- (void)routeViewControllerDidBeginRefreshing:(MITShuttleRouteViewController *)routeViewController
+- (void)routeViewControllerDidRefresh:(MITShuttleRouteViewController *)routeViewController
 {
-    self.isUpdating = YES;
-    [self refreshLastUpdatedLabel];
-}
-
-- (void)routeViewControllerDidEndRefreshing:(MITShuttleRouteViewController *)routeViewController
-{
-    self.isUpdating = NO;
-    self.lastUpdatedDate = [NSDate date];
-    [self refreshLastUpdatedLabel];
     [self.mapViewController routeUpdated];
 }
 

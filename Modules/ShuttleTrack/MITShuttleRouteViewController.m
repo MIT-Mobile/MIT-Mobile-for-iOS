@@ -4,6 +4,8 @@
 #import "MITShuttleStopCell.h"
 #import "MITShuttleRouteStatusCell.h"
 #import "MITShuttleController.h"
+#import "UIKit+MITAdditions.h"
+#import "NSDateFormatter+RelativeString.h"
 
 static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
@@ -20,6 +22,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) UITableViewCell *embeddedMapPlaceholderCell;
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
+
+@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
+
+@property (strong, nonatomic) NSDate *lastUpdatedDate;
+@property (nonatomic) BOOL isUpdating;
 
 @end
 
@@ -43,11 +50,13 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [super viewDidLoad];
     self.title = self.route.title;
     [self setupTableView];
+    [self setupToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:NO animated:animated];
     [self startRefreshingRoute];
 }
 
@@ -76,6 +85,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
+}
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
 #pragma mark - Refresh Control
@@ -124,17 +139,37 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)beginRefreshing
 {
     [self.refreshControl beginRefreshing];
-    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidBeginRefreshing:)]) {
-        [self.delegate routeViewControllerDidBeginRefreshing:self];
-    }
+    
+    self.isUpdating = YES;
+    [self refreshLastUpdatedLabel];
 }
 
 - (void)endRefreshing
 {
     [self.refreshControl endRefreshing];
-    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidEndRefreshing:)]) {
-        [self.delegate routeViewControllerDidEndRefreshing:self];
+    
+    self.isUpdating = NO;
+    self.lastUpdatedDate = [NSDate date];
+    [self refreshLastUpdatedLabel];
+    
+    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
+        [self.delegate routeViewControllerDidRefresh:self];
     }
+}
+
+#pragma mark - Last Updated
+
+- (void)refreshLastUpdatedLabel
+{
+    NSString *lastUpdatedText;
+    if (self.isUpdating) {
+        lastUpdatedText = @"Updating...";
+    } else {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
+                                                                            toDate:[NSDate date]];
+        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    }
+    self.lastUpdatedLabel.text = lastUpdatedText;
 }
 
 #pragma mark - Embedded Map Placeholder Cell

@@ -12,6 +12,8 @@
 @property (weak, nonatomic) id <MITShuttleRouteViewControllerDataSource> dataSource;
 @property (weak, nonatomic) id <MITShuttleRouteViewControllerDelegate> delegate;
 
+@property (weak, nonatomic) IBOutlet UIView *toolbarLabelView;
+
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
 
 @end
@@ -29,8 +31,7 @@
 
 @optional
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset;
-- (void)routeViewControllerDidBeginRefreshing:(MITShuttleRouteViewController *)routeViewController;
-- (void)routeViewControllerDidEndRefreshing:(MITShuttleRouteViewController *)routeViewController;
+- (void)routeViewControllerDidRefresh:(MITShuttleRouteViewController *)routeViewController;
 - (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController;
 
 @end
