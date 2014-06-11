@@ -41,6 +41,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = self.route.title;
     [self setupTableView];
 }
 
@@ -66,7 +67,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)setupTableView
 {
-    self.tableView.backgroundColor = [UIColor clearColor];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        self.tableView.backgroundColor = [UIColor clearColor];
+    }
     [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     self.tableView.separatorInset = UIEdgeInsetsMake(0, self.tableView.frame.size.width, 0, 0);
     
