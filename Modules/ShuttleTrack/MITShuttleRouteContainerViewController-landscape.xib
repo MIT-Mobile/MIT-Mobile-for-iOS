@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITShuttleRouteContainerViewController">
             <connections>
-                <outlet property="lastUpdatedLabel" destination="ov7-dh-z7C" id="NTE-bT-atv"/>
                 <outlet property="mapContainerView" destination="5gJ-YO-gaQ" id="sBF-yd-GhG"/>
                 <outlet property="mapContainerViewLandscapeWidthConstraint" destination="YHh-op-ZNH" id="xg9-U8-JwI"/>
                 <outlet property="navigationBarExtensionView" destination="3Eq-88-j5h" id="atF-yN-GcK"/>
@@ -17,7 +16,6 @@
                 <outlet property="stopTitleLabel" destination="cP8-Hc-Iwq" id="rRn-UJ-fdf"/>
                 <outlet property="stopTitleView" destination="G0b-yZ-Yeg" id="yxO-l6-2R6"/>
                 <outlet property="stopsScrollView" destination="Sqv-Qr-FD3" id="NmK-jl-ydM"/>
-                <outlet property="toolbarLabelView" destination="vMR-It-BL2" id="XuS-xY-0p4"/>
                 <outlet property="view" destination="XdD-eg-puq" id="bGG-dl-EAU"/>
             </connections>
         </placeholder>
@@ -78,23 +76,6 @@
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
-        </view>
-        <view contentMode="scaleToFill" id="vMR-It-BL2">
-            <rect key="frame" x="0.0" y="0.0" width="240" height="30"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Updated 1 minute ago" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ov7-dh-z7C">
-                    <rect key="frame" x="60" y="8" width="121" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="12"/>
-                    <nil key="highlightedColor"/>
-                </label>
-            </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-            <constraints>
-                <constraint firstAttribute="centerY" secondItem="ov7-dh-z7C" secondAttribute="centerY" id="1BU-C2-lMe"/>
-                <constraint firstAttribute="centerX" secondItem="ov7-dh-z7C" secondAttribute="centerX" id="jJU-ls-cFx"/>
-            </constraints>
         </view>
         <tapGestureRecognizer id="2hH-L0-FvN">
             <connections>

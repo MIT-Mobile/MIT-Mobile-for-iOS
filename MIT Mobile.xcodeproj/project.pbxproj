@@ -285,6 +285,7 @@
 		56D7DF52128854DF00E9E5C9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56D7DF51128854DF00E9E5C9 /* MapKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */; };
 		5E0693031947522A009D1449 /* MITShuttleRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0693021947522A009D1449 /* MITShuttleRootViewController.m */; };
+		5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */; };
 		5E4C6609192CFC470091282A /* MITShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E4C6608192CFC470091282A /* MITShuttleStop.m */; };
 		5E617F0E1926693F00091656 /* MITShuttleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F0D1926693F00091656 /* MITShuttleController.m */; };
 		5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F10192688E700091656 /* MITShuttlesResource.m */; };
@@ -1054,6 +1055,7 @@
 		5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MITShuttleRoute+MapKit.m"; path = "Categories/MITShuttleRoute+MapKit.m"; sourceTree = "<group>"; };
 		5E0693011947522A009D1449 /* MITShuttleRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRootViewController.h; sourceTree = "<group>"; };
 		5E0693021947522A009D1449 /* MITShuttleRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRootViewController.m; sourceTree = "<group>"; };
+		5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteViewController.xib; sourceTree = "<group>"; };
 		5E4C6607192CFC470091282A /* MITShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStop.h; sourceTree = "<group>"; };
 		5E4C6608192CFC470091282A /* MITShuttleStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStop.m; sourceTree = "<group>"; };
 		5E617F0C1926693F00091656 /* MITShuttleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleController.h; sourceTree = "<group>"; };
@@ -2685,6 +2687,7 @@
 				5E70E39E192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib */,
 				5E70E391192F7F7F00165B41 /* MITShuttleRouteViewController.h */,
 				5E70E392192F7F7F00165B41 /* MITShuttleRouteViewController.m */,
+				5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */,
 				5E70E394192F7F9900165B41 /* MITShuttleStopViewController.h */,
 				5E70E395192F7F9900165B41 /* MITShuttleStopViewController.m */,
 				5E70E399192F87CA00165B41 /* MITShuttleMapViewController.h */,
@@ -3405,6 +3408,7 @@
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
 				A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */,
+				5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,

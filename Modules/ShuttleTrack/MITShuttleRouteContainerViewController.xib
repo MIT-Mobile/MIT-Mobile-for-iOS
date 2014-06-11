@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITShuttleRouteContainerViewController">
             <connections>
-                <outlet property="lastUpdatedLabel" destination="2IF-Bq-gql" id="o3R-QF-2z1"/>
                 <outlet property="mapContainerView" destination="GKm-8L-Pgv" id="QZP-Ib-Q0w"/>
                 <outlet property="mapContainerViewPortraitHeightConstraint" destination="nfh-k8-pGg" id="zo2-ow-7ZT"/>
                 <outlet property="navigationBarExtensionView" destination="P2M-3z-edw" id="uki-A4-e73"/>
@@ -18,7 +17,6 @@
                 <outlet property="stopTitleLabel" destination="Igc-GJ-ngV" id="fte-BL-aUN"/>
                 <outlet property="stopTitleView" destination="6et-md-XXK" id="NTK-3t-hdT"/>
                 <outlet property="stopsScrollView" destination="D9V-gA-fOK" id="kkb-t6-vfh"/>
-                <outlet property="toolbarLabelView" destination="hHD-72-WBX" id="mvA-YJ-vfm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -79,23 +77,6 @@
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
-        </view>
-        <view contentMode="scaleToFill" id="hHD-72-WBX">
-            <rect key="frame" x="0.0" y="0.0" width="240" height="33"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Updated 1 minute ago" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2IF-Bq-gql">
-                    <rect key="frame" x="60" y="10" width="121" height="14"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="12"/>
-                    <nil key="highlightedColor"/>
-                </label>
-            </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-            <constraints>
-                <constraint firstAttribute="centerY" secondItem="2IF-Bq-gql" secondAttribute="centerY" id="WId-75-Pfg"/>
-                <constraint firstAttribute="centerX" secondItem="2IF-Bq-gql" secondAttribute="centerX" id="WoP-Ta-wHw"/>
-            </constraints>
         </view>
         <tapGestureRecognizer id="RC7-J3-7Q4">
             <connections>
