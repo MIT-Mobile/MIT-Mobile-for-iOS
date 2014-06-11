@@ -34,11 +34,11 @@ static NSString * const kResourcePhoneNumberKey = @"phoneNumber";
 static NSString * const kResourceFormattedPhoneNumberKey = @"formattedPhoneNumber";
 static NSString * const kResourceURLKey = @"url";
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleSectionRoutes = 0,
     MITShuttleSectionContactInformation = 1,
     MITShuttleSectionMBTAInformation = 2
-} MITShuttleSection;
+};
 
 @interface MITShuttleHomeViewController ()
 
