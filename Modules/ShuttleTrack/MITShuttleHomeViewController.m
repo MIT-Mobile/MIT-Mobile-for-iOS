@@ -565,8 +565,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
     switch (indexPath.section) {
         case MITShuttleSectionRoutes: {
             MITShuttleRoute *route;
@@ -579,16 +577,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 route = [self routeForStopAtIndexInFlatRouteArray:indexPath.row];
             }
             if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+                if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectRoute:stop:)]) {
+                    [self.delegate shuttleHomeViewController:self didSelectRoute:route stop:stop];
+                }
                 if (stop) {
-                    if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectStop:)]) {
-                        [self.delegate shuttleHomeViewController:self didSelectStop:stop];
-                    }
                     return;
-                } else {
-                    if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectRoute:)]) {
-                        [self.delegate shuttleHomeViewController:self didSelectRoute:route];
-                    }
-                    [self.navigationController pushViewController:[[MITShuttleRouteViewController alloc] initWithRoute:route] animated:YES];
                 }
             } else {
                 MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];

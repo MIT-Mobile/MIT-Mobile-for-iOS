@@ -327,6 +327,15 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     return fetchedResultsController;
 }
 
+- (void)resetFetchedResults
+{
+    self.routesFetchedResultsController = nil;
+    self.stopsFetchedResultsController = nil;
+    self.vehiclesFetchedResultsController = nil;
+    
+    [self performFetch];
+}
+
 #pragma mark - NSFetchedResultsControllerDelegate
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
@@ -402,6 +411,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - Public Methods
 
+- (void)setRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
+{
+    self.route = route;
+    self.stop = stop;
+    [self resetFetchedResults];
+    [self setupMapBoundingBoxAnimated:YES];
+    
+    if (stop && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        // TODO: present popover for stop
+    }
+}
+
 - (void)routeUpdated
 {
     [self refreshStopAnnotationImages];
@@ -414,7 +435,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.routesFetchedResultsController performFetch:nil];
     [self.stopsFetchedResultsController performFetch:nil];
     [self.vehiclesFetchedResultsController performFetch:nil];
-    
     [self refreshAll];
 }
 
@@ -474,13 +494,16 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)refreshRoutes
 {
-    if (![self.route.pathSegments isKindOfClass:[NSArray class]]) {
-        if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
-            return;
+    if (self.route) {
+        if (![self.route.pathSegments isKindOfClass:[NSArray class]]) {
+            if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
+                return;
+            }
         }
+    } else {
+        [self.mapView removeOverlays:self.routeSegmentPolylines];
+        return;
     }
-    
-    [self.mapView removeOverlays:self.routeSegmentPolylines];
     
     NSArray *pathSegments = [self.route.pathSegments isKindOfClass:[NSArray class]] ? self.route.pathSegments : nil;
     
