@@ -12,8 +12,7 @@
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
-static const CLLocationCoordinate2D kMITShuttleDefaultMapCenter = {42.357353, -71.095098};
-static const CLLocationDistance kMITShuttleDefaultMapSpan = 10240.740226;
+static const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.01, 0.01}};
 static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
 
 static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
@@ -440,18 +439,15 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
+    MKCoordinateRegion region;
     if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
-        MKCoordinateRegion boundingBox = [self.route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
-        [self.mapView setRegion:boundingBox animated:animated];
+        region = [self.route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
     } else {
         // Center on the MIT Campus with custom map tiles
-        CLLocationCoordinate2D centerCoordinate = kMITShuttleDefaultMapCenter;
-        MKMapPoint point = MKMapPointForCoordinate(centerCoordinate);
-        
-        [self.mapView setVisibleMapRect:MKMapRectMake(point.x, point.y, kMITShuttleDefaultMapSpan, kMITShuttleDefaultMapSpan) animated:animated];
-        [self.mapView setCenterCoordinate:centerCoordinate];
+        region = kMITShuttleDefaultMapRegion;
     }
-    
+    [self.mapView setRegion:region animated:animated];
+
     self.hasSetUpMapRect = YES;
 }
 
@@ -494,16 +490,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)refreshRoutes
 {
-    if (self.route) {
-        if (![self.route.pathSegments isKindOfClass:[NSArray class]]) {
-            if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
-                return;
-            }
+    if (self.route && ![self.route.pathSegments isKindOfClass:[NSArray class]]) {
+        if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
+            return;
         }
-    } else {
-        [self.mapView removeOverlays:self.routeSegmentPolylines];
-        return;
     }
+    
+    [self.mapView removeOverlays:self.routeSegmentPolylines];
     
     NSArray *pathSegments = [self.route.pathSegments isKindOfClass:[NSArray class]] ? self.route.pathSegments : nil;
     
