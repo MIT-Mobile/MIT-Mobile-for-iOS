@@ -9,6 +9,7 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleRouteContainerViewController.h"
 #import "MITShuttleRouteViewController.h"
+#import "MITShuttleResourceData.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
@@ -18,10 +19,6 @@ static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
 static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
 
-static NSString * const kContactInformationHeaderTitle = @"Contact Information";
-static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
-
-static const NSInteger kNumberOfSectionsInTableView = 3;
 static const NSInteger kMinimumNumberOfRowsForRoute = 1;
 static const NSInteger kNearestStopDisplayCount = 2;
 
@@ -29,11 +26,6 @@ static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
 static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
 
 static const CGFloat kContactInformationCellHeight = 60.0;
-
-static NSString * const kResourceDescriptionKey = @"description";
-static NSString * const kResourcePhoneNumberKey = @"phoneNumber";
-static NSString * const kResourceFormattedPhoneNumberKey = @"formattedPhoneNumber";
-static NSString * const kResourceURLKey = @"url";
 
 typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleSectionRoutes = 0,
@@ -62,8 +54,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (strong, nonatomic) NSTimer *routesRefreshTimer;
 @property (strong, nonatomic) NSTimer *predictionsRefreshTimer;
 
-@property (copy, nonatomic) NSArray *contactInformation;
-@property (copy, nonatomic) NSArray *mbtaInformation;
+@property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
 @end
 
@@ -179,24 +170,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)setupResourceData
 {
-    // TODO: these phone numbers and links should be provided by the server, not hardcoded
-	self.contactInformation = @[
-                                @{kResourceDescriptionKey:          @"Parking Office",
-                                  kResourcePhoneNumberKey:          @"16172586510",
-                                  kResourceFormattedPhoneNumberKey: @"617.258.6510"},
-                                @{kResourceDescriptionKey:          @"Saferide",
-                                  kResourcePhoneNumberKey:          @"16172532997",
-                                  kResourceFormattedPhoneNumberKey: @"617.253.2997"}
-                                ];
-	
-    self.mbtaInformation = @[
-                             @{kResourceDescriptionKey: @"Real-time Bus Arrivals",
-                               kResourceURLKey:         @"http://www.nextbus.com/webkit"},
-                             @{kResourceDescriptionKey: @"Real-time Train Arrivals",
-                               kResourceURLKey:         @"http://www.mbtainfo.com/"},
-                             @{kResourceDescriptionKey: @"Google Transit",
-                               kResourceURLKey:         @"http://www.google.com/transit"}
-                             ];
+    self.resourceData = [[MITShuttleResourceData alloc] init];
 }
 
 #pragma mark - Refresh Control
@@ -395,7 +369,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return kNumberOfSectionsInTableView;
+    NSInteger sections = 1;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        sections += kResourceSectionCount;
+    }
+    return sections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -404,9 +382,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes:
             return [self.flatRouteArray count];
         case MITShuttleSectionContactInformation:
-            return [self.contactInformation count];
+            return [self.resourceData.contactInformation count];
         case MITShuttleSectionMBTAInformation:
-            return [self.mbtaInformation count];
+            return [self.resourceData.mbtaInformation count];
         default:
             return 0;
     }
@@ -485,7 +463,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITShuttlePhoneNumberCellIdentifier];
     }
-    NSDictionary *resource = self.contactInformation[indexPath.row];
+    NSDictionary *resource = self.resourceData.contactInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.detailTextLabel.text = resource[kResourceFormattedPhoneNumberKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
@@ -499,7 +477,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITShuttleURLCellIdentifier];
     }
-    NSDictionary *resource = self.mbtaInformation[indexPath.row];
+    NSDictionary *resource = self.resourceData.mbtaInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     return cell;
@@ -513,9 +491,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes:
             return nil;
         case MITShuttleSectionContactInformation:
-            return kContactInformationHeaderTitle;
+            return [kContactInformationHeaderTitle uppercaseString];
         case MITShuttleSectionMBTAInformation:
-            return kMBTAInformationHeaderTitle;
+            return [kMBTAInformationHeaderTitle uppercaseString];
         default:
             return nil;
     }
@@ -590,10 +568,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             break;
         }
         case MITShuttleSectionContactInformation:
-            [self phoneNumberResourceSelected:self.contactInformation[indexPath.row]];
+            [self phoneNumberResourceSelected:self.resourceData.contactInformation[indexPath.row]];
             break;
         case MITShuttleSectionMBTAInformation:
-            [self urlResourceSelected:self.mbtaInformation[indexPath.row]];
+            [self urlResourceSelected:self.resourceData.mbtaInformation[indexPath.row]];
         default:
             break;
     }
