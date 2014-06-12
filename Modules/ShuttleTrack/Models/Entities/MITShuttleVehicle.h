@@ -21,6 +21,7 @@ extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
 @property (nonatomic, retain) NSSet *predictions;
 
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;
+- (NSString *)routeTitle;
 
 @end
 
