@@ -47,4 +47,17 @@ NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttle
     return self.route.title;
 }
 
+#pragma mark - Route Title
+
+- (NSString *)routeTitle
+{
+    NSString *routeTitle;
+    if (self.route) {
+        routeTitle = self.route.title;
+    } else if (self.vehicleList) {
+        routeTitle = self.vehicleList.routeTitle;
+    }
+    return routeTitle;
+}
+
 @end
