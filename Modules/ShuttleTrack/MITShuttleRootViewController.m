@@ -2,6 +2,7 @@
 #import "MITShuttleHomeViewController.h"
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
+#import "MITShuttleResourceViewController.h"
 
 @interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate, UINavigationControllerDelegate>
 
@@ -15,6 +16,8 @@
 @property (nonatomic, strong) MITShuttleHomeViewController *homeViewController;
 @property (nonatomic, weak) MITShuttleRouteViewController *routeViewController;
 @property (nonatomic, strong) MITShuttleMapViewController *mapViewController;
+
+@property (nonatomic, strong) UIPopoverController *resourcePopoverController;
 
 @end
 
@@ -69,6 +72,7 @@
     [self setupMapViewController];
     [self setupSplitViewController];
     [self configureNavigationBarSeparatorOverlay];
+    [self configureResourceBarButtonItem];
 }
 
 - (void)setupHomeViewController
@@ -108,6 +112,23 @@
     UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 1, 64)];
     overlayView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:242.0/255 alpha:1];
     [self.splitViewController.view addSubview:overlayView];
+}
+
+- (void)configureResourceBarButtonItem
+{
+    UIBarButtonItem *resourceBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Resources" style:UIBarButtonItemStylePlain target:self action:@selector(resourceBarButtonItemTapped:)];
+    self.mapViewController.navigationItem.rightBarButtonItem = resourceBarButtonItem;
+}
+
+#pragma mark - Button Actions
+
+- (void)resourceBarButtonItemTapped:(id)sender
+{
+    MITShuttleResourceViewController *resourceViewController = [[MITShuttleResourceViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:resourceViewController];
+    popoverController.backgroundColor = [UIColor whiteColor];
+    [popoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    self.resourcePopoverController = popoverController;
 }
 
 #pragma mark - Master View Controller
