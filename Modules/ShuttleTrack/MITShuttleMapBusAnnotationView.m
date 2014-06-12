@@ -30,7 +30,7 @@
 
 - (void)setupBusImageView
 {
-    self.busImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle"]];
+    self.busImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/bus_annotation"]];
     self.busImageView.translatesAutoresizingMaskIntoConstraints = NO;
     self.busImageView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
     [self addSubview:self.busImageView];
@@ -60,8 +60,8 @@
     [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[routeTitleLabel]-14-|" options:0 metrics:nil views:@{@"routeTitleLabel": routeTitleLabel}]];
     [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[routeTitleLabel]-4-|" options:0 metrics:nil views:@{@"routeTitleLabel": routeTitleLabel}]];
     
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleContainerView][busImageView]" options:0 metrics:nil views:@{@"bubbleContainerView": bubbleContainerView, @"busImageView": self.busImageView}]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.busImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:bubbleContainerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:bubbleContainerView.frame.size.height / 2]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleContainerView]-(-10)-[busImageView]" options:0 metrics:nil views:@{@"bubbleContainerView": bubbleContainerView, @"busImageView": self.busImageView}]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.busImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:bubbleContainerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:bubbleContainerView.frame.size.height]];
     
     [self layoutIfNeeded];
     
