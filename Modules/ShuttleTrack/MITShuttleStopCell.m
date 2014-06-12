@@ -2,6 +2,8 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
 
+const CGFloat kStopCellDefaultSeparatorLeftInset = 42.0;
+
 static NSString * const kTimeUnavailableText = @"--";
 
 @interface MITShuttleStopCell()

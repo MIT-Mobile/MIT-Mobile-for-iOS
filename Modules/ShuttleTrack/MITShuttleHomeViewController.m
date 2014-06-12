@@ -12,23 +12,17 @@
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
 static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
 
-static NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
 static NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
-
-static NSString * const kMITShuttleStopCellNibName = @"MITShuttleStopCell";
 static NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";
-
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
 static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
 
 static NSString * const kContactInformationHeaderTitle = @"Contact Information";
 static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
 
-static const NSInteger kRouteSectionMinimumNumberOfRows = 1;
-static const NSInteger kRouteCellRow = 0;
+static const NSInteger kNumberOfSectionsInTableView = 3;
+static const NSInteger kMinimumNumberOfRowsForRoute = 1;
 static const NSInteger kNearestStopDisplayCount = 2;
-
-static const NSInteger kResourceSectionCount = 2;
 
 static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
 static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
@@ -40,10 +34,11 @@ static NSString * const kResourcePhoneNumberKey = @"phoneNumber";
 static NSString * const kResourceFormattedPhoneNumberKey = @"formattedPhoneNumber";
 static NSString * const kResourceURLKey = @"url";
 
-typedef enum {
-    MITShuttleResourceSectionContactInformation = 0,
-    MITShuttleResourceSectionMBTAInformation = 1
-} MITShuttleResourceSection;
+typedef NS_ENUM(NSUInteger, MITShuttleSection) {
+    MITShuttleSectionRoutes = 0,
+    MITShuttleSectionContactInformation = 1,
+    MITShuttleSectionMBTAInformation = 2
+};
 
 @interface MITShuttleHomeViewController ()
 
@@ -57,6 +52,7 @@ typedef enum {
 @property (strong, nonatomic) NSFetchedResultsController *predictionListsFetchedResultsController;
 @property (nonatomic, readonly) NSArray *predictionLists;
 
+@property (copy, nonatomic) NSArray *flatRouteArray;
 @property (copy, nonatomic) NSDictionary *nearestStops;
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
@@ -166,8 +162,8 @@ typedef enum {
 
 - (void)setupTableView
 {
-    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleRouteCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleRouteCellIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleRouteCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleStopCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
@@ -247,7 +243,7 @@ typedef enum {
         [self endRefreshing];
         if (!error) {
             [self.routesFetchedResultsController performFetch:nil];
-            [self refreshNearestStops];
+            [self refreshFlatRouteArray];
             [self.tableView reloadData];
             if (!self.predictionsRefreshTimer.isValid) {
                 [self startRefreshingPredictions];
@@ -263,8 +259,7 @@ typedef enum {
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
                 if (!error) {
                     [self.predictionListsFetchedResultsController performFetch:nil];
-                    NSInteger routeIndex = [self.routes indexOfObject:route];
-                    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:routeIndex] withRowAnimation:UITableViewRowAnimationNone];
+                    [self.tableView reloadData];
                 }
             }];
         }
@@ -328,20 +323,38 @@ typedef enum {
 
 - (void)locationManagerDidUpdateLocation:(NSNotification *)notification
 {
-    [self refreshNearestStops];
+    [self refreshFlatRouteArray];
     [self.tableView reloadData];
 }
 
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     if ([MITLocationManager locationServicesAuthorized]) {
-        [self refreshNearestStops];
+        [self refreshFlatRouteArray];
     }
     [self refreshLocationStatusLabel];
     [self.tableView reloadData];
 }
 
 #pragma mark - Route Data Helpers
+
+- (void)refreshFlatRouteArray
+{
+    [self refreshNearestStops];
+    
+    NSMutableArray *mutableFlatRouteArray = [NSMutableArray array];
+    for (MITShuttleRoute *route in self.routes) {
+        for (NSInteger indexInRoute = 0; indexInRoute < [self numberOfRowsForRoute:route]; ++indexInRoute) {
+            if (indexInRoute == 0) {
+                [mutableFlatRouteArray addObject:route];
+            } else {
+                NSInteger stopIndex = indexInRoute - 1;
+                [mutableFlatRouteArray addObject:[self nearestStopForRoute:route atIndex:stopIndex]];
+            }
+        }
+    }
+    self.flatRouteArray = [NSArray arrayWithArray:mutableFlatRouteArray];
+}
 
 - (void)refreshNearestStops
 {
@@ -363,6 +376,24 @@ typedef enum {
     return nil;
 }
 
+- (MITShuttleRoute *)routeForStopAtIndexInFlatRouteArray:(NSInteger)index
+{
+    // Start with object before stop, traverse backward until the first route is reached
+    for (NSInteger i = index - 1; i >= 0; --i) {
+        id object = self.flatRouteArray[i];
+        if ([object isKindOfClass:[MITShuttleRoute class]]) {
+            return object;
+        }
+    }
+    return nil;
+}
+
+- (BOOL)isLastNearestStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
+{
+    NSInteger lastNearestStopIndex = kNearestStopDisplayCount - 1;
+    return ([self nearestStopForRoute:route atIndex:lastNearestStopIndex] == stop);
+}
+
 - (MITShuttlePrediction *)predictionForStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
 {
     for (MITShuttlePredictionList *predictionList in self.predictionLists) {
@@ -373,66 +404,61 @@ typedef enum {
     return nil;
 }
 
-#pragma mark - Resource Section Helpers
-
-- (NSInteger)sectionIndexForResourceSection:(MITShuttleResourceSection)section
-{
-    return [self.routes count] + section;
-}
-
-- (BOOL)isContactInformationSection:(NSInteger)section
-{
-    return (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionContactInformation]);
-}
-
-- (BOOL)isMBTAInformationSection:(NSInteger)section
-{
-    return (section == [self sectionIndexForResourceSection:MITShuttleResourceSectionMBTAInformation]);
-}
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.routes count] + kResourceSectionCount;
+    return kNumberOfSectionsInTableView;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if ([self isContactInformationSection:section]) {
-        return [self.contactInformation count];
-    } else if ([self isMBTAInformationSection:section]) {
-        return [self.mbtaInformation count];
-    } else {
-        MITShuttleRoute *route = self.routes[section];
-        return [self numberOfRowsInSectionWithRoute:route];
+    switch (section) {
+        case MITShuttleSectionRoutes:
+            return [self.flatRouteArray count];
+        case MITShuttleSectionContactInformation:
+            return [self.contactInformation count];
+        case MITShuttleSectionMBTAInformation:
+            return [self.mbtaInformation count];
+        default:
+            return 0;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger section = indexPath.section;
-    if ([self isContactInformationSection:section]) {
-        return [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
-    } else if ([self isMBTAInformationSection:section]) {
-        return [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
-    } else {
-        switch (indexPath.row) {
-            case kRouteCellRow: {
+    switch (indexPath.section) {
+        case MITShuttleSectionRoutes: {
+            id object = self.flatRouteArray[indexPath.row];
+            if ([object isKindOfClass:[MITShuttleRoute class]]) {
                 return [self tableView:tableView routeCellForRowAtIndexPath:indexPath];
-            }
-            default: {
+            } else {
                 return [self tableView:tableView stopCellForRowAtIndexPath:indexPath];
             }
         }
+        case MITShuttleSectionContactInformation:
+            return [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
+        case MITShuttleSectionMBTAInformation:
+            return [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
+        default:
+            return nil;
     }
 }
 
 #pragma mark - UITableViewDataSource Helpers
 
-- (NSInteger)numberOfRowsInSectionWithRoute:(MITShuttleRoute *)route
+- (NSInteger)numberOfRowsInRouteSection
 {
-    NSInteger count = kRouteSectionMinimumNumberOfRows;    // always show at least the route cell
+    NSInteger count = 0;
+    for (MITShuttleRoute *route in self.routes) {
+        count += [self numberOfRowsForRoute:route];
+    }
+    return count;
+}
+
+- (NSInteger)numberOfRowsForRoute:(MITShuttleRoute *)route
+{
+    NSInteger count = kMinimumNumberOfRowsForRoute;    // always show at least the route cell
     if ([MITLocationManager locationServicesAuthorized] && [route.scheduled boolValue]) {
         count += [self.nearestStops[route.identifier] count];
     }
@@ -442,22 +468,28 @@ typedef enum {
 - (UITableViewCell *)tableView:(UITableView *)tableView routeCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITShuttleRouteCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleRouteCellIdentifier forIndexPath:indexPath];
-    NSInteger routeIndex = indexPath.section;
-    [cell setRoute:self.routes[routeIndex]];
+    MITShuttleRoute *route = self.flatRouteArray[indexPath.row];
+    [cell setRoute:route];
     return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView stopCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
-    NSInteger routeIndex = indexPath.section;
-    NSInteger stopIndex = indexPath.row - 1;
-    MITShuttleRoute *route = self.routes[routeIndex];
-    MITShuttleStop *stop = [self nearestStopForRoute:self.routes[routeIndex] atIndex:stopIndex];
+    NSInteger row = indexPath.row;
+    MITShuttleStop *stop = self.flatRouteArray[row];
+    MITShuttleRoute *route = [self routeForStopAtIndexInFlatRouteArray:row];
     MITShuttlePrediction *prediction = [self predictionForStop:stop inRoute:route];
     [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];
+    cell.separatorInset = [self stopCellSeparatorEdgeInsetsForStop:stop inRoute:route];
     return cell;
+}
+
+- (UIEdgeInsets)stopCellSeparatorEdgeInsetsForStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
+{
+    CGFloat leftEdgeInset = [self isLastNearestStop:stop inRoute:route] ? 0 : kStopCellDefaultSeparatorLeftInset;
+    return UIEdgeInsetsMake(0, leftEdgeInset, 0, 0);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView phoneNumberCellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -490,46 +522,57 @@ typedef enum {
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if ([self isContactInformationSection:section]) {
-        return kContactInformationHeaderTitle;
-    } else if ([self isMBTAInformationSection:section]) {
-        return kMBTAInformationHeaderTitle;
+    switch (section) {
+        case MITShuttleSectionRoutes:
+            return nil;
+        case MITShuttleSectionContactInformation:
+            return kContactInformationHeaderTitle;
+        case MITShuttleSectionMBTAInformation:
+            return kMBTAInformationHeaderTitle;
+        default:
+            return nil;
     }
-    return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if ([self isContactInformationSection:section] || [self isMBTAInformationSection:section]) {
-        return tableView.sectionHeaderHeight;
+    switch (section) {
+        case MITShuttleSectionContactInformation:
+        case MITShuttleSectionMBTAInformation:
+            return tableView.sectionHeaderHeight;
+        default:
+            return kRouteSectionHeaderHeight;
     }
-    return kRouteSectionHeaderHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    NSInteger lastRouteSection = [self.routes count] - 1;
-    if (section < lastRouteSection) {
-        return kRouteSectionFooterHeight;
-    } else {
-        return tableView.sectionFooterHeight;
+    switch (section) {
+        case MITShuttleSectionContactInformation:
+        case MITShuttleSectionMBTAInformation:
+            return tableView.sectionFooterHeight;
+        default:
+            return kRouteSectionFooterHeight;
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger section = indexPath.section;
-    if ([self isContactInformationSection:section]) {
-        return kContactInformationCellHeight;
-    } else if ([self isMBTAInformationSection:section]) {
-        return tableView.rowHeight;
-    } else {
-        switch (indexPath.row) {
-            case kRouteCellRow:
-                return [MITShuttleRouteCell cellHeightForRoute:nil];
-            default:
+    switch (indexPath.section) {
+        case MITShuttleSectionRoutes: {
+            id object = self.flatRouteArray[indexPath.row];
+            if ([object isKindOfClass:[MITShuttleRoute class]]) {
+                return [MITShuttleRouteCell cellHeightForRoute:object];
+            } else {
                 return tableView.rowHeight;
+            }
         }
+        case MITShuttleSectionContactInformation:
+            return kContactInformationCellHeight;
+        case MITShuttleSectionMBTAInformation:
+            return tableView.rowHeight;
+        default:
+            return 0;
     }
 }
 
@@ -537,20 +580,23 @@ typedef enum {
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    NSInteger section = indexPath.section;
-    if ([self isContactInformationSection:section]) {
-        [self phoneNumberResourceSelected:self.contactInformation[indexPath.row]];
-    } else if ([self isMBTAInformationSection:section]) {
-        [self urlResourceSelected:self.mbtaInformation[indexPath.row]];
-    } else {
-        MITShuttleRoute *route = self.routes[section];
-        if (indexPath.row == kRouteCellRow) {
-            [self routeSelected:route];
-        } else {
-            NSInteger stopIndex = indexPath.row - 1;
-            MITShuttleStop *stop = [self nearestStopForRoute:route atIndex:stopIndex];
-            [self stopSelected:stop];
+    switch (indexPath.section) {
+        case MITShuttleSectionRoutes: {
+            id object = self.flatRouteArray[indexPath.row];
+            if ([object isKindOfClass:[MITShuttleRoute class]]) {
+                [self routeSelected:object];
+            } else {
+                [self stopSelected:object];
+            }
+            break;
         }
+        case MITShuttleSectionContactInformation:
+            [self phoneNumberResourceSelected:self.contactInformation[indexPath.row]];
+            break;
+        case MITShuttleSectionMBTAInformation:
+            [self urlResourceSelected:self.mbtaInformation[indexPath.row]];
+        default:
+            break;
     }
 }
 

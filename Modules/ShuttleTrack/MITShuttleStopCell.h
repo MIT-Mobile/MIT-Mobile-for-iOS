@@ -8,6 +8,8 @@ typedef enum {
     MITShuttleStopCellTypeRouteDetail
 } MITShuttleStopCellType;
 
+extern const CGFloat kStopCellDefaultSeparatorLeftInset;
+
 @interface MITShuttleStopCell : UITableViewCell
 
 - (void)setCellType:(MITShuttleStopCellType)cellType;
