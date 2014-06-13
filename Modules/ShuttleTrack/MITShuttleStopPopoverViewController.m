@@ -2,14 +2,16 @@
 #import "MITShuttleStopViewController.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleRoute.h"
+#import "MITShuttleStopPredictionLoader.h"
 
-@interface MITShuttleStopPopoverViewController () <UIScrollViewDelegate>
+@interface MITShuttleStopPopoverViewController () <UIScrollViewDelegate, MITShuttleStopPredictionLoaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *stopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *routeNameLabel;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIPageControl *pageControl;
 
+@property (nonatomic, strong) MITShuttleStopPredictionLoader *predictionLoader;
 @property (nonatomic, strong) NSArray *orderedRoutes;
 @property (nonatomic, strong) NSArray *stopViewControllers;
 
@@ -25,6 +27,7 @@
     if (self) {
         _stop = stop;
         _currentRoute = route;
+        [self setupPredictionLoader];
         [self setupStopViewControllers];
     }
     return self;
@@ -38,7 +41,9 @@
     self.stopNameLabel.text = self.stop.name;
     [self configureViewForRoute:self.currentRoute];
     [self layoutStopViews];
+    [self setupPageControl];
     self.contentSizeForViewInPopover = self.view.frame.size;
+    [self.predictionLoader startRefreshingPredictions];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,6 +54,13 @@
 
 #pragma mark - Setup
 
+- (void)setupPredictionLoader
+{
+    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:self.stop];
+    predictionLoader.delegate = self;
+    self.predictionLoader = predictionLoader;
+}
+
 - (void)setupStopViewControllers
 {
     NSMutableOrderedSet *routes = [self.stop.routes mutableCopy];
@@ -58,9 +70,17 @@
     self.orderedRoutes = [routes array];
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[routes count]];
     for (MITShuttleRoute *route in routes) {
-        [stopViewControllers addObject:[[MITShuttleStopViewController alloc] initWithStop:self.stop]];
+        MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStop:self.stop route:route predictionLoader:self.predictionLoader];
+        stopViewController.viewOption = MITShuttleStopViewOptionSingleRoute;
+        [stopViewControllers addObject:stopViewController];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
+}
+
+- (void)setupPageControl
+{
+    self.pageControl.transform = CGAffineTransformMakeScale(2.0, 2.0);
+    self.pageControl.numberOfPages = [self.stop.routes count];
 }
 
 - (void)configureViewForRoute:(MITShuttleRoute *)route
@@ -73,11 +93,47 @@
 - (void)layoutStopViews
 {
     CGFloat width = self.scrollView.frame.size.width;
+    CGFloat height = self.scrollView.frame.size.height;
     NSInteger index = 0;
     for (MITShuttleStopViewController *viewController in self.stopViewControllers) {
+        [self addChildStopViewController:viewController];
+        
         UIView *view = viewController.view;
-        view.frame = CGRectMake(width * index, 0, width, self.scrollView.frame.size.height);
+        view.frame = CGRectMake(width * index, 0, width, height);
         ++index;
+    }
+    self.scrollView.contentSize = CGSizeMake(index * width, height);
+}
+
+- (void)addChildStopViewController:(MITShuttleStopViewController *)stopViewController
+{
+    [self addChildViewController:stopViewController];
+    [self.scrollView addSubview:stopViewController.view];
+    [stopViewController didMoveToParentViewController:self];
+}
+
+#pragma mark - Actions
+
+- (IBAction)routeViewTapped:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(stopPopoverViewController:didSelectRoute:)]) {
+        [self.delegate stopPopoverViewController:self didSelectRoute:self.currentRoute];
+    }
+}
+
+#pragma mark - MITShuttleStopPredictionLoaderDelegate
+
+- (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
+{
+    for (MITShuttleStopViewController *viewController in self.stopViewControllers) {
+        [viewController beginRefreshing];
+    }
+}
+
+- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
+{
+    for (MITShuttleStopViewController *viewController in self.stopViewControllers) {
+        [viewController endRefreshing];
     }
 }
 
@@ -85,9 +141,11 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    NSInteger stopIndex = (*targetContentOffset).x / scrollView.frame.size.width;
-    MITShuttleRoute *route = self.stop.routes[stopIndex];
+    NSInteger routeIndex = (*targetContentOffset).x / scrollView.frame.size.width;
+    MITShuttleRoute *route = self.orderedRoutes[routeIndex];
+    self.pageControl.currentPage = routeIndex;
     [self configureViewForRoute:route];
+    self.currentRoute = route;
 }
 
 @end

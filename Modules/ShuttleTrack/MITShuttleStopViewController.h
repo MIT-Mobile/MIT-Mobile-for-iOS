@@ -1,12 +1,26 @@
 #import <UIKit/UIKit.h>
 
 @class MITShuttleStop;
+@class MITShuttleRoute;
+@class MITShuttleStopPredictionLoader;
+
+typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
+    MITShuttleStopViewOptionSingleRoute,
+    MITShuttleStopViewOptionAllRoutes
+};
 
 @interface MITShuttleStopViewController : UITableViewController
 
 @property (strong, nonatomic) MITShuttleStop *stop;
-@property (nonatomic) BOOL shouldRefreshData;
+@property (strong, nonatomic) MITShuttleRoute *route;
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop;
+@property (nonatomic, strong) MITShuttleStopPredictionLoader *predictionLoader;
+@property (nonatomic) MITShuttleStopViewOption viewOption;
+
+- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
+- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader;
+
+- (void)beginRefreshing;
+- (void)endRefreshing;
 
 @end

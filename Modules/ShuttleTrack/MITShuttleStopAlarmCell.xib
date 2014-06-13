@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -14,8 +14,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="162m" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elj-Ma-Fxe">
-                        <rect key="frame" x="11" y="11" width="42" height="21"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="162m" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elj-Ma-Fxe">
+                        <rect key="frame" x="15" y="12" width="42" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="42" id="SGP-sQ-kVx"/>
@@ -24,19 +24,16 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="12:51 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owX-ab-drq">
-                        <rect key="frame" x="81" y="11" width="96" height="21"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12:51 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owX-ab-drq">
+                        <rect key="frame" x="80" y="11" width="70" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYB-G0-uer">
-                        <rect key="frame" x="229" y="7" width="84" height="30"/>
+                    <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="84" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYB-G0-uer">
+                        <rect key="frame" x="229" y="6" width="84" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="84" id="ryZ-Uf-reP"/>
-                        </constraints>
                         <state key="normal" image="shuttle/shuttle-alert-toggle-off.png">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
@@ -46,11 +43,12 @@
                     </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="owX-ab-drq" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="elj-Ma-Fxe" secondAttribute="trailing" constant="10" id="HkM-Ty-gp7"/>
-                    <constraint firstItem="fYB-G0-uer" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="owX-ab-drq" secondAttribute="trailing" constant="20" id="RzF-0G-zG6"/>
-                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="11" id="ZTz-4P-8Eo"/>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" constant="0.5" id="8aa-h7-OYe"/>
+                    <constraint firstAttribute="centerY" secondItem="elj-Ma-Fxe" secondAttribute="centerY" id="QjR-MB-tcl"/>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="ZTz-4P-8Eo"/>
+                    <constraint firstItem="owX-ab-drq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="80" id="fhq-VL-gIm"/>
                     <constraint firstAttribute="trailing" secondItem="fYB-G0-uer" secondAttribute="trailing" constant="7" id="s53-Ld-bbm"/>
-                    <constraint firstItem="owX-ab-drq" firstAttribute="leading" relation="lessThanOrEqual" secondItem="elj-Ma-Fxe" secondAttribute="trailing" constant="28" id="vS4-wl-abu"/>
+                    <constraint firstItem="fYB-G0-uer" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" id="yUW-bK-Ugs"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

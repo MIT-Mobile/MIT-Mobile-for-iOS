@@ -293,6 +293,7 @@
 		5E62A9B1194A28DF00C0B76C /* MITShuttleResourceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */; };
 		5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */; };
 		5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */; };
+		5E62A9B9194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */; };
 		5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */; };
 		5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */; };
 		5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDF21924F49100BA54BE /* MITLocationManager.m */; };
@@ -1073,6 +1074,8 @@
 		5E62A9B2194A405A00C0B76C /* MITShuttleStopPopoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPopoverViewController.h; sourceTree = "<group>"; };
 		5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPopoverViewController.m; sourceTree = "<group>"; };
 		5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopPopoverViewController.xib; sourceTree = "<group>"; };
+		5E62A9B7194B6F1200C0B76C /* MITShuttleStopPredictionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPredictionLoader.h; sourceTree = "<group>"; };
+		5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPredictionLoader.m; sourceTree = "<group>"; };
 		5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopCell.h; sourceTree = "<group>"; };
 		5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopCell.m; sourceTree = "<group>"; };
 		5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopCell.xib; sourceTree = "<group>"; };
@@ -2743,6 +2746,8 @@
 				5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */,
 				5E617F0C1926693F00091656 /* MITShuttleController.h */,
 				5E617F0D1926693F00091656 /* MITShuttleController.m */,
+				5E62A9B7194B6F1200C0B76C /* MITShuttleStopPredictionLoader.h */,
+				5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */,
 				A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */,
 				A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */,
 				5E62A9A9194A275900C0B76C /* MITShuttleResourceData.h */,
@@ -3597,6 +3602,7 @@
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
+				5E62A9B9194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,

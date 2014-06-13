@@ -10,29 +10,40 @@
 #import "MITShuttleRouteNoDataCell.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITShuttleStopNotificationManager.h"
+#import "MITShuttleStopPredictionLoader.h"
 
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMITShuttleStopViewControllerNoDataCellReuseIdentifier";
 
-static const NSTimeInterval kStopRefreshInterval = 10.0;
+@interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate>
 
-@interface MITShuttleStopViewController ()
-
-@property (nonatomic, retain) NSDictionary *predictionsByRoute;
+@property (nonatomic, strong) NSArray *sortedRoutes;
 @property (nonatomic, retain) NSArray *vehicles;
 @property (nonatomic, retain) UILabel *statusFooterLabel;
-@property (strong, nonatomic) NSTimer *stopRefreshTimer;
 @property (nonatomic, strong) NSDate *lastUpdatedDate;
 
 @end
 
 @implementation MITShuttleStopViewController
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop
+- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
+{
+    return [self initWithStop:stop route:route predictionLoader:nil];
+}
+
+- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         _stop = stop;
+        _route = route;
+        _predictionLoader = predictionLoader;
+        [self refreshSortedRoutes];
+        
+        // default to using one prediction loader per view controller
+        if (!predictionLoader) {
+            [self setupPredictionLoader];
+        }
     }
     return self;
 }
@@ -43,7 +54,7 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupTableView];
-    [self startRefreshingData];
+    [self.predictionLoader startRefreshingPredictions];
     [self setupHelpAndStatusFooter];
 }
 
@@ -53,43 +64,28 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Public Methods
-
-- (void)setShouldRefreshData:(BOOL)shouldRefreshData
-{
-    _shouldRefreshData = shouldRefreshData;
-    if (shouldRefreshData) {
-        [self startRefreshingData];
-    }
-}
-
-- (void)startRefreshingData
-{
-    [self reloadPredictions];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.stopRefreshTimer invalidate];
-        self.stopRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kStopRefreshInterval
-                                                                 target:self
-                                                               selector:@selector(reloadPredictions)
-                                                               userInfo:nil
-                                                                repeats:YES];
-    });
-}
-
-- (void)stopRefreshingData
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.stopRefreshTimer invalidate];
-        self.stopRefreshTimer = nil;
-    });
-}
-
 #pragma mark - Refresh Control
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self stopRefreshingData];
-    [self startRefreshingData];
+    [self.predictionLoader startRefreshingPredictions];
+    [self.predictionLoader stopRefreshingPredictions];
+}
+
+#pragma mark - Refreshing
+
+- (void)beginRefreshing
+{
+    [self updateStatusLabel];
+    [self.refreshControl beginRefreshing];
+}
+
+- (void)endRefreshing
+{
+    [self.refreshControl endRefreshing];
+    self.lastUpdatedDate = [NSDate date];
+    [self.tableView reloadData];
+    [self updateStatusLabel];
 }
 
 #pragma mark - Private Methods
@@ -130,100 +126,120 @@ static const NSTimeInterval kStopRefreshInterval = 10.0;
     self.tableView.tableFooterView = helpAndStatusFooter;
 }
 
-- (void)reloadPredictions {
-    [self updateStatusLabel];
-    
-    if (!self.shouldRefreshData) {
-        return;
-    }
-    
-    [self.refreshControl beginRefreshing];
-    [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictions, NSError *error) {
-        [self.refreshControl endRefreshing];
-        if (error) {
-            // Nothing to do, simply do not update the status label and the UI will be correct
-        } else {
-            self.lastUpdatedDate = [NSDate date];
-            [[MITShuttleStopNotificationManager sharedManager] updateNotificationsForStop:self.stop];
-            
-            [self createPredictionsByRoute:predictions];
-            [self.tableView reloadData];
-            [self updateStatusLabel];
-        }
-    }];
+- (void)setupPredictionLoader
+{
+    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:self.stop];
+    predictionLoader.delegate = self;
+    self.predictionLoader = predictionLoader;
 }
 
-- (void)updateStatusLabel {
+- (void)refreshSortedRoutes
+{
+    NSMutableOrderedSet *mutableRoutes = [self.stop.routes mutableCopy];
+    if (self.route) {
+        NSInteger index = [mutableRoutes indexOfObject:self.route];
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:index];
+        [mutableRoutes moveObjectsAtIndexes:indexSet toIndex:0];
+    }
+    self.sortedRoutes = [mutableRoutes array];
+}
+
+- (void)updateStatusLabel
+{
     if (self.lastUpdatedDate) {
         self.statusFooterLabel.text = [NSString stringWithFormat:@"Updated %@", [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate toDate:[NSDate date]]];
     }
 }
 
-- (void)createPredictionsByRoute:(NSArray *)predictions {
-    NSMutableDictionary *newPredictionsByRoute = [NSMutableDictionary dictionary];
-    
-    for (MITShuttleRoute *route in self.stop.routes) {
-        NSMutableArray *predictionsArrayForRoute = [NSMutableArray array];
-        
-        for (MITShuttlePredictionList *predictionList in predictions) {
-            if ([predictionList.routeId isEqualToString:route.identifier] && [predictionList.stopId isEqualToString:self.stop.identifier]) {
-                for (MITShuttlePrediction *prediction in predictionList.predictions) {
-                    [predictionsArrayForRoute addObject:prediction];
-                }
-                if (predictionsArrayForRoute.count > 0) {
-                    [newPredictionsByRoute setObject:predictionsArrayForRoute forKey:route.identifier];
-                }
-            }
-        }
-    }
-    
-    self.predictionsByRoute = [NSDictionary dictionaryWithDictionary:newPredictionsByRoute];
+#pragma mark - MITShuttleStopPredictionLoaderDelegate
+
+- (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
+{
+    [self beginRefreshing];
+}
+
+- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
+{
+    [self endRefreshing];
 }
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return self.stop.routes.count;
+    switch (self.viewOption) {
+        case MITShuttleStopViewOptionSingleRoute:
+            return 1;
+        case MITShuttleStopViewOptionAllRoutes:
+            return [self.stop.routes count];
+        default:
+            return 0;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    MITShuttleRoute *route = self.stop.routes[section];
-    NSArray *predictionsForRoute = self.predictionsByRoute[route.identifier];
+    MITShuttleRoute *route = [self routeForSection:section];
+    NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[route.identifier];
     return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITShuttleRoute *route = self.stop.routes[indexPath.section];
-    NSArray *predictionsArray = self.predictionsByRoute[route.identifier];
-    MITShuttlePrediction *prediction = nil;
+    MITShuttleRoute *route = [self routeForSection:indexPath.section];
     
-    if (![route.scheduled boolValue]) {
-        MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
-        [cell setNotInService:route];
-        return cell;
-    } else if (![route.predictable boolValue] || !predictionsArray) {
-        MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
-        [cell setNoPredictions:route];
-        return cell;
-    } else {
-        MITShuttleStopAlarmCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
-        prediction = predictionsArray[indexPath.row];
-        [cell updateUIWithPrediction:prediction atStop:self.stop];
-        return cell;
+    if (route) {
+        NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[route.identifier];
+        MITShuttlePrediction *prediction = nil;
+        
+        if (![route.scheduled boolValue]) {
+            MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
+            [cell setNotInService:route];
+            return cell;
+        } else if (![route.predictable boolValue] || !predictionsArray) {
+            MITShuttleRouteNoDataCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
+            [cell setNoPredictions:route];
+            return cell;
+        } else {
+            MITShuttleStopAlarmCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
+            prediction = predictionsArray[indexPath.row];
+            [cell updateUIWithPrediction:prediction atStop:self.stop];
+            return cell;
+        }
     }
     
     return [UITableViewCell new];
+}
+
+#pragma mark - UITableViewDataSource Helpers
+
+- (MITShuttleRoute *)routeForSection:(NSInteger)section
+{
+    switch (self.viewOption) {
+        case MITShuttleStopViewOptionSingleRoute:
+            return self.route;
+        case MITShuttleStopViewOptionAllRoutes:
+            return self.sortedRoutes[section];
+        default:
+            return nil;
+    }
 }
 
 #pragma mark - UITableViewDelegate
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    MITShuttleRoute *route = self.stop.routes[section];
-    return [route.title uppercaseString];
+    switch (self.viewOption) {
+        case MITShuttleStopViewOptionSingleRoute: {
+            return nil;
+        }
+        case MITShuttleStopViewOptionAllRoutes: {
+            MITShuttleRoute *route = [self routeForSection:section];
+            return [route.title uppercaseString];
+        }
+        default:
+            return nil;
+    }
 }
 
 @end

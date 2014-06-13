@@ -4,6 +4,7 @@
 #import "MITShuttleMapViewController.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
+#import "MITShuttleStopPredictionLoader.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
@@ -155,7 +156,8 @@ typedef enum {
     NSArray *stops = [self.route.stops array];
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[stops count]];
     for (MITShuttleStop *stop in stops) {
-        MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStop:stop];
+        MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStop:stop route:self.route];
+        stopVC.viewOption = MITShuttleStopViewOptionAllRoutes;
         [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
@@ -349,7 +351,7 @@ typedef enum {
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
         NSInteger index = [self.stopViewControllers indexOfObject:stopViewController];
         MITShuttleStop *stop = self.route.stops[index];
-        stopViewController.shouldRefreshData = [self shouldRefreshStop:stop];
+        stopViewController.predictionLoader.shouldRefreshPredictions = [self shouldRefreshStop:stop];
     }
 }
 
