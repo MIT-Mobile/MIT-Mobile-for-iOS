@@ -8,6 +8,7 @@
 #import "MITShuttleMapBusAnnotationView.h"
 #import "MITCoreDataController.h"
 #import "MITShuttleController.h"
+#import "MITShuttleStopPopoverViewController.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -26,7 +27,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateNext     = 1 << 1,
 };
 
-@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate>
+@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet MKMapView *mapView;
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
@@ -47,6 +48,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) NSDictionary *busAnnotationViewsByVehicleId;
 @property (nonatomic, strong) NSArray *stopAnnotations;
 @property (nonatomic) BOOL shouldAnimateBusUpdate;
+
+@property (nonatomic, strong) UIPopoverController *stopPopoverController;
 
 - (IBAction)currentLocationButtonTapped:(id)sender;
 - (IBAction)exitMapStateButtonTapped:(id)sender;
@@ -451,6 +454,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.hasSetUpMapRect = YES;
 }
 
+- (CGRect)mapViewRectForAnnotationView:(MKAnnotationView *)annotationView
+{
+    CGPoint center = [self.mapView convertCoordinate:annotationView.annotation.coordinate toPointToView:self.mapView];
+    CGSize size = annotationView.frame.size;
+    return CGRectMake(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
+}
+
 #pragma mark - Tile Overlays
 
 - (void)setupTileOverlays
@@ -479,7 +489,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
-#pragma mark - Route Overlay
+#pragma mark - Overlays/Annotations
 
 - (void)refreshAll
 {
@@ -553,24 +563,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
-- (void)startAnimatingBusAnnotations
-{
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] startAnimating];
-        }
-    }
-}
-
-- (void)stopAnimatingBusAnnotations
-{
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] stopAnimating];
-        }
-    }
-}
-
 - (void)removeMapAnnotationsForClass:(Class)class
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
@@ -612,6 +604,42 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next-selected"];
     }
     return nil;
+}
+
+#pragma mark - Bus Annotation Animations
+
+- (void)startAnimatingBusAnnotations
+{
+    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+        if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
+            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] startAnimating];
+        }
+    }
+}
+
+- (void)stopAnimatingBusAnnotations
+{
+    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+        if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
+            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] stopAnimating];
+        }
+    }
+}
+
+#pragma mark - Stop Selection
+
+- (void)presentPopoverForStop:(MITShuttleStop *)stop
+{
+    MITShuttleStopPopoverViewController *viewController = [[MITShuttleStopPopoverViewController alloc] initWithStop:stop route:self.route];
+    
+    UIPopoverController *stopPopoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
+    stopPopoverController.backgroundColor = [UIColor whiteColor];
+    stopPopoverController.delegate = self;
+    
+    MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:stop];
+    [stopPopoverController presentPopoverFromRect:[self mapViewRectForAnnotationView:stopAnnotationView] inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    
+    self.stopPopoverController = stopPopoverController;
 }
 
 #pragma mark - MKMapViewDelegate Methods
@@ -657,7 +685,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     id<MKAnnotation> annotation = view.annotation;
     if ([annotation isKindOfClass:[MITShuttleStop class]]) {
         MITShuttleStop *stop = (MITShuttleStop *)annotation;
-        // TODO: show popover from stop annotation
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            [self presentPopoverForStop:stop];
+        }
         if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
             [self.delegate shuttleMapViewController:self didSelectStop:stop];
         }
@@ -666,6 +696,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
+    if (self.stopPopoverController.isPopoverVisible) {
+        [self.stopPopoverController dismissPopoverAnimated:YES];
+    }
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
         [self.delegate shuttleMapViewController:self didSelectStop:nil];
     }
@@ -695,6 +728,24 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     [self startAnimatingBusAnnotations];
+}
+
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    MITShuttleStop *selectedStop = [self.mapView.selectedAnnotations firstObject];
+    [self.mapView deselectAnnotation:selectedStop animated:YES];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
+        [self.delegate shuttleMapViewController:self didSelectStop:nil];
+    }
+}
+
+- (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view
+{
+    MITShuttleStop *selectedStop = [self.mapView.selectedAnnotations firstObject];
+    MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:selectedStop];
+    *rect = [self mapViewRectForAnnotationView:stopAnnotationView];
 }
 
 @end
