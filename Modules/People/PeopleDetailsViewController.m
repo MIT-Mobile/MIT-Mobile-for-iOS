@@ -45,6 +45,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     [self updateTableViewHeaderView];
 	
     [self reloadDataIfNeeded];
+    
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void) reloadDataIfNeeded
@@ -56,11 +58,17 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
             if (!error) {
                 self.personDetails = [objects lastObject];
-                [self updateTableViewHeaderView];
-                [self.tableView reloadData];
+                
+                [self reload];
             }
         }];
     }
+}
+
+- (void) reload
+{
+    [self updateTableViewHeaderView];
+    [self.tableView reloadData];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -167,6 +175,39 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self adjustViewHeight];
+}
+
+- (void) didMoveToParentViewController:(UIViewController *)parent
+{
+    if( parent )
+    {
+        CGFloat top = parent.topLayoutGuide.length;
+        CGFloat bottom = parent.bottomLayoutGuide.length;
+        
+        if( self.tableView.contentInset.top != top )
+        {
+            UIEdgeInsets newInsets = UIEdgeInsetsMake(top, 0, bottom, 0);
+            self.tableView.contentInset = newInsets;
+            self.tableView.scrollIndicatorInsets = newInsets;
+        }
+    }
+    
+    [self adjustViewHeight];
+    
+    [super didMoveToParentViewController:parent];
+}
+
+- (void) adjustViewHeight
+{
+    self.tableView.frame = CGRectMake(self.tableView.frame.origin.x,
+                                      self.tableView.frame.origin.y,
+                                      self.tableView.frame.size.width,
+                                      self.parentViewController.view.frame.size.height);
+}
+
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -178,6 +219,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if( !self.personDetails )
+    {
+        return 0;
+    }
+    
 	return 2;
 }
 

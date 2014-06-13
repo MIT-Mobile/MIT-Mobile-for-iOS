@@ -11,6 +11,7 @@
 #import "PeopleDetailsViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "PeopleSearchHandler.h"
+#import "PeopleRecentsData.h"
 
 @interface PeopleSearchViewController_iPad () <UISearchBarDelegate>
 
@@ -18,6 +19,7 @@
 @property (nonatomic, weak) IBOutlet UIButton *emergencyContactsButton;
 @property (nonatomic, weak) IBOutlet UIView *searchResultsViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *searchDetailsViewContainer;
+@property (nonatomic, weak) IBOutlet UIView *searchViewsSeparator;
 
 @property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
 
@@ -63,6 +65,9 @@
     [self.emergencyContactsButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
     
     searchHandler = [PeopleSearchHandler new];
+    
+    // TODO: should not be here probably?
+    [PeopleRecentsData sharedData];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -195,6 +200,7 @@
          
          [self.searchResultsViewContainer setHidden:!showSearchResults];
          [self.searchDetailsViewContainer setHidden:!showSearchResults];
+         [self.searchViewsSeparator setHidden:!showSearchResults];
      }];
 }
 
@@ -202,7 +208,7 @@
 {
     self.searchDetailsViewController.personDetails = person;
     
-    [self.searchDetailsViewController reloadDataIfNeeded];
+    [self.searchDetailsViewController reload];
 }
 
 #pragma mark - Navigation
