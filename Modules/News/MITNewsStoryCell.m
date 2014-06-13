@@ -96,6 +96,8 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             }
             
             self.titleLabel.text = titleContent;
+        } else {
+            self.titleLabel.text = nil;
         }
         
         if (dek) {
@@ -107,6 +109,8 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             }
             
             self.dekLabel.text = dekContent;
+        } else {
+            self.dekLabel.text = nil;
         }
         
         if (imageURL) {
