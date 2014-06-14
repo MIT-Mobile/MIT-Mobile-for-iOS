@@ -51,12 +51,12 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </containerView>
-                            <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VKQ-pm-ejg" userLabel="OneLineSeparator">
+                            <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VKQ-pm-ejg" userLabel="OneLineSeparator">
                                 <rect key="frame" x="320" y="0.0" width="1" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <containerView hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ncf-X7-ZPG" userLabel="SearchDetailsView">
+                            <containerView hidden="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ncf-X7-ZPG" userLabel="SearchDetailsView">
                                 <rect key="frame" x="321" y="0.0" width="447" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -65,6 +65,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="cqK-mc-bgy" firstAttribute="top" secondItem="cUc-pF-YcU" secondAttribute="bottom" constant="7" id="8lx-ZW-ZXW"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="leading" secondItem="VKQ-pm-ejg" secondAttribute="trailing" id="bJz-l9-E2d"/>
+                            <constraint firstAttribute="trailing" secondItem="Ncf-X7-ZPG" secondAttribute="trailing" id="gPg-2e-OUG"/>
                             <constraint firstAttribute="centerX" secondItem="cqK-mc-bgy" secondAttribute="centerX" id="oJ6-7a-9If"/>
                             <constraint firstItem="H39-Up-Lb9" firstAttribute="top" secondItem="cqK-mc-bgy" secondAttribute="bottom" constant="757" id="qlZ-vA-J60"/>
                         </constraints>
@@ -144,12 +146,13 @@
             <objects>
                 <viewController storyboardIdentifier="PeopleSearchDetailsViewController" automaticallyAdjustsScrollViewInsets="NO" id="r2L-GJ-uIH" customClass="PeopleDetailsViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="QYN-H5-VGS">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <inset key="separatorInset" minX="1000" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="8bh-kL-jaA">
-                            <rect key="frame" x="0.0" y="0.0" width="768" height="96"/>
+                            <rect key="frame" x="0.0" y="0.0" width="1024" height="96"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="552" translatesAutoresizingMaskIntoConstraints="NO" id="fnf-X6-plA">
@@ -175,10 +178,10 @@
                         </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AttributeCell" textLabel="NXy-JG-Und" detailTextLabel="mi0-9P-a9r" rowHeight="62" style="IBUITableViewCellStyleSubtitle" id="LT5-kw-nSg">
-                                <rect key="frame" x="0.0" y="118" width="768" height="62"/>
+                                <rect key="frame" x="0.0" y="118" width="1024" height="62"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LT5-kw-nSg" id="8At-7c-kx8">
-                                    <rect key="frame" x="0.0" y="0.0" width="768" height="61"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="61"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="label (one-line)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NXy-JG-Und">
@@ -200,14 +203,14 @@
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ActionCell" textLabel="Ni7-uY-K3m" rowHeight="44" style="IBUITableViewCellStyleDefault" id="7i1-7g-HoA">
-                                <rect key="frame" x="0.0" y="180" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="180" width="1024" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7i1-7g-HoA" id="zFy-SC-0fP">
-                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Action (one-line)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ni7-uY-K3m">
-                                            <rect key="frame" x="15" y="0.0" width="738" height="43"/>
+                                            <rect key="frame" x="15" y="0.0" width="994" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.65882354970000001" green="0.10588236149999999" blue="0.21568629149999999" alpha="1" colorSpace="deviceRGB"/>
@@ -220,6 +223,8 @@
                         </prototypes>
                     </tableView>
                     <toolbarItems/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+                    <size key="freeformSize" width="768" height="1024"/>
                     <connections>
                         <outlet property="personName" destination="fnf-X6-plA" id="8yC-wn-cQA"/>
                         <outlet property="personOrganization" destination="fo8-LO-2nK" id="rtC-fE-va4"/>

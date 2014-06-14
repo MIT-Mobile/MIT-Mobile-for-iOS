@@ -86,9 +86,21 @@
     [self.searchResultsViewController didMoveToParentViewController:self];
     
     self.searchDetailsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PeopleSearchDetailsViewController"];
+    self.searchDetailsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self addChildViewController:self.searchDetailsViewController];
     [self.searchDetailsViewContainer addSubview:self.searchDetailsViewController.view];
     [self.searchDetailsViewController didMoveToParentViewController:self];
+    
+    UIView *childView = self.searchDetailsViewController.view;
+    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(childView);
+    [self.view addConstraints:[NSLayoutConstraint
+                               constraintsWithVisualFormat:@"H:|[childView]|"
+                               options:0 metrics:nil
+                               views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint
+                               constraintsWithVisualFormat:@"V:|-[childView]-|"
+                               options:0 metrics:nil
+                               views:viewsDictionary]];
 }
 
 - (void) viewDidDisappear:(BOOL)animated

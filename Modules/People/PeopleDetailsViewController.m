@@ -175,14 +175,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [self adjustViewHeight];
-}
-
 - (void) didMoveToParentViewController:(UIViewController *)parent
 {
-    if( parent )
+    BOOL is_iPad = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+
+    if( parent && is_iPad)
     {
         CGFloat top = parent.topLayoutGuide.length;
         CGFloat bottom = parent.bottomLayoutGuide.length;
@@ -195,17 +192,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         }
     }
     
-    [self adjustViewHeight];
-    
     [super didMoveToParentViewController:parent];
-}
-
-- (void) adjustViewHeight
-{
-    self.tableView.frame = CGRectMake(self.tableView.frame.origin.x,
-                                      self.tableView.frame.origin.y,
-                                      self.tableView.frame.size.width,
-                                      self.parentViewController.view.frame.size.height);
 }
 
 - (void)didReceiveMemoryWarning {
