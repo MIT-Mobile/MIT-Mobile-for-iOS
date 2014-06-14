@@ -161,7 +161,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         CGRect frame = self.headerView.frame;
         frame.size.height = size.height;
         self.headerView.frame = frame;
+        
+        return;
     }
+
+    self.personTitle.text = @"";
+    self.personName.text = @"";
+    self.personOrganization.text = @"";
 }
 
 // Override to allow orientations other than the default portrait orientation.

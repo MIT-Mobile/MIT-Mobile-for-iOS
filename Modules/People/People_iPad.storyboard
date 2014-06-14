@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cqK-mc-bgy" userLabel="default content view">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cqK-mc-bgy" userLabel="default content view">
                                 <rect key="frame" x="239" y="26" width="290" height="240"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -46,17 +46,20 @@
                                     <constraint firstAttribute="width" constant="290" id="FmQ-oF-eYG"/>
                                 </constraints>
                             </view>
-                            <containerView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xVk-fy-0k5" userLabel="SearchResultsView">
+                            <containerView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xVk-fy-0k5" userLabel="SearchResultsView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </containerView>
-                            <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VKQ-pm-ejg" userLabel="OneLineSeparator">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VKQ-pm-ejg" userLabel="OneLineSeparator">
                                 <rect key="frame" x="320" y="0.0" width="1" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="1" id="2hu-KK-lya"/>
+                                </constraints>
                             </view>
-                            <containerView hidden="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ncf-X7-ZPG" userLabel="SearchDetailsView">
+                            <containerView hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ncf-X7-ZPG" userLabel="SearchDetailsView">
                                 <rect key="frame" x="321" y="0.0" width="447" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -64,11 +67,20 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="cqK-mc-bgy" firstAttribute="top" secondItem="cUc-pF-YcU" secondAttribute="bottom" constant="7" id="8lx-ZW-ZXW"/>
-                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="leading" secondItem="VKQ-pm-ejg" secondAttribute="trailing" id="bJz-l9-E2d"/>
+                            <constraint firstItem="xVk-fy-0k5" firstAttribute="leading" secondItem="0vV-jc-OHK" secondAttribute="leading" id="0kD-B7-tWW"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="top" secondItem="VKQ-pm-ejg" secondAttribute="top" id="66e-fs-gEu"/>
+                            <constraint firstItem="cqK-mc-bgy" firstAttribute="top" secondItem="cUc-pF-YcU" secondAttribute="bottom" constant="6" id="8lx-ZW-ZXW"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="top" secondItem="0vV-jc-OHK" secondAttribute="top" id="8nt-FZ-XLz"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="bottom" secondItem="xVk-fy-0k5" secondAttribute="bottom" id="Ceu-rN-c6g"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="leading" secondItem="0vV-jc-OHK" secondAttribute="leading" constant="321" id="DLB-Ac-5kd"/>
+                            <constraint firstItem="VKQ-pm-ejg" firstAttribute="leading" secondItem="xVk-fy-0k5" secondAttribute="leading" constant="320" id="EWU-fu-e29"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="top" secondItem="xVk-fy-0k5" secondAttribute="top" id="Guc-iV-gyH"/>
+                            <constraint firstItem="Ncf-X7-ZPG" firstAttribute="bottom" secondItem="VKQ-pm-ejg" secondAttribute="bottom" id="Q1K-bb-sQC"/>
+                            <constraint firstAttribute="trailing" secondItem="xVk-fy-0k5" secondAttribute="trailing" constant="448" id="Sqd-Eo-FuJ"/>
+                            <constraint firstAttribute="bottom" secondItem="Ncf-X7-ZPG" secondAttribute="bottom" id="VYO-gj-Cuy"/>
                             <constraint firstAttribute="trailing" secondItem="Ncf-X7-ZPG" secondAttribute="trailing" id="gPg-2e-OUG"/>
                             <constraint firstAttribute="centerX" secondItem="cqK-mc-bgy" secondAttribute="centerX" id="oJ6-7a-9If"/>
-                            <constraint firstItem="H39-Up-Lb9" firstAttribute="top" secondItem="cqK-mc-bgy" secondAttribute="bottom" constant="757" id="qlZ-vA-J60"/>
+                            <constraint firstItem="H39-Up-Lb9" firstAttribute="top" secondItem="cqK-mc-bgy" secondAttribute="bottom" constant="758" id="qlZ-vA-J60"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LgV-xG-env"/>
@@ -85,6 +97,7 @@
                 <searchBar contentMode="redraw" searchBarStyle="minimal" id="aSR-t8-Yp3">
                     <rect key="frame" x="0.0" y="0.0" width="400" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="barTintColor" red="1" green="0.63178497960798441" blue="0.63763487184497603" alpha="1" colorSpace="calibratedRGB"/>
                     <textInputTraits key="textInputTraits"/>
                     <connections>
                         <outlet property="delegate" destination="W0Q-ru-dKB" id="0tx-bO-zJU"/>

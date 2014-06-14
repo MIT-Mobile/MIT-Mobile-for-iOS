@@ -187,6 +187,10 @@
     
     [searchBar resignFirstResponder];
     
+    [self.searchResultsViewContainer setHidden:YES];
+    [self.searchDetailsViewContainer setHidden:YES];
+    [self.searchViewsSeparator setHidden:YES];
+    
     //TODO: go back to the main screen
 }
 
