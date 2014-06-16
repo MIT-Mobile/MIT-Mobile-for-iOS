@@ -70,7 +70,10 @@
     self.orderedRoutes = [routes array];
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[routes count]];
     for (MITShuttleRoute *route in routes) {
-        MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStop:self.stop route:route predictionLoader:self.predictionLoader];
+        MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain
+                                                                                                          stop:self.stop
+                                                                                                         route:route
+                                                                                              predictionLoader:self.predictionLoader];
         stopViewController.viewOption = MITShuttleStopViewOptionSingleRoute;
         [stopViewControllers addObject:stopViewController];
     }

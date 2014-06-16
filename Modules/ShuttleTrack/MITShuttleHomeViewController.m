@@ -12,6 +12,7 @@
 #import "MITShuttleResourceData.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "UITableView+MITAdditions.h"
 
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
 static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
@@ -223,7 +224,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         if (!error) {
             [self.routesFetchedResultsController performFetch:nil];
             [self refreshFlatRouteArray];
-            [self.tableView reloadData];
+            
+            [self.tableView reloadDataAndMaintainSelection];
             if (!self.predictionsRefreshTimer.isValid) {
                 [self startRefreshingPredictions];
             }
@@ -238,7 +240,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
                 if (!error) {
                     [self.predictionListsFetchedResultsController performFetch:nil];
-                    [self.tableView reloadData];
+                    [self.tableView reloadDataAndMaintainSelection];
                 }
             }];
         }

@@ -29,8 +29,7 @@ static NSString * const kTimeUnavailableText = @"--";
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
+    self.backgroundColor = selected ? [UIColor colorWithWhite:0.9 alpha:1.0] : [UIColor whiteColor];
 }
 
 - (void)setCellType:(MITShuttleStopCellType)cellType

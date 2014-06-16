@@ -44,9 +44,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) NSArray *routeSegmentPolylines;
-@property (nonatomic, strong) NSArray *busAnnotations;
-@property (nonatomic, strong) NSDictionary *busAnnotationViewsByVehicleId;
-@property (nonatomic, strong) NSArray *stopAnnotations;
 @property (nonatomic) BOOL shouldAnimateBusUpdate;
 
 @property (nonatomic, strong) UIPopoverController *stopPopoverController;
@@ -402,6 +399,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
                 [self removeObject:anObject];
                 [self addObject:anObject];
             }
+        } else if ([[self.mapView selectedAnnotations] containsObject:anObject]) {
+            // do nothing, otherwise popover will be dismissed
         } else {
             [self removeObject:anObject];
             [self addObject:anObject];

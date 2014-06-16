@@ -18,22 +18,23 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
 @interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate>
 
 @property (nonatomic, strong) NSArray *sortedRoutes;
-@property (nonatomic, retain) NSArray *vehicles;
-@property (nonatomic, retain) UILabel *statusFooterLabel;
+@property (nonatomic, strong) NSArray *vehicles;
+@property (nonatomic, strong) UILabel *helpLabel;
+@property (nonatomic, strong) UILabel *statusFooterLabel;
 @property (nonatomic, strong) NSDate *lastUpdatedDate;
 
 @end
 
 @implementation MITShuttleStopViewController
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
+- (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
 {
-    return [self initWithStop:stop route:route predictionLoader:nil];
+    return [self initWithStyle:style stop:stop route:route predictionLoader:nil];
 }
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader
+- (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader
 {
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    self = [super initWithStyle:style];
     if (self) {
         _stop = stop;
         _route = route;
@@ -54,8 +55,8 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupTableView];
-    [self.predictionLoader startRefreshingPredictions];
     [self setupHelpAndStatusFooter];
+    [self.predictionLoader startRefreshingPredictions];
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,6 +86,7 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
     [self.refreshControl endRefreshing];
     self.lastUpdatedDate = [NSDate date];
     [self.tableView reloadData];
+    [self updateHelpLabel];
     [self updateStatusLabel];
 }
 
@@ -104,24 +106,33 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
 {
     UIView *helpAndStatusFooter = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
     
-    UILabel *helpLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, 320, 30)];
-    helpLabel.font = [UIFont systemFontOfSize:12];
-    helpLabel.textColor = [UIColor lightGrayColor];
-    helpLabel.textAlignment = NSTextAlignmentCenter;
-    helpLabel.text = @"Tap bell to be notified 5 min. before arrival";
-    [helpAndStatusFooter addSubview:helpLabel];
-    helpLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[helpLabel]" options:0 metrics:nil views:@{@"helpLabel": helpLabel}]];
-    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[helpLabel]|" options:0 metrics:nil views:@{@"helpLabel": helpLabel}]];
-    
-    self.statusFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, 320, 30)];
-    self.statusFooterLabel.font = [UIFont systemFontOfSize:14];
-    self.statusFooterLabel.textColor = [UIColor blackColor];
-    self.statusFooterLabel.textAlignment = NSTextAlignmentCenter;
-    [helpAndStatusFooter addSubview:self.statusFooterLabel];
-    self.statusFooterLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[statusFooterLabel]" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
-    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[statusFooterLabel]|" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+    self.helpLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.helpLabel.font = [UIFont systemFontOfSize:12];
+    self.helpLabel.textAlignment = NSTextAlignmentLeft;
+    self.helpLabel.numberOfLines = 0;
+    [helpAndStatusFooter addSubview:self.helpLabel];
+    self.helpLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[helpLabel]" options:0 metrics:nil views:@{@"helpLabel": self.helpLabel}]];
+    [helpAndStatusFooter addConstraint:[NSLayoutConstraint constraintWithItem:self.helpLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:helpAndStatusFooter attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
+
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        self.helpLabel.textColor = [UIColor lightGrayColor];
+        self.helpLabel.text = @"Tap bell to be notified 5 min. before arrival";
+        
+        self.statusFooterLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        self.statusFooterLabel.font = [UIFont systemFontOfSize:14];
+        self.statusFooterLabel.textColor = [UIColor blackColor];
+        self.statusFooterLabel.textAlignment = NSTextAlignmentCenter;
+        [helpAndStatusFooter addSubview:self.statusFooterLabel];
+        self.statusFooterLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[statusFooterLabel]" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+        [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[statusFooterLabel]|" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+    } else {
+        self.helpLabel.textColor = [UIColor grayColor];
+        self.helpLabel.preferredMaxLayoutWidth = 180.0;
+        self.helpLabel.text = @"Tap bell icon to be notified 5 minutes before the estimated arrival time";
+        self.helpLabel.hidden = YES;
+    }
     
     self.tableView.tableFooterView = helpAndStatusFooter;
 }
@@ -142,6 +153,14 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
         [mutableRoutes moveObjectsAtIndexes:indexSet toIndex:0];
     }
     self.sortedRoutes = [mutableRoutes array];
+}
+
+- (void)updateHelpLabel
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
+        self.helpLabel.hidden = ([predictionsForRoute count] == 0);
+    }
 }
 
 - (void)updateStatusLabel

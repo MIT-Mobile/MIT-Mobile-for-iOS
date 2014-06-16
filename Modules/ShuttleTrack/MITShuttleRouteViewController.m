@@ -6,6 +6,7 @@
 #import "MITShuttleController.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "UITableView+MITAdditions.h"
 
 static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
@@ -132,9 +133,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [self beginRefreshing];
     [[MITShuttleController sharedController] getRouteDetail:self.route completion:^(MITShuttleRoute *route, NSError *error) {
         [self endRefreshing];
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        [self.tableView reloadData];
-        [self.tableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        [self.tableView reloadDataAndMaintainSelection];
     }];
 }
 
