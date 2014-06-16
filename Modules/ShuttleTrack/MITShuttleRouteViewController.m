@@ -44,12 +44,26 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     return self;
 }
 
+#pragma mark - Route Setter
+
+- (void)setRoute:(MITShuttleRoute *)route
+{
+    // clear data and reload table
+    _route = nil;
+    [self.tableView reloadData];
+    
+    _route = route;
+    [self configureViewForCurrentRoute];
+    [self stopRefreshingRoute];
+    [self startRefreshingRoute];
+}
+
 #pragma mark - View Lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = self.route.title;
+    [self configureViewForCurrentRoute];
     [self setupTableView];
     [self setupToolbar];
 }
@@ -74,6 +88,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 }
 
 #pragma mark - Setup
+
+- (void)configureViewForCurrentRoute
+{
+    self.title = self.route.title;
+    self.routeStatusCell = nil;
+}
 
 - (void)setupTableView
 {
