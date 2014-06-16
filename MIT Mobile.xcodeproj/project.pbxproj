@@ -326,6 +326,7 @@
 		A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
+		5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */; };
 		A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */; };
 		A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */; };
 		A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */; };
@@ -1107,6 +1108,8 @@
 		5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapBrowseContainerViewController.xib; sourceTree = "<group>"; };
 		5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
+		5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITableView+MITAdditions.h"; path = "Categories/UITableView+MITAdditions.h"; sourceTree = "<group>"; };
+		5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITableView+MITAdditions.m"; path = "Categories/UITableView+MITAdditions.m"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A51E209E196C68D9005608C3 /* MITMapTypeAheadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapTypeAheadTableViewController.h; sourceTree = "<group>"; };
 		A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapTypeAheadTableViewController.m; sourceTree = "<group>"; };
@@ -1857,6 +1860,8 @@
 				2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */,
 				2C189A971819D26900653DF6 /* CoreData+MITAdditions.h */,
 				2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */,
+				5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */,
+				5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -3689,6 +3694,7 @@
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
+				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,

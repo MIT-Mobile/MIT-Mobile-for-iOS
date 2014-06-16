@@ -16,7 +16,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="473"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kendall Square" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qv6-xg-NPs">
@@ -56,14 +56,14 @@
                     </connections>
                 </view>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2JG-XX-6Pk">
-                    <rect key="frame" x="0.0" y="86" width="320" height="317"/>
+                    <rect key="frame" x="0.0" y="86" width="320" height="320"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="bj0-c1-8U4"/>
                     </connections>
                 </scrollView>
                 <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" hidesForSinglePage="YES" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="AiU-T2-rVf">
-                    <rect key="frame" x="141" y="423" width="39" height="37"/>
+                    <rect key="frame" x="141" y="421" width="39" height="37"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <color key="currentPageIndicatorTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -73,14 +73,14 @@
             <constraints>
                 <constraint firstItem="gAy-xe-ZL8" firstAttribute="leading" secondItem="qv6-xg-NPs" secondAttribute="leading" id="4Pp-0A-loA"/>
                 <constraint firstItem="qv6-xg-NPs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="5lN-eD-Zfi"/>
-                <constraint firstAttribute="bottom" secondItem="AiU-T2-rVf" secondAttribute="bottom" constant="20" id="8pn-1H-X9K"/>
+                <constraint firstAttribute="bottom" secondItem="AiU-T2-rVf" secondAttribute="bottom" constant="15" id="8pn-1H-X9K"/>
                 <constraint firstItem="2JG-XX-6Pk" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="IUl-Oi-hiV"/>
                 <constraint firstAttribute="trailing" secondItem="2JG-XX-6Pk" secondAttribute="trailing" id="Nwd-jX-TEx"/>
                 <constraint firstAttribute="centerX" secondItem="AiU-T2-rVf" secondAttribute="centerX" constant="-0.5" id="RCU-h3-p3A"/>
                 <constraint firstItem="2JG-XX-6Pk" firstAttribute="top" secondItem="gAy-xe-ZL8" secondAttribute="bottom" constant="8" id="VsT-fH-fLV"/>
                 <constraint firstItem="qv6-xg-NPs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="20" id="ddQ-Ft-SGc"/>
                 <constraint firstItem="gAy-xe-ZL8" firstAttribute="top" secondItem="qv6-xg-NPs" secondAttribute="bottom" id="g2w-fr-00z"/>
-                <constraint firstItem="AiU-T2-rVf" firstAttribute="top" secondItem="2JG-XX-6Pk" secondAttribute="bottom" constant="20" id="gmI-sd-WlC"/>
+                <constraint firstItem="AiU-T2-rVf" firstAttribute="top" secondItem="2JG-XX-6Pk" secondAttribute="bottom" constant="15" id="gmI-sd-WlC"/>
             </constraints>
         </view>
         <tapGestureRecognizer id="NCO-Iz-Bzj">

@@ -17,8 +17,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 @property (nonatomic, strong) MITShuttleStopPredictionLoader *predictionLoader;
 @property (nonatomic) MITShuttleStopViewOption viewOption;
 
-- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
-- (instancetype)initWithStop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader;
+- (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
+- (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader;
 
 - (void)beginRefreshing;
 - (void)endRefreshing;

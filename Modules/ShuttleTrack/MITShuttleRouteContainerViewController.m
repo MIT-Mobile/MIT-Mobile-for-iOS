@@ -156,7 +156,9 @@ typedef enum {
     NSArray *stops = [self.route.stops array];
     NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[stops count]];
     for (MITShuttleStop *stop in stops) {
-        MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStop:stop route:self.route];
+        MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped
+                                                                                              stop:stop
+                                                                                             route:self.route];
         stopVC.viewOption = MITShuttleStopViewOptionAllRoutes;
         [stopViewControllers addObject:stopVC];
     }
