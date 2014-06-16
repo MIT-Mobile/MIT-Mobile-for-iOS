@@ -178,7 +178,11 @@
 {
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
-        // TODO: determine behavior here. should we only mark selection if a "nearest stop" was selected? how do we know route context?
+        [self.homeViewController highlightStop:stop];
+        if (!stop) {
+            // clear map selection if stop was selected from home view controller
+            [self setMapViewControllerRoute:nil stop:nil];
+        }
     } else if (masterViewController == self.routeViewController) {
         [self.routeViewController highlightStop:stop];
     }

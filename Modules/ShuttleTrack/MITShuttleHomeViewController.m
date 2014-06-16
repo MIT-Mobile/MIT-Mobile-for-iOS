@@ -299,6 +299,26 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self.tableView reloadData];
 }
 
+#pragma mark - Highlight Stop
+
+- (void)highlightStop:(MITShuttleStop *)stop
+{
+    if (stop) {
+        for (id object in self.flatRouteArray) {
+            if (object == stop) {
+                NSInteger index = [self.flatRouteArray indexOfObject:object];
+                [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:MITShuttleSectionRoutes] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+                return;
+            }
+        }
+    } else {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        if (indexPath) {
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
+    }
+}
+
 #pragma mark - Route Data Helpers
 
 - (void)refreshFlatRouteArray

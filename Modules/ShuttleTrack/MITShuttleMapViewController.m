@@ -420,7 +420,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self setupMapBoundingBoxAnimated:YES];
     
     if (stop && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        // TODO: present popover for stop
+        // wait until map region change animation completes
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self presentPopoverForStop:stop];
+        });
     }
 }
 
