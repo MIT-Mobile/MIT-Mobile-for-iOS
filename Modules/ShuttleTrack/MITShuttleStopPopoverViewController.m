@@ -149,6 +149,9 @@
     self.pageControl.currentPage = routeIndex;
     [self configureViewForRoute:route];
     self.currentRoute = route;
+    if ([self.delegate respondsToSelector:@selector(stopPopoverViewController:didScrollToRoute:)]) {
+        [self.delegate stopPopoverViewController:self didScrollToRoute:route];
+    }
 }
 
 @end

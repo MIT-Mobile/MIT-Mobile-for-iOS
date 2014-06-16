@@ -138,6 +138,14 @@
     return self.masterNavigationController.topViewController;
 }
 
+- (void)pushRouteViewControllerWithRoute:(MITShuttleRoute *)route
+{
+    MITShuttleRouteViewController *routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:route];
+    routeViewController.delegate = self;
+    [self.masterNavigationController pushViewController:routeViewController animated:YES];
+    self.routeViewController = routeViewController;
+}
+
 #pragma mark - MITShuttleMapViewController
 
 - (void)setMapViewControllerRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
@@ -157,10 +165,7 @@
 - (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
     if (!stop) {
-        MITShuttleRouteViewController *routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:route];
-        routeViewController.delegate = self;
-        [self.masterNavigationController pushViewController:routeViewController animated:YES];
-        self.routeViewController = routeViewController;
+        [self pushRouteViewControllerWithRoute:route];
     }
     [self setMapViewControllerRoute:route stop:stop];
 }
@@ -185,6 +190,16 @@
         }
     } else if (masterViewController == self.routeViewController) {
         [self.routeViewController highlightStop:stop];
+    }
+}
+
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route
+{
+    UIViewController *masterViewController = self.masterViewController;
+    if (masterViewController == self.homeViewController) {
+        [self pushRouteViewControllerWithRoute:route];
+    } else if (masterViewController == self.routeViewController) {
+        self.routeViewController.route = route;
     }
 }
 

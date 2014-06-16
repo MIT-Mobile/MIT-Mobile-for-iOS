@@ -17,6 +17,7 @@
 
 @protocol MITShuttleStopPopoverViewControllerDelegate <NSObject>
 
+- (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didScrollToRoute:(MITShuttleRoute *)route;
 - (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didSelectRoute:(MITShuttleRoute *)route;
 
 @end

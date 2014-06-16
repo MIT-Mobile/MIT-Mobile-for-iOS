@@ -27,7 +27,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateNext     = 1 << 1,
 };
 
-@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate>
+@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate, MITShuttleStopPopoverViewControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet MKMapView *mapView;
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
@@ -633,6 +633,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)presentPopoverForStop:(MITShuttleStop *)stop
 {
     MITShuttleStopPopoverViewController *viewController = [[MITShuttleStopPopoverViewController alloc] initWithStop:stop route:self.route];
+    viewController.delegate = self;
     
     UIPopoverController *stopPopoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
     stopPopoverController.backgroundColor = [UIColor whiteColor];
@@ -748,6 +749,23 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStop *selectedStop = [self.mapView.selectedAnnotations firstObject];
     MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:selectedStop];
     *rect = [self mapViewRectForAnnotationView:stopAnnotationView];
+}
+
+#pragma mark - MITShuttleStopPopoverViewControllerDelegate
+
+- (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didScrollToRoute:(MITShuttleRoute *)route
+{
+    // TODO: display route and maintain current route as semi-transparent
+}
+
+- (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didSelectRoute:(MITShuttleRoute *)route
+{
+    self.route = route;
+    [self resetFetchedResults];
+    [self setupMapBoundingBoxAnimated:YES];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
+        [self.delegate shuttleMapViewController:self didSelectRoute:route];
+    }
 }
 
 @end
