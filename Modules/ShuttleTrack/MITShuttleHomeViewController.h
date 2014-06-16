@@ -10,6 +10,8 @@
 
 @property (nonatomic, weak) id <MITShuttleHomeViewControllerDelegate> delegate;
 
+- (void)highlightStop:(MITShuttleStop *)stop;
+
 @end
 
 @protocol MITShuttleHomeViewControllerDelegate <NSObject>
