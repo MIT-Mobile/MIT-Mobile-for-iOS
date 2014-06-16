@@ -6,10 +6,10 @@
 //
 //
 
-#import "PeopleSearchHandler.h"
+#import "MITPeopleSearchHandler.h"
 #import "MITPeopleResource.h"
 
-@implementation PeopleSearchHandler
+@implementation MITPeopleSearchHandler
 
 - (void)performSearchWithCompletionHandler:(void(^)(BOOL isSuccess))completionHandler
 {

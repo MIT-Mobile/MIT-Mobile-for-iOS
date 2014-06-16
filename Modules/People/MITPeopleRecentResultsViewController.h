@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PeopleSearchViewController_iPad.h"
+#import "MITPeopleSearchViewController_iPad.h"
 
 @interface MITPeopleRecentResultsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 

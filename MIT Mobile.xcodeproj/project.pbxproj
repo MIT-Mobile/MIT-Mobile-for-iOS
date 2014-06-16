@@ -12,9 +12,9 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
-		2748872A1932E1C800414552 /* PeopleSearchViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887291932E1C800414552 /* PeopleSearchViewController_iPad.m */; };
-		274887301933A61900414552 /* PeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */; };
-		274887341933ABCC00414552 /* PeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* PeopleSearchHandler.m */; };
+		2748872A1932E1C800414552 /* MITPeopleSearchViewController_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887291932E1C800414552 /* MITPeopleSearchViewController_iPad.m */; };
+		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
+		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
 		2748873A193413AB00414552 /* MITPeopleSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -485,12 +485,12 @@
 		1D6058910D05DD3D006BFB54 /* MITMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MITMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
-		274887281932E1C800414552 /* PeopleSearchViewController_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleSearchViewController_iPad.h; sourceTree = "<group>"; };
-		274887291932E1C800414552 /* PeopleSearchViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchViewController_iPad.m; sourceTree = "<group>"; };
-		2748872E1933A61900414552 /* PeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleSearchResultsViewController.h; sourceTree = "<group>"; };
-		2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchResultsViewController.m; sourceTree = "<group>"; };
-		274887321933ABCC00414552 /* PeopleSearchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleSearchHandler.h; sourceTree = "<group>"; };
-		274887331933ABCC00414552 /* PeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchHandler.m; sourceTree = "<group>"; };
+		274887281932E1C800414552 /* MITPeopleSearchViewController_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchViewController_iPad.h; sourceTree = "<group>"; };
+		274887291932E1C800414552 /* MITPeopleSearchViewController_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchViewController_iPad.m; sourceTree = "<group>"; };
+		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
+		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
+		274887321933ABCC00414552 /* MITPeopleSearchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchHandler.h; sourceTree = "<group>"; };
+		274887331933ABCC00414552 /* MITPeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchHandler.m; sourceTree = "<group>"; };
 		27488738193413AB00414552 /* MITPeopleSearchDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchDisplayController.h; sourceTree = "<group>"; };
 		27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchDisplayController.m; sourceTree = "<group>"; };
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
@@ -1450,10 +1450,10 @@
 		277B3DCD194DC7610032229E /* iPad */ = {
 			isa = PBXGroup;
 			children = (
-				2748872E1933A61900414552 /* PeopleSearchResultsViewController.h */,
-				2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */,
-				274887281932E1C800414552 /* PeopleSearchViewController_iPad.h */,
-				274887291932E1C800414552 /* PeopleSearchViewController_iPad.m */,
+				2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */,
+				2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */,
+				274887281932E1C800414552 /* MITPeopleSearchViewController_iPad.h */,
+				274887291932E1C800414552 /* MITPeopleSearchViewController_iPad.m */,
 				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
 				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
 			);
@@ -2994,8 +2994,8 @@
 				EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */,
 				EB7F327210CD6C5B00188BCD /* PeopleDetailsViewController.h */,
 				EB7F327310CD6C5B00188BCD /* PeopleDetailsViewController.m */,
-				274887321933ABCC00414552 /* PeopleSearchHandler.h */,
-				274887331933ABCC00414552 /* PeopleSearchHandler.m */,
+				274887321933ABCC00414552 /* MITPeopleSearchHandler.h */,
+				274887331933ABCC00414552 /* MITPeopleSearchHandler.m */,
 				27488738193413AB00414552 /* MITPeopleSearchDisplayController.h */,
 				27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */,
 			);
@@ -3446,7 +3446,7 @@
 				EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */,
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
-				274887341933ABCC00414552 /* PeopleSearchHandler.m in Sources */,
+				274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,
 				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,
 				EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */,
@@ -3478,7 +3478,7 @@
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
 				4B667063140330A000714C6A /* LibrariesViewController.m in Sources */,
 				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
-				2748872A1932E1C800414552 /* PeopleSearchViewController_iPad.m in Sources */,
+				2748872A1932E1C800414552 /* MITPeopleSearchViewController_iPad.m in Sources */,
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
@@ -3501,7 +3501,7 @@
 				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
 				4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */,
 				4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */,
-				274887301933A61900414552 /* PeopleSearchResultsViewController.m in Sources */,
+				274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */,
 				4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */,
 				4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,

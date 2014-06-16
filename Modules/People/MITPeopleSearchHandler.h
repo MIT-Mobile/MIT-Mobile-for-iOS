@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PeopleSearchHandler : NSObject
+@interface MITPeopleSearchHandler : NSObject
 
 @property (nonatomic, copy) NSString *searchTerms;
 @property (nonatomic, copy) NSArray *searchTokens;

@@ -6,16 +6,16 @@
 //
 //
 
-#import "PeopleSearchViewController_iPad.h"
-#import "PeopleSearchResultsViewController.h"
+#import "MITPeopleSearchViewController_iPad.h"
+#import "MITPeopleSearchResultsViewController.h"
 #import "PeopleDetailsViewController.h"
 #import "UIKit+MITAdditions.h"
-#import "PeopleSearchHandler.h"
+#import "MITPeopleSearchHandler.h"
 #import "PeopleRecentsData.h"
 #import "MITLoadingActivityView.h"
 #import "MITPeopleRecentResultsViewController.h"
 
-@interface PeopleSearchViewController_iPad () <UISearchBarDelegate>
+@interface MITPeopleSearchViewController_iPad () <UISearchBarDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *sampleSearchesLabel;
 @property (nonatomic, weak) IBOutlet UIButton *emergencyContactsButton;
@@ -29,14 +29,14 @@
 
 @property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
 
-@property PeopleSearchResultsViewController *searchResultsViewController;
+@property MITPeopleSearchResultsViewController *searchResultsViewController;
 @property PeopleDetailsViewController *searchDetailsViewController;
 
 @end
 
-@implementation PeopleSearchViewController_iPad
+@implementation MITPeopleSearchViewController_iPad
 {
-    PeopleSearchHandler *searchHandler;
+    MITPeopleSearchHandler *searchHandler;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -70,7 +70,7 @@
     self.sampleSearchesLabel.text = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
     [self.emergencyContactsButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
     
-    searchHandler = [PeopleSearchHandler new];
+    searchHandler = [MITPeopleSearchHandler new];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -225,7 +225,7 @@
 
 - (void)performSearch
 {
-    __weak PeopleSearchViewController_iPad *weakSelf = self;
+    __weak MITPeopleSearchViewController_iPad *weakSelf = self;
     
     [searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {

@@ -12,7 +12,7 @@
 #import "UIKit+MITAdditions.h"
 
 #import "MITPeopleResource.h"
-#import "PeopleSearchHandler.h"
+#import "MITPeopleSearchHandler.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -33,7 +33,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 @implementation PeopleSearchViewController
 {
-    PeopleSearchHandler *searchHandler;
+    MITPeopleSearchHandler *searchHandler;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil
@@ -68,7 +68,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         self.searchBar.tintColor = [UIColor mit_tintColor];
     }
     
-    searchHandler = [PeopleSearchHandler new];
+    searchHandler = [MITPeopleSearchHandler new];
 }
 
 - (void)viewWillAppear:(BOOL)animated

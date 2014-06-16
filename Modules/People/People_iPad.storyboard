@@ -8,7 +8,7 @@
         <!--People Search View Controller i Pad-->
         <scene sceneID="ngJ-IE-Rhy">
             <objects>
-                <viewController id="W0Q-ru-dKB" customClass="PeopleSearchViewController_iPad" sceneMemberID="viewController">
+                <viewController id="W0Q-ru-dKB" customClass="MITPeopleSearchViewController_iPad" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="cUc-pF-YcU"/>
                         <viewControllerLayoutGuide type="bottom" id="H39-Up-Lb9"/>
@@ -163,7 +163,7 @@
         <!--People Search Results View Controller-->
         <scene sceneID="fly-nL-s8L">
             <objects>
-                <viewController storyboardIdentifier="PeopleSearchResultsViewController" automaticallyAdjustsScrollViewInsets="NO" id="bAy-Mh-PUm" customClass="PeopleSearchResultsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PeopleSearchResultsViewController" automaticallyAdjustsScrollViewInsets="NO" id="bAy-Mh-PUm" customClass="MITPeopleSearchResultsViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8FU-Zq-uoN">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

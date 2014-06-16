@@ -22,6 +22,6 @@
 
 @end
 
-@interface PeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate>
+@interface MITPeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate>
 
 @end

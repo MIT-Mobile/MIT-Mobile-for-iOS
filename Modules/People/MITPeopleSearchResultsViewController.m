@@ -6,16 +6,16 @@
 //
 //
 
-#import "PeopleSearchResultsViewController.h"
+#import "MITPeopleSearchResultsViewController.h"
 #import "PersonDetails.h"
 
-@interface PeopleSearchResultsViewController ()
+@interface MITPeopleSearchResultsViewController ()
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
 @end
 
-@implementation PeopleSearchResultsViewController
+@implementation MITPeopleSearchResultsViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
