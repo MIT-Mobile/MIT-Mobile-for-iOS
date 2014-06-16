@@ -16,6 +16,7 @@
                         <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT Directory" id="E5U-BI-S0w">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                             <connections>
                                 <outlet property="delegate" destination="pGg-6v-bdr" id="ZAt-6Y-J6i"/>

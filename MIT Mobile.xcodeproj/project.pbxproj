@@ -16,6 +16,7 @@
 		274887301933A61900414552 /* PeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* PeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* PeopleSearchHandler.m */; };
 		2748873A193413AB00414552 /* MITPeopleSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */; };
+		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -492,6 +493,8 @@
 		274887331933ABCC00414552 /* PeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchHandler.m; sourceTree = "<group>"; };
 		27488738193413AB00414552 /* MITPeopleSearchDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchDisplayController.h; sourceTree = "<group>"; };
 		27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchDisplayController.m; sourceTree = "<group>"; };
+		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
+		277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleRecentResultsViewController.m; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1442,6 +1445,19 @@
 				1D6058910D05DD3D006BFB54 /* MITMobile.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		277B3DCD194DC7610032229E /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				2748872E1933A61900414552 /* PeopleSearchResultsViewController.h */,
+				2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */,
+				274887281932E1C800414552 /* PeopleSearchViewController_iPad.h */,
+				274887291932E1C800414552 /* PeopleSearchViewController_iPad.m */,
+				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
+				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
+			);
+			name = iPad;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
@@ -2971,16 +2987,13 @@
 				481F764D188EBA470051F444 /* People.storyboard */,
 				274886981930286C00414552 /* People_iPad.storyboard */,
 				EB7F326910CD6C5B00188BCD /* Model */,
+				277B3DCD194DC7610032229E /* iPad */,
 				EB7F327410CD6C5B00188BCD /* PeopleModule.h */,
 				EB7F327510CD6C5B00188BCD /* PeopleModule.m */,
 				EBCA123210CEF3C400577C5D /* PeopleSearchViewController.h */,
 				EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */,
 				EB7F327210CD6C5B00188BCD /* PeopleDetailsViewController.h */,
 				EB7F327310CD6C5B00188BCD /* PeopleDetailsViewController.m */,
-				274887281932E1C800414552 /* PeopleSearchViewController_iPad.h */,
-				274887291932E1C800414552 /* PeopleSearchViewController_iPad.m */,
-				2748872E1933A61900414552 /* PeopleSearchResultsViewController.h */,
-				2748872F1933A61900414552 /* PeopleSearchResultsViewController.m */,
 				274887321933ABCC00414552 /* PeopleSearchHandler.h */,
 				274887331933ABCC00414552 /* PeopleSearchHandler.m */,
 				27488738193413AB00414552 /* MITPeopleSearchDisplayController.h */,
@@ -3371,6 +3384,7 @@
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
+				277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,

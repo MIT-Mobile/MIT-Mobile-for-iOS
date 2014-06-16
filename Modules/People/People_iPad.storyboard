@@ -94,17 +94,71 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fq-hp-FWz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchBar contentMode="redraw" searchBarStyle="minimal" id="aSR-t8-Yp3">
+                <searchBar contentMode="redraw" searchBarStyle="minimal" showsCancelButton="YES" id="aSR-t8-Yp3">
                     <rect key="frame" x="0.0" y="0.0" width="400" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <color key="barTintColor" red="1" green="0.63178497960798441" blue="0.63763487184497603" alpha="1" colorSpace="calibratedRGB"/>
-                    <textInputTraits key="textInputTraits"/>
+                    <color key="tintColor" red="0.5678013392857143" green="0.086510592703093192" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="barTintColor" red="0.45651307397959184" green="0.0" blue="0.04932679833967913" alpha="1" colorSpace="calibratedRGB"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
                         <outlet property="delegate" destination="W0Q-ru-dKB" id="0tx-bO-zJU"/>
                     </connections>
                 </searchBar>
             </objects>
-            <point key="canvasLocation" x="1921" y="-1100"/>
+            <point key="canvasLocation" x="1455" y="-2020"/>
+        </scene>
+        <!--People Recent Results View Controller-->
+        <scene sceneID="WbC-6p-Zma">
+            <objects>
+                <viewController storyboardIdentifier="peopleRecentResults" id="eQy-sL-uqG" customClass="MITPeopleRecentResultsViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Qic-0h-H35">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <navigationBar key="tableHeaderView" contentMode="scaleToFill" id="jEJ-ei-m5S">
+                            <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <items>
+                                <navigationItem title="Recents" id="xSs-YY-gb1">
+                                    <barButtonItem key="leftBarButtonItem" title="Clear" id="9V3-IW-cxy">
+                                        <connections>
+                                            <action selector="clearRecents:" destination="eQy-sL-uqG" id="ikp-10-Srp"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </navigationItem>
+                            </items>
+                        </navigationBar>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="recentTableViewCell" textLabel="Xyp-mf-BXw" style="IBUITableViewCellStyleDefault" id="ceT-Ue-uhG">
+                                <rect key="frame" x="0.0" y="66" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ceT-Ue-uhG" id="gIM-pg-Me9">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Xyp-mf-BXw">
+                                            <rect key="frame" x="15" y="0.0" width="738" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="eQy-sL-uqG" id="3Vi-N5-ZqU"/>
+                            <outlet property="delegate" destination="eQy-sL-uqG" id="ML3-yE-vMR"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="tableView" destination="Qic-0h-H35" id="Ki7-1x-CXn"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QfZ-4X-HpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3066" y="-2020"/>
         </scene>
         <!--People Search Results View Controller-->
         <scene sceneID="fly-nL-s8L">
@@ -152,7 +206,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1my-Aa-7zp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3160" y="-1916"/>
+            <point key="canvasLocation" x="1736" y="-644"/>
         </scene>
         <!--People Details View Controller-->
         <scene sceneID="Yfi-d6-EE4">
@@ -246,7 +300,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kYq-ED-a9X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3141" y="-581"/>
+            <point key="canvasLocation" x="2773" y="-585"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

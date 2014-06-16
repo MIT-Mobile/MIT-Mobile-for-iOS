@@ -15,6 +15,13 @@
 
 @end
 
-@interface PeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate>
+@protocol PeopleRecentsViewControllerDelegate
+
+- (void) didSelectRecentPerson:(PersonDetails *)person;
+- (void) didClearRecents;
+
+@end
+
+@interface PeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate>
 
 @end

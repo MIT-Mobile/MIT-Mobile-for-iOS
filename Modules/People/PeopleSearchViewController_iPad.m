@@ -12,6 +12,8 @@
 #import "UIKit+MITAdditions.h"
 #import "PeopleSearchHandler.h"
 #import "PeopleRecentsData.h"
+#import "MITLoadingActivityView.h"
+#import "MITPeopleRecentResultsViewController.h"
 
 @interface PeopleSearchViewController_iPad () <UISearchBarDelegate>
 
@@ -20,8 +22,12 @@
 @property (nonatomic, weak) IBOutlet UIView *searchResultsViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *searchDetailsViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *searchViewsSeparator;
-
 @property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
+
+@property (nonatomic, strong) UIPopoverController *recentsPickerPopover;
+@property (nonatomic, strong) MITPeopleRecentResultsViewController *recentsPicker;
+
+@property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
 
 @property PeopleSearchResultsViewController *searchResultsViewController;
 @property PeopleDetailsViewController *searchDetailsViewController;
@@ -65,9 +71,6 @@
     [self.emergencyContactsButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
     
     searchHandler = [PeopleSearchHandler new];
-    
-    // TODO: should not be here probably?
-    [PeopleRecentsData sharedData];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -156,6 +159,14 @@
 
 #pragma mark - Search methods
 
+#pragma mark - Connection methods
+- (void)showLoadingView
+{
+    MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+    self.searchResultsLoadingView = loadingView;
+    [self.view addSubview:loadingView];
+}
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchBar.text length] <= 0)
@@ -164,17 +175,27 @@
         searchHandler.searchTerms = nil;
         searchHandler.searchCancelled = YES;
         
-        searchBar.showsCancelButton = NO;
-        
-        //TODO: go back to the main screen
-        
+        [self showRecentsPopoverIfNeeded];
+                
         return;
     }
+    
+    if( [self.recentsPickerPopover isPopoverVisible] )
+    {
+        [self dismissRecentsPopover];
+    }
+    
+    searchBar.showsCancelButton = YES;
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     searchBar.showsCancelButton = YES;
+    
+    if ([searchBar.text length] <= 0)
+    {
+        [self showRecentsPopoverIfNeeded];
+    }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
@@ -204,20 +225,31 @@
 
 - (void)performSearch
 {
+    __weak PeopleSearchViewController_iPad *weakSelf = self;
+    
     [searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {
          BOOL showSearchResults = [searchHandler.searchResults count] > 0;
          
          if( showSearchResults  )
          {
-             [self.searchResultsViewController setSearchHandler:searchHandler];
-             [self.searchResultsViewController reload];
+             [weakSelf.searchResultsViewController setSearchHandler:searchHandler];
+             [weakSelf.searchResultsViewController reload];
          }
          
-         [self.searchResultsViewContainer setHidden:!showSearchResults];
-         [self.searchDetailsViewContainer setHidden:!showSearchResults];
-         [self.searchViewsSeparator setHidden:!showSearchResults];
+         [weakSelf setSearchResultViewsHidden:!showSearchResults];
+         
+         [weakSelf.searchResultsLoadingView removeFromSuperview];
      }];
+    
+    [self showLoadingView];
+}
+
+- (void) setSearchResultViewsHidden:(BOOL)hidden
+{
+    [self.searchResultsViewContainer setHidden:hidden];
+    [self.searchDetailsViewContainer setHidden:hidden];
+    [self.searchViewsSeparator setHidden:hidden];
 }
 
 - (void) didSelectPerson:(PersonDetails *)person
@@ -225,6 +257,59 @@
     self.searchDetailsViewController.personDetails = person;
     
     [self.searchDetailsViewController reload];
+}
+
+- (void) didSelectRecentPerson:(PersonDetails *)person
+{
+    // remove recents popover && hide the keyboard
+    [self dismissRecentsPopover];
+    [self.searchBar resignFirstResponder];
+    
+    // set search results and search bar text with selected recent person
+    searchHandler.searchResults = @[person];
+    self.searchBar.text = [person name];
+    
+    // update search results controller
+    [self.searchResultsViewController setSearchHandler:searchHandler];
+    [self.searchResultsViewController reload];
+    [self.searchResultsViewController selectFirstResult];
+    
+    // update search details controller
+    [self didSelectPerson:person];
+    
+    // make sure search controllers are visible
+    [self setSearchResultViewsHidden:NO];
+}
+
+- (void) didClearRecents
+{
+    [self dismissRecentsPopover];
+}
+
+- (void) dismissRecentsPopover
+{
+    [self.recentsPickerPopover dismissPopoverAnimated:YES];
+}
+
+- (void) showRecentsPopoverIfNeeded
+{
+    if( [[[PeopleRecentsData sharedData] recents] count] <= 0 )
+    {
+        return;
+    }
+    
+    if( !self.recentsPicker )
+    {
+        self.recentsPicker = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
+        self.recentsPicker.delegate = self;
+    }
+    
+    if( !self.recentsPickerPopover )
+    {
+        self.recentsPickerPopover = [[UIPopoverController alloc] initWithContentViewController:self.recentsPicker];
+    }
+    
+    [self.recentsPickerPopover presentPopoverFromRect:self.searchBar.frame inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 #pragma mark - Navigation

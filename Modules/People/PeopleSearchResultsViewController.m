@@ -128,6 +128,17 @@
     [self.tableView reloadData];
 }
 
+- (void) selectFirstResult
+{
+    // make sure we have at least one search result set.
+    if( [self.tableView numberOfSections] < 1 || [self.tableView numberOfRowsInSection:0] < 1 )
+    {
+        return;
+    }
+    
+    [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+}
+
 
 /*
 #pragma mark - Navigation

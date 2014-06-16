@@ -19,4 +19,6 @@
 
 - (void) reload;
 
+- (void) selectFirstResult;
+
 @end
