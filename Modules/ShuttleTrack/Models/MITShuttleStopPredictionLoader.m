@@ -58,6 +58,8 @@ static const NSTimeInterval kStopPredictionDefaultRefreshInterval = 10.0;
     _shouldRefreshPredictions = shouldRefreshPredictions;
     if (shouldRefreshPredictions) {
         [self startRefreshingPredictions];
+    } else {
+        [self stopRefreshingPredictions];
     }
 }
 

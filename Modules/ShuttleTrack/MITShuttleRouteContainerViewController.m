@@ -89,7 +89,10 @@ typedef enum {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setToolbarHidden:(self.state != MITShuttleRouteContainerStateRoute) animated:animated];
+    if (self.state == MITShuttleRouteContainerStateStop) {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+        [self configureStopViewControllerRefreshing];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -159,6 +162,7 @@ typedef enum {
         MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped
                                                                                               stop:stop
                                                                                              route:self.route];
+        stopVC.predictionLoader.shouldRefreshPredictions = NO;
         stopVC.viewOption = MITShuttleStopViewOptionAllRoutes;
         [stopViewControllers addObject:stopVC];
     }
