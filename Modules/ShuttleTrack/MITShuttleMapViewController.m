@@ -13,7 +13,7 @@
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
-static const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.01, 0.01}};
+static const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
 
 static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
@@ -92,7 +92,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.exitMapStateButton.layer.cornerRadius = 4;
     self.exitMapStateButton.backgroundColor = [UIColor colorWithWhite:0.88 alpha:1];
     
-    [self setState:self.state animated:NO];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self setState:self.state animated:NO];
+    } else {
+        self.exitMapStateButton.alpha = 0;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -471,6 +475,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         // Center on the MIT Campus with custom map tiles
         region = kMITShuttleDefaultMapRegion;
     }
+    
+    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+    
     [self.mapView setRegion:region animated:animated];
 
     self.hasSetUpMapRect = YES;

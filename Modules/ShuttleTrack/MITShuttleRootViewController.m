@@ -68,8 +68,8 @@
 
 - (void)setupViewControllers
 {
-    [self setupHomeViewController];
     [self setupMapViewController];
+    [self setupHomeViewController];
     [self setupSplitViewController];
     [self configureNavigationBarSeparatorOverlay];
     [self configureResourceBarButtonItem];
@@ -150,7 +150,9 @@
 
 - (void)setMapViewControllerRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
-    [self.mapViewController setRoute:route stop:stop];
+    if (self.mapViewController.isViewLoaded) {
+        [self.mapViewController setRoute:route stop:stop];
+    }
 }
 
 #pragma mark - UISplitViewControllerDelegate
