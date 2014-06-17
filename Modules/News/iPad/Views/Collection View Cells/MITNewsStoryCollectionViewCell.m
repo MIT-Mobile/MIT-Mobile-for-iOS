@@ -26,8 +26,9 @@
     if (_isExternalStory) {
         _imageHeightConstraint.constant = _scaledImageSize.height;
         _imageWidthConstraint.constant = _scaledImageSize.width;
+#warning unused
     } else {
-        _imageHeightConstraint.constant =  _scaledImageSize.height;
+      //  _imageHeightConstraint.constant =  _scaledImageSize.height;
     }
 }
 
@@ -61,31 +62,34 @@
             title = story.title;
             dek = story.dek;
             
-            
             CGSize idealImageSize = CGSizeZero;
             if ([story.type isEqualToString:@"news_clip"]) {
                 idealImageSize = CGSizeMake(self.storyImageView.frame.size.width, self.imageHeightConstraint.constant);
                 _isExternalStory = YES;
             } else {
-                idealImageSize = self.storyImageView.frame.size;
+                idealImageSize = CGSizeMake(350, 350);
                 _isExternalStory = NO;
             }
-            
             MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];
             if (representation) {
                 imageURL = representation.url;
                 
                 if (_isExternalStory) {
                     _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(self.storyImageView.frame.size.width, self.imageHeightConstraint.constant)];
-                } else {
-                    _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(self.storyImageView.frame.size.width, MAXFLOAT)];
-                    CGFloat cellWidth = self.frame.size.width;
-                    if (cellWidth > _scaledImageSize.width) {
-                        CGFloat imageHeight = _scaledImageSize.height;
-                        _scaledImageSize.height = (cellWidth / _scaledImageSize.width) * imageHeight;
-                        _scaledImageSize.width = cellWidth;
+                
                     }
-                }
+#warning used for dynamic height
+                /*else {
+                    _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(self.storyImageView.frame.size.width, MAXFLOAT)];
+
+                    CGFloat cellWidth = self.frame.size.width;
+                    CGFloat imageHeight = _scaledImageSize.height;
+                    _scaledImageSize.height = (cellWidth / _scaledImageSize.width) * imageHeight;
+                    _scaledImageSize.width = cellWidth;
+                    
+                    //NSLayoutConstraint *contraint = [NSLayoutConstraint constraintWithItem:self.storyImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.storyImageView attribute:NSLayoutAttributeWidth multiplier:_scaledImageSize.height / _scaledImageSize.width constant:0.0f];
+                   // [self.storyImageView addConstraint:contraint];
+                                    }*/
             }
         }];
         
@@ -96,12 +100,12 @@
                 DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
                 titleContent = title;
             }
-            
             self.titleLabel.text = titleContent;
+            [self.titleLabel setPreferredMaxLayoutWidth:self.frame.size.width];
+
         } else {
             self.titleLabel.text = nil;
         }
-        
         if (dek) {
             NSError *error = nil;
             NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
@@ -111,6 +115,7 @@
             }
             
             self.dekLabel.text = dekContent;
+            [self.dekLabel setPreferredMaxLayoutWidth:self.frame.size.width];
         } else {
             self.dekLabel.text = nil;
         }

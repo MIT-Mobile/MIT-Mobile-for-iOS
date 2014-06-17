@@ -1,4 +1,9 @@
 #import "MITNewsiPadViewController.h"
+#import "MITNewsPadLayout.h"
+#import "MITNewsModelController.h"
+#import "MITNewsStory.h"
+#import "MITNewsStoryCollectionViewCell.h"
+#import "MITNewsConstants.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -12,6 +17,9 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 
 @property (nonatomic, weak) UIViewController *activeViewController;
+
+@property (nonatomic, strong) NSArray *stories;
+@property (nonatomic, strong) MITNewsPadLayout *collectionViewLayout;
 
 - (MITNewsPadStyle)currentStyle;
 @end
@@ -27,12 +35,34 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     return self;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self.gridViewController.collectionView reloadData];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.collectionViewLayout = [[MITNewsPadLayout alloc] init];
+    self.automaticallyAdjustsScrollViewInsets = NO;
     
+    __weak MITNewsiPadViewController *weakController = self;
+    
+#warning test data
+                            //in_the_media  //_mit_news //around_campus
+    [[MITNewsModelController sharedController] storiesInCategory:@"around_campus" query:nil offset:0 limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+        MITNewsiPadViewController *strong = weakController;
+        if (strong) {
+            strong.stories = [[NSArray alloc] initWithArray:stories];
+            strong.collectionViewLayout.stories = stories;
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [strong.gridViewController.collectionView reloadData];
+            }];
+        }
+
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -41,6 +71,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self showStoriesAsGrid:nil];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,16 +86,28 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     UICollectionViewController *gridViewController = _gridViewController;
     
     if (!gridViewController) {
-        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-        gridViewController = [[UICollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+        
+        gridViewController = [[UICollectionViewController alloc] initWithCollectionViewLayout:self.collectionViewLayout];
+
         gridViewController.collectionView.dataSource = self;
         gridViewController.collectionView.delegate = self;
         gridViewController.collectionView.backgroundView = nil;
-        gridViewController.collectionView.backgroundColor = [UIColor redColor];
+        gridViewController.collectionView.backgroundColor = [UIColor whiteColor];
         
         _gridViewController = gridViewController;
+
     }
+#warning hard code these values later
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:@"NewsStoryJumboCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"NewsStoryJumboCollectionViewCell"];
+
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:@"NewsStoryDekCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"NewsStoryDekCollectionViewCell"];
+
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:@"NewsClipCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"NewsClipCollectionViewCell"];
     
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:@"NewsStoryImageCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"NewsStoryImageCollectionViewCell"];
+
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:@"NewsiPadHeaderReusableView" bundle:nil] forSupplementaryViewOfKind:@"MITNewsiPadHeaderReusableView" withReuseIdentifier:@"MITNewsiPadHeaderReusableView"];
+
     return gridViewController;
 }
 
@@ -106,11 +149,12 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         return;
     } else {
         if (self.activeViewController) {
+
             [self.activeViewController.view removeFromSuperview];
             [self.activeViewController removeFromParentViewController];
             self.activeViewController = nil;
         }
-        
+
         UICollectionViewController *collectionView = self.gridViewController;
         [self addChildViewController:collectionView];
         [self.containerView addSubview:collectionView.view];
@@ -169,12 +213,59 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 #pragma mark UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (self.stories) {
+#warning sample data
+        return [@[@"15",@"4",@"3",@"2",@"1"][section] intValue];
+    }
     return 0;
 }
 
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+} 
+
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    NSString *identifier = nil;
+
+    MITNewsStory *newsStory = [self.stories objectAtIndex:indexPath.row];
+    if (newsStory) {
+        if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
+#warning need to test this identifier
+            identifier = @"NewsClipCollectionViewCell";
+        } else if (newsStory.coverImage)  {
+            identifier = @"NewsStoryImageCollectionViewCell";
+        } else {
+            identifier = @"NewsStoryDekCollectionViewCell";
+        }
+    }
+    if (indexPath.row == 0) {
+    MITNewsStoryCollectionViewCell *jumboCell = [collectionView
+                                      dequeueReusableCellWithReuseIdentifier:@"NewsStoryJumboCollectionViewCell"
+                                      forIndexPath:indexPath];
+
+    jumboCell.story = [self.stories objectAtIndex:indexPath.row];
+    return jumboCell;
+    }
+    MITNewsStoryCollectionViewCell *imageCell = [collectionView
+                                                 dequeueReusableCellWithReuseIdentifier:identifier
+                                                 forIndexPath:indexPath];
+    
+    imageCell.story = [self.stories objectAtIndex:indexPath.row];
+    return imageCell;
+}
+
+- (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView
+          viewForSupplementaryElementOfKind:(NSString *)kind
+                                atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionReusableView *reusableView = nil;
+    reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind
+                                                      withReuseIdentifier:@"MITNewsiPadHeaderReusableView"
+                                                             forIndexPath:indexPath];
+    return reusableView;
 }
 
 #pragma mark UICollectionViewDelegate
@@ -192,7 +283,5 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 }
 
 #pragma mark UITableViewDelegate
-
-
 
 @end
