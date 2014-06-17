@@ -124,6 +124,23 @@
     }
 }
 
+- (IBAction)pageControlValueChanged:(id)sender
+{
+    NSInteger currentPage = self.pageControl.currentPage;
+    MITShuttleRoute *route = self.orderedRoutes[currentPage];
+    [self.scrollView setContentOffset:CGPointMake(currentPage * self.scrollView.frame.size.width, 0) animated:YES];
+    [self didScrollToRoute:route];
+}
+
+- (void)didScrollToRoute:(MITShuttleRoute *)route
+{
+    [self configureViewForRoute:route];
+    self.currentRoute = route;
+    if ([self.delegate respondsToSelector:@selector(stopPopoverViewController:didScrollToRoute:)]) {
+        [self.delegate stopPopoverViewController:self didScrollToRoute:route];
+    }
+}
+
 #pragma mark - MITShuttleStopPredictionLoaderDelegate
 
 - (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
@@ -147,11 +164,7 @@
     NSInteger routeIndex = (*targetContentOffset).x / scrollView.frame.size.width;
     MITShuttleRoute *route = self.orderedRoutes[routeIndex];
     self.pageControl.currentPage = routeIndex;
-    [self configureViewForRoute:route];
-    self.currentRoute = route;
-    if ([self.delegate respondsToSelector:@selector(stopPopoverViewController:didScrollToRoute:)]) {
-        [self.delegate stopPopoverViewController:self didScrollToRoute:route];
-    }
+    [self didScrollToRoute:route];
 }
 
 @end
