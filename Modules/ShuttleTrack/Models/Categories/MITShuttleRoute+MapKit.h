@@ -5,4 +5,7 @@
 
 - (MKCoordinateRegion)mapRegionWithPaddingFactor:(CGFloat)paddingFactor;
 
+- (BOOL)pathSegmentsAreValid;
+- (NSArray *)pathSegmentPolylines;
+
 @end

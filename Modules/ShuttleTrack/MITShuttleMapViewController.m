@@ -21,6 +21,9 @@ static const NSTimeInterval kMapContractingAnimationDuration = 0.4;
 
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
+static const CGFloat kMapAnnotationAlphaDefault = 1.0;
+static const CGFloat kMapAnnotationAlphaTransparent = 0.5;
+
 typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateDefault  = 0,
     MITShuttleStopStateSelected = 1 << 0,
@@ -44,7 +47,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) NSArray *routeSegmentPolylines;
+@property (nonatomic, strong) NSArray *secondaryRouteSegmentPolylines;
+
 @property (nonatomic) BOOL shouldAnimateBusUpdate;
+@property (nonatomic) BOOL shouldRepositionPopover;
 
 @property (nonatomic, strong) UIPopoverController *stopPopoverController;
 
@@ -277,7 +283,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)routesFetchedResultsController
 {
     if (!_routesFetchedResultsController) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
+        NSPredicate *predicate;
+        if (self.secondaryRoute) {
+            predicate = [NSPredicate predicateWithFormat:@"SELF = %@ OR SELF = %@", self.route, self.secondaryRoute];
+        } else {
+            predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
+        }
         _routesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleRoute" predicate:predicate];
     }
     return _routesFetchedResultsController;
@@ -288,7 +299,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if (!_stopsFetchedResultsController) {
         NSPredicate *predicate;
         if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.stops];
+            NSMutableSet *stops = [[self.route.stops set] mutableCopy];
+            if (self.secondaryRoute) {
+                [stops unionSet:[self.secondaryRoute.stops set]];
+            }
+            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", stops];
         }
         _stopsFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleStop" predicate:predicate];
     }
@@ -300,7 +315,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if (!_vehiclesFetchedResultsController) {
         NSPredicate *predicate;
         if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", self.route.vehicles];
+            NSMutableSet *vehicles = [[self.route.vehicles set] mutableCopy];
+            if (self.secondaryRoute) {
+                [vehicles unionSet:[self.secondaryRoute.vehicles set]];
+            }
+            predicate = [NSPredicate predicateWithFormat:@"%@ CONTAINS SELF", vehicles];
         }
         _vehiclesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleVehicle" predicate:predicate];
     }
@@ -399,7 +418,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
                 [self removeObject:anObject];
                 [self addObject:anObject];
             }
-        } else if ([[self.mapView selectedAnnotations] containsObject:anObject]) {
+        } else if (anObject == self.stop) {
             // do nothing, otherwise popover will be dismissed
         } else {
             [self removeObject:anObject];
@@ -445,8 +464,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     MKCoordinateRegion region;
-    if ([self.route.pathBoundingBox isKindOfClass:[NSArray class]] && [self.route.pathBoundingBox count] > 3) {
-        region = [self.route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
+    MITShuttleRoute *route = self.secondaryRoute ? self.secondaryRoute : self.route;
+    if ([route.pathBoundingBox isKindOfClass:[NSArray class]] && [route.pathBoundingBox count] > 3) {
+        region = [route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
     } else {
         // Center on the MIT Campus with custom map tiles
         region = kMITShuttleDefaultMapRegion;
@@ -456,11 +476,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.hasSetUpMapRect = YES;
 }
 
-- (CGRect)mapViewRectForAnnotationView:(MKAnnotationView *)annotationView
+- (CGRect)rectForAnnotationView:(MKAnnotationView *)annotationView inView:(UIView *)view
 {
     CGPoint center = [self.mapView convertCoordinate:annotationView.annotation.coordinate toPointToView:self.mapView];
     CGSize size = annotationView.frame.size;
-    return CGRectMake(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
+    CGRect mapViewRect = CGRectMake(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
+    return [self.mapView convertRect:mapViewRect toView:view];
 }
 
 #pragma mark - Tile Overlays
@@ -502,51 +523,36 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)refreshRoutes
 {
-    if (self.route && ![self.route.pathSegments isKindOfClass:[NSArray class]]) {
-        if (![self.route.pathSegments count] > 0 || ![self.route.pathSegments[0] isKindOfClass:[NSArray class]]) {
-            return;
-        }
+    [self refreshPrimaryRoute];
+    [self refreshSecondaryRoute];
+}
+
+- (void)refreshPrimaryRoute
+{
+    if (self.route && ![self.route pathSegmentsAreValid]) {
+        return;
     }
     
     [self.mapView removeOverlays:self.routeSegmentPolylines];
     
-    NSArray *pathSegments = [self.route.pathSegments isKindOfClass:[NSArray class]] ? self.route.pathSegments : nil;
-    
-    NSMutableArray *segmentPolylines = [NSMutableArray arrayWithCapacity:[pathSegments count]];
-    
-    if (pathSegments) {
-        for (NSInteger i = 0; i < pathSegments.count; i++) {
-            NSArray *pathSegment = [pathSegments[i] isKindOfClass:[NSArray class]] ? pathSegments[i] : nil;
-            
-            if (pathSegment) {
-                CLLocationCoordinate2D segmentPoints[pathSegment.count];
-                
-                for (NSInteger j = 0; j < pathSegment.count; j++) {
-                    NSArray *pathCoordinateArray = [pathSegment[j] isKindOfClass:[NSArray class]] ? pathSegment[j] : nil;
-                    
-                    if (pathCoordinateArray && pathCoordinateArray.count > 1) {
-                        NSNumber *longitude = pathCoordinateArray[0];
-                        NSNumber *latitude = pathCoordinateArray[1];
-                        
-                        CLLocationCoordinate2D pathPointCoordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
-                        segmentPoints[j] = pathPointCoordinate;
-                    }
-                }
-                
-                MKPolyline *segmentPolyline = [MKPolyline polylineWithCoordinates:segmentPoints count:pathSegment.count];
-                [segmentPolylines addObject:segmentPolyline];
-            }
-        }
+    self.routeSegmentPolylines = [self.route pathSegmentPolylines];
+    if ([self.routeSegmentPolylines count] > 0) {
+        [self.mapView addOverlays:self.routeSegmentPolylines];
     }
-    
-    // If we got nothing, its broken somehow so don't show anything
-    if (segmentPolylines.count < 1) {
+}
+
+- (void)refreshSecondaryRoute
+{
+    if (self.secondaryRoute && ![self.secondaryRoute pathSegmentsAreValid]) {
         return;
     }
     
-    [self.mapView addOverlays:segmentPolylines];
+    [self.mapView removeOverlays:self.secondaryRouteSegmentPolylines];
     
-    self.routeSegmentPolylines = [NSArray arrayWithArray:segmentPolylines];
+    self.secondaryRouteSegmentPolylines = [self.secondaryRoute pathSegmentPolylines];
+    if ([self.secondaryRouteSegmentPolylines count] > 0) {
+        [self.mapView addOverlays:self.secondaryRouteSegmentPolylines];
+    }
 }
 
 - (void)refreshStops
@@ -569,7 +575,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:class]) {
+        if ([annotation isKindOfClass:class] && annotation != self.stop) {
             [annotationsToRemove addObject:annotation];
         }
     }
@@ -581,12 +587,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     for (MITShuttleStop *stop in self.stops) {
         MKAnnotationView *annotationView = [self.mapView viewForAnnotation:stop];
         [UIView transitionWithView:annotationView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-            annotationView.image = [self stopAnnotationImageForStop:stop];
+            annotationView.image = [self annotationViewImageForStop:stop];
         } completion:nil];
     }
 }
 
-- (UIImage *)stopAnnotationImageForStop:(MITShuttleStop *)stop
+- (UIImage *)annotationViewImageForStop:(MITShuttleStop *)stop
 {
     MITShuttleStopState state = MITShuttleStopStateDefault;
     if ([self.route.nextStops containsObject:stop]) {
@@ -606,6 +612,33 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next-selected"];
     }
     return nil;
+}
+
+- (CGFloat)annotationViewAlphaForStop:(MITShuttleStop *)stop
+{
+    if (self.secondaryRoute && [self.route.stops containsObject:stop] && ![self.secondaryRoute.stops containsObject:stop]) {
+        return kMapAnnotationAlphaTransparent;
+    } else {
+        return kMapAnnotationAlphaDefault;
+    }
+}
+
+- (CGFloat)annotationViewAlphaForVehicle:(MITShuttleVehicle *)vehicle
+{
+    if (self.secondaryRoute && vehicle.route == self.route) {
+        return kMapAnnotationAlphaTransparent;
+    } else {
+        return kMapAnnotationAlphaDefault;
+    }
+}
+
+- (CGFloat)overlayAlphaForPolyline:(MKPolyline *)polyline
+{
+    if (self.secondaryRoute && [self.routeSegmentPolylines containsObject:polyline]) {
+        return kMapAnnotationAlphaTransparent;
+    } else {
+        return kMapAnnotationAlphaDefault;
+    }
 }
 
 #pragma mark - Bus Annotation Animations
@@ -640,7 +673,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     stopPopoverController.delegate = self;
     
     MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:stop];
-    [stopPopoverController presentPopoverFromRect:[self mapViewRectForAnnotationView:stopAnnotationView] inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    [stopPopoverController presentPopoverFromRect:[self rectForAnnotationView:stopAnnotationView inView:self.view] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.stopPopoverController = stopPopoverController;
 }
@@ -658,14 +691,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         if (annotationView == nil) {
             annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
         }
-        annotationView.image = [self stopAnnotationImageForStop:stop];
+        annotationView.image = [self annotationViewImageForStop:stop];
+        annotationView.alpha = [self annotationViewAlphaForStop:stop];
         return annotationView;
     } else if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
+        MITShuttleVehicle *vehicle = (MITShuttleVehicle *)annotation;
+        
         MITShuttleMapBusAnnotationView *annotationView = (MITShuttleMapBusAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITShuttleMapBusAnnotationViewReuseIdentifier];
         if (!annotationView) {
             annotationView = [[MITShuttleMapBusAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITShuttleMapBusAnnotationViewReuseIdentifier];
         }
-        [(MITShuttleMapBusAnnotationView *)annotationView setMapView:mapView];
+        annotationView.mapView = mapView;
+        annotationView.alpha = [self annotationViewAlphaForVehicle:vehicle];
         return annotationView;
     }
     
@@ -688,9 +725,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     id<MKAnnotation> annotation = view.annotation;
     if ([annotation isKindOfClass:[MITShuttleStop class]]) {
         MITShuttleStop *stop = (MITShuttleStop *)annotation;
+        self.stop = stop;
+        
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             [self presentPopoverForStop:stop];
         }
+        
         if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
             [self.delegate shuttleMapViewController:self didSelectStop:stop];
         }
@@ -699,9 +739,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
+    self.stop = nil;
+    
     if (self.stopPopoverController.isPopoverVisible) {
         [self.stopPopoverController dismissPopoverAnimated:YES];
     }
+    
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
         [self.delegate shuttleMapViewController:self didSelectStop:nil];
     }
@@ -712,9 +755,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([overlay isKindOfClass:[MKPolyline class]]) {
         MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
         renderer.lineWidth = 2.5;
-        renderer.fillColor = [UIColor darkGrayColor];
-        renderer.strokeColor = [UIColor darkGrayColor];
-        
+        renderer.fillColor = [UIColor blackColor];
+        renderer.strokeColor = [UIColor blackColor];
+        renderer.alpha = [self overlayAlphaForPolyline:overlay];
         return renderer;
     } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
         return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
@@ -726,19 +769,33 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
 {
     [self stopAnimatingBusAnnotations];
+    if (self.stopPopoverController.isPopoverVisible) {
+        self.shouldRepositionPopover = YES;
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     [self startAnimatingBusAnnotations];
+    if (self.shouldRepositionPopover) {
+        MITShuttleStop *selectedStop = self.stop;
+        MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:selectedStop];
+        [self.stopPopoverController presentPopoverFromRect:[self rectForAnnotationView:stopAnnotationView inView:self.view] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+        self.shouldRepositionPopover = NO;
+    }
 }
 
 #pragma mark - UIPopoverControllerDelegate
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    MITShuttleStop *selectedStop = [self.mapView.selectedAnnotations firstObject];
-    [self.mapView deselectAnnotation:selectedStop animated:YES];
+    if (self.secondaryRoute) {
+        self.secondaryRoute = nil;
+        [self resetFetchedResults];
+        [self setupMapBoundingBoxAnimated:YES];
+    }
+    [self.mapView deselectAnnotation:self.stop animated:YES];
+    self.stop = nil;
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
         [self.delegate shuttleMapViewController:self didSelectStop:nil];
     }
@@ -746,21 +803,27 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view
 {
-    MITShuttleStop *selectedStop = [self.mapView.selectedAnnotations firstObject];
-    MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:selectedStop];
-    *rect = [self mapViewRectForAnnotationView:stopAnnotationView];
+    MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:self.stop];
+    *rect = [self rectForAnnotationView:stopAnnotationView inView:*view];
 }
 
 #pragma mark - MITShuttleStopPopoverViewControllerDelegate
 
 - (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didScrollToRoute:(MITShuttleRoute *)route
 {
-    // TODO: display route and maintain current route as semi-transparent
+    if (route == self.route) {
+        self.secondaryRoute = nil;
+    } else {
+        self.secondaryRoute = route;
+    }
+    [self resetFetchedResults];
+    [self setupMapBoundingBoxAnimated:YES];
 }
 
 - (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didSelectRoute:(MITShuttleRoute *)route
 {
     self.route = route;
+    self.secondaryRoute = nil;
     [self resetFetchedResults];
     [self setupMapBoundingBoxAnimated:YES];
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
