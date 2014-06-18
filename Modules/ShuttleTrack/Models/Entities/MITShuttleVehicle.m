@@ -11,6 +11,7 @@ NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttle
 @dynamic identifier;
 @dynamic latitude;
 @dynamic longitude;
+@dynamic routeId;
 @dynamic secondsSinceReport;
 @dynamic speedKph;
 @dynamic route;
@@ -27,6 +28,14 @@ NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttle
                                                   @"speed_kph": @"speedKph",
                                                   @"seconds_since_report": @"secondsSinceReport"}];
     [mapping setIdentificationAttributes:@[@"identifier"]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromVehicleList
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.route_id": @"routeId"}];
+    [mapping addConnectionForRelationship:@"route" connectedBy:@{@"routeId": @"identifier"}];
     return mapping;
 }
 

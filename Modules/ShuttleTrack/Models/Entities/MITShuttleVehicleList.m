@@ -17,7 +17,7 @@
                                                   @"route_url": @"routeURL",
                                                   @"route_title": @"routeTitle",
                                                   @"agency": @"agency"}];
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"vehicles" toKeyPath:@"vehicles" withMapping:[MITShuttleVehicle objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"vehicles" toKeyPath:@"vehicles" withMapping:[MITShuttleVehicle objectMappingFromVehicleList]]];
     [mapping setIdentificationAttributes:@[@"routeId"]];
     return mapping;
 }
