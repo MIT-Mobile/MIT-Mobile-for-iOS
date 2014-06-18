@@ -196,17 +196,27 @@
             if (publishedAt) {
                 postDate = [dateFormatter stringFromDate:publishedAt];
             }
-
+            
+            MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(400, 400)];
+            
+            CGSize resizedImage;
+            if (representation) {
+                resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(400, 400)];
+            }
+            
             templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
                                  @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
                                  @"__DATE__": (postDate ? postDate : [NSNull null]),
                                  @"__DEK__": (story.dek ? story.dek : [NSNull null]),
                                  @"__BODY__": (story.body ? story.body : [NSNull null]),
-                                 @"__GALLERY_COUNT__": @(0),
+                                 @"__GALLERY_COUNT__": (1 ? representation : [NSNull null]),
                                  @"__BOOKMARKED__": @"",
                                  @"__THUMBNAIL_URL__": @"",
                                  @"__THUMBNAIL_WIDTH__": @"",
-                                 @"__THUMBNAIL_HEIGHT__": @""};
+                                 @"__THUMBNAIL_HEIGHT__": @"",
+                                 @"__GALLERY_URL__" : [representation.url absoluteString],
+                                 @"__GALLERY_WIDTH__" : [NSString stringWithFormat:@"%f",resizedImage.width],
+                                 @"__GALLERY_HEIGHT__" : [NSString stringWithFormat:@"%f",resizedImage.height]};
         }
    // }];
 
@@ -231,6 +241,19 @@
     }];
     
     return templateString;
+}
+
+- (CGSize)scaledSizeForSize:(CGSize)targetSize withMaximumSize:(CGSize)maximumSize
+{
+    if ((targetSize.width > maximumSize.width) || (targetSize.height > maximumSize.height)) {
+        CGFloat xScale = maximumSize.width / targetSize.width;
+        CGFloat yScale = maximumSize.height / targetSize.height;
+        
+        CGFloat scale = MIN(xScale,yScale);
+        return CGSizeMake(ceil(targetSize.width * scale), ceil(targetSize.height * scale));
+    } else {
+        return targetSize;
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation

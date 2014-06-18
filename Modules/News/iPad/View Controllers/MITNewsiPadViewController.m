@@ -269,7 +269,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 #pragma mark UICollectionViewDelegate
 
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
 }

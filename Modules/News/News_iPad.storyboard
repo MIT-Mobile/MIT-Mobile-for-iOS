@@ -56,23 +56,23 @@
             </objects>
             <point key="canvasLocation" x="-585" y="184"/>
         </scene>
-        <!--Newsi Pad Story View Controller-->
+        <!--News iPad Story View Controller-->
         <scene sceneID="Gpk-Vd-bz5">
             <objects>
-                <viewController id="nXb-ze-oPc" customClass="MITNewsiPadStoryViewController" sceneMemberID="viewController">
+                <viewController id="nXb-ze-oPc" userLabel="News iPad Story View Controller" customClass="MITNewsiPadStoryViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1Za-YJ-qfZ"/>
                         <viewControllerLayoutGuide type="bottom" id="JeH-dg-JxY"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="LSd-EA-i8C">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lbw-PH-uJi">
-                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lbw-PH-uJi">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
-                                    <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-FN-0Ky">
+                                    <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-FN-0Ky">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="768"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -98,6 +98,7 @@
                             <constraint firstAttribute="trailing" secondItem="lbw-PH-uJi" secondAttribute="trailing" id="ymX-T2-2iF"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="foN-Li-JFC"/>
                     <connections>
                         <outlet property="bodyView" destination="ZMx-FN-0Ky" id="F5r-na-07C"/>
