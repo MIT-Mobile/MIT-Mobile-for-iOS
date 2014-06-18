@@ -22,3 +22,11 @@ extern NSString* const MITNewsStoryExternalNoImageCellNibName;
 
 extern NSString* const MITNewsCategoryHeaderIdentifier;
 extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;
+
+#pragma mark iPad stories
+
+NSString* const MITNewsStoryJumboCollectionViewCell;
+NSString* const MITNewsStoryDekCollectionViewCell;
+NSString* const MITNewsStoryClipCollectionViewCell;
+NSString* const MITNewsStoryImageCollectionViewCell;
+NSString* const MITNewsStoryHeaderReusableView;

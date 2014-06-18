@@ -11,8 +11,8 @@
 		0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */; };
 		0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */; };
 		0B4EB228194B532200C7AA2F /* MITNewsPadLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4EB227194B532200C7AA2F /* MITNewsPadLayout.m */; };
-		0B9A2FAD194B746600A36C94 /* NewsiPadHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B9A2FAC194B746600A36C94 /* NewsiPadHeaderReusableView.xib */; };
-		0BD7B96E194A36D200B0EDBD /* NewsClipCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BD7B96C194A36D200B0EDBD /* NewsClipCollectionViewCell.xib */; };
+		0B9A2FAD194B746600A36C94 /* NewsStoryHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */; };
+		0BD7B96E194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BD7B96C194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib */; };
 		0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BD7B96D194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib */; };
 		0BD7B972194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD7B971194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m */; };
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; };
@@ -505,8 +505,8 @@
 		0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryDekCollectionViewCell.xib; path = XIBs/NewsStoryDekCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B4EB226194B532200C7AA2F /* MITNewsPadLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsPadLayout.h; path = "Modules/News/iPad/View Layouts/MITNewsPadLayout.h"; sourceTree = "<group>"; };
 		0B4EB227194B532200C7AA2F /* MITNewsPadLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsPadLayout.m; path = "Modules/News/iPad/View Layouts/MITNewsPadLayout.m"; sourceTree = "<group>"; };
-		0B9A2FAC194B746600A36C94 /* NewsiPadHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsiPadHeaderReusableView.xib; path = XIBs/NewsiPadHeaderReusableView.xib; sourceTree = "<group>"; };
-		0BD7B96C194A36D200B0EDBD /* NewsClipCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsClipCollectionViewCell.xib; path = XIBs/NewsClipCollectionViewCell.xib; sourceTree = "<group>"; };
+		0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryHeaderReusableView.xib; path = XIBs/NewsStoryHeaderReusableView.xib; sourceTree = "<group>"; };
+		0BD7B96C194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryClipCollectionViewCell.xib; path = XIBs/NewsStoryClipCollectionViewCell.xib; sourceTree = "<group>"; };
 		0BD7B96D194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryJumboCollectionViewCell.xib; path = XIBs/NewsStoryJumboCollectionViewCell.xib; sourceTree = "<group>"; };
 		0BD7B970194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsStoryCollectionViewCell.h; path = "Collection View Cells/MITNewsStoryCollectionViewCell.h"; sourceTree = "<group>"; };
 		0BD7B971194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsStoryCollectionViewCell.m; path = "Collection View Cells/MITNewsStoryCollectionViewCell.m"; sourceTree = "<group>"; };
@@ -1543,9 +1543,9 @@
 		0BD7B96B194A36C700B0EDBD /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
-				0BD7B96C194A36D200B0EDBD /* NewsClipCollectionViewCell.xib */,
+				0BD7B96C194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib */,
 				0BD7B96D194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib */,
-				0B9A2FAC194B746600A36C94 /* NewsiPadHeaderReusableView.xib */,
+				0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */,
 				0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */,
 				0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */,
 			);
@@ -3361,7 +3361,7 @@
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
 				442C192B10F3AE3400CB44EC /* RouteMapViewController.xib in Resources */,
-				0BD7B96E194A36D200B0EDBD /* NewsClipCollectionViewCell.xib in Resources */,
+				0BD7B96E194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib in Resources */,
 				448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */,
 				44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */,
 				0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */,
@@ -3382,7 +3382,7 @@
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
-				0B9A2FAD194B746600A36C94 /* NewsiPadHeaderReusableView.xib in Resources */,
+				0B9A2FAD194B746600A36C94 /* NewsStoryHeaderReusableView.xib in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
