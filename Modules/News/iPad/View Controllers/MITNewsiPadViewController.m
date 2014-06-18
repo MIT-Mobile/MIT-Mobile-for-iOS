@@ -4,7 +4,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
-
+#import "MITNewsiPadStoryViewController.h"
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
     MITNewsPadStyleGrid = 0,
@@ -268,6 +268,40 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 }
 
 #pragma mark UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    UIViewController *destinationViewController = [segue destinationViewController];
+    
+    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
+    
+    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsiPadStoryViewController class]]) {
+            MITNewsiPadStoryViewController *storyDetailViewController = (MITNewsiPadStoryViewController*)destinationViewController;
+            NSIndexPath *indexPath = sender;
+            MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
+            if (story) {
+#warning temporary disable of correct story handling
+                //NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                //managedObjectContext.parentContext = self.managedObjectContext;
+                //storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = story;
+
+            }
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsiPadStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    } else {
+        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
+    }
+}
 
 #pragma mark UITableViewDataSource
 

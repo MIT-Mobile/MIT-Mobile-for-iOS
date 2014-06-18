@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="559-UV-zry">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="559-UV-zry">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -49,11 +49,65 @@
                     <navigationItem key="navigationItem" id="sB4-3N-XVH"/>
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
+                        <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="g55-fq-NLw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e52-0i-HFC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-585" y="184"/>
+        </scene>
+        <!--Newsi Pad Story View Controller-->
+        <scene sceneID="Gpk-Vd-bz5">
+            <objects>
+                <viewController id="nXb-ze-oPc" customClass="MITNewsiPadStoryViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1Za-YJ-qfZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="JeH-dg-JxY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="LSd-EA-i8C">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lbw-PH-uJi">
+                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-FN-0Ky">
+                                        <rect key="frame" x="0.0" y="0.0" width="768" height="768"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="768" id="EtD-ah-Jgu"/>
+                                        </constraints>
+                                    </webView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="ZMx-FN-0Ky" secondAttribute="trailing" id="5Io-ky-aOj"/>
+                                    <constraint firstAttribute="bottom" secondItem="ZMx-FN-0Ky" secondAttribute="bottom" id="Tyh-IP-DFp"/>
+                                    <constraint firstItem="ZMx-FN-0Ky" firstAttribute="top" secondItem="lbw-PH-uJi" secondAttribute="top" id="WcN-6Y-srV"/>
+                                    <constraint firstItem="ZMx-FN-0Ky" firstAttribute="width" secondItem="lbw-PH-uJi" secondAttribute="width" id="hzA-Rs-ueT"/>
+                                    <constraint firstItem="ZMx-FN-0Ky" firstAttribute="leading" secondItem="lbw-PH-uJi" secondAttribute="leading" id="s5T-74-pn5"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="lbw-PH-uJi" firstAttribute="top" secondItem="1Za-YJ-qfZ" secondAttribute="bottom" id="F4v-y7-qYd"/>
+                            <constraint firstItem="JeH-dg-JxY" firstAttribute="top" secondItem="lbw-PH-uJi" secondAttribute="bottom" id="ncx-aH-Xh9"/>
+                            <constraint firstItem="lbw-PH-uJi" firstAttribute="leading" secondItem="LSd-EA-i8C" secondAttribute="leading" id="v0V-c3-frp"/>
+                            <constraint firstAttribute="trailing" secondItem="lbw-PH-uJi" secondAttribute="trailing" id="ymX-T2-2iF"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="foN-Li-JFC"/>
+                    <connections>
+                        <outlet property="bodyView" destination="ZMx-FN-0Ky" id="F5r-na-07C"/>
+                        <outlet property="bodyViewHeightConstraint" destination="EtD-ah-Jgu" id="WpS-js-SBI"/>
+                        <outlet property="scrollView" destination="lbw-PH-uJi" id="kfC-xj-bjf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="57i-Pa-t19" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="247" y="184"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
