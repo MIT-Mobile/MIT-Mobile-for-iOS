@@ -9,7 +9,6 @@
 
 @property (nonatomic, retain) NSString * agency;
 @property (nonatomic, retain) NSString * routeId;
-@property (nonatomic, retain) NSString * routeTitle;
 @property (nonatomic, retain) NSString * routeURL;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
 @end
