@@ -8,10 +8,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" reuseIdentifier="NewsStoryImageCollectionViewCell" id="kaU-Et-mRD" userLabel="NewsStoryImageCollectionViewCell" customClass="MITNewsStoryCollectionViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="178" height="185"/>
+            <rect key="frame" x="0.0" y="0.0" width="178" height="134"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="178" height="185"/>
+                <rect key="frame" x="0.0" y="0.0" width="178" height="134"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
@@ -21,9 +21,9 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="178" translatesAutoresizingMaskIntoConstraints="NO" id="Lch-jy-yVG">
-                        <rect key="frame" x="0.0" y="108" width="178" height="77"/>
+                        <rect key="frame" x="0.0" y="108" width="178" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
@@ -38,7 +38,7 @@
                 <constraint firstItem="H2F-9T-m4h" firstAttribute="top" secondItem="kaU-Et-mRD" secondAttribute="top" id="usa-lT-TE0"/>
                 <constraint firstItem="Lch-jy-yVG" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="uzK-hB-dHa"/>
             </constraints>
-            <size key="customSize" width="155" height="159"/>
+            <size key="customSize" width="155" height="108"/>
             <connections>
                 <outlet property="storyImageView" destination="H2F-9T-m4h" id="aEr-dI-sGf"/>
                 <outlet property="titleLabel" destination="Lch-jy-yVG" id="J5g-A7-rru"/>
