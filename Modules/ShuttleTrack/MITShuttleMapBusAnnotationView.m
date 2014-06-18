@@ -6,6 +6,8 @@
 @interface MITShuttleMapBusAnnotationView()
 
 @property (nonatomic, strong) UIImageView *busImageView;
+@property (nonatomic, strong) UIView *bubbleContainerView;
+@property (nonatomic, strong) UILabel *routeTitleLabel;
 
 @end
 
@@ -41,27 +43,27 @@
 - (void)setupBubbleView
 {
     MITShuttleVehicle *vehicle = (MITShuttleVehicle *)self.annotation;
-    NSString *routeTitle = vehicle.routeTitle;
+    NSString *routeTitle = vehicle.route.title;
     if (!routeTitle) {
         return;
     }
 
-    UILabel *routeTitleLabel = [self labelForRouteTitle:routeTitle];
+    self.routeTitleLabel = [self labelForRouteTitle:routeTitle];
+    self.bubbleContainerView = [self bubbleContainerViewWithFrame:self.routeTitleLabel.bounds];
     UIImageView *bubbleImageView = [self bubbleImageView];
-    UIView *bubbleContainerView = [self bubbleContainerViewWithFrame:routeTitleLabel.bounds];
     
-    [bubbleContainerView addSubview:bubbleImageView];
-    [bubbleContainerView addSubview:routeTitleLabel];
-    [self addSubview:bubbleContainerView];
+    [self.bubbleContainerView addSubview:bubbleImageView];
+    [self.bubbleContainerView addSubview:self.routeTitleLabel];
+    [self addSubview:self.bubbleContainerView];
 
-    [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
-    [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
+    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
+    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
 
-    [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[routeTitleLabel]-14-|" options:0 metrics:nil views:@{@"routeTitleLabel": routeTitleLabel}]];
-    [bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[routeTitleLabel]-4-|" options:0 metrics:nil views:@{@"routeTitleLabel": routeTitleLabel}]];
+    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[routeTitleLabel]-15-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
+    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-1-[routeTitleLabel]-5-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
     
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleContainerView]-(-10)-[busImageView]" options:0 metrics:nil views:@{@"bubbleContainerView": bubbleContainerView, @"busImageView": self.busImageView}]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.busImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:bubbleContainerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:bubbleContainerView.frame.size.height]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleContainerView]-(-8)-[busImageView]" options:0 metrics:nil views:@{@"bubbleContainerView": self.bubbleContainerView, @"busImageView": self.busImageView}]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.busImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.bubbleContainerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:self.bubbleContainerView.frame.size.height]];
     
     [self layoutIfNeeded];
     
@@ -82,7 +84,7 @@
 
 - (UIImageView *)bubbleImageView
 {
-    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"shuttle/bus_bubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 16, 16)]];
+    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"shuttle/bus_bubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 14, 16)]];
     bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
     return bubbleImageView;
 }
@@ -93,6 +95,17 @@
     bubbleContainerView.backgroundColor = [UIColor clearColor];
     bubbleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     return bubbleContainerView;
+}
+
+#pragma mark - Route Title
+
+- (void)setRouteTitle:(NSString *)routeTitle
+{
+    self.routeTitleLabel.text = routeTitle;
+    [self.routeTitleLabel sizeToFit];
+    [self layoutIfNeeded];
+    
+    self.centerOffset = CGPointMake(-self.busImageView.center.x, -self.busImageView.center.y);
 }
 
 #pragma mark - Animations

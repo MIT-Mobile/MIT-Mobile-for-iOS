@@ -709,6 +709,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             annotationView = [[MITShuttleMapBusAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITShuttleMapBusAnnotationViewReuseIdentifier];
         }
         annotationView.mapView = mapView;
+        [annotationView setRouteTitle:vehicle.route.title];
         annotationView.alpha = [self annotationViewAlphaForVehicle:vehicle];
         return annotationView;
     }

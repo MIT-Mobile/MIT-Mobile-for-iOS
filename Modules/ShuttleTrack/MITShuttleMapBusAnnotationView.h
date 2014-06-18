@@ -8,5 +8,6 @@
 
 - (void)startAnimating;
 - (void)stopAnimating;
+- (void)setRouteTitle:(NSString *)routeTitle;
 
 @end
