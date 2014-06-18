@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     
 #warning test data
                             //in_the_media  //_mit_news //around_campus
-    [[MITNewsModelController sharedController] storiesInCategory:@"around_campus" query:nil offset:0 limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+    [[MITNewsModelController sharedController] storiesInCategory:@"mit_news" query:nil offset:0 limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
         MITNewsiPadViewController *strong = weakController;
         if (strong) {
             strong.stories = [[NSArray alloc] initWithArray:stories];
@@ -230,9 +230,9 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     NSString *identifier = nil;
 
     MITNewsStory *newsStory = [self.stories objectAtIndex:indexPath.row];
+    
     if (newsStory) {
         if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-#warning need to test this identifier
             identifier = MITNewsStoryClipCollectionViewCell;
         } else if (newsStory.coverImage)  {
             identifier = MITNewsStoryImageCollectionViewCell;
@@ -245,7 +245,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
                                       dequeueReusableCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell
                                       forIndexPath:indexPath];
 
-    jumboCell.story = [self.stories objectAtIndex:indexPath.row];
+    jumboCell.story = newsStory;
     return jumboCell;
     }
     MITNewsStoryCollectionViewCell *imageCell = [collectionView

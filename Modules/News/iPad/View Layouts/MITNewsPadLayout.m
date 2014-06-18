@@ -48,6 +48,8 @@
 
 - (void)prepareLayout
 {
+    
+    self.collectionViewHeight = 0;
     NSMutableDictionary *cellLayoutInfo = [NSMutableDictionary dictionary];
     
     NSInteger sectionCount = [self.collectionView numberOfSections];
@@ -74,24 +76,24 @@
         CGFloat xOrigin = 60;
         //max height of current row's cells so next row are all aligned
         CGFloat maxHeight = 0;
+       // CGFloat previousX = 0;
+        BOOL comeUpWithAName = FALSE;
 
         for (NSInteger item = 0; item < itemCount; item++) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
             UICollectionViewLayoutAttributes *itemAttributes =
             [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            
             if (section == 0) {
-                //if Jumob Cell
+                //if Jumbo Cell
                 if (item == 0) {
                     UICollectionViewLayoutAttributes * layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withIndexPath:indexPath];
                     layoutAttributes.frame = CGRectMake(xOrigin, 10, self.collectionView.frame.size.width, 50);
                     cellLayoutInfo[[NSString stringWithFormat:@"%@%d",MITNewsStoryHeaderReusableView,indexPath.section]] = layoutAttributes;
                     
-                    itemAttributes.frame = CGRectMake(xOrigin, yOrigin, widthOfLargeCell, [self calculateHeightOfCellFromStory:[self.stories objectAtIndex:indexPath.row] withCellWidth:widthOfLargeCell isFeatured:YES]);
+                    itemAttributes.frame = CGRectMake(xOrigin, yOrigin, widthOfLargeCell, [self calculateHeightOfCellFromStory:[self.stories objectAtIndex:indexPath.row] withCellWidth:widthOfLargeCell isJumboCell:YES]);
                     xOrigin += widthOfLargeCell + horizontalSpace;
                 } else  {
-                    
-                    itemAttributes.frame = [self findNextAvailableOpeningForCell:CGRectMake(xOrigin, yOrigin, widthOfSmallCell, [self calculateHeightOfCellFromStory:[self.stories objectAtIndex:indexPath.row] withCellWidth:widthOfSmallCell isFeatured:NO]) againstFrames:cellLayoutInfo withYOrigin:maxHeight];
+                    itemAttributes.frame = [self findNextAvailableOpeningForCell:CGRectMake(xOrigin, yOrigin, widthOfSmallCell, [self calculateHeightOfCellFromStory:[self.stories objectAtIndex:indexPath.row] withCellWidth:widthOfSmallCell isJumboCell:NO]) againstFrames:cellLayoutInfo withYOrigin:maxHeight isFeatured:YES];
 
                     yOrigin = itemAttributes.frame.origin.y;
                     xOrigin = itemAttributes.frame.size.width + itemAttributes.frame.origin.x + horizontalSpace;
@@ -122,7 +124,7 @@
     self.layoutInfo = cellLayoutInfo;
 }
 
-- (CGRect)findNextAvailableOpeningForCell:(CGRect)cellFrame againstFrames:(NSDictionary *)dictionary withYOrigin:(CGFloat)yOrigin
+- (CGRect)findNextAvailableOpeningForCell:(CGRect)cellFrame againstFrames:(NSDictionary *)dictionary withYOrigin:(CGFloat)yOrigin isFeatured:(BOOL)featured
 {
     CGSize displayArea = self.collectionView.bounds.size;
     while (TRUE) {
@@ -133,6 +135,8 @@
             cellFrame = frame;
         } else {
             BOOL intersectsRect = FALSE;
+            
+            NSInteger numbeOfSameXOrigins = 0;
             for (NSIndexPath *key in dictionary) {
                 UICollectionViewLayoutAttributes *cellAttributes = dictionary[key];
                 
@@ -143,7 +147,28 @@
                     intersectsRect = TRUE;
                     break;
                 }
+                if (cellAttributes.frame.origin.x == cellFrame.origin.x) {
+                    numbeOfSameXOrigins++;
+                }
             }
+            if (numbeOfSameXOrigins == 1 && [dictionary count] == 3 && featured) {
+
+                if (cellFrame.size.height + cellFrame.origin.y < self.collectionViewHeight && [UIDevice currentDevice].orientation == UIDeviceOrientationPortrait) {
+                    CGRect frame = cellFrame;
+                    frame.origin.y = self.collectionViewHeight - cellFrame.size.height;
+                    cellFrame = frame;
+                }
+
+            }
+            if (numbeOfSameXOrigins == 1 && [dictionary count] == 4 && featured && [UIDevice currentDevice].orientation != UIDeviceOrientationPortrait) {
+                if (cellFrame.size.height + cellFrame.origin.y < self.collectionViewHeight) {
+                    CGRect frame = cellFrame;
+                    frame.origin.y = self.collectionViewHeight - cellFrame.size.height;
+                    cellFrame = frame;
+                }
+                
+            }
+            
             if (!intersectsRect) {
                 return cellFrame;
             }
@@ -206,10 +231,11 @@
 }
 */
 
-- (CGFloat)calculateHeightOfCellFromStory:(MITNewsStory *)story withCellWidth:(CGFloat)cellWidth isFeatured:(BOOL)featured
+- (CGFloat)calculateHeightOfCellFromStory:(MITNewsStory *)story withCellWidth:(CGFloat)cellWidth isJumboCell:(BOOL)jumboCell
 {
+    
     CGFloat length = 0;
-    if (featured ) {
+    if (jumboCell ) {
         if (story.title) {
             length = [self boxsize:story.title textwidth:cellWidth font:[UIFont fontWithName:@"HelveticaNeue-Medium" size:24]].height;
         }
@@ -217,7 +243,7 @@
             length += [self boxsize:story.dek textwidth:cellWidth font:[UIFont fontWithName:@"HelveticaNeue-Medium" size:17]].height;
         }
     } else if ([story.type isEqualToString:@"news_clip"]) {
-        
+
         length = [self boxsize:story.dek textwidth:cellWidth font:[UIFont fontWithName:@"HelveticaNeue" size:14]].height;
     } else {
         
@@ -250,17 +276,16 @@
         imageSize.width = cellWidth;
         return length + imageSize.height;*/
         
-        if (featured) {
+        if ([story.type isEqualToString:@"news_clip"]) {
+            return length + 34;
+        }
+        if (jumboCell) {
             return length + 275 + 9;
         } else {
             return length + 100 + 9;
 
         }
     } else {
-        if (length < 200) {
-            return 200;
-        }
-#warning 1?
         return length + 1;
     }
 }

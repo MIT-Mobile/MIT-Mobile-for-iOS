@@ -5,6 +5,14 @@
 #import "MITNewsImageRepresentation.h"
 #import "MITAdditions.h"
 
+@interface MITNewsStoryCollectionViewCell ()
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageWidthConstraint;
+@end
+
+#warning 'External' story image size should probably not be hardcoded
+static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .height = 34.};
+
 @implementation MITNewsStoryCollectionViewCell {
     BOOL _isExternalStory;
     CGSize _scaledImageSize;
@@ -22,10 +30,11 @@
 - (void)updateConstraints
 {
     [super updateConstraints];
-    
+
     if (_isExternalStory) {
         _imageHeightConstraint.constant = _scaledImageSize.height;
         _imageWidthConstraint.constant = _scaledImageSize.width;
+        
 #warning unused
     } else {
       //  _imageHeightConstraint.constant =  _scaledImageSize.height;
@@ -64,7 +73,7 @@
             
             CGSize idealImageSize = CGSizeZero;
             if ([story.type isEqualToString:@"news_clip"]) {
-                idealImageSize = CGSizeMake(self.storyImageView.frame.size.width, self.imageHeightConstraint.constant);
+                idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
                 _isExternalStory = YES;
             } else {
                 idealImageSize = CGSizeMake(350, 350);
@@ -75,8 +84,7 @@
                 imageURL = representation.url;
                 
                 if (_isExternalStory) {
-                    _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(self.storyImageView.frame.size.width, self.imageHeightConstraint.constant)];
-                
+                    _scaledImageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:MITNewsStoryCellExternalMaximumImageSize];
                     }
 #warning used for dynamic height
                 /*else {
