@@ -76,7 +76,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
                 idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
                 _isExternalStory = YES;
             } else {
-                idealImageSize = CGSizeMake(350, 350);
+                idealImageSize = CGSizeMake(1000, 1000);
                 _isExternalStory = NO;
             }
             MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];

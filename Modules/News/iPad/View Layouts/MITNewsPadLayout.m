@@ -264,11 +264,9 @@
     }
     
     
-    MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(350, 350)];
+    MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(1000, 1000)];
     if (representation) {
         
-        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(350, 350)];
-      
         CGFloat ratio = [representation.height floatValue] / [representation.width floatValue];
         CGFloat imageHeight = cellWidth * ratio;
         
