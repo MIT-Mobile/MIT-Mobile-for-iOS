@@ -14,6 +14,7 @@ extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
 @property (nonatomic, retain) NSString * identifier;
 @property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSNumber * longitude;
+@property (nonatomic, retain) NSString * routeId;
 @property (nonatomic, retain) NSNumber * secondsSinceReport;
 @property (nonatomic, retain) NSNumber * speedKph;
 @property (nonatomic, retain) MITShuttleRoute *route;
@@ -22,6 +23,8 @@ extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
 
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;
 - (NSString *)routeTitle;
+
++ (RKMapping *)objectMappingFromVehicleList;
 
 @end
 

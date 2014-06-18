@@ -50,6 +50,7 @@
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="routeId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="secondsSinceReport" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="speedKph" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ShuttlePrediction" inverseName="vehicle" inverseEntity="ShuttlePrediction" syncable="YES"/>
@@ -64,11 +65,11 @@
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="vehicleList" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ShuttlePrediction" positionX="-36" positionY="99" width="128" height="133"/>
-        <element name="ShuttlePredictionList" positionX="-18" positionY="108" width="128" height="148"/>
-        <element name="ShuttleRoute" positionX="-63" positionY="-18" width="128" height="253"/>
-        <element name="ShuttleStop" positionX="-54" positionY="63" width="128" height="195"/>
-        <element name="ShuttleVehicle" positionX="0" positionY="144" width="128" height="180"/>
-        <element name="ShuttleVehicleList" positionX="18" positionY="171" width="128" height="118"/>
+        <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="133"/>
+        <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="148"/>
+        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="253"/>
+        <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="195"/>
+        <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
+        <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="118"/>
     </elements>
 </model>
