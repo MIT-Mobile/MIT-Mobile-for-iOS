@@ -267,22 +267,18 @@
     MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(350, 350)];
     if (representation) {
         
-#warning for dynamic height
-       /* CGSize imageSize = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(cellWidth, MAXFLOAT)];
-        
-        
-        CGFloat imageHeight = imageSize.height;
-        imageSize.height = (cellWidth / imageSize.width) * imageHeight;
-        imageSize.width = cellWidth;
-        return length + imageSize.height;*/
+        MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(350, 350)];
+      
+        CGFloat ratio = [representation.height floatValue] / [representation.width floatValue];
+        CGFloat imageHeight = cellWidth * ratio;
         
         if ([story.type isEqualToString:@"news_clip"]) {
             return length + 34;
         }
         if (jumboCell) {
-            return length + 275 + 9;
+            return length + imageHeight + 9;
         } else {
-            return length + 100 + 9;
+            return length + imageHeight + 9;
 
         }
     } else {
