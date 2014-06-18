@@ -70,6 +70,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 }
 
 #pragma mark - Vehicles
+
 - (void)getVehicles:(MITShuttleVehiclesCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
