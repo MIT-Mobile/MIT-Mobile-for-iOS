@@ -10,6 +10,14 @@
 
 @interface MITNewsiPadStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryDekLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryDateLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStory;
+@property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @end
 
 @implementation MITNewsiPadStoryViewController {
@@ -41,9 +49,11 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-
     __block NSURL *imageURL = nil;
-    [self.managedObjectContext performBlockAndWait:^{
+    
+    [self setupNextStory];
+    
+    /*[self.managedObjectContext performBlockAndWait:^{
         if (self.story) {
             CGSize imageSize = self.coverImageView.bounds.size;
             imageSize.height = 213.;
@@ -58,6 +68,92 @@
                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
                                        [self.view setNeedsUpdateConstraints];
         }];
+    }*/
+}
+
+- (void)setupNextStory
+{
+    if (_story) {
+        __block NSString *title = nil;
+        __block NSString *dek = nil;
+        __block NSURL *imageURL = nil;
+        //[_story.managedObjectContext performBlockAndWait:^{
+        title = self.story.title;
+        dek = self.story.dek;
+        
+        
+        CGSize idealImageSize = self.nextStoryImageView.frame.size;
+        
+        MITNewsImageRepresentation *representation = [self.story.coverImage bestRepresentationForSize:idealImageSize];
+        if (representation) {
+            imageURL = representation.url;
+        }
+        //   }];
+        
+        if (title) {
+            NSError *error = nil;
+            NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (!titleContent) {
+                DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
+                titleContent = title;
+            }
+            self.nextStoryTitleLabel.text = titleContent;
+            
+        } else {
+            self.nextStoryTitleLabel.text = nil;
+        }
+        if (dek) {
+            NSError *error = nil;
+            NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (error) {
+                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
+                dekContent = dek;
+            }
+            
+            self.nextStoryDekLabel.text = dekContent;
+        } else {
+            self.nextStoryDekLabel.text = nil;
+        }
+        
+        if (imageURL) {
+            MITNewsStory *currentStory = self.story;
+            __weak MITNewsiPadStoryViewController *weakSelf = self;
+            [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                MITNewsiPadStoryViewController *blockSelf = weakSelf;
+                if (blockSelf && (blockSelf->_story == currentStory)) {
+                    if (error) {
+                        blockSelf.nextStoryImageView.image = nil;
+                    }
+                }
+            }];
+        } else {
+            self.nextStoryImageView.image = nil;
+        }
+        static NSDateFormatter *dateFormatter = nil;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"MMM dd, y"];
+        });
+        
+        NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+        
+        NSError *error = nil;
+        NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
+        NSAssert(templateString, @"failed to load News story HTML template");
+        
+        NSString *postDate = @"";
+        NSDate *publishedAt = self.story.publishedAt;
+        if (publishedAt) {
+            postDate = [dateFormatter stringFromDate:publishedAt];
+        }
+        self.nextStoryDateLabel.text = postDate;
+    } else {
+        [self.nextStoryImageView cancelCurrentImageLoad];
+        self.nextStoryImageView.image = nil;
+        self.nextStoryTitleLabel.text = nil;
+        self.nextStoryDekLabel.text = nil;
+        self.nextStoryDateLabel.text = nil;
     }
 }
 
@@ -77,8 +173,8 @@
         CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
         self.bodyViewHeightConstraint.constant = size.height;
     }
-
-
+    NSLog(@"%f %f %f %f",self.nextStoryDekLabel.frame.size.height, self.nextStoryTitleLabel.frame.size.height, self.nextStoryDateLabel.frame.size.height, self.view.frame.size.width);
+/*
     if (self.coverImageView.image) {
         // Using 213 here because all the images from the News office should be around a
         // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
@@ -88,7 +184,7 @@
         self.coverImageViewHeightConstraint.constant = 213.;
     } else {
         self.coverImageViewHeightConstraint.constant = 0;
-    }
+    }*/
 }
 
 - (IBAction)shareButtonTapped:(id)sender
