@@ -5,11 +5,11 @@
 
 @class MITShuttleStop, MITShuttleVehicle;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
     MITShuttleRouteStatusNotInService = 0,
     MITShuttleRouteStatusInService,
     MITShuttleRouteStatusPredictionsUnavailable
-} MITShuttleRouteStatus;
+};
 
 @interface MITShuttleRoute : MITManagedObject <MITMappedObject>
 
