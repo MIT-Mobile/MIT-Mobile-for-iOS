@@ -109,6 +109,14 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (!self.hasSetUpMapRect) {
+        [self setupMapBoundingBoxAnimated:YES];
+        self.hasSetUpMapRect = YES;
+    }
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self prepareForViewDisappearance];
@@ -119,10 +127,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)prepareForViewAppearance
 {
-    if (!self.hasSetUpMapRect) {
-        [self setupMapBoundingBoxAnimated:NO];
-    }
-    
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self startRefreshingVehicles];
     }
@@ -499,8 +503,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
     [self.mapView setRegion:region animated:animated];
-
-    self.hasSetUpMapRect = YES;
 }
 
 - (CGRect)rectForAnnotationView:(MKAnnotationView *)annotationView inView:(UIView *)view
