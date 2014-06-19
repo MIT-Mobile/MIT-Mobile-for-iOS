@@ -99,7 +99,23 @@
     emergencyPhone.text = [contactInfo valueForKey:@"phone"];
     emergencySubtitle.text = [contactInfo valueForKey:@"summary"];
     
+    BOOL isHidden = !emergencySubtitle.text || [emergencySubtitle.text length] == 0;
+    [self setView:emergencySubtitle hidden:isHidden withinContentView:cell.contentView];
+    
     return cell;
+}
+
+- (void) setView:(UIView *)view hidden:(BOOL)isHidden withinContentView:(UIView *)contentView
+{
+    [view setHidden:isHidden];
+    
+    for (NSLayoutConstraint *con in contentView.constraints)
+    {
+        if (con.firstItem == view  && con.firstAttribute == NSLayoutAttributeTop) {
+            con.constant = isHidden ? -9 : 0;
+            break;
+        }
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;

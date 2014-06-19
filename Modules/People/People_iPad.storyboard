@@ -36,8 +36,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="55"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Emergency Name" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kAw-aa-tWj">
-                                            <rect key="frame" x="20" y="8" width="160" height="21"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Name" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kAw-aa-tWj">
+                                            <rect key="frame" x="20" y="8" width="129" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="JE9-Tc-7Lt"/>
@@ -46,8 +46,8 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Emergency Phone" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Wh-VP-uwg">
-                                            <rect key="frame" x="195" y="8" width="160" height="21"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Phone" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Wh-VP-uwg">
+                                            <rect key="frame" x="164" y="8" width="133" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.70000000000000007" colorSpace="calibratedRGB"/>
@@ -63,6 +63,7 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="3Kj-6b-Pj9" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="bottom" id="2Ge-xg-kps"/>
+                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="top" secondItem="zI7-BS-Ki8" secondAttribute="top" constant="29" id="3K8-ip-j8N"/>
                                         <constraint firstItem="3Kj-6b-Pj9" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="leading" id="AyX-g2-D7K"/>
                                         <constraint firstAttribute="trailing" secondItem="3Kj-6b-Pj9" secondAttribute="trailing" constant="20" symbolic="YES" id="OiR-x5-CIG"/>
                                         <constraint firstItem="kAw-aa-tWj" firstAttribute="leading" secondItem="zI7-BS-Ki8" secondAttribute="leading" constant="20" symbolic="YES" id="Sko-c8-UA3"/>
@@ -70,7 +71,6 @@
                                         <constraint firstAttribute="bottom" secondItem="3Kj-6b-Pj9" secondAttribute="bottom" constant="5" id="Ypj-jf-ncw"/>
                                         <constraint firstItem="2Wh-VP-uwg" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="top" id="noU-mu-GXR"/>
                                         <constraint firstItem="2Wh-VP-uwg" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="trailing" constant="15" id="pYH-iJ-CiI"/>
-                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="top" secondItem="zI7-BS-Ki8" secondAttribute="top" constant="8" id="sOA-sU-uGx"/>
                                     </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
