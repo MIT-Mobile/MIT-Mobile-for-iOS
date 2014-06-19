@@ -86,9 +86,9 @@
             if (section == 0) {
                 //if Jumbo Cell
                 if (item == 0) {
-                    UICollectionViewLayoutAttributes * layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withIndexPath:indexPath];
+                    UICollectionViewLayoutAttributes * layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsCollectionReusableHeaderWithCellIdentifier withIndexPath:indexPath];
                     layoutAttributes.frame = CGRectMake(xOrigin, 10, self.collectionView.frame.size.width, 50);
-                    cellLayoutInfo[[NSString stringWithFormat:@"%@%d",MITNewsStoryHeaderReusableView,indexPath.section]] = layoutAttributes;
+                    cellLayoutInfo[[NSString stringWithFormat:@"%@%d",MITNewsCollectionReusableHeaderWithCellIdentifier,indexPath.section]] = layoutAttributes;
                     
                     itemAttributes.frame = CGRectMake(xOrigin, yOrigin, widthOfLargeCell, [self calculateHeightOfCellFromStory:[self.stories objectAtIndex:indexPath.row] withCellWidth:widthOfLargeCell isJumboCell:YES]);
                     xOrigin += widthOfLargeCell + horizontalSpace;
@@ -107,9 +107,9 @@
             } else {
                 if (indexPath.row == 0) {
                     yOrigin += widthOfSmallCell + horizontalSpace + 15;
-                    UICollectionViewLayoutAttributes *layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView  withIndexPath:indexPath];
+                    UICollectionViewLayoutAttributes *layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsCollectionReusableHeaderWithCellIdentifier  withIndexPath:indexPath];
                     layoutAttributes.frame = CGRectMake(40, yOrigin - 50, self.collectionView.frame.size.width, 50);
-                    cellLayoutInfo[[NSString stringWithFormat:@"%@%d",MITNewsStoryHeaderReusableView,indexPath.section]] = layoutAttributes;
+                    cellLayoutInfo[[NSString stringWithFormat:@"%@%d",MITNewsCollectionReusableHeaderWithCellIdentifier,indexPath.section]] = layoutAttributes;
                     
                 }
                 itemAttributes.frame = CGRectMake(xOrigin, yOrigin, widthOfSmallCell, widthOfSmallCell);

@@ -97,15 +97,15 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         _gridViewController = gridViewController;
 
     }
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsCollectionCellStoryJumboWithCellIdentifier bundle:nil] forCellWithReuseIdentifier:MITNewsCollectionCellStoryJumboWithCellIdentifier];
 
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsCollectionCellStoryDekWithCellIdentifier bundle:nil] forCellWithReuseIdentifier:MITNewsCollectionCellStoryDekWithCellIdentifier];
 
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryClipCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsCollectionCellStoryClipWithCellIdentifier bundle:nil] forCellWithReuseIdentifier:MITNewsCollectionCellStoryClipWithCellIdentifier];
     
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsCollectionCellStoryImageWithCellIdentifier bundle:nil] forCellWithReuseIdentifier:MITNewsCollectionCellStoryImageWithCellIdentifier];
 
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
+    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsCollectionReusableHeaderWithCellIdentifier bundle:nil] forSupplementaryViewOfKind:MITNewsCollectionReusableHeaderWithCellIdentifier withReuseIdentifier:MITNewsCollectionReusableHeaderWithCellIdentifier];
 
     return gridViewController;
 }
@@ -233,16 +233,16 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     
     if (newsStory) {
         if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-            identifier = MITNewsStoryClipCollectionViewCell;
+            identifier = MITNewsCollectionCellStoryClipWithCellIdentifier;
         } else if (newsStory.coverImage)  {
-            identifier = MITNewsStoryImageCollectionViewCell;
+            identifier = MITNewsCollectionCellStoryImageWithCellIdentifier;
         } else {
-            identifier = MITNewsStoryDekCollectionViewCell;
+            identifier = MITNewsCollectionCellStoryDekWithCellIdentifier;
         }
     }
     if (indexPath.row == 0) {
     MITNewsStoryCollectionViewCell *jumboCell = [collectionView
-                                      dequeueReusableCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell
+                                      dequeueReusableCellWithReuseIdentifier:MITNewsCollectionCellStoryJumboWithCellIdentifier
                                       forIndexPath:indexPath];
 
     jumboCell.story = newsStory;
@@ -262,7 +262,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     UICollectionReusableView *reusableView = nil;
     reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind
-                                                      withReuseIdentifier:MITNewsStoryHeaderReusableView
+                                                      withReuseIdentifier:MITNewsCollectionReusableHeaderWithCellIdentifier
                                                              forIndexPath:indexPath];
     return reusableView;
 }

@@ -25,8 +25,8 @@ extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;
 
 #pragma mark iPad stories
 
-extern NSString* const MITNewsStoryJumboCollectionViewCell;
-extern NSString* const MITNewsStoryDekCollectionViewCell;
-extern NSString* const MITNewsStoryClipCollectionViewCell;
-extern NSString* const MITNewsStoryImageCollectionViewCell;
-extern NSString* const MITNewsStoryHeaderReusableView;
+extern NSString* const MITNewsCollectionCellStoryJumboWithCellIdentifier;
+extern NSString* const MITNewsCollectionCellStoryDekWithCellIdentifier;
+extern NSString* const MITNewsCollectionCellStoryClipWithCellIdentifier;
+extern NSString* const MITNewsCollectionCellStoryImageWithCellIdentifier;
+extern NSString* const MITNewsCollectionReusableHeaderWithCellIdentifier;
