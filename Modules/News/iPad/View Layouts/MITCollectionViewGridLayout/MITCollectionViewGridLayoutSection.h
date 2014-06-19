@@ -6,18 +6,20 @@
 @property (nonatomic,readonly,weak) MITCollectionViewNewsGridLayout *layout;
 @property (nonatomic,readonly) NSInteger section;
 
-@property (nonatomic) CGPoint origin;
 @property (nonatomic) UIEdgeInsets contentInsets;
 
+@property (nonatomic) CGPoint origin;
 @property (nonatomic,readonly) CGRect bounds;
 @property (nonatomic,readonly) CGRect frame;
 
-@property (nonatomic,readonly,strong) UICollectionViewLayoutAttributes *headerLayoutAttributes;
-@property (nonatomic,readonly,strong) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
-@property (nonatomic,readonly,strong) NSArray *itemLayoutAttributes;
+@property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *headerLayoutAttributes;
+@property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
+@property (nonatomic,readonly,copy) NSArray *itemLayoutAttributes;
 
 + (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns;
-- (NSArray*)layoutAttributesInRect:(CGRect)rect;
+
+- (void)invalidateLayout;
+- (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

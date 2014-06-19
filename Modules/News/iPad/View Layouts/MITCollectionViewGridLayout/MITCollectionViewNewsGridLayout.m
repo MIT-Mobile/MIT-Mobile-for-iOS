@@ -57,7 +57,7 @@
 
 - (MITCollectionViewGridLayoutSection*)primitiveLayoutForSection:(NSInteger)section
 {
-    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self section:section];
+    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:self.numberOfColumns];
 
     CGPoint origin = CGPointZero;
     if (section > 0) {
@@ -93,30 +93,48 @@
 {
     [super invalidateLayout];
 
-    [self.sectionLayouts removeAllObjects];
+    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *section, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
+        [sectionLayout invalidateLayout];
+    }];
 }
 
 #pragma mark Returning layout attributes
 - (NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
 {
-    NSMutableArray *layoutAttributes = [[NSMutableArray alloc] init];
-
+    NSMutableOrderedSet *visibleLayoutAttributes = [[NSMutableOrderedSet alloc] init];
     NSInteger numberOfSections = [self.collectionView numberOfSections];
     for (NSInteger section = 0; section < numberOfSections; ++section) {
         MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:section];
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
-            CGRect intersectionFrame = CGRectIntersection(rect, sectionLayout.frame);
-            [layoutAttributes addObjectsFromArray:[sectionLayout layoutAttributesInRect:intersectionFrame]];
+            [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+                    [visibleLayoutAttributes addObject:layoutAttributes];
+                }
+            }];
         }
     }
 
-    return layoutAttributes;
+    return [visibleLayoutAttributes array];
+}
+
+
+- (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
+    return sectionLayout.headerLayoutAttributes;
+}
+
+- (UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)decorationViewKind atIndexPath:(NSIndexPath *)indexPath
+{
+    MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
+    return nil;
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
+    return [sectionLayout layoutAttributesForItemAtIndexPath:indexPath];
 }
 
 #pragma mark Delegate Pass-Thru
@@ -149,7 +167,7 @@
 
 - (BOOL)showFeaturedItemInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:showFeaturedStoryInSection:)]) {
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:showFeaturedItemInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self showFeaturedItemInSection:section];
     } else {
         return NO;

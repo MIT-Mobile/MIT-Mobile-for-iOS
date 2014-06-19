@@ -4,6 +4,7 @@
 
 @interface MITCollectionViewGridLayoutSection ()
 @property (nonatomic,readwrite) NSInteger section;
+@property (nonatomic,readwrite) CGRect bounds;
 
 @property (nonatomic) UIEdgeInsets sectionInsets;
 @property (nonatomic) NSUInteger numberOfColumns;
@@ -19,7 +20,7 @@
 @synthesize headerLayoutAttributes = _headerLayoutAttributes;
 @synthesize featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
 
-+ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout section:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns
++ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [[self alloc] initWithLayout:layout];
     sectionLayout.section = section;
@@ -53,26 +54,51 @@
 {
     [self layoutIfNeeded];
     
-    return _featuredItemLayoutAttributes;
+    UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = _headerLayoutAttributes;
+    
+    if (featuredItemLayoutAttributes) {
+        featuredItemLayoutAttributes = [_featuredItemLayoutAttributes copy];
+        featuredItemLayoutAttributes.frame = CGRectOffset(featuredItemLayoutAttributes.frame, self.origin.x, self.origin.y);
+    }
+    
+    return featuredItemLayoutAttributes;
 }
 
 - (UICollectionViewLayoutAttributes*)headerLayoutAttributes
 {
     [self layoutIfNeeded];
     
+    UICollectionViewLayoutAttributes *headerLayoutAttributes = _headerLayoutAttributes;
     
-    return _headerLayoutAttributes;
+    if (headerLayoutAttributes) {
+        headerLayoutAttributes = [_headerLayoutAttributes copy];
+        headerLayoutAttributes.frame = CGRectOffset(headerLayoutAttributes.frame, self.origin.x, self.origin.y);
+    }
+    
+    return headerLayoutAttributes;
 }
 
 - (NSArray*)itemLayoutAttributes
 {
     [self layoutIfNeeded];
-    return [_itemLayoutAttributes copy];
+    
+    if (!_itemLayoutAttributes) {
+        return nil;
+    } else {
+        NSArray *itemLayoutAttributes = [[NSArray alloc] initWithArray:_itemLayoutAttributes copyItems:YES];
+        [itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+            layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
+        }];
+        
+        return [_itemLayoutAttributes copy];
+    }
 }
 
-- (CGFloat)contentWidth
+- (CGRect)bounds
 {
-    return CGRectGetWidth(self.layout.collectionView.bounds);
+    [self layoutIfNeeded];
+    
+    return _bounds;
 }
 
 - (CGRect)frame
@@ -86,6 +112,7 @@
     _headerLayoutAttributes = nil;
     _itemLayoutAttributes = nil;
     _needsLayout = YES;
+    _bounds = CGRectZero;
 }
 
 - (void)layoutIfNeeded
@@ -93,7 +120,9 @@
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is layed out, we'll go back and give the height a correct value
-        CGRect layoutBounds = CGRectMake(0, 0, [self contentWidth], CGFLOAT_MAX);
+        CGFloat contentWidth = CGRectGetWidth(self.layout.collectionView.bounds);
+        __block CGRect layoutBounds = CGRectMake(0, 0, contentWidth, CGFLOAT_MAX);
+        layoutBounds = UIEdgeInsetsInsetRect(layoutBounds, self.contentInsets);
         
         const CGFloat numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
         if (numberOfItems == 0) {
@@ -163,33 +192,36 @@
             [currentLayoutRow addItemForIndexPath:indexPath itemSize:itemSize];
         }
         
-        
-        // Now that each row has been partitioned and sized, place the
-        // featured item and create its frame.
-        UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:0 inSection:self.section]];
-        
-        CGFloat featuredItemHeight = 0;
-        NSIndexSet *indentedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, featuredStoryRowSpan)];
-        [rowLayouts enumerateObjectsAtIndexes:indentedRowIndexes options:0 usingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
-            featuredItemHeight += rowLayout.contentSize.height;
-        }];
-        
-        CGRect featuredItemFrame = CGRectZero;
-        CGRect scratchFrame = CGRectZero;
-        CGRectDivide(layoutBounds, &featuredItemFrame, &scratchFrame, featuredItemHeight, CGRectMinYEdge);
-        
-        CGFloat featuredItemWidth = (columnWidth * featuredStoryColumnSpan) + (minimumInterItemPadding * (featuredStoryColumnSpan - 1));
-        CGRectDivide(featuredItemFrame, &featuredItemFrame, &scratchFrame, featuredItemWidth, CGRectMinXEdge);
-        
-        featuredItemLayoutAttributes.frame = featuredItemFrame;
-        _featuredItemLayoutAttributes = featuredItemLayoutAttributes;
+        CGFloat featuredItemWidth = 0;
+        if (hasFeaturedItem) {
+            // Now that each row has been partitioned and sized, place the
+            // featured item and create its frame.
+            UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:0 inSection:self.section]];
+            
+            __block CGFloat featuredItemHeight = 0;
+            NSIndexSet *indentedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, featuredStoryRowSpan)];
+            [rowLayouts enumerateObjectsAtIndexes:indentedRowIndexes options:0 usingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
+                featuredItemHeight += rowLayout.contentSize.height;
+            }];
+            
+            CGRect featuredItemFrame = CGRectZero;
+            CGRect scratchFrame = CGRectZero;
+            CGRectDivide(layoutBounds, &featuredItemFrame, &scratchFrame, featuredItemHeight, CGRectMinYEdge);
+            
+            featuredItemWidth = (columnWidth * featuredStoryColumnSpan) + (minimumInterItemPadding * (featuredStoryColumnSpan - 1));
+            CGRectDivide(featuredItemFrame, &featuredItemFrame, &scratchFrame, featuredItemWidth, CGRectMinXEdge);
+            
+            featuredItemLayoutAttributes.frame = featuredItemFrame;
+            _featuredItemLayoutAttributes = featuredItemLayoutAttributes;
+        } else {
+            _featuredItemLayoutAttributes = nil;
+        }
 
 
         // At this point, the featured item and the header are layed out properly
         // but the rows are bunched up at the top (but sized correctly!). Run through
         // each of the rows here and shift the origins to where they need to be
         NSMutableArray *layoutAttributes = [[NSMutableArray alloc] init];
-        __block CGPoint origin = layoutBounds.origin;
         [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *row, NSUInteger rowIndex, BOOL *stop) {
             CGRect rowFrame = CGRectZero;
             CGRectDivide(layoutBounds, &rowFrame, &layoutBounds, row.contentSize.height, CGRectMinYEdge);
@@ -214,12 +246,50 @@
         }];
         
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
-        layoutBounds.size.height = CGRectGetMaxX(lastRowLayout.contentFrame);
+        layoutBounds.size.height = CGRectGetMaxX(lastRowLayout.contentFrame) + self.contentInsets.bottom;
+        self.bounds = layoutBounds;
         
         _itemLayoutAttributes = layoutAttributes;
         
         _needsLayout = NO;
     }
+}
+
+- (NSArray*)allLayoutAttributes
+{
+    NSMutableArray *attributeLayouts = [[NSMutableArray alloc] init];
+    
+    if (self.headerLayoutAttributes) {
+        [attributeLayouts addObject:self.headerLayoutAttributes];
+    }
+    
+    if (self.featuredItemLayoutAttributes) {
+        [attributeLayouts addObject:self.featuredItemLayoutAttributes];
+    }
+    
+    if (self.itemLayoutAttributes) {
+        [attributeLayouts addObjectsFromArray:self.itemLayoutAttributes];
+    }
+    
+    return attributeLayouts;
+}
+
+- (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+    __block UICollectionViewLayoutAttributes *resultLayoutAttributes = nil;
+    [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *attributes, NSUInteger idx, BOOL *stop) {
+        if (attributes.representedElementCategory == UICollectionElementCategoryCell) {
+            if ([attributes.indexPath isEqual:indexPath]) {
+                resultLayoutAttributes = attributes;
+                (*stop) = YES;
+            }
+        }
+    }];
+    
+    resultLayoutAttributes = [resultLayoutAttributes copy];
+    resultLayoutAttributes.frame = CGRectOffset(resultLayoutAttributes.frame, self.origin.x, self.origin.y);
+    
+    return resultLayoutAttributes;
 }
 
 @end

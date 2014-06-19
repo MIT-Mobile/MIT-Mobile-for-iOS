@@ -2,7 +2,7 @@
 
 @interface MITCollectionViewGridLayoutRow ()
 @property (nonatomic) NSUInteger maximumNumberOfItems;
-@property (nonatomic) NSUInteger numberOfItems;
+//@property (nonatomic) NSUInteger numberOfItems;
 @end
 
 @implementation MITCollectionViewGridLayoutRow {
@@ -101,7 +101,8 @@
 
 - (BOOL)canAcceptItems
 {
-    return ([_itemLayoutAttributes count] <= self.numberOfItems);
+    BOOL canAcceptItems = [_itemLayoutAttributes count] <= self.maximumNumberOfItems;
+    return canAcceptItems;
 }
 
 - (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath itemSize:(CGSize)size
