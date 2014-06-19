@@ -65,6 +65,7 @@
 {
     NSMutableOrderedSet *routes = [self.stop.routes mutableCopy];
     if (self.currentRoute) {
+        [routes removeObject:self.currentRoute];
         [routes insertObject:self.currentRoute atIndex:0];
     }
     self.orderedRoutes = [routes array];
@@ -127,9 +128,7 @@
 - (IBAction)pageControlValueChanged:(id)sender
 {
     NSInteger currentPage = self.pageControl.currentPage;
-    MITShuttleRoute *route = self.orderedRoutes[currentPage];
     [self.scrollView setContentOffset:CGPointMake(currentPage * self.scrollView.frame.size.width, 0) animated:YES];
-    [self didScrollToRoute:route];
 }
 
 - (void)didScrollToRoute:(MITShuttleRoute *)route
@@ -159,9 +158,26 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSInteger routeIndex = (*targetContentOffset).x / scrollView.frame.size.width;
+    [self scrollingDidEnd];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        [self scrollingDidEnd];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollingDidEnd];
+}
+
+- (void)scrollingDidEnd
+{
+    NSInteger routeIndex = self.scrollView.contentOffset.x / self.scrollView.frame.size.width;
     MITShuttleRoute *route = self.orderedRoutes[routeIndex];
     self.pageControl.currentPage = routeIndex;
     [self didScrollToRoute:route];
