@@ -3,8 +3,10 @@
 #import "MITNewsModelController.h"
 #import "MITNewsCategory.h"
 #import "MITNewsStory.h"
+#import "MITCollectionViewNewsGridLayout.h"
+#import "MITNewsConstants.h"
 
-@interface MITNewsCollectionViewController () <UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface MITNewsCollectionViewController () <MITCollectionViewDelegateNewsGrid, NSFetchedResultsControllerDelegate>
 @property (nonatomic,readonly,strong) NSMapTable *fetchedResultsControllersByCategory;
 @property (nonatomic,readonly,strong) NSFetchedResultsController *categoriesFetchedResultsController;
 
@@ -18,10 +20,10 @@
 
 - (instancetype)init
 {
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(128., 128.);
-    layout.scrollDirection = UICollectionViewScrollDirectionVertical;
-
+    MITCollectionViewNewsGridLayout *layout = [[MITCollectionViewNewsGridLayout alloc] init];
+    layout.numberOfColumns = 4;
+    layout.headerHeight = 44.;
+    
     self = [super initWithCollectionViewLayout:layout];
 
     if (self) {
@@ -34,7 +36,22 @@
 
 - (void)viewDidLoad
 {
+    self.collectionView.dataSource = self;
+}
 
+- (void)collectionViewDidLoad
+{
+    self.collectionView.dataSource = self;
+    
+    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
+    
+    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
+    
+    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryClipCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
+    
+    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
+    
+    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -43,8 +60,11 @@
 
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
-
     }
+    
+    [self performDataUpdate:^(NSError *error) {
+        [self.collectionView reloadData];
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -250,17 +270,6 @@
     return [self.fetchedResultsControllersByCategory objectForKey:category];
 }
 
-#pragma mark Delegation Pass-Thru
-- (void)didSelectStory:(MITNewsStory*)story
-{
-    [self.selectionDelegate newsCollectionController:self didSelectStory:story];
-}
-
-- (void)didSelectCategory:(MITNewsCategory*)category
-{
-    [self.selectionDelegate newsCollectionController:self didSelectCategory:category];
-}
-
 #pragma mark - Delegation
 #pragma mark NSFetchedResultsController
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
@@ -268,22 +277,113 @@
     /* Do Nothing. Here to enabled NSFRC's change tracking */
 }
 
-#pragma mark UICollectionViewDelegateFlowLayout
+#pragma mark UICollectionViewDelegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [self.categoriesFetchedResultsController.fetchedObjects count];
+    return [self numberOfCategories];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSFetchedResultsController *fetchController = [self fetchedResultControllerForSection:section];
-    return [fetchController.fetchedObjects count];
+    MITNewsCategory *category = [self categoryForIndex:section];
+    return [self numberOfStoriesInCategory:category];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    [self didSelectStory:story];
+    MITNewsCategory *category = [self categoryForIndex:indexPath.section];
+    MITNewsStory *selectedStory = [self storyAtIndex:indexPath.item inCategory:category];
+    [self didSelectStory:selectedStory];
 }
+
+#pragma mark MITCollectionViewDelegateNewsGrid
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+    return 128.;
+}
+
+- (BOOL)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout showFeaturedItemInSection:(NSInteger)section
+{
+    if (section == 0) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
+{
+    return 2;
+}
+
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
+{
+    return 2;
+}
+
+#pragma mark Delegate & Data source Pass-thru
+- (void)didSelectCategory:(MITNewsCategory*)category
+{
+    if ([self.delegate respondsToSelector:@selector(newsCollectionController:didSelectCategory:)]) {
+        [self.delegate newsCollectionController:self didSelectCategory:category];
+    }
+}
+
+- (void)didSelectStory:(MITNewsStory*)story
+{
+    if ([self.delegate respondsToSelector:@selector(newsCollectionController:didSelectStory:)]) {
+        [self.delegate newsCollectionController:self didSelectStory:story];
+    }
+}
+
+- (NSInteger)numberOfCategories
+{
+    if ([self.dataSource respondsToSelector:@selector(numberOfCategoriesInNewsCollectionController:)]) {
+        return [self.dataSource numberOfCategoriesInNewsCollectionController:self];
+    } else {
+        return [self.categoriesFetchedResultsController.fetchedObjects count];
+    }
+}
+
+- (MITNewsCategory*)categoryForIndex:(NSInteger)index
+{
+    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:categoryAtIndex:)]) {
+        return [self.dataSource newsCollectionController:self categoryAtIndex:index];
+    } else {
+        return self.categoriesFetchedResultsController.fetchedObjects[index];
+    }
+}
+
+- (NSInteger)numberOfStoriesInCategory:(MITNewsCategory*)category
+{
+    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:numberOfStoriesInCategory:)]) {
+        return [self.dataSource newsCollectionController:self numberOfStoriesInCategory:category];
+    } else {
+        NSArray *stories = [self storiesInCategory:category];
+        return MAX(self.numberOfStoriesPerCategory,[stories count]);
+    }
+}
+
+- (MITNewsStory*)storyAtIndex:(NSInteger)index inCategory:(MITNewsCategory*)category
+{
+    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:storyAtIndex:inCategory:)]) {
+        return [self.dataSource newsCollectionController:self storyAtIndex:index inCategory:category];
+    } else {
+        NSArray *stories = [self storiesInCategory:category];
+        return stories[index];
+    }
+}
+
+/*
+@protocol MITNewsCollectionViewDelegate <NSObject>
+- (NSInteger)numberOfCategoriesInNewsCollectionController:(MITNewsCollectionViewController*)collectionControllers;
+- (MITNewsCategory*)newsCollectionController:(MITNewsCollectionViewController*)collectionController categoryForIndex:(NSInteger)index;
+
+- (NSInteger)newsCollectionController:(MITNewsCollectionViewController*)collectionController numberOfStoriesInCategory:(MITNewsCategory*)category;
+- (MITNewsStory*)newsCollectionController:(MITNewsCollectionViewController*)collectionController storyAtIndex:(NSInteger)index inCategory:(MITNewsCategory*)category;
+
+- (void)newsCollectionController:(MITNewsCollectionViewController*)collectionController didSelectStory:(MITNewsStory*)story;
+- (void)newsCollectionController:(MITNewsCollectionViewController*)collectionController didSelectCategory:(MITNewsCategory*)category;
+@end*/
 
 @end
