@@ -25,3 +25,4 @@ NSString* const MITNewsStoryDekCollectionViewCell = @"NewsStoryDekCollectionView
 NSString* const MITNewsStoryClipCollectionViewCell = @"NewsStoryClipCollectionViewCell";
 NSString* const MITNewsStoryImageCollectionViewCell = @"NewsStoryImageCollectionViewCell";
 NSString* const MITNewsStoryHeaderReusableView = @"NewsStoryHeaderReusableView";
+NSString* const MITNewsCollectionDecorationDividerIdentifier = @"MITNewsCollectionDecorationDividerIdentifier";
