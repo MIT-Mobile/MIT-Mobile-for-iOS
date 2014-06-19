@@ -3,11 +3,11 @@
 @class MITShuttleRoute;
 @class MITShuttleStop;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleRouteContainerState) {
     MITShuttleRouteContainerStateRoute = 0,
     MITShuttleRouteContainerStateStop,
     MITShuttleRouteContainerStateMap
-} MITShuttleRouteContainerState;
+};
 
 @interface MITShuttleRouteContainerViewController : UIViewController <UIScrollViewDelegate>
 

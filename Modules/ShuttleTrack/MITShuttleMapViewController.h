@@ -5,12 +5,12 @@
 
 @protocol MITShuttleMapViewControllerDelegate;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
     MITShuttleMapStateContracted = 0,
     MITShuttleMapStateContracting,
     MITShuttleMapStateExpanded,
     MITShuttleMapStateExpanding
-} MITShuttleMapState;
+};
 
 @interface MITShuttleMapViewController : UIViewController
 

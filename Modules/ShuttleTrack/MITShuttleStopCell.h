@@ -8,10 +8,10 @@ extern const CGFloat kStopCellDefaultSeparatorLeftInset;
 extern NSString * const kMITShuttleStopCellNibName;
 extern NSString * const kMITShuttleStopCellIdentifier;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleStopCellType) {
     MITShuttleStopCellTypeRouteList,
     MITShuttleStopCellTypeRouteDetail
-} MITShuttleStopCellType;
+};
 
 @interface MITShuttleStopCell : UITableViewCell
 

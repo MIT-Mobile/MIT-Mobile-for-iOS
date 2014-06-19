@@ -19,11 +19,11 @@ static const NSTimeInterval kStopSubtitleAnimationDuration = 0.3;
 
 static const CGFloat kNavigationBarStopStateExtension = 14.0;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
     MITShuttleStopSubtitleLabelAnimationTypeForward,
     MITShuttleStopSubtitleLabelAnimationTypeBackward
-} MITShuttleStopSubtitleLabelAnimationType;
+};
 
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate>
 
