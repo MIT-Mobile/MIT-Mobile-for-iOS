@@ -9,14 +9,14 @@
 @property (nonatomic) CGPoint origin;
 @property (nonatomic) UIEdgeInsets contentInsets;
 
-@property (nonatomic, readonly) CGSize bounds;
+@property (nonatomic,readonly) CGRect bounds;
 @property (nonatomic,readonly) CGRect frame;
 
 @property (nonatomic,readonly,strong) UICollectionViewLayoutAttributes *headerLayoutAttributes;
-@property (nonatomic,readonly,strong) UICollectionViewLayout *featuredItemLayoutAttributes;
+@property (nonatomic,readonly,strong) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
 @property (nonatomic,readonly,strong) NSArray *itemLayoutAttributes;
 
-+ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout section:(NSInteger)section;
++ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns;
 - (NSArray*)layoutAttributesInRect:(CGRect)rect;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
 
