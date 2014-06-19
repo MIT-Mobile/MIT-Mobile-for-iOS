@@ -2,6 +2,13 @@
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITCollectionViewGridLayoutRow.h"
 
+typedef struct {
+    NSUInteger rowSpan;
+    NSUInteger columnSpan;
+    CGFloat width;
+    CGFloat horizontalOffset;
+} MITFeaturedItemLayoutContext;
+
 @interface MITCollectionViewGridLayoutSection ()
 @property (nonatomic,readwrite) NSInteger section;
 @property (nonatomic,readwrite) CGRect bounds;
@@ -120,7 +127,7 @@
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is layed out, we'll go back and give the height a correct value
-        CGFloat contentWidth = CGRectGetWidth(self.layout.collectionView.bounds);
+        CGFloat contentWidth = self.layoutWidth;
         __block CGRect layoutBounds = CGRectMake(0, 0, contentWidth, CGFLOAT_MAX);
         layoutBounds = UIEdgeInsetsInsetRect(layoutBounds, self.contentInsets);
         
@@ -133,8 +140,8 @@
         
         // Make sure that there is enough padding between successive
         const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
-        const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) / numberOfColumns) - (minimumInterItemPadding * (numberOfColumns - 1)));
-        
+        const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) / numberOfColumns)) - (minimumInterItemPadding * (numberOfColumns - 1));
+
         
         UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:@"Header" withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
         
@@ -146,13 +153,22 @@
         
         
         const BOOL hasFeaturedItem = [self.layout showFeaturedItemInSection:self.section];
-        NSUInteger featuredStoryColumnSpan = 0;
-        NSUInteger featuredStoryRowSpan = 0;
+        MITFeaturedItemLayoutContext featuredItemLayoutContext = {.columnSpan = 0, .rowSpan = 0, .width = 0, .horizontalOffset = 0};
         if (hasFeaturedItem) {
-            featuredStoryColumnSpan = [self.layout featuredStoryHorizontalSpanInSection:self.section];
-            featuredStoryRowSpan = [self.layout featuredStoryVerticalSpanInSection:self.section];
-            
-            NSAssert(featuredStoryColumnSpan < self.numberOfColumns, @"there must be space for at least 1 item after the featured story", self.numberOfColumns);
+            featuredItemLayoutContext.columnSpan = [self.layout featuredStoryHorizontalSpanInSection:self.section];
+            featuredItemLayoutContext.rowSpan = [self.layout featuredStoryVerticalSpanInSection:self.section];
+
+            if (featuredItemLayoutContext.columnSpan > 0) {
+                // The actual content of the featured item will span <n> column widths
+                //  plus <n-1> item spacings. The extra minimumInterItemPadding factor
+                //  here is so we leave the proper spacing between the edge of the featured
+                //  item and the rows it overlaps
+                featuredItemLayoutContext.width = columnWidth * featuredItemLayoutContext.columnSpan;
+                featuredItemLayoutContext.width += minimumInterItemPadding * (featuredItemLayoutContext.columnSpan - 1);
+                featuredItemLayoutContext.horizontalOffset = featuredItemLayoutContext.width + minimumInterItemPadding;
+            }
+
+            NSAssert(featuredItemLayoutContext.columnSpan < self.numberOfColumns, @"there must be space for at least 1 item after the featured story", self.numberOfColumns);
         }
         
         
@@ -168,89 +184,103 @@
         if (hasFeaturedItem) {
             ++item; // The featured item is always item 0, so start at item 1 if a featured item is present
         }
-        
+
         for (; item < numberOfItems; ++item) {
             NSIndexPath* const indexPath = [NSIndexPath indexPathForItem:item inSection:self.section];
+            NSUInteger maximumNumberOfItemsInRow = numberOfColumns;
 
-            if (![currentLayoutRow canAcceptItems]) {
+            // If the row we are laying out overlaps the featured story, make sure to reduce the number
+            // of items it is capable of holding
+            if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
+                maximumNumberOfItemsInRow -= featuredItemLayoutContext.columnSpan;
+            }
+
+            if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
                 if (currentLayoutRow) {
                     [rowLayouts addObject:currentLayoutRow];
                 }
-                
-                NSUInteger numberOfItemsInRow = numberOfColumns;
-                
-                // If the row we are laying out overlaps the featured story, make sure to reduce the number
-                // of items it is capable of holding
-                if (numberOfRows() < featuredStoryRowSpan) {
-                    numberOfItemsInRow -= featuredStoryColumnSpan;
+
+                currentLayoutRow = [[MITCollectionViewGridLayoutRow alloc] init];
+                currentLayoutRow.interItemSpacing = minimumInterItemPadding;
+
+                // Make sure a frame with a valid width is set here. We don't care about the origin
+                // or the height at this point (the height will be ignored, anyway) but the width
+                // is vital, otherwise we'll get an incorrect height when calculating the featured item
+                // placement
+                if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
+                    CGFloat horizontalOffset = featuredItemLayoutContext.horizontalOffset;
+                    currentLayoutRow.frame = CGRectMake(horizontalOffset, 0, CGRectGetWidth(layoutBounds) - horizontalOffset, 0);
+                } else {
+                    currentLayoutRow.frame = CGRectMake(0, 0, CGRectGetWidth(layoutBounds), 0);
                 }
-                
-                currentLayoutRow = [MITCollectionViewGridLayoutRow rowWithMaximumNumberOfItems:numberOfItemsInRow interItemSpacing:minimumInterItemPadding];
             }
             
-            CGSize itemSize = CGSizeMake(columnWidth, [self.layout heightForItemAtIndexPath:indexPath]);
-            [currentLayoutRow addItemForIndexPath:indexPath itemSize:itemSize];
+            CGFloat itemHeight = [self.layout heightForItemAtIndexPath:indexPath];
+            [currentLayoutRow addItemForIndexPath:indexPath withHeight:itemHeight];
         }
-        
-        CGFloat featuredItemWidth = 0;
+
+        // Now that the rows have their items partitioned out we can figure out how high
+        // the featured item should be (and position it). One thing to note is that if an
+        // invalid frame or a frame with an improper width is assigned to the row when
+        // paritioning the elements, the results here will be interesting.
         if (hasFeaturedItem) {
-            // Now that each row has been partitioned and sized, place the
-            // featured item and create its frame.
             UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:0 inSection:self.section]];
-            
+
             __block CGFloat featuredItemHeight = 0;
-            NSIndexSet *indentedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, featuredStoryRowSpan)];
+            NSIndexSet *indentedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, featuredItemLayoutContext.rowSpan)];
             [rowLayouts enumerateObjectsAtIndexes:indentedRowIndexes options:0 usingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
-                featuredItemHeight += rowLayout.contentSize.height;
+                featuredItemHeight += CGRectGetHeight(rowLayout.frame);
             }];
-            
+
             CGRect featuredItemFrame = CGRectZero;
             CGRect scratchFrame = CGRectZero;
             CGRectDivide(layoutBounds, &featuredItemFrame, &scratchFrame, featuredItemHeight, CGRectMinYEdge);
-            
-            featuredItemWidth = (columnWidth * featuredStoryColumnSpan) + (minimumInterItemPadding * (featuredStoryColumnSpan - 1));
-            CGRectDivide(featuredItemFrame, &featuredItemFrame, &scratchFrame, featuredItemWidth, CGRectMinXEdge);
-            
+            CGRectDivide(featuredItemFrame, &featuredItemFrame, &scratchFrame, featuredItemLayoutContext.width, CGRectMinXEdge);
+
             featuredItemLayoutAttributes.frame = featuredItemFrame;
             _featuredItemLayoutAttributes = featuredItemLayoutAttributes;
         } else {
             _featuredItemLayoutAttributes = nil;
         }
 
-
-        // At this point, the featured item and the header are layed out properly
-        // but the rows are bunched up at the top (but sized correctly!). Run through
-        // each of the rows here and shift the origins to where they need to be
+        // At this point, the rows been paritioned off and their hights should be fixed
+        // but they are bunched up at the top. Run through each of the rows here and
+        // shift the origins to where they need to be
         NSMutableArray *layoutAttributes = [[NSMutableArray alloc] init];
-        [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *row, NSUInteger rowIndex, BOOL *stop) {
-            CGRect rowFrame = CGRectZero;
-            CGRectDivide(layoutBounds, &rowFrame, &layoutBounds, row.contentSize.height, CGRectMinYEdge);
-            
+        [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *row, NSUInteger index, BOOL *stop) {
+            CGRect bounds = row.bounds;
+            CGRect frame = CGRectZero;
+            CGRectDivide(layoutBounds, &frame, &layoutBounds, CGRectGetHeight(bounds), CGRectMinYEdge);
+
             CGRect scratchFrame = CGRectZero;
-            if (rowIndex < featuredStoryRowSpan) {
-                CGRectDivide(layoutBounds, &scratchFrame, &rowFrame, featuredItemWidth + minimumInterItemPadding, CGRectMinXEdge);
+            if (index < featuredItemLayoutContext.rowSpan) {
+                CGRectDivide(frame, &scratchFrame, &frame, featuredItemLayoutContext.horizontalOffset, CGRectMinXEdge);
             }
-            
-            row.origin = rowFrame.origin;
+
+            // The size *should* be the same here so a re-layout
+            // shouldn't be triggerd.
+            NSAssert(CGSizeEqualToSize(bounds.size, frame.size), @"existing row bounds.size != frame.size, unnecessary relayout triggered");
+            row.frame = frame;
+
             [layoutAttributes addObjectsFromArray:[row itemLayoutAttributes]];
             [layoutAttributes addObjectsFromArray:[row decorationLayoutAttributes]];
-            
+
             // If we are on either the 1st or (n-2) row, shift the layout bounds down
-            // a bit further to account for the interLineSpacing
+            // a bit further to account for the intraLineSpacing
             NSRange spacingIndexRange = NSMakeRange(1, numberOfRows() - 2);
             NSIndexSet *spacingIndexes = [NSIndexSet indexSetWithIndexesInRange:spacingIndexRange];
-            if ([spacingIndexes containsIndex:rowIndex]) {
-                CGRect scratchSliceRect = CGRectZero;
-                CGRectDivide(layoutBounds, &scratchSliceRect, &layoutBounds, self.layout.interLineSpacing, CGRectMinXEdge);
+            if ([spacingIndexes containsIndex:index]) {
+                CGRect scratchRect = CGRectZero;
+                CGRectDivide(layoutBounds, &scratchRect, &layoutBounds, self.layout.interLineSpacing, CGRectMinXEdge);
             }
         }];
         
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
-        layoutBounds.size.height = CGRectGetMaxX(lastRowLayout.contentFrame) + self.contentInsets.bottom;
+        layoutBounds.origin = CGPointZero;
+        layoutBounds.size.height = CGRectGetMaxY(lastRowLayout.frame) + self.contentInsets.bottom;
         self.bounds = layoutBounds;
         
         _itemLayoutAttributes = layoutAttributes;
-        
         _needsLayout = NO;
     }
 }

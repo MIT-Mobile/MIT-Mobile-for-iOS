@@ -7,6 +7,7 @@
 @property (nonatomic,readonly) NSInteger section;
 
 @property (nonatomic) UIEdgeInsets contentInsets;
+@property (nonatomic) CGFloat layoutWidth;
 
 @property (nonatomic) CGPoint origin;
 @property (nonatomic,readonly) CGRect bounds;
