@@ -51,6 +51,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 @property (nonatomic) BOOL shouldAnimateBusUpdate;
 @property (nonatomic) BOOL shouldRepositionPopover;
+@property (nonatomic) BOOL shouldRepositionMapOnRotate;
+@property (nonatomic) BOOL touchesActive;
 
 @property (nonatomic, strong) UIPopoverController *stopPopoverController;
 
@@ -138,6 +140,31 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self stopRefreshingVehicles];
     }
+}
+
+#pragma mark - UIViewController Methods
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    if (self.shouldRepositionMapOnRotate) {
+        [self setupMapBoundingBoxAnimated:YES];
+    }
+    
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    [super touchesBegan:touches withEvent:event];
+    self.touchesActive = YES;
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+    [super touchesCancelled:touches withEvent:event];
+    self.touchesActive = NO;
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    [super touchesEnded:touches withEvent:event];
+    self.touchesActive = NO;
 }
 
 #pragma mark - Notifications
@@ -440,6 +467,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.route = route;
     self.stop = stop;
     [self resetFetchedResults];
+    self.shouldRepositionMapOnRotate = YES;
     [self setupMapBoundingBoxAnimated:YES];
     
     if (stop && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
@@ -779,6 +807,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self stopAnimatingBusAnnotations];
     if (self.stopPopoverController.isPopoverVisible) {
         self.shouldRepositionPopover = YES;
+    }
+    
+    if (self.touchesActive) { // The user is touching and almost certainly manually repositioning the map
+        self.shouldRepositionMapOnRotate = NO;
     }
 }
 
