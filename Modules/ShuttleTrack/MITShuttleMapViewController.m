@@ -334,7 +334,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if (!_stopsFetchedResultsController) {
         NSPredicate *predicate;
         if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"routes contains %@", self.route];
+            if (self.secondaryRoute) {
+                predicate = [NSPredicate predicateWithFormat:@"routes contains %@ OR routes contains %@", self.route, self.secondaryRoute];
+            } else {
+                predicate = [NSPredicate predicateWithFormat:@"routes contains %@", self.route];
+            }
         }
         _stopsFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleStop" predicate:predicate];
     }
@@ -346,7 +350,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if (!_vehiclesFetchedResultsController) {
         NSPredicate *predicate;
         if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
+            if (self.secondaryRoute) {
+                predicate = [NSPredicate predicateWithFormat:@"route = %@ OR route = %@", self.route, self.secondaryRoute];
+            } else {
+                predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
+            }
         }
         _vehiclesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleVehicle" predicate:predicate];
     }
@@ -833,6 +841,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
         [self.delegate shuttleMapViewController:self didSelectStop:nil];
     }
+    self.stopPopoverController = nil;
 }
 
 - (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view
