@@ -303,7 +303,6 @@ typedef enum {
 {
     _stop = stop;
     self.mapViewController.stop = stop;
-    [self configureStopViewControllerRefreshing];
 }
 
 - (void)layoutStopViews
@@ -486,6 +485,8 @@ typedef enum {
         completionBlock(YES);
     }
     
+    [self configureStopViewControllerRefreshing];
+
     MITShuttleStopViewController *stopViewController = [self stopViewControllerForStop:self.stop];
     [stopViewController.tableView reloadData];
 }
@@ -640,6 +641,28 @@ typedef enum {
         MITShuttleStop *stop = self.route.stops[stopIndex];
         [self didScrollToStop:stop];
     }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self scrollingDidEnd];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        [self scrollingDidEnd];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollingDidEnd];
+}
+
+- (void)scrollingDidEnd
+{
+    [self configureStopViewControllerRefreshing];
 }
 
 #pragma mark - MITShuttleMapViewControllerDelegate Methods
