@@ -5,6 +5,7 @@
 #import "MITNewsStory.h"
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITNewsConstants.h"
+#import "MITNewsStoryCollectionViewCell.h"
 
 @interface MITNewsCollectionViewController () <MITCollectionViewDelegateNewsGrid, NSFetchedResultsControllerDelegate>
 @property (nonatomic,readonly,strong) NSMapTable *fetchedResultsControllersByCategory;
@@ -36,13 +37,17 @@
 
 - (void)viewDidLoad
 {
-    self.collectionView.dataSource = self;
+    [super viewDidLoad];
+
+    [self collectionViewDidLoad];
 }
 
 - (void)collectionViewDidLoad
 {
     self.collectionView.dataSource = self;
-    
+    self.collectionView.delegate = self;
+
+    /*
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
     
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
@@ -52,6 +57,13 @@
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
     
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
+     */
+
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
+    [self.collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -256,12 +268,11 @@
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
-    NSUInteger section = (NSUInteger)indexPath.section;
-    NSUInteger row = (NSUInteger)indexPath.row;
+    NSInteger categoryIndex = (NSUInteger)indexPath.section;
+    NSInteger storyIndex = (NSUInteger)indexPath.row;
 
-    MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[section];
-    NSArray *stories = [self storiesInCategory:sectionCategory];
-    return stories[row];
+    MITNewsCategory *category = [self categoryForIndex:categoryIndex];
+    return [self storyAtIndex:storyIndex inCategory:category];
 }
 
 - (NSFetchedResultsController*)fetchedResultControllerForSection:(NSInteger)section
@@ -294,6 +305,46 @@
     MITNewsCategory *category = [self categoryForIndex:indexPath.section];
     MITNewsStory *selectedStory = [self storyAtIndex:indexPath.item inCategory:category];
     [self didSelectStory:selectedStory];
+}
+
+- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
+
+    if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
+        MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
+        storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
+    } else if ([collectionViewCell isKindOfClass:[UICollectionViewCell class]]) {
+        // Debugging!
+        if ([cellIdentifier isEqualToString:MITNewsStoryJumboCollectionViewCell]) {
+            collectionViewCell.contentView.backgroundColor = [UIColor blueColor];
+        } else if ([cellIdentifier isEqualToString:MITNewsStoryImageCollectionViewCell]) {
+            collectionViewCell.contentView.backgroundColor = [UIColor greenColor];
+        } else if ([cellIdentifier isEqualToString:MITNewsStoryClipCollectionViewCell]) {
+            collectionViewCell.contentView.backgroundColor = [UIColor grayColor];
+        } else if ([cellIdentifier isEqualToString:MITNewsStoryDekCollectionViewCell]) {
+            collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
+        }
+    }
+
+    return collectionViewCell;
+}
+
+- (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+{
+    MITNewsStory *story = [self storyAtIndexPath:indexPath];
+    BOOL featuredStory = [self collectionView:collectionView layout:nil showFeaturedItemInSection:indexPath.section];
+
+    if (featuredStory && indexPath.item == 0) {
+        return MITNewsStoryJumboCollectionViewCell;
+    } else if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+        return MITNewsStoryClipCollectionViewCell;
+    } else if (story.coverImage)  {
+        return MITNewsStoryImageCollectionViewCell;
+    } else {
+        return MITNewsStoryDekCollectionViewCell;
+    }
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
