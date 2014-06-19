@@ -14,6 +14,7 @@
 #import "PeopleRecentsData.h"
 #import "MITLoadingActivityView.h"
 #import "MITPeopleRecentResultsViewController.h"
+#import "MITEmergencyContactsTableViewController.h"
 
 @interface MITPeopleSearchViewController_iPad () <UISearchBarDelegate>
 
@@ -59,16 +60,21 @@
     // configure search bar to be in the center of navigaion bar.
     UIView *searchBarWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, self.navigationController.navigationBar.frame.size.height)];
     searchBarWrapperView.center = self.navigationController.navigationBar.center;
-    
     self.searchBar.placeholder = @"Search People Directory";
     self.searchBar.frame = searchBarWrapperView.bounds;
     [searchBarWrapperView addSubview:self.searchBar];
-    
     self.navigationItem.titleView = searchBarWrapperView;
     
     // configure main screen
     self.sampleSearchesLabel.text = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
     [self.emergencyContactsButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
+    
+    // configure bottom toolbar
+    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:nil];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:NO];
+    
+    // configure bottom toolbar
+    [self configureBottomToolbar];
     
     searchHandler = [MITPeopleSearchHandler new];
 }
@@ -78,6 +84,49 @@
     [super viewDidAppear:animated];
     
     [self configureChildControllers];
+}
+
+- (void) viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    //TODO: remove child view controllers
+}
+
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods
+{
+    return YES;
+}
+
+- (BOOL)shouldAutomaticallyForwardRotationMethods
+{
+    return YES;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - UI Setup
+
+- (void) configureBottomToolbar
+{
+    UILabel *directoryAssistanceLabel = [[UILabel alloc] init];
+    directoryAssistanceLabel.font = [UIFont systemFontOfSize:16];
+    directoryAssistanceLabel.text = @"Directory Assistance 617.253.1000";
+    directoryAssistanceLabel.textColor = [UIColor blackColor];
+    directoryAssistanceLabel.backgroundColor = [UIColor clearColor];
+    [directoryAssistanceLabel sizeToFit];
+    
+//    UIButton *emergencyContactsButton = [[UIButton alloc] init];
+//    [emergencyContactsButton setTitle:@"Emergency Contacts" forState:UIControlStateNormal];
+////    [emergencyContactsButton setTitleColor:mit_tintColor forState:UIControlStateNormal];
+    
+    UIBarButtonItem *directoryAssistanceItem = [[UIBarButtonItem alloc] initWithCustomView:directoryAssistanceLabel];
+    UIBarButtonItem *emergencyContactsItem = [[UIBarButtonItem alloc] initWithTitle:@"Emergency Contacts" style:UIBarButtonItemStylePlain target:self action:@selector(emergencyContactsButtonTapped:)];
+    [self setToolbarItems:@[directoryAssistanceItem,[UIBarButtonItem flexibleSpace], emergencyContactsItem] animated:YES];
 }
 
 - (void) configureChildControllers
@@ -106,32 +155,76 @@
                                views:viewsDictionary]];
 }
 
-- (void) viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    
-    //TODO: remove child view controllers
-}
+#pragma mark - actions handling
 
-- (BOOL)shouldAutomaticallyForwardAppearanceMethods
+- (void) emergencyContactsButtonTapped:(id)sender
 {
-    return YES;
-}
-
-- (BOOL)shouldAutomaticallyForwardRotationMethods
-{
-    return YES;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self performSegueWithIdentifier:@"MITEmergencyContactsModalSegue" sender:self];
 }
 
 - (void) handleFavorites
 {
     //todo
+}
+
+- (void)showLoadingView
+{
+    MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+    self.searchResultsLoadingView = loadingView;
+    [self.view addSubview:loadingView];
+}
+
+- (void) didSelectRecentPerson:(PersonDetails *)person
+{
+    // remove recents popover && hide the keyboard
+    [self dismissRecentsPopover];
+    [self.searchBar resignFirstResponder];
+    
+    // set search results and search bar text with selected recent person
+    searchHandler.searchResults = @[person];
+    self.searchBar.text = [person name];
+    
+    // update search results controller
+    [self.searchResultsViewController setSearchHandler:searchHandler];
+    [self.searchResultsViewController reload];
+    [self.searchResultsViewController selectFirstResult];
+    
+    // update search details controller
+    [self didSelectPerson:person];
+    
+    // make sure search controllers are visible
+    [self setSearchResultViewsHidden:NO];
+}
+
+- (void) didClearRecents
+{
+    [self dismissRecentsPopover];
+}
+
+- (void) dismissRecentsPopover
+{
+    [self.recentsPickerPopover dismissPopoverAnimated:YES];
+}
+
+- (void) showRecentsPopoverIfNeeded
+{
+    if( [[[PeopleRecentsData sharedData] recents] count] <= 0 )
+    {
+        return;
+    }
+    
+    if( !self.recentsPicker )
+    {
+        self.recentsPicker = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
+        self.recentsPicker.delegate = self;
+    }
+    
+    if( !self.recentsPickerPopover )
+    {
+        self.recentsPickerPopover = [[UIPopoverController alloc] initWithContentViewController:self.recentsPicker];
+    }
+    
+    [self.recentsPickerPopover presentPopoverFromRect:self.searchBar.frame inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 #pragma mark - Table view methods
@@ -158,14 +251,6 @@
 }
 
 #pragma mark - Search methods
-
-#pragma mark - Connection methods
-- (void)showLoadingView
-{
-    MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
-    self.searchResultsLoadingView = loadingView;
-    [self.view addSubview:loadingView];
-}
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
@@ -259,59 +344,6 @@
     [self.searchDetailsViewController reload];
 }
 
-- (void) didSelectRecentPerson:(PersonDetails *)person
-{
-    // remove recents popover && hide the keyboard
-    [self dismissRecentsPopover];
-    [self.searchBar resignFirstResponder];
-    
-    // set search results and search bar text with selected recent person
-    searchHandler.searchResults = @[person];
-    self.searchBar.text = [person name];
-    
-    // update search results controller
-    [self.searchResultsViewController setSearchHandler:searchHandler];
-    [self.searchResultsViewController reload];
-    [self.searchResultsViewController selectFirstResult];
-    
-    // update search details controller
-    [self didSelectPerson:person];
-    
-    // make sure search controllers are visible
-    [self setSearchResultViewsHidden:NO];
-}
-
-- (void) didClearRecents
-{
-    [self dismissRecentsPopover];
-}
-
-- (void) dismissRecentsPopover
-{
-    [self.recentsPickerPopover dismissPopoverAnimated:YES];
-}
-
-- (void) showRecentsPopoverIfNeeded
-{
-    if( [[[PeopleRecentsData sharedData] recents] count] <= 0 )
-    {
-        return;
-    }
-    
-    if( !self.recentsPicker )
-    {
-        self.recentsPicker = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
-        self.recentsPicker.delegate = self;
-    }
-    
-    if( !self.recentsPickerPopover )
-    {
-        self.recentsPickerPopover = [[UIPopoverController alloc] initWithContentViewController:self.recentsPicker];
-    }
-    
-    [self.recentsPickerPopover presentPopoverFromRect:self.searchBar.frame inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-}
-
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -320,13 +352,9 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    if( [[segue identifier] isEqualToString:@"SearchResultsSegue"] )
+    if( [[segue identifier] isEqualToString:@"MITEmergencyContactsModalSegue"] )
     {
-        self.searchResultsViewController = segue.destinationViewController;
-    }
-    else if( [[segue identifier] isEqualToString:@"SearchDetailsSegue"] )
-    {
-        self.searchDetailsViewController = segue.destinationViewController;
+        [segue.destinationViewController setModalPresentationStyle:UIModalPresentationFormSheet];
     }
 }
 

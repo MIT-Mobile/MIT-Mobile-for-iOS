@@ -17,6 +17,7 @@
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
 		2748873A193413AB00414552 /* MITPeopleSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
+		27D2CC3B19528740003F447F /* MITEmergencyContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -495,6 +496,8 @@
 		27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchDisplayController.m; sourceTree = "<group>"; };
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
 		277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleRecentResultsViewController.m; sourceTree = "<group>"; };
+		27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyContactsTableViewController.h; sourceTree = "<group>"; };
+		27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyContactsTableViewController.m; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1456,6 +1459,8 @@
 				274887291932E1C800414552 /* MITPeopleSearchViewController_iPad.m */,
 				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
 				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
+				27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */,
+				27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */,
 			);
 			name = iPad;
 			sourceTree = "<group>";
@@ -3457,6 +3462,7 @@
 				EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */,
 				2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */,
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
+				27D2CC3B19528740003F447F /* MITEmergencyContactsTableViewController.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
@@ -3683,7 +3689,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "3F5C37C7-853A-4A14-ACBC-39C10379CF26";
+				PROVISIONING_PROFILE = "0975E861-99D0-4C64-AC49-D8144D6864B3";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};

@@ -5,6 +5,87 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="KBI-Ov-JVw">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="dLi-xs-wvr" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="sg5-kV-AGV">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="YO0-6q-KuQ" kind="relationship" relationship="rootViewController" id="ZGI-Qm-ICy"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1Hd-es-STv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="374" y="-4254"/>
+        </scene>
+        <!--Emergency Contacts Table View Controller-->
+        <scene sceneID="OH6-Xz-mNH">
+            <objects>
+                <tableViewController id="YO0-6q-KuQ" customClass="MITEmergencyContactsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="5LE-qk-ETc">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITEmergencyContactTableCell" rowHeight="56" id="jOi-t6-5gJ">
+                                <rect key="frame" x="0.0" y="86" width="768" height="56"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jOi-t6-5gJ" id="zI7-BS-Ki8">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="55"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Emergency Name" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kAw-aa-tWj">
+                                            <rect key="frame" x="20" y="8" width="160" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="JE9-Tc-7Lt"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Emergency Phone" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Wh-VP-uwg">
+                                            <rect key="frame" x="195" y="8" width="160" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.70000000000000007" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Contact Subtitle" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="3Kj-6b-Pj9">
+                                            <rect key="frame" x="20" y="29" width="728" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" white="0.0" alpha="0.70000000000000007" colorSpace="calibratedWhite"/>
+                                            <color key="highlightedColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="bottom" id="2Ge-xg-kps"/>
+                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="leading" id="AyX-g2-D7K"/>
+                                        <constraint firstAttribute="trailing" secondItem="3Kj-6b-Pj9" secondAttribute="trailing" constant="20" symbolic="YES" id="OiR-x5-CIG"/>
+                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="leading" secondItem="zI7-BS-Ki8" secondAttribute="leading" constant="20" symbolic="YES" id="Sko-c8-UA3"/>
+                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="baseline" secondItem="2Wh-VP-uwg" secondAttribute="baseline" id="Wpw-xq-ZsE"/>
+                                        <constraint firstAttribute="bottom" secondItem="3Kj-6b-Pj9" secondAttribute="bottom" constant="5" id="Ypj-jf-ncw"/>
+                                        <constraint firstItem="2Wh-VP-uwg" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="top" id="noU-mu-GXR"/>
+                                        <constraint firstItem="2Wh-VP-uwg" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="trailing" constant="15" id="pYH-iJ-CiI"/>
+                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="top" secondItem="zI7-BS-Ki8" secondAttribute="top" constant="8" id="sOA-sU-uGx"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="YO0-6q-KuQ" id="tOZ-yA-1tJ"/>
+                            <outlet property="delegate" destination="YO0-6q-KuQ" id="vvR-to-fcj"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="3ev-iY-KLz"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ql9-0C-GhC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1540" y="-3933"/>
+        </scene>
         <!--People Search View Controller i Pad-->
         <scene sceneID="ngJ-IE-Rhy">
             <objects>
@@ -91,6 +172,7 @@
                         <outlet property="searchDetailsViewContainer" destination="Ncf-X7-ZPG" id="yn9-dN-lxk"/>
                         <outlet property="searchResultsViewContainer" destination="xVk-fy-0k5" id="GE7-ui-cb0"/>
                         <outlet property="searchViewsSeparator" destination="VKQ-pm-ejg" id="7Kf-cn-EfF"/>
+                        <segue destination="dLi-xs-wvr" kind="modal" identifier="MITEmergencyContactsModalSegue" id="XLC-3R-M0w"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fq-hp-FWz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -105,7 +187,7 @@
                     </connections>
                 </searchBar>
             </objects>
-            <point key="canvasLocation" x="1455" y="-2020"/>
+            <point key="canvasLocation" x="911" y="-2564"/>
         </scene>
         <!--People Recent Results View Controller-->
         <scene sceneID="WbC-6p-Zma">
@@ -158,7 +240,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QfZ-4X-HpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3066" y="-2020"/>
+            <point key="canvasLocation" x="2370" y="-2564"/>
         </scene>
         <!--People Search Results View Controller-->
         <scene sceneID="fly-nL-s8L">
@@ -206,7 +288,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1my-Aa-7zp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1736" y="-644"/>
+            <point key="canvasLocation" x="296" y="-676"/>
         </scene>
         <!--People Details View Controller-->
         <scene sceneID="Yfi-d6-EE4">
@@ -300,7 +382,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kYq-ED-a9X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2773" y="-585"/>
+            <point key="canvasLocation" x="1605" y="-513"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
