@@ -2,6 +2,7 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="ShuttlePrediction" representedClassName="MITShuttlePrediction" syncable="YES">
         <attribute name="seconds" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="stopId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="vehicleId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttlePredictionList" inverseName="predictions" inverseEntity="ShuttlePredictionList" syncable="YES"/>
@@ -64,7 +65,7 @@
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="vehicleList" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <elements>
-        <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="133"/>
+        <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="150"/>
         <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="148"/>
         <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="253"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="195"/>

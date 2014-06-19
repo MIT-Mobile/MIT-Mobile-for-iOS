@@ -7,6 +7,7 @@
 @implementation MITShuttlePrediction
 
 @dynamic seconds;
+@dynamic stopId;
 @dynamic timestamp;
 @dynamic vehicleId;
 @dynamic list;
@@ -21,6 +22,14 @@
                                                   @"seconds": @"seconds"}];
     [mapping addConnectionForRelationship:@"vehicle" connectedBy:@{@"vehicleId": @"identifier"}];
     [mapping setIdentificationAttributes:@[@"vehicleId", @"timestamp"]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromPredictionList
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.stop_id": @"stopId"}];
+    [mapping addConnectionForRelationship:@"stop" connectedBy:@{@"stopId": @"identifier"}];
     return mapping;
 }
 

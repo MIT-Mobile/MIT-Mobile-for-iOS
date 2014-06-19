@@ -1,9 +1,14 @@
 #import "MITShuttleStopNotificationManager.h"
+#import "MITShuttlePrediction.h"
 #import "MITShuttleStop.h"
 
-NSString * const kMITShuttleStopNotificationStopIdKey = @"kMITShuttleStopNotificationStopIdKey";
-NSString * const kMITShuttleStopNotificationPredictionDateKey = @"kMITShuttleStopNotificationPredictionDateKey";
-NSString * const kMITShuttleStopNotificationVarianceKey = @"kMITShuttleStopNotificationVarianceKey";
+static NSString * const kMITShuttleStopNotificationStopIdKey = @"kMITShuttleStopNotificationStopIdKey";
+static NSString * const kMITShuttleStopNotificationVehicleIdKey = @"kMITShuttleStopNotificationVehicleIdKey";
+static NSString * const kMITShuttleStopNotificationPredictionDateKey = @"kMITShuttleStopNotificationPredictionDateKey";
+
+// Use 10 minutes variance. Using the length of the route loop isn't accurate since there can be multiple shuttles on a route. 10 minutes is a "best-guess" scenario unless we can find a better way or add support in the api
+const NSTimeInterval kMITShuttleStopNotificationVariance = 600.0;
+const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 @implementation MITShuttleStopNotificationManager
 
@@ -19,30 +24,48 @@ NSString * const kMITShuttleStopNotificationVarianceKey = @"kMITShuttleStopNotif
     return _sharedManager;
 }
 
-- (void)scheduleNotificationForStop:(MITShuttleStop *)stop fromPredictionTime:(NSDate *)date withVariance:(NSTimeInterval)variance
+- (void)toggleNotifcationForPrediction:(MITShuttlePrediction *)prediction
+{
+    UILocalNotification *scheduledNotification = [self notificationForPrediction:prediction];
+    if (scheduledNotification) {
+        [[UIApplication sharedApplication] cancelLocalNotification:scheduledNotification];
+    } else {
+        [self scheduleNotificationForPrediction:prediction];
+    }
+}
+
+- (void)scheduleNotificationForPrediction:(MITShuttlePrediction *)prediction
 {
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.fireDate = [date dateByAddingTimeInterval:-300]; // 5 minutes earlier than predicted time
-    notification.alertBody = [NSString stringWithFormat:@"The shuttle is arriving at %@ in 5 minutes", stop.title];
-    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey: stop.identifier,
-                              kMITShuttleStopNotificationPredictionDateKey: date,
-                              kMITShuttleStopNotificationVarianceKey: @(variance)};
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
+    notification.fireDate = [predictionDate dateByAddingTimeInterval:kMITShuttleStopNotificationInterval]; // 5 minutes earlier than predicted time
+    notification.alertBody = [NSString stringWithFormat:@"The shuttle is arriving at %@ in %d minutes", prediction.stop.title, abs(kMITShuttleStopNotificationInterval / 60)];
+    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         prediction.stopId,
+                              kMITShuttleStopNotificationVehicleIdKey:      prediction.vehicleId,
+                              kMITShuttleStopNotificationPredictionDateKey: predictionDate};
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
-- (void)updateNotificationsForStop:(MITShuttleStop *)stop
+- (void)updateNotificationForPrediction:(MITShuttlePrediction *)prediction
 {
-    
+    UILocalNotification *notification = [self notificationForPrediction:prediction];
+    if (notification) {
+        [[UIApplication sharedApplication] cancelLocalNotification:notification];
+        NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
+        notification.fireDate = [predictionDate dateByAddingTimeInterval:kMITShuttleStopNotificationInterval];
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
 }
 
-- (UILocalNotification *)notificationForStop:(MITShuttleStop *)stopToFind nearTime:(NSDate *)dateToFind
+- (UILocalNotification *)notificationForPrediction:(MITShuttlePrediction *)prediction
 {
     for (UILocalNotification *notification in [[UIApplication sharedApplication] scheduledLocalNotifications]) {
-        NSString *stopId = [notification.userInfo objectForKey:kMITShuttleStopNotificationStopIdKey];
-        if ([stopId isEqualToString:stopToFind.identifier]) {
-            NSNumber *variance = [notification.userInfo objectForKey:kMITShuttleStopNotificationVarianceKey];
-            NSDate *predictionDate = [notification.userInfo objectForKey:kMITShuttleStopNotificationPredictionDateKey];
-            if (abs([dateToFind timeIntervalSinceDate:predictionDate]) < [variance doubleValue]) {
+        NSString *stopId = notification.userInfo[kMITShuttleStopNotificationStopIdKey];
+        NSString *vehicleId = notification.userInfo[kMITShuttleStopNotificationVehicleIdKey];
+        if ([stopId isEqualToString:prediction.stopId] && [vehicleId isEqualToString:prediction.vehicleId]) {
+            NSDate *notificationPredicationDate = notification.userInfo[kMITShuttleStopNotificationPredictionDateKey];
+            NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
+            if (abs([predictionDate timeIntervalSinceDate:notificationPredicationDate]) < kMITShuttleStopNotificationVariance) {
                 return notification;
             }
         }

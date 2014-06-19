@@ -15,7 +15,7 @@
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMITShuttleStopViewControllerNoDataCellReuseIdentifier";
 
-@interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate>
+@interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate, MITShuttleStopAlarmCellDelegate>
 
 @property (nonatomic, strong) NSArray *sortedRoutes;
 @property (nonatomic, strong) NSArray *vehicles;
@@ -221,8 +221,9 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
             return cell;
         } else {
             MITShuttleStopAlarmCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
+            cell.delegate = self;
             prediction = predictionsArray[indexPath.row];
-            [cell updateUIWithPrediction:prediction atStop:self.stop];
+            [cell updateUIWithPrediction:prediction];
             return cell;
         }
     }
@@ -259,6 +260,20 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
         default:
             return nil;
     }
+}
+
+#pragma mark - MITShuttleStopAlarmCellDelegate
+
+- (void)stopAlarmCellDidToggleAlarm:(MITShuttleStopAlarmCell *)cell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    MITShuttleRoute *route = [self routeForSection:indexPath.section];
+    NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[route.identifier];
+    MITShuttlePrediction *prediction = predictionsArray[indexPath.row];
+    
+    [[MITShuttleStopNotificationManager sharedManager] toggleNotifcationForPrediction:prediction];
+    
+    [cell updateNotificationButtonWithPrediction:prediction];
 }
 
 @end

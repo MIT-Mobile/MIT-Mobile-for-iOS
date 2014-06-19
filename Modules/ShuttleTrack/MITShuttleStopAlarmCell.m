@@ -4,8 +4,6 @@
 
 @interface MITShuttleStopAlarmCell ()
 
-@property (nonatomic, strong) MITShuttlePrediction *prediction;
-@property (nonatomic, strong) MITShuttleStop *stop;
 @property (nonatomic, weak) IBOutlet UILabel *timeRemainingLabel;
 @property (nonatomic, weak) IBOutlet UILabel *clockTimeLabel;
 @property (nonatomic, weak) IBOutlet UIButton *alertButton;
@@ -30,23 +28,13 @@
 
 - (IBAction)notificationButtonPressed:(id)sender
 {
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[self.prediction.timestamp doubleValue]];
-    UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForStop:self.stop nearTime:predictionDate];
-    if (scheduledNotification) {
-        [[UIApplication sharedApplication] cancelLocalNotification:scheduledNotification];
-    } else {
-        // Use 10 minutes variance. Using the length of the route loop isn't accurate since there can be multiple shuttles on a route. 10 minutes is a "best-guess" scenario unless we can find a better way or add support in the api
-        [[MITShuttleStopNotificationManager sharedManager] scheduleNotificationForStop:self.stop fromPredictionTime:predictionDate withVariance:600];
+    if ([self.delegate respondsToSelector:@selector(stopAlarmCellDidToggleAlarm:)]) {
+        [self.delegate stopAlarmCellDidToggleAlarm:self];
     }
-    
-    [self updateNotificationButton];
 }
 
-- (void)updateUIWithPrediction:(MITShuttlePrediction *)prediction atStop:(MITShuttleStop *)stop
+- (void)updateUIWithPrediction:(MITShuttlePrediction *)prediction
 {
-    self.prediction = prediction;
-    self.stop = stop;
-    
     if (!prediction) {
         self.timeRemainingLabel.text = @"";
         self.clockTimeLabel.text = @"";
@@ -66,13 +54,13 @@
     NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
     self.clockTimeLabel.text = [formatter stringFromDate:predictionDate];
     
-    [self updateNotificationButton];
+    [self updateNotificationButtonWithPrediction:prediction];
 }
 
-- (void)updateNotificationButton
+- (void)updateNotificationButtonWithPrediction:(MITShuttlePrediction *)prediction
 {
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[self.prediction.timestamp doubleValue]];
-    UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForStop:self.stop nearTime:predictionDate];
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
+    UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForPrediction:prediction];
     if (scheduledNotification) {
         [self.alertButton setImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on"] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;

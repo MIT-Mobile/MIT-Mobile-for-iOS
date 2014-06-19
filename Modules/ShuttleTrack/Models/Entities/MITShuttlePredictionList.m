@@ -21,7 +21,7 @@
                                                   @"stop_id": @"stopId",
                                                   @"stop_url": @"stopURL",
                                                   @"stop_title": @"stopTitle"}];
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMappingFromPredictionList]]];
     [mapping setIdentificationAttributes:@[@"routeId", @"stopId"]];
     return mapping;
 }

@@ -75,13 +75,23 @@ static const NSTimeInterval kStopPredictionDefaultRefreshInterval = 10.0;
     }
     [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictions, NSError *error) {
         if (!error) {
-            [[MITShuttleStopNotificationManager sharedManager] updateNotificationsForStop:self.stop];
+            [self updateNotificationsForPredictions:predictions];
             [self createPredictionsByRoute:predictions];
             if ([self.delegate respondsToSelector:@selector(stopPredictionLoaderDidReloadPredictions:)]) {
                 [self.delegate stopPredictionLoaderDidReloadPredictions:self];
             }
         }
     }];
+}
+
+- (void)updateNotificationsForPredictions:(NSArray *)predictions
+{
+    MITShuttleStopNotificationManager *notificationManager = [MITShuttleStopNotificationManager sharedManager];
+    for (MITShuttlePredictionList *predictionList in predictions) {
+        for (MITShuttlePrediction *prediction in predictionList.predictions) {
+            [notificationManager updateNotificationForPrediction:prediction];
+        }
+    }
 }
 
 - (void)createPredictionsByRoute:(NSArray *)predictions
