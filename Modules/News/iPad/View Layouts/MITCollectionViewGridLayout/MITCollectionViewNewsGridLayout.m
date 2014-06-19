@@ -1,5 +1,6 @@
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITCollectionViewGridLayoutSection.h"
+#import "MITNewsConstants.h"
 
 @interface MITCollectionViewNewsGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
@@ -17,6 +18,7 @@
         _headerHeight = 0;
         _numberOfColumns = 4;
         _sectionLayouts = [[NSMutableDictionary alloc] init];
+        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
     return self;
@@ -68,6 +70,7 @@
 
     sectionLayout.contentInsets = UIEdgeInsetsZero;
     sectionLayout.origin = origin;
+    sectionLayout.layoutWidth = CGRectGetWidth(self.collectionView.bounds);
 
     return sectionLayout;
 }
