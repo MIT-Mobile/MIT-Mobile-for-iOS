@@ -5,8 +5,8 @@
             html {padding-top: 10px; padding-right: 60px; padding-left: 60px; padding-bottom: 10px;}
             body {font-family: "Helvetica Neue", Helvetica;font-size: 16px;margin: 0;padding: 0;-webkit-text-size-adjust: none;}
             a { color: #990000; }
-            .slugline {font-weight: bold;font-size:24px;line-height: 24px;margin: 0;padding: 0;}
-            .dek {font-size: 18px;line-height: 20px;margin: 14px 0;color: #505050;}
+            .slugline {font-family: "Helvetica Neue Medium", Helvetica;font-size: 24px;line-height: 24px;margin: 0;padding: 0;}
+            .dek {font-size: 18px;line-height: 18px;margin: 14px 0;color: #505050;}
             .dek:empty { margin: 0; } /* CSS 3: shrink if no content */
             .inlineControls {
                 float: right;
@@ -44,7 +44,7 @@
                 background-image: url('global/share_pressed@2x.png');
                 -webkit-background-size: 44px 38px;
             }
-            .byline {font-size: 16px;color: #505050;min-height:30px;}
+            .byline {font-size: 16px;min-height:16px; margin: 0; padding-top: 10; padding-bottom: 10;}
             .inline-separator {margin: 0 3px;}
             #content {border-top: 1px dotted #F00;}
             .credential {font-size:8pt;}
@@ -56,6 +56,8 @@
             #image a div { margin-top: -4px; }
             #image a+a div { margin-top: 2px; }
             #body {line-height: 20px;color: #202020; margin-top: 14px;}
+            .imageDescription {float:right; font-size:15px; line-height: 15px; margin: 0;padding-top: 10; word-wrap:break-word; opacity:0.7;}
+            .imageCredit {float:right; font-size:14px; line-height: 14px; margin: 0;padding-top: 0; word-wrap:break-word; opacity:0.6;}
 
             /* Resize embedded iframes for YouTube videos on News articles. */
             iframe {
@@ -81,6 +83,8 @@
                 <br /></a>
                 <a href="image"><div><img class="enlarge" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__" alt="zoom"></div>
             </a></div>
+            <p class="imageDescription" style="width:__GALLERY_WIDTH__">__GALLERY_DESCRIPTION__</p>
+            <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
             <p class="dek">__DEK__</p><div id="body">__BODY__</div>
         </div>
     </body>
@@ -92,6 +96,13 @@
             var creditNode = document.getElementsByClassName("credit")[0];
             creditNode.parentElement.removeChild(creditNode);
         }
+    
+        var authorIsEmpty = (document.getElementsByClassName("gallery_credit")[0].childNodes.length == 0);
+        if (authorIsEmpty) {
+            var creditNode = document.getElementsByClassName("imageCredit")[0];
+            creditNode.parentElement.removeChild(creditNode);
+        }
+    
         var imageCount = __GALLERY_COUNT__;
         // remove #image block there are no images at all
         if (imageCount == 0) {

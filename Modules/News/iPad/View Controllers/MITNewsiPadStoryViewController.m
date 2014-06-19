@@ -216,7 +216,10 @@
                                  @"__THUMBNAIL_HEIGHT__": @"",
                                  @"__GALLERY_URL__" : [representation.url absoluteString],
                                  @"__GALLERY_WIDTH__" : [NSString stringWithFormat:@"%f",resizedImage.width],
-                                 @"__GALLERY_HEIGHT__" : [NSString stringWithFormat:@"%f",resizedImage.height]};
+                                 @"__GALLERY_HEIGHT__" : [NSString stringWithFormat:@"%f",resizedImage.height],
+                                 @"__GALLERY_DESCRIPTION__" : (story.coverImage.descriptionText ? story.coverImage.descriptionText : [NSNull null]),
+                                 @"__GALLERY_CREDIT__" : (story.coverImage.credits ? story.coverImage.credits : [NSNull null])
+                                 };
         }
    // }];
 
