@@ -1,6 +1,7 @@
 #import "MITCollectionViewGridLayoutSection.h"
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITCollectionViewGridLayoutRow.h"
+#import "MITNewsConstants.h"
 
 typedef struct {
     NSUInteger rowSpan;
@@ -156,7 +157,7 @@ typedef struct {
         __block CGRect layoutBounds = _bounds;
         layoutBounds.size.height = CGFLOAT_MAX;
 
-        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:@"Header" withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
+        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
         
         CGRect headerFrame = CGRectZero;
         CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
@@ -258,6 +259,8 @@ typedef struct {
             [rowLayouts enumerateObjectsAtIndexes:indentedRowIndexes options:0 usingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
                 featuredItemHeight += CGRectGetHeight(rowLayout.frame);
             }];
+
+            featuredItemHeight += (featuredItemLayoutContext.rowSpan - 1) * self.layout.interLineSpacing;
 
             CGRect featuredItemFrame = CGRectZero;
             CGRect scratchFrame = CGRectZero;
