@@ -162,6 +162,10 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (void)viewDidLayoutSubviews
+{
+    [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.frame.size.width];
+}
 
 - (void)updateViewConstraints
 {
@@ -173,7 +177,6 @@
         CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
         self.bodyViewHeightConstraint.constant = size.height;
     }
-    NSLog(@"%f %f %f %f",self.nextStoryDekLabel.frame.size.height, self.nextStoryTitleLabel.frame.size.height, self.nextStoryDateLabel.frame.size.height, self.view.frame.size.width);
 /*
     if (self.coverImageView.image) {
         // Using 213 here because all the images from the News office should be around a
