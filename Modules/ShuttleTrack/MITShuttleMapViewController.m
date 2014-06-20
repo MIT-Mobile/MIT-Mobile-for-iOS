@@ -111,8 +111,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (!self.hasSetUpMapRect) {
-        [self setupMapBoundingBoxAnimated:YES];
+    [super viewDidAppear:animated];
+    if (!self.hasSetUpMapRect && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self setupMapBoundingBoxAnimated:NO];
         self.hasSetUpMapRect = YES;
     }
 }
@@ -129,6 +130,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self startRefreshingVehicles];
+        
+        if (!self.hasSetUpMapRect) {
+            [self setupMapBoundingBoxAnimated:NO];
+            self.hasSetUpMapRect = YES;
+        }
     }
 
     [self setupTileOverlays];
@@ -447,9 +453,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             if (self.shouldAnimateBusUpdate) {
                 [anObject setCoordinate:((MITShuttleVehicle *)anObject).coordinate];
             } else {
-                if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-                    self.shouldAnimateBusUpdate = YES;
-                }
                 [self removeObject:anObject];
                 [self addObject:anObject];
             }
@@ -485,6 +488,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)routeUpdated
 {
     [self refreshStopAnnotationImages];
+    self.shouldAnimateBusUpdate = YES;
 }
 
 #pragma mark - Private Methods
