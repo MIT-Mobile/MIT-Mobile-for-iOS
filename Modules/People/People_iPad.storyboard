@@ -84,7 +84,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ql9-0C-GhC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1540" y="-3933"/>
+            <point key="canvasLocation" x="1740" y="-4254"/>
         </scene>
         <!--People Search View Controller i Pad-->
         <scene sceneID="ngJ-IE-Rhy">
@@ -98,35 +98,37 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cqK-mc-bgy" userLabel="default content view">
-                                <rect key="frame" x="239" y="26" width="290" height="240"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sample Searches" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="264" translatesAutoresizingMaskIntoConstraints="NO" id="8DU-Jj-uzq">
+                                <rect key="frame" x="259" y="46" width="264" height="78"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Sample Searches" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="264" translatesAutoresizingMaskIntoConstraints="NO" id="8DU-Jj-uzq">
-                                        <rect key="frame" x="20" y="20" width="264" height="78"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" white="0.0" alpha="0.70000000000000007" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Directory Assistance 617.253.1000" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cib-yt-Rxq">
-                                        <rect key="frame" x="20" y="130" width="262" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EtP-iC-4ue">
-                                        <rect key="frame" x="20" y="183" width="166" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <state key="normal" title="Emergency Contacts"/>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="290" id="FmQ-oF-eYG"/>
+                                    <constraint firstAttribute="height" constant="78" id="RfJ-n0-zQw"/>
+                                    <constraint firstAttribute="width" constant="264" id="iJC-vS-DKy"/>
                                 </constraints>
-                            </view>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.0" alpha="0.70000000000000007" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Directory Assistance 617.253.1000" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cib-yt-Rxq">
+                                <rect key="frame" x="259" y="156" width="262" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="idb-2S-TjK"/>
+                                    <constraint firstAttribute="width" constant="262" id="jat-mf-Ek5"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EtP-iC-4ue">
+                                <rect key="frame" x="259" y="209" width="166" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="166" id="jEI-xH-Yrm"/>
+                                    <constraint firstAttribute="height" constant="30" id="sWu-e6-IkF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" title="Emergency Contacts"/>
+                            </button>
                             <containerView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xVk-fy-0k5" userLabel="SearchResultsView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -150,8 +152,9 @@
                         <constraints>
                             <constraint firstItem="xVk-fy-0k5" firstAttribute="leading" secondItem="0vV-jc-OHK" secondAttribute="leading" id="0kD-B7-tWW"/>
                             <constraint firstItem="Ncf-X7-ZPG" firstAttribute="top" secondItem="VKQ-pm-ejg" secondAttribute="top" id="66e-fs-gEu"/>
-                            <constraint firstItem="cqK-mc-bgy" firstAttribute="top" secondItem="cUc-pF-YcU" secondAttribute="bottom" constant="6" id="8lx-ZW-ZXW"/>
+                            <constraint firstItem="cib-yt-Rxq" firstAttribute="leading" secondItem="8DU-Jj-uzq" secondAttribute="leading" id="6YL-6m-DsJ"/>
                             <constraint firstItem="Ncf-X7-ZPG" firstAttribute="top" secondItem="0vV-jc-OHK" secondAttribute="top" id="8nt-FZ-XLz"/>
+                            <constraint firstAttribute="centerX" secondItem="cib-yt-Rxq" secondAttribute="centerX" constant="-6" id="9BG-0v-oBa"/>
                             <constraint firstItem="Ncf-X7-ZPG" firstAttribute="bottom" secondItem="xVk-fy-0k5" secondAttribute="bottom" id="Ceu-rN-c6g"/>
                             <constraint firstItem="Ncf-X7-ZPG" firstAttribute="leading" secondItem="0vV-jc-OHK" secondAttribute="leading" constant="321" id="DLB-Ac-5kd"/>
                             <constraint firstItem="VKQ-pm-ejg" firstAttribute="leading" secondItem="xVk-fy-0k5" secondAttribute="leading" constant="320" id="EWU-fu-e29"/>
@@ -160,8 +163,10 @@
                             <constraint firstAttribute="trailing" secondItem="xVk-fy-0k5" secondAttribute="trailing" constant="448" id="Sqd-Eo-FuJ"/>
                             <constraint firstAttribute="bottom" secondItem="Ncf-X7-ZPG" secondAttribute="bottom" id="VYO-gj-Cuy"/>
                             <constraint firstAttribute="trailing" secondItem="Ncf-X7-ZPG" secondAttribute="trailing" id="gPg-2e-OUG"/>
-                            <constraint firstAttribute="centerX" secondItem="cqK-mc-bgy" secondAttribute="centerX" id="oJ6-7a-9If"/>
-                            <constraint firstItem="H39-Up-Lb9" firstAttribute="top" secondItem="cqK-mc-bgy" secondAttribute="bottom" constant="758" id="qlZ-vA-J60"/>
+                            <constraint firstItem="EtP-iC-4ue" firstAttribute="top" secondItem="cib-yt-Rxq" secondAttribute="bottom" constant="32" id="jc2-bD-Yxn"/>
+                            <constraint firstItem="cib-yt-Rxq" firstAttribute="top" secondItem="8DU-Jj-uzq" secondAttribute="bottom" constant="32" id="qwL-FR-baa"/>
+                            <constraint firstItem="8DU-Jj-uzq" firstAttribute="top" secondItem="cUc-pF-YcU" secondAttribute="bottom" constant="26" id="yXE-OJ-shr"/>
+                            <constraint firstItem="EtP-iC-4ue" firstAttribute="leading" secondItem="cib-yt-Rxq" secondAttribute="leading" id="zBN-88-Oy5"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LgV-xG-env"/>

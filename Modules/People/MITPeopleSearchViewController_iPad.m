@@ -68,6 +68,7 @@
     // configure main screen
     self.sampleSearchesLabel.text = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
     [self.emergencyContactsButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
+    [self.emergencyContactsButton addTarget:self action:@selector(emergencyContactsButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     // configure bottom toolbar
     UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:nil];
@@ -120,13 +121,11 @@
     directoryAssistanceLabel.backgroundColor = [UIColor clearColor];
     [directoryAssistanceLabel sizeToFit];
     
-//    UIButton *emergencyContactsButton = [[UIButton alloc] init];
-//    [emergencyContactsButton setTitle:@"Emergency Contacts" forState:UIControlStateNormal];
-////    [emergencyContactsButton setTitleColor:mit_tintColor forState:UIControlStateNormal];
-    
     UIBarButtonItem *directoryAssistanceItem = [[UIBarButtonItem alloc] initWithCustomView:directoryAssistanceLabel];
     UIBarButtonItem *emergencyContactsItem = [[UIBarButtonItem alloc] initWithTitle:@"Emergency Contacts" style:UIBarButtonItemStylePlain target:self action:@selector(emergencyContactsButtonTapped:)];
     [self setToolbarItems:@[directoryAssistanceItem,[UIBarButtonItem flexibleSpace], emergencyContactsItem] animated:YES];
+    
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void) configureChildControllers
@@ -293,9 +292,7 @@
     
     [searchBar resignFirstResponder];
     
-    [self.searchResultsViewContainer setHidden:YES];
-    [self.searchDetailsViewContainer setHidden:YES];
-    [self.searchViewsSeparator setHidden:YES];
+    [self setSearchResultViewsHidden:YES];
     
     //TODO: go back to the main screen
 }
@@ -335,6 +332,12 @@
     [self.searchResultsViewContainer setHidden:hidden];
     [self.searchDetailsViewContainer setHidden:hidden];
     [self.searchViewsSeparator setHidden:hidden];
+    
+    [self.searchResultsViewContainer setUserInteractionEnabled:!hidden];
+    [self.searchDetailsViewContainer setUserInteractionEnabled:!hidden];
+    [self.searchViewsSeparator setUserInteractionEnabled:!hidden];
+    
+    self.navigationController.toolbarHidden = hidden;
 }
 
 - (void) didSelectPerson:(PersonDetails *)person
