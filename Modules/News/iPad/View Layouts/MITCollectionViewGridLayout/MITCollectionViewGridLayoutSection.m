@@ -212,9 +212,6 @@ typedef struct {
         MITCollectionViewGridLayoutRow *currentLayoutRow = nil;
         NSMutableArray *rowLayouts = [[NSMutableArray alloc] init];
         NSUInteger (^numberOfRows)(void) = ^{ return [rowLayouts count]; };
-        BOOL (^canAcceptMoreItems)(MITCollectionViewGridLayoutRow*, NSUInteger) = ^(MITCollectionViewGridLayoutRow *layout, NSUInteger maximumNumberOfItems) {
-            return (BOOL)(layout && ([layout numberOfItems] < maximumNumberOfItems));
-        };
         
         NSInteger item = 0;
         if (hasFeaturedItem) {
@@ -231,7 +228,7 @@ typedef struct {
                 maximumNumberOfItemsInRow -= featuredItemLayoutContext.columnSpan;
             }
 
-            if (!canAcceptMoreItems(currentLayoutRow,maximumNumberOfItemsInRow)) {
+            if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
                 if (currentLayoutRow) {
                     [rowLayouts addObject:currentLayoutRow];
                 }
