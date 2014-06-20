@@ -312,10 +312,7 @@
     NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
-    if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
-        MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
-        storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
-    } else if ([collectionViewCell isKindOfClass:[UICollectionViewCell class]]) {
+    if ([collectionViewCell isMemberOfClass:[UICollectionViewCell class]]) {
         // Debugging!
         if ([cellIdentifier isEqualToString:MITNewsStoryJumboCollectionViewCell]) {
             collectionViewCell.contentView.backgroundColor = [UIColor blueColor];
@@ -326,6 +323,9 @@
         } else if ([cellIdentifier isEqualToString:MITNewsStoryDekCollectionViewCell]) {
             collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
         }
+    } else if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
+        MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
+        storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
     }
 
     return collectionViewCell;
