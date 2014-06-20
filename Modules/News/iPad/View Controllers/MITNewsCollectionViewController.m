@@ -331,6 +331,18 @@
     return collectionViewCell;
 }
 
+- (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    if ([kind isEqualToString:MITNewsStoryHeaderReusableView]) {
+        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView forIndexPath:indexPath];
+        headerView.backgroundColor = [UIColor redColor];
+
+        return headerView;
+    }
+
+    return nil;
+}
+
 - (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
