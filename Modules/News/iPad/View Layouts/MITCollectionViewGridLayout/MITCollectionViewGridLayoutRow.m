@@ -15,6 +15,7 @@
 @synthesize bounds = _bounds;
 
 @dynamic decorationLayoutAttributes;
+@dynamic frame;
 @dynamic itemLayoutAttributes;
 @dynamic numberOfItems;
 
@@ -47,21 +48,13 @@
 
         const CGFloat layoutWidth = CGRectGetWidth(layoutBounds);
         const NSUInteger numberOfItems = [self numberOfItems];
-        const CGFloat decorationWidth = 3.0; // must be odd!
-
-        // Chose 3 for the hell of it. This just guarantees that there is enough space for the decoration
-        // view in between the items. This should probably be a configurable option
-        const CGFloat interItemSpacing = (floor(_interItemSpacing / 2.0) * 2) + decorationWidth;
-        CGFloat itemWidth = (layoutWidth / numberOfItems) - (interItemSpacing * (numberOfItems - 1));
+        const CGFloat interItemSpacing = _interItemSpacing;
+        CGFloat itemWidth = (layoutWidth - (interItemSpacing * (numberOfItems - 1))) / numberOfItems;
 
         __block CGFloat maximumItemHeight = -CGFLOAT_MAX;
         [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
             CGFloat itemOriginY = CGRectGetMinY(layoutBounds);
-            CGFloat itemOriginX = CGRectGetMinX(layoutBounds) + (itemWidth * idx);
-
-            if (idx > 0){
-                itemOriginX += interItemSpacing * (idx - 1);
-            }
+            CGFloat itemOriginX = CGRectGetMinX(layoutBounds) + (itemWidth * idx) + (interItemSpacing * idx);
 
             CGRect itemFrame = CGRectMake(itemOriginX, itemOriginY, itemWidth, CGRectGetHeight(itemLayoutAttributes.frame));
             itemLayoutAttributes.frame = itemFrame;
@@ -71,14 +64,14 @@
             }
         }];
 
-        const CGFloat interItemSpacingCenterOffset = ceil(interItemSpacing / 2.0);
         [_decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *decorationLayoutAttributes, NSUInteger idx, BOOL *stop) {
-            CGRect frame = CGRectMake(0, CGRectGetMinY(layoutBounds), decorationWidth, maximumItemHeight);
-            decorationLayoutAttributes.frame = frame;
+            CGRect frame = CGRectMake(0, CGRectGetMinY(layoutBounds), interItemSpacing, maximumItemHeight);
+            frame.origin.x = CGRectGetMinX(layoutBounds) + (itemWidth * (idx + 1)) + (interItemSpacing * idx);
 
-            CGPoint center = decorationLayoutAttributes.center;
-            center.x = (itemWidth + interItemSpacingCenterOffset) * (idx + 1);
-            decorationLayoutAttributes.center = center;
+            frame.origin.y = CGRectGetMinY(layoutBounds);
+            frame.size.width = interItemSpacing;
+            frame.size.height = maximumItemHeight;
+            decorationLayoutAttributes.frame = frame;
         }];
 
         bounds.size.height = maximumItemHeight;
@@ -136,7 +129,7 @@
     self.origin = frame.origin;
 
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
-    if (!CGRectEqualToRect(bounds, self.bounds)) {
+    if (!CGRectEqualToRect(bounds, _bounds)) {
         self.bounds = bounds;
     }
 }
@@ -164,7 +157,7 @@
     //  to the _itemLayoutAttributes ivar, numberOfItems will increment and we'll end up with an extra decoration.
     if ([self numberOfItems] > 0) {
         UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier withIndexPath:[NSIndexPath indexPathWithIndex:[self numberOfItems]]];
-        decorationLayoutAttributes.frame = CGRectMake(0, 0, 3., 0);
+        decorationLayoutAttributes.frame = CGRectMake(0, 0, _interItemSpacing, 0);
 
         [_decorationLayoutAttributes addObject:decorationLayoutAttributes];
     }
