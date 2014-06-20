@@ -107,7 +107,18 @@ typedef struct {
 
 - (NSArray*)decorationLayoutAttributes
 {
+    [self layoutIfNeeded];
 
+    if (!_decorationLayoutAttributes) {
+        return nil;
+    } else {
+        NSArray *decorationLayoutAttributes = [[NSArray alloc] initWithArray:_decorationLayoutAttributes copyItems:YES];
+        [decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+            layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
+        }];
+
+        return decorationLayoutAttributes;
+    }
 }
 
 - (CGRect)frame
@@ -322,27 +333,42 @@ typedef struct {
 
 - (NSArray*)allLayoutAttributes
 {
+    NSArray *allLayoutAttributes = [[NSArray alloc] initWithArray:[self _allLayoutAttributes] copyItems:YES];
+
+    [allLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+        layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
+    }];
+
+    return allLayoutAttributes;
+}
+
+- (NSArray*)_allLayoutAttributes
+{
     NSMutableArray *attributeLayouts = [[NSMutableArray alloc] init];
-    
-    if (self.headerLayoutAttributes) {
-        [attributeLayouts addObject:self.headerLayoutAttributes];
+
+    if (_headerLayoutAttributes) {
+        [attributeLayouts addObject:_headerLayoutAttributes];
     }
-    
-    if (self.featuredItemLayoutAttributes) {
-        [attributeLayouts addObject:self.featuredItemLayoutAttributes];
+
+    if (_featuredItemLayoutAttributes) {
+        [attributeLayouts addObject:_featuredItemLayoutAttributes];
     }
-    
-    if (self.itemLayoutAttributes) {
-        [attributeLayouts addObjectsFromArray:self.itemLayoutAttributes];
+
+    if (_itemLayoutAttributes) {
+        [attributeLayouts addObjectsFromArray:_itemLayoutAttributes];
     }
-    
+
+    if (_decorationLayoutAttributes) {
+        [attributeLayouts addObjectsFromArray:_decorationLayoutAttributes];
+    }
+
     return attributeLayouts;
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath
 {
     __block UICollectionViewLayoutAttributes *resultLayoutAttributes = nil;
-    [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *attributes, NSUInteger idx, BOOL *stop) {
+    [[self _allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *attributes, NSUInteger idx, BOOL *stop) {
         if (attributes.representedElementCategory == UICollectionElementCategoryCell) {
             if ([attributes.indexPath isEqual:indexPath]) {
                 resultLayoutAttributes = attributes;
