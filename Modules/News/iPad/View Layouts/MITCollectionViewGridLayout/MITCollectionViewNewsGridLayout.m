@@ -22,7 +22,7 @@
 
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 8.0;
-        _interLineSpacing = 8.0;
+        _lineSpacing = 8.0;
         [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 

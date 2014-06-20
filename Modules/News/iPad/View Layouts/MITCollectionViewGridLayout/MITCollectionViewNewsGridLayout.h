@@ -12,7 +12,8 @@
 
 //
 @property (nonatomic) CGFloat minimumInterItemPadding;
-@property (nonatomic) CGFloat interLineSpacing;
+@property (nonatomic) CGFloat lineSpacing;
+@property (nonatomic) CGFloat sectionSpacing;
 
 - (instancetype)init;
 
