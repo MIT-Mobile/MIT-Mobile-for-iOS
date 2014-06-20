@@ -12,6 +12,7 @@
 @property (nonatomic,strong) MITNewsStory *story;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryConstraintBetweenImageAndTitle;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDekLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDateLabel;
@@ -177,6 +178,13 @@
         CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
         self.bodyViewHeightConstraint.constant = size.height;
     }
+    
+    if(self.nextStoryImageView.image) {
+        self.nextStoryImageHeightConstraint.constant = 70;
+        self.nextStoryImageWidthConstraint.constant = 90;
+        self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+    }
+    
 /*
     if (self.coverImageView.image) {
         // Using 213 here because all the images from the News office should be around a

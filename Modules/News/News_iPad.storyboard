@@ -85,28 +85,28 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
-                                                <rect key="frame" x="0.0" y="35" width="90" height="70"/>
+                                                <rect key="frame" x="0.0" y="35" width="0.0" height="0.0"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="90" id="3nw-pn-3yB"/>
-                                                    <constraint firstAttribute="height" constant="70" id="nX8-sr-rAA"/>
+                                                    <constraint firstAttribute="width" id="3nw-pn-3yB"/>
+                                                    <constraint firstAttribute="height" id="nX8-sr-rAA"/>
                                                 </constraints>
                                             </imageView>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="535" translatesAutoresizingMaskIntoConstraints="NO" id="Zwj-9s-ZzK">
-                                                <rect key="frame" x="98" y="35" width="535" height="22"/>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="Zwj-9s-ZzK">
+                                                <rect key="frame" x="0.0" y="35" width="633" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dek" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="535" translatesAutoresizingMaskIntoConstraints="NO" id="DJg-5Q-Y2i">
-                                                <rect key="frame" x="98" y="59" width="535" height="18"/>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dek" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="DJg-5Q-Y2i">
+                                                <rect key="frame" x="0.0" y="59" width="633" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="535" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
-                                                <rect key="frame" x="98" y="79" width="535" height="18"/>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
+                                                <rect key="frame" x="0.0" y="79" width="633" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <nil key="highlightedColor"/>
@@ -132,7 +132,7 @@
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="DJg-5Q-Y2i" secondAttribute="leading" id="rTK-Tf-Bgt"/>
                                             <constraint firstItem="aRd-O6-eP4" firstAttribute="top" secondItem="DJg-5Q-Y2i" secondAttribute="bottom" constant="2" id="txr-LR-ona"/>
                                             <constraint firstAttribute="bottom" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
-                                            <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" constant="8" id="w2e-dE-rk9"/>
+                                            <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" id="w2e-dE-rk9"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -161,6 +161,7 @@
                     <connections>
                         <outlet property="bodyView" destination="ZMx-FN-0Ky" id="F5r-na-07C"/>
                         <outlet property="bodyViewHeightConstraint" destination="EtD-ah-Jgu" id="WpS-js-SBI"/>
+                        <outlet property="nextStoryConstraintBetweenImageAndTitle" destination="w2e-dE-rk9" id="C6o-Jc-9Nv"/>
                         <outlet property="nextStoryDateLabel" destination="aRd-O6-eP4" id="h8d-Ab-Mc6"/>
                         <outlet property="nextStoryDekLabel" destination="DJg-5Q-Y2i" id="OsE-K5-l4J"/>
                         <outlet property="nextStoryImageHeightConstraint" destination="nX8-sr-rAA" id="DcF-5N-RyF"/>
