@@ -4,6 +4,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
+#import "MITNewsCollectionViewController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -44,7 +45,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+
     self.collectionViewLayout = [[MITNewsPadLayout alloc] init];
     self.automaticallyAdjustsScrollViewInsets = NO;
     
@@ -86,26 +87,14 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     UICollectionViewController *gridViewController = _gridViewController;
     
     if (!gridViewController) {
-        
-        gridViewController = [[UICollectionViewController alloc] initWithCollectionViewLayout:self.collectionViewLayout];
+        gridViewController = [[MITNewsCollectionViewController alloc] init];
 
-        gridViewController.collectionView.dataSource = self;
-        gridViewController.collectionView.delegate = self;
         gridViewController.collectionView.backgroundView = nil;
         gridViewController.collectionView.backgroundColor = [UIColor whiteColor];
         
         _gridViewController = gridViewController;
 
     }
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
-
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
-
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryClipCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
-    
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
-
-    [gridViewController.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
 
     return gridViewController;
 }
@@ -209,66 +198,6 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 
 #pragma mark - Delegate Methods
-#pragma mark UICollectionViewDataSource
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    if (self.stories) {
-#warning sample data
-        return [@[@"15",@"4",@"3",@"2",@"1"][section] intValue];
-    }
-    return 0;
-}
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
-    return 1;
-} 
-
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *identifier = nil;
-
-    MITNewsStory *newsStory = [self.stories objectAtIndex:indexPath.row];
-    
-    if (newsStory) {
-        if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-            identifier = MITNewsStoryClipCollectionViewCell;
-        } else if (newsStory.coverImage)  {
-            identifier = MITNewsStoryImageCollectionViewCell;
-        } else {
-            identifier = MITNewsStoryDekCollectionViewCell;
-        }
-    }
-    if (indexPath.row == 0) {
-    MITNewsStoryCollectionViewCell *jumboCell = [collectionView
-                                      dequeueReusableCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell
-                                      forIndexPath:indexPath];
-
-    jumboCell.story = newsStory;
-    return jumboCell;
-    }
-    MITNewsStoryCollectionViewCell *imageCell = [collectionView
-                                                 dequeueReusableCellWithReuseIdentifier:identifier
-                                                 forIndexPath:indexPath];
-    
-    imageCell.story = [self.stories objectAtIndex:indexPath.row];
-    return imageCell;
-}
-
-- (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView
-          viewForSupplementaryElementOfKind:(NSString *)kind
-                                atIndexPath:(NSIndexPath *)indexPath
-{
-    UICollectionReusableView *reusableView = nil;
-    reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind
-                                                      withReuseIdentifier:MITNewsStoryHeaderReusableView
-                                                             forIndexPath:indexPath];
-    return reusableView;
-}
-
-#pragma mark UICollectionViewDelegate
-
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
