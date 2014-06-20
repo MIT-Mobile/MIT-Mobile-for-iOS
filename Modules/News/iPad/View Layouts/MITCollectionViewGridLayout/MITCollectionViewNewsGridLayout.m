@@ -23,6 +23,7 @@
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
+        _sectionSpacing = 20.;
         [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
@@ -70,7 +71,7 @@
     if (section > 0) {
         MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
         CGRect frame = previousSectionLayout.frame;
-        origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame));
+        origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
     }
 
     sectionLayout.contentInsets = UIEdgeInsetsMake(0, 30., 0, 30.);
