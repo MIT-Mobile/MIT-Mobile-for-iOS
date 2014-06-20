@@ -42,6 +42,7 @@
     self.bodyView.scrollView.scrollEnabled = NO;
     self.bodyView.scrollView.bounces = NO;
     self.bodyView.delegate = self;
+    [self updateNavigationItem:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -371,6 +372,21 @@
                           baseURL:nil];
 }
 
+- (void)updateNavigationItem:(BOOL)animated
+{
+    NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
+    
+    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
+    [rightBarItems addObject:shareItem];
+    
+    UIBarButtonItem *starItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:nil];
+    [rightBarItems addObject:starItem];
+    
+    UIBarButtonItem *fontSizeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:nil];
+    [rightBarItems addObject:fontSizeItem];
+    
+    [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+}
 
 #pragma mark UIWebViewDelegate
 - (void)webViewDidStartLoad:(UIWebView *)webView
