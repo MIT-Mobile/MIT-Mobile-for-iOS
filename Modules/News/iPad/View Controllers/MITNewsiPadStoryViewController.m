@@ -50,7 +50,7 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    __block NSURL *imageURL = nil;
+    //__block NSURL *imageURL = nil;
     
     [self setupNextStory];
     
@@ -254,14 +254,13 @@
 
 - (void)setStory:(MITNewsStory*)story
 {
-#warning temporary disable of correct story handling
-  /*  NSManagedObjectID *newStoryObjectID = [story objectID];
+    NSManagedObjectID *newStoryObjectID = [story objectID];
     if (newStoryObjectID && ![newStoryObjectID isEqual:_storyObjectID]) {
         _storyObjectID = newStoryObjectID;
     }
     
-    _story = nil;*/
-    _story = story;
+    _story = nil;
+   // _story = story;
 }
 
 - (MITNewsStory*)story
@@ -308,7 +307,7 @@
             
             CGSize resizedImage;
             if (representation) {
-                resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(400, 400)];
+                resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(368, 400)];
             }
             
             templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
@@ -396,6 +395,11 @@
     
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		NSURL *url = [request URL];
+        if ([[url relativeString] isEqualToString:@"http://newsoffice.mit.edu/openGallery"])
+        {
+            [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
+            return NO;
+        }
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]];
         
         if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {

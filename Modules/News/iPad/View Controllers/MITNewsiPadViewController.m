@@ -5,6 +5,9 @@
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
 #import "MITNewsiPadStoryViewController.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITCoreDataController.h"
+
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
     MITNewsPadStyleGrid = 0,
@@ -81,6 +84,18 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 }
 
 #pragma mark Dynamic Properties
+
+- (NSManagedObjectContext*)managedObjectContext
+{
+    if (!_managedObjectContext) {
+        DDLogWarn(@"[%@] A managed object context was not set before being added to the view hierarchy. The default main queue NSManaged object context will be used but this will be a fatal error in the future.",self);
+        _managedObjectContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
+    }
+    
+    NSAssert(_managedObjectContext, @"[%@] failed to load a valid NSManagedObjectContext", NSStringFromClass([self class]));
+    return _managedObjectContext;
+}
+
 - (UICollectionViewController *)gridViewController
 {
     UICollectionViewController *gridViewController = _gridViewController;
@@ -287,11 +302,10 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
             NSIndexPath *indexPath = sender;
             MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
             if (story) {
-#warning temporary disable of correct story handling
-                //NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-                //managedObjectContext.parentContext = self.managedObjectContext;
-                //storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = story;
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                managedObjectContext.parentContext = self.managedObjectContext;
+                storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
 
             }
         } else {

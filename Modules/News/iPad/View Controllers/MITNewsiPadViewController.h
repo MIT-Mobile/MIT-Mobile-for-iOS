@@ -6,4 +6,6 @@
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
 
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
 @end
