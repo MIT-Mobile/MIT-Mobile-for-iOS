@@ -264,9 +264,12 @@ typedef struct {
             UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:0 inSection:self.section]];
 
             __block CGFloat featuredItemHeight = 0;
-            NSIndexSet *indentedRowIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, featuredItemLayoutContext.rowSpan)];
-            [rowLayouts enumerateObjectsAtIndexes:indentedRowIndexes options:0 usingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
-                featuredItemHeight += CGRectGetHeight(rowLayout.frame);
+            [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
+                if (idx < featuredItemLayoutContext.rowSpan) {
+                    featuredItemHeight += CGRectGetHeight(rowLayout.frame);
+                } else {
+                    (*stop) = YES;
+                }
             }];
 
             featuredItemHeight += (featuredItemLayoutContext.rowSpan - 1) * self.layout.lineSpacing;
