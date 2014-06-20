@@ -316,14 +316,14 @@
                                  @"__DATE__": (postDate ? postDate : [NSNull null]),
                                  @"__DEK__": (story.dek ? story.dek : [NSNull null]),
                                  @"__BODY__": (story.body ? story.body : [NSNull null]),
-                                 @"__GALLERY_COUNT__": (1 ? representation : [NSNull null]),
+                                 @"__GALLERY_COUNT__": (representation ? @"1" : @"0"),
                                  @"__BOOKMARKED__": @"",
                                  @"__THUMBNAIL_URL__": @"",
                                  @"__THUMBNAIL_WIDTH__": @"",
                                  @"__THUMBNAIL_HEIGHT__": @"",
-                                 @"__GALLERY_URL__" : [representation.url absoluteString],
-                                 @"__GALLERY_WIDTH__" : [NSString stringWithFormat:@"%f",resizedImage.width],
-                                 @"__GALLERY_HEIGHT__" : [NSString stringWithFormat:@"%f",resizedImage.height],
+                                 @"__GALLERY_URL__" : ([representation.url absoluteString] ? [representation.url absoluteString] : [NSNull null]),
+                                 @"__GALLERY_WIDTH__" : ([NSString stringWithFormat:@"%f",resizedImage.width] ? [NSString stringWithFormat:@"%f",resizedImage.width] : @"0"),
+                                 @"__GALLERY_HEIGHT__" : ([NSString stringWithFormat:@"%f",resizedImage.height] ? [NSString stringWithFormat:@"%f",resizedImage.height] : @"0"),
                                  @"__GALLERY_DESCRIPTION__" : (story.coverImage.descriptionText ? story.coverImage.descriptionText : [NSNull null]),
                                  @"__GALLERY_CREDIT__" : (story.coverImage.credits ? story.coverImage.credits : [NSNull null])
                                  };
