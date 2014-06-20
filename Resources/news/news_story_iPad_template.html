@@ -46,7 +46,8 @@
             }
             .byline {font-size: 16px;min-height:16px; margin: 0; padding-top: 10; padding-bottom: 10;}
             .inline-separator {margin: 0 3px;}
-            #content {border-top: 1px dotted #F00;}
+            #content {border-top: 1px dotted;}
+            .horizontalRule {border-bottom: 1px dotted; margin: 0; padding-top: 10;}
             .credential {font-size:8pt;}
             #image {float:right;margin: 14px 0 -1px 8px;}
             #image img.thumbnail {float:right; border: 1px solid #505050; /* scale to width respecting aspect */}
@@ -90,8 +91,8 @@
             <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
             <p class="dek">__DEK__</p><div id="body">__BODY__</div>
         </div>
-        <div id="content">
-            </div>
+        <p class="horizontalRule">
+            </p>
     </body>
     <!-- JS at the bottom instead of onload in order to do work before UIWebView slides into view -->
     <script type="text/javascript" charset="utf-8">
