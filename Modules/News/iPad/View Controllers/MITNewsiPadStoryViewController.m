@@ -395,7 +395,7 @@
     
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		NSURL *url = [request URL];
-        if ([[url relativeString] isEqualToString:@"http://newsoffice.mit.edu/openGallery"])
+        if ([[url relativeString] isEqualToString:@"mitmobile://opengallery"])
         {
             [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
             return NO;
