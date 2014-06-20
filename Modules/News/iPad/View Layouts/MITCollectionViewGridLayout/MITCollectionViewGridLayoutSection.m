@@ -11,7 +11,7 @@ typedef struct {
 
 @interface MITCollectionViewGridLayoutSection ()
 @property (nonatomic,readwrite) NSInteger section;
-@property (nonatomic,readwrite) CGRect bounds;
+@property (nonatomic) CGPoint origin;
 
 @property (nonatomic) UIEdgeInsets sectionInsets;
 @property (nonatomic) NSUInteger numberOfColumns;
@@ -26,6 +26,8 @@ typedef struct {
 
 @synthesize headerLayoutAttributes = _headerLayoutAttributes;
 @synthesize featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
+@synthesize bounds = _bounds;
+@dynamic frame;
 
 + (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns
 {
@@ -61,7 +63,7 @@ typedef struct {
 {
     [self layoutIfNeeded];
     
-    UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = _headerLayoutAttributes;
+    UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
     
     if (featuredItemLayoutAttributes) {
         featuredItemLayoutAttributes = [_featuredItemLayoutAttributes copy];
@@ -97,20 +99,38 @@ typedef struct {
             layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
         }];
         
-        return [_itemLayoutAttributes copy];
+        return itemLayoutAttributes;
+    }
+}
+
+- (CGRect)frame
+{
+    CGRect frame = self.bounds;
+    frame = CGRectOffset(frame, self.origin.x, self.origin.y);
+    return frame;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    self.origin = frame.origin;
+
+    CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    if (!CGRectEqualToRect(bounds, _bounds)) {
+        self.bounds = bounds;
     }
 }
 
 - (CGRect)bounds
 {
     [self layoutIfNeeded];
-    
     return _bounds;
 }
 
-- (CGRect)frame
+- (void)setBounds:(CGRect)bounds
 {
-    return CGRectOffset(self.bounds, self.origin.x, self.origin.y);
+    bounds.size.height = 0;
+    _bounds = bounds;
+    [self invalidateLayout];
 }
 
 - (void)invalidateLayout
@@ -119,7 +139,7 @@ typedef struct {
     _headerLayoutAttributes = nil;
     _itemLayoutAttributes = nil;
     _needsLayout = YES;
-    _bounds = CGRectZero;
+    _bounds.size.height = 0;
 }
 
 - (void)layoutIfNeeded
@@ -127,22 +147,15 @@ typedef struct {
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is layed out, we'll go back and give the height a correct value
-        CGFloat contentWidth = self.layoutWidth;
-        __block CGRect layoutBounds = CGRectMake(0, 0, contentWidth, CGFLOAT_MAX);
-        layoutBounds = UIEdgeInsetsInsetRect(layoutBounds, self.contentInsets);
-        
+        const NSInteger numberOfColumns = self.numberOfColumns;
         const CGFloat numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
         if (numberOfItems == 0) {
             return;
         }
 
-        const NSInteger numberOfColumns = self.numberOfColumns;
-        
-        // Make sure that there is enough padding between successive
-        const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
-        const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) / numberOfColumns)) - (minimumInterItemPadding * (numberOfColumns - 1));
+        __block CGRect layoutBounds = _bounds;
+        layoutBounds.size.height = CGFLOAT_MAX;
 
-        
         UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:@"Header" withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
         
         CGRect headerFrame = CGRectZero;
@@ -150,8 +163,21 @@ typedef struct {
         CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
         headerLayoutAttributes.frame = headerFrame;
         _headerLayoutAttributes = headerLayoutAttributes;
-        
-        
+
+
+        // Now that the header has been layed out, we need to apply the content
+        //  insets to the actual content so things appear properly. We only care
+        //  about the left and right insets here. The top will be ignored and the
+        //  bottom will be handled after everything is laid out.
+        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, self.contentInsets.left, 0, self.contentInsets.right);
+        layoutBounds = UIEdgeInsetsInsetRect(layoutBounds, contentInsets);
+
+
+        const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
+        CGFloat maximumPaddingPerRow = (minimumInterItemPadding * (numberOfColumns - 1));
+        const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) - maximumPaddingPerRow) / numberOfColumns);
+
+
         const BOOL hasFeaturedItem = [self.layout showFeaturedItemInSection:self.section];
         MITFeaturedItemLayoutContext featuredItemLayoutContext = {.columnSpan = 0, .rowSpan = 0, .width = 0, .horizontalOffset = 0};
         if (hasFeaturedItem) {
@@ -207,12 +233,13 @@ typedef struct {
                 // or the height at this point (the height will be ignored, anyway) but the width
                 // is vital, otherwise we'll get an incorrect height when calculating the featured item
                 // placement
+                CGRect initialRowFrame = CGRectMake(CGRectGetMinX(layoutBounds), 0, CGRectGetWidth(layoutBounds), 0);
                 if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
-                    CGFloat horizontalOffset = featuredItemLayoutContext.horizontalOffset;
-                    currentLayoutRow.frame = CGRectMake(horizontalOffset, 0, CGRectGetWidth(layoutBounds) - horizontalOffset, 0);
-                } else {
-                    currentLayoutRow.frame = CGRectMake(0, 0, CGRectGetWidth(layoutBounds), 0);
+                    initialRowFrame.origin.x += featuredItemLayoutContext.horizontalOffset;
+                    initialRowFrame.size.width -= featuredItemLayoutContext.horizontalOffset;
                 }
+
+                currentLayoutRow.frame = initialRowFrame;
             }
             
             CGFloat itemHeight = [self.layout heightForItemAtIndexPath:indexPath];
@@ -257,29 +284,23 @@ typedef struct {
                 CGRectDivide(frame, &scratchFrame, &frame, featuredItemLayoutContext.horizontalOffset, CGRectMinXEdge);
             }
 
-            // The size *should* be the same here so a re-layout
-            // shouldn't be triggerd.
-            NSAssert(CGSizeEqualToSize(bounds.size, frame.size), @"existing row bounds.size != frame.size, unnecessary relayout triggered");
             row.frame = frame;
 
             [layoutAttributes addObjectsFromArray:[row itemLayoutAttributes]];
             [layoutAttributes addObjectsFromArray:[row decorationLayoutAttributes]];
 
-            // If we are on either the 1st or (n-2) row, shift the layout bounds down
-            // a bit further to account for the intraLineSpacing
-            NSRange spacingIndexRange = NSMakeRange(1, numberOfRows() - 2);
+            // Shift the layout bounds down a bit further to account for the intraLineSpacing
+            // if we are not on the (n-1)th row;
+            NSRange spacingIndexRange = NSMakeRange(0, numberOfRows() - 1);
             NSIndexSet *spacingIndexes = [NSIndexSet indexSetWithIndexesInRange:spacingIndexRange];
             if ([spacingIndexes containsIndex:index]) {
                 CGRect scratchRect = CGRectZero;
-                CGRectDivide(layoutBounds, &scratchRect, &layoutBounds, self.layout.interLineSpacing, CGRectMinXEdge);
+                CGRectDivide(layoutBounds, &scratchRect, &layoutBounds, self.layout.interLineSpacing, CGRectMinYEdge);
             }
         }];
         
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
-        layoutBounds.origin = CGPointZero;
-        layoutBounds.size.height = CGRectGetMaxY(lastRowLayout.frame) + self.contentInsets.bottom;
-        self.bounds = layoutBounds;
-        
+        _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame) + self.contentInsets.bottom;
         _itemLayoutAttributes = layoutAttributes;
         _needsLayout = NO;
     }

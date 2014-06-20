@@ -7,11 +7,9 @@
 @property (nonatomic,readonly) NSInteger section;
 
 @property (nonatomic) UIEdgeInsets contentInsets;
-@property (nonatomic) CGFloat layoutWidth;
 
-@property (nonatomic) CGPoint origin;
-@property (nonatomic,readonly) CGRect bounds;
-@property (nonatomic,readonly) CGRect frame;
+@property (nonatomic) CGRect frame;
+@property (nonatomic) CGRect bounds;
 
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *headerLayoutAttributes;
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
@@ -22,5 +20,4 @@
 - (void)invalidateLayout;
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
-
 @end

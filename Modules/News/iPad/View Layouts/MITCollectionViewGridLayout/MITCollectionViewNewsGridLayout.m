@@ -4,6 +4,7 @@
 
 @interface MITCollectionViewNewsGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
+@property (nonatomic) CGFloat dividerDecorationWidth;
 @end
 
 @implementation MITCollectionViewNewsGridLayout
@@ -18,6 +19,10 @@
         _headerHeight = 0;
         _numberOfColumns = 4;
         _sectionLayouts = [[NSMutableDictionary alloc] init];
+
+        _dividerDecorationWidth = 5.0;
+        _minimumInterItemPadding = 8.0;
+        _interLineSpacing = 8.0;
         [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
@@ -48,7 +53,7 @@
 {
     MITCollectionViewGridLayoutSection *sectionLayout = self.sectionLayouts[@(section)];
 
-    if (!section) {
+    if (!sectionLayout) {
         sectionLayout = [self primitiveLayoutForSection:section];
         NSAssert(sectionLayout,@"failed to create layout for section %d",section);
         self.sectionLayouts[@(section)] = sectionLayout;
@@ -68,16 +73,16 @@
         origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame));
     }
 
-    sectionLayout.contentInsets = UIEdgeInsetsZero;
-    sectionLayout.origin = origin;
-    sectionLayout.layoutWidth = CGRectGetWidth(self.collectionView.bounds);
+    sectionLayout.contentInsets = UIEdgeInsetsMake(0, 30., 0, 30.);
+    CGRect sectionFrame = CGRectMake(origin.x, origin.y, CGRectGetWidth(self.collectionView.bounds), 0);
+    sectionLayout.frame = sectionFrame;
 
     return sectionLayout;
 }
 
 - (CGSize)collectionViewContentSize
 {
-    CGRect contentFrame = CGRectZero;
+    __block CGRect contentFrame = CGRectZero;
     NSInteger numberOfSections = [self.collectionView numberOfSections];
     for (NSInteger section = 0; section < numberOfSections; ++section) {
         MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:section];
@@ -85,7 +90,7 @@
         if (section == 0) {
             contentFrame = sectionLayout.frame;
         } else {
-            CGRectUnion(contentFrame, sectionLayout.frame);
+            contentFrame = CGRectUnion(contentFrame, sectionLayout.frame);
         }
     }
 
