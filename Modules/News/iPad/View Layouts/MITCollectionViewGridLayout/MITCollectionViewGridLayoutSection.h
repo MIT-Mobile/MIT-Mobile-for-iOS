@@ -14,6 +14,7 @@
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *headerLayoutAttributes;
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
 @property (nonatomic,readonly,copy) NSArray *itemLayoutAttributes;
+@property (nonatomic,readonly,copy) NSArray *decorationLayoutAttributes;
 
 + (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns;
 

@@ -21,12 +21,13 @@ typedef struct {
 @end
 
 @implementation MITCollectionViewGridLayoutSection {
-    NSMutableArray *_itemLayoutAttributes;
     BOOL _needsLayout;
 }
 
 @synthesize headerLayoutAttributes = _headerLayoutAttributes;
 @synthesize featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
+@synthesize itemLayoutAttributes = _itemLayoutAttributes;
+@synthesize decorationLayoutAttributes = _decorationLayoutAttributes;
 @synthesize bounds = _bounds;
 @dynamic frame;
 
@@ -79,7 +80,7 @@ typedef struct {
     [self layoutIfNeeded];
     
     UICollectionViewLayoutAttributes *headerLayoutAttributes = _headerLayoutAttributes;
-    
+
     if (headerLayoutAttributes) {
         headerLayoutAttributes = [_headerLayoutAttributes copy];
         headerLayoutAttributes.frame = CGRectOffset(headerLayoutAttributes.frame, self.origin.x, self.origin.y);
@@ -102,6 +103,11 @@ typedef struct {
         
         return itemLayoutAttributes;
     }
+}
+
+- (NSArray*)decorationLayoutAttributes
+{
+
 }
 
 - (CGRect)frame
@@ -206,6 +212,9 @@ typedef struct {
         MITCollectionViewGridLayoutRow *currentLayoutRow = nil;
         NSMutableArray *rowLayouts = [[NSMutableArray alloc] init];
         NSUInteger (^numberOfRows)(void) = ^{ return [rowLayouts count]; };
+        BOOL (^canAcceptMoreItems)(MITCollectionViewGridLayoutRow*, NSUInteger) = ^(MITCollectionViewGridLayoutRow *layout, NSUInteger maximumNumberOfItems) {
+            return (BOOL)(layout && ([layout numberOfItems] < maximumNumberOfItems));
+        };
         
         NSInteger item = 0;
         if (hasFeaturedItem) {
@@ -222,7 +231,7 @@ typedef struct {
                 maximumNumberOfItemsInRow -= featuredItemLayoutContext.columnSpan;
             }
 
-            if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
+            if (!canAcceptMoreItems(currentLayoutRow,maximumNumberOfItemsInRow)) {
                 if (currentLayoutRow) {
                     [rowLayouts addObject:currentLayoutRow];
                 }
@@ -260,7 +269,7 @@ typedef struct {
                 featuredItemHeight += CGRectGetHeight(rowLayout.frame);
             }];
 
-            featuredItemHeight += (featuredItemLayoutContext.rowSpan - 1) * self.layout.interLineSpacing;
+            featuredItemHeight += (featuredItemLayoutContext.rowSpan - 1) * self.layout.lineSpacing;
 
             CGRect featuredItemFrame = CGRectZero;
             CGRect scratchFrame = CGRectZero;
@@ -276,7 +285,8 @@ typedef struct {
         // At this point, the rows been paritioned off and their hights should be fixed
         // but they are bunched up at the top. Run through each of the rows here and
         // shift the origins to where they need to be
-        NSMutableArray *layoutAttributes = [[NSMutableArray alloc] init];
+        NSMutableArray *itemLayoutAttributes = [[NSMutableArray alloc] init];
+        NSMutableArray *decorationLayoutAttributes = [[NSMutableArray alloc] init];
         [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *row, NSUInteger index, BOOL *stop) {
             CGRect bounds = row.bounds;
             CGRect frame = CGRectZero;
@@ -289,8 +299,8 @@ typedef struct {
 
             row.frame = frame;
 
-            [layoutAttributes addObjectsFromArray:[row itemLayoutAttributes]];
-            [layoutAttributes addObjectsFromArray:[row decorationLayoutAttributes]];
+            [itemLayoutAttributes addObjectsFromArray:[row itemLayoutAttributes]];
+            [decorationLayoutAttributes addObjectsFromArray:[row decorationLayoutAttributes]];
 
             // Shift the layout bounds down a bit further to account for the intraLineSpacing
             // if we are not on the (n-1)th row;
@@ -298,13 +308,14 @@ typedef struct {
             NSIndexSet *spacingIndexes = [NSIndexSet indexSetWithIndexesInRange:spacingIndexRange];
             if ([spacingIndexes containsIndex:index]) {
                 CGRect scratchRect = CGRectZero;
-                CGRectDivide(layoutBounds, &scratchRect, &layoutBounds, self.layout.interLineSpacing, CGRectMinYEdge);
+                CGRectDivide(layoutBounds, &scratchRect, &layoutBounds, self.layout.lineSpacing, CGRectMinYEdge);
             }
         }];
         
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
         _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame) + self.contentInsets.bottom;
-        _itemLayoutAttributes = layoutAttributes;
+        _itemLayoutAttributes = itemLayoutAttributes;
+        _decorationLayoutAttributes = decorationLayoutAttributes;
         _needsLayout = NO;
     }
 }
