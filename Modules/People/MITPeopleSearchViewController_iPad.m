@@ -12,9 +12,11 @@
 #import "UIKit+MITAdditions.h"
 #import "MITPeopleSearchHandler.h"
 #import "PeopleRecentsData.h"
+#import "PeopleFavoriteData.h"
 #import "MITLoadingActivityView.h"
 #import "MITPeopleRecentResultsViewController.h"
 #import "MITEmergencyContactsTableViewController.h"
+#import "MITPeopleFavoritesTableViewController.h"
 
 @interface MITPeopleSearchViewController_iPad () <UISearchBarDelegate>
 
@@ -24,6 +26,8 @@
 @property (nonatomic, weak) IBOutlet UIView *searchDetailsViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *searchViewsSeparator;
 @property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
+
+@property (nonatomic, weak) IBOutlet UIBarButtonItem *barItem;
 
 @property (nonatomic, strong) UIPopoverController *recentsPickerPopover;
 @property (nonatomic, strong) MITPeopleRecentResultsViewController *recentsPicker;
@@ -54,8 +58,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    UIBarButtonItem *favItem = [[UIBarButtonItem alloc] initWithTitle:@"Favorites" style:UIBarButtonItemStylePlain target:self action:@selector(handleFavorites)];
-    [self.navigationItem setRightBarButtonItems:@[favItem]];
+//    UIBarButtonItem *favItem = [[UIBarButtonItem alloc] initWithTitle:@"Favorites" style:UIBarButtonItemStylePlain target:self action:@selector(handleFavorites)];
+    [self.barItem setTitle:@"Favorites"];
+    [self.barItem setTarget:self];
+    [self.barItem setAction:@selector(handleFavorites)];
+    [self.navigationItem setRightBarButtonItems:@[self.barItem]];
 
     // configure search bar to be in the center of navigaion bar.
     UIView *searchBarWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, self.navigationController.navigationBar.frame.size.height)];
@@ -163,7 +170,9 @@
 
 - (void) handleFavorites
 {
-    //todo
+//    NSArray *favorites = [PeopleFavoriteData retrieveFavoritePeople];
+    
+    [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
 - (void)showLoadingView
@@ -358,6 +367,10 @@
     if( [[segue identifier] isEqualToString:@"MITEmergencyContactsModalSegue"] )
     {
         [segue.destinationViewController setModalPresentationStyle:UIModalPresentationFormSheet];
+    }
+    else if( [[segue identifier] isEqualToString:@"MITFavoritesSegue"] )
+    {
+        // todo
     }
 }
 

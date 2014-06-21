@@ -86,6 +86,50 @@
             </objects>
             <point key="canvasLocation" x="1740" y="-4254"/>
         </scene>
+        <!--People Favorites Table View Controller - Root View Controller-->
+        <scene sceneID="A1Q-uD-rMs">
+            <objects>
+                <tableViewController id="4xh-sv-ysx" customClass="MITPeopleFavoritesTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="vJX-Bi-gfg">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Xak-Hq-BIe">
+                                <rect key="frame" x="0.0" y="86" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xak-Hq-BIe" id="8Rt-7K-yEb">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="4xh-sv-ysx" id="hMW-pk-tQs"/>
+                            <outlet property="delegate" destination="4xh-sv-ysx" id="OAD-WB-PwW"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="SNu-rQ-t9D"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="P1S-8H-sgP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3590" y="-2579"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="O0m-WO-z8g">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="748-1u-aQR" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="XVK-z6-Udv">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="4xh-sv-ysx" kind="relationship" relationship="rootViewController" id="u2c-z7-bQf"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L9B-cX-uA1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2614" y="-2579"/>
+        </scene>
         <!--People Search View Controller i Pad-->
         <scene sceneID="ngJ-IE-Rhy">
             <objects>
@@ -95,10 +139,10 @@
                         <viewControllerLayoutGuide type="bottom" id="H39-Up-Lb9"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="0vV-jc-OHK">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sample Searches" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="264" translatesAutoresizingMaskIntoConstraints="NO" id="8DU-Jj-uzq">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Sample Searches" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="264" translatesAutoresizingMaskIntoConstraints="NO" id="8DU-Jj-uzq">
                                 <rect key="frame" x="259" y="46" width="264" height="78"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
@@ -109,7 +153,7 @@
                                 <color key="textColor" white="0.0" alpha="0.70000000000000007" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Directory Assistance 617.253.1000" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cib-yt-Rxq">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Directory Assistance 617.253.1000" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cib-yt-Rxq">
                                 <rect key="frame" x="259" y="156" width="262" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
@@ -119,7 +163,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EtP-iC-4ue">
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EtP-iC-4ue">
                                 <rect key="frame" x="259" y="209" width="166" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
@@ -130,12 +174,12 @@
                                 <state key="normal" title="Emergency Contacts"/>
                             </button>
                             <containerView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xVk-fy-0k5" userLabel="SearchResultsView">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </containerView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VKQ-pm-ejg" userLabel="OneLineSeparator">
-                                <rect key="frame" x="320" y="0.0" width="1" height="1024"/>
+                                <rect key="frame" x="320" y="0.0" width="1" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -143,7 +187,7 @@
                                 </constraints>
                             </view>
                             <containerView hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ncf-X7-ZPG" userLabel="SearchDetailsView">
-                                <rect key="frame" x="321" y="0.0" width="447" height="1024"/>
+                                <rect key="frame" x="321" y="0.0" width="447" height="960"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </containerView>
@@ -169,8 +213,12 @@
                             <constraint firstItem="EtP-iC-4ue" firstAttribute="leading" secondItem="cib-yt-Rxq" secondAttribute="leading" id="zBN-88-Oy5"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="LgV-xG-env"/>
+                    <navigationItem key="navigationItem" id="LgV-xG-env">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="bkM-H0-Uxl"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
+                        <outlet property="barItem" destination="bkM-H0-Uxl" id="AmI-4O-z7p"/>
                         <outlet property="emergencyContactsButton" destination="EtP-iC-4ue" id="wk4-ZK-FiD"/>
                         <outlet property="sampleSearchesLabel" destination="8DU-Jj-uzq" id="xcw-lu-yyO"/>
                         <outlet property="searchBar" destination="aSR-t8-Yp3" id="BHV-mM-lfJ"/>
@@ -178,6 +226,9 @@
                         <outlet property="searchResultsViewContainer" destination="xVk-fy-0k5" id="GE7-ui-cb0"/>
                         <outlet property="searchViewsSeparator" destination="VKQ-pm-ejg" id="7Kf-cn-EfF"/>
                         <segue destination="dLi-xs-wvr" kind="modal" identifier="MITEmergencyContactsModalSegue" id="XLC-3R-M0w"/>
+                        <segue destination="748-1u-aQR" kind="popover" identifier="MITFavoritesSegue" popoverAnchorBarButtonItem="bkM-H0-Uxl" id="hrg-gf-llQ">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4fq-hp-FWz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -245,7 +296,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QfZ-4X-HpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2370" y="-2564"/>
+            <point key="canvasLocation" x="-534" y="-2556"/>
         </scene>
         <!--People Search Results View Controller-->
         <scene sceneID="fly-nL-s8L">

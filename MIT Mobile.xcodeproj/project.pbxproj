@@ -18,6 +18,8 @@
 		2748873A193413AB00414552 /* MITPeopleSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
 		27D2CC3B19528740003F447F /* MITEmergencyContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */; };
+		27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */; };
+		27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -498,6 +500,10 @@
 		277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleRecentResultsViewController.m; sourceTree = "<group>"; };
 		27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyContactsTableViewController.h; sourceTree = "<group>"; };
 		27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyContactsTableViewController.m; sourceTree = "<group>"; };
+		27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleFavoriteData.h; sourceTree = "<group>"; };
+		27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleFavoriteData.m; sourceTree = "<group>"; };
+		27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleFavoritesTableViewController.h; sourceTree = "<group>"; };
+		27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleFavoritesTableViewController.m; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1461,6 +1467,8 @@
 				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
 				27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */,
 				27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */,
+				27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */,
+				27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */,
 			);
 			name = iPad;
 			sourceTree = "<group>";
@@ -3015,6 +3023,8 @@
 				EB7F326F10CD6C5B00188BCD /* PersonDetails.m */,
 				DEA4C65518BD8F4400A60657 /* PeopleRecentsData.h */,
 				DEA4C65618BD8F4400A60657 /* PeopleRecentsData.m */,
+				27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */,
+				27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -3324,6 +3334,7 @@
 				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
+				27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */,
 				EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */,
 				3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */,
 				3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */,
@@ -3388,6 +3399,7 @@
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
+				27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,

@@ -1,6 +1,7 @@
 #import "PeopleDetailsViewController.h"
 #import "ConnectionDetector.h"
 #import "PeopleRecentsData.h"
+#import "PeopleFavoriteData.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
@@ -229,7 +230,15 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             return [self.attributes count];
 
         case 1:
-            return 2;
+            
+            if( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad )
+            {
+                return 3; // additional row for 'add to favorites' on iPad
+            }
+            else
+            {
+                return 2;
+            }
 
         default:
             return 0;
@@ -250,9 +259,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 		if (row == 0) {
 			cell.textLabel.text = @"Create New Contact";
-        } else {
+        } else if( row == 1 ) {
 			cell.textLabel.text = @"Add to Existing Contact";
-		}
+		} else if( row == 2 ) {
+            cell.textLabel.text = @"Add to Favorites";
+        }
 		
 	} else { // (section == 0) cells for displaying person details
 		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
@@ -404,13 +415,16 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 			[appDelegate presentAppModalViewController:navController animated:YES];
 
             CFRelease(person);
-		} else {
+		} else if( indexPath.row == 1 ){
 			ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
 			[picker setPeoplePickerDelegate:self];
 			
 			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 			[appDelegate presentAppModalViewController:picker animated:YES];
-		}
+		} else if( indexPath.row == 2 )
+        {
+            [PeopleFavoriteData setPerson:self.personDetails asFavorite:YES];
+        }
 
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 	} else {
