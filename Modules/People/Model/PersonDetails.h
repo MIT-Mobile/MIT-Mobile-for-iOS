@@ -27,7 +27,9 @@
 @property (nonatomic,copy) NSString *url;
 @property (nonatomic,copy) NSArray  *website;
 @property (nonatomic,copy) NSDate   *lastUpdate;
-@property (nonatomic,assign) BOOL   *favorite;
+
+@property (nonatomic,assign) BOOL favorite;
+@property (nonatomic,assign) NSInteger favoriteIndex;
 
 - (NSString *)address;
 

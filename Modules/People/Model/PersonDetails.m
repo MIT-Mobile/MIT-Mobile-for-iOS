@@ -10,7 +10,7 @@
 @dynamic street, city, state;
 @dynamic url, website;
 @dynamic lastUpdate;
-@dynamic favorite;
+@dynamic favorite, favoriteIndex;
 
 - (NSString *)address
 {

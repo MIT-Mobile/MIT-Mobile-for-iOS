@@ -169,9 +169,7 @@
 }
 
 - (void) handleFavorites
-{
-//    NSArray *favorites = [PeopleFavoriteData retrieveFavoritePeople];
-    
+{    
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 

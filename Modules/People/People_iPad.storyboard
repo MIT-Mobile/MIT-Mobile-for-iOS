@@ -29,7 +29,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITEmergencyContactTableCell" rowHeight="56" id="jOi-t6-5gJ">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITEmergencyContactTableCell" rowHeight="56" id="jOi-t6-5gJ">
                                 <rect key="frame" x="0.0" y="86" width="768" height="56"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jOi-t6-5gJ" id="zI7-BS-Ki8">
@@ -86,7 +86,7 @@
             </objects>
             <point key="canvasLocation" x="1740" y="-4254"/>
         </scene>
-        <!--People Favorites Table View Controller - Root View Controller-->
+        <!--People Favorites Table View Controller - Favorites-->
         <scene sceneID="A1Q-uD-rMs">
             <objects>
                 <tableViewController id="4xh-sv-ysx" customClass="MITPeopleFavoritesTableViewController" sceneMemberID="viewController">
@@ -95,12 +95,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Xak-Hq-BIe">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITPeopleFavoriteCell" textLabel="bfS-hi-jsJ" detailTextLabel="fBO-FQ-2yp" style="IBUITableViewCellStyleSubtitle" id="Xak-Hq-BIe">
                                 <rect key="frame" x="0.0" y="86" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xak-Hq-BIe" id="8Rt-7K-yEb">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bfS-hi-jsJ">
+                                            <rect key="frame" x="15" y="3" width="34" height="22"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fBO-FQ-2yp">
+                                            <rect key="frame" x="15" y="25" width="43" height="15"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
@@ -109,7 +125,7 @@
                             <outlet property="delegate" destination="4xh-sv-ysx" id="OAD-WB-PwW"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="SNu-rQ-t9D"/>
+                    <navigationItem key="navigationItem" title="Favorites" id="SNu-rQ-t9D"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P1S-8H-sgP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -344,7 +360,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1my-Aa-7zp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="296" y="-676"/>
+            <point key="canvasLocation" x="1104" y="-1108"/>
         </scene>
         <!--People Details View Controller-->
         <scene sceneID="Yfi-d6-EE4">
@@ -438,7 +454,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kYq-ED-a9X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1605" y="-513"/>
+            <point key="canvasLocation" x="-134" y="-1005"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
