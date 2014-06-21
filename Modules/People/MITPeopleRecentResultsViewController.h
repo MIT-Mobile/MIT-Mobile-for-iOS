@@ -13,6 +13,6 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-@property (nonatomic, strong) id<PeopleRecentsViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<PeopleRecentsViewControllerDelegate> delegate;
 
 @end

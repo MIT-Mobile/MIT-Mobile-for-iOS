@@ -91,12 +91,12 @@
             <objects>
                 <tableViewController id="4xh-sv-ysx" customClass="MITPeopleFavoritesTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="vJX-Bi-gfg">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITPeopleFavoriteCell" textLabel="bfS-hi-jsJ" detailTextLabel="fBO-FQ-2yp" style="IBUITableViewCellStyleSubtitle" id="Xak-Hq-BIe">
-                                <rect key="frame" x="0.0" y="86" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="22" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xak-Hq-BIe" id="8Rt-7K-yEb">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
@@ -135,7 +135,9 @@
         <scene sceneID="O0m-WO-z8g">
             <objects>
                 <navigationController definesPresentationContext="YES" id="748-1u-aQR" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="XVK-z6-Udv">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="XVK-z6-Udv">
+                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -243,7 +245,7 @@
                         <outlet property="searchViewsSeparator" destination="VKQ-pm-ejg" id="7Kf-cn-EfF"/>
                         <segue destination="dLi-xs-wvr" kind="modal" identifier="MITEmergencyContactsModalSegue" id="XLC-3R-M0w"/>
                         <segue destination="748-1u-aQR" kind="popover" identifier="MITFavoritesSegue" popoverAnchorBarButtonItem="bkM-H0-Uxl" id="hrg-gf-llQ">
-                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES"/>
                         </segue>
                     </connections>
                 </viewController>

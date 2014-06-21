@@ -32,6 +32,8 @@
 @property (nonatomic, strong) UIPopoverController *recentsPickerPopover;
 @property (nonatomic, strong) MITPeopleRecentResultsViewController *recentsPicker;
 
+@property (nonatomic, strong) UIPopoverController *favoritesPopover;
+
 @property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
 
 @property MITPeopleSearchResultsViewController *searchResultsViewController;
@@ -202,11 +204,6 @@
     [self setSearchResultViewsHidden:NO];
 }
 
-- (void) didClearRecents
-{
-    [self dismissRecentsPopover];
-}
-
 - (void) dismissRecentsPopover
 {
     [self.recentsPickerPopover dismissPopoverAnimated:YES];
@@ -279,6 +276,16 @@
     searchBar.showsCancelButton = YES;
 }
 
+- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    return [self shouldPerformSearchAction];
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    return [self shouldPerformSearchAction];
+}
+
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     searchBar.showsCancelButton = YES;
@@ -291,6 +298,11 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
 {
+    if( ![self shouldPerformSearchAction] )
+    {
+        return;
+    }
+    
     searchHandler.searchResults = nil;
     searchHandler.searchTerms = nil;
     searchHandler.searchCancelled = YES;
@@ -347,11 +359,45 @@
     self.navigationController.toolbarHidden = hidden;
 }
 
+#pragma mark - recent and favorite delegates
+
+- (void) didClearRecents
+{
+    [self dismissRecentsPopover];
+}
+
 - (void) didSelectPerson:(PersonDetails *)person
 {
     self.searchDetailsViewController.personDetails = person;
     
     [self.searchDetailsViewController reload];
+}
+
+- (void) didSelectFavoritePerson:(PersonDetails *)person
+{
+    [self setSearchResultViewsHidden:NO];
+    
+    self.searchDetailsViewController.personDetails = person;
+    [self.searchDetailsViewController reload];
+    
+    [self.favoritesPopover dismissPopoverAnimated:YES];
+}
+
+- (void) didDismissFavoritesPopover
+{
+    self.favoritesPopover = nil;
+}
+
+- (BOOL) shouldPerformSearchAction
+{
+    if( [self favoritesPopover] )
+    {
+        [[self favoritesPopover] dismissPopoverAnimated:YES];
+        
+        return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark - Navigation
@@ -368,7 +414,13 @@
     }
     else if( [[segue identifier] isEqualToString:@"MITFavoritesSegue"] )
     {
-        // todo
+        UINavigationController *navController = [segue destinationViewController];
+        MITPeopleFavoritesTableViewController *favoritesTableViewController = [[navController viewControllers] firstObject];
+        favoritesTableViewController.delegate = self;
+        
+        // keeping a reference to popoverController, so that it can be programmatically dismissed later
+        self.favoritesPopover = [(UIStoryboardPopoverSegue *)segue popoverController];
+        self.favoritesPopover.passthroughViews = nil;
     }
 }
 

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MITPeopleSearchViewController_iPad.h"
 
 @interface MITPeopleFavoritesTableViewController : UITableViewController
+
+@property (nonatomic, weak) id<MITPeopleFavoritesViewControllerDelegate> delegate;
 
 @end

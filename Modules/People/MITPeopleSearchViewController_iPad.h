@@ -22,6 +22,13 @@
 
 @end
 
-@interface MITPeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate>
+@protocol MITPeopleFavoritesViewControllerDelegate
+
+- (void) didSelectFavoritePerson:(PersonDetails *)person;
+- (void) didDismissFavoritesPopover;
+
+@end
+
+@interface MITPeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate, MITPeopleFavoritesViewControllerDelegate>
 
 @end
