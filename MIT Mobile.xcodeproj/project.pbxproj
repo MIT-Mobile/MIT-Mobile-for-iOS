@@ -1459,10 +1459,10 @@
 		277B3DCD194DC7610032229E /* iPad */ = {
 			isa = PBXGroup;
 			children = (
-				2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */,
-				2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */,
 				274887281932E1C800414552 /* MITPeopleSearchViewController_iPad.h */,
 				274887291932E1C800414552 /* MITPeopleSearchViewController_iPad.m */,
+				2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */,
+				2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */,
 				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
 				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
 				27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */,

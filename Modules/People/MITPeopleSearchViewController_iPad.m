@@ -100,6 +100,8 @@
 {
     [super viewDidDisappear:animated];
     
+    [self cancelSearch];
+    
     //TODO: remove child view controllers
 }
 
@@ -302,18 +304,21 @@
     {
         return;
     }
-    
+
+    [self cancelSearch];
+}
+
+- (void) cancelSearch
+{
     searchHandler.searchResults = nil;
     searchHandler.searchTerms = nil;
     searchHandler.searchCancelled = YES;
-    searchBar.text = nil;
-    searchBar.showsCancelButton = NO;
+    self.searchBar.text = nil;
+    self.searchBar.showsCancelButton = NO;
     
-    [searchBar resignFirstResponder];
+    [self.searchBar resignFirstResponder];
     
     [self setSearchResultViewsHidden:YES];
-    
-    //TODO: go back to the main screen
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
