@@ -100,8 +100,6 @@
 {
     [super viewDidDisappear:animated];
     
-    [self cancelSearch];
-    
     //TODO: remove child view controllers
 }
 
@@ -141,6 +139,11 @@
 
 - (void) configureChildControllers
 {
+    if( self.searchResultsViewController && self.searchDetailsViewContainer )
+    {
+        return;
+    }
+    
     self.searchResultsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PeopleSearchResultsViewController"];
     self.searchResultsViewController.delegate = self;
     [self addChildViewController:self.searchResultsViewController];
