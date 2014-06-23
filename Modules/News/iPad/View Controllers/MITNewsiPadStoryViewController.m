@@ -166,18 +166,6 @@
         self.nextStoryImageWidthConstraint.constant = 90;
         self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
     }
-    
-/*
-    if (self.coverImageView.image) {
-        // Using 213 here because all the images from the News office should be around a
-        // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
-        // a point or two.
-        // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
-        // (bskinner - 2014.02.07)
-        self.coverImageViewHeightConstraint.constant = 213.;
-    } else {
-        self.coverImageViewHeightConstraint.constant = 0;
-    }*/
 }
 
 - (IBAction)shareButtonTapped:(id)sender
