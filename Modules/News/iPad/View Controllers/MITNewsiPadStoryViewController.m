@@ -379,12 +379,6 @@
     UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
     [rightBarItems addObject:shareItem];
     
-    UIBarButtonItem *starItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:nil];
-    [rightBarItems addObject:starItem];
-    
-    UIBarButtonItem *fontSizeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:nil];
-    [rightBarItems addObject:fontSizeItem];
-    
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 
