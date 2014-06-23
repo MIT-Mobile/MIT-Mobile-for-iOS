@@ -200,7 +200,7 @@
                                 </connections>
                             </containerView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qc8-w7-yJc" userLabel="Caption View">
-                                <rect key="frame" x="0.0" y="948" width="768" height="76"/>
+                                <rect key="frame" x="0.0" y="900" width="768" height="124"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description text (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="Rbl-Gf-Oaq">
@@ -223,17 +223,28 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ew8-Ox-al8" userLabel="Thumbnail View">
+                                        <rect key="frame" x="20" y="64" width="728" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="JoW-34-dkb"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="YM8-JL-rdi" firstAttribute="leading" secondItem="Rbl-Gf-Oaq" secondAttribute="leading" id="4wj-L3-8QO"/>
+                                    <constraint firstItem="ew8-Ox-al8" firstAttribute="leading" secondItem="Qc8-w7-yJc" secondAttribute="leading" constant="20" id="BYY-2k-PEU"/>
+                                    <constraint firstItem="ew8-Ox-al8" firstAttribute="top" secondItem="YM8-JL-rdi" secondAttribute="bottom" constant="8" symbolic="YES" id="Ftw-hk-0mO"/>
                                     <constraint firstItem="Rbl-Gf-Oaq" firstAttribute="leading" secondItem="Qc8-w7-yJc" secondAttribute="leading" constant="20" id="I5g-xi-nwS"/>
+                                    <constraint firstAttribute="bottom" secondItem="ew8-Ox-al8" secondAttribute="bottom" constant="10" id="IAo-Zl-jpJ"/>
                                     <constraint firstAttribute="trailing" secondItem="Rbl-Gf-Oaq" secondAttribute="trailing" constant="20" id="LEx-UW-Srz"/>
                                     <constraint firstItem="Rbl-Gf-Oaq" firstAttribute="top" secondItem="Qc8-w7-yJc" secondAttribute="top" constant="20" id="LxJ-Pb-o9r"/>
-                                    <constraint firstAttribute="bottom" secondItem="YM8-JL-rdi" secondAttribute="bottom" constant="20" symbolic="YES" id="XSe-f6-C2X"/>
                                     <constraint firstItem="YM8-JL-rdi" firstAttribute="top" secondItem="Rbl-Gf-Oaq" secondAttribute="bottom" constant="8" id="bQ6-xI-6do"/>
                                     <constraint firstItem="YM8-JL-rdi" firstAttribute="trailing" secondItem="Rbl-Gf-Oaq" secondAttribute="trailing" id="dDI-Dg-DjU"/>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="vuW-T4-eII"/>
+                                    <constraint firstAttribute="trailing" secondItem="ew8-Ox-al8" secondAttribute="trailing" constant="20" id="vFI-Lf-idh"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="vuW-T4-eII"/>
                                 </constraints>
                             </view>
                             <navigationBar contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="a4m-LP-xI5">
