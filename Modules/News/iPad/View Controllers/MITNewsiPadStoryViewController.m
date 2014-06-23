@@ -51,26 +51,7 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    //__block NSURL *imageURL = nil;
-    
     [self setupNextStory];
-    
-    /*[self.managedObjectContext performBlockAndWait:^{
-        if (self.story) {
-            CGSize imageSize = self.coverImageView.bounds.size;
-            imageSize.height = 213.;
-
-            MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
-            imageURL = imageRepresentation.url;
-        }
-    }];
-
-    if (imageURL) {
-        [self.coverImageView setImageWithURL:imageURL
-                                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                       [self.view setNeedsUpdateConstraints];
-        }];
-    }*/
 }
 
 - (void)setupNextStory
@@ -181,7 +162,7 @@
     }
     
     if(self.nextStoryImageView.image) {
-        self.nextStoryImageHeightConstraint.constant = 70;
+        self.nextStoryImageHeightConstraint.constant = 60;
         self.nextStoryImageWidthConstraint.constant = 90;
         self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
     }
