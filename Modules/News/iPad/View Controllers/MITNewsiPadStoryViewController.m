@@ -60,18 +60,18 @@
         __block NSString *title = nil;
         __block NSString *dek = nil;
         __block NSURL *imageURL = nil;
-        //[_story.managedObjectContext performBlockAndWait:^{
-        title = self.story.title;
-        dek = self.story.dek;
-        
-        
-        CGSize idealImageSize = self.nextStoryImageView.frame.size;
-        
-        MITNewsImageRepresentation *representation = [self.story.coverImage bestRepresentationForSize:idealImageSize];
-        if (representation) {
-            imageURL = representation.url;
-        }
-        //   }];
+        [_story.managedObjectContext performBlockAndWait:^{
+           
+            title = self.story.title;
+            dek = self.story.dek;
+            
+            CGSize idealImageSize = self.nextStoryImageView.frame.size;
+            
+            MITNewsImageRepresentation *representation = [self.story.coverImage bestRepresentationForSize:idealImageSize];
+            if (representation) {
+                imageURL = representation.url;
+            }
+        }];
         
         if (title) {
             NSError *error = nil;
@@ -264,7 +264,7 @@
     NSAssert(templateString, @"failed to load News story HTML template");
 
     __block NSDictionary *templateBindings = nil;
-   // [self.managedObjectContext performBlockAndWait:^{
+    [self.managedObjectContext performBlockAndWait:^{
         MITNewsStory *story = self.story;
         if (story) {
             NSString *postDate = @"";
@@ -297,7 +297,7 @@
                                  @"__GALLERY_CREDIT__" : (story.coverImage.credits ? story.coverImage.credits : [NSNull null])
                                  };
         }
-   // }];
+    }];
 
 
     [templateBindings enumerateKeysAndObjectsUsingBlock:^(NSString *placeholder, id value, BOOL *stop) {

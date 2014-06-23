@@ -81,7 +81,7 @@
                                         </constraints>
                                     </webView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
-                                        <rect key="frame" x="60" y="800" width="648" height="107"/>
+                                        <rect key="frame" x="60" y="800" width="648" height="103"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
@@ -93,20 +93,20 @@
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="Zwj-9s-ZzK">
-                                                <rect key="frame" x="0.0" y="35" width="633" height="22"/>
+                                                <rect key="frame" x="0.0" y="31" width="633" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dek" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="DJg-5Q-Y2i">
-                                                <rect key="frame" x="0.0" y="59" width="633" height="18"/>
+                                                <rect key="frame" x="0.0" y="55" width="633" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
-                                                <rect key="frame" x="0.0" y="79" width="633" height="18"/>
+                                                <rect key="frame" x="0.0" y="75" width="633" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <nil key="highlightedColor"/>
@@ -119,7 +119,7 @@
                                             </label>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="top" id="1Xq-cw-eTU"/>
+                                            <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="top" constant="4" id="1Xq-cw-eTU"/>
                                             <constraint firstAttribute="trailing" secondItem="Zwj-9s-ZzK" secondAttribute="trailing" constant="15" id="3Ug-KR-0DI"/>
                                             <constraint firstItem="NuZ-d7-c35" firstAttribute="top" secondItem="lyu-sR-MC2" secondAttribute="top" constant="10" id="F1b-dJ-tOq"/>
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="leading" secondItem="aRd-O6-eP4" secondAttribute="leading" id="NN8-Un-6CQ"/>
