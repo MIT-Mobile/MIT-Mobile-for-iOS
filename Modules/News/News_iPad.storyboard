@@ -223,13 +223,16 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ew8-Ox-al8" userLabel="Thumbnail View">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ew8-Ox-al8" userLabel="Thumbnail View" customClass="ThumbnailPickerView">
                                         <rect key="frame" x="20" y="64" width="728" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="JoW-34-dkb"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="dataSource" destination="jao-yi-cxX" id="FDK-e5-WqJ"/>
+                                            <outlet property="delegate" destination="jao-yi-cxX" id="VnD-L7-SOk"/>
+                                        </connections>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
@@ -294,6 +297,7 @@
                         <outlet property="descriptionLabel" destination="Rbl-Gf-Oaq" id="aJF-HS-Sfz"/>
                         <outlet property="navigationBar" destination="a4m-LP-xI5" id="epx-zF-cds"/>
                         <outlet property="resetZoomGesture" destination="gAb-H4-EN6" id="jOc-9e-VwD"/>
+                        <outlet property="thumbnailPickerView" destination="ew8-Ox-al8" id="bcg-YF-Z9V"/>
                         <outlet property="toggleUIGesture" destination="SvE-Ge-YmL" id="F1z-tS-CAW"/>
                     </connections>
                 </viewController>

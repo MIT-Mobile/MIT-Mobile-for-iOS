@@ -9,12 +9,19 @@
 
 #import "MITAdditions.h"
 
-@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
+#import "ThumbnailPickerView.h"
+
+#import "UIImageView+WebCache.h"
+
+@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate>
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *toggleUIGesture;
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *resetZoomGesture;
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
 @property (nonatomic,strong) NSMutableArray *galleryPageViewControllers;
 @property (nonatomic) NSInteger selectedIndex;
+
+@property (nonatomic, strong) NSMutableArray *thumbnailImages;
+@property (strong, nonatomic) IBOutlet ThumbnailPickerView *thumbnailPickerView;
 
 @end
 
@@ -53,6 +60,7 @@
     // Call this to force an update of the image caption
     // for the first view controller
     [self didChangeSelectedIndex];
+    [self.thumbnailPickerView setSelectedIndex:0];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -71,15 +79,28 @@
     }];
 }
 
+- (NSMutableArray*)thumbnailImages
+{
+    if (!_thumbnailImages) {
+        NSMutableArray *thumbnailImages = [[NSMutableArray alloc] init];
+        
+        for(int i = 0 ; i < [self.galleryImages count] ; i++) {
+            [thumbnailImages addObject:[NSNull null]];
+        }
+        _thumbnailImages = thumbnailImages;
+        }
+    return _thumbnailImages;
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     NSAssert(self.managedObjectContext, @"parent did not assign a managed object context");
 
     if ([segue.identifier isEqualToString:@"embedPageViewController"]) {
-        UIPageViewController *pageViewController = [segue destinationViewController];
-        pageViewController.dataSource = self;
-        pageViewController.delegate = self;
-        pageViewController.view.backgroundColor = [UIColor clearColor];
+        self.pageViewController = [segue destinationViewController];
+        self.pageViewController.dataSource = self;
+        self.pageViewController.delegate = self;
+        self.pageViewController.view.backgroundColor = [UIColor clearColor];
 
         NSMutableArray *galleryPageViewControllers = [[NSMutableArray alloc] init];
         [self.managedObjectContext performBlockAndWait:^{
@@ -91,11 +112,32 @@
                 imageViewController.image = (MITNewsImage*)[context objectWithID:[image objectID]];
                 
                 [galleryPageViewControllers addObject:imageViewController];
+                
+                if (self.thumbnailPickerView) {
+                    __block NSURL *imageURL = nil;
+                    
+                    __weak MITNewsMediaGalleryViewController *weak = self;
+                    
+                    MITNewsImageRepresentation *imageRepresentation = [imageViewController.image bestRepresentationForSize:MITNewsImageSmallestImageSize];
+                    imageURL = imageRepresentation.url;
+                    [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:imageURL
+                                                                          options:0
+                                                                         progress:nil
+                                                                        completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished) {
+                                                                            MITNewsMediaGalleryViewController *strong = weak;
+                                                                            if (image) {
+                                                                                [strong.thumbnailImages replaceObjectAtIndex:idx withObject:image];
+                                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                    [strong.thumbnailPickerView reloadThumbnailAtIndex:idx];
+                                                                                });
+                                                                            }
+                                                                        }];
+                }
             }];
             
-
+            
             self.galleryPageViewControllers = galleryPageViewControllers;
-            [pageViewController setViewControllers:@[[galleryPageViewControllers firstObject]]
+            [self.pageViewController setViewControllers:@[[galleryPageViewControllers firstObject]]
                                          direction:UIPageViewControllerNavigationDirectionForward
                                           animated:NO
                                         completion:nil];
@@ -110,10 +152,25 @@
         _selectedIndex = selectedIndex;
         
         [self didChangeSelectedIndex];
+        [self.thumbnailPickerView setSelectedIndex:selectedIndex animated:YES];
     }
 }
 
 #pragma mark UI Actions
+
+- (void)goToIndex:(NSInteger)selectedIndex {
+    
+    MITNewsImageViewController *imageViewController = [self.galleryPageViewControllers objectAtIndex:selectedIndex];
+    
+    if(selectedIndex > self.selectedIndex) {
+        [self.pageViewController setViewControllers:@[imageViewController] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:NULL];
+    } else {
+        [self.pageViewController setViewControllers:@[imageViewController] direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:NULL];
+    }
+    [self setSelectedIndex:selectedIndex];
+
+}
+
 - (IBAction)dismissGallery:(id)sender
 {
 
@@ -180,7 +237,7 @@
         
         if (!_interfaceHidden) {
             if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                [self setNeedsStatusBarAppearanceUpdate];
+                //[self setNeedsStatusBarAppearanceUpdate];
             }
         }
         
@@ -194,7 +251,7 @@
                          } completion:^(BOOL finished) {
                              if (_interfaceHidden) {
                                  if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                                     [self setNeedsStatusBarAppearanceUpdate];
+                                     //[self setNeedsStatusBarAppearanceUpdate];
                                  }
                              }
                          }];
@@ -287,6 +344,36 @@
             self.selectedIndex = NSNotFound;
         }
     }
+}
+
+#pragma mark - Private API
+
+- (void)_updateUIWithSelectedIndex:(NSUInteger)index
+{
+    [self goToIndex:index];
+}
+
+#pragma mark - ThumbnailPickerView data source
+
+- (NSUInteger)numberOfImagesForThumbnailPickerView:(ThumbnailPickerView *)thumbnailPickerView
+{
+    return [self.galleryImages count];
+}
+
+- (UIImage *)thumbnailPickerView:(ThumbnailPickerView *)thumbnailPickerView imageAtIndex:(NSUInteger)index
+{
+    UIImage *image;
+    if ([self.thumbnailImages count] > index  && [self.thumbnailImages objectAtIndex:index] != [NSNull null]) {
+       image = [self.thumbnailImages objectAtIndex:index];
+    }
+    return image;
+}
+
+#pragma mark - ThumbnailPickerView delegate
+
+- (void)thumbnailPickerView:(ThumbnailPickerView *)thumbnailPickerView didSelectImageWithIndex:(NSUInteger)index
+{
+    [self _updateUIWithSelectedIndex:index];
 }
 
 @end
