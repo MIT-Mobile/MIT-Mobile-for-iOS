@@ -130,7 +130,7 @@
         minScale = maxScale;
     }
         
-    self.maximumZoomScale = 1.0;
+    self.maximumZoomScale = 2.0;
     self.minimumZoomScale = minScale;
 }
 
