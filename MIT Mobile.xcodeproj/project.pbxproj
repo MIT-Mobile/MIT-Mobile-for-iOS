@@ -12,6 +12,7 @@
 		0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */; };
 		0B3786841952014600A8D7E3 /* MITNewsiPadStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B3786831952014600A8D7E3 /* MITNewsiPadStoryViewController.m */; };
 		0B4EB228194B532200C7AA2F /* MITNewsPadLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4EB227194B532200C7AA2F /* MITNewsPadLayout.m */; };
+		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0B9A2FAD194B746600A36C94 /* NewsStoryHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */; };
 		0BD7B96E194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BD7B96C194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib */; };
 		0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BD7B96D194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib */; };
@@ -508,6 +509,8 @@
 		0B3786831952014600A8D7E3 /* MITNewsiPadStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsiPadStoryViewController.m; sourceTree = "<group>"; };
 		0B4EB226194B532200C7AA2F /* MITNewsPadLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsPadLayout.h; path = "Modules/News/iPad/View Layouts/MITNewsPadLayout.h"; sourceTree = "<group>"; };
 		0B4EB227194B532200C7AA2F /* MITNewsPadLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsPadLayout.m; path = "Modules/News/iPad/View Layouts/MITNewsPadLayout.m"; sourceTree = "<group>"; };
+		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
+		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
 		0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryHeaderReusableView.xib; path = XIBs/NewsStoryHeaderReusableView.xib; sourceTree = "<group>"; };
 		0BD7B96C194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryClipCollectionViewCell.xib; path = XIBs/NewsStoryClipCollectionViewCell.xib; sourceTree = "<group>"; };
 		0BD7B96D194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryJumboCollectionViewCell.xib; path = XIBs/NewsStoryJumboCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -1534,6 +1537,15 @@
 			);
 			name = "View Layouts";
 			path = ../../..;
+			sourceTree = "<group>";
+		};
+		0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */ = {
+			isa = PBXGroup;
+			children = (
+				0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */,
+				0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */,
+			);
+			name = ThumbnailPickerView;
 			sourceTree = "<group>";
 		};
 		0BD7B96A194A36BC00B0EDBD /* Collection View Cells */ = {
@@ -2964,6 +2976,7 @@
 				0B1689C91937D13A001EB3B1 /* iPad */,
 				DE81CF6010C6BC390085573D /* NewsModule.h */,
 				DE81CF6110C6BC390085573D /* NewsModule.m */,
+				0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */,
 				DE4AAFAC10ED4E63007476D9 /* Model */,
 				2C3C53431896A7D300D1F9B5 /* News_iPhone.storyboard */,
 				2C7A58BC1937C44C0041DBFC /* News_iPad.storyboard */,
@@ -3797,6 +3810,7 @@
 				DE65451D173D90A900562C20 /* SDWebImageCompat.m in Sources */,
 				5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */,
 				DE65451E173D90A900562C20 /* SDWebImageDecoder.m in Sources */,
+				0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */,
 				DE65451F173D90A900562C20 /* SDWebImageDownloader.m in Sources */,
 				DE654520173D90A900562C20 /* SDWebImageDownloaderOperation.m in Sources */,
 				DE654521173D90A900562C20 /* SDWebImageManager.m in Sources */,
