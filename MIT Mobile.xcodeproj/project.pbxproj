@@ -182,6 +182,7 @@
 		2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */; };
 		2CE1C89C18C156B0001B8FEB /* DiningMenuCompareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */; };
 		2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */; };
+		2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE355651959F673004011C5 /* MITNewsListViewController.m */; };
 		2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
@@ -835,6 +836,8 @@
 		2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DiningMenuCompareViewController.xib; path = XIBs/DiningMenuCompareViewController.xib; sourceTree = "<group>"; };
 		2CE20DA218885F2C0010FA49 /* MITDisclosureHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDisclosureHeaderView.h; path = Views/MITDisclosureHeaderView.h; sourceTree = "<group>"; };
 		2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDisclosureHeaderView.m; path = Views/MITDisclosureHeaderView.m; sourceTree = "<group>"; };
+		2CE355641959F673004011C5 /* MITNewsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsListViewController.h; path = ../../MITNewsListViewController.h; sourceTree = "<group>"; };
+		2CE355651959F673004011C5 /* MITNewsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsListViewController.m; path = ../../MITNewsListViewController.m; sourceTree = "<group>"; };
 		2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MapKit+MITAdditions.h"; path = "Categories/MapKit+MITAdditions.h"; sourceTree = "<group>"; };
 		2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MapKit+MITAdditions.m"; path = "Categories/MapKit+MITAdditions.m"; sourceTree = "<group>"; };
 		2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MFMailComposeViewController+RFC2368.h"; sourceTree = "<group>"; };
@@ -1517,6 +1520,8 @@
 				0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */,
 				2CD75BA4194B94D700B8E4DB /* MITNewsCollectionViewController.h */,
 				2CD75BA5194B94D700B8E4DB /* MITNewsCollectionViewController.m */,
+				2CE355641959F673004011C5 /* MITNewsListViewController.h */,
+				2CE355651959F673004011C5 /* MITNewsListViewController.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -3632,6 +3637,7 @@
 				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
 				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
 				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
+				2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
 				DEA8767F18AAE9AD00327823 /* DDContextFilterLogFormatter.m in Sources */,
