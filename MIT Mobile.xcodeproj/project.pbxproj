@@ -183,6 +183,7 @@
 		2CE1C89C18C156B0001B8FEB /* DiningMenuCompareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */; };
 		2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */; };
 		2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE355651959F673004011C5 /* MITNewsListViewController.m */; };
+		2CE3556C195A23E7004011C5 /* MITNewsHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE3556B195A23E7004011C5 /* MITNewsHomeViewController.m */; };
 		2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
@@ -838,6 +839,8 @@
 		2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDisclosureHeaderView.m; path = Views/MITDisclosureHeaderView.m; sourceTree = "<group>"; };
 		2CE355641959F673004011C5 /* MITNewsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsListViewController.h; path = ../../MITNewsListViewController.h; sourceTree = "<group>"; };
 		2CE355651959F673004011C5 /* MITNewsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsListViewController.m; path = ../../MITNewsListViewController.m; sourceTree = "<group>"; };
+		2CE3556A195A23E7004011C5 /* MITNewsHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsHomeViewController.h; sourceTree = "<group>"; };
+		2CE3556B195A23E7004011C5 /* MITNewsHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsHomeViewController.m; sourceTree = "<group>"; };
 		2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MapKit+MITAdditions.h"; path = "Categories/MapKit+MITAdditions.h"; sourceTree = "<group>"; };
 		2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MapKit+MITAdditions.m"; path = "Categories/MapKit+MITAdditions.m"; sourceTree = "<group>"; };
 		2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MFMailComposeViewController+RFC2368.h"; sourceTree = "<group>"; };
@@ -1522,6 +1525,8 @@
 				2CD75BA5194B94D700B8E4DB /* MITNewsCollectionViewController.m */,
 				2CE355641959F673004011C5 /* MITNewsListViewController.h */,
 				2CE355651959F673004011C5 /* MITNewsListViewController.m */,
+				2CE3556A195A23E7004011C5 /* MITNewsHomeViewController.h */,
+				2CE3556B195A23E7004011C5 /* MITNewsHomeViewController.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -3756,6 +3761,7 @@
 				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
 				2C18090918F33B95008F9775 /* MITTouchstoneIdentityProvider.m in Sources */,
 				2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */,
+				2CE3556C195A23E7004011C5 /* MITNewsHomeViewController.m in Sources */,
 				2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */,
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
