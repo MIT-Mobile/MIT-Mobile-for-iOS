@@ -4,7 +4,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
-#import "MITNewsCollectionViewController.h"
+#import "MITNewsGridViewController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     UICollectionViewController *gridViewController = _gridViewController;
     
     if (!gridViewController) {
-        gridViewController = [[MITNewsCollectionViewController alloc] init];
+        gridViewController = [[MITNewsGridViewController alloc] init];
 
         gridViewController.collectionView.backgroundView = nil;
         gridViewController.collectionView.backgroundColor = [UIColor whiteColor];

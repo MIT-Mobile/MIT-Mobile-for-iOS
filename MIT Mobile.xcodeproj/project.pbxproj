@@ -168,7 +168,7 @@
 		2CD1AE8419520E40003D7601 /* MITCollectionViewNewsGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE8119520E40003D7601 /* MITCollectionViewNewsGridLayout.m */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */; };
-		2CD75BA6194B94D700B8E4DB /* MITNewsCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD75BA5194B94D700B8E4DB /* MITNewsCollectionViewController.m */; };
+		2CD75BA6194B94D700B8E4DB /* MITNewsGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD75BA5194B94D700B8E4DB /* MITNewsGridViewController.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
@@ -814,8 +814,8 @@
 		2CD27AAA1709D3EF002E220E /* MGSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSGeometry.m; sourceTree = "<group>"; };
 		2CD4F69B188ED4EB003F2C46 /* MITManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITManagedObject.h; sourceTree = "<group>"; };
 		2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITManagedObject.m; sourceTree = "<group>"; };
-		2CD75BA4194B94D700B8E4DB /* MITNewsCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCollectionViewController.h; sourceTree = "<group>"; };
-		2CD75BA5194B94D700B8E4DB /* MITNewsCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCollectionViewController.m; sourceTree = "<group>"; };
+		2CD75BA4194B94D700B8E4DB /* MITNewsGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsGridViewController.h; sourceTree = "<group>"; };
+		2CD75BA5194B94D700B8E4DB /* MITNewsGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsGridViewController.m; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
 		2CDA8AB71762445F001F011F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -1521,10 +1521,10 @@
 			children = (
 				0B1689CF1937D1EB001EB3B1 /* MITNewsiPadViewController.h */,
 				0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */,
-				2CD75BA4194B94D700B8E4DB /* MITNewsCollectionViewController.h */,
-				2CD75BA5194B94D700B8E4DB /* MITNewsCollectionViewController.m */,
 				2CE355641959F673004011C5 /* MITNewsListViewController.h */,
 				2CE355651959F673004011C5 /* MITNewsListViewController.m */,
+				2CD75BA4194B94D700B8E4DB /* MITNewsGridViewController.h */,
+				2CD75BA5194B94D700B8E4DB /* MITNewsGridViewController.m */,
 				2CE3556A195A23E7004011C5 /* MITNewsHomeViewController.h */,
 				2CE3556B195A23E7004011C5 /* MITNewsHomeViewController.m */,
 			);
@@ -3649,7 +3649,7 @@
 				EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */,
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
-				2CD75BA6194B94D700B8E4DB /* MITNewsCollectionViewController.m in Sources */,
+				2CD75BA6194B94D700B8E4DB /* MITNewsGridViewController.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,
 				0B4EB228194B532200C7AA2F /* MITNewsPadLayout.m in Sources */,
 				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,

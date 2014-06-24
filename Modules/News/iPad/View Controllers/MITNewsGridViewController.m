@@ -1,4 +1,4 @@
-#import "MITNewsCollectionViewController.h"
+#import "MITNewsGridViewController.h"
 #import "MITCoreDataController.h"
 #import "MITNewsModelController.h"
 #import "MITNewsCategory.h"
@@ -6,8 +6,9 @@
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
+#import "MITNewsHomeViewController.h"
 
-@interface MITNewsCollectionViewController () <MITCollectionViewDelegateNewsGrid, NSFetchedResultsControllerDelegate>
+@interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid, NSFetchedResultsControllerDelegate>
 @property (nonatomic,readonly,strong) NSMapTable *fetchedResultsControllersByCategory;
 @property (nonatomic,readonly,strong) NSFetchedResultsController *categoriesFetchedResultsController;
 
@@ -15,7 +16,7 @@
 
 @end
 
-@implementation MITNewsCollectionViewController
+@implementation MITNewsGridViewController
 @synthesize fetchedResultsControllersByCategory = _fetchedResultsControllersByCategory;
 @synthesize categoriesFetchedResultsController = _categoriesFetchedResultsController;
 
@@ -173,9 +174,9 @@
         // from the in-flight request tracker, call our completion block.
         // All the callbacks should be on the main thread so race conditions should be a non-issue.
         NSMutableSet *inFlightDataRequests = [[NSMutableSet alloc] init];
-        __weak MITNewsCollectionViewController *weakSelf = self;
+        __weak MITNewsGridViewController *weakSelf = self;
         void (^requestCompleted)(id token, NSError *error) = ^(id token, NSError *error) {
-            MITNewsCollectionViewController *blockSelf = weakSelf;
+            MITNewsGridViewController *blockSelf = weakSelf;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [inFlightDataRequests removeObject:token];
 
@@ -266,15 +267,6 @@
     return [self storyAtIndexPath:selectedIndexPath];
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
-{
-    NSInteger categoryIndex = (NSUInteger)indexPath.section;
-    NSInteger storyIndex = (NSUInteger)indexPath.row;
-
-    MITNewsCategory *category = [self categoryForIndex:categoryIndex];
-    return [self storyAtIndex:storyIndex inCategory:category];
-}
-
 - (NSFetchedResultsController*)fetchedResultControllerForSection:(NSInteger)section
 {
     MITNewsCategory *category = self.categoriesFetchedResultsController.fetchedObjects[section];
@@ -296,15 +288,12 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    MITNewsCategory *category = [self categoryForIndex:section];
-    return [self numberOfStoriesInCategory:category];
+    return [self numberOfStoriesInCategoryAtIndex:section];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITNewsCategory *category = [self categoryForIndex:indexPath.section];
-    MITNewsStory *selectedStory = [self storyAtIndex:indexPath.item inCategory:category];
-    [self didSelectStory:selectedStory];
+    [self didSelectStoryAtIndexPath:indexPath];
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -384,69 +373,63 @@
     return 2;
 }
 
-#pragma mark Delegate & Data source Pass-thru
-- (void)didSelectCategory:(MITNewsCategory*)category
+#pragma mark MITNewsStory delegate/datasource passthru methods
+- (NSUInteger)numberOfCategories
 {
-    if ([self.delegate respondsToSelector:@selector(newsCollectionController:didSelectCategory:)]) {
-        [self.delegate newsCollectionController:self didSelectCategory:category];
-    }
-}
-
-- (void)didSelectStory:(MITNewsStory*)story
-{
-    if ([self.delegate respondsToSelector:@selector(newsCollectionController:didSelectStory:)]) {
-        [self.delegate newsCollectionController:self didSelectStory:story];
-    }
-}
-
-- (NSInteger)numberOfCategories
-{
-    if ([self.dataSource respondsToSelector:@selector(numberOfCategoriesInNewsCollectionController:)]) {
-        return [self.dataSource numberOfCategoriesInNewsCollectionController:self];
+    if ([self.dataSource respondsToSelector:@selector(numberOfCategoriesInViewController:)]) {
+        return [self.dataSource numberOfCategoriesInViewController:self];
     } else {
-        return [self.categoriesFetchedResultsController.fetchedObjects count];
+        return 0;
     }
 }
 
-- (MITNewsCategory*)categoryForIndex:(NSInteger)index
+- (BOOL)featuredCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:categoryAtIndex:)]) {
-        return [self.dataSource newsCollectionController:self categoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:categoryAtIndexShouldBeFeatured:)]) {
+        return [self.dataSource viewController:self categoryAtIndexShouldBeFeatured:index];
     } else {
-        return self.categoriesFetchedResultsController.fetchedObjects[index];
+        return NO;
     }
 }
 
-- (NSInteger)numberOfStoriesInCategory:(MITNewsCategory*)category
+- (NSString*)titleForCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:numberOfStoriesInCategory:)]) {
-        return [self.dataSource newsCollectionController:self numberOfStoriesInCategory:category];
+    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryAtIndex:)]) {
+        return [self.dataSource viewController:self titleForCategoryAtIndex:index];
     } else {
-        NSArray *stories = [self storiesInCategory:category];
-        return MAX(self.numberOfStoriesPerCategory,[stories count]);
+        return nil;
     }
 }
 
-- (MITNewsStory*)storyAtIndex:(NSInteger)index inCategory:(MITNewsCategory*)category
+- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(newsCollectionController:storyAtIndex:inCategory:)]) {
-        return [self.dataSource newsCollectionController:self storyAtIndex:index inCategory:category];
+    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfItemsInCategoryAtIndex:)]) {
+        return [self.dataSource viewController:self numberOfItemsInCategoryAtIndex:index];
     } else {
-        NSArray *stories = [self storiesInCategory:category];
-        return stories[index];
+        return 0;
     }
 }
 
-/*
-@protocol MITNewsCollectionViewDelegate <NSObject>
-- (NSInteger)numberOfCategoriesInNewsCollectionController:(MITNewsCollectionViewController*)collectionControllers;
-- (MITNewsCategory*)newsCollectionController:(MITNewsCollectionViewController*)collectionController categoryForIndex:(NSInteger)index;
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndexPath:)]) {
+        return [self.dataSource viewController:self storyAtIndexPath:indexPath];
+    } else {
+        return nil;
+    }
+}
 
-- (NSInteger)newsCollectionController:(MITNewsCollectionViewController*)collectionController numberOfStoriesInCategory:(MITNewsCategory*)category;
-- (MITNewsStory*)newsCollectionController:(MITNewsCollectionViewController*)collectionController storyAtIndex:(NSInteger)index inCategory:(MITNewsCategory*)category;
+- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndexPath:)]) {
+        [self.delegate viewController:self didSelectStoryAtIndexPath:indexPath];
+    }
+}
 
-- (void)newsCollectionController:(MITNewsCollectionViewController*)collectionController didSelectStory:(MITNewsStory*)story;
-- (void)newsCollectionController:(MITNewsCollectionViewController*)collectionController didSelectCategory:(MITNewsCategory*)category;
-@end*/
-
+- (void)didSelectCategoryAtIndex:(NSUInteger)index
+{
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectCategoryAtIndex:)]) {
+        [self.delegate viewController:self didSelectCategoryAtIndex:index];
+    }
+}
 @end
