@@ -3806,7 +3806,7 @@
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"${BUILT_PRODUCTS_DIR}/../../Headers\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
@@ -3833,7 +3833,7 @@
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"${BUILT_PRODUCTS_DIR}/../../Headers\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -3860,7 +3860,7 @@
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"${BUILT_PRODUCTS_DIR}/../../Headers\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = (
 					"-DDEBUG",
 					"-DTESTFLIGHT",
