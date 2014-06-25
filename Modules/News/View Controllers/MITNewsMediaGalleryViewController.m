@@ -13,7 +13,7 @@
 
 #import "UIImageView+WebCache.h"
 
-@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate>
+@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate, UIGestureRecognizerDelegate>
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *toggleUIGesture;
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *resetZoomGesture;
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
@@ -39,18 +39,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
 	// Do any additional setup after loading the view.
     self.title = nil;
-    
+
+    self.toggleUIGesture.delegate = self;
     [self.toggleUIGesture requireGestureRecognizerToFail:self.resetZoomGesture];
     
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.navigationBar.tintColor = [UIColor blackColor];
-    } else {
-        self.edgesForExtendedLayout = UIRectEdgeAll;
-        self.extendedLayoutIncludesOpaqueBars = YES;
-        self.navigationBar.tintColor = [UIColor whiteColor];
-    }
+    self.edgesForExtendedLayout = UIRectEdgeAll;
+    self.extendedLayoutIncludesOpaqueBars = YES;
+    self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.view.backgroundColor = [UIColor blackColor];
 }
@@ -391,4 +389,16 @@
     [self _updateUIWithSelectedIndex:index];
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ([gestureRecognizer isEqual:self.toggleUIGesture]) {
+        CGPoint touchPoint = [touch locationInView:self.thumbnailPickerView];
+
+        if (CGRectContainsPoint(self.thumbnailPickerView.bounds,touchPoint)) {
+            return NO;
+        }
+    }
+
+    return YES;
+}
 @end
