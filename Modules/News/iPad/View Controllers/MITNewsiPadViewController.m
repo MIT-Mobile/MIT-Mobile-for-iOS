@@ -290,6 +290,12 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
 }
 
+- (MITNewsStory*)newsDetailController:(MITNewsiPadStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+{
+    return nil;
+
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     UIViewController *destinationViewController = [segue destinationViewController];

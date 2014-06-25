@@ -8,6 +8,8 @@
 #import "MITCoreDataController.h"
 #import "UIImageView+WebCache.h"
 
+#import "MITNewsiPadViewController.h"
+
 @interface MITNewsiPadStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
@@ -53,9 +55,21 @@
                           baseURL:nil];
     [self setupNextStory];
 }
+- (IBAction)touchNextStoryView:(id)sender {
+    NSLog(@"Bring up next story");
+    //[self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+    MITNewsiPadViewController *temp = [[MITNewsiPadViewController alloc] init];
+    [temp newsDetailController:self storyAfterStory:self.story];
+    [self.bodyView loadHTMLString:[self htmlBody]
+                          baseURL:nil];
+    
+
+}
 
 - (void)setupNextStory
 {
+    //Ask for next story
+    //
     if (_story) {
         __block NSString *title = nil;
         __block NSString *dek = nil;
@@ -148,12 +162,13 @@
 - (void)viewDidLayoutSubviews
 {
     [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.frame.size.width];
+    [self.nextStoryTitleLabel setPreferredMaxLayoutWidth:self.nextStoryTitleLabel.frame.size.width];
 }
 
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
-
+    
     if ([self.bodyView isLoading]) {
         self.bodyViewHeightConstraint.constant = CGRectGetHeight(self.scrollView.frame);
     } else {
@@ -279,7 +294,7 @@
             if (representation) {
                 resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(368, 400)];
             }
-            
+
             templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
                                  @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
                                  @"__DATE__": (postDate ? postDate : [NSNull null]),
@@ -360,6 +375,13 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+    
+    CGRect frame = webView.frame;
+    
+    frame.size.height = 1;
+    webView.frame = frame;
+    frame.size.height = webView.scrollView.contentSize.height;
+    webView.frame = frame;
     [self.view setNeedsUpdateConstraints];
     [self.view updateConstraintsIfNeeded];
 }

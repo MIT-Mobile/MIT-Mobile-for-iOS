@@ -75,7 +75,6 @@
                                     <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-FN-0Ky">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="800"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="800" id="EtD-ah-Jgu"/>
                                         </constraints>
@@ -97,6 +96,7 @@
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                                                 <nil key="highlightedColor"/>
+                                                <size key="shadowOffset" width="1" height="-1"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dek" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="DJg-5Q-Y2i">
                                                 <rect key="frame" x="0.0" y="55" width="633" height="18"/>
@@ -118,6 +118,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="top" constant="4" id="1Xq-cw-eTU"/>
                                             <constraint firstAttribute="trailing" secondItem="Zwj-9s-ZzK" secondAttribute="trailing" constant="15" id="3Ug-KR-0DI"/>
@@ -134,6 +135,9 @@
                                             <constraint firstAttribute="bottom" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" id="w2e-dE-rk9"/>
                                         </constraints>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="ki1-hl-xJV" appends="YES" id="Ax4-yX-5JW"/>
+                                        </connections>
                                     </view>
                                 </subviews>
                                 <constraints>
@@ -175,6 +179,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57i-Pa-t19" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="ki1-hl-xJV">
+                    <connections>
+                        <action selector="touchNextStoryView:" destination="nXb-ze-oPc" id="2jj-h4-cSA"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="247" y="184"/>
         </scene>

@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "MITNewsiPadStoryViewController.h"
 
 @interface MITNewsiPadViewController : UIViewController
 
@@ -8,4 +9,5 @@
 
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
+- (MITNewsStory*)newsDetailController:(MITNewsiPadStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
 @end
