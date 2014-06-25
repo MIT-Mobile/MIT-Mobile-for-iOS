@@ -7,6 +7,7 @@
 #import "MITNewsStoryDetailController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
+#import "MITNewsStoryDetailController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -14,7 +15,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleList
 };
 
-@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryDetailPagingDelegate>
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -289,17 +290,6 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
 }
-
-- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyAfterStory:(MITNewsStory*)story
-{
-    
-    NSLog(@"%@ %@",self.collectionViewLayout.stories, [self.stories objectAtIndex:4]);
-    NSLog(@"%d",[self.stories indexOfObject:[self.stories objectAtIndex:4]]);
-    return nil;
-
-}
-int temp;
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     //NSLog(@"%@",self.stories);
@@ -310,9 +300,9 @@ int temp;
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
         if ([destinationViewController isKindOfClass:[MITNewsStoryDetailController class]]) {
             MITNewsStoryDetailController *storyDetailViewController = (MITNewsStoryDetailController*)destinationViewController;
+            storyDetailViewController.delegate = self;
             NSIndexPath *indexPath = sender;
             MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
-            temp = indexPath.row;
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
@@ -343,5 +333,42 @@ int temp;
 }
 
 #pragma mark UITableViewDelegate
+
+#pragma mark MITNewsStoryDetailPagingDelegate
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+{
+#warning find better way to implement
+    for (int i = 0 ; i < [self.stories count] ; i ++) {
+        MITNewsStory *storyFromArray = [self.stories objectAtIndex:i];
+        if ([story.identifier isEqualToString:storyFromArray.identifier]) {
+            if ([self.stories count] > i + 1) {
+                
+                if (storyDetailController) {
+                    [storyDetailController setStory:[self.stories objectAtIndex:i + 1]];
+                } else {
+                    return [self.stories objectAtIndex:i + 1];
+                }
+            }
+        }
+    };
+    
+    return nil;
+}
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
+{
+    return nil;
+}
+
+- (BOOL)newsDetailController:(MITNewsStoryDetailController*)storyDetailController canPageToStory:(MITNewsStory*)story
+{
+    return nil;
+}
+
+- (void)newsDetailController:(MITNewsStoryDetailController*)storyDetailController didPageToStory:(MITNewsStory*)story
+{
+
+}
 
 @end

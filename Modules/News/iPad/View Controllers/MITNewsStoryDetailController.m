@@ -55,33 +55,40 @@
                           baseURL:nil];
     [self setupNextStory];
 }
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
+{
+    return [self.delegate newsDetailController:storyDetailController storyAfterStory:self.story];
+}
+
 - (IBAction)touchNextStoryView:(id)sender {
     NSLog(@"Bring up next story");
-    //[self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
-    MITNewsiPadViewController *temp = [[MITNewsiPadViewController alloc] init];
-    [temp newsDetailController:self storyAfterStory:self.story];
+
+    [self newsDetailController:self storyAfterStory:self.story];
+    [self setupNextStory];
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+
 
 }
 
 - (void)setupNextStory
 {
-    //Ask for next story
-    //
-    if (_story) {
+   MITNewsStory *nextStory = [self newsDetailController:nil storyAfterStory:self.story];
+
+    if (nextStory) {
         __block NSString *title = nil;
         __block NSString *dek = nil;
         __block NSURL *imageURL = nil;
-        [_story.managedObjectContext performBlockAndWait:^{
+        [nextStory.managedObjectContext performBlockAndWait:^{
            
-            title = self.story.title;
-            dek = self.story.dek;
+            title = nextStory.title;
+            dek = nextStory.dek;
             
             CGSize idealImageSize = self.nextStoryImageView.frame.size;
             
-            MITNewsImageRepresentation *representation = [self.story.coverImage bestRepresentationForSize:idealImageSize];
+            MITNewsImageRepresentation *representation = [nextStory.coverImage bestRepresentationForSize:idealImageSize];
             if (representation) {
                 imageURL = representation.url;
             }
@@ -113,7 +120,7 @@
         }
         
         if (imageURL) {
-            MITNewsStory *currentStory = self.story;
+            MITNewsStory *currentStory = nextStory;
             __weak MITNewsStoryDetailController *weakSelf = self;
             [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
                 MITNewsStoryDetailController *blockSelf = weakSelf;
@@ -140,7 +147,7 @@
         NSAssert(templateString, @"failed to load News story HTML template");
         
         NSString *postDate = @"";
-        NSDate *publishedAt = self.story.publishedAt;
+        NSDate *publishedAt = nextStory.publishedAt;
         if (publishedAt) {
             postDate = [dateFormatter stringFromDate:publishedAt];
         }
