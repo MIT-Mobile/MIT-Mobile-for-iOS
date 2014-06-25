@@ -4,7 +4,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
-#import "MITNewsiPadStoryViewController.h"
+#import "MITNewsStoryDetailController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
 
@@ -290,23 +290,29 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
 }
 
-- (MITNewsStory*)newsDetailController:(MITNewsiPadStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
+    
+    NSLog(@"%@ %@",self.collectionViewLayout.stories, [self.stories objectAtIndex:4]);
+    NSLog(@"%d",[self.stories indexOfObject:[self.stories objectAtIndex:4]]);
     return nil;
 
 }
+int temp;
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    //NSLog(@"%@",self.stories);
     UIViewController *destinationViewController = [segue destinationViewController];
     
     DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
     
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsiPadStoryViewController class]]) {
-            MITNewsiPadStoryViewController *storyDetailViewController = (MITNewsiPadStoryViewController*)destinationViewController;
+        if ([destinationViewController isKindOfClass:[MITNewsStoryDetailController class]]) {
+            MITNewsStoryDetailController *storyDetailViewController = (MITNewsStoryDetailController*)destinationViewController;
             NSIndexPath *indexPath = sender;
             MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
+            temp = indexPath.row;
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
@@ -316,7 +322,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsiPadStoryViewController class]),
+                      NSStringFromClass([MITNewsStoryDetailController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else {

@@ -59,7 +59,7 @@
         <!--News iPad Story View Controller-->
         <scene sceneID="Gpk-Vd-bz5">
             <objects>
-                <viewController id="nXb-ze-oPc" userLabel="News iPad Story View Controller" customClass="MITNewsiPadStoryViewController" sceneMemberID="viewController">
+                <viewController id="nXb-ze-oPc" userLabel="News iPad Story View Controller" customClass="MITNewsStoryDetailController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1Za-YJ-qfZ"/>
                         <viewControllerLayoutGuide type="bottom" id="JeH-dg-JxY"/>

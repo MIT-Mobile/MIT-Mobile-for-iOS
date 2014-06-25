@@ -1,4 +1,4 @@
-#import "MITNewsiPadStoryViewController.h"
+#import "MITNewsStoryDetailController.h"
 #import "MITNewsStory.h"
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
@@ -10,7 +10,7 @@
 
 #import "MITNewsiPadViewController.h"
 
-@interface MITNewsiPadStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
+@interface MITNewsStoryDetailController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageHeightConstraint;
@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @end
 
-@implementation MITNewsiPadStoryViewController {
+@implementation MITNewsStoryDetailController {
     NSManagedObjectID *_storyObjectID;
 }
 @synthesize story = _story;
@@ -114,9 +114,9 @@
         
         if (imageURL) {
             MITNewsStory *currentStory = self.story;
-            __weak MITNewsiPadStoryViewController *weakSelf = self;
+            __weak MITNewsStoryDetailController *weakSelf = self;
             [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                MITNewsiPadStoryViewController *blockSelf = weakSelf;
+                MITNewsStoryDetailController *blockSelf = weakSelf;
                 if (blockSelf && (blockSelf->_story == currentStory)) {
                     if (error) {
                         blockSelf.nextStoryImageView.image = nil;

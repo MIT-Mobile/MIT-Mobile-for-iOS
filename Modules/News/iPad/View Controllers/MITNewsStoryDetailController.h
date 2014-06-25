@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITNewsStory.h"
 
-@interface MITNewsiPadStoryViewController : UIViewController <UIGestureRecognizerDelegate>
+@interface MITNewsStoryDetailController : UIViewController <UIGestureRecognizerDelegate>
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
 //@property (nonatomic,weak) IBOutlet UIGestureRecognizer *coverImageGestureRecognizer;
