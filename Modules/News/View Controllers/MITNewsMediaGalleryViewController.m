@@ -159,16 +159,31 @@
 #pragma mark UI Actions
 
 - (void)goToIndex:(NSInteger)selectedIndex {
-    
-    MITNewsImageViewController *imageViewController = [self.galleryPageViewControllers objectAtIndex:selectedIndex];
-    
-    if(selectedIndex > self.selectedIndex) {
-        [self.pageViewController setViewControllers:@[imageViewController] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:NULL];
-    } else {
-        [self.pageViewController setViewControllers:@[imageViewController] direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:NULL];
+    if (selectedIndex > [self.galleryPageViewControllers count]) {
+        return;
     }
-    [self setSelectedIndex:selectedIndex];
 
+    const NSUInteger minimumIndex = MIN(selectedIndex,self.selectedIndex);
+    const NSUInteger maximumIndex = MAX(selectedIndex,self.selectedIndex);
+    const NSUInteger length = (maximumIndex + 1) - minimumIndex;
+
+    UIPageViewControllerNavigationDirection direction = UIPageViewControllerNavigationDirectionForward;
+    NSEnumerationOptions enumerationOptions = 0;
+
+    if (selectedIndex < self.selectedIndex) {
+        direction = UIPageViewControllerNavigationDirectionReverse;
+        enumerationOptions |= NSEnumerationReverse;
+    }
+
+    NSIndexSet *imageControllerIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(minimumIndex, length)];
+
+    [self.galleryPageViewControllers enumerateObjectsAtIndexes:imageControllerIndexes
+                                                       options:enumerationOptions
+                                                    usingBlock:^(UIViewController *viewController, NSUInteger idx, BOOL *stop) {
+        [self.pageViewController setViewControllers:@[viewController] direction:direction animated:NO completion:nil];
+    }];
+
+    self.selectedIndex = selectedIndex;
 }
 
 - (IBAction)dismissGallery:(id)sender
