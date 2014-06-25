@@ -6,26 +6,19 @@
 #import "MITNewsConstants.h"
 #import "MITNewsGridViewController.h"
 
-typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
-    MITNewsPadStyleInvalid = -1,
-    MITNewsPadStyleGrid = 0,
-    MITNewsPadStyleList
-};
-
 @interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, weak) IBOutlet UIView *containerView;
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
-@property (nonatomic, weak) IBOutlet UIView *containerView;
+@property (nonatomic, readonly, weak) UIViewController *activeViewController;
 
-@property (nonatomic, weak) UIViewController *activeViewController;
-
-@property (nonatomic, strong) NSArray *stories;
-@property (nonatomic, strong) MITNewsPadLayout *collectionViewLayout;
-
-- (MITNewsPadStyle)currentStyle;
 @end
 
-@implementation MITNewsiPadViewController
+@implementation MITNewsiPadViewController {
+    BOOL _isTransitioningToPresentationStyle;
+}
+
+@synthesize activeViewController = _activeViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

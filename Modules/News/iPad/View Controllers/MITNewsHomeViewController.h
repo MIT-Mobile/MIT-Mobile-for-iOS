@@ -6,7 +6,10 @@
 @protocol MITNewsStoryDelegate;
 
 @interface MITNewsHomeViewController : UIViewController
+@property (nonatomic) BOOL showFeaturedItems;
 
++ (instancetype)newsViewControllerForCategory:(MITNewsCategory*)category;
+- (instancetype)init;
 @end
 
 @protocol MITNewsStoryDataSource <NSObject>
