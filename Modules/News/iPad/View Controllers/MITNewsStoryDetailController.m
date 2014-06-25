@@ -169,8 +169,8 @@
 }
 - (void)viewDidLayoutSubviews
 {
-    [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.frame.size.width];
-    [self.nextStoryTitleLabel setPreferredMaxLayoutWidth:self.nextStoryTitleLabel.frame.size.width];
+    [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.bounds.size.width];
+    [self.nextStoryTitleLabel setPreferredMaxLayoutWidth:self.nextStoryTitleLabel.bounds.size.width];
 }
 
 - (void)updateViewConstraints
@@ -383,15 +383,18 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-    
+    // Set the height to '1' here so that when we update the
+    // view constraints in updateViewConstraints, the web view
+    // returns the correct minimum size it needs to fit the content
+    // when sizeThatFitsSize: is called. '1' may or may not be a magic
+    // number here; using either '0' or leaving the frame at its
+    // default sizing results in incorrect behavior
     CGRect frame = webView.frame;
-    
     frame.size.height = 1;
     webView.frame = frame;
-    frame.size.height = webView.scrollView.contentSize.height;
-    webView.frame = frame;
+    
     [self.view setNeedsUpdateConstraints];
-    [self.view updateConstraintsIfNeeded];
+    [self.view layoutIfNeeded];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
