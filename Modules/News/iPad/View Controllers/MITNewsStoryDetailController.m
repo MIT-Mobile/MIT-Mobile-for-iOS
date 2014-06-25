@@ -19,7 +19,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDekLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDateLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
-@property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStory;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @end
 
@@ -61,16 +61,16 @@
     return [self.delegate newsDetailController:storyDetailController storyAfterStory:self.story];
 }
 
-- (IBAction)touchNextStoryView:(id)sender {
+- (IBAction)touchNextStoryView:(id)sender
+{
     NSLog(@"Bring up next story");
 
     [self newsDetailController:self storyAfterStory:self.story];
     [self setupNextStory];
+    
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
-
-
 }
 
 - (void)setupNextStory
@@ -158,6 +158,7 @@
         self.nextStoryTitleLabel.text = nil;
         self.nextStoryDekLabel.text = nil;
         self.nextStoryDateLabel.text = nil;
+        self.nextStoryNextStoryLabel.text = nil;
     }
 }
 

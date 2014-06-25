@@ -171,7 +171,7 @@
                         <outlet property="nextStoryImageHeightConstraint" destination="nX8-sr-rAA" id="DcF-5N-RyF"/>
                         <outlet property="nextStoryImageView" destination="MsR-he-jtK" id="CNJ-yl-cna"/>
                         <outlet property="nextStoryImageWidthConstraint" destination="3nw-pn-3yB" id="5Nh-WO-Wrv"/>
-                        <outlet property="nextStoryNextStory" destination="NuZ-d7-c35" id="ic8-1W-AsJ"/>
+                        <outlet property="nextStoryNextStoryLabel" destination="NuZ-d7-c35" id="j04-Pu-ghh"/>
                         <outlet property="nextStoryTitleLabel" destination="Zwj-9s-ZzK" id="YRP-fW-GWn"/>
                         <outlet property="nextStoryView" destination="lyu-sR-MC2" id="wzy-KX-x6z"/>
                         <outlet property="scrollView" destination="lbw-PH-uJi" id="kfC-xj-bjf"/>

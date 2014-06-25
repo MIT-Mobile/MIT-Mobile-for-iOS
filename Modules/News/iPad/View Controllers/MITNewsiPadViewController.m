@@ -230,7 +230,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     if (self.stories) {
 #warning sample data
-        return [@[@"15",@"4",@"3",@"2",@"1"][section] intValue];
+        return [@[@"20",@"4",@"3",@"2",@"1"][section] intValue];
     }
     return 0;
 }
