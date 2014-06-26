@@ -4,7 +4,6 @@
 #import "MITNewsStory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
-#import "MITNewsStoryDetailController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
 #import "MITNewsStoryViewController.h"
@@ -312,7 +311,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsStoryDetailController class]),
+                      NSStringFromClass([MITNewsStoryViewController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else {
@@ -336,7 +335,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
-- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
 #warning find better way to implement
     for (int i = 0 ; i < [self.stories count] ; i ++) {
@@ -356,17 +355,17 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     return nil;
 }
 
-- (MITNewsStory*)newsDetailController:(MITNewsStoryDetailController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
 {
     return nil;
 }
 
-- (BOOL)newsDetailController:(MITNewsStoryDetailController*)storyDetailController canPageToStory:(MITNewsStory*)story
+- (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
 {
     return nil;
 }
 
-- (void)newsDetailController:(MITNewsStoryDetailController*)storyDetailController didPageToStory:(MITNewsStory*)story
+- (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
 {
 
 }
