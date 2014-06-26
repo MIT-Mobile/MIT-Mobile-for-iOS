@@ -2,6 +2,7 @@
 #import "MITMapPlace.h"
 #import "MITAdditions.h"
 #import "MITCoreDataController.h"
+#import "MITMapSearch.h"
 
 static NSString* const MITMapPlaceIdentifierKey = @"id";
 static NSString* const MITMapPlaceNameKey = @"name";
@@ -39,6 +40,8 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 @dynamic url;
 @dynamic contents;
 @dynamic bookmark;
+@dynamic search;
+
 - (id)init
 {
     self = [super init];

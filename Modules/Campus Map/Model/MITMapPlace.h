@@ -6,6 +6,7 @@
 
 @class MITMapPlace;
 @class MITMapBookmark;
+@class MITMapSearch;
 
 @interface MITMapPlace : MITManagedObject <MKAnnotation,MGSAnnotation>
 @property (nonatomic, copy) NSString * identifier;
@@ -22,6 +23,7 @@
 @property (nonatomic, copy) NSURL * url;
 @property (nonatomic, copy) NSOrderedSet *contents;
 @property (nonatomic, strong) MITMapBookmark *bookmark;
+@property (nonatomic, strong) MITMapSearch *search;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 

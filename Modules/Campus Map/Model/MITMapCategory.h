@@ -2,7 +2,7 @@
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
 
-@class MITMapPlace, MITMapCategory;
+@class MITMapPlace, MITMapCategory, MITMapSearch;
 
 @interface MITMapCategory : MITManagedObject
 @property (nonatomic, copy) NSString * name;
@@ -11,6 +11,7 @@
 @property (nonatomic, copy) NSSet *places;
 @property (nonatomic, copy) NSOrderedSet *children;
 @property (nonatomic, strong) MITMapCategory *parent;
+@property (nonatomic, strong) MITMapSearch *search;
 
 - (NSString*)canonicalName;
 @end

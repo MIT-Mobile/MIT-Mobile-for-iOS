@@ -1006,6 +1006,7 @@
 		5EC89F671926517200E06204 /* MITShuttleVehicleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleVehicleList.m; sourceTree = "<group>"; };
 		5EC89F691926517200E06204 /* MITShuttlePredictionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlePredictionList.h; sourceTree = "<group>"; };
 		5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePredictionList.m; sourceTree = "<group>"; };
+		5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v3.xcdatamodel"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
@@ -3787,10 +3788,11 @@
 		44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */,
 				2C3FB1D51808810300F23D40 /* CampusMap v2.xcdatamodel */,
 				44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */,
 			);
-			currentVersion = 2C3FB1D51808810300F23D40 /* CampusMap v2.xcdatamodel */;
+			currentVersion = 5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */;
 			path = CampusMap.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

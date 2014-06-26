@@ -1,6 +1,7 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "MITCoreDataController.h"
+#import "MITMapSearch.h"
 
 @implementation MITMapCategory
 
@@ -10,6 +11,7 @@
 @dynamic places;
 @dynamic children;
 @dynamic parent;
+@dynamic search;
 
 - (NSString*)canonicalName
 {
