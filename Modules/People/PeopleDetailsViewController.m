@@ -8,7 +8,7 @@
 #import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
-#import "MITCampusMapViewController.h"
+//#import "MITCampusMapViewController.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -61,16 +61,16 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([@"showLocationOnMap" isEqualToString:segue.identifier]) {
-        MITCampusMapViewController *mapViewController = (MITCampusMapViewController*)[segue destinationViewController];
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        if (selectedIndexPath.row < [self.attributes count]) {
-            NSArray *personAttributes = self.attributes[selectedIndexPath.row];
-
-            DDLogVerbose(@"Using attribute %@:%@",personAttributes[DisplayNameIndex],personAttributes[AttributeValueIndex]);
-            NSString *locationName = personAttributes[AttributeValueIndex];
-
-            [mapViewController setPendingSearch:locationName];
-        }
+//        MITCampusMapViewController *mapViewController = (MITCampusMapViewController*)[segue destinationViewController];
+//        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+//        if (selectedIndexPath.row < [self.attributes count]) {
+//            NSArray *personAttributes = self.attributes[selectedIndexPath.row];
+//
+//            DDLogVerbose(@"Using attribute %@:%@",personAttributes[DisplayNameIndex],personAttributes[AttributeValueIndex]);
+//            NSString *locationName = personAttributes[AttributeValueIndex];
+//
+//            [mapViewController setPendingSearch:locationName];
+//        }
     }
 }
 
