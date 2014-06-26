@@ -1,6 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "MITNewsStory.h"
 
+@protocol MITNewsStoryViewControllerDelegate;
+
 @interface MITNewsStoryViewController : UIViewController <UIGestureRecognizerDelegate>
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
@@ -15,5 +17,19 @@
 
 - (IBAction)unwindFromImageGallery:(UIStoryboardSegue*)sender;
 - (void)setStory:(MITNewsStory*)story;
+
+@property (nonatomic, weak) id <MITNewsStoryViewControllerDelegate> delegate;
+
+@end
+
+@protocol MITNewsStoryViewControllerDelegate <NSObject>
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story;
+
+- (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story;
+
+- (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story;
 
 @end

@@ -7,7 +7,7 @@
 #import "MITNewsStoryDetailController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "MITNewsStoryDetailController.h"
+#import "MITNewsStoryViewController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleList
 };
 
-@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryDetailPagingDelegate>
+@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate>
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -298,8 +298,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
     
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsStoryDetailController class]]) {
-            MITNewsStoryDetailController *storyDetailViewController = (MITNewsStoryDetailController*)destinationViewController;
+        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
             storyDetailViewController.delegate = self;
             NSIndexPath *indexPath = sender;
             MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
