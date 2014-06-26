@@ -101,7 +101,10 @@
 {
     NSLog(@"Bring up next story");
     
-    [self newsDetailController:self storyAfterStory:self.story];
+    MITNewsStory *nextStory = [self newsDetailController:self storyAfterStory:self.story];
+
+    [self setStory:nextStory];
+    
     [self setupNextStory];
     
     [self.bodyView loadHTMLString:[self htmlBody]

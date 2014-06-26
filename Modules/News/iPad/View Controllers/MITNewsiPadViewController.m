@@ -342,12 +342,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         MITNewsStory *storyFromArray = [self.stories objectAtIndex:i];
         if ([story.identifier isEqualToString:storyFromArray.identifier]) {
             if ([self.stories count] > i + 1) {
-                
-                if (storyDetailController) {
-                    [storyDetailController setStory:[self.stories objectAtIndex:i + 1]];
-                } else {
-                    return [self.stories objectAtIndex:i + 1];
-                }
+                return [self.stories objectAtIndex:i + 1];
             }
         }
     };
