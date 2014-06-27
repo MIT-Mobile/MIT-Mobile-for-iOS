@@ -7,6 +7,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
 #import "MITNewsStoryViewController.h"
+#import "MITNewsSearchController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -14,7 +15,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleList
 };
 
-@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -23,6 +24,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 @property (nonatomic, strong) NSArray *stories;
 @property (nonatomic, strong) MITNewsPadLayout *collectionViewLayout;
+
+@property (nonatomic, strong) MITNewsSearchController *searchController;
 
 - (MITNewsPadStyle)currentStyle;
 @end
@@ -151,10 +154,29 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     }
 }
 
+- (MITNewsSearchController *)searchController
+{
+    if(!_searchController) {
+        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        _searchController = searchController;
+    }
+    return _searchController;
+}
+
 #pragma mark UI Actions
+
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
+    self.searchController = [[MITNewsSearchController alloc] init];
+    self.searchController.delegate = self;
     
+    [self.navigationItem setRightBarButtonItems:[self.searchController showSearchFieldFromItems:self.navigationItem.rightBarButtonItems] animated:YES];
+    
+}
+
+- (void)hideSearchField
+{
+    [self updateNavigationItem:YES];
 }
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
