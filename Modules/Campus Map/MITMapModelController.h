@@ -13,7 +13,7 @@
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block;
 
-- (NSManagedObjectID*)addRecentSearch:(NSString*)queryString;
+- (NSManagedObjectID*)addRecentSearch:(id)query;
 - (NSFetchRequest*)recentSearches:(MITMobileManagedResult)block;
 - (NSFetchRequest*)recentSearchesForPartialString:(NSString*)string loaded:(MITMobileManagedResult)block;
 

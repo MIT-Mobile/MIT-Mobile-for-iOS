@@ -42,21 +42,38 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 #pragma mark - Search, Create, Read methods
 #pragma mark Synchronous
-- (NSManagedObjectID*)addRecentSearch:(NSString*)queryString
+- (NSManagedObjectID *)addRecentSearch:(id)query
 {
+    if (![query isKindOfClass:[NSString class]] || ![query isKindOfClass:[MITMapPlace class]] || ![query isKindOfClass:[MITMapCategory class]]) {
+        return nil;
+    }
+    
     __block NSManagedObjectID *searchObjectID = nil;
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
     [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
-
+        if ([query isKindOfClass:[NSString class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", query];
+        } else if ([query isKindOfClass:[MITMapPlace class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"place == %@", query];
+        } else if ([query isKindOfClass:[MITMapCategory class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@", query];
+        }
+        
         MITMapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
         if (!mapSearch) {
             mapSearch = [NSEntityDescription insertNewObjectForEntityForName:[MITMapSearch entityName]
                                                       inManagedObjectContext:context];
         }
+        
+        if ([query isKindOfClass:[NSString class]]) {
+            mapSearch.searchTerm = query;
+        } else if ([query isKindOfClass:[MITMapPlace class]]) {
+            mapSearch.place = query;
+        } else if ([query isKindOfClass:[MITMapCategory class]]) {
+            mapSearch.category = query;
+        }
 
-        mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
 
         [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
@@ -79,7 +96,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"searchTerm" ascending:YES]];
+                                     [NSSortDescriptor sortDescriptorWithKey:@"token" ascending:YES]];
     if (string) {
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
     }
