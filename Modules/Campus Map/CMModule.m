@@ -1,6 +1,6 @@
 #import "CMModule.h"
-
 #import "MITMapPlace.h"
+#import "MITMapHomeViewController.h"
 
 @implementation CMModule
 
@@ -28,7 +28,7 @@
 
 - (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
-    return [[UIViewController alloc] init];
+    return [[MITMapHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
 /*
