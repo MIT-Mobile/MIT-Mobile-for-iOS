@@ -83,10 +83,14 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
             DDLogError(@"store exists, but failed to load (revision %@), migration will be attempted",self.persistentStoreRevision);
 
             NSError *migrationError = nil;
-            [self migratePersistentStoreWithURL:persistentStoreURL error:&migrationError];
+            BOOL storeMigrationSucceeded = [self migratePersistentStoreWithURL:persistentStoreURL error:&migrationError];
             
-            if (migrationError) {
+            if (!storeMigrationSucceeded) {
                 DDLogError(@"migration failed, the store will be re-created");
+                if (migrationError)  {
+                    DDLogInfo(@"migration failed with error: %@", migrationError);
+                }
+                
                 [[NSFileManager defaultManager] removeItemAtURL:persistentStoreURL error:nil];
             }
             
@@ -120,7 +124,7 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
     }
 }
 
-- (void)migratePersistentStoreWithURL:(NSURL *)storeURL error:(NSError *__autoreleasing*)error
+- (BOOL)migratePersistentStoreWithURL:(NSURL *)storeURL error:(NSError *__autoreleasing*)error
 {
     NSDictionary *storeMeta = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:storeURL error:error];
     if (storeMeta) {
@@ -144,10 +148,14 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
                     if (done) {
                         [[NSFileManager defaultManager] removeItemAtURL:storeBackupURL error:error];
                     }
+                    
+                    return done;
                 }
             }
         }
     }
+    
+    return NO;
 }
 
 #pragma mark Persistent Store Metadata
