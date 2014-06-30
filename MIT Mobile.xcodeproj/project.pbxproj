@@ -282,16 +282,8 @@
 		5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F611926517200E06204 /* MITShuttlePrediction.m */; };
 		5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F671926517200E06204 /* MITShuttleVehicleList.m */; };
 		5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */; };
-		5ED472D81959BE7E001D6B78 /* MITMapModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED472CF1959BE7E001D6B78 /* MITMapModule.m */; };
-		5ED472D91959BE7E001D6B78 /* MITMapPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED472D31959BE7E001D6B78 /* MITMapPlace.m */; };
-		5ED472DA1959BE7E001D6B78 /* MITMapPlaceCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED472D51959BE7E001D6B78 /* MITMapPlaceCategory.m */; };
-		5ED472DB1959BE7E001D6B78 /* MITMapDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5ED472D61959BE7E001D6B78 /* MITMapDataModel.xcdatamodeld */; };
-		5ED472DE1959BEA4001D6B78 /* MITMapResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED472DD1959BEA4001D6B78 /* MITMapResource.m */; };
-		5ED473221959C0D8001D6B78 /* MITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED473211959C0D8001D6B78 /* MITMapView.m */; };
-		5ED473271959C0F7001D6B78 /* MITAnnotationAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED473241959C0F7001D6B78 /* MITAnnotationAdaptor.m */; };
-		5ED473281959C0F7001D6B78 /* MITMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED473261959C0F7001D6B78 /* MITMapAnnotationView.m */; };
-		5ED4732B1959C21D001D6B78 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED4732A1959C21D001D6B78 /* MITMapRoute.m */; };
-		5ED4732E1959ECA8001D6B78 /* MITMapController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED4732D1959ECA8001D6B78 /* MITMapController.m */; };
+		5ED473221959C0D8001D6B78 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
@@ -1020,6 +1012,8 @@
 		5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePredictionList.m; sourceTree = "<group>"; };
 		5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v3.xcdatamodel"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
+		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
 		A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapHomeViewController.h; sourceTree = "<group>"; };
 		A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapHomeViewController.m; sourceTree = "<group>"; };
 		A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapHomeViewController.xib; sourceTree = "<group>"; };
@@ -1357,6 +1351,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				A544EEFD1961D1B60046823E /* Views */,
 				2C101A451653E931000E40E3 /* MapCore */,
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
@@ -2539,6 +2534,15 @@
 			path = Entities;
 			sourceTree = "<group>";
 		};
+		A544EEFD1961D1B60046823E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A544EEFE1961D1B60046823E /* MITTiledMapView.h */,
+				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -2686,10 +2690,6 @@
 				2C101AC916552AF5000E40E3 /* MITMapView.m */,
 				4431A384646993384D06783E /* MITAnnotationAdaptor.h */,
 				4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */,
-				5ED472CE1959BE7E001D6B78 /* MITMapModule.h */,
-				5ED472CF1959BE7E001D6B78 /* MITMapModule.m */,
-				5ED472D01959BE7E001D6B78 /* Models */,
-				5ED472DF1959BFE4001D6B78 /* Old */,
 				A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */,
 				A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */,
 				A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */,
@@ -3488,6 +3488,7 @@
 				2C18090918F33B95008F9775 /* MITTouchstoneIdentityProvider.m in Sources */,
 				2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */,
 				2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */,
+				A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */,
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
@@ -3568,7 +3569,7 @@
 				DE94998317450C800066F6CF /* RetailDay.m in Sources */,
 				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
 				A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */,
-				5ED473221959C0D8001D6B78 /* MITMapView.m in Sources */,
+				5ED473221959C0D8001D6B78 /* (null) in Sources */,
 				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
 				DEBF146117699977009B6089 /* DiningRoot.m in Sources */,
 				DEBF1464176999BA009B6089 /* DiningLink.m in Sources */,
