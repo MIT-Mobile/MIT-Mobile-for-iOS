@@ -1,31 +1,51 @@
 #import "MITMapHomeViewController.h"
+#import "MITMapModelController.h"
+#import "MITMapPlace.h"
+#import "MITTiledMapView.h"
 
-@interface MITMapHomeViewController () <UISearchBarDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate>
+
+@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
+@property (nonatomic, readonly) MKMapView *mapView;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UILabel *searchResultsCountLabel;
+@property (nonatomic) BOOL searchBarShouldBeginEditing;
+
+@property (nonatomic, copy) NSArray *places;
 
 @end
 
 @implementation MITMapHomeViewController
 
+#pragma mark - Map View
+
+- (MKMapView *)mapView
+{
+    return self.tiledMapView.mapView;
+}
+
+#pragma mark - Init
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        _searchBarShouldBeginEditing = YES;
     }
     return self;
 }
 
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
     [self setupNavigationBar];
+    [self setupMapView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -52,7 +72,15 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Private Methods
+#pragma mark - Rotation
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self setupMapBoundingBoxAnimated:YES];
+}
+
+#pragma mark - Setup
 
 - (void)setupNavigationBar
 {
@@ -101,6 +129,15 @@
     }
 }
 
+- (void)setupMapView
+{
+    self.mapView.delegate = self;
+    self.mapView.showsUserLocation = YES;
+    [self setupMapBoundingBoxAnimated:NO];
+}
+
+#pragma mark - Button Actions
+
 - (void)bookmarksButtonPressed
 {
     
@@ -110,6 +147,8 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+#pragma mark - Search Bar
 
 - (void)closeSearchBar:(UISearchBar *)searchBar
 {
@@ -147,6 +186,53 @@
     self.searchResultsCountLabel.hidden = hidden;
 }
 
+#pragma mark - Map View
+
+- (void)setupMapBoundingBoxAnimated:(BOOL)animated
+{
+    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+    
+    if ([self.places count] > 0) {
+        [self.mapView showAnnotations:self.places animated:animated];
+    } else {
+        [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
+    }
+}
+
+- (void)setPlaces:(NSArray *)places
+{
+    [self setPlaces:places animated:NO];
+}
+
+- (void)setPlaces:(NSArray *)places animated:(BOOL)animated
+{
+    _places = places;
+    [self refreshPlaceAnnotations];
+    [self setupMapBoundingBoxAnimated:animated];
+}
+
+- (void)clearPlacesAnimated:(BOOL)animated
+{
+    [self setPlaces:nil animated:animated];
+}
+
+- (void)refreshPlaceAnnotations
+{
+    [self removeAllPlaceAnnotations];
+    [self.mapView addAnnotations:self.places];
+}
+
+- (void)removeAllPlaceAnnotations
+{
+    NSMutableArray *annotationsToRemove = [NSMutableArray array];
+    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+        if ([annotation isKindOfClass:[MITMapPlace class]]) {
+            [annotationsToRemove addObject:annotation];
+        }
+    }
+    [self.mapView removeAnnotations:annotationsToRemove];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -161,9 +247,47 @@
     [self closeSearchBar:searchBar];
 }
 
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+
+    [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
+                                                          loaded:^(NSArray *objects, NSError *error) {
+                                                              if (objects) {
+                                                                  [self setPlaces:objects animated:YES];
+                                                              }
+                                                          }];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if (!searchBar.isFirstResponder) {
+        self.searchBarShouldBeginEditing = NO;
+        [self clearPlacesAnimated:YES];
+    }
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    BOOL shouldBeginEditing = self.searchBarShouldBeginEditing;
+    self.searchBarShouldBeginEditing = YES;
+    return shouldBeginEditing;
+}
+
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+    [self clearPlacesAnimated:YES];
+}
+
+#pragma mark - MKMapViewDelegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITMapPlace class]]) {
+        // TODO: implement numbered map pin
+    }
+    return nil;
 }
 
 @end

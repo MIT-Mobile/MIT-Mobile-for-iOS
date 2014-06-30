@@ -2,13 +2,13 @@
 #import <MapKit/MapKit.h>
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
-#import "MGSAnnotation.h"
 
 @class MITMapPlace;
 @class MITMapBookmark;
 @class MITMapSearch;
 
-@interface MITMapPlace : MITManagedObject <MKAnnotation,MGSAnnotation>
+@interface MITMapPlace : MITManagedObject <MKAnnotation>
+
 @property (nonatomic, copy) NSString * identifier;
 @property (nonatomic, copy) NSString * buildingNumber;
 @property (nonatomic, copy) NSString * architect;

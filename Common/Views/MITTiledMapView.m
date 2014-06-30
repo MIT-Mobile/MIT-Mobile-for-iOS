@@ -1,5 +1,7 @@
 #import "MITTiledMapView.h"
 
+const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
+
 static CGFloat const kBottomButtonSize = 46;
 static CGFloat const kBottomButtonPadding = 20;
 

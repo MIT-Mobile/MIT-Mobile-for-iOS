@@ -1,7 +1,6 @@
 #import <MapKit/MapKit.h>
 #import "MITMapPlace.h"
 #import "MITAdditions.h"
-#import "MITCoreDataController.h"
 #import "MITMapSearch.h"
 
 static NSString* const MITMapPlaceIdentifierKey = @"id";
@@ -52,9 +51,8 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
     return self;
 }
 
-#pragma mark - Protocols
 #pragma mark MKAnnotation
-// Shared between MGSAnnotation and MKAnnotation protocols
+
 - (NSString*)title
 {
     if ([self.buildingNumber length]) {
@@ -78,9 +76,4 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
     return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
 }
 
-#pragma mark MGSAnnotation
-- (NSString*)detail
-{
-    return [self subtitle];
-}
 @end

@@ -1,5 +1,7 @@
 #import <MapKit/MapKit.h>
 
+extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
+
 @protocol MITTiledMapViewButtonDelegate;
 
 @interface MITTiledMapView : UIView
