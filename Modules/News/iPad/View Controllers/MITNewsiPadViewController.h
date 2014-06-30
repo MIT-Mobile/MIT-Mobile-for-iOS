@@ -4,12 +4,13 @@
 @class MITNewsCategory;
 
 typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
-    MITNewsPadStyleGrid = 0,
-    MITNewsPadStyleList
+    MITNewsPresentationStyleGrid = 0,
+    MITNewsPresentationStyleList
 };
 
 @interface MITNewsiPadViewController : UIViewController
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
+@property (nonatomic) BOOL showsFeaturedStories;
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
