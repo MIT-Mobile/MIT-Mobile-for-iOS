@@ -41,9 +41,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 @property (weak, nonatomic) IBOutlet UIView *navigationBarExtensionView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewTopSpaceConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewZeroHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewPortraitHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewLandscapeWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopSubtitleLabelCenterAlignmentConstraint;
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
 
@@ -83,7 +85,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     [self displayAllChildViewControllers];
     [self layoutStopViews];
     [self setupToolbar];
-    [self configureLayoutForState:self.state animated:NO];
+    if (!self.isRotating) {
+        [self configureLayoutForState:self.state animated:NO];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -244,22 +248,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         self.stopSubtitleLabel.text = stop.title;
     } else {
         CGPoint stopSubtitleLabelCenter = self.stopSubtitleLabel.center;
-        self.stopSubtitleLabel.translatesAutoresizingMaskIntoConstraints = YES;
-        
         CGPoint initialTempLabelCenter;
-        CGPoint finalSubtitleLabelCenter;
         switch (animationType) {
             case MITShuttleStopSubtitleLabelAnimationTypeForward:
                 initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
                                                                      CGAffineTransformMakeTranslation(kStopSubtitleAnimationSpan, 0));
-                finalSubtitleLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
-                                                                       CGAffineTransformMakeTranslation(-kStopSubtitleAnimationSpan, 0));
+                self.stopSubtitleLabelCenterAlignmentConstraint.constant = kStopSubtitleAnimationSpan;
                 break;
             case MITShuttleStopSubtitleLabelAnimationTypeBackward:
                 initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
                                                                      CGAffineTransformMakeTranslation(-kStopSubtitleAnimationSpan, 0));
-                finalSubtitleLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
-                                                                       CGAffineTransformMakeTranslation(kStopSubtitleAnimationSpan, 0));
+                self.stopSubtitleLabelCenterAlignmentConstraint.constant = -kStopSubtitleAnimationSpan;
                 break;
             default:
                 break;
@@ -273,14 +272,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         [UIView animateWithDuration:kStopSubtitleAnimationDuration animations:^{
             tempLabel.center = stopSubtitleLabelCenter;
             tempLabel.alpha = 1;
-            self.stopSubtitleLabel.center = finalSubtitleLabelCenter;
             self.stopSubtitleLabel.alpha = 0;
+            [self.stopTitleView layoutIfNeeded];
         } completion:^(BOOL finished) {
             [tempLabel removeFromSuperview];
             self.stopSubtitleLabel.text = stop.title;
-            [self.stopSubtitleLabel sizeToFit];
-            self.stopSubtitleLabel.center = stopSubtitleLabelCenter;
+            self.stopSubtitleLabelCenterAlignmentConstraint.constant = 0;
             self.stopSubtitleLabel.alpha = 1;
+            [self.stopTitleView layoutIfNeeded];
         }];
     }
 }
@@ -410,17 +409,18 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)configureLayoutForRouteStateAnimated:(BOOL)animated
 {
     [self setTitleForRoute:self.route];
-    [self.navigationController setToolbarHidden:NO animated:animated];
     [self setRouteViewHidden:NO];
     [self.view sendSubviewToBack:self.mapContainerView];
     
-    self.routeContainerViewTopSpaceConstraint.constant = 0;
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+        self.routeContainerViewTopSpaceConstraint.constant = 0;
+        self.routeContainerViewTopSpaceConstraint.priority = UILayoutPriorityDefaultHigh;
+        self.routeContainerViewZeroHeightConstraint.priority = UILayoutPriorityDefaultLow;
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateRoute];
     }
-    
+
     dispatch_block_t animationBlock = ^{
         [self setNavigationBarExtended:NO];
         [self.view layoutIfNeeded];
@@ -429,8 +429,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setStopViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
+        [self.routeViewController.tableView reloadData];
     };
     
+    [self.navigationController setToolbarHidden:NO animated:animated];
     [self.mapViewController setState:MITShuttleMapStateContracting];
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
@@ -443,7 +445,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         completionBlock(YES);
     }
     
-    [self.routeViewController.tableView reloadData];
 }
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
@@ -455,11 +456,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
         [self.view sendSubviewToBack:self.mapContainerView];
+
+        self.routeContainerViewTopSpaceConstraint.priority = UILayoutPriorityDefaultLow;
+        self.routeContainerViewZeroHeightConstraint.priority = UILayoutPriorityDefaultHigh;
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateStop];
     }
-    self.routeContainerViewTopSpaceConstraint.constant = CGRectGetMaxY(self.stopsScrollView.frame);
     
     dispatch_block_t animationBlock = ^{
         [self setNavigationBarExtended:YES];
@@ -470,6 +473,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         [self layoutStopViews];
         [self setRouteViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
+        MITShuttleStopViewController *stopViewController = [self stopViewControllerForStop:self.stop];
+        [stopViewController.tableView reloadData];
     };
     
     [self.mapViewController setState:MITShuttleMapStateContracting];
@@ -487,8 +492,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     
     [self configureStopViewControllerRefreshing];
 
-    MITShuttleStopViewController *stopViewController = [self stopViewControllerForStop:self.stop];
-    [stopViewController.tableView reloadData];
 }
 
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
@@ -497,14 +500,20 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     [self.view bringSubviewToFront:self.mapContainerView];
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+        self.routeContainerViewTopSpaceConstraint.priority = UILayoutPriorityDefaultHigh;
+        self.routeContainerViewZeroHeightConstraint.priority = UILayoutPriorityDefaultLow;
         self.routeContainerViewTopSpaceConstraint.constant = CGRectGetHeight(self.view.frame) - kMapContainerViewEmbeddedHeightPortrait;
-        self.mapContainerViewPortraitHeightConstraint.constant = CGRectGetHeight(self.view.frame);
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateMap];
     }
     
     dispatch_block_t animationBlock = ^{
         [self setNavigationBarExtended:NO];
+        
+        // Updating this constraint outside of animation block triggers a constraint exception
+        if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
+            self.mapContainerViewPortraitHeightConstraint.constant = CGRectGetHeight(self.view.frame);
+        }
         [self.view layoutIfNeeded];
     };
     

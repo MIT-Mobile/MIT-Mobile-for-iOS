@@ -13,7 +13,9 @@
                 <outlet property="navigationBarExtensionViewHeightConstraint" destination="ESS-M2-hYa" id="ohQ-M0-zOA"/>
                 <outlet property="routeContainerView" destination="mcQ-I2-FK8" id="b1l-lA-kD9"/>
                 <outlet property="routeContainerViewTopSpaceConstraint" destination="Hog-ae-7mc" id="MRw-vq-jxo"/>
+                <outlet property="routeContainerViewZeroHeightConstraint" destination="19g-0Y-tfE" id="D1P-dC-RNk"/>
                 <outlet property="stopSubtitleLabel" destination="03V-0v-K5P" id="njZ-oh-10I"/>
+                <outlet property="stopSubtitleLabelCenterAlignmentConstraint" destination="Odw-Ss-gPT" id="rtY-16-UyS"/>
                 <outlet property="stopTitleLabel" destination="Igc-GJ-ngV" id="fte-BL-aUN"/>
                 <outlet property="stopTitleView" destination="6et-md-XXK" id="NTK-3t-hdT"/>
                 <outlet property="stopsScrollView" destination="D9V-gA-fOK" id="kkb-t6-vfh"/>
@@ -55,6 +57,9 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" priority="250" id="19g-0Y-tfE"/>
+                    </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -62,7 +67,7 @@
                 <constraint firstAttribute="trailing" secondItem="P2M-3z-edw" secondAttribute="trailing" id="34R-Tv-cgL"/>
                 <constraint firstItem="GKm-8L-Pgv" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="BSh-rn-fGa"/>
                 <constraint firstAttribute="bottom" secondItem="mcQ-I2-FK8" secondAttribute="bottom" id="CvY-n2-6p8"/>
-                <constraint firstItem="mcQ-I2-FK8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Hog-ae-7mc"/>
+                <constraint firstItem="mcQ-I2-FK8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" priority="750" id="Hog-ae-7mc"/>
                 <constraint firstItem="P2M-3z-edw" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="HuP-9z-kjT"/>
                 <constraint firstItem="D9V-gA-fOK" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="S4p-pZ-2qw"/>
                 <constraint firstAttribute="trailing" secondItem="GKm-8L-Pgv" secondAttribute="trailing" id="ZF1-6b-fLX"/>
