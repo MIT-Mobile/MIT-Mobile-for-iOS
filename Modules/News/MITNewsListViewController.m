@@ -9,30 +9,21 @@
 
 #import "MITNewsStoryViewController.h"
 #import "MITNewsCategoryViewController.h"
-#import "MITNewsModelController.h"
 #import "MITNewsStoryCell.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 #import "MITDisclosureHeaderView.h"
 #import "UIImageView+WebCache.h"
-#import "MITLoadingActivityView.h"
 
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
-#import "UIScrollView+SVPullToRefresh.h"
 #import "UITableView+DynamicSizing.h"
-
-@interface MITNewsListViewController () <MITNewsStoryDataSource>
-
-@end
+#import "MITNewsiPadViewController.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerHeightOffset = 64;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
-@property (nonatomic,getter = isUpdating) BOOL updating;
-@property (nonatomic,strong) NSDate *lastUpdated;
-
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 
@@ -347,8 +338,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (BOOL)featuredCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:categoryAtIndexShouldBeFeatured:)]) {
-        return [self.dataSource viewController:self categoryAtIndexShouldBeFeatured:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:isFeaturedCategoryAtIndex:)]) {
+        return [self.dataSource viewController:self isFeaturedCategoryAtIndex:index];
     } else {
         return NO;
     }
@@ -365,8 +356,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfItemsInCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self numberOfItemsInCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesInCategoryAtIndex:)]) {
+        return [self.dataSource viewController:self numberOfStoriesInCategoryAtIndex:index];
     } else {
         return 0;
     }
