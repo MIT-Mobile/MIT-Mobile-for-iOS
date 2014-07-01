@@ -284,6 +284,9 @@
 		5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */; };
 		5ED473221959C0D8001D6B78 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */; };
+		5EE17BE61962F41700F375B5 /* MITMapResultsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BE51962F41700F375B5 /* MITMapResultsListViewController.m */; };
+		5EE17BED1962FC8300F375B5 /* MITMapNumberedResultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */; };
+		5EE17BEE1962FC8300F375B5 /* MITMapNumberedResultCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
@@ -1014,6 +1017,11 @@
 		5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v3.xcdatamodel"; sourceTree = "<group>"; };
 		5EE17BDD196207CE00F375B5 /* MITMapPlaceAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceAnnotationView.h; sourceTree = "<group>"; };
 		5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceAnnotationView.m; sourceTree = "<group>"; };
+		5EE17BE41962F41700F375B5 /* MITMapResultsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapResultsListViewController.h; sourceTree = "<group>"; };
+		5EE17BE51962F41700F375B5 /* MITMapResultsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapResultsListViewController.m; sourceTree = "<group>"; };
+		5EE17BEA1962FC8300F375B5 /* MITMapNumberedResultCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapNumberedResultCell.h; sourceTree = "<group>"; };
+		5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapNumberedResultCell.m; sourceTree = "<group>"; };
+		5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapNumberedResultCell.xib; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
 		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
@@ -2543,6 +2551,8 @@
 				A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */,
 				A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */,
 				A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */,
+				5EE17BE41962F41700F375B5 /* MITMapResultsListViewController.h */,
+				5EE17BE51962F41700F375B5 /* MITMapResultsListViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -2552,6 +2562,9 @@
 			children = (
 				5EE17BDD196207CE00F375B5 /* MITMapPlaceAnnotationView.h */,
 				5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */,
+				5EE17BEA1962FC8300F375B5 /* MITMapNumberedResultCell.h */,
+				5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */,
+				5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3178,6 +3191,7 @@
 				A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */,
 				2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
+				5EE17BEE1962FC8300F375B5 /* MITMapNumberedResultCell.xib in Resources */,
 				2CE1C89C18C156B0001B8FEB /* DiningMenuCompareViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
@@ -3422,6 +3436,7 @@
 				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
 				2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */,
 				2C0023A617FB7AC800E8E0E5 /* MITMapPlace.m in Sources */,
+				5EE17BE61962F41700F375B5 /* MITMapResultsListViewController.m in Sources */,
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
 				2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
@@ -3470,6 +3485,7 @@
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
 				2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */,
 				DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */,
+				5EE17BED1962FC8300F375B5 /* MITMapNumberedResultCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,

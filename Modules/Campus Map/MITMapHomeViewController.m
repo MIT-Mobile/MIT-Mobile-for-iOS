@@ -3,10 +3,11 @@
 #import "MITMapPlace.h"
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
+#import "MITMapResultsListViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
@@ -134,6 +135,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)setupMapView
 {
+    self.tiledMapView.buttonDelegate = self;
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
     [self setupMapBoundingBoxAnimated:NO];
@@ -283,6 +285,19 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     [self clearPlacesAnimated:YES];
 }
 
+#pragma mark - MITTiledMapViewButtonDelegate
+
+- (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView
+{
+    // TODO: initialize results list VC properly if category/place was selected as search query
+    MITMapResultsListViewController *resultsListViewController = [[MITMapResultsListViewController alloc] initWithPlaces:self.places];
+    resultsListViewController.delegate = self;
+    [resultsListViewController setTitleWithSearchQuery:self.searchBar.text];
+    
+    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:resultsListViewController];
+    [self presentViewController:resultsListNavigationController animated:YES completion:nil];
+}
+
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -304,6 +319,15 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITMapPlace *place = view.annotation;
         // TODO: push place detail view controller
+    }
+}
+
+#pragma mark - MITMapResultsListViewControllerDelegate
+
+- (void)resultsListViewController:(MITMapResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
+{
+    if ([self.places containsObject:place]) {
+        [self.mapView selectAnnotation:place animated:YES];
     }
 }
 
