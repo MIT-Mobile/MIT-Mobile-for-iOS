@@ -282,7 +282,9 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-    [self clearPlacesAnimated:YES];
+    if ([searchBar.text length] == 0) {
+        [self clearPlacesAnimated:YES];
+    }
 }
 
 #pragma mark - MITTiledMapViewButtonDelegate
