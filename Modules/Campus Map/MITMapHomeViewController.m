@@ -4,6 +4,7 @@
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITMapResultsListViewController.h"
+#import "MITMapBrowseContainerViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -145,7 +146,11 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)bookmarksButtonPressed
 {
-    
+    MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browseContainerViewController];
+    navigationController.navigationBarHidden = YES;
+    navigationController.toolbarHidden = NO;
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)menuButtonPressed
