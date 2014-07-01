@@ -7,6 +7,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
 #import "MITNewsStoryViewController.h"
+#import "MITNewsRecentSearchViewController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -14,7 +15,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleList
 };
 
-@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate, UIPopoverControllerDelegate>
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -23,6 +24,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 @property (nonatomic, strong) NSArray *stories;
 @property (nonatomic, strong) MITNewsPadLayout *collectionViewLayout;
+
+@property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 
 - (MITNewsPadStyle)currentStyle;
 @end
@@ -154,7 +157,16 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 #pragma mark UI Actions
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
+    MITNewsRecentSearchViewController *viewController = [[MITNewsRecentSearchViewController alloc] init];
     
+    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
+    recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
+    
+    recentSearchPopoverController.backgroundColor = [UIColor whiteColor];
+    recentSearchPopoverController.delegate = self;
+    [recentSearchPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+
+    self.recentSearchPopoverController = recentSearchPopoverController;
 }
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
