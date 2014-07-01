@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITNewsRecentSearchViewController">
             <connections>
+                <outlet property="recentsTable" destination="5X6-jK-kcI" id="tXU-qN-Khi"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
