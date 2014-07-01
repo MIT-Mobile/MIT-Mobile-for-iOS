@@ -79,11 +79,24 @@ typedef struct {
 {
     [self layoutIfNeeded];
     
-    UICollectionViewLayoutAttributes *headerLayoutAttributes = _headerLayoutAttributes;
-
-    if (headerLayoutAttributes) {
+    UICollectionViewLayoutAttributes *headerLayoutAttributes = nil;
+    if (_headerLayoutAttributes) {
         headerLayoutAttributes = [_headerLayoutAttributes copy];
-        headerLayoutAttributes.frame = CGRectOffset(headerLayoutAttributes.frame, self.origin.x, self.origin.y);
+        headerLayoutAttributes.frame = CGRectOffset(_headerLayoutAttributes.frame, self.origin.x, self.origin.y);
+
+        const CGRect sectionFrame = self.frame;
+        const CGPoint contentOffset = self.layout.collectionView.contentOffset;
+        if (self.stickyHeaders && CGRectContainsPoint(sectionFrame, contentOffset)) {
+            CGFloat yOffset = contentOffset.y;
+
+            CGRect offsetHeaderFrame = CGRectOffset(headerLayoutAttributes.frame, 0, yOffset);
+            if (!CGRectContainsRect(sectionFrame, offsetHeaderFrame)) {
+                yOffset = CGRectGetMaxY(sectionFrame) - CGRectGetHeight(headerLayoutAttributes.frame);
+            }
+
+            CGAffineTransform transform = CGAffineTransformMakeTranslation(0, yOffset);
+            headerLayoutAttributes.transform = transform;
+        }
     }
     
     return headerLayoutAttributes;

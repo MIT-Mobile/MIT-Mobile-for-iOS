@@ -7,7 +7,7 @@
 @property (nonatomic,readonly) NSInteger section;
 
 @property (nonatomic) UIEdgeInsets contentInsets;
-
+@property (nonatomic) BOOL stickyHeaders;
 @property (nonatomic) CGRect frame;
 @property (nonatomic) CGRect bounds;
 
@@ -18,6 +18,7 @@
 
 + (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns;
 
+- (instancetype)initWithLayout:(MITCollectionViewNewsGridLayout*)layout;
 - (void)invalidateLayout;
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
