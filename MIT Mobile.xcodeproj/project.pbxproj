@@ -283,6 +283,7 @@
 		5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F671926517200E06204 /* MITShuttleVehicleList.m */; };
 		5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */; };
 		5ED473221959C0D8001D6B78 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
@@ -1011,6 +1012,8 @@
 		5EC89F691926517200E06204 /* MITShuttlePredictionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlePredictionList.h; sourceTree = "<group>"; };
 		5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePredictionList.m; sourceTree = "<group>"; };
 		5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v3.xcdatamodel"; sourceTree = "<group>"; };
+		5EE17BDD196207CE00F375B5 /* MITMapPlaceAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceAnnotationView.h; sourceTree = "<group>"; };
+		5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceAnnotationView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
 		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
@@ -2534,6 +2537,25 @@
 			path = Entities;
 			sourceTree = "<group>";
 		};
+		5EE17BD81962079F00F375B5 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */,
+				A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */,
+				A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		5EE17BDC196207B100F375B5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5EE17BDD196207CE00F375B5 /* MITMapPlaceAnnotationView.h */,
+				5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		A544EEFD1961D1B60046823E /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -2679,9 +2701,11 @@
 		DE715446102FE468005E6111 /* Campus Map */ = {
 			isa = PBXGroup;
 			children = (
-				44C1A26011A2E865000FD653 /* Model */,
 				4463CC8710D6F4A50048CA83 /* CMModule.h */,
 				4463CC8810D6F4A50048CA83 /* CMModule.m */,
+				44C1A26011A2E865000FD653 /* Model */,
+				5EE17BD81962079F00F375B5 /* View Controllers */,
+				5EE17BDC196207B100F375B5 /* Views */,
 				4463CC8F10D6F4A50048CA83 /* MITMapAnnotationView.h */,
 				4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */,
 				442C195410F3B21400CB44EC /* MITMapRoute.h */,
@@ -2690,9 +2714,6 @@
 				2C101AC916552AF5000E40E3 /* MITMapView.m */,
 				4431A384646993384D06783E /* MITAnnotationAdaptor.h */,
 				4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */,
-				A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */,
-				A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */,
-				A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */,
 			);
 			path = "Campus Map";
 			sourceTree = "<group>";
@@ -3457,6 +3478,7 @@
 				DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */,
 				DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */,
 				DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */,
+				5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */,
 				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
 				5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,

@@ -2,6 +2,9 @@
 #import "MITMapModelController.h"
 #import "MITMapPlace.h"
 #import "MITTiledMapView.h"
+#import "MITMapPlaceAnnotationView.h"
+
+static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
 @interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate>
 
@@ -285,7 +288,13 @@
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
     if ([annotation isKindOfClass:[MITMapPlace class]]) {
-        // TODO: implement numbered map pin
+        MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
+        if (!annotationView) {
+            annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
+        }
+        NSInteger placeIndex = [self.places indexOfObject:annotation];
+        [annotationView setNumber:(placeIndex + 1)];
+        return annotationView;
     }
     return nil;
 }

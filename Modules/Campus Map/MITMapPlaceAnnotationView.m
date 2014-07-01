@@ -1,0 +1,40 @@
+#import "MITMapPlaceAnnotationView.h"
+
+@interface MITMapPlaceAnnotationView()
+
+@property (nonatomic, strong) UILabel *numberLabel;
+
+@end
+
+@implementation MITMapPlaceAnnotationView
+
+- (instancetype)initWithAnnotation:(id<MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.image = [UIImage imageNamed:@"map/map_place_pin"];
+        self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
+        self.canShowCallout = YES;
+        self.rightCalloutAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow"]];
+        [self setupNumberLabel];
+    }
+    return self;
+}
+
+- (void)setupNumberLabel
+{
+    UILabel *numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.width)];
+    numberLabel.font = [UIFont systemFontOfSize:11.0];
+    numberLabel.textColor = [UIColor whiteColor];
+    numberLabel.backgroundColor = [UIColor clearColor];
+    numberLabel.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:numberLabel];
+    self.numberLabel = numberLabel;
+}
+
+- (void)setNumber:(NSInteger)number
+{
+    self.numberLabel.text = [@(number) stringValue];
+}
+
+@end
