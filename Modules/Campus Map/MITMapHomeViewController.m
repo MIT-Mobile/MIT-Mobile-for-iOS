@@ -299,4 +299,12 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     return nil;
 }
 
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        MITMapPlace *place = view.annotation;
+        // TODO: push place detail view controller
+    }
+}
+
 @end

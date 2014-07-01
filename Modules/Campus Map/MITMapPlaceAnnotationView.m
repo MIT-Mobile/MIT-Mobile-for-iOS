@@ -15,7 +15,7 @@
         self.image = [UIImage imageNamed:@"map/map_place_pin"];
         self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
         self.canShowCallout = YES;
-        self.rightCalloutAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow"]];
+        self.rightCalloutAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]];
         [self setupNumberLabel];
     }
     return self;
