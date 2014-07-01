@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="NewsCategory" representedClassName="MITNewsCategory" syncable="YES">
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -21,6 +21,12 @@
         <attribute name="width" attributeType="Double" defaultValueString="0" syncable="YES"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NewsImage" inverseName="representations" inverseEntity="NewsImage" syncable="YES"/>
     </entity>
+    <entity name="NewsRecentSearchList" representedClassName="MITNewsRecentSearchList" syncable="YES">
+        <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="NewsRecentSearchQuery" syncable="YES"/>
+    </entity>
+    <entity name="NewsRecentSearchQuery" representedClassName="MITNewsRecentSearchQuery" syncable="YES">
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="NewsStory" representedClassName="MITNewsStory" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
@@ -38,9 +44,11 @@
         <relationship name="galleryImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="NewsImage" inverseName="gallery" inverseEntity="NewsImage" syncable="YES"/>
     </entity>
     <elements>
-        <element name="NewsCategory" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="NewsImage" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="NewsImageRep" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="NewsStory" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="NewsCategory" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="NewsImage" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="NewsImageRep" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="NewsRecentSearchQuery" positionX="0" positionY="0" width="128" height="58"/>
+        <element name="NewsRecentSearchList" positionX="0" positionY="0" width="128" height="58"/>
+        <element name="NewsStory" positionX="0" positionY="0" width="128" height="255"/>
     </elements>
 </model>
