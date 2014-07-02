@@ -445,6 +445,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     };
     
     [self.navigationController setToolbarHidden:NO animated:animated];
+    self.routeViewController.tableView.contentOffset = CGPointZero;
     [self.mapViewController setState:MITShuttleMapStateContracting];
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
