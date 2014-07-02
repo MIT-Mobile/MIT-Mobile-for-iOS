@@ -158,6 +158,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     if(!_searchController) {
         MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.delegate = self;
         _searchController = searchController;
     }
     return _searchController;
@@ -167,8 +168,17 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
-    self.searchController = [[MITNewsSearchController alloc] init];
-    self.searchController.delegate = self;
+    [self addChildViewController:self.searchController];
+    [self.view addSubview:self.searchController.view];
+    [self.searchController didMoveToParentViewController:self];
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchController.view.alpha = .5;
+                     } completion:^(BOOL finished) {
+                        
+                     }];
     
     [self.navigationItem setRightBarButtonItems:[self.searchController showSearchFieldFromItems:self.navigationItem.rightBarButtonItems] animated:YES];
     
@@ -176,6 +186,15 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 - (void)hideSearchField
 {
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchController.view.alpha = .0;
+                     } completion:^(BOOL finished) {
+                         [self.searchController removeFromParentViewController];
+                         [self.searchController.view removeFromSuperview];
+                     }];
     [self updateNavigationItem:YES];
 }
 
