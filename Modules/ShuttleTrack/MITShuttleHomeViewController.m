@@ -226,7 +226,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             [self refreshFlatRouteArray];
             
             [self.tableView reloadDataAndMaintainSelection];
-            if (!self.predictionsRefreshTimer.isValid) {
+            
+            // Start refreshing predications if we are still in the view hierarchy
+            if (!self.predictionsRefreshTimer.isValid && self.navigationController) {
                 [self startRefreshingPredictions];
             }
         }
