@@ -46,10 +46,14 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 {
     __block NSManagedObjectID *searchObjectID = nil;
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-    [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
+    NSError *updateError = nil;
+    BOOL success = [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
+        BOOL blockSuccess = NO;
+
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
 
+        // Don't care if this fails. If it does, just create a new object.
         MITMapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
         if (!mapSearch) {
             mapSearch = [NSEntityDescription insertNewObjectForEntityForName:[MITMapSearch entityName]
@@ -59,12 +63,18 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
 
-        [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
+        blockSuccess = [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
 
         if (!error) {
             searchObjectID = [mapSearch objectID];
         }
-    } error:nil];
+
+        return blockSuccess;
+    } error:&updateError];
+
+    if (!success) {
+        DDLogWarn(@"failed to add new search for term '%@': %@",queryString,updateError);
+    }
 
     return searchObjectID;
 }
