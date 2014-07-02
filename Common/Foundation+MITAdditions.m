@@ -13,6 +13,69 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
     return (fabs(((double)f0) - ((double)f1)) <= CGFLOAT_EPSILON);
 }
 
+NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
+{
+    static NSRegularExpression *linkHeaderRegularExpression = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // TODO: Find a better way to pick out the link metadata
+        // This is liable to break in unexpected & infuriating ways if
+        // things are not perfectly formed
+        // (bskinner - 2014.05.28)
+        NSString *pattern = @"^<(.+)>;\\s+rel=\"([^\"]+)\"";
+        NSError *error = nil;
+        linkHeaderRegularExpression = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                options:NSRegularExpressionCaseInsensitive
+                                                                                  error:&error];
+
+        NSCAssert(linkHeaderRegularExpression, @"failed to create 'link' header regular expression: %@", error);
+    });
+
+    NSString *linkHeader = [response allHeaderFields][@"Link"];
+    NSMutableDictionary *linkHeaderFields = nil;
+
+    if (linkHeader) {
+        linkHeaderFields = [[NSMutableDictionary alloc] init];
+
+        // Separate link fields are separated by a ',' followed by 0 or more
+        //  whitespace (\s*) so separate everything out by ',' first, then trimming the
+        //  whitespace.
+        //
+        // There shouldn't be a problem splitting ',' as it is a reserved character
+        //  (per RFC 3986) and if it is present in the URL, it should be percent-encoded.
+        //  If there is a bare comma in the URL (or the relation type), we should just
+        //  assume that is it malformed and GIGO applies.
+        [[linkHeader componentsSeparatedByString:@","] enumerateObjectsUsingBlock:^(NSString *link, NSUInteger idx, BOOL *stop) {
+            NSString *trimmedLink = [link stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            [linkHeaderRegularExpression enumerateMatchesInString:trimmedLink options:0
+                                               range:NSMakeRange(0, [trimmedLink length])
+                                         usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+
+                // Checking for '3' here because the string should have 3 ranges:
+                //  0: The complete matching string
+                //  1: The URL from the Link reference
+                //  2: The relation type from the Link reference
+                if ([result numberOfRanges] != 3) {
+                    NSRange fullRange = [result rangeAtIndex:0];
+                    DDLogCWarn(@"invalid 'Link' value '%@'",[link substringWithRange:fullRange]);
+                } else {
+                    NSString *urlString = [link substringWithRange:[result rangeAtIndex:1]];
+                    NSURL *url = [NSURL URLWithString:urlString];
+                    NSString *relation = [link substringWithRange:[result rangeAtIndex:2]];
+
+                    if (!url) {
+                        DDLogCWarn(@"url '%@' for relation type '%@' is malformed", url, relation);
+                    } else {
+                        linkHeaderFields[relation] = url;
+                    }
+                }
+            }];
+        }];
+    }
+
+    return linkHeaderFields;
+}
+
 @implementation NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path {
