@@ -108,26 +108,31 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
     
     self.helpLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     self.helpLabel.font = [UIFont systemFontOfSize:12];
-    self.helpLabel.textAlignment = NSTextAlignmentLeft;
     self.helpLabel.numberOfLines = 0;
     [helpAndStatusFooter addSubview:self.helpLabel];
     self.helpLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[helpLabel]" options:0 metrics:nil views:@{@"helpLabel": self.helpLabel}]];
+    [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|->=10-[helpLabel]->=10-|" options:0 metrics:nil views:@{@"helpLabel": self.helpLabel}]];
     [helpAndStatusFooter addConstraint:[NSLayoutConstraint constraintWithItem:self.helpLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:helpAndStatusFooter attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
 
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         self.helpLabel.textColor = [UIColor lightGrayColor];
         self.helpLabel.text = @"Tap bell to be notified 5 min. before arrival";
-        
+        self.helpLabel.textAlignment = NSTextAlignmentCenter;
+
         self.statusFooterLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         self.statusFooterLabel.font = [UIFont systemFontOfSize:14];
         self.statusFooterLabel.textColor = [UIColor blackColor];
         self.statusFooterLabel.textAlignment = NSTextAlignmentCenter;
+        self.statusFooterLabel.adjustsFontSizeToFitWidth = YES;
+        self.statusFooterLabel.minimumScaleFactor = 0.5;
         [helpAndStatusFooter addSubview:self.statusFooterLabel];
         self.statusFooterLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[statusFooterLabel]" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
-        [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[statusFooterLabel]|" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+        [helpAndStatusFooter addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|->=10-[statusFooterLabel]->=10-|" options:0 metrics:nil views:@{@"statusFooterLabel": self.statusFooterLabel}]];
+        [helpAndStatusFooter addConstraint:[NSLayoutConstraint constraintWithItem:self.statusFooterLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:helpAndStatusFooter attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
     } else {
+        self.helpLabel.textAlignment = NSTextAlignmentLeft;
         self.helpLabel.textColor = [UIColor grayColor];
         self.helpLabel.preferredMaxLayoutWidth = 180.0;
         self.helpLabel.text = @"Tap bell icon to be notified 5 minutes before the estimated arrival time";
