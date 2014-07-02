@@ -13,6 +13,7 @@
                 <outlet property="navigationBarExtensionViewHeightConstraint" destination="C5I-Aa-K53" id="lX1-ck-e4e"/>
                 <outlet property="routeContainerView" destination="6fA-Uj-MMs" id="Llh-m9-7jy"/>
                 <outlet property="stopSubtitleLabel" destination="GKR-Nx-YOc" id="aQF-4h-jZs"/>
+                <outlet property="stopSubtitleLabelCenterAlignmentConstraint" destination="GPg-ox-2Ue" id="ktj-y9-Szz"/>
                 <outlet property="stopTitleLabel" destination="cP8-Hc-Iwq" id="rRn-UJ-fdf"/>
                 <outlet property="stopTitleView" destination="G0b-yZ-Yeg" id="yxO-l6-2R6"/>
                 <outlet property="stopsScrollView" destination="Sqv-Qr-FD3" id="NmK-jl-ydM"/>
