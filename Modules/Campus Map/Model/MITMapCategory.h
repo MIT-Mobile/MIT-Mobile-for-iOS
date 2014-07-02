@@ -13,7 +13,8 @@
 @property (nonatomic, strong) MITMapCategory *parent;
 @property (nonatomic, strong) MITMapSearch *search;
 
-- (NSString*)canonicalName;
+- (NSString *)canonicalName;
+- (NSString *)iconName;
 @end
 
 @interface MITMapCategory (CoreDataGeneratedAccessors)

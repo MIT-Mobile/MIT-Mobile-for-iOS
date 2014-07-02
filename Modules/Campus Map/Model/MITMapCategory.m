@@ -27,4 +27,9 @@
     return [components componentsJoinedByString:@","];
 }
 
+- (NSString *)iconName
+{
+    return [NSString stringWithFormat:@"map/map_category_%@", self.identifier];
+}
+
 @end

@@ -1,5 +1,6 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapCategoriesViewController.h"
 
 @interface MITMapBrowseContainerViewController ()
 
@@ -27,6 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self setupSegmentedControl];
     [self showViewControllerAtIndex:0];
 }
@@ -81,9 +83,7 @@
 {
     // TODO: add done bar button item to each view controller
     
-    UIViewController *categoriesViewController = [[UIViewController alloc] init];
-    categoriesViewController.navigationItem.title = @"Categories";
-    categoriesViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    MITMapCategoriesViewController *categoriesViewController = [[MITMapCategoriesViewController alloc] initWithStyle:UITableViewStylePlain];
     
     UIViewController *bookmarksViewController = [[UIViewController alloc] init];
     bookmarksViewController.navigationItem.title = @"Bookmarks";
@@ -107,7 +107,7 @@
     if ([self.viewControllers indexOfObject:self.selectedViewController] != index) {
         UIViewController *selectedViewController = self.viewControllers[index];
         selectedViewController.view.frame = self.view.bounds;
-        selectedViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//        selectedViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addChildViewController:selectedViewController];
         [selectedViewController beginAppearanceTransition:YES animated:NO];
         [self.view addSubview:selectedViewController.view];
