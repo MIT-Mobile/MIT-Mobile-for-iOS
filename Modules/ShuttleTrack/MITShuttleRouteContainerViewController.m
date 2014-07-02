@@ -95,6 +95,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     [super viewWillAppear:animated];
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self.navigationController setToolbarHidden:YES animated:animated];
+        [self configureLayoutForState:self.state animated:NO];
+        [self layoutStopViews];
+        [self selectStop:self.stop];
         [self configureStopViewControllerRefreshing];
     }
 }
@@ -306,6 +309,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 - (void)layoutStopViews
 {
+    [self.view layoutIfNeeded];
+    
     CGSize stopViewSize = self.stopsScrollView.frame.size;
     CGFloat xOffset = 0;
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {

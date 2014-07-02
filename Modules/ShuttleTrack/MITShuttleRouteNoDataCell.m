@@ -12,7 +12,7 @@
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    self.mainLabel.preferredMaxLayoutWidth = self.mainLabel.frame.size.width;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

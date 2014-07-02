@@ -22,8 +22,8 @@
                             <constraint firstAttribute="height" constant="19" id="b3W-5R-469"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="12" preferredMaxLayoutWidth="40" translatesAutoresizingMaskIntoConstraints="NO" id="nwR-jM-kvo">
-                        <rect key="frame" x="46" y="12" width="40" height="20"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="12" preferredMaxLayoutWidth="254" translatesAutoresizingMaskIntoConstraints="NO" id="nwR-jM-kvo">
+                        <rect key="frame" x="46" y="12" width="254" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -34,7 +34,7 @@
                     <constraint firstAttribute="centerY" secondItem="5ZK-f6-nLL" secondAttribute="centerY" id="VX0-T5-V0L"/>
                     <constraint firstItem="nwR-jM-kvo" firstAttribute="centerY" secondItem="5ZK-f6-nLL" secondAttribute="centerY" id="Zgk-Su-oFk"/>
                     <constraint firstItem="nwR-jM-kvo" firstAttribute="leading" secondItem="5ZK-f6-nLL" secondAttribute="trailing" constant="8" id="dUI-k7-VF5"/>
-                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="nwR-jM-kvo" secondAttribute="trailing" constant="20" id="f4T-pe-XSw"/>
+                    <constraint firstAttribute="trailing" secondItem="nwR-jM-kvo" secondAttribute="trailing" constant="20" id="f4T-pe-XSw"/>
                     <constraint firstItem="5ZK-f6-nLL" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="gxe-ES-90w"/>
                 </constraints>
             </tableViewCellContentView>
