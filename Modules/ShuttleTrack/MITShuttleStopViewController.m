@@ -56,7 +56,18 @@ NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMIT
     
     [self setupTableView];
     [self setupHelpAndStatusFooter];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     [self.predictionLoader startRefreshingPredictions];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.predictionLoader stopRefreshingPredictions];
 }
 
 - (void)didReceiveMemoryWarning
