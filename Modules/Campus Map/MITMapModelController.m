@@ -44,7 +44,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 #pragma mark Synchronous
 - (NSManagedObjectID *)addRecentSearch:(id)query
 {
-    if (![query isKindOfClass:[NSString class]] || ![query isKindOfClass:[MITMapPlace class]] || ![query isKindOfClass:[MITMapCategory class]]) {
+    if (![query isKindOfClass:[NSString class]] && ![query isKindOfClass:[MITMapPlace class]] && ![query isKindOfClass:[MITMapCategory class]]) {
         return nil;
     }
     

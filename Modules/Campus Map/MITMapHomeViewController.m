@@ -5,13 +5,11 @@
 #import "MITMapPlaceAnnotationView.h"
 #import "MITMapResultsListViewController.h"
 #import "MITMapBrowseContainerViewController.h"
+#import "CoreData+MITAdditions.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate>
-
-@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MKMapView *mapView;
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -19,7 +17,14 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 @property (nonatomic, strong) UILabel *searchResultsCountLabel;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
 
+@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
+@property (nonatomic, readonly) MKMapView *mapView;
 @property (nonatomic, copy) NSArray *places;
+
+@property (nonatomic, strong) UITableView *resultsTableView;
+@property (nonatomic, strong) NSArray *recentSearchItems;
+@property (nonatomic, strong) NSArray *webserviceSearchItems;
+@property (nonatomic, strong) NSString *currentSearchString;
 
 @end
 
@@ -51,18 +56,26 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     
     [self setupNavigationBar];
     [self setupMapView];
+    [self setupResultsTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.navigationItem setHidesBackButton:YES animated:NO];
+    [self registerForKeyboardNotifications];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self setupResultsCountLabel];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self unregisterForKeyboardNotifications];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -143,6 +156,26 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 }
 
 #pragma mark - Button Actions
+
+- (void)setupResultsTableView
+{
+    self.resultsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, -100, self.view.frame.size.width, 0)];
+    self.resultsTableView.delegate = self;
+    self.resultsTableView.dataSource = self;
+    [self.view addSubview:self.resultsTableView];
+}
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)unregisterForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
 
 - (void)bookmarksButtonPressed
 {
@@ -243,6 +276,75 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     [self.mapView removeAnnotations:annotationsToRemove];
 }
 
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    CGFloat navBarHeight = 64;
+    CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    NSLog(@"show end frame: %@", NSStringFromCGRect(endFrame));
+    CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
+    self.resultsTableView.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
+    [self.resultsTableView reloadData];
+    [UIView animateWithDuration:0.5 animations:^{
+        self.resultsTableView.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+    }];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    [UIView animateWithDuration:0.5 animations:^{
+        self.resultsTableView.frame = CGRectMake(0, -self.resultsTableView.frame.size.height, self.view.frame.size.width, self.resultsTableView.frame.size.height);
+    }];
+}
+
+- (void)updateSearchResultsForSearchString:(NSString *)searchString
+{
+    if ([searchString isEqualToString:@""]) {
+        searchString = nil;
+    }
+    
+    self.currentSearchString = searchString;
+    
+    __weak MITMapHomeViewController *blockSelf = self;
+    
+    // The error cases in these blocks are left unhandled on purpose for now. Not sure if the user ever needs to be informed
+    [[MITMapModelController sharedController] recentSearchesForPartialString:searchString loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+        if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
+            return;
+        }
+        if (fetchRequest) {
+            NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+            [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+                if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
+                    return;
+                }
+                self.recentSearchItems = [managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
+                [self.resultsTableView reloadData];
+            }];
+        }
+    }];
+    
+    if (searchString) {
+        [[MITMapModelController sharedController] searchMapWithQuery:searchString loaded:^(NSArray *objects, NSError *error) {
+            if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
+                return;
+            }
+            self.webserviceSearchItems = objects;
+            [self.resultsTableView reloadData];
+        }];
+    }
+}
+
+- (BOOL)isCurrentSearchStringEqualTo:(NSString *)searchString
+{
+    if (searchString == nil && self.currentSearchString == nil) {
+        return YES;
+    } else if ([searchString isEqualToString:self.currentSearchString]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -250,6 +352,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.rightBarButtonItem = nil;
     [searchBar setShowsCancelButton:YES animated:YES];
+    [self updateSearchResultsForSearchString:nil];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -261,6 +364,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 {
     [searchBar resignFirstResponder];
 
+    [[MITMapModelController sharedController] addRecentSearch:searchBar.text];
     [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
                                                           loaded:^(NSArray *objects, NSError *error) {
                                                               if (objects) {
@@ -271,6 +375,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    [self updateSearchResultsForSearchString:searchText];
+    
     if (!searchBar.isFirstResponder) {
         self.searchBarShouldBeginEditing = NO;
         [self clearPlacesAnimated:YES];
@@ -336,6 +442,61 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     if ([self.places containsObject:place]) {
         [self.mapView selectAnnotation:place animated:YES];
     }
+}
+
+#pragma mark - UITableViewDelegate Methods
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44;
+}
+
+#pragma mark - UITableViewDataSource Methods
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch (section) {
+        case 0: {
+            return self.recentSearchItems.count;
+            break;
+        }
+        case 1: {
+            return self.webserviceSearchItems.count;
+            break;
+        }
+        default: {
+            return 0;
+            break;
+        }
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    
+    switch (indexPath.section) {
+        case 0: {
+            MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
+            cell.textLabel.text = searchItem.searchTerm;
+            break;
+        }
+        case 1: {
+            MITMapPlace *searchItem = self.webserviceSearchItems[indexPath.row];
+            cell.textLabel.text = searchItem.name;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    
+    return cell;
 }
 
 @end

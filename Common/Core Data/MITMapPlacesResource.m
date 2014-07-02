@@ -16,7 +16,6 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
                                                 parameters:@{@"q" : queryString}
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[MITMapModelController sharedController] addRecentSearch:queryString];
 
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
