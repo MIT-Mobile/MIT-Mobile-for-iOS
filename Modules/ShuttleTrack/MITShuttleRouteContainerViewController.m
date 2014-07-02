@@ -44,6 +44,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewZeroHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewPortraitHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapContainerViewLandscapeWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewLandscapeWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopsScrollViewLandscapeWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewLandscapeTrailingSpaceConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopsScrollViewLandscapeTrailingSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopSubtitleLabelCenterAlignmentConstraint;
 
@@ -199,6 +203,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 {
     [self addChildViewController:childViewController];
     childViewController.view.frame = view.bounds;
+    childViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [view addSubview:childViewController.view];
     [childViewController didMoveToParentViewController:self];
 }
@@ -309,8 +314,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 - (void)layoutStopViews
 {
-    [self.view layoutIfNeeded];
-    
     CGSize stopViewSize = self.stopsScrollView.frame.size;
     CGFloat xOffset = 0;
     for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
@@ -424,6 +427,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateRoute];
+        self.routeContainerViewLandscapeTrailingSpaceConstraint.priority =
+        self.stopsScrollViewLandscapeTrailingSpaceConstraint.priority = UILayoutPriorityDefaultHigh;
+        self.routeContainerViewLandscapeWidthConstraint.priority =
+        self.stopsScrollViewLandscapeWidthConstraint.priority = UILayoutPriorityDefaultLow;
     }
 
     dispatch_block_t animationBlock = ^{
@@ -467,6 +474,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         self.mapContainerViewPortraitHeightConstraint.constant = kMapContainerViewEmbeddedHeightPortrait;
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateStop];
+        self.routeContainerViewLandscapeTrailingSpaceConstraint.priority =
+        self.stopsScrollViewLandscapeTrailingSpaceConstraint.priority = UILayoutPriorityDefaultHigh;
+        self.routeContainerViewLandscapeWidthConstraint.priority =
+        self.stopsScrollViewLandscapeWidthConstraint.priority = UILayoutPriorityDefaultLow;
     }
     
     dispatch_block_t animationBlock = ^{
@@ -510,6 +521,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         self.routeContainerViewTopSpaceConstraint.constant = CGRectGetHeight(self.view.frame) - kMapContainerViewEmbeddedHeightPortrait;
     } else {
         self.mapContainerViewLandscapeWidthConstraint.constant = [self mapContainerViewLandscapeWidthForState:MITShuttleRouteContainerStateMap];
+        self.routeContainerViewLandscapeTrailingSpaceConstraint.priority =
+        self.stopsScrollViewLandscapeTrailingSpaceConstraint.priority = UILayoutPriorityDefaultLow;
+        self.routeContainerViewLandscapeWidthConstraint.priority =
+        self.stopsScrollViewLandscapeWidthConstraint.priority = UILayoutPriorityDefaultHigh;
     }
     
     dispatch_block_t animationBlock = ^{

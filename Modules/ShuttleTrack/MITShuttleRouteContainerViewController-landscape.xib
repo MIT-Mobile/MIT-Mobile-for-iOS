@@ -12,11 +12,15 @@
                 <outlet property="navigationBarExtensionView" destination="3Eq-88-j5h" id="atF-yN-GcK"/>
                 <outlet property="navigationBarExtensionViewHeightConstraint" destination="C5I-Aa-K53" id="lX1-ck-e4e"/>
                 <outlet property="routeContainerView" destination="6fA-Uj-MMs" id="Llh-m9-7jy"/>
+                <outlet property="routeContainerViewLandscapeTrailingSpaceConstraint" destination="cFo-P7-pcA" id="5bl-EF-tzK"/>
+                <outlet property="routeContainerViewLandscapeWidthConstraint" destination="991-Uf-bMS" id="kIy-cT-WWY"/>
                 <outlet property="stopSubtitleLabel" destination="GKR-Nx-YOc" id="aQF-4h-jZs"/>
                 <outlet property="stopSubtitleLabelCenterAlignmentConstraint" destination="GPg-ox-2Ue" id="ktj-y9-Szz"/>
                 <outlet property="stopTitleLabel" destination="cP8-Hc-Iwq" id="rRn-UJ-fdf"/>
                 <outlet property="stopTitleView" destination="G0b-yZ-Yeg" id="yxO-l6-2R6"/>
                 <outlet property="stopsScrollView" destination="Sqv-Qr-FD3" id="NmK-jl-ydM"/>
+                <outlet property="stopsScrollViewLandscapeTrailingSpaceConstraint" destination="gzU-Hw-SsP" id="N9K-cL-MB6"/>
+                <outlet property="stopsScrollViewLandscapeWidthConstraint" destination="TTa-kT-xGn" id="G0J-xT-3pE"/>
                 <outlet property="view" destination="XdD-eg-puq" id="bGG-dl-EAU"/>
             </connections>
         </placeholder>
@@ -44,16 +48,22 @@
                         <outletCollection property="gestureRecognizers" destination="2hH-L0-FvN" appends="YES" id="yu5-Mu-Q1u"/>
                     </connections>
                 </view>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sqv-Qr-FD3" userLabel="Scroll View - Stop">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sqv-Qr-FD3" userLabel="Scroll View - Stop">
                     <rect key="frame" x="320" y="0.0" width="248" height="256"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" priority="250" constant="248" id="TTa-kT-xGn"/>
+                    </constraints>
                     <connections>
                         <outlet property="delegate" destination="-1" id="jid-Pr-gTX"/>
                     </connections>
                 </scrollView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6fA-Uj-MMs" userLabel="View - Route">
+                <view contentMode="scaleToFill" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="6fA-Uj-MMs" userLabel="View - Route">
                     <rect key="frame" x="320" y="0.0" width="248" height="256"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" priority="250" constant="248" id="991-Uf-bMS"/>
+                    </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -64,10 +74,10 @@
                 <constraint firstItem="Sqv-Qr-FD3" firstAttribute="top" secondItem="3Eq-88-j5h" secondAttribute="bottom" id="Fvf-CY-QII"/>
                 <constraint firstAttribute="bottom" secondItem="6fA-Uj-MMs" secondAttribute="bottom" id="HTc-QK-vy9"/>
                 <constraint firstItem="3Eq-88-j5h" firstAttribute="top" secondItem="XdD-eg-puq" secondAttribute="top" id="a36-a2-TEf"/>
-                <constraint firstAttribute="trailing" secondItem="6fA-Uj-MMs" secondAttribute="trailing" id="cFo-P7-pcA"/>
+                <constraint firstAttribute="trailing" secondItem="6fA-Uj-MMs" secondAttribute="trailing" priority="750" id="cFo-P7-pcA"/>
                 <constraint firstItem="3Eq-88-j5h" firstAttribute="leading" secondItem="XdD-eg-puq" secondAttribute="leading" id="dQC-II-bxT"/>
                 <constraint firstItem="6fA-Uj-MMs" firstAttribute="top" secondItem="3Eq-88-j5h" secondAttribute="bottom" id="e5V-AI-zKx"/>
-                <constraint firstAttribute="trailing" secondItem="Sqv-Qr-FD3" secondAttribute="trailing" id="gzU-Hw-SsP"/>
+                <constraint firstAttribute="trailing" secondItem="Sqv-Qr-FD3" secondAttribute="trailing" priority="750" id="gzU-Hw-SsP"/>
                 <constraint firstAttribute="bottom" secondItem="5gJ-YO-gaQ" secondAttribute="bottom" id="kG1-R9-hBD"/>
                 <constraint firstAttribute="trailing" secondItem="3Eq-88-j5h" secondAttribute="trailing" id="mUr-HM-Owe"/>
                 <constraint firstItem="5gJ-YO-gaQ" firstAttribute="leading" secondItem="XdD-eg-puq" secondAttribute="leading" id="pZ8-d9-gbk"/>
