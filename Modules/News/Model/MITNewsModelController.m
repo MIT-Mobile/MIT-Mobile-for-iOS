@@ -7,11 +7,10 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-#import "MITResultsPager.h"
-
 @interface MITNewsModelController ()
-- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block;
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))block;
 @end
+
 @implementation MITNewsModelController
 + (instancetype)sharedController
 {
@@ -43,7 +42,7 @@
                                                 }];
 }
 
-- (void)featuredStoriesWithOffset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))completion
+- (void)featuredStoriesWithOffset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))completion
 {
     [self storiesInCategory:nil
                       query:nil
@@ -53,7 +52,7 @@
                  completion:completion];
 }
 
-- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray* stories, MITResultsPager* pager, NSError* error))completion
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray* stories, NSDictionary *pagingMetadata, NSError* error))completion
 {
     [self storiesInCategory:categoryID
                       query:queryString
@@ -63,7 +62,7 @@
                  completion:completion];
 }
 
-- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))block
 {
     NSMutableDictionary* parameters = [[NSMutableDictionary alloc] init];
 
@@ -95,8 +94,8 @@
                                                             if (!error) {
                                                                 NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
                                                                 NSArray *mainQueueStories = [mainContext transferManagedObjects:[result array]];
-                                                                MITResultsPager *pager = [MITResultsPager resultsPagerWithResponse:response];
-                                                                block(mainQueueStories,pager,nil);
+                                                                NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
+                                                                block(mainQueueStories,pagingMetadata,nil);
                                                             } else {
                                                                 block(nil,nil,error);
                                                             }
