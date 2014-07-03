@@ -20,6 +20,7 @@
         sharedModelController = [[self alloc] init];
     });
 
+    NSAssert(sharedModelController, @"failed to create the shared %@ instance", NSStringFromClass(self));
     return sharedModelController;
 }
 
