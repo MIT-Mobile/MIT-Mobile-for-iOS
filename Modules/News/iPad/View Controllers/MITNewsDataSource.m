@@ -1,50 +1,45 @@
 #import "MITNewsDataSource.h"
 #import "MITCoreDataController.h"
+#import <objc/runtime.h>
 
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-@interface MITNewsDataSource ()
-@property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
+static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
 
-@property (nonatomic,copy) NSString *categoryIdentifier;
-@property (nonatomic,strong) NSURL *nextPageURL;
-@property (nonatomic,getter = isFeaturedStorySource) BOOL featuredStorySource;
+@interface MITNewsDataSource ()
+
 @end
 
 @implementation MITNewsDataSource
 @synthesize managedObjectContext = _managedObjectContext;
-
-+ (instancetype)allCategoriesDataSource
++ (BOOL)clearCachedObjectsWithManagedObjectContext:(NSManagedObjectContext*)context error:(NSError**)error
 {
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
-
-    MITNewsDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
-
-    return dataSource;
+    /* Do Nothing, just fail-by-success for the default implementation */
+    return YES;
 }
 
-+ (instancetype)featuredStoriesDataSource
++ (void)_clearCachedObjects
 {
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+    // This most likely will be a fairly espensive operation
+    // since it involves potentially deleting a large number of
+    // CoreData objects (especially with a number of subclasses)
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun);
 
-    MITNewsDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
-    dataSource.featuredStorySource = YES;
+        if (!firstRunToken) {
+            __block NSError *error = nil;
+            BOOL updateDidFail = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+                return [self clearCachedObjectsWithManagedObjectContext:context error:error];
+            } error:&error];
 
-    return dataSource;
-}
+            if (updateDidFail) {
+                DDLogWarn(@"failed to clear cached objects for %@: %@",NSStringFromClass(self),[error localizedDescription]);
+            }
 
-+ (instancetype)dataSourceForCategory:(MITNewsCategory*)category
-{
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
-
-    MITNewsDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
-
-    [category.managedObjectContext performBlockAndWait:^{
-        dataSource.categoryIdentifier = category.identifier;
-    }];
-
-    return dataSource;
+            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+    });
 }
 
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext
@@ -60,29 +55,21 @@
 
 - (BOOL)hasNextPage
 {
-    return (BOOL)(self.nextPageURL != nil);
+    return NO;
 }
 
-- (void)nextPage:(void(^)(NSError *error))block
+- (BOOL)nextPage:(void(^)(NSError *error))block
 {
-    void (^wrappedBlock)(NSError *error) = ^(NSError *error) {
-        if (block) {
-            block(error);
-        }
-    };
-
-    if (![self hasNextPage]) {
-        wrappedBlock(nil);
-        return;
+    if (block) {
+        block(nil);
     }
-
-    
-
 }
 
 - (void)refresh:(void(^)(NSError *error))block
 {
-
+    if (block) {
+        block(nil);
+    }
 }
 
 @end

@@ -6,17 +6,17 @@
 
 @interface MITNewsDataSource : NSObject
 @property (nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,readonly,strong) NSOrderedSet *categories;
-@property (nonatomic,readonly,strong) NSOrderedSet *stories;
+@property (nonatomic,readonly,strong) NSOrderedSet *objects;
+@property (nonatomic) NSUInteger maximumNumberOfItemsPerPage;
 
-+ (void)clearCachedObjects;
+// For subclass use only
+//  Called when the first instance of a subclass
+//  is initialized.
++ (BOOL)clearCachedObjectsWithManagedObjectContext:(NSManagedObjectContext*)context error:(NSError**)error;
 
-+ (instancetype)allCategoriesDataSource;
-+ (instancetype)featuredStoriesDataSource;
-+ (instancetype)dataSourceForCategory:(MITNewsCategory*)category;
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext;
 
 - (BOOL)hasNextPage;
-- (void)nextPage:(void(^)(NSError *error))block;
+- (BOOL)nextPage:(void(^)(NSError *error))block;
 - (void)refresh:(void(^)(NSError *error))block;
 @end
