@@ -349,36 +349,48 @@ typedef struct {
 
 - (NSArray*)allLayoutAttributes
 {
-    NSArray *allLayoutAttributes = [[NSArray alloc] initWithArray:[self _allLayoutAttributes] copyItems:YES];
+    NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
 
-    [allLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-        layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
-    }];
+    if (_headerLayoutAttributes) {
+        [allLayoutAttributes addObject:self.headerLayoutAttributes];
+    }
+
+    if (_featuredItemLayoutAttributes) {
+        [allLayoutAttributes addObject:self.featuredItemLayoutAttributes];
+    }
+
+    if (_itemLayoutAttributes) {
+        [allLayoutAttributes addObjectsFromArray:self.itemLayoutAttributes];
+    }
+
+    if (_decorationLayoutAttributes) {
+        [allLayoutAttributes addObjectsFromArray:self.decorationLayoutAttributes];
+    }
 
     return allLayoutAttributes;
 }
 
 - (NSArray*)_allLayoutAttributes
 {
-    NSMutableArray *attributeLayouts = [[NSMutableArray alloc] init];
+    NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
 
     if (_headerLayoutAttributes) {
-        [attributeLayouts addObject:_headerLayoutAttributes];
+        [allLayoutAttributes addObject:_headerLayoutAttributes];
     }
 
     if (_featuredItemLayoutAttributes) {
-        [attributeLayouts addObject:_featuredItemLayoutAttributes];
+        [allLayoutAttributes addObject:_featuredItemLayoutAttributes];
     }
 
     if (_itemLayoutAttributes) {
-        [attributeLayouts addObjectsFromArray:_itemLayoutAttributes];
+        [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
     }
 
     if (_decorationLayoutAttributes) {
-        [attributeLayouts addObjectsFromArray:_decorationLayoutAttributes];
+        [allLayoutAttributes addObjectsFromArray:_decorationLayoutAttributes];
     }
 
-    return attributeLayouts;
+    return allLayoutAttributes;
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath
