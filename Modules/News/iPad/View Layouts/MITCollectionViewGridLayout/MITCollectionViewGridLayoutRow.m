@@ -47,7 +47,7 @@
         CGRect layoutBounds = bounds; // Leave an entry point if we want to add edge insets later
 
         const CGFloat layoutWidth = CGRectGetWidth(layoutBounds);
-        const NSUInteger numberOfItems = [self numberOfItems];
+        const NSUInteger numberOfItems = self.maximumNumberOfItems;
         const CGFloat interItemSpacing = _interItemSpacing;
         CGFloat itemWidth = (layoutWidth - (interItemSpacing * (numberOfItems - 1))) / numberOfItems;
 
@@ -147,15 +147,19 @@
     [self setNeedsLayout];
 }
 
-- (void)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
+- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
 {
+    if (self.numberOfItems >= self.maximumNumberOfItems) {
+        return NO;
+    }
+    
     if (!_itemLayoutAttributes) {
         _itemLayoutAttributes = [[NSMutableArray alloc] init];
     }
 
     // Checking for numberOfItems here because, once we add the new layout attributes
     //  to the _itemLayoutAttributes ivar, numberOfItems will increment and we'll end up with an extra decoration.
-    if ([self numberOfItems] > 0) {
+    if (self.numberOfItems > 0) {
         UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier withIndexPath:[NSIndexPath indexPathWithIndex:[self numberOfItems]]];
         decorationLayoutAttributes.frame = CGRectMake(0, 0, _interItemSpacing, 0);
 
@@ -167,6 +171,8 @@
     [_itemLayoutAttributes addObject:itemLayoutAttributes];
 
     [self setNeedsLayout];
+
+    return YES;
 }
 
 @end

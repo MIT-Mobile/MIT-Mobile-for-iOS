@@ -6,10 +6,12 @@
 // Only the width is used. The height is ignored for layout purposes.
 @property (nonatomic) CGRect frame;
 @property (nonatomic) CGRect bounds;
+@property (nonatomic) NSUInteger maximumNumberOfItems;
+
 @property (nonatomic,readonly) NSUInteger numberOfItems;
 @property (nonatomic,readonly) NSArray *itemLayoutAttributes;
 @property (nonatomic,readonly) NSArray *decorationLayoutAttributes;
 
 - (instancetype)init;
-- (void)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight;
+- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight;
 @end
