@@ -72,7 +72,9 @@
 {
     [super viewDidLoad];
 
-    self.dataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
+    self.automaticallyAdjustsScrollViewInsets = YES;
+    self.edgesForExtendedLayout = UIRectEdgeAll ^ UIRectEdgeTop;
+    self.showsFeaturedStories = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
