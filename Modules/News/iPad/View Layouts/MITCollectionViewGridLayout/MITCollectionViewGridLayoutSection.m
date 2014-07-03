@@ -10,6 +10,8 @@ typedef struct {
     CGFloat horizontalOffset;
 } MITFeaturedItemLayoutContext;
 
+static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.rowSpan = 0, .columnSpan = 0, .width = 0, .horizontalOffset = 0};
+
 @interface MITCollectionViewGridLayoutSection ()
 @property (nonatomic,readwrite) NSInteger section;
 @property (nonatomic) CGPoint origin;
@@ -208,8 +210,8 @@ typedef struct {
         const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) - maximumPaddingPerRow) / numberOfColumns);
 
 
+        MITFeaturedItemLayoutContext featuredItemLayoutContext = MITFeatureItemLayoutEmptyContext;
         const BOOL hasFeaturedItem = [self.layout showFeaturedItemInSection:self.section];
-        MITFeaturedItemLayoutContext featuredItemLayoutContext = {.columnSpan = 0, .rowSpan = 0, .width = 0, .horizontalOffset = 0};
         if (hasFeaturedItem) {
             featuredItemLayoutContext.columnSpan = [self.layout featuredStoryHorizontalSpanInSection:self.section];
             featuredItemLayoutContext.rowSpan = [self.layout featuredStoryVerticalSpanInSection:self.section];
