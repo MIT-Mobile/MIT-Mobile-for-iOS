@@ -61,9 +61,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.automaticallyAdjustsScrollViewInsets = YES;
-    self.edgesForExtendedLayout = UIRectEdgeAll ^ UIRectEdgeTop;
+    self.edgesForExtendedLayout = UIRectEdgeAll;
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
 }
