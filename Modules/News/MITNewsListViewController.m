@@ -338,26 +338,26 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (BOOL)featuredCategoryAtIndex:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:isFeaturedCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self isFeaturedCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:isFeaturedCategoryInSection:)]) {
+        return [self.dataSource viewController:self isFeaturedCategoryInSection:index];
     } else {
         return NO;
     }
 }
 
-- (NSString*)titleForCategoryAtIndex:(NSUInteger)index
+- (NSString*)titleForCategoryInSection:(NSUInteger)section
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self titleForCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryInSection:)]) {
+        return [self.dataSource viewController:self titleForCategoryInSection:section];
     } else {
         return nil;
     }
 }
 
-- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesInCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self numberOfStoriesInCategoryAtIndex:index];
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     } else {
         return 0;
     }
@@ -365,8 +365,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row];
+    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
+        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
     } else {
         return nil;
     }
@@ -374,15 +374,15 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndexPath:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndexPath:indexPath];
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
+        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
     }
 }
 
 - (void)didSelectCategoryAtIndex:(NSUInteger)index
 {
     if ([self.delegate respondsToSelector:@selector(viewController:didSelectCategoryAtIndex:)]) {
-        [self.delegate viewController:self didSelectCategoryAtIndex:index];
+        [self.delegate viewController:self didSelectCategoryInSection:index];
     }
 }
 

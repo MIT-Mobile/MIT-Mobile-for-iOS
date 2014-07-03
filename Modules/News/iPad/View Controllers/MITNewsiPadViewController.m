@@ -22,12 +22,6 @@
 - (void)reloadItems:(void(^)(NSError *error))block;
 
 - (void)reloadDataSources;
-
-- (NSUInteger)numberOfCategories;
-- (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index;
-- (NSString*)titleForCategoryAtIndex:(NSUInteger)index;
-- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index;
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
 @interface MITNewsiPadViewController ()
@@ -324,20 +318,20 @@
     });
 }
 
-- (MITNewsDataSource*)dataSourceForCategoryAtIndex:(NSUInteger)index
+- (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
 {
-    return self.dataSources[index];
+    return self.dataSources[section];
 }
 
-- (BOOL)canLoadMoreItemsForCategoryAtIndex:(NSUInteger)index
+- (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:index];
     return [dataSource hasNextPage];
 }
 
-- (BOOL)loadMoreItemsForCategoryAtIndex:(NSUInteger)index completion:(void(^)(NSError *error))block
+- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:index];
     return [dataSource nextPage:block];
 }
 
@@ -346,12 +340,7 @@
     [self reloadDataSources];
 }
 
-- (NSUInteger)numberOfCategories
-{
-    return [self.dataSources count];
-}
-
-- (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index
+- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
 {
     if (self.isSearching) {
         return NO;
@@ -362,59 +351,44 @@
     }
 }
 
-- (NSString*)titleForCategoryAtIndex:(NSUInteger)index
+- (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
+{
+    return [self.dataSources count];
+}
+
+- (NSString*)viewController:(UIViewController*)viewController titleForCategoryInSection:(NSUInteger)section
 {
     if (self.isSearching) {
         return nil;
-    } else if (self.showsFeaturedStories && (index == 0)) {
+    } else if (self.showsFeaturedStories && (section == 0)) {
         return @"Featured";
-    } else if ([self numberOfCategories] == 1) {
-        return nil;
     } else {
-        return @"My Category's Name";
+        __block NSString *title = nil;
+        --section;
+
+        MITNewsCategory *category = self.categories[section];
+        [category.managedObjectContext performBlockAndWait:^{
+            title = category.identifier;
+        }];
+
+        return title;
     }
 }
 
-- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
+- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if (self.showsFeaturedStories && (index == 0)) {
+    if (self.showsFeaturedStories && (section == 0)) {
         return 5;
     } else {
-        MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+        MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return MIN([dataSource.objects count],10);
     }
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
+- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:indexPath.section];
-    return dataSource.objects[indexPath.row];
-}
-
-
-- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryAtIndex:(NSUInteger)index
-{
-    return [self isFeaturedCategoryAtIndex:index];
-}
-
-- (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
-{
-    return [self numberOfCategories];
-}
-
-- (NSString*)viewController:(UIViewController*)viewController titleForCategoryAtIndex:(NSUInteger)index
-{
-    return [self titleForCategoryAtIndex:index];
-}
-
-- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesInCategoryAtIndex:(NSUInteger)index
-{
-    return [self numberOfStoriesInCategoryAtIndex:index];
-}
-
-- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self storyAtIndexPath:indexPath];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    return dataSource.objects[index];
 }
 
 @end

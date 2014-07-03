@@ -13,8 +13,8 @@
 - (instancetype)init;
 
 - (NSUInteger)numberOfCategories;
-- (BOOL)featuredCategoryAtIndex:(NSUInteger)index;
-- (NSString*)titleForCategoryAtIndex:(NSUInteger)index;
-- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index;
+- (BOOL)featuredCategoryInSection:(NSUInteger)section;
+- (NSString*)titleForCategoryInSection:(NSUInteger)section;
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 @end

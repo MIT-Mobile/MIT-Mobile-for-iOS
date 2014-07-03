@@ -1,3 +1,5 @@
+#import <objc/runtime.h>
+
 #import "MITNewsGridViewController.h"
 #import "MITCoreDataController.h"
 #import "MITNewsModelController.h"
@@ -92,7 +94,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [self numberOfStoriesInCategoryAtIndex:section];
+    return [self numberOfStoriesForCategoryInSection:section];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -153,9 +155,29 @@
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
+- (CGFloat)_heightForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSMutableDictionary *heights = objc_getAssociatedObject(self, _cmd);
+
+    if (!heights) {
+        heights = [[NSMutableDictionary alloc] init];
+        objc_setAssociatedObject(self, _cmd, heights, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+
+    CGFloat height = 0;
+    if (!heights[indexPath]) {
+        height = 64. + arc4random_uniform(96);
+        heights[indexPath] = @(height);
+    } else {
+        height = [heights[indexPath] doubleValue];
+    }
+
+    return height;
+}
+
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
-    return 128.;
+    return [self _heightForItemAtIndexPath:indexPath];
 }
 
 - (BOOL)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout showFeaturedItemInSection:(NSInteger)section
@@ -187,28 +209,28 @@
     }
 }
 
-- (BOOL)featuredCategoryAtIndex:(NSUInteger)index
+- (BOOL)isFeaturedCategoryInSection:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:isFeaturedCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self isFeaturedCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:isFeaturedCategoryInSection:)]) {
+        return [self.dataSource viewController:self isFeaturedCategoryInSection:index];
     } else {
         return NO;
     }
 }
 
-- (NSString*)titleForCategoryAtIndex:(NSUInteger)index
+- (NSString*)titleForCategoryInSection:(NSUInteger)section
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self titleForCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryInSection:)]) {
+        return [self.dataSource viewController:self titleForCategoryInSection:section];
     } else {
         return nil;
     }
 }
 
-- (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)index
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesInCategoryAtIndex:)]) {
-        return [self.dataSource viewController:self numberOfStoriesInCategoryAtIndex:index];
+    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:index];
     } else {
         return 0;
     }
@@ -216,8 +238,8 @@
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row];
+    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
+        return [self.dataSource viewController:self storyAtIndex:indexPath.item forCategoryInSection:indexPath.section];
     } else {
         return nil;
     }
@@ -225,15 +247,15 @@
 
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndexPath:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndexPath:indexPath];
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
+        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
     }
 }
 
-- (void)didSelectCategoryAtIndex:(NSUInteger)index
+- (void)didSelectCategoryInSection:(NSUInteger)section
 {
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectCategoryAtIndex:)]) {
-        [self.delegate viewController:self didSelectCategoryAtIndex:index];
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectCategoryInSection:)]) {
+        [self.delegate viewController:self didSelectCategoryInSection:section];
     }
 }
 
