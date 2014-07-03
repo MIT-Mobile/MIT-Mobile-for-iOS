@@ -88,17 +88,22 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
         headerLayoutAttributes.frame = CGRectOffset(headerLayoutAttributes.frame, self.origin.x, self.origin.y);
 
         const CGRect sectionFrame = self.frame;
-        const CGPoint contentOffset = self.layout.collectionView.contentOffset;
-        if (self.stickyHeaders && CGRectContainsPoint(sectionFrame, contentOffset)) {
-            CGFloat yOffset = contentOffset.y - CGRectGetMinY(sectionFrame);
+        CGPoint contentOffset = self.layout.collectionView.bounds.origin;
+        contentOffset.y += self.layout.collectionView.contentInset.top;
+        if (self.stickyHeaders) {
+            if (CGRectContainsPoint(sectionFrame, contentOffset)) {
+                CGFloat offsetY = contentOffset.y - CGRectGetMinY(sectionFrame);
 
-            CGRect offsetHeaderFrame = CGRectOffset(headerLayoutAttributes.frame, 0, yOffset);
-            if (!CGRectContainsRect(sectionFrame, offsetHeaderFrame)) {
-                yOffset = CGRectGetMaxY(self.bounds) - CGRectGetHeight(headerLayoutAttributes.bounds);
+                CGRect offsetHeaderFrame = CGRectOffset(headerLayoutAttributes.frame, 0, offsetY);
+                if (!CGRectContainsRect(sectionFrame, offsetHeaderFrame)) {
+                    offsetY = CGRectGetMaxY(self.bounds) - CGRectGetHeight(headerLayoutAttributes.bounds);
+                }
+
+                headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, offsetY);
+            } else if (CGRectGetMaxY(sectionFrame) < contentOffset.y) {
+                CGFloat offsetY = CGRectGetMaxY(self.bounds) - CGRectGetHeight(headerLayoutAttributes.bounds);
+                headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, offsetY);
             }
-
-            CGAffineTransform transform = CGAffineTransformMakeTranslation(0, yOffset);
-            headerLayoutAttributes.transform = transform;
         }
     }
     
