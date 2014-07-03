@@ -9,6 +9,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 };
 
 @interface MITNewsiPadViewController : UIViewController
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 @property (nonatomic) BOOL showsFeaturedStories;
 

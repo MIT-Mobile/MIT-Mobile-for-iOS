@@ -107,6 +107,15 @@
 }
 
 #pragma mark Dynamic Properties
+- (NSManagedObjectContext*)managedObjectContext
+{
+    if (!_managedObjectContext) {
+        _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+    }
+
+    return _managedObjectContext;
+}
+
 - (MITNewsGridViewController*)gridViewController
 {
     if (![self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
