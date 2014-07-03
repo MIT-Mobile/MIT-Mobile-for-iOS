@@ -199,6 +199,7 @@ typedef struct {
         CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
         CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
         headerLayoutAttributes.frame = headerFrame;
+        headerLayoutAttributes.zIndex = 1024;
         _headerLayoutAttributes = headerLayoutAttributes;
 
 
