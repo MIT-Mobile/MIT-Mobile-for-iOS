@@ -9,10 +9,15 @@
 #import "MITNewsGridViewController.h"
 #import "MITMobile.h"
 
+#import "MITNewsStoriesDataSource.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate>
 @property (nonatomic,strong) NSString *searchQuery;
 @property (nonatomic,strong) NSOrderedSet *searchResults;
+
+- (BOOL)canLoadMoreItems;
+- (void)loadMoreItems:(void(^)(NSError *error))block;
+- (void)reloadItems:(void(^)(NSError *error))block;
 
 - (NSUInteger)numberOfCategories;
 - (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index;
@@ -30,7 +35,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 
 #pragma mark Data Source
-@property (nonatomic,readonly,strong) NSFetchedResultsController *storiesDataSource;
+@property (nonatomic,strong) MITNewsStoriesDataSource *dataSource;
 
 // We need this because there is no easy way to section (or sort) the featured stories.
 // They should be displayed in the order the server spits them back and do not have a
@@ -47,7 +52,6 @@
     BOOL _isTransitioningToPresentationStyle;
 }
 
-@synthesize storiesDataSource = _storiesDataSource;
 @synthesize activeViewController = _activeViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -68,15 +72,32 @@
 {
     [super viewDidLoad];
 
+    self.dataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [self showStoriesAsGrid:nil];
 
+    if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
+        [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
+    } else {
+        [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
+    }
+
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+
+    [self reloadItems:^(NSError *error) {
+        if (error) {
+            DDLogWarn(@"update failed; %@",error);
+        }
+
+        if (self.activeViewController == self.gridViewController) {
+            [self.gridViewController.collectionView reloadData];
+        } else if (self.activeViewController == self.listViewController) {
+            [self.listViewController.tableView reloadData];
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -92,8 +113,10 @@
         return nil;
     } else if (!_gridViewController) {
         MITNewsGridViewController *gridViewController = [[MITNewsGridViewController alloc] init];
+        gridViewController.delegate = self;
+        gridViewController.dataSource = self;
 
-        [self addChildViewController:_gridViewController];
+        [self addChildViewController:gridViewController];
         _gridViewController = gridViewController;
     }
 
@@ -106,6 +129,8 @@
         return nil;
     } else if (!_listViewController) {
         MITNewsListViewController *listViewController = [[MITNewsListViewController alloc] init];
+        listViewController.delegate = self;
+        listViewController.dataSource = self;
 
         [self addChildViewController:listViewController];
         _listViewController = listViewController;
@@ -229,24 +254,22 @@
 @implementation MITNewsiPadViewController (NewsDataSource)
 - (BOOL)canLoadMoreItems
 {
-    return (BOOL)(self.nextPageURL != nil);
+    return [self.dataSource hasNextPage];
 }
 
 - (void)loadMoreItems:(void(^)(NSError *error))block
 {
-    [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        
-    }];
+    [self.dataSource nextPage:block];
 }
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-
+    [self.dataSource refresh:block];
 }
 
 - (NSUInteger)numberOfCategories
 {
-    return [self.storiesDataSource.sections count];
+    return 1;
 }
 
 - (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index
@@ -275,10 +298,33 @@
 
 - (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
 {
-    if (self.isSearching) {
-        return [self.searchResults count];
-    }
-    return 0;
+    return [[self.dataSource stories] count];
+}
+
+- (MITNewsStory*)storyAtIndex:(NSUInteger)index
+{
+    return self.dataSource.stories[index];
+}
+
+
+- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryAtIndex:(NSUInteger)index
+{
+    return [self isFeaturedCategoryAtIndex:index];
+}
+
+- (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
+{
+    return [self numberOfCategories];
+}
+
+- (NSString*)viewController:(UIViewController*)viewController titleForCategoryAtIndex:(NSUInteger)index
+{
+    return [self titleForCategoryAtIndex:index];
+}
+
+- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesInCategoryAtIndex:(NSUInteger)index
+{
+    return [self numberOfStoriesInCategoryAtIndex:index];
 }
 
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index
