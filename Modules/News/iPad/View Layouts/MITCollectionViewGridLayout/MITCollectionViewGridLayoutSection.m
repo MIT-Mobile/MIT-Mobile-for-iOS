@@ -185,7 +185,12 @@ typedef struct {
             return;
         }
 
-        __block CGRect layoutBounds = _bounds;
+        // Apply the content insets to the actual content so things appear properly. We only care
+        //  about the left and right insets here. The top will be ignored and the
+        //  bottom will be handled after everything is laid out.
+        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, self.contentInsets.left, 0, self.contentInsets.right);
+
+        __block CGRect layoutBounds = UIEdgeInsetsInsetRect(_bounds, contentInsets);
         layoutBounds.size.height = CGFLOAT_MAX;
 
         UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
@@ -195,14 +200,6 @@ typedef struct {
         CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
         headerLayoutAttributes.frame = headerFrame;
         _headerLayoutAttributes = headerLayoutAttributes;
-
-
-        // Now that the header has been layed out, we need to apply the content
-        //  insets to the actual content so things appear properly. We only care
-        //  about the left and right insets here. The top will be ignored and the
-        //  bottom will be handled after everything is laid out.
-        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, self.contentInsets.left, 0, self.contentInsets.right);
-        layoutBounds = UIEdgeInsetsInsetRect(layoutBounds, contentInsets);
 
 
         const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
