@@ -281,9 +281,9 @@
     return 0;
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
+- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index
 {
-    return nil;
+    return [self storyAtIndex:index];
 }
 
 @end

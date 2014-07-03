@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (NSString*)viewController:(UIViewController*)viewController titleForCategoryAtIndex:(NSUInteger)index;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesInCategoryAtIndex:(NSUInteger)index;
-- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndexPath:(NSIndexPath*)indexPath;
+- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index;
 @end
 
 @protocol MITNewsStoryDelegate <NSObject>

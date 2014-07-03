@@ -412,8 +412,8 @@
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndexPath:)]) {
-        return [self.dataSource viewController:self storyAtIndexPath:indexPath];
+    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:)]) {
+        return [self.dataSource viewController:self storyAtIndex:indexPath.row];
     } else {
         return nil;
     }
