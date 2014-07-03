@@ -46,6 +46,7 @@ typedef struct {
     if (self) {
         _layout = layout;
         _numberOfColumns = 2;
+        _stickyHeaders = YES;
         [self invalidateLayout];
     }
 
