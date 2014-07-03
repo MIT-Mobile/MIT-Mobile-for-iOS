@@ -55,7 +55,7 @@
     MITCollectionViewGridLayoutSection *sectionLayout = self.sectionLayouts[@(section)];
 
     if (!sectionLayout) {
-        sectionLayout = [self primitiveLayoutForSection:section];
+        sectionLayout = [self _layoutForSection:section];
         NSAssert(sectionLayout,@"failed to create layout for section %d",section);
         self.sectionLayouts[@(section)] = sectionLayout;
     }
@@ -63,7 +63,7 @@
     return sectionLayout;
 }
 
-- (MITCollectionViewGridLayoutSection*)primitiveLayoutForSection:(NSInteger)section
+- (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:self.numberOfColumns];
 
