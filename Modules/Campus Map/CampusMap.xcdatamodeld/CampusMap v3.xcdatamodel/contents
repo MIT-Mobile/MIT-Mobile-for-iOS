@@ -37,7 +37,7 @@
     </entity>
     <entity name="MapSearch" representedClassName="MITMapSearch" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
-        <attribute name="searchTerm" attributeType="String" syncable="YES"/>
+        <attribute name="searchTerm" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="token" attributeType="String" indexed="YES" syncable="YES"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MapCategory" inverseName="search" inverseEntity="MapCategory" syncable="YES"/>
         <relationship name="place" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MapPlace" inverseName="search" inverseEntity="MapPlace" syncable="YES"/>
@@ -47,6 +47,6 @@
         <element name="MapCategory" positionX="0" positionY="0" width="128" height="150"/>
         <element name="MapPlace" positionX="0" positionY="0" width="128" height="270"/>
         <element name="MapPlaceContent" positionX="0" positionY="0" width="128" height="90"/>
-        <element name="MapSearch" positionX="0" positionY="0" width="128" height="118"/>
+        <element name="MapSearch" positionX="0" positionY="0" width="128" height="120"/>
     </elements>
 </model>

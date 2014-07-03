@@ -425,3 +425,17 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 }
 @end
+
+@implementation UISearchBar (MITAdditions)
+- (UITextField *)textField
+{
+    for (UIView *subview in self.subviews) {
+        for (UIView *secondLevelSubview in subview.subviews){
+            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
+                return (UITextField *)secondLevelSubview;
+            }
+        }
+    }
+    return nil;
+}
+@end

@@ -86,3 +86,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 + (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width;
 + (UIBarButtonItem*)flexibleSpace;
 @end
+
+@interface UISearchBar (MITAdditions)
+- (UITextField *)textField;
+@end

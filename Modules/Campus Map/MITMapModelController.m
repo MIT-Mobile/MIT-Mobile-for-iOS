@@ -66,20 +66,29 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
                                                       inManagedObjectContext:context];
         }
         
-        if ([query isKindOfClass:[NSString class]]) {
-            mapSearch.searchTerm = query;
-        } else if ([query isKindOfClass:[MITMapPlace class]]) {
-            mapSearch.place = query;
-        } else if ([query isKindOfClass:[MITMapCategory class]]) {
-            mapSearch.category = query;
+        id localQuery = query;
+        if ([query isKindOfClass:[NSManagedObject class]]) {
+            localQuery = [[context transferManagedObjects:@[query]] firstObject];
+        }
+
+        if ([localQuery isKindOfClass:[NSString class]]) {
+            mapSearch.searchTerm = localQuery;
+        } else if ([localQuery isKindOfClass:[MITMapPlace class]]) {
+            mapSearch.place = localQuery;
+        } else if ([localQuery isKindOfClass:[MITMapCategory class]]) {
+            mapSearch.category = localQuery;
         }
 
         mapSearch.date = [NSDate date];
+        
+        [context save:error];
+        
+        if (!*error) {
+            [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
 
-        [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
-
-        if (!error) {
-            searchObjectID = [mapSearch objectID];
+            if (!*error) {
+                searchObjectID = [mapSearch objectID];
+            }
         }
     } error:nil];
 

@@ -6,8 +6,15 @@
 #import "MITMapResultsListViewController.h"
 #import "MITMapBrowseContainerViewController.h"
 #import "CoreData+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
+
+typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
+    MITMapSearchQueryTypeText,
+    MITMapSearchQueryTypePlace,
+    MITMapSearchQueryTypeCategory
+};
 
 @interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
@@ -16,6 +23,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UILabel *searchResultsCountLabel;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
+@property (nonatomic) MITMapSearchQueryType searchQueryType;
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
@@ -25,6 +33,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 @property (nonatomic, strong) NSArray *recentSearchItems;
 @property (nonatomic, strong) NSArray *webserviceSearchItems;
 @property (nonatomic, strong) NSString *currentSearchString;
+
 
 @end
 
@@ -129,22 +138,22 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         [self.searchResultsCountLabel removeFromSuperview];
     }
     
-    for (UIView *subview in self.searchBar.subviews) {
-        for (UIView *secondLevelSubview in subview.subviews){
-            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
-                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
-                self.searchResultsCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(searchBarTextField.frame.origin.x + searchBarTextField.frame.size.width - 80, searchBarTextField.frame.origin.y, 80, searchBarTextField.frame.size.height)];
-                
-                self.searchResultsCountLabel.textAlignment = NSTextAlignmentRight;
-                self.searchResultsCountLabel.font = [UIFont systemFontOfSize:13];
-                self.searchResultsCountLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
-                [self setSearchResultsCountHidden:YES];
-                
-                [subview addSubview:self.searchResultsCountLabel];
-                break;
-            }
-        }
-    }
+    UITextField *searchBarTextField = [self.searchBar textField];
+    UIView *textFieldSuperview = searchBarTextField.superview;
+    
+    self.searchResultsCountLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.searchResultsCountLabel.textAlignment = NSTextAlignmentRight;
+    self.searchResultsCountLabel.font = [UIFont systemFontOfSize:13];
+    self.searchResultsCountLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
+    self.searchResultsCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self setSearchResultsCountHidden:YES];
+    
+    [textFieldSuperview addSubview:self.searchResultsCountLabel];
+    
+    [textFieldSuperview addConstraint:[NSLayoutConstraint constraintWithItem:self.searchResultsCountLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:searchBarTextField attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];
+    [textFieldSuperview addConstraint:[NSLayoutConstraint constraintWithItem:self.searchResultsCountLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:searchBarTextField attribute:NSLayoutAttributeRight multiplier:1.0 constant:-30.0]];
+    [self.searchResultsCountLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+    
 }
 
 - (void)setupMapView
@@ -203,15 +212,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)setSearchBarTextColor:(UIColor *)color
 {
     // A public API would be preferable, but UIAppearance doesn't update unless you remove the view from superview and re-add, which messes with the display
-    for (UIView *subview in self.searchBar.subviews) {
-        for (UIView *secondLevelSubview in subview.subviews){
-            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
-                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
-                searchBarTextField.textColor = color;
-                break;
-            }
-        }
-    }
+    UITextField *searchBarTextField = [self.searchBar textField];
+    searchBarTextField.textColor = color;
 }
 
 - (void)setSearchResultsCount:(NSInteger)count
@@ -221,12 +223,19 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     } else {
         self.searchResultsCountLabel.text = [NSString stringWithFormat:@"%i Results", count];
     }
-    
+    [self setSearchResultsCountHidden:NO];
 }
 
 - (void)setSearchResultsCountHidden:(BOOL)hidden
 {
     self.searchResultsCountLabel.hidden = hidden;
+}
+
+- (void)setSearchQueryType:(MITMapSearchQueryType)searchQueryType
+{
+    UIColor *searchBarTextColor = (searchQueryType == MITMapSearchQueryTypeText) ? [UIColor blackColor] : [UIColor mit_tintColor];
+    [self setSearchBarTextColor:searchBarTextColor];
+    _searchQueryType = searchQueryType;
 }
 
 #pragma mark - Map View
@@ -242,6 +251,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     }
 }
 
+#pragma mark - Places
+
 - (void)setPlaces:(NSArray *)places
 {
     [self setPlaces:places animated:NO];
@@ -256,7 +267,9 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)clearPlacesAnimated:(BOOL)animated
 {
+    self.webserviceSearchItems = nil;
     [self setPlaces:nil animated:animated];
+    [self setSearchResultsCountHidden:YES];
 }
 
 - (void)refreshPlaceAnnotations
@@ -275,6 +288,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     }
     [self.mapView removeAnnotations:annotationsToRemove];
 }
+
+#pragma mark - Search Results
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
@@ -345,6 +360,44 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     }
 }
 
+- (void)performSearchWithQuery:(NSString *)query
+{
+    [[MITMapModelController sharedController] addRecentSearch:query];
+    [[MITMapModelController sharedController] searchMapWithQuery:query
+                                                          loaded:^(NSArray *objects, NSError *error) {
+                                                              if (objects) {
+                                                                  [self setPlaces:objects animated:YES];
+                                                                  [self setSearchResultsCount:[objects count]];
+                                                              }
+                                                          }];
+}
+
+- (void)searchResultsDidSelectRecentQuery:(NSString *)query
+{
+    [self performSearchWithQuery:query];
+    self.searchBar.text = query;
+    self.searchQueryType = MITMapSearchQueryTypeText;
+}
+
+- (void)searchResultsDidSelectPlace:(MITMapPlace *)place
+{
+    [[MITMapModelController sharedController] addRecentSearch:place];
+    [self setPlaces:@[place] animated:YES];
+    self.searchBar.text = place.name;
+    self.searchQueryType = MITMapSearchQueryTypePlace;
+    [self setSearchResultsCount:1];
+}
+
+- (void)searchResultsDidSelectCategory:(MITMapCategory *)category
+{
+    [[MITMapModelController sharedController] addRecentSearch:category];
+    NSArray *places = [category.places allObjects];
+    [self setPlaces:places animated:YES];
+    self.searchBar.text = category.name;
+    self.searchQueryType = MITMapSearchQueryTypeCategory;
+    [self setSearchResultsCount:[places count]];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -353,6 +406,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     self.navigationItem.rightBarButtonItem = nil;
     [searchBar setShowsCancelButton:YES animated:YES];
     [self updateSearchResultsForSearchString:nil];
+    [self setSearchResultsCountHidden:YES];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -363,14 +417,17 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+    self.searchQueryType = MITMapSearchQueryTypeText;
+    [self performSearchWithQuery:searchBar.text];
+}
 
-    [[MITMapModelController sharedController] addRecentSearch:searchBar.text];
-    [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
-                                                          loaded:^(NSArray *objects, NSError *error) {
-                                                              if (objects) {
-                                                                  [self setPlaces:objects animated:YES];
-                                                              }
-                                                          }];
+- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if (self.searchQueryType != MITMapSearchQueryTypeText) {
+        searchBar.text = text;
+        self.searchQueryType = MITMapSearchQueryTypeText;
+    }
+    return YES;
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
@@ -451,6 +508,27 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     return 44;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.searchBar resignFirstResponder];
+    
+    NSInteger section = indexPath.section;
+    NSInteger index = indexPath.row;
+    if (section == 0) {
+        MITMapSearch *searchItem = self.recentSearchItems[index];
+        if (searchItem.searchTerm) {
+            [self searchResultsDidSelectRecentQuery:searchItem.searchTerm];
+        } else if (searchItem.place) {
+            [self searchResultsDidSelectPlace:searchItem.place];
+        } else if (searchItem.category) {
+            [self searchResultsDidSelectCategory:searchItem.category];
+        }
+    } else if (section == 1) {
+        MITMapPlace *place = self.webserviceSearchItems[index];
+        [self searchResultsDidSelectPlace:place];
+    }
+}
+
 #pragma mark - UITableViewDataSource Methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -483,7 +561,13 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     switch (indexPath.section) {
         case 0: {
             MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
-            cell.textLabel.text = searchItem.searchTerm;
+            if (searchItem.searchTerm) {
+                cell.textLabel.text = searchItem.searchTerm;
+            } else if (searchItem.place) {
+                cell.textLabel.text = searchItem.place.name;
+            } else if (searchItem.category) {
+                cell.textLabel.text = searchItem.category.name;
+            }
             break;
         }
         case 1: {
