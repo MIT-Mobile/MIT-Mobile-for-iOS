@@ -12,6 +12,7 @@
 #import "MITCoreData.h"
 
 #import "MITNewsStoriesDataSource.h"
+#import "MITAdditions.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate>
 @property (nonatomic,strong) NSString *searchQuery;
@@ -64,6 +65,7 @@
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.edgesForExtendedLayout = UIRectEdgeAll ^ UIRectEdgeTop;
     self.showsFeaturedStories = YES;
+    self.containerView.backgroundColor = [UIColor mit_backgroundColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated

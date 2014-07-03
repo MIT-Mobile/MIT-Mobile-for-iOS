@@ -41,6 +41,8 @@
 {
     collectionView.dataSource = self;
     collectionView.delegate = self;
+    collectionView.backgroundColor = [UIColor clearColor];
+    collectionView.backgroundView = nil;
 
     /*
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
