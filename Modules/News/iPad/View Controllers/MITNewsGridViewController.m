@@ -32,14 +32,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    [self collectionViewDidLoad];
+    [self didLoadCollectionView:self.collectionView];
 }
 
-- (void)collectionViewDidLoad
+- (void)didLoadCollectionView:(UICollectionView*)collectionView
 {
-    self.collectionView.dataSource = self;
-    self.collectionView.delegate = self;
+    collectionView.dataSource = self;
+    collectionView.delegate = self;
 
     /*
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
@@ -53,11 +52,12 @@
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
      */
 
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
-    [self.collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
+    [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
