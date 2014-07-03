@@ -47,7 +47,7 @@
         CGRect layoutBounds = bounds; // Leave an entry point if we want to add edge insets later
 
         const CGFloat layoutWidth = CGRectGetWidth(layoutBounds);
-        const NSUInteger numberOfItems = self.maximumNumberOfItems;
+        const NSUInteger numberOfItems = (self.maximumNumberOfItems > 0 ? self.maximumNumberOfItems : self.numberOfItems);
         const CGFloat interItemSpacing = _interItemSpacing;
         CGFloat itemWidth = (layoutWidth - (interItemSpacing * (numberOfItems - 1))) / numberOfItems;
 
@@ -149,8 +149,10 @@
 
 - (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
 {
-    if (self.numberOfItems >= self.maximumNumberOfItems) {
-        return NO;
+    if (self.maximumNumberOfItems > 0) {
+        if (self.numberOfItems >= self.maximumNumberOfItems) {
+            return NO;
+        }
     }
     
     if (!_itemLayoutAttributes) {
