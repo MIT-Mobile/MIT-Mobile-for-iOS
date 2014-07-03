@@ -258,6 +258,7 @@ typedef struct {
 
                 currentLayoutRow = [[MITCollectionViewGridLayoutRow alloc] init];
                 currentLayoutRow.interItemSpacing = minimumInterItemPadding;
+                currentLayoutRow.maximumNumberOfItems = maximumNumberOfItemsInRow;
 
                 // Make sure a frame with a valid width is set here. We don't care about the origin
                 // or the height at this point (the height will be ignored, anyway) but the width
