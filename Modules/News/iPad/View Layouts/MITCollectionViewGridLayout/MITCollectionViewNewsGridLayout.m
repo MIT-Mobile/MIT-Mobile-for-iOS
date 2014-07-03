@@ -117,7 +117,9 @@
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
             [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+                if ([layoutAttributes.representedElementKind isEqualToString:MITNewsStoryHeaderReusableView]) {
+                    [visibleLayoutAttributes addObject:layoutAttributes];
+                } else if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 }
             }];
@@ -127,6 +129,10 @@
     return [visibleLayoutAttributes array];
 }
 
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBound
+{
+    return YES;
+}
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
