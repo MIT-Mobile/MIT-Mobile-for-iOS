@@ -105,34 +105,35 @@
 
 - (MITNewsGridViewController*)gridViewController
 {
+    MITNewsGridViewController *gridViewController = _gridViewController;
+
     if (![self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
         return nil;
-    } else if (!_gridViewController) {
-        MITNewsGridViewController *gridViewController = [[MITNewsGridViewController alloc] init];
+    } else if (!gridViewController) {
+        gridViewController = [[MITNewsGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
-        
-        [self addChildViewController:gridViewController];
         _gridViewController = gridViewController;
     }
 
-    return _gridViewController;
+    return gridViewController;
 }
 
 - (MITNewsListViewController*)listViewController
 {
+    MITNewsListViewController *listViewController = _listViewController;
+
     if (![self supportsPresentationStyle:MITNewsPresentationStyleList]) {
         return nil;
-    } else if (!_listViewController) {
-        MITNewsListViewController *listViewController = [[MITNewsListViewController alloc] init];
+    } else if (!listViewController) {
+        listViewController = [[MITNewsListViewController alloc] init];
         listViewController.delegate = self;
         listViewController.dataSource = self;
 
-        [self addChildViewController:listViewController];
         _listViewController = listViewController;
     }
     
-    return _listViewController;
+    return listViewController;
 }
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style
@@ -161,13 +162,14 @@
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
-
         toViewController.view.frame = viewFrame;
 
         const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
         _isTransitioningToPresentationStyle = YES;
         _activeViewController = toViewController;
         if (!fromViewController) {
+            [self addChildViewController:toViewController];
+
             [UIView transitionWithView:self.containerView
                               duration:animationDuration
                                options:0
@@ -175,8 +177,12 @@
                                 [self.containerView addSubview:toViewController.view];
                             } completion:^(BOOL finished) {
                                 _isTransitioningToPresentationStyle = NO;
+                                [toViewController didMoveToParentViewController:self];
                             }];
         } else {
+            [fromViewController willMoveToParentViewController:nil];
+            [self addChildViewController:toViewController];
+
             [self transitionFromViewController:fromViewController
                               toViewController:toViewController
                                       duration:animationDuration
@@ -184,6 +190,8 @@
                                     animations:nil
                                     completion:^(BOOL finished) {
                                         _isTransitioningToPresentationStyle = NO;
+                                        [toViewController didMoveToParentViewController:self];
+                                        [fromViewController removeFromParentViewController];
                                     }];
         }
     }
