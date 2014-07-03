@@ -277,6 +277,10 @@ typedef struct {
             [currentLayoutRow addItemForIndexPath:indexPath withHeight:itemHeight];
         }
 
+        if (currentLayoutRow) {
+            [rowLayouts addObject:currentLayoutRow];
+        }
+
         // Now that the rows have their items partitioned out we can figure out how high
         // the featured item should be (and position it). One thing to note is that if an
         // invalid frame or a frame with an improper width is assigned to the row when
