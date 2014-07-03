@@ -19,16 +19,18 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 @end
 
 @protocol MITNewsStoryDataSource <NSObject>
-- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryAtIndex:(NSUInteger)index;
+@optional
+- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section;
 
+@required
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController;
-- (NSString*)viewController:(UIViewController*)viewController titleForCategoryAtIndex:(NSUInteger)index;
+- (NSString*)viewController:(UIViewController*)viewController titleForCategoryInSection:(NSUInteger)section;
 
-- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesInCategoryAtIndex:(NSUInteger)index;
-- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index;
+- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section;
+- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 @end
 
 @protocol MITNewsStoryDelegate <NSObject>
-- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryAtIndex:(NSUInteger)index;
-- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
+- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
+- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 @end
