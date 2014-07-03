@@ -2,12 +2,14 @@
 #import "MITNewsPadLayout.h"
 #import "MITNewsModelController.h"
 #import "MITNewsStory.h"
+#import "MITNewsCategory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
 
 #import "MITNewsListViewController.h"
 #import "MITNewsGridViewController.h"
 #import "MITMobile.h"
+#import "MITCoreData.h"
 
 #import "MITNewsStoriesDataSource.h"
 
@@ -18,6 +20,8 @@
 - (BOOL)canLoadMoreItems;
 - (void)loadMoreItems:(void(^)(NSError *error))block;
 - (void)reloadItems:(void(^)(NSError *error))block;
+
+- (void)reloadDataSources;
 
 - (NSUInteger)numberOfCategories;
 - (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index;
@@ -35,17 +39,8 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 
 #pragma mark Data Source
-@property (nonatomic,strong) MITNewsStoriesDataSource *dataSource;
-
-// We need this because there is no easy way to section (or sort) the featured stories.
-// They should be displayed in the order the server spits them back and do not have a
-// category definition of their own (featured stories will be a mix of stories from
-// every category).
-@property (nonatomic,readonly,strong) NSFetchedResultsController *featuredStoriesDataSource;
-@property (nonatomic,strong) NSOrderedSet *featuredStories;
-
-@property (nonatomic,copy) NSURL *nextPageURL;
-
+@property (nonatomic,copy) NSArray *categories;
+@property (nonatomic,copy) NSArray *dataSources;
 @end
 
 @implementation MITNewsiPadViewController {
@@ -58,7 +53,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+
     }
     return self;
 }
@@ -93,12 +88,6 @@
         if (error) {
             DDLogWarn(@"update failed; %@",error);
         }
-
-        if (self.activeViewController == self.gridViewController) {
-            [self.gridViewController.collectionView reloadData];
-        } else if (self.activeViewController == self.listViewController) {
-            [self.listViewController.tableView reloadData];
-        }
     }];
 }
 
@@ -126,7 +115,7 @@
         MITNewsGridViewController *gridViewController = [[MITNewsGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
-
+        
         [self addChildViewController:gridViewController];
         _gridViewController = gridViewController;
     }
@@ -176,20 +165,18 @@
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
+
         toViewController.view.frame = viewFrame;
 
         const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
         _isTransitioningToPresentationStyle = YES;
         _activeViewController = toViewController;
         if (!fromViewController) {
-            toViewController.view.alpha = 0.0;
-            [self.containerView addSubview:toViewController.view];
-
             [UIView transitionWithView:self.containerView
                               duration:animationDuration
                                options:0
                             animations:^{
-                                toViewController.view.alpha = 1.0;
+                                [self.containerView addSubview:toViewController.view];
                             } completion:^(BOOL finished) {
                                 _isTransitioningToPresentationStyle = NO;
                             }];
@@ -263,24 +250,105 @@
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
-- (BOOL)canLoadMoreItems
+- (void)reloadDataSources
 {
-    return [self.dataSource hasNextPage];
+    NSMutableArray *dataSources = [[NSMutableArray alloc] init];
+
+    if (self.showsFeaturedStories) {
+        MITNewsDataSource *featuredDataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
+        featuredDataSource.maximumNumberOfItemsPerPage = 5;
+        [dataSources addObject:featuredDataSource];
+    }
+
+    __weak MITNewsiPadViewController *weakSelf = self;
+    [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+        MITNewsiPadViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else {
+            NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
+
+            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+                NSManagedObjectID *objectID = [category objectID];
+                NSError *error = nil;
+                NSManagedObject *object = [blockSelf.managedObjectContext existingObjectWithID:objectID error:&error];
+
+                if (!object) {
+                    DDLogWarn(@"failed to retreive object for ID %@: %@",object,error);
+                } else {
+                    [categorySet addObject:object];
+                }
+            }];
+
+            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+                MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
+                [dataSources addObject:dataSource];
+            }];
+
+            blockSelf.categories = [categorySet array];
+            blockSelf.dataSources = dataSources;
+            [blockSelf refreshDataSources];
+        }
+    }];
 }
 
-- (void)loadMoreItems:(void(^)(NSError *error))block
+- (void)refreshDataSources
 {
-    [self.dataSource nextPage:block];
+    __block dispatch_group_t refreshGroup = dispatch_group_create();
+
+    [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
+        dispatch_group_enter(refreshGroup);
+
+        [dataSource refresh:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"failed to refresh data source %@",dataSource);
+            } else {
+                DDLogVerbose(@"refreshed data source %@",dataSource);
+            }
+
+            dispatch_group_leave(refreshGroup);
+        }];
+    }];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (self.activeViewController == self.gridViewController) {
+                [self.gridViewController.collectionView reloadData];
+            } else if (self.activeViewController == self.listViewController) {
+                [self.listViewController.tableView reloadData];
+            }
+        }];
+    });
+}
+
+- (MITNewsDataSource*)dataSourceForCategoryAtIndex:(NSUInteger)index
+{
+    return self.dataSources[index];
+}
+
+- (BOOL)canLoadMoreItemsForCategoryAtIndex:(NSUInteger)index
+{
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+    return [dataSource hasNextPage];
+}
+
+- (BOOL)loadMoreItemsForCategoryAtIndex:(NSUInteger)index completion:(void(^)(NSError *error))block
+{
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+    return [dataSource nextPage:block];
 }
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    [self.dataSource refresh:block];
+    [self reloadDataSources];
 }
 
 - (NSUInteger)numberOfCategories
 {
-    return 1;
+    return [self.dataSources count];
 }
 
 - (BOOL)isFeaturedCategoryAtIndex:(NSUInteger)index
@@ -309,12 +377,18 @@
 
 - (NSUInteger)numberOfStoriesInCategoryAtIndex:(NSUInteger)index
 {
-    return [[self.dataSource stories] count];
+    if (self.showsFeaturedStories && (index == 0)) {
+        return 5;
+    } else {
+        MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:index];
+        return MIN([dataSource.objects count],10);
+    }
 }
 
-- (MITNewsStory*)storyAtIndex:(NSUInteger)index
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
-    return self.dataSource.stories[index];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryAtIndex:indexPath.section];
+    return dataSource.objects[indexPath.row];
 }
 
 
@@ -338,9 +412,9 @@
     return [self numberOfStoriesInCategoryAtIndex:index];
 }
 
-- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index
+- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self storyAtIndex:index];
+    return [self storyAtIndexPath:indexPath];
 }
 
 @end
