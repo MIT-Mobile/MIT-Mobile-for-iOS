@@ -63,20 +63,29 @@
     return sectionLayout;
 }
 
+- (CGRect)minimumContentBounds
+{
+    CGRect collectionViewBounds = self.collectionView.bounds;
+    collectionViewBounds.origin = CGPointZero;
+    collectionViewBounds.size.height = CGFLOAT_MAX;
+    collectionViewBounds.size.height = 0;
+    return collectionViewBounds;
+}
+
 - (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:self.numberOfColumns];
 
-    CGPoint origin = CGPointZero;
-    if (section > 0) {
+    if (section == 0) {
+        sectionLayout.frame = [self minimumContentBounds];
+    } else {
         MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
         CGRect frame = previousSectionLayout.frame;
-        origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
+        frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
+        sectionLayout.frame = frame;
     }
 
     sectionLayout.contentInsets = UIEdgeInsetsMake(0, 30., 0, 30.);
-    CGRect sectionFrame = CGRectMake(origin.x, origin.y, CGRectGetWidth(self.collectionView.bounds), 0);
-    sectionLayout.frame = sectionFrame;
 
     return sectionLayout;
 }
@@ -102,8 +111,16 @@
 {
     [super invalidateLayout];
 
-    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *section, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
-        [sectionLayout invalidateLayout];
+    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
+        NSUInteger section = [sectionNumber unsignedIntegerValue];
+        if (section == 0) {
+            sectionLayout.frame = [self minimumContentBounds];
+        } else {
+            MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
+            CGRect frame = previousSectionLayout.frame;
+            frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
+            sectionLayout.frame = frame;
+        }
     }];
 }
 
