@@ -9,6 +9,9 @@
 
 #import "MITResultsPager.h"
 
+#import "MITNewsRecentSearchList.h"
+#import "MITNewsRecentSearchQuery.h"
+
 @interface MITNewsModelController ()
 - (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block;
 @end
@@ -109,6 +112,65 @@
                                                         }
                                                     }
                                                 }];
+}
+
+#pragma mark - Recent Search List
+
+- (MITNewsRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsRecentSearchList entityName]];
+    fetchRequest.fetchLimit = 1;
+    NSError *error;
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        return nil;
+    } else if ([fetchedObjects count] == 0) {
+        return [[MITNewsRecentSearchList alloc] initWithEntity:[MITNewsRecentSearchList entityDescription] insertIntoManagedObjectContext:context];
+    } else {
+        return [fetchedObjects firstObject];
+    }
+}
+
+#pragma mark - Recent Search Items
+
+- (NSArray *)recentSearchItems
+{
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
+    return [[recentSearchList.recentQueries reversedOrderedSet] array];
+}
+
+- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *__autoreleasing *)error
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+
+        MITNewsRecentSearchQuery *searchItem = [[MITNewsRecentSearchQuery alloc] initWithEntity:[MITNewsRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+        
+        searchItem.text = searchTerm;
+        
+        MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+
+        // Create a new recent search list if one does not exist
+        if (!recentSearchList) {
+            recentSearchList = [[MITNewsRecentSearchList alloc] initWithEntity:[MITNewsRecentSearchList entityDescription] insertIntoManagedObjectContext:context];
+        }
+        
+        [context transferManagedObjects:@[searchItem]];
+        
+        // Create relationship between recent search list and search item
+        [recentSearchList addRecentQueriesObject:searchItem];
+        
+        [context save:updateError];
+    } error:error];
+}
+
+- (void)clearRecentSearchesWithError:(NSError *__autoreleasing *)error
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+        MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        [context deleteObject:recentSearchList];
+        [context save:updateError];
+    } error:error];
 }
 
 @end
