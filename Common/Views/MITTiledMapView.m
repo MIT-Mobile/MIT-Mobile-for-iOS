@@ -1,6 +1,6 @@
 #import "MITTiledMapView.h"
 
-const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
+const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 
 static CGFloat const kBottomButtonSize = 46;
 static CGFloat const kBottomButtonPadding = 20;
@@ -18,8 +18,7 @@ static CGFloat const kBottomButtonPadding = 20;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setupTileOverlays];
-        [self setupButtons];
+        [self setup];
     }
     return self;
 }
