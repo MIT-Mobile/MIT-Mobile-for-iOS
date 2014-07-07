@@ -32,35 +32,22 @@
     [self.delegate hideSearchField];
 }
 
-- (NSArray *)showSearchFieldFromItems:(NSArray *)navigationBarItems
+- (UISearchBar *)returnSearchBar
 {
-    NSMutableArray *rightBarItems = [navigationBarItems mutableCopy];
-
-    NSUInteger positionOfSearchIcon = [rightBarItems indexOfObjectPassingTest:^BOOL(UIBarButtonItem *barButtonItem, NSUInteger idx, BOOL *stop) {
-        if (barButtonItem.action == @selector(searchButtonWasTriggered:)) {
-            *stop = YES;
-            return YES;
-        }
-        return NO;
-    }];
-    
-    if (positionOfSearchIcon == NSNotFound) {
-        return navigationBarItems;
-    }
     UISearchBar * searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
     searchBar.delegate = self;
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.showsCancelButton = YES;
-    UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
-    [barWrapper addSubview:searchBar];
-    UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
-    [rightBarItems replaceObjectAtIndex:positionOfSearchIcon withObject:searchBarItem];
-    [searchBar becomeFirstResponder];
-    return rightBarItems;
+    return searchBar;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [self hideSearchField];
 }
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)aSearchBar
+{
+}
+
 @end

@@ -27,6 +27,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 @property (nonatomic, strong) MITNewsSearchController *searchController;
 
+@property (nonatomic) BOOL searching;
+
 - (MITNewsPadStyle)currentStyle;
 @end
 
@@ -179,9 +181,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
                      } completion:^(BOOL finished) {
                         
                      }];
-    
-    [self.navigationItem setRightBarButtonItems:[self.searchController showSearchFieldFromItems:self.navigationItem.rightBarButtonItems] animated:YES];
-    
+    self.searching = YES;
+    [self updateNavigationItem:YES];
 }
 
 - (void)hideSearchField
@@ -194,7 +195,9 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
                      } completion:^(BOOL finished) {
                          [self.searchController removeFromParentViewController];
                          [self.searchController.view removeFromSuperview];
+                         self.searchController = nil;
                      }];
+    self.searching = NO;
     [self updateNavigationItem:YES];
 }
 
@@ -256,10 +259,20 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         [rightBarItems addObject:listItem];
     }
     
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
-    
-    [rightBarItems addObject:searchItem];
-    
+    if (self.searching) {
+        UISearchBar *searchBar = [self.searchController returnSearchBar];
+        
+        UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
+        [barWrapper addSubview:searchBar];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
+        
+        [rightBarItems addObject:searchBarItem];
+        [searchBar becomeFirstResponder];
+
+    } else {
+        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
+        [rightBarItems addObject:searchItem];
+    }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 

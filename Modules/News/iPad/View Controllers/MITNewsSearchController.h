@@ -4,7 +4,7 @@
 
 @interface MITNewsSearchController : UIViewController
 
-- (NSArray *)showSearchFieldFromItems:(NSArray *)navigationBarItems;
+- (UISearchBar *)returnSearchBar;
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
 
 @end
