@@ -291,6 +291,16 @@
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
+		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
+		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
+		A544EF141965A7AF0046823E /* MITMapPlaceContentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF121965A7AF0046823E /* MITMapPlaceContentCell.m */; };
+		A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */; };
+		A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */; };
+		A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */; };
+		A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26081969FCB400D73AF5 /* MITMapPlaceNameCell.m */; };
+		A5BF260B1969FCB400D73AF5 /* MITMapPlaceNameCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF26091969FCB400D73AF5 /* MITMapPlaceNameCell.xib */; };
+		A5BF260F1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF260D1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m */; };
+		A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
@@ -1033,6 +1043,21 @@
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
 		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
+		A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceDetailViewController.h; sourceTree = "<group>"; };
+		A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceDetailViewController.m; sourceTree = "<group>"; };
+		A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceDetailViewController.xib; sourceTree = "<group>"; };
+		A544EF111965A7AF0046823E /* MITMapPlaceContentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceContentCell.h; sourceTree = "<group>"; };
+		A544EF121965A7AF0046823E /* MITMapPlaceContentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceContentCell.m; sourceTree = "<group>"; };
+		A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceContentCell.xib; sourceTree = "<group>"; };
+		A5BF25FF1969E24400D73AF5 /* MITMapPlacePhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlacePhotoCell.h; sourceTree = "<group>"; };
+		A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacePhotoCell.m; sourceTree = "<group>"; };
+		A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlacePhotoCell.xib; sourceTree = "<group>"; };
+		A5BF26071969FCB400D73AF5 /* MITMapPlaceNameCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceNameCell.h; sourceTree = "<group>"; };
+		A5BF26081969FCB400D73AF5 /* MITMapPlaceNameCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceNameCell.m; sourceTree = "<group>"; };
+		A5BF26091969FCB400D73AF5 /* MITMapPlaceNameCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceNameCell.xib; sourceTree = "<group>"; };
+		A5BF260C1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceBottomButtonCell.h; sourceTree = "<group>"; };
+		A5BF260D1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceBottomButtonCell.m; sourceTree = "<group>"; };
+		A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceBottomButtonCell.xib; sourceTree = "<group>"; };
 		A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapHomeViewController.h; sourceTree = "<group>"; };
 		A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapHomeViewController.m; sourceTree = "<group>"; };
 		A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapHomeViewController.xib; sourceTree = "<group>"; };
@@ -2566,6 +2591,9 @@
 				5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */,
 				5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */,
 				5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */,
+				A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */,
+				A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */,
+				A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -2578,6 +2606,18 @@
 				5EE17BEA1962FC8300F375B5 /* MITMapNumberedResultCell.h */,
 				5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */,
 				5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */,
+				A544EF111965A7AF0046823E /* MITMapPlaceContentCell.h */,
+				A544EF121965A7AF0046823E /* MITMapPlaceContentCell.m */,
+				A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */,
+				A5BF25FF1969E24400D73AF5 /* MITMapPlacePhotoCell.h */,
+				A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */,
+				A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */,
+				A5BF26071969FCB400D73AF5 /* MITMapPlaceNameCell.h */,
+				A5BF26081969FCB400D73AF5 /* MITMapPlaceNameCell.m */,
+				A5BF26091969FCB400D73AF5 /* MITMapPlaceNameCell.xib */,
+				A5BF260C1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.h */,
+				A5BF260D1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m */,
+				A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3116,7 +3156,7 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = A35W4MM59Y;
+						DevelopmentTeam = THP5EV5EJ9;
 					};
 				};
 			};
@@ -3201,10 +3241,15 @@
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				2C5D7882191828E700ECB388 /* LauncherModuleListCell.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
+				A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */,
 				A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */,
+				A5BF260B1969FCB400D73AF5 /* MITMapPlaceNameCell.xib in Resources */,
 				2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapNumberedResultCell.xib in Resources */,
+				A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */,
+				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
+				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
 				2CE1C89C18C156B0001B8FEB /* DiningMenuCompareViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
@@ -3319,6 +3364,7 @@
 				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
+				A5BF260F1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m in Sources */,
 				EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */,
 				3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */,
 				3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */,
@@ -3363,9 +3409,11 @@
 				2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */,
 				EB07AD9812B886DF005D6A4C /* MITEventList.m in Sources */,
 				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
+				A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */,
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
 				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
+				A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				2C5D787C19181F4000ECB388 /* MITLauncherGridViewCell.m in Sources */,
@@ -3570,6 +3618,7 @@
 				48A372ED170F47B800C95573 /* MGSLayerController.m in Sources */,
 				48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */,
 				48A6E4DB170B9423004DED46 /* DiningHallDetailHeaderView.m in Sources */,
+				A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */,
 				486B1E70170E24C900A75563 /* DiningHallMenuFooterView.m in Sources */,
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
@@ -3608,6 +3657,7 @@
 				DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */,
 				DE65451C173D90A900562C20 /* SDImageCache.m in Sources */,
 				DE65451D173D90A900562C20 /* SDWebImageCompat.m in Sources */,
+				A544EF141965A7AF0046823E /* MITMapPlaceContentCell.m in Sources */,
 				5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */,
 				DE65451E173D90A900562C20 /* SDWebImageDecoder.m in Sources */,
 				DE65451F173D90A900562C20 /* SDWebImageDownloader.m in Sources */,
@@ -3660,6 +3710,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3677,6 +3728,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "3C32429D-0B25-46E0-ABE5-3D464D8D73CC";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -3688,6 +3740,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3798,6 +3851,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

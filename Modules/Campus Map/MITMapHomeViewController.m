@@ -7,8 +7,10 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapPlaceDetailViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
+static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaultCellIdentifier";
 
 typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeText,
@@ -295,7 +297,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     CGFloat navBarHeight = 64;
     CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    NSLog(@"show end frame: %@", NSStringFromCGRect(endFrame));
     CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
     self.resultsTableView.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
     [self.resultsTableView reloadData];
@@ -398,6 +399,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setSearchResultsCount:[places count]];
 }
 
+- (void)pushDetailViewControllerForPlace:(MITMapPlace *)place
+{
+    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.place = place;
+    [self.navigationController pushViewController:detailVC animated:YES];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -488,7 +496,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITMapPlace *place = view.annotation;
-        // TODO: push place detail view controller
+        [self pushDetailViewControllerForPlace:place];
     }
 }
 
@@ -497,7 +505,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)resultsListViewController:(MITMapResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
 {
     if ([self.places containsObject:place]) {
-        [self.mapView selectAnnotation:place animated:YES];
+        [self pushDetailViewControllerForPlace:place];
     }
 }
 
@@ -512,20 +520,26 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [self.searchBar resignFirstResponder];
     
-    NSInteger section = indexPath.section;
-    NSInteger index = indexPath.row;
-    if (section == 0) {
-        MITMapSearch *searchItem = self.recentSearchItems[index];
-        if (searchItem.searchTerm) {
-            [self searchResultsDidSelectRecentQuery:searchItem.searchTerm];
-        } else if (searchItem.place) {
-            [self searchResultsDidSelectPlace:searchItem.place];
-        } else if (searchItem.category) {
-            [self searchResultsDidSelectCategory:searchItem.category];
+    switch (indexPath.section) {
+        case 0: {
+		        MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
+		        if (searchItem.searchTerm) {
+		            [self searchResultsDidSelectRecentQuery:searchItem.searchTerm];
+		        } else if (searchItem.place) {
+		            [self searchResultsDidSelectPlace:searchItem.place];
+		        } else if (searchItem.category) {
+		            [self searchResultsDidSelectCategory:searchItem.category];
+		        }
+            break;
         }
-    } else if (section == 1) {
-        MITMapPlace *place = self.webserviceSearchItems[index];
-        [self searchResultsDidSelectPlace:place];
+        case 1: {
+	        	MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
+	        	[self searchResultsDidSelectPlace:place];
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 
@@ -556,7 +570,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapPlaceDefaultCellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapPlaceDefaultCellIdentifier];
+    }
     
     switch (indexPath.section) {
         case 0: {
@@ -571,8 +588,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             break;
         }
         case 1: {
-            MITMapPlace *searchItem = self.webserviceSearchItems[indexPath.row];
-            cell.textLabel.text = searchItem.name;
+            MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
+            cell.textLabel.text = place.name;
             break;
         }
         default: {
