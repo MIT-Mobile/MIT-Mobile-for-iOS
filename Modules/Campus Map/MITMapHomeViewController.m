@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
 @property (nonatomic, copy) NSArray *places;
+@property (nonatomic, strong) MITMapCategory *category;
 
 @property (nonatomic, strong) UITableView *resultsTableView;
 @property (nonatomic, strong) NSArray *recentSearchItems;
@@ -376,6 +377,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchResultsDidSelectRecentQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
+    self.category = nil;
     self.searchBar.text = query;
     self.searchQueryType = MITMapSearchQueryTypeText;
 }
@@ -383,6 +385,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchResultsDidSelectPlace:(MITMapPlace *)place
 {
     [[MITMapModelController sharedController] addRecentSearch:place];
+    self.category = nil;
     [self setPlaces:@[place] animated:YES];
     self.searchBar.text = place.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
@@ -392,6 +395,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchResultsDidSelectCategory:(MITMapCategory *)category
 {
     [[MITMapModelController sharedController] addRecentSearch:category];
+    self.category = category;
     NSArray *places = [category.places allObjects];
     [self setPlaces:places animated:YES];
     self.searchBar.text = category.name;
@@ -467,10 +471,25 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView
 {
-    // TODO: initialize results list VC properly if category/place was selected as search query
     MITMapResultsListViewController *resultsListViewController = [[MITMapResultsListViewController alloc] initWithPlaces:self.places];
     resultsListViewController.delegate = self;
-    [resultsListViewController setTitleWithSearchQuery:self.searchBar.text];
+    switch (self.searchQueryType) {
+        case MITMapSearchQueryTypeText: {
+            [resultsListViewController setTitleWithSearchQuery:self.searchBar.text];
+            break;
+        }
+        case MITMapSearchQueryTypePlace: {
+            MITMapPlace *place = [self.places firstObject];
+            [resultsListViewController setTitle:place.name];
+            break;
+        }
+        case MITMapSearchQueryTypeCategory: {
+            [resultsListViewController setTitle:self.category.name];
+            break;
+        }
+        default:
+            break;
+    }
     
     UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:resultsListViewController];
     [self presentViewController:resultsListNavigationController animated:YES completion:nil];
