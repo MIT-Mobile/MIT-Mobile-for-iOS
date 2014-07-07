@@ -9,6 +9,7 @@
 #import "MITCoreDataController.h"
 #import "MITShuttleController.h"
 #import "MITShuttleStopPopoverViewController.h"
+#import "UIKit+MITAdditions.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -83,6 +84,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.hasSetUpMapRect = NO;
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
+    self.mapView.tintColor = [UIColor mit_systemTintColor];
     
     self.currentLocationButton.layer.borderWidth = 1;
     self.currentLocationButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
