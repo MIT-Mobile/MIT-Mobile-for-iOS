@@ -75,7 +75,8 @@
 
 - (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
-    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:self.numberOfColumns];
+    NSUInteger numberOfColumns = [self numberOfColumnsInSection:section];
+    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:numberOfColumns];
 
     if (section == 0) {
         sectionLayout.frame = [self minimumContentBounds];
