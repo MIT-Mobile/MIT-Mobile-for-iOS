@@ -253,7 +253,7 @@
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
-- (void)reloadDataSources
+- (void)reloadDataSources:(void (^)(NSError*))completion
 {
     NSMutableArray *dataSources = [[NSMutableArray alloc] init];
 
@@ -291,14 +291,15 @@
 
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
-            [blockSelf refreshDataSources];
+            [blockSelf refreshDataSources:completion];
         }
     }];
 }
 
-- (void)refreshDataSources
+- (void)refreshDataSources:(void (^)(NSError*))completion
 {
     __block dispatch_group_t refreshGroup = dispatch_group_create();
+    __block NSError *updateError = nil;
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
         dispatch_group_enter(refreshGroup);
@@ -306,6 +307,10 @@
         [dataSource refresh:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",dataSource);
+
+                if (!updateError) {
+                    updateError = error;
+                }
             } else {
                 DDLogVerbose(@"refreshed data source %@",dataSource);
             }
@@ -316,6 +321,9 @@
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(updateError);
+        });
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (self.activeViewController == self.gridViewController) {
@@ -346,7 +354,7 @@
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    [self reloadDataSources];
+    [self reloadDataSources:block];
 }
 
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
