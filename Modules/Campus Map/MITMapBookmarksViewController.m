@@ -1,7 +1,10 @@
 #import "MITMapBookmarksViewController.h"
 #import "MITCoreDataController.h"
 #import "MITMapModelController.h"
-#import "MITMapPlace.h"
+#import "MITMapBookmark.h"
+
+static NSString *const kAddBookmarksLabelText = @"Add Bookmarks from building details screens.";
+static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmarksTableCellIdentifier";
 
 @interface MITMapBookmarksViewController ()
 
@@ -35,13 +38,11 @@
     
 }
 
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 - (void)loadBookmarks
 {
@@ -83,28 +84,30 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return self.bookmarks ? self.bookmarks.count : 0;
 }
 
-/*
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapsBookmarksTableCellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
+    }
+   
+    MITMapPlace *bookmarkedPlace = self.bookmarks[indexPath.row];
     
-    // Configure the cell...
+    cell.textLabel.text = bookmarkedPlace.title;
+    cell.detailTextLabel.text = bookmarkedPlace.subtitle;
+    cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
     
     return cell;
 }
-*/
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -167,7 +170,7 @@
         addBookmarksLabel.lineBreakMode = NSLineBreakByWordWrapping;
         addBookmarksLabel.font = [UIFont systemFontOfSize:14.0];
         addBookmarksLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-        addBookmarksLabel.text = @"Add Bookmarks from building details screens.";
+        addBookmarksLabel.text = kAddBookmarksLabelText;
         
         [_tableBackgroundView addSubview:addBookmarksLabel];
     }
