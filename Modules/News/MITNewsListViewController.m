@@ -196,14 +196,20 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 #pragma mark UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 44.;
+    NSString* const titleForSection = [self titleForCategoryInSection:section];
+
+    if (!titleForSection) {
+        return 0;
+    } else {
+        return 44.;
+    }
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
+    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
     NSString* const titleForSection = [self titleForCategoryInSection:section];
     const BOOL isFeaturedSection = [self isFeaturedCategoryInSection:section];
-    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
 
     if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
         MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
