@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rS3-R9-Ivy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rS3-R9-Ivy">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -234,61 +234,49 @@
                         <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                     </toolbar>
                     <connections>
-                        <segue destination="pGg-6v-bdr" kind="relationship" relationship="rootViewController" id="8d3-3b-Dde"/>
+                        <segue destination="xrU-Yg-YHd" kind="relationship" relationship="rootViewController" id="t6g-09-OP8"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eq9-QA-ai8" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="198" y="186"/>
+            <point key="canvasLocation" x="167" y="206"/>
         </scene>
-        <!--News View Controller - Master-->
-        <scene sceneID="VgW-fR-Quf">
+        <!--Newsi Pad View Controller-->
+        <scene sceneID="jif-pX-JjV">
             <objects>
-                <tableViewController storyboardIdentifier="StoryListViewController" title="Master" useStoryboardIdentifierAsRestorationIdentifier="YES" id="pGg-6v-bdr" customClass="MITNewsViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="84" sectionHeaderHeight="44" sectionFooterHeight="22" id="mLL-gJ-YKr">
+                <viewController storyboardIdentifier="StoryListViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="xrU-Yg-YHd" customClass="MITNewsiPadViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="e1Q-9d-FfH"/>
+                        <viewControllerLayoutGuide type="bottom" id="gHp-xK-tTt"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5gj-eP-c1u">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <sections/>
-                        <connections>
-                            <outlet property="dataSource" destination="pGg-6v-bdr" id="P41-gY-KXY"/>
-                            <outlet property="delegate" destination="pGg-6v-bdr" id="Y6K-Cp-Qkv"/>
-                        </connections>
-                    </tableView>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" title="MIT News" id="tQt-TN-PWz">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="tb4-Us-2aZ">
-                            <connections>
-                                <action selector="searchButtonTapped:" destination="pGg-6v-bdr" id="bhr-AT-Wx5"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aQO-aR-W6l">
+                                <rect key="frame" x="0.0" y="64" width="320" height="460"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="aQO-aR-W6l" firstAttribute="top" secondItem="e1Q-9d-FfH" secondAttribute="top" id="LdC-N6-kuH"/>
+                            <constraint firstItem="gHp-xK-tTt" firstAttribute="bottom" secondItem="aQO-aR-W6l" secondAttribute="bottom" id="QbS-hy-urf"/>
+                            <constraint firstItem="aQO-aR-W6l" firstAttribute="leading" secondItem="5gj-eP-c1u" secondAttribute="leading" id="TuC-8z-5YQ"/>
+                            <constraint firstAttribute="trailing" secondItem="aQO-aR-W6l" secondAttribute="trailing" id="b7b-aI-5nS"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="ZAR-Fy-hRa"/>
                     <connections>
-                        <outlet property="searchDisplayController" destination="AK7-bs-9zP" id="T6R-5u-nOk"/>
-                        <segue destination="4LW-qO-0Fw" kind="push" identifier="showCategoryDetail" id="qDz-dI-qz6"/>
-                        <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="nGa-UM-Gil"/>
+                        <outlet property="containerView" destination="aQO-aR-W6l" id="WHW-UM-52T"/>
+                        <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="LJH-M1-aqG"/>
+                        <segue destination="4LW-qO-0Fw" kind="push" identifier="showCategoryDetail" id="BuS-Z8-X71"/>
                     </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6Cn-md-YlS" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="AK7-bs-9zP">
-                    <connections>
-                        <outlet property="delegate" destination="pGg-6v-bdr" id="FKg-jN-rme"/>
-                        <outlet property="searchBar" destination="hpf-Vt-yBg" id="htq-D9-TVQ"/>
-                        <outlet property="searchContentsController" destination="pGg-6v-bdr" id="rje-uk-5Wm"/>
-                        <outlet property="searchResultsDataSource" destination="pGg-6v-bdr" id="oyr-lu-Gea"/>
-                        <outlet property="searchResultsDelegate" destination="pGg-6v-bdr" id="vfc-ic-Pqr"/>
-                    </connections>
-                </searchDisplayController>
-                <searchBar contentMode="redraw" id="hpf-Vt-yBg">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="pGg-6v-bdr" id="1rd-gF-8Dr"/>
-                    </connections>
-                </searchBar>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="m70-gP-nSu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="656" y="186"/>
+            <point key="canvasLocation" x="641" y="206"/>
         </scene>
         <!--News Category View Controller-->
         <scene sceneID="UOR-L4-bbH">
@@ -364,6 +352,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="nGa-UM-Gil"/>
+        <segue reference="LJH-M1-aqG"/>
     </inferredMetricsTieBreakers>
 </document>
