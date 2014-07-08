@@ -9,5 +9,6 @@
 @end
 
 @protocol UITableViewDataSourceDynamicSizing <UITableViewDataSource>
+@required
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
