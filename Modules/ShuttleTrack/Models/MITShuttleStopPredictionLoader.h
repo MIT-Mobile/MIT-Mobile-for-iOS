@@ -14,6 +14,7 @@
 - (instancetype)initWithStop:(MITShuttleStop *)stop;
 - (NSDictionary *)predictionsByRoute;
 
+- (void)reloadPredictions;
 - (void)startRefreshingPredictions;
 - (void)stopRefreshingPredictions;
 
