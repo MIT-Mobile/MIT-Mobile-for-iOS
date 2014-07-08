@@ -366,7 +366,7 @@
 {
     if (self.isSearching) {
         return NO;
-    } else if (self.showsFeaturedStories && (index == 0)) {
+    } else if (self.showsFeaturedStories && (section == 0)) {
         return YES;
     } else {
         return NO;
