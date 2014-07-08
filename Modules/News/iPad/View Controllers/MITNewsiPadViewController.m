@@ -8,7 +8,6 @@
 #import "MITCoreDataController.h"
 #import "MITNewsStoryViewController.h"
 #import "MITNewsSearchController.h"
-#import "MITNewsRecentSearchViewController.h"
 
 typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleInvalid = -1,
@@ -16,7 +15,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
     MITNewsPadStyleList
 };
 
-@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate, UIPopoverControllerDelegate>
+@interface MITNewsiPadViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
 @property (nonatomic, weak) IBOutlet UICollectionViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet UITableViewController *listViewController;
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -30,9 +29,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 @property (nonatomic) BOOL searching;
 
-@property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
-
-@property (nonatomic, strong) UIBarButtonItem *searchBarItem;
+@property (nonatomic, strong) UISearchBar *searchBar;
 
 - (MITNewsPadStyle)currentStyle;
 @end
@@ -188,16 +185,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
                      }];
     self.searching = YES;
     [self updateNavigationItem:YES];
-    MITNewsRecentSearchViewController *viewController = [[MITNewsRecentSearchViewController alloc] init];
-    
-    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
-    recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
-    
-    recentSearchPopoverController.backgroundColor = [UIColor whiteColor];
-    recentSearchPopoverController.delegate = self;
-    [recentSearchPopoverController presentPopoverFromBarButtonItem:self.searchBarItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-
-    self.recentSearchPopoverController = recentSearchPopoverController;
+    [self.searchController showSearchRecents];
 }
 
 - (void)hideSearchField
@@ -280,7 +268,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
         [barWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
-        self.searchBarItem = searchBarItem;
+        self.searchBar = searchBar;
 
         [rightBarItems addObject:searchBarItem];
         [searchBar becomeFirstResponder];

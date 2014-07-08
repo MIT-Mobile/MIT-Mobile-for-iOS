@@ -133,10 +133,17 @@
 
 #pragma mark - Recent Search Items
 
-- (NSArray *)recentSearchItems
+- (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
 {
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
     MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
+    
+    NSArray *recentSearchItems = [[recentSearchList.recentQueries reversedOrderedSet] array];
+    if (filterString && ![filterString isEqualToString:@""]) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
+        return [recentSearchItems filteredArrayUsingPredicate:predicate];
+    }
+    
     return [[recentSearchList.recentQueries reversedOrderedSet] array];
 }
 

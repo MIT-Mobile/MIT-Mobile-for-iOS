@@ -6,6 +6,7 @@
 
 - (UISearchBar *)returnSearchBar;
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
+- (void)showSearchRecents;
 
 @end
 
