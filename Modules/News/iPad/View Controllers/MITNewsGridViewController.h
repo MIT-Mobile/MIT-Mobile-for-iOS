@@ -13,7 +13,7 @@
 - (instancetype)init;
 
 - (NSUInteger)numberOfCategories;
-- (BOOL)featuredCategoryInSection:(NSUInteger)section;
+- (BOOL)isFeaturedCategoryInSection:(NSUInteger)section;
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
