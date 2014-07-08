@@ -265,6 +265,15 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
                     [rowLayouts addObject:currentLayoutRow];
                 }
 
+                // Recalculate the maximum number of items in the new row
+                // since we just added the old one to the saved rows and it's
+                // time to start on a new one.
+                if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
+                    maximumNumberOfItemsInRow = numberOfColumns - featuredItemLayoutContext.columnSpan;
+                } else {
+                    maximumNumberOfItemsInRow = numberOfColumns;
+                }
+
                 currentLayoutRow = [[MITCollectionViewGridLayoutRow alloc] init];
                 currentLayoutRow.interItemSpacing = minimumInterItemPadding;
                 currentLayoutRow.maximumNumberOfItems = maximumNumberOfItemsInRow;
