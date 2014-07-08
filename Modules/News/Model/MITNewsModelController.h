@@ -13,7 +13,7 @@
 - (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block;
 
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString;
-- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *__autoreleasing *)addError;
-- (void)clearRecentSearchesWithError:(NSError *__autoreleasing *)addError;
+- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *)addError;
+- (void)clearRecentSearchesWithError:(NSError *)addError;
 
 @end

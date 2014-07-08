@@ -10,6 +10,8 @@
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *clearButtonItem;
 @property (nonatomic, strong) NSString *filterString;
 
+@property (nonatomic, strong) NSArray *recentResults;
+
 
 @end
 
@@ -39,7 +41,8 @@
     
     if (buttonIndex == 0) {
         NSError *error;
-        [self.modelController clearRecentSearchesWithError:&error];
+        [self.modelController clearRecentSearchesWithError:error];
+        self.recentResults = nil;
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.tableView reloadData];
         }];
@@ -52,8 +55,13 @@
 - (void)addRecentSearchItem:(NSString *)searchTerm
 {
     NSError *error;
-    [self.modelController addRecentSearchItem:searchTerm error:&error];
-    [self.tableView reloadData];
+    [self.modelController addRecentSearchItem:searchTerm error:error];
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
+
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+    self.clearButtonItem.enabled = YES;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -66,7 +74,9 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    MITNewsRecentSearchQuery *query = [[self.modelController recentSearchItemswithFilterString:self.filterString] objectAtIndex:indexPath.row];
+    
+    
+    MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     cell.textLabel.text = query.text;
     
     return cell;
@@ -74,7 +84,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[self.modelController recentSearchItemswithFilterString:self.filterString] count];
+    return [self.recentResults count];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -90,17 +100,19 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    if ([[self.modelController recentSearchItemswithFilterString:self.filterString] count] == 0) {
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
+    if ([self.recentResults count] == 0) {
         self.clearButtonItem.enabled = NO;
     }
 }
 
 - (void)filterResultsUsingString:(NSString *)filterString
 {
-    NSLog(@"%@",filterString);
-    [self.modelController recentSearchItemswithFilterString:filterString];
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
     self.filterString = filterString;
-    [self.tableView reloadData];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)didReceiveMemoryWarning
