@@ -152,11 +152,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 - (void)setFrame:(CGRect)frame
 {
     self.origin = frame.origin;
-
-    CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
-    if (!CGRectEqualToRect(bounds, _bounds)) {
-        self.bounds = bounds;
-    }
+    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
 }
 
 - (CGRect)bounds
@@ -167,9 +163,17 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 
 - (void)setBounds:(CGRect)bounds
 {
-    bounds.size.height = 0;
-    _bounds = bounds;
-    [self invalidateLayout];
+    CGRect newBounds = bounds;
+    newBounds.size.height = 0;
+
+    CGRect oldBounds = _bounds;
+    oldBounds.size.height = 0;
+
+    if (!CGRectEqualToRect(newBounds, oldBounds)) {
+        bounds.size.height = 0;
+        _bounds = bounds;
+        _needsLayout = YES;
+    }
 }
 
 - (void)invalidateLayout
