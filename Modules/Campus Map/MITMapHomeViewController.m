@@ -23,7 +23,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
-@property (nonatomic, strong) UILabel *searchResultsCountLabel;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
 @property (nonatomic) MITMapSearchQueryType searchQueryType;
 
@@ -78,12 +77,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self registerForKeyboardNotifications];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self setupResultsCountLabel];
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -132,31 +125,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
-}
-
-// Must be called after viewDidAppear
-- (void)setupResultsCountLabel
-{
-    if (self.searchResultsCountLabel) {
-        [self.searchResultsCountLabel removeFromSuperview];
-    }
-    
-    UITextField *searchBarTextField = [self.searchBar textField];
-    UIView *textFieldSuperview = searchBarTextField.superview;
-    
-    self.searchResultsCountLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    self.searchResultsCountLabel.textAlignment = NSTextAlignmentRight;
-    self.searchResultsCountLabel.font = [UIFont systemFontOfSize:13];
-    self.searchResultsCountLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
-    self.searchResultsCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self setSearchResultsCountHidden:YES];
-    
-    [textFieldSuperview addSubview:self.searchResultsCountLabel];
-    
-    [textFieldSuperview addConstraint:[NSLayoutConstraint constraintWithItem:self.searchResultsCountLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:searchBarTextField attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];
-    [textFieldSuperview addConstraint:[NSLayoutConstraint constraintWithItem:self.searchResultsCountLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:searchBarTextField attribute:NSLayoutAttributeRight multiplier:1.0 constant:-30.0]];
-    [self.searchResultsCountLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-    
 }
 
 - (void)setupMapView
@@ -219,21 +187,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     searchBarTextField.textColor = color;
 }
 
-- (void)setSearchResultsCount:(NSInteger)count
-{
-    if (count == 1) {
-        self.searchResultsCountLabel.text = [NSString stringWithFormat:@"1 Result"];
-    } else {
-        self.searchResultsCountLabel.text = [NSString stringWithFormat:@"%i Results", count];
-    }
-    [self setSearchResultsCountHidden:NO];
-}
-
-- (void)setSearchResultsCountHidden:(BOOL)hidden
-{
-    self.searchResultsCountLabel.hidden = hidden;
-}
-
 - (void)setSearchQueryType:(MITMapSearchQueryType)searchQueryType
 {
     UIColor *searchBarTextColor = (searchQueryType == MITMapSearchQueryTypeText) ? [UIColor blackColor] : [UIColor mit_tintColor];
@@ -272,7 +225,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     self.webserviceSearchItems = nil;
     [self setPlaces:nil animated:animated];
-    [self setSearchResultsCountHidden:YES];
 }
 
 - (void)refreshPlaceAnnotations
@@ -369,7 +321,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
                                                           loaded:^(NSArray *objects, NSError *error) {
                                                               if (objects) {
                                                                   [self setPlaces:objects animated:YES];
-                                                                  [self setSearchResultsCount:[objects count]];
                                                               }
                                                           }];
 }
@@ -389,7 +340,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setPlaces:@[place] animated:YES];
     self.searchBar.text = place.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
-    [self setSearchResultsCount:1];
 }
 
 - (void)searchResultsDidSelectCategory:(MITMapCategory *)category
@@ -400,7 +350,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setPlaces:places animated:YES];
     self.searchBar.text = category.name;
     self.searchQueryType = MITMapSearchQueryTypeCategory;
-    [self setSearchResultsCount:[places count]];
 }
 
 - (void)pushDetailViewControllerForPlace:(MITMapPlace *)place
@@ -418,7 +367,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.navigationItem.rightBarButtonItem = nil;
     [searchBar setShowsCancelButton:YES animated:YES];
     [self updateSearchResultsForSearchString:nil];
-    [self setSearchResultsCountHidden:YES];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar

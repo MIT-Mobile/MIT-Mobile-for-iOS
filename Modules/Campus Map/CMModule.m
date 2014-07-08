@@ -23,7 +23,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return nil;
+    return [[MITMapHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
 - (UIViewController*)createHomeViewControllerForPhoneIdiom
