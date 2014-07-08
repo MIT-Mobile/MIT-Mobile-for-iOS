@@ -38,6 +38,8 @@
 #import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
 
+#import "MITShuttleStopNotificationManager.h"
+
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
@@ -350,6 +352,35 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         if(!identity) {
             [MITDeviceRegistration registerNewDeviceWithToken:nil];
         }
+    }
+}
+
+#pragma mark - Local Notifications
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [[[UIAlertView alloc] initWithTitle:@"Alert" message:notification.alertBody delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+
+    if ([application.scheduledLocalNotifications count] == 0) {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+    }
+}
+
+#pragma mark - Background Fetch
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    if ([application.scheduledLocalNotifications count] > 0) {
+        [[MITShuttleStopNotificationManager sharedManager] performBackgroundNotificationUpdatesWithCompletion:^(NSError *error) {
+            if (error) {
+                completionHandler(UIBackgroundFetchResultFailed);
+            } else {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }];
+    } else {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+        completionHandler(UIBackgroundFetchResultNoData);
     }
 }
 
