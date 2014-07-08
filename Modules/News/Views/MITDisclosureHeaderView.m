@@ -46,11 +46,6 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    
-    self.titleLabel.text = @"";
-    self.titleLabel.hidden = NO;
-
-    self.accessoryView.hidden = NO;
 }
 
 @end
