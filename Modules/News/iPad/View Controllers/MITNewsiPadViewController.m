@@ -390,7 +390,7 @@
 
         MITNewsCategory *category = self.categories[section];
         [category.managedObjectContext performBlockAndWait:^{
-            title = category.identifier;
+            title = category.name;
         }];
 
         return title;
