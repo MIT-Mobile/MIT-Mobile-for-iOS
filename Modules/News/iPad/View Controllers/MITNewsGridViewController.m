@@ -250,7 +250,7 @@
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
+        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.item forCategoryInSection:indexPath.section];
     }
 }
 
