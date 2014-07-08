@@ -10,10 +10,10 @@
 @property (nonatomic) CGFloat itemHeight;
 @property (nonatomic) CGFloat headerHeight;
 
-//
 @property (nonatomic) CGFloat minimumInterItemPadding;
 @property (nonatomic) CGFloat lineSpacing;
 @property (nonatomic) CGFloat sectionSpacing;
+@property (nonatomic) UIEdgeInsets sectionContentInsets;
 
 - (instancetype)init;
 
@@ -24,7 +24,6 @@
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section;
 - (NSUInteger)featuredStoryVerticalSpanInSection:(NSInteger)section;
 @end
-
 
 
 @protocol MITCollectionViewDelegateNewsGrid <UICollectionViewDelegate>

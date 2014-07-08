@@ -24,6 +24,7 @@
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
         _sectionSpacing = 20.;
+        _sectionContentInsets = UIEdgeInsetsZero;
         [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
@@ -85,7 +86,7 @@
         sectionLayout.frame = frame;
     }
 
-    sectionLayout.contentInsets = UIEdgeInsetsMake(0, 30., 0, 30.);
+    sectionLayout.contentInsets = self.sectionContentInsets;
 
     return sectionLayout;
 }
