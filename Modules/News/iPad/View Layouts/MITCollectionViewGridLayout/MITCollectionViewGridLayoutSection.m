@@ -15,8 +15,6 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 @interface MITCollectionViewGridLayoutSection ()
 @property (nonatomic,readwrite) NSInteger section;
 @property (nonatomic) CGPoint origin;
-
-@property (nonatomic) UIEdgeInsets sectionInsets;
 @property (nonatomic) NSUInteger numberOfColumns;
 
 - (instancetype)initWithLayout:(MITCollectionViewNewsGridLayout*)layout;
