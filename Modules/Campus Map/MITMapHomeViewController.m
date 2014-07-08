@@ -68,6 +68,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setupNavigationBar];
     [self setupMapView];
     [self setupResultsTableView];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self.navigationController setToolbarHidden:NO];
+        [self.tiledMapView setButtonsHidden:YES animated:NO];
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/location"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
+    } else {
+        [self.navigationController setToolbarHidden:YES];
+        [self.tiledMapView setButtonsHidden:NO animated:NO];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -169,6 +181,16 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)menuButtonPressed
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)ipadListButtonPressed
+{
+    
+}
+
+- (void)ipadCurrentLocationButtonPressed
+{
+    [self.tiledMapView centerMapOnUserLocation];
 }
 
 #pragma mark - Search Bar

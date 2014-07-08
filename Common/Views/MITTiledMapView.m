@@ -60,15 +60,6 @@ static CGFloat const kBottomButtonPadding = 20;
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]|" options:0 metrics:nil views:viewDictionary]];
 }
 
-- (void)centerMapOnUserLocation
-{
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
-        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
-    } else {
-        [[[UIAlertView alloc] initWithTitle:nil message:@"Turn on Location Services to Allow Shuttles to Determine Your Location." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }
-}
-
 #pragma mark - Public Methods
 
 - (void)setButtonsHidden:(BOOL)hidden animated:(BOOL)animated
@@ -111,6 +102,15 @@ static CGFloat const kBottomButtonPadding = 20;
         [UIView animateWithDuration:0.5 animations:hideButtonBlock];
     } else {
         hideButtonBlock();
+    }
+}
+
+- (void)centerMapOnUserLocation
+{
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:nil message:@"Turn on Location Services to Allow Shuttles to Determine Your Location." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }
 }
 

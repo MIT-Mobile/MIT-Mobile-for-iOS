@@ -13,6 +13,8 @@ extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 - (void)setLeftButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 - (void)setRightButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 
+- (void)centerMapOnUserLocation;
+
 @end
 
 @protocol MITTiledMapViewButtonDelegate <NSObject>
