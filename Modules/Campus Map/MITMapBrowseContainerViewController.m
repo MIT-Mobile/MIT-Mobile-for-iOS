@@ -2,6 +2,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITMapCategoriesViewController.h"
 #import "MITMapPlaceSelector.h"
+#import "MITMapBookmarksViewController.h"
 
 @interface MITMapBrowseContainerViewController ()
 
@@ -79,7 +80,7 @@
     
     MITMapCategoriesViewController *categoriesViewController = [[MITMapCategoriesViewController alloc] initWithStyle:UITableViewStylePlain];
     
-    UIViewController *bookmarksViewController = [[UIViewController alloc] init];
+    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] initWithStyle:UITableViewStylePlain];
     bookmarksViewController.navigationItem.title = @"Bookmarks";
     bookmarksViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
     
