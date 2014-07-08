@@ -11,6 +11,7 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AEC227196C2EF3006AA3BA /* MITMapBookmarksViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -491,6 +492,8 @@
 		1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MIT_MobileAppDelegate.m; path = "App Delegate/MIT_MobileAppDelegate.m"; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* MITMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MITMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		22AEC226196C2EF3006AA3BA /* MITMapBookmarksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapBookmarksViewController.h; sourceTree = "<group>"; };
+		22AEC227196C2EF3006AA3BA /* MITMapBookmarksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapBookmarksViewController.m; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -2600,6 +2603,8 @@
 				5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */,
 				5E069DD2196C464C00AC27CD /* MITMapIndexedCategoryViewController.h */,
 				5E069DD3196C464C00AC27CD /* MITMapIndexedCategoryViewController.m */,
+				22AEC226196C2EF3006AA3BA /* MITMapBookmarksViewController.h */,
+				22AEC227196C2EF3006AA3BA /* MITMapBookmarksViewController.m */,
 				A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */,
 				A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */,
 				A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */,
@@ -3552,6 +3557,7 @@
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
 				A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */,
 				2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */,
+				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
