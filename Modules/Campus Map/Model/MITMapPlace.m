@@ -2,6 +2,7 @@
 #import "MITMapPlace.h"
 #import "MITAdditions.h"
 #import "MITMapSearch.h"
+#import "MITMapCategory.h"
 
 static NSString* const MITMapPlaceIdentifierKey = @"id";
 static NSString* const MITMapPlaceNameKey = @"name";
@@ -37,6 +38,8 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 @dynamic longitude;
 @dynamic latitude;
 @dynamic url;
+@dynamic categoryIds;
+@dynamic categories;
 @dynamic contents;
 @dynamic bookmark;
 @dynamic search;

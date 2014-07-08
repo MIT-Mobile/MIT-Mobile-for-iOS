@@ -15,6 +15,8 @@
 
 - (NSString *)canonicalName;
 - (NSString *)iconName;
+- (NSString *)sectionIndexTitle;
+
 @end
 
 @interface MITMapCategory (CoreDataGeneratedAccessors)

@@ -1,6 +1,7 @@
 #import "MITMapCategoriesViewController.h"
 #import "MITMapCategory.h"
 #import "MITMapModelController.h"
+#import "MITMapIndexedCategoryViewController.h"
 
 static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 
@@ -40,6 +41,7 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 {
     [super viewDidLoad];
     self.navigationItem.title = @"Categories";
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
     [self setupDoneBarButtonItem];
 }
 
@@ -93,6 +95,10 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITMapCategory *category = self.categories[indexPath.row];
+    if ([category.children count] > 0) {
+        MITMapIndexedCategoryViewController *viewController = [[MITMapIndexedCategoryViewController alloc] initWithCategory:category];
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
     // TODO: push category view controller
 }
 

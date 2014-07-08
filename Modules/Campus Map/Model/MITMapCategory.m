@@ -32,4 +32,15 @@
     return [NSString stringWithFormat:@"map/map_category_%@", self.identifier];
 }
 
+- (NSString *)sectionIndexTitle
+{
+    NSString *title;
+    if ([self.identifier isEqualToString:@"m"] || [self.identifier isEqualToString:@"1_999"]) {
+        title = @"#";
+    } else {
+        title = [[self.identifier stringByReplacingOccurrencesOfString:@"_" withString:@"-"] uppercaseString];
+    }
+    return [NSString stringWithFormat:@" %@ ", title];
+}
+
 @end

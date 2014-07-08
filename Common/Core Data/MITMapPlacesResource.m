@@ -137,8 +137,13 @@
                                                        @"street" : @"streetAddress",
                                                        @"city" : @"city",
                                                        @"lat_wgs84" : @"latitude",
-                                                       @"long_wgs84" : @"longitude"}];
-
+                                                       @"long_wgs84" : @"longitude",
+                                                       @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *categoriesRelationship = [placeEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *categoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:categoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [placeMapping addConnection:categoriesConnection];
+    
     RKEntityMapping *contentsMapping = [[RKEntityMapping alloc] initWithEntity:placeContentEntity];
     [contentsMapping addAttributeMappingsFromDictionary:@{@"name" : @"name",
                                                           @"url" : @"url"}];
