@@ -22,7 +22,7 @@
 - (void)loadMoreItems:(void(^)(NSError *error))block;
 - (void)reloadItems:(void(^)(NSError *error))block;
 
-- (void)reloadDataSources;
+- (void)loadDataSources:(void(^)(NSError*))completion;
 @end
 
 @interface MITNewsiPadViewController ()
@@ -71,10 +71,12 @@
 {
     [super viewWillAppear:animated];
 
-    if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-        [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
-    } else {
-        [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
+    if (!self.activeViewController) {
+        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
+            [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
+        } else {
+            [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
+        }
     }
 
     [self.navigationController setNavigationBarHidden:NO animated:animated];
@@ -128,7 +130,6 @@
         listViewController = [[MITNewsListViewController alloc] init];
         listViewController.delegate = self;
         listViewController.dataSource = self;
-
         _listViewController = listViewController;
     }
     
@@ -253,7 +254,7 @@
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
-- (void)reloadDataSources:(void (^)(NSError*))completion
+- (void)loadDataSources:(void (^)(NSError*))completion
 {
     NSMutableArray *dataSources = [[NSMutableArray alloc] init];
 
@@ -354,7 +355,11 @@
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    [self reloadDataSources:block];
+    if (_dataSources) {
+        [self refreshDataSources:block];
+    } else {
+        [self loadDataSources:block];
+    }
 }
 
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
