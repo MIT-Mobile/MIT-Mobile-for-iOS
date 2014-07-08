@@ -81,7 +81,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
     [self.tableView reloadData];
 }
 
@@ -129,7 +128,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        [self didSelectCategoryAtIndex:[categoryIndexPath indexAtPosition:0]];
+        [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
     }
 }
 
@@ -202,8 +201,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    NSString* const titleForSection = [self titleForCategoryAtIndex:section];
-    const BOOL isFeaturedSection = [self featuredCategoryAtIndex:section];
+    NSString* const titleForSection = [self titleForCategoryInSection:section];
+    const BOOL isFeaturedSection = [self isFeaturedCategoryInSection:section];
     UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITNewsCategoryHeaderIdentifier];
 
     if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
@@ -250,7 +249,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
 }
 
@@ -283,12 +282,12 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesInCategoryAtIndex:section]);
+    return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
@@ -307,7 +306,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 }
 
 #pragma mark UITableView Data Source/Delegate Helper Methods
-- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
 
@@ -326,8 +325,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         }
 
         return identifier;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
     }
