@@ -209,7 +209,9 @@
 
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
+    if (![self showFeaturedItemInSection:section]) {
+        return 0;
+    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryHorizontalSpanInSection:section];
     } else {
         return 0;
@@ -218,7 +220,9 @@
 
 - (NSUInteger)featuredStoryVerticalSpanInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
+    if (![self showFeaturedItemInSection:section]) {
+        return 0;
+    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryVerticalSpanInSection:section];
     } else {
         return 0;
