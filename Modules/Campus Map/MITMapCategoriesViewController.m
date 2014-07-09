@@ -2,6 +2,7 @@
 #import "MITMapCategory.h"
 #import "MITMapModelController.h"
 #import "MITMapIndexedCategoryViewController.h"
+#import "MITMapDefaultCategoryViewController.h"
 
 static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 
@@ -97,12 +98,17 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITMapCategory *category = self.categories[indexPath.row];
+    UIViewController <MITMapPlaceSelector> *viewController;
+    
     if ([category.children count] > 0) {
-        MITMapIndexedCategoryViewController *viewController = [[MITMapIndexedCategoryViewController alloc] initWithCategory:category];
-        viewController.delegate = self.delegate;
-        [self.navigationController pushViewController:viewController animated:YES];
+        viewController = [[MITMapIndexedCategoryViewController alloc] initWithCategory:category];
     }
-    // TODO: push category view controller
+    else {
+        viewController = [[MITMapDefaultCategoryViewController alloc] initWithCategory:category];
+    }
+    
+    viewController.delegate = self.delegate;
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 @end

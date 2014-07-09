@@ -377,6 +377,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchQueryType = MITMapSearchQueryTypeCategory;
 }
 
+- (void)setPlaces:(NSArray *)places category:(MITMapCategory *)category
+{
+    [[MITMapModelController sharedController] addRecentSearch:category];
+    self.category = category;
+    [self setPlaces:places animated:YES];
+    self.searchBar.text = category.name;
+    self.searchQueryType = MITMapSearchQueryTypeCategory;
+}
+
 - (void)pushDetailViewControllerForPlace:(MITMapPlace *)place
 {
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
@@ -523,10 +532,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }];
 }
 
-- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
+- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category places:(NSArray *)places
 {
     [self dismissViewControllerAnimated:YES completion:^{
-        [self setPlacesWithCategory:category];
+        [self setPlaces:places category:category];
     }];
 }
 

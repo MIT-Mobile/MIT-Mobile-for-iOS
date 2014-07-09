@@ -107,13 +107,13 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapsBookmarksTableCellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
+        cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
     }
    
     MITMapPlace *bookmarkedPlace = self.bookmarkedPlaces[indexPath.row];
     
     cell.textLabel.text = bookmarkedPlace.title;
     cell.detailTextLabel.text = bookmarkedPlace.subtitle;
-    cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
     
     return cell;
 }
