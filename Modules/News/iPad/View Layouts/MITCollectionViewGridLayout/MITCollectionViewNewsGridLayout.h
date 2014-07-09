@@ -19,7 +19,6 @@
 - (NSUInteger)numberOfColumnsInSection:(NSInteger)section;
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath;
 - (CGFloat)heightForHeaderInSection:(NSInteger)section;
-- (BOOL)showFeaturedItemInSection:(NSInteger)section;
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section;
 - (NSUInteger)featuredStoryVerticalSpanInSection:(NSInteger)section;
 @end
@@ -32,8 +31,6 @@
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath;
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForHeaderInSection:(NSInteger)section;
-
-- (BOOL)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout showFeaturedItemInSection:(NSInteger)section;
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section;
 

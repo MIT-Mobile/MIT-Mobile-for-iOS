@@ -1,6 +1,7 @@
 #import "MITCollectionViewNewsGridLayout.h"
 #import "MITCollectionViewGridLayoutSection.h"
 #import "MITNewsConstants.h"
+#import "MITCollectionViewGridDividerView.h"
 
 @interface MITCollectionViewNewsGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
@@ -17,14 +18,15 @@
     if (self) {
         _itemHeight = 128.;
         _headerHeight = 0;
-        _numberOfColumns = 4;
+        _numberOfColumns = 5;
         _sectionLayouts = [[NSMutableDictionary alloc] init];
 
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
         _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
-        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
+        
+        [self registerClass:[MITCollectionViewGridDividerView class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
     return self;
@@ -53,21 +55,26 @@
     [[NSIndexSet indexSetWithIndexesInRange:sectionRange] enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop) {
         const NSUInteger numberOfItems = [self.collectionView numberOfItemsInSection:section];
         const NSUInteger numberOfColumns  = [self numberOfColumnsInSection:section];
-        const BOOL sectionHasFeaturedItem = [self showFeaturedItemInSection:section];
         const NSUInteger featuredHorizontalSpan = [self featuredStoryHorizontalSpanInSection:section];
         const NSUInteger featuredVerticalSpan = [self featuredStoryVerticalSpanInSection:section];
+        const MITCollectionViewGridSpan span = MITCollectionViewGridSpanMake(featuredHorizontalSpan, featuredVerticalSpan);
 
         // At a minimum, we need at least N - 1 filled rows (where N is the vertical span of the
         // featured item cell), plus a final cell on the Nth row so we can get a valid height
         NSUInteger minimumNumberOfItems = 0;
-        if (sectionHasFeaturedItem) {
+        if (MITCollectionViewGridSpanIsValid(span)) {
             minimumNumberOfItems = ((numberOfColumns - featuredHorizontalSpan) * (featuredVerticalSpan - 1)) + 1;
         }
 
         if (minimumNumberOfItems > numberOfItems) {
-            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,featuredHorizontalSpan,featuredVerticalSpan,numberOfItems];
+            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,span.horizontal,span.vertical,numberOfItems];
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
         }
+    }];
+
+    // Run through and update the frames of any existing layouts
+    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
+        sectionLayout.frame = [self _layoutFrameForSection:[sectionNumber unsignedIntegerValue]];
     }];
 }
 
@@ -87,8 +94,13 @@
 - (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
     NSUInteger numberOfColumns = [self numberOfColumnsInSection:section];
-    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:numberOfColumns];
+    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithIndex:section layout:self numberOfColumns:numberOfColumns];
     sectionLayout.frame = [self _layoutFrameForSection:section];
+
+    const NSUInteger featuredHorizontalSpan = [self featuredStoryHorizontalSpanInSection:section];
+    const NSUInteger featuredVerticalSpan = [self featuredStoryVerticalSpanInSection:section];
+    sectionLayout.featuredItemSpan = MITCollectionViewGridSpanMake(featuredHorizontalSpan, featuredVerticalSpan);
+
     return sectionLayout;
 }
 
@@ -112,10 +124,6 @@
 - (void)invalidateLayout
 {
     [super invalidateLayout];
-
-    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
-        sectionLayout.frame = [self _layoutFrameForSection:[sectionNumber unsignedIntegerValue]];
-    }];
 }
 
 - (CGRect)_layoutFrameForSection:(NSUInteger)section
@@ -153,6 +161,12 @@
                 }
             }];
 
+            [[sectionLayout decorationLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+                    [visibleLayoutAttributes addObject:layoutAttributes];
+                }
+            }];
+
             CGPoint contentOffset = self.collectionView.contentOffset;
             contentOffset.y += self.collectionView.contentInset.top;
             contentOffset.x += self.collectionView.contentInset.left;
@@ -178,7 +192,18 @@
 - (UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)decorationViewKind atIndexPath:(NSIndexPath *)indexPath
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
-    return nil;
+
+    __block UICollectionViewLayoutAttributes *attributes = nil;
+    [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes* layoutAttributes, NSUInteger idx, BOOL *stop) {
+        if ([layoutAttributes.representedElementKind isEqualToString:decorationViewKind]) {
+            if ([layoutAttributes.indexPath isEqual:indexPath]) {
+                attributes = layoutAttributes;
+                (*stop) = YES;
+            }
+        }
+    }];
+
+    return attributes;
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -215,20 +240,9 @@
     }
 }
 
-- (BOOL)showFeaturedItemInSection:(NSInteger)section
-{
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:showFeaturedItemInSection:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self showFeaturedItemInSection:section];
-    } else {
-        return NO;
-    }
-}
-
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
-    if (![self showFeaturedItemInSection:section]) {
-        return 0;
-    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryHorizontalSpanInSection:section];
     } else {
         return 0;
@@ -237,9 +251,7 @@
 
 - (NSUInteger)featuredStoryVerticalSpanInSection:(NSInteger)section
 {
-    if (![self showFeaturedItemInSection:section]) {
-        return 0;
-    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryVerticalSpanInSection:section];
     } else {
         return 0;

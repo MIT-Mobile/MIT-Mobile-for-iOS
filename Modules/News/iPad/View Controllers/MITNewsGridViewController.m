@@ -18,7 +18,7 @@
 - (instancetype)init
 {
     MITCollectionViewNewsGridLayout *layout = [[MITCollectionViewNewsGridLayout alloc] init];
-    layout.numberOfColumns = 4;
+    layout.numberOfColumns = 3;
     layout.headerHeight = 44.;
     
     self = [super initWithCollectionViewLayout:layout];
@@ -143,7 +143,7 @@
 - (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    BOOL featuredStory = [self collectionView:collectionView layout:nil showFeaturedItemInSection:indexPath.section];
+    BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
 
     if (featuredStory && indexPath.item == 0) {
         return MITNewsCellIdentifierStoryJumbo;
@@ -168,7 +168,7 @@
 
     CGFloat height = 0;
     if (!heights[indexPath]) {
-        height = 64. + arc4random_uniform(96);
+        height = 96. + arc4random_uniform(96);
         heights[indexPath] = @(height);
     } else {
         height = [heights[indexPath] doubleValue];
@@ -182,23 +182,22 @@
     return [self _heightForItemAtIndexPath:indexPath];
 }
 
-- (BOOL)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout showFeaturedItemInSection:(NSInteger)section
-{
-    if (section == 0) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
 {
-    return 2;
+    if ([self isFeaturedCategoryInSection:section]) {
+        return 2;
+    } else {
+        return 0;
+    }
 }
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
-    return 2;
+    if ([self isFeaturedCategoryInSection:section]) {
+        return 2;
+    } else {
+        return 0;
+    }
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
