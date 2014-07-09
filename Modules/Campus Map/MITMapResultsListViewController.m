@@ -32,6 +32,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     [super viewDidLoad];
     [self setupTableView];
     [self setupDoneBarButtonItem];
+    [self setupBackBarButtonItem];
 }
 
 - (void)didReceiveMemoryWarning
@@ -69,6 +70,11 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonItemTapped:)];
     self.navigationItem.rightBarButtonItem = doneButtonItem;
+}
+
+- (void)setupBackBarButtonItem
+{
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
 #pragma mark - Button Actions
