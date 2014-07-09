@@ -7,7 +7,7 @@ static NSString * const kMITMapIndexedPlaceCellIdentifier = @"MITMapIndexedPlace
 
 NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientation orientation)
 {
-    return UIInterfaceOrientationIsLandscape(orientation) ? 1 : 3;
+    return UIInterfaceOrientationIsLandscape(orientation) ? 2 : 3;
 }
 
 @interface MITMapIndexedCategoryViewController ()
@@ -91,6 +91,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
         [self.category.children enumerateObjectsUsingBlock:^(MITMapCategory *childCategory, NSUInteger idx, BOOL *stop) {
             [sectionIndexTitles addObject:[childCategory sectionIndexTitle]];
             if (idx < [self.category.children count] - 1) {
+                // Add dot separators between actual section index titles
                 for (NSInteger dotIndex = 0; dotIndex < MITMapSectionIndexSeparatorDotCountForOrientation(self.interfaceOrientation); ++dotIndex) {
                     [sectionIndexTitles addObject:@"\u2022"];
                 }
@@ -150,7 +151,9 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
-    return MAX(0, floor((index + 1) / (float)(MITMapSectionIndexSeparatorDotCountForOrientation(self.interfaceOrientation) + 1)));
+    NSInteger effectiveIndex = index + 1;   // Touching the dot after the index title should select that section
+    float indexTitlesPerSection = (float)(MITMapSectionIndexSeparatorDotCountForOrientation(self.interfaceOrientation) + 1);    // Number of index titles that map to a single section
+    return floor(effectiveIndex / indexTitlesPerSection);
 }
 
 #pragma mark - UITableViewDelegate
