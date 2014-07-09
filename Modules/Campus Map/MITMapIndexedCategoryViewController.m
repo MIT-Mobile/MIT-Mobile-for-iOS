@@ -7,7 +7,7 @@ static NSString * const kMITMapIndexedPlaceCellIdentifier = @"MITMapIndexedPlace
 
 NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientation orientation)
 {
-    return UIInterfaceOrientationIsLandscape(orientation) ? 2 : 3;
+    return UIInterfaceOrientationIsLandscape(orientation) ? 1 : 3;
 }
 
 @interface MITMapIndexedCategoryViewController ()
@@ -53,8 +53,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    self.sectionIndexTitles = nil;
-    [self.tableView reloadData];
+    [self resetSectionIndexTitles];
 }
 
 #pragma mark - Setup
@@ -75,6 +74,8 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 - (void)refreshPlaces
 {
+    [self showRefreshControlLoadingAnimation];
+
     MITMapModelController *mapModelController = [MITMapModelController sharedController];
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
     [self.category.children enumerateObjectsUsingBlock:^(MITMapCategory *childCategory, NSUInteger idx, BOOL *stop) {
@@ -82,8 +83,25 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
             NSError *fetchError = nil;
             self.indexedPlaces[idx] = [mainQueueContext executeFetchRequest:fetchRequest error:&fetchError];
             [self.tableView reloadData];
+            if ([self isCategoryLoadingComplete]) {
+                [self hideRefreshControlLoadingAnimation];
+            }
         }];
     }];
+}
+
+// Use UIRefreshControl to indicate loading, then remove it when network calls complete
+
+- (void)showRefreshControlLoadingAnimation
+{
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl beginRefreshing];
+}
+
+- (void)hideRefreshControlLoadingAnimation
+{
+    [self.refreshControl endRefreshing];
+    self.refreshControl = nil;
 }
 
 #pragma mark - UITableViewDataSource Helpers
@@ -125,11 +143,31 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
     return _sectionIndexTitles;
 }
 
+- (void)resetSectionIndexTitles
+{
+    self.sectionIndexTitles = nil;
+    [self.tableView reloadData];
+}
+
+- (BOOL)isCategoryLoadingComplete
+{
+    for (id places in self.indexedPlaces) {
+        if (places == [NSNull null]) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.indexedPlaces count];
+    if ([self isCategoryLoadingComplete]) {
+        return [self.indexedPlaces count];
+    } else {
+        return 0;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -155,7 +193,11 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    return self.sectionIndexTitles;
+    if ([self isCategoryLoadingComplete]) {
+        return self.sectionIndexTitles;
+    } else {
+        return nil;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
