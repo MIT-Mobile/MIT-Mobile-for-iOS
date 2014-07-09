@@ -4,48 +4,59 @@
 #import "MITNewsConstants.h"
 
 typedef struct {
-    NSUInteger rowSpan;
-    NSUInteger columnSpan;
+    MITCollectionViewGridSpan span;
     CGFloat width;
     CGFloat horizontalOffset;
-} MITFeaturedItemLayoutContext;
+} MITSpannedItemContext;
 
-static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.rowSpan = 0, .columnSpan = 0, .width = 0, .horizontalOffset = 0};
+static MITSpannedItemContext const MITSpannedItemEmptyContext = {.span = {.horizontal = 0, .vertical = 0}, .width = 0, .horizontalOffset = 0};
+
+MITCollectionViewGridSpan const MITCollectionViewGridSpanInvalid = {.horizontal = 0, .vertical = 0};
+BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span) {
+    return (BOOL)((span.horizontal != 0) && (span.vertical != 0));
+}
+
+MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, NSUInteger vertical) {
+    MITCollectionViewGridSpan span = {.horizontal = horizontal, .vertical = vertical};
+    return span;
+}
 
 @interface MITCollectionViewGridLayoutSection ()
-@property (nonatomic,readwrite) NSInteger section;
+@property (nonatomic) NSInteger section;
 @property (nonatomic) CGPoint origin;
 @property (nonatomic) NSUInteger numberOfColumns;
 
-- (instancetype)initWithLayout:(MITCollectionViewNewsGridLayout*)layout;
 @end
 
 @implementation MITCollectionViewGridLayoutSection {
     BOOL _needsLayout;
 }
 
-@synthesize headerLayoutAttributes = _headerLayoutAttributes;
-@synthesize featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
-@synthesize itemLayoutAttributes = _itemLayoutAttributes;
-@synthesize decorationLayoutAttributes = _decorationLayoutAttributes;
 @synthesize bounds = _bounds;
+@synthesize decorationLayoutAttributes = _decorationLayoutAttributes;
+@synthesize featuredItemLayoutAttributes = _featuredItemLayoutAttributes;
+@synthesize headerLayoutAttributes = _headerLayoutAttributes;
+@synthesize layout = _layout;
+@synthesize itemLayoutAttributes = _itemLayoutAttributes;
+@synthesize section = _section;
+
 @dynamic frame;
 
-+ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns
++ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns
 {
-    MITCollectionViewGridLayoutSection *sectionLayout = [[self alloc] initWithLayout:layout];
-    sectionLayout.section = section;
+    MITCollectionViewGridLayoutSection *sectionLayout = [[self alloc] initWithSection:section layout:layout];
     sectionLayout.numberOfColumns = numberOfColumns;
 
     return sectionLayout;
 }
 
-- (instancetype)initWithLayout:(MITCollectionViewNewsGridLayout*)layout
+- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout *)layout
 {
     self = [super init];
     if (self) {
+        _section = section;
         _layout = layout;
-        _numberOfColumns = 2;
+        _numberOfColumns = 3;
         _stickyHeaders = YES;
         [self invalidateLayout];
     }
@@ -206,14 +217,18 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 
 - (void)layoutIfNeeded
 {
+    const NSUInteger numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
+    if (numberOfItems == 0) {
+        // Nothing to layout so just mark the layout as up-to-date
+        // and bail.
+        _needsLayout = NO;
+        return;
+    }
+
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
-        // Once everything is layed out, we'll go back and give the height a correct value
+        // Once everything is laid out, we'll go back and give the heights a correct value
         const NSInteger numberOfColumns = self.numberOfColumns;
-        const CGFloat numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
-        if (numberOfItems == 0) {
-            return;
-        }
 
         // Apply the content insets to the actual content so things appear properly. We only care
         //  about the left and right insets here. The top will be ignored and the
@@ -227,32 +242,33 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
         CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
         CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
         headerLayoutAttributes.frame = headerFrame;
+
+        // Set a high value for the zIndex to make sure that the header 'floats'
+        // over everything else.
         headerLayoutAttributes.zIndex = 1024;
         _headerLayoutAttributes = headerLayoutAttributes;
-
 
         const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
         CGFloat maximumPaddingPerRow = (minimumInterItemPadding * (numberOfColumns - 1));
         const CGFloat columnWidth = floor((CGRectGetWidth(layoutBounds) - maximumPaddingPerRow) / numberOfColumns);
 
 
-        MITFeaturedItemLayoutContext featuredItemLayoutContext = MITFeatureItemLayoutEmptyContext;
-        const BOOL hasFeaturedItem = [self.layout showFeaturedItemInSection:self.section];
+        MITSpannedItemContext featuredItemLayoutContext = MITSpannedItemEmptyContext;
+        const BOOL hasFeaturedItem = MITCollectionViewGridSpanIsValid(self.featuredItemSpan);
         if (hasFeaturedItem) {
-            featuredItemLayoutContext.columnSpan = [self.layout featuredStoryHorizontalSpanInSection:self.section];
-            featuredItemLayoutContext.rowSpan = [self.layout featuredStoryVerticalSpanInSection:self.section];
+            featuredItemLayoutContext.span = self.featuredItemSpan;
 
-            if (featuredItemLayoutContext.columnSpan > 0) {
+            if (featuredItemLayoutContext.span.horizontal > 0) {
                 // The actual content of the featured item will span <n> column widths
                 //  plus <n-1> item spacings. The extra minimumInterItemPadding factor
                 //  here is so we leave the proper spacing between the edge of the featured
                 //  item and the rows it overlaps
-                featuredItemLayoutContext.width = columnWidth * featuredItemLayoutContext.columnSpan;
-                featuredItemLayoutContext.width += minimumInterItemPadding * (featuredItemLayoutContext.columnSpan - 1);
+                featuredItemLayoutContext.width = columnWidth * featuredItemLayoutContext.span.horizontal;
+                featuredItemLayoutContext.width += minimumInterItemPadding * (featuredItemLayoutContext.span.horizontal - 1);
                 featuredItemLayoutContext.horizontalOffset = featuredItemLayoutContext.width + minimumInterItemPadding;
             }
 
-            NSAssert(featuredItemLayoutContext.columnSpan < self.numberOfColumns, @"there must be space for at least 1 item after the featured story", self.numberOfColumns);
+            NSAssert(featuredItemLayoutContext.span.horizontal < self.numberOfColumns, @"there must be space for at least 1 item after the featured story", self.numberOfColumns);
         }
         
         
@@ -275,8 +291,8 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 
             // If the row we are laying out overlaps the featured story, make sure to reduce the number
             // of items it is capable of holding
-            if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
-                maximumNumberOfItemsInRow -= featuredItemLayoutContext.columnSpan;
+            if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
+                maximumNumberOfItemsInRow -= featuredItemLayoutContext.span.horizontal;
             }
 
             if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
@@ -287,8 +303,8 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
                 // Recalculate the maximum number of items in the new row
                 // since we just added the old one to the saved rows and it's
                 // time to start on a new one.
-                if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
-                    maximumNumberOfItemsInRow = numberOfColumns - featuredItemLayoutContext.columnSpan;
+                if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
+                    maximumNumberOfItemsInRow = numberOfColumns - featuredItemLayoutContext.span.horizontal;
                 } else {
                     maximumNumberOfItemsInRow = numberOfColumns;
                 }
@@ -302,7 +318,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
                 // is vital, otherwise we'll get an incorrect height when calculating the featured item
                 // placement
                 CGRect initialRowFrame = CGRectMake(CGRectGetMinX(layoutBounds), 0, CGRectGetWidth(layoutBounds), 0);
-                if (numberOfRows() < featuredItemLayoutContext.rowSpan) {
+                if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
                     initialRowFrame.origin.x += featuredItemLayoutContext.horizontalOffset;
                     initialRowFrame.size.width -= featuredItemLayoutContext.horizontalOffset;
                 }
@@ -327,14 +343,14 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
 
             __block CGFloat featuredItemHeight = 0;
             [rowLayouts enumerateObjectsUsingBlock:^(MITCollectionViewGridLayoutRow *rowLayout, NSUInteger idx, BOOL *stop) {
-                if (idx < featuredItemLayoutContext.rowSpan) {
+                if (idx < featuredItemLayoutContext.span.vertical) {
                     featuredItemHeight += CGRectGetHeight(rowLayout.frame);
                 } else {
                     (*stop) = YES;
                 }
             }];
 
-            featuredItemHeight += (featuredItemLayoutContext.rowSpan - 1) * self.layout.lineSpacing;
+            featuredItemHeight += (featuredItemLayoutContext.span.horizontal - 1) * self.layout.lineSpacing;
 
             CGRect featuredItemFrame = CGRectZero;
             CGRect scratchFrame = CGRectZero;
@@ -358,7 +374,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
             CGRectDivide(layoutBounds, &frame, &layoutBounds, CGRectGetHeight(bounds), CGRectMinYEdge);
 
             CGRect scratchFrame = CGRectZero;
-            if (index < featuredItemLayoutContext.rowSpan) {
+            if (index < featuredItemLayoutContext.span.vertical) {
                 CGRectDivide(frame, &scratchFrame, &frame, featuredItemLayoutContext.horizontalOffset, CGRectMinXEdge);
             }
 

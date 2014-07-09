@@ -2,6 +2,15 @@
 
 @class MITCollectionViewNewsGridLayout;
 
+typedef struct {
+    NSUInteger horizontal;
+    NSUInteger vertical;
+} MITCollectionViewGridSpan;
+
+extern MITCollectionViewGridSpan const MITCollectionViewGridSpanInvalid;
+MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, NSUInteger vertical);
+BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span);
+
 @interface MITCollectionViewGridLayoutSection : NSObject
 @property (nonatomic,readonly,weak) MITCollectionViewNewsGridLayout *layout;
 @property (nonatomic,readonly) NSInteger section;
@@ -10,14 +19,18 @@
 @property (nonatomic) CGRect frame;
 @property (nonatomic) CGRect bounds;
 
+@property (nonatomic) MITCollectionViewGridSpan featuredItemSpan;
+@property (nonatomic) CGFloat interItemPadding;
+@property (nonatomic) CGFloat lineSpacing;
+
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *headerLayoutAttributes;
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
 @property (nonatomic,readonly,copy) NSArray *itemLayoutAttributes;
 @property (nonatomic,readonly,copy) NSArray *decorationLayoutAttributes;
 
-+ (instancetype)sectionWithLayout:(MITCollectionViewNewsGridLayout*)layout forSection:(NSInteger)section numberOfColumns:(NSInteger)numberOfColumns;
++ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns;
 
-- (instancetype)initWithLayout:(MITCollectionViewNewsGridLayout*)layout;
+- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout;
 - (void)invalidateLayout;
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
