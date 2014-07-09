@@ -23,9 +23,8 @@
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
-        _sectionSpacing = 20.;
-        _sectionContentInsets = UIEdgeInsetsZero;
-        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
+        _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
+        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier];
     }
 
     return self;
@@ -50,6 +49,7 @@
 {
     NSRange sectionRange = NSMakeRange(0, [self.collectionView numberOfSections]);
 
+    // Perform a sanity check of our data source before attempting to lay things out
     [[NSIndexSet indexSetWithIndexesInRange:sectionRange] enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop) {
         const NSUInteger numberOfItems = [self.collectionView numberOfItemsInSection:section];
         const NSUInteger numberOfColumns  = [self numberOfColumnsInSection:section];
@@ -84,31 +84,11 @@
     return sectionLayout;
 }
 
-- (CGRect)minimumContentBounds
-{
-    CGRect collectionViewBounds = self.collectionView.bounds;
-    collectionViewBounds.origin = CGPointZero;
-    collectionViewBounds.size.height = CGFLOAT_MAX;
-    collectionViewBounds.size.height = 0;
-    return collectionViewBounds;
-}
-
 - (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
     NSUInteger numberOfColumns = [self numberOfColumnsInSection:section];
     MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:numberOfColumns];
-
-    if (section == 0) {
-        sectionLayout.frame = [self minimumContentBounds];
-    } else {
-        MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
-        CGRect frame = previousSectionLayout.frame;
-        frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
-        sectionLayout.frame = frame;
-    }
-
-    sectionLayout.contentInsets = self.sectionContentInsets;
-
+    sectionLayout.frame = [self _layoutFrameForSection:section];
     return sectionLayout;
 }
 
@@ -134,16 +114,28 @@
     [super invalidateLayout];
 
     [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
-        NSUInteger section = [sectionNumber unsignedIntegerValue];
-        if (section == 0) {
-            sectionLayout.frame = [self minimumContentBounds];
-        } else {
-            MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
-            CGRect frame = previousSectionLayout.frame;
-            frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
-            sectionLayout.frame = frame;
-        }
+        sectionLayout.frame = [self _layoutFrameForSection:[sectionNumber unsignedIntegerValue]];
     }];
+}
+
+- (CGRect)_layoutFrameForSection:(NSUInteger)section
+{
+    CGRect layoutBounds = self.collectionView.bounds;
+    layoutBounds.origin = CGPointZero;
+
+    // Set the height to zero since it will be variable (this is a
+    // vertically scrolling layout).
+    layoutBounds.size.height = 0;
+
+    if (section == 0) {
+        CGRect frame = layoutBounds;
+        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);;
+    } else {
+        MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
+        CGRect frame = layoutBounds;
+        frame.origin.y = CGRectGetMaxY(previousSectionLayout.frame) + self.sectionInsets.bottom;
+        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);
+    }
 }
 
 #pragma mark Returning layout attributes

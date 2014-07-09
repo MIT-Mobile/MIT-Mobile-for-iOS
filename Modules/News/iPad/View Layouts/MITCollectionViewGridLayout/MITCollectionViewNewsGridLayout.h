@@ -11,9 +11,8 @@
 @property (nonatomic) CGFloat headerHeight;
 
 @property (nonatomic) CGFloat minimumInterItemPadding;
+@property (nonatomic) UIEdgeInsets sectionInsets;
 @property (nonatomic) CGFloat lineSpacing;
-@property (nonatomic) CGFloat sectionSpacing;
-@property (nonatomic) UIEdgeInsets sectionContentInsets;
 
 - (instancetype)init;
 

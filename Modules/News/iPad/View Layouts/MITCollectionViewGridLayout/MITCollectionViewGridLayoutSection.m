@@ -179,8 +179,8 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
     _featuredItemLayoutAttributes = nil;
     _headerLayoutAttributes = nil;
     _itemLayoutAttributes = nil;
-    _needsLayout = YES;
     _bounds.size.height = 0;
+    _needsLayout = YES;
 }
 
 - (void)layoutIfNeeded
@@ -197,9 +197,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
         // Apply the content insets to the actual content so things appear properly. We only care
         //  about the left and right insets here. The top will be ignored and the
         //  bottom will be handled after everything is laid out.
-        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, self.contentInsets.left, 0, self.contentInsets.right);
-
-        __block CGRect layoutBounds = UIEdgeInsetsInsetRect(_bounds, contentInsets);
+        __block CGRect layoutBounds = _bounds;
         layoutBounds.size.height = CGFLOAT_MAX;
 
         UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
@@ -359,7 +357,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
         }];
         
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
-        _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame) + self.contentInsets.bottom;
+        _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame);
         _itemLayoutAttributes = itemLayoutAttributes;
         _decorationLayoutAttributes = decorationLayoutAttributes;
         _needsLayout = NO;

@@ -6,7 +6,6 @@
 @property (nonatomic,readonly,weak) MITCollectionViewNewsGridLayout *layout;
 @property (nonatomic,readonly) NSInteger section;
 
-@property (nonatomic) UIEdgeInsets contentInsets;
 @property (nonatomic) BOOL stickyHeaders;
 @property (nonatomic) CGRect frame;
 @property (nonatomic) CGRect bounds;
