@@ -29,6 +29,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
+
+@property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
 
@@ -248,6 +250,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)clearPlacesAnimated:(BOOL)animated
 {
     self.webserviceSearchItems = nil;
+    self.category = nil;
+    self.searchQuery = nil;
     [self setPlaces:nil animated:animated];
 }
 
@@ -340,6 +344,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)performSearchWithQuery:(NSString *)query
 {
+    self.searchQuery = query;
     [[MITMapModelController sharedController] addRecentSearch:query];
     [[MITMapModelController sharedController] searchMapWithQuery:query
                                                           loaded:^(NSArray *objects, NSError *error) {
@@ -360,6 +365,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)setPlacesWithPlace:(MITMapPlace *)place
 {
     [[MITMapModelController sharedController] addRecentSearch:place];
+    self.searchQuery = nil;
     self.category = nil;
     [self setPlaces:@[place] animated:YES];
     self.searchBar.text = place.name;
@@ -371,6 +377,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [[MITMapModelController sharedController] addRecentSearch:category];
     self.category = category;
+    self.searchQuery = nil;
     NSArray *places = [category.places allObjects];
     [self setPlaces:places animated:YES];
     self.searchBar.text = category.name;
@@ -464,7 +471,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     resultsListViewController.delegate = self;
     switch (self.searchQueryType) {
         case MITMapSearchQueryTypeText: {
-            [resultsListViewController setTitleWithSearchQuery:self.searchBar.text];
+            [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
             break;
         }
         case MITMapSearchQueryTypePlace: {
