@@ -59,13 +59,13 @@
 
         // At a minimum, we need at least N - 1 filled rows (where N is the vertical span of the
         // featured item cell), plus a final cell on the Nth row so we can get a valid height
-        NSUInteger minimumNumberOfCells = 0;
+        NSUInteger minimumNumberOfItems = 0;
         if (sectionHasFeaturedItem) {
-            minimumNumberOfCells = ((numberOfColumns - featuredHorizontalSpan) * (featuredVerticalSpan - 1)) + 1;
+            minimumNumberOfItems = ((numberOfColumns - featuredHorizontalSpan) * (featuredVerticalSpan - 1)) + 1;
         }
 
-        if (minimumNumberOfCells > numberOfItems) {
-            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfCells,featuredHorizontalSpan,featuredVerticalSpan,numberOfItems];
+        if (minimumNumberOfItems > numberOfItems) {
+            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,featuredHorizontalSpan,featuredVerticalSpan,numberOfItems];
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
         }
     }];
