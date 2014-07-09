@@ -396,9 +396,63 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         MITCollectionViewGridLayoutRow *lastRowLayout = [rowLayouts lastObject];
         _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame);
         _itemLayoutAttributes = itemLayoutAttributes;
-        _decorationLayoutAttributes = decorationLayoutAttributes;
+
+        if (hasFeaturedItem) {
+            NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
+            if (hasFeaturedItem) {
+                [allLayoutAttributes addObject:_featuredItemLayoutAttributes];
+            }
+
+            [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
+
+            _decorationLayoutAttributes = [self _featuredDecorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
+        } else {
+            _decorationLayoutAttributes = decorationLayoutAttributes;
+        }
+
         _needsLayout = NO;
     }
+}
+
+- (NSArray*)_featuredDecorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
+{
+    if (!itemLayoutAttributes) {
+        return nil;
+    }
+
+    NSMutableDictionary *allDecorationLayoutAttributes = [[NSMutableDictionary alloc] init];
+
+    [itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+        UICollectionViewLayoutAttributes *nextLayoutAttributes = nil;
+        if ((idx + 1) < [itemLayoutAttributes count]) {
+            nextLayoutAttributes = itemLayoutAttributes[idx + 1];
+        }
+
+        const CGFloat decorationOriginX = CGRectGetMaxX(layoutAttributes.frame);
+        if (!allDecorationLayoutAttributes[@(decorationOriginX)]) {
+            // Make sure we are not at the end of the current row
+            if (CGRectGetMinY(layoutAttributes.frame) != CGRectGetMinY(nextLayoutAttributes.frame)) {
+                return;
+            }
+
+            const CGFloat decorationOriginY = CGRectGetMinY(layoutAttributes.frame);
+            const CGFloat decorationWidth = CGRectGetMinX(nextLayoutAttributes.frame) - decorationOriginX;
+            const CGFloat decorationHeight = CGRectGetHeight(layoutAttributes.frame);
+
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:layoutAttributes.indexPath.item inSection:self.section];
+            UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier withIndexPath:indexPath];
+
+            decorationLayoutAttributes.frame = CGRectMake(decorationOriginX, decorationOriginY, decorationWidth, decorationHeight);
+            allDecorationLayoutAttributes[@(decorationOriginX)] = decorationLayoutAttributes;
+        } else {
+            UICollectionViewLayoutAttributes *decorationLayoutAttributes = allDecorationLayoutAttributes[@(decorationOriginX)];
+            CGRect frame = decorationLayoutAttributes.frame;
+            frame.size.height += CGRectGetMaxY(layoutAttributes.frame) - CGRectGetMaxY(decorationLayoutAttributes.frame);
+            decorationLayoutAttributes.frame = frame;
+        }
+    }];
+
+    return [allDecorationLayoutAttributes allValues];
 }
 
 - (NSArray*)allLayoutAttributes
