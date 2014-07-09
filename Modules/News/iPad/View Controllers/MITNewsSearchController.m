@@ -15,6 +15,7 @@
 @property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (weak, nonatomic) IBOutlet UITableView *searchTableView;
+@property (nonatomic) BOOL unwindFromStoryDetail;
 
 @end
 
@@ -26,6 +27,7 @@
 {
     if(!_recentSearchController) {
         MITNewsRecentSearchController *recentSearchController = [[MITNewsRecentSearchController alloc] init];
+        recentSearchController.searchController = self;
         _recentSearchController = recentSearchController;
     }
     return _recentSearchController;
@@ -82,28 +84,31 @@
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self hideSearchRecents];
-    [self.searchBar resignFirstResponder];
-    
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [self.recentSearchController addRecentSearchItem:searchBar.text];
-    [self.recentSearchPopoverController dismissPopoverAnimated:NO];
-    [self.searchBar resignFirstResponder];
-    self.searchTableView.alpha = 1;
-    self.view.alpha = 1;
+    [self getResultsForString:searchBar.text];
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    if (self.unwindFromStoryDetail) {
+        self.unwindFromStoryDetail = NO;
+        return NO;
+    }
+    return YES;
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    
+    [self showSearchRecents];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self.recentSearchController filterResultsUsingString:searchText];
-    
 }
 
 - (UISearchBar *)returnSearchBar
@@ -114,6 +119,15 @@
     searchBar.showsCancelButton = YES;
     self.searchBar = searchBar;
     return searchBar;
+}
+
+#pragma mark - search
+
+- (void)getResultsForString:(NSString *)searchTerm
+{
+    [self.recentSearchPopoverController dismissPopoverAnimated:NO];
+    self.searchTableView.alpha = 1;
+    self.view.alpha = 1;
 }
 
 #pragma mark - hide/show Recents
@@ -132,13 +146,10 @@
 {
     
     UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
+    
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
-    
-    recentSearchPopoverController.backgroundColor = [UIColor whiteColor];
     recentSearchPopoverController.delegate = self;
-    
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
-    
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
@@ -153,14 +164,16 @@
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
+    [self.searchBar resignFirstResponder];
+    if (self.searchTableView.alpha == 0) {
+        [self hideSearchField];
+    }
     return YES;
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     self.recentSearchPopoverController = nil;
-    [self hideSearchField];
-    [self.searchBar resignFirstResponder];
 }
 
 #pragma mark - TableView
@@ -254,6 +267,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
     MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
     storyDetailViewController.delegate = self;
@@ -264,37 +278,9 @@
         managedObjectContext.parentContext = self.managedObjectContext;
         storyDetailViewController.managedObjectContext = managedObjectContext;
         storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-        
-    }
-    [self.navigationController pushViewController:storyDetailViewController animated:YES];
     
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    UIViewController *destinationViewController = [segue destinationViewController];
-    
-    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
-    
-    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            NSIndexPath *indexPath = sender;
-            MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
-            if (story) {
-                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-                managedObjectContext.parentContext = self.managedObjectContext;
-                storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                
-            }
-        } else {
-            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsStoryViewController class]),
-                      NSStringFromClass([[segue destinationViewController] class]));
-        }
-    } else {
-        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
+        self.unwindFromStoryDetail = YES;
+        [self.navigationController pushViewController:storyDetailViewController animated:YES];
     }
 }
 

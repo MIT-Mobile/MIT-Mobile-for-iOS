@@ -78,7 +78,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -86,7 +85,6 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    
     
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     cell.textLabel.text = query.text;
@@ -97,6 +95,12 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [self.recentResults count];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.searchController getResultsForString:[self.recentResults objectAtIndex:indexPath.row]];
 }
 
 #pragma mark - View lifecycle

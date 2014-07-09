@@ -4,12 +4,13 @@
 
 @interface MITNewsSearchController : UIViewController
 
-- (UISearchBar *)returnSearchBar;
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
-- (void)showSearchRecents;
-
 @property (nonatomic, strong) NSArray *stories;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
+- (void)showSearchRecents;
+- (void)getResultsForString:(NSString *)searchTerm;
+- (UISearchBar *)returnSearchBar;
 
 @end
 

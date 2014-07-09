@@ -173,6 +173,8 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
+    self.searching = YES;
+    [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
     [self.view addSubview:self.searchController.view];
     [self.searchController didMoveToParentViewController:self];
@@ -184,9 +186,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
                      } completion:^(BOOL finished) {
                         
                      }];
-    self.searching = YES;
-    [self updateNavigationItem:YES];
-    [self.searchController showSearchRecents];
+    [self.searchBar becomeFirstResponder];
 }
 
 - (void)hideSearchField
@@ -270,9 +270,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
         [barWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
         self.searchBar = searchBar;
-
         [rightBarItems addObject:searchBarItem];
-        [searchBar becomeFirstResponder];
 
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
