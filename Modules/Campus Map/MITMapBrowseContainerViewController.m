@@ -117,11 +117,6 @@
         
         self.selectedViewController = selectedViewController;
     }
-    
-    NSInteger segmentedControlIndex = index + 1;
-    if (self.segmentedControl.selectedSegmentIndex != segmentedControlIndex) {
-        self.segmentedControl.selectedSegmentIndex = segmentedControlIndex;
-    }
 }
 
 #pragma mark - Delegate
