@@ -21,4 +21,5 @@
 - (void)invalidateLayout;
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
+- (UICollectionViewLayoutAttributes*)headerLayoutAttributesWithContentOffset:(CGPoint)contentOffset;
 @end

@@ -84,27 +84,43 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
     if (_headerLayoutAttributes) {
         headerLayoutAttributes = [_headerLayoutAttributes copy];
         headerLayoutAttributes.frame = CGRectOffset(headerLayoutAttributes.frame, self.origin.x, self.origin.y);
-
-        const CGRect sectionFrame = self.frame;
-        CGPoint contentOffset = self.layout.collectionView.bounds.origin;
-        contentOffset.y += self.layout.collectionView.contentInset.top;
-        if (self.stickyHeaders) {
-            if (CGRectContainsPoint(sectionFrame, contentOffset)) {
-                CGFloat offsetY = contentOffset.y - CGRectGetMinY(sectionFrame);
-
-                CGRect offsetHeaderFrame = CGRectOffset(headerLayoutAttributes.frame, 0, offsetY);
-                if (!CGRectContainsRect(sectionFrame, offsetHeaderFrame)) {
-                    offsetY = CGRectGetMaxY(self.bounds) - CGRectGetHeight(headerLayoutAttributes.bounds);
-                }
-
-                headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, offsetY);
-            } else if (CGRectGetMaxY(sectionFrame) < contentOffset.y) {
-                CGFloat offsetY = CGRectGetMaxY(self.bounds) - CGRectGetHeight(headerLayoutAttributes.bounds);
-                headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, offsetY);
-            }
-        }
     }
     
+    return headerLayoutAttributes;
+}
+
+- (UICollectionViewLayoutAttributes*)headerLayoutAttributesWithContentOffset:(CGPoint)contentOffset
+{
+    UICollectionViewLayoutAttributes *headerLayoutAttributes = self.headerLayoutAttributes;
+
+    if (self.stickyHeaders) {
+        const CGRect sectionFrame = self.frame;
+        const CGRect headerFrame = headerLayoutAttributes.frame;
+
+        const CGFloat maximumHeaderOffset = CGRectGetHeight(sectionFrame) - CGRectGetHeight(headerFrame);
+        if (contentOffset.y < CGRectGetMinY(sectionFrame)) {
+            // If the current content offset is above the current section, reset the
+            // transform to the identity, just in case, and leave it pinned to the top
+            // of the section
+            headerLayoutAttributes.transform = CGAffineTransformIdentity;
+        } else if (contentOffset.y > CGRectGetMaxY(sectionFrame)) {
+            // If the current content offset is below the current section,
+            // pin the header to the bottom of the section so we get proper
+            // behavior when scrolling between sectons (ie: the header doesn't
+            // jump around)
+            headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, maximumHeaderOffset);
+        } else {
+            // Otherwise, the content offset is somewhere within the current section frame.
+            // Figure out what the current offset is from the frame's minY and adjust the
+            // translation as needed.
+            CGFloat contentOffsetFromTopOfFrame = contentOffset.y - CGRectGetMinY(sectionFrame);
+
+            // Make sure the header doesn't extent past the current section frame
+            CGFloat headerOffset = MIN(contentOffsetFromTopOfFrame,maximumHeaderOffset);
+            headerLayoutAttributes.transform = CGAffineTransformMakeTranslation(0, headerOffset);
+        }
+    }
+
     return headerLayoutAttributes;
 }
 
@@ -115,10 +131,15 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
     if (!_itemLayoutAttributes) {
         return nil;
     } else {
-        NSArray *itemLayoutAttributes = [[NSArray alloc] initWithArray:_itemLayoutAttributes copyItems:YES];
+        NSMutableArray *itemLayoutAttributes = [[NSMutableArray alloc] initWithArray:_itemLayoutAttributes copyItems:YES];
         [itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
             layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
         }];
+
+        UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = self.featuredItemLayoutAttributes;
+        if (featuredItemLayoutAttributes) {
+            [itemLayoutAttributes addObject:featuredItemLayoutAttributes];
+        }
         
         return itemLayoutAttributes;
     }

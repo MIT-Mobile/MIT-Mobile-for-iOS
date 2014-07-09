@@ -147,13 +147,17 @@
         MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:section];
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
-            [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-                if ([layoutAttributes.representedElementKind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
-                    [visibleLayoutAttributes addObject:layoutAttributes];
-                } else if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+            [[sectionLayout itemLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 }
             }];
+
+            CGPoint contentOffset = self.collectionView.contentOffset;
+            contentOffset.y += self.collectionView.contentInset.top;
+            contentOffset.x += self.collectionView.contentInset.left;
+            UICollectionViewLayoutAttributes *headerLayoutAttributes = [sectionLayout headerLayoutAttributesWithContentOffset:contentOffset];
+            [visibleLayoutAttributes addObject:headerLayoutAttributes];
         }
     }
 
