@@ -2,6 +2,7 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "MITMapNumberedResultCell.h"
+#import "MITMapPlaceDetailViewController.h"
 
 static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedResultCell";
 
@@ -141,7 +142,9 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     MITMapPlace *place = self.places[indexPath.row];
-    // TODO: push place detail VC
+    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.place = place;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 @end

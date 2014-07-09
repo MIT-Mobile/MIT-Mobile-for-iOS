@@ -13,6 +13,8 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
 
 @implementation MITMapCategoriesViewController
 
+@synthesize delegate = _delegate;
+
 #pragma mark - Init
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -97,6 +99,7 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
     MITMapCategory *category = self.categories[indexPath.row];
     if ([category.children count] > 0) {
         MITMapIndexedCategoryViewController *viewController = [[MITMapIndexedCategoryViewController alloc] initWithCategory:category];
+        viewController.delegate = self.delegate;
         [self.navigationController pushViewController:viewController animated:YES];
     }
     // TODO: push category view controller

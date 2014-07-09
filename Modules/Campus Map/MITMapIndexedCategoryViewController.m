@@ -19,6 +19,8 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 @implementation MITMapIndexedCategoryViewController
 
+@synthesize delegate = _delegate;
+
 #pragma mark - Init
 
 - (instancetype)initWithCategory:(MITMapCategory *)category
@@ -69,6 +71,21 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - Places
+
+- (void)refreshPlaces
+{
+    MITMapModelController *mapModelController = [MITMapModelController sharedController];
+    NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+    [self.category.children enumerateObjectsUsingBlock:^(MITMapCategory *childCategory, NSUInteger idx, BOOL *stop) {
+        [mapModelController placesInCategory:childCategory loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+            NSError *fetchError = nil;
+            self.indexedPlaces[idx] = [mainQueueContext executeFetchRequest:fetchRequest error:&fetchError];
+            [self.tableView reloadData];
+        }];
+    }];
+}
+
 #pragma mark - UITableViewDataSource Helpers
 
 - (NSMutableArray *)indexedPlaces
@@ -82,6 +99,12 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
         _indexedPlaces = indexedPlaces;
     }
     return _indexedPlaces;
+}
+
+- (MITMapPlace *)placeForIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *places = self.indexedPlaces[indexPath.section];
+    return places[indexPath.row];
 }
 
 - (NSArray *)sectionIndexTitles
@@ -100,19 +123,6 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
         _sectionIndexTitles = [NSArray arrayWithArray:sectionIndexTitles];
     }
     return _sectionIndexTitles;
-}
-
-- (void)refreshPlaces
-{
-    MITMapModelController *mapModelController = [MITMapModelController sharedController];
-    NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-    [self.category.children enumerateObjectsUsingBlock:^(MITMapCategory *childCategory, NSUInteger idx, BOOL *stop) {
-        [mapModelController placesInCategory:childCategory loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-            NSError *fetchError = nil;
-            self.indexedPlaces[idx] = [mainQueueContext executeFetchRequest:fetchRequest error:&fetchError];
-            [self.tableView reloadData];
-        }];
-    }];
 }
 
 #pragma mark - UITableViewDataSource
@@ -137,8 +147,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapIndexedPlaceCellIdentifier];
     }
-    NSArray *places = self.indexedPlaces[indexPath.section];
-    MITMapPlace *place = places[indexPath.row];
+    MITMapPlace *place = [self placeForIndexPath:indexPath];
     cell.textLabel.text = place.title;
     cell.detailTextLabel.text = place.subtitle;
     return cell;
@@ -162,6 +171,14 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 {
     MITMapCategory *childCategory = self.category.children[section];
     return childCategory.name;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITMapPlace *place = [self placeForIndexPath:indexPath];
+    if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectPlace:)]) {
+        [self.delegate placeSelectionViewController:self didSelectPlace:place];
+    }
 }
 
 @end

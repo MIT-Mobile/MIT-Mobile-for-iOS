@@ -1,6 +1,7 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMapCategoriesViewController.h"
+#import "MITMapPlaceSelector.h"
 
 @interface MITMapBrowseContainerViewController ()
 
@@ -29,7 +30,7 @@
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    [self setupSegmentedControl];
+    [self setupToolbar];
     [self showViewControllerAtIndex:0];
 }
 
@@ -63,17 +64,10 @@
     [self.selectedViewController endAppearanceTransition];
 }
 
-#pragma mark - Segmented Control Setup
+#pragma mark - Toolbar Setup
 
-- (void)setupSegmentedControl
+- (void)setupToolbar
 {
-    // Remove rounded corners by adding 'zero-width' segments to both ends
-    [self.segmentedControl insertSegmentWithTitle:nil atIndex:0 animated:NO];
-    [self.segmentedControl setWidth:CGFLOAT_MIN forSegmentAtIndex:0];
-    
-    [self.segmentedControl insertSegmentWithTitle:nil atIndex:self.segmentedControl.numberOfSegments animated:NO];
-    [self.segmentedControl setWidth:CGFLOAT_MIN forSegmentAtIndex:self.segmentedControl.numberOfSegments - 1];
-    
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl], [UIBarButtonItem flexibleSpace]] animated:NO];
 }
 
@@ -107,7 +101,6 @@
     if ([self.viewControllers indexOfObject:self.selectedViewController] != index) {
         UIViewController *selectedViewController = self.viewControllers[index];
         selectedViewController.view.frame = self.view.bounds;
-//        selectedViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addChildViewController:selectedViewController];
         [selectedViewController beginAppearanceTransition:YES animated:NO];
         [self.view addSubview:selectedViewController.view];
@@ -131,13 +124,23 @@
     }
 }
 
+#pragma mark - Delegate
+
+- (void)setDelegate:(id <MITMapPlaceSelectionDelegate>)delegate
+{
+    for (UINavigationController *navigationController in self.viewControllers) {
+        UIViewController *topViewController = navigationController.topViewController;
+        if ([topViewController conformsToProtocol:@protocol(MITMapPlaceSelector)]) {
+            [(id <MITMapPlaceSelector>)topViewController setDelegate:delegate];
+        }
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)segmentedControlValueChanged:(UISegmentedControl *)sender
 {
-    // Offset by 1 because of additional segments on both ends of control
-    NSInteger viewControllerIndex = sender.selectedSegmentIndex - 1;
-    [self showViewControllerAtIndex:viewControllerIndex];
+    [self showViewControllerAtIndex:sender.selectedSegmentIndex];
 }
 
 - (void)doneButtonItemTapped:(id)sender

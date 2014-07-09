@@ -8,6 +8,7 @@
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMapPlaceDetailViewController.h"
+#import "MITMapPlaceSelector.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaultCellIdentifier";
@@ -18,7 +19,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -172,6 +173,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)bookmarksButtonPressed
 {
     MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] initWithNibName:nil bundle:nil];
+    [browseContainerViewController setDelegate:self];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browseContainerViewController];
     navigationController.navigationBarHidden = YES;
     navigationController.toolbarHidden = NO;
@@ -347,7 +349,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
                                                           }];
 }
 
-- (void)searchResultsDidSelectRecentQuery:(NSString *)query
+- (void)setPlacesWithRecentSearchQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
     self.category = nil;
@@ -355,16 +357,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchQueryType = MITMapSearchQueryTypeText;
 }
 
-- (void)searchResultsDidSelectPlace:(MITMapPlace *)place
+- (void)setPlacesWithPlace:(MITMapPlace *)place
 {
     [[MITMapModelController sharedController] addRecentSearch:place];
     self.category = nil;
     [self setPlaces:@[place] animated:YES];
     self.searchBar.text = place.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
+    [self showCalloutForPlace:place];
 }
 
-- (void)searchResultsDidSelectCategory:(MITMapCategory *)category
+- (void)setPlacesWithCategory:(MITMapCategory *)category
 {
     [[MITMapModelController sharedController] addRecentSearch:category];
     self.category = category;
@@ -379,6 +382,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.place = place;
     [self.navigationController pushViewController:detailVC animated:YES];
+}
+
+- (void)showCalloutForPlace:(MITMapPlace *)place
+{
+    if ([self.places containsObject:place]) {
+        [self.mapView selectAnnotation:place animated:YES];
+    }
 }
 
 #pragma mark - UISearchBarDelegate Methods
@@ -501,9 +511,23 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)resultsListViewController:(MITMapResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
 {
-    if ([self.places containsObject:place]) {
-        [self pushDetailViewControllerForPlace:place];
-    }
+    [self showCalloutForPlace:place];
+}
+
+#pragma mark - MITMapPlaceSelectionDelegate
+
+- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectPlace:(MITMapPlace *)place
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self setPlacesWithPlace:place];
+    }];
+}
+
+- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self setPlacesWithCategory:category];
+    }];
 }
 
 #pragma mark - UITableViewDelegate Methods
@@ -521,17 +545,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         case 0: {
 		        MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
 		        if (searchItem.searchTerm) {
-		            [self searchResultsDidSelectRecentQuery:searchItem.searchTerm];
+		            [self setPlacesWithRecentSearchQuery:searchItem.searchTerm];
 		        } else if (searchItem.place) {
-		            [self searchResultsDidSelectPlace:searchItem.place];
+		            [self setPlacesWithPlace:searchItem.place];
 		        } else if (searchItem.category) {
-		            [self searchResultsDidSelectCategory:searchItem.category];
+		            [self setPlacesWithCategory:searchItem.category];
 		        }
             break;
         }
         case 1: {
 	        	MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-	        	[self searchResultsDidSelectPlace:place];
+	        	[self setPlacesWithPlace:place];
             break;
         }
         default: {

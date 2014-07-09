@@ -1,5 +1,8 @@
 #import <UIKit/UIKit.h>
+#import "MITMapPlaceSelector.h"
 
-@interface MITMapCategoriesViewController : UITableViewController
+@class MITMapPlace;
+
+@interface MITMapCategoriesViewController : UITableViewController <MITMapPlaceSelector>
 
 @end
