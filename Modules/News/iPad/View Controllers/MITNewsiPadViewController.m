@@ -162,6 +162,7 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 {
     if(!_searchController) {
         MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.stories = self.stories;
         searchController.delegate = self;
         _searchController = searchController;
     }
@@ -341,7 +342,6 @@ typedef NS_ENUM(NSInteger, MITNewsPadStyle) {
 }
 
 #pragma mark UICollectionViewDelegate
-
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
