@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
+#import "MITMapPlaceSelector.h"
 
-@interface MITMapBookmarksViewController : UITableViewController
+@interface MITMapBookmarksViewController : UITableViewController <MITMapPlaceSelector>
 
 @end
