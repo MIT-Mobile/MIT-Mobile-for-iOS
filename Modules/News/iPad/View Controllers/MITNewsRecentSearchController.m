@@ -9,13 +9,13 @@
 @property (nonatomic, readwrite) UIActionSheet *confirmSheet;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *clearButtonItem;
 @property (nonatomic, strong) NSString *filterString;
-
 @property (nonatomic, strong) NSArray *recentResults;
-
 
 @end
 
 @implementation MITNewsRecentSearchController
+
+#pragma mark - properties
 
 - (MITNewsModelController *)modelController
 {
@@ -26,6 +26,8 @@
     return _modelController;
 }
 
+#pragma mark - Recent Add/Remove methods
+
 - (IBAction)clearRecentsButtonClicked:(id)sender
 {
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
@@ -35,6 +37,27 @@
 
     self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:clearAllRecentsButtonTitle otherButtonTitles:nil];
     [self.confirmSheet showInView:self.view];
+}
+
+- (void)addRecentSearchItem:(NSString *)searchTerm
+{
+    NSError *error;
+    [self.modelController addRecentSearchItem:searchTerm error:error];
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
+
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+    self.clearButtonItem.enabled = YES;
+}
+
+- (void)filterResultsUsingString:(NSString *)filterString
+{
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
+    self.filterString = filterString;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -49,20 +72,9 @@
         self.clearButtonItem.enabled = NO;
     }
     self.confirmSheet = nil;
-
 }
 
-- (void)addRecentSearchItem:(NSString *)searchTerm
-{
-    NSError *error;
-    [self.modelController addRecentSearchItem:searchTerm error:error];
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
-    self.clearButtonItem.enabled = YES;
-}
+#pragma mark - Table View methods
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -87,6 +99,8 @@
     return [self.recentResults count];
 }
 
+#pragma mark - View lifecycle
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -104,15 +118,6 @@
     if ([self.recentResults count] == 0) {
         self.clearButtonItem.enabled = NO;
     }
-}
-
-- (void)filterResultsUsingString:(NSString *)filterString
-{
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
-    self.filterString = filterString;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
 }
 
 - (void)didReceiveMemoryWarning

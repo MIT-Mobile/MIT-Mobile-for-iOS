@@ -1,12 +1,12 @@
 #import "MITNewsSearchController.h"
 #import "MITNewsModelController.h"
 #import "MITNewsRecentSearchController.h"
-@interface MITNewsSearchController () <UISearchBarDelegate, UIPopoverControllerDelegate>
+@interface MITNewsSearchController () <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UISearchBar *searchBar;
-
 @property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
+@property (weak, nonatomic) IBOutlet UITableView *searchTableView;
 
 @end
 
@@ -21,6 +21,8 @@
     return self;
 }
 
+#pragma mark - properties
+
 - (MITNewsRecentSearchController *)recentSearchController
 {
     if(!_recentSearchController) {
@@ -30,11 +32,14 @@
     return _recentSearchController;
 }
 
+#pragma mark - View lifecyle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 	self.view.frame = self.navigationController.view.frame;
+    self.searchTableView.alpha = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -43,20 +48,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)hideSearchField
-{
-    [self.delegate hideSearchField];
-}
-
-- (UISearchBar *)returnSearchBar
-{
-    UISearchBar * searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
-    searchBar.delegate = self;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    searchBar.showsCancelButton = YES;
-    self.searchBar = searchBar;
-    return searchBar;
-}
+#pragma mark - SearchBar
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
@@ -72,6 +64,42 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [self.recentSearchController addRecentSearchItem:searchBar.text];
+    [self.recentSearchPopoverController dismissPopoverAnimated:NO];
+    self.searchTableView.alpha = 1;
+    self.view.alpha = 1;
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self.recentSearchController filterResultsUsingString:searchText];
+    
+}
+
+- (UISearchBar *)returnSearchBar
+{
+    UISearchBar * searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
+    searchBar.delegate = self;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.showsCancelButton = YES;
+    self.searchBar = searchBar;
+    return searchBar;
+}
+
+#pragma mark - hide/show Recents
+
+- (void)hideSearchRecents
+{
+    if (self.recentSearchPopoverController != nil) {
+        if (self.recentSearchController.confirmSheet == nil) {
+            [self.recentSearchPopoverController dismissPopoverAnimated:YES];
+            self.recentSearchPopoverController = nil;
+        }
+    }
 }
 
 - (void)showSearchRecents
@@ -90,26 +118,12 @@
     self.recentSearchPopoverController = recentSearchPopoverController;
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+- (void)hideSearchField
 {
-    
+    [self.delegate hideSearchField];
 }
 
-- (void)hideSearchRecents
-{
-    if (self.recentSearchPopoverController != nil) {
-        if (self.recentSearchController.confirmSheet == nil) {
-            [self.recentSearchPopoverController dismissPopoverAnimated:YES];
-            self.recentSearchPopoverController = nil;
-        }
-    }
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    [self.recentSearchController filterResultsUsingString:searchText];
-    
-}
+#pragma mark - Popover
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
@@ -121,6 +135,18 @@
     self.recentSearchPopoverController = nil;
     [self hideSearchField];
     [self.searchBar resignFirstResponder];
+}
+
+#pragma mark - TableView
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return nil;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 0;
 }
 
 @end
