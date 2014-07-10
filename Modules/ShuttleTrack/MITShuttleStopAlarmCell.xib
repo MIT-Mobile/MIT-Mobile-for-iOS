@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" id="KGk-i7-Jjw" customClass="MITShuttleStopAlarmCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="162m" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elj-Ma-Fxe">
+                        <rect key="frame" x="15" y="12" width="42" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="42" id="SGP-sQ-kVx"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12:51 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owX-ab-drq">
+                        <rect key="frame" x="80" y="11" width="70" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="84" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYB-G0-uer">
+                        <rect key="frame" x="229" y="6" width="84" height="30"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <state key="normal" image="shuttle/shuttle-alert-toggle-off.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="notificationButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="NOv-yX-p4d"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" constant="0.5" id="8aa-h7-OYe"/>
+                    <constraint firstAttribute="centerY" secondItem="elj-Ma-Fxe" secondAttribute="centerY" id="QjR-MB-tcl"/>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="ZTz-4P-8Eo"/>
+                    <constraint firstItem="owX-ab-drq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="80" id="fhq-VL-gIm"/>
+                    <constraint firstAttribute="trailing" secondItem="fYB-G0-uer" secondAttribute="trailing" constant="7" id="s53-Ld-bbm"/>
+                    <constraint firstItem="fYB-G0-uer" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" id="yUW-bK-Ugs"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="alertButton" destination="fYB-G0-uer" id="hkg-f4-Raf"/>
+                <outlet property="clockTimeLabel" destination="owX-ab-drq" id="vea-z5-pkc"/>
+                <outlet property="timeRemainingLabel" destination="elj-Ma-Fxe" id="RNI-Ri-qZa"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="shuttle/shuttle-alert-toggle-off.png" width="84" height="30"/>
+    </resources>
+</document>

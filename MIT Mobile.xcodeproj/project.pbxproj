@@ -283,22 +283,46 @@
 		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC3421282ADCE00BA0794 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3411282ADCE00BA0794 /* libiconv.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		56D7DF52128854DF00E9E5C9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56D7DF51128854DF00E9E5C9 /* MapKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */; };
+		5E0693031947522A009D1449 /* MITShuttleRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0693021947522A009D1449 /* MITShuttleRootViewController.m */; };
+		5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */; };
 		5E4C6609192CFC470091282A /* MITShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E4C6608192CFC470091282A /* MITShuttleStop.m */; };
 		5E617F0E1926693F00091656 /* MITShuttleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F0D1926693F00091656 /* MITShuttleController.m */; };
 		5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F10192688E700091656 /* MITShuttlesResource.m */; };
+		5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9AA194A275900C0B76C /* MITShuttleResourceData.m */; };
+		5E62A9B1194A28DF00C0B76C /* MITShuttleResourceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */; };
+		5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */; };
+		5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */; };
+		5E62A9B9194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */; };
 		5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */; };
 		5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */; };
 		5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDF21924F49100BA54BE /* MITLocationManager.m */; };
+		5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E70E38A192E81CF00165B41 /* MITShuttleRouteContainerViewController.m */; };
+		5E70E38D192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E70E38B192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib */; };
+		5E70E393192F7F7F00165B41 /* MITShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E70E392192F7F7F00165B41 /* MITShuttleRouteViewController.m */; };
+		5E70E396192F7F9900165B41 /* MITShuttleStopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E70E395192F7F9900165B41 /* MITShuttleStopViewController.m */; };
+		5E70E39C192F87CA00165B41 /* MITShuttleMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E70E39A192F87CA00165B41 /* MITShuttleMapViewController.m */; };
+		5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E70E39B192F87CA00165B41 /* MITShuttleMapViewController.xib */; };
+		5E70E39F192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E70E39E192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib */; };
 		5E8CE4091922B12E00703920 /* MITShuttleHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8CE4071922B12E00703920 /* MITShuttleHomeViewController.m */; };
 		5E8CE40A1922B12E00703920 /* MITShuttleHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */; };
 		5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */; };
 		5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */; };
+		5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EB7F3FB19351D7F00C89F64 /* MITShuttleRouteStatusCell.m */; };
+		5EB7F3FE19351D7F00C89F64 /* MITShuttleRouteStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EB7F3FC19351D7F00C89F64 /* MITShuttleRouteStatusCell.xib */; };
 		5EC89F591926514800E06204 /* MITShuttleDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */; };
 		5EC89F5C1926517100E06204 /* MITShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F5B1926517100E06204 /* MITShuttleRoute.m */; };
 		5EC89F5F1926517200E06204 /* MITShuttleVehicle.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F5E1926517200E06204 /* MITShuttleVehicle.m */; };
 		5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F611926517200E06204 /* MITShuttlePrediction.m */; };
 		5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F671926517200E06204 /* MITShuttleVehicleList.m */; };
 		5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */; };
+		5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */; };
+		A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */; };
+		A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */; };
+		A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */; };
+		A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */; };
+		A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */; };
+		A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1033,23 +1057,51 @@
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		569DC3411282ADCE00BA0794 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		56D7DF51128854DF00E9E5C9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		5E0692F61945F7A0009D1449 /* MITShuttleRoute+MapKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MITShuttleRoute+MapKit.h"; path = "Categories/MITShuttleRoute+MapKit.h"; sourceTree = "<group>"; };
+		5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MITShuttleRoute+MapKit.m"; path = "Categories/MITShuttleRoute+MapKit.m"; sourceTree = "<group>"; };
+		5E0693011947522A009D1449 /* MITShuttleRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRootViewController.h; sourceTree = "<group>"; };
+		5E0693021947522A009D1449 /* MITShuttleRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRootViewController.m; sourceTree = "<group>"; };
+		5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteViewController.xib; sourceTree = "<group>"; };
 		5E4C6607192CFC470091282A /* MITShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStop.h; sourceTree = "<group>"; };
 		5E4C6608192CFC470091282A /* MITShuttleStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStop.m; sourceTree = "<group>"; };
 		5E617F0C1926693F00091656 /* MITShuttleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleController.h; sourceTree = "<group>"; };
 		5E617F0D1926693F00091656 /* MITShuttleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleController.m; sourceTree = "<group>"; };
 		5E617F0F192688E700091656 /* MITShuttlesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlesResource.h; sourceTree = "<group>"; };
 		5E617F10192688E700091656 /* MITShuttlesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlesResource.m; sourceTree = "<group>"; };
+		5E62A9A9194A275900C0B76C /* MITShuttleResourceData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleResourceData.h; sourceTree = "<group>"; };
+		5E62A9AA194A275900C0B76C /* MITShuttleResourceData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleResourceData.m; sourceTree = "<group>"; };
+		5E62A9AF194A28DF00C0B76C /* MITShuttleResourceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleResourceViewController.h; sourceTree = "<group>"; };
+		5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleResourceViewController.m; sourceTree = "<group>"; };
+		5E62A9B2194A405A00C0B76C /* MITShuttleStopPopoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPopoverViewController.h; sourceTree = "<group>"; };
+		5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPopoverViewController.m; sourceTree = "<group>"; };
+		5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopPopoverViewController.xib; sourceTree = "<group>"; };
+		5E62A9B7194B6F1200C0B76C /* MITShuttleStopPredictionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPredictionLoader.h; sourceTree = "<group>"; };
+		5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPredictionLoader.m; sourceTree = "<group>"; };
 		5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopCell.h; sourceTree = "<group>"; };
 		5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopCell.m; sourceTree = "<group>"; };
 		5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopCell.xib; sourceTree = "<group>"; };
 		5E6DEDF11924F49100BA54BE /* MITLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLocationManager.h; sourceTree = "<group>"; };
 		5E6DEDF21924F49100BA54BE /* MITLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLocationManager.m; sourceTree = "<group>"; };
+		5E70E389192E81CF00165B41 /* MITShuttleRouteContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteContainerViewController.h; sourceTree = "<group>"; };
+		5E70E38A192E81CF00165B41 /* MITShuttleRouteContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteContainerViewController.m; sourceTree = "<group>"; };
+		5E70E38B192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteContainerViewController.xib; sourceTree = "<group>"; };
+		5E70E391192F7F7F00165B41 /* MITShuttleRouteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteViewController.h; sourceTree = "<group>"; };
+		5E70E392192F7F7F00165B41 /* MITShuttleRouteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteViewController.m; sourceTree = "<group>"; };
+		5E70E394192F7F9900165B41 /* MITShuttleStopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopViewController.h; sourceTree = "<group>"; };
+		5E70E395192F7F9900165B41 /* MITShuttleStopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopViewController.m; sourceTree = "<group>"; };
+		5E70E399192F87CA00165B41 /* MITShuttleMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleMapViewController.h; sourceTree = "<group>"; };
+		5E70E39A192F87CA00165B41 /* MITShuttleMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleMapViewController.m; sourceTree = "<group>"; };
+		5E70E39B192F87CA00165B41 /* MITShuttleMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleMapViewController.xib; sourceTree = "<group>"; };
+		5E70E39E192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MITShuttleRouteContainerViewController-landscape.xib"; sourceTree = "<group>"; };
 		5E8CE4061922B12E00703920 /* MITShuttleHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleHomeViewController.h; sourceTree = "<group>"; };
 		5E8CE4071922B12E00703920 /* MITShuttleHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleHomeViewController.m; sourceTree = "<group>"; };
 		5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleHomeViewController.xib; sourceTree = "<group>"; };
 		5E8CE40B1922BBE900703920 /* MITShuttleRouteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteCell.h; sourceTree = "<group>"; };
 		5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteCell.m; sourceTree = "<group>"; };
 		5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteCell.xib; sourceTree = "<group>"; };
+		5EB7F3FA19351D7F00C89F64 /* MITShuttleRouteStatusCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteStatusCell.h; sourceTree = "<group>"; };
+		5EB7F3FB19351D7F00C89F64 /* MITShuttleRouteStatusCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteStatusCell.m; sourceTree = "<group>"; };
+		5EB7F3FC19351D7F00C89F64 /* MITShuttleRouteStatusCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteStatusCell.xib; sourceTree = "<group>"; };
 		5EC89F581926514800E06204 /* MITShuttleDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITShuttleDataModel.xcdatamodel; sourceTree = "<group>"; };
 		5EC89F5A1926517100E06204 /* MITShuttleRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRoute.h; sourceTree = "<group>"; };
 		5EC89F5B1926517100E06204 /* MITShuttleRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRoute.m; sourceTree = "<group>"; };
@@ -1061,7 +1113,19 @@
 		5EC89F671926517200E06204 /* MITShuttleVehicleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleVehicleList.m; sourceTree = "<group>"; };
 		5EC89F691926517200E06204 /* MITShuttlePredictionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttlePredictionList.h; sourceTree = "<group>"; };
 		5EC89F6A1926517200E06204 /* MITShuttlePredictionList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttlePredictionList.m; sourceTree = "<group>"; };
+		5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITableView+MITAdditions.h"; path = "Categories/UITableView+MITAdditions.h"; sourceTree = "<group>"; };
+		5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITableView+MITAdditions.m"; path = "Categories/UITableView+MITAdditions.m"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		A51EBA641937B7F9000F41EE /* MITShuttleRouteNoDataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteNoDataCell.h; sourceTree = "<group>"; };
+		A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteNoDataCell.m; sourceTree = "<group>"; };
+		A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteNoDataCell.xib; sourceTree = "<group>"; };
+		A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopAlarmCell.h; sourceTree = "<group>"; };
+		A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopAlarmCell.m; sourceTree = "<group>"; };
+		A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopAlarmCell.xib; sourceTree = "<group>"; };
+		A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopNotificationManager.h; sourceTree = "<group>"; };
+		A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopNotificationManager.m; sourceTree = "<group>"; };
+		A5960A101940B98D0028E86C /* MITShuttleMapBusAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleMapBusAnnotationView.h; sourceTree = "<group>"; };
+		A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleMapBusAnnotationView.m; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
 		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
@@ -1791,6 +1855,8 @@
 				2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */,
 				2C189A971819D26900653DF6 /* CoreData+MITAdditions.h */,
 				2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */,
+				5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */,
+				5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -2567,6 +2633,29 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		5E0692F51945F779009D1449 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				5E0692F61945F7A0009D1449 /* MITShuttleRoute+MapKit.h */,
+				5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
+		5E06930019475189009D1449 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				5E0693011947522A009D1449 /* MITShuttleRootViewController.h */,
+				5E0693021947522A009D1449 /* MITShuttleRootViewController.m */,
+				5E62A9B2194A405A00C0B76C /* MITShuttleStopPopoverViewController.h */,
+				5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */,
+				5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */,
+				5E62A9AF194A28DF00C0B76C /* MITShuttleResourceViewController.h */,
+				5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */,
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
 		5E6DEDED1924F45300BA54BE /* Location */ = {
 			isa = PBXGroup;
 			children = (
@@ -2609,13 +2698,67 @@
 			name = Old;
 			sourceTree = "<group>";
 		};
+		5E70E397192F7FA400165B41 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5E06930019475189009D1449 /* iPad */,
+				5E8CE4061922B12E00703920 /* MITShuttleHomeViewController.h */,
+				5E8CE4071922B12E00703920 /* MITShuttleHomeViewController.m */,
+				5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */,
+				5E70E389192E81CF00165B41 /* MITShuttleRouteContainerViewController.h */,
+				5E70E38A192E81CF00165B41 /* MITShuttleRouteContainerViewController.m */,
+				5E70E38B192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib */,
+				5E70E39E192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib */,
+				5E70E391192F7F7F00165B41 /* MITShuttleRouteViewController.h */,
+				5E70E392192F7F7F00165B41 /* MITShuttleRouteViewController.m */,
+				5E06930A1948A86A009D1449 /* MITShuttleRouteViewController.xib */,
+				5E70E394192F7F9900165B41 /* MITShuttleStopViewController.h */,
+				5E70E395192F7F9900165B41 /* MITShuttleStopViewController.m */,
+				5E70E399192F87CA00165B41 /* MITShuttleMapViewController.h */,
+				5E70E39A192F87CA00165B41 /* MITShuttleMapViewController.m */,
+				5E70E39B192F87CA00165B41 /* MITShuttleMapViewController.xib */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		5E70E398192F7FBF00165B41 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5E8CE40B1922BBE900703920 /* MITShuttleRouteCell.h */,
+				5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */,
+				5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */,
+				5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */,
+				5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */,
+				5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */,
+				5EB7F3FA19351D7F00C89F64 /* MITShuttleRouteStatusCell.h */,
+				5EB7F3FB19351D7F00C89F64 /* MITShuttleRouteStatusCell.m */,
+				5EB7F3FC19351D7F00C89F64 /* MITShuttleRouteStatusCell.xib */,
+				A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */,
+				A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */,
+				A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */,
+				A51EBA641937B7F9000F41EE /* MITShuttleRouteNoDataCell.h */,
+				A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */,
+				A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */,
+				A5960A101940B98D0028E86C /* MITShuttleMapBusAnnotationView.h */,
+				A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		5EC89F5519264B6F00E06204 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				5EC89F571926514800E06204 /* MITShuttleDataModel.xcdatamodeld */,
 				5E617F0C1926693F00091656 /* MITShuttleController.h */,
 				5E617F0D1926693F00091656 /* MITShuttleController.m */,
+				5E62A9B7194B6F1200C0B76C /* MITShuttleStopPredictionLoader.h */,
+				5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */,
+				A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */,
+				A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */,
+				5E62A9A9194A275900C0B76C /* MITShuttleResourceData.h */,
+				5E62A9AA194A275900C0B76C /* MITShuttleResourceData.m */,
 				5EC89F5619264DE700E06204 /* Entities */,
+				5E0692F51945F779009D1449 /* Categories */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2820,15 +2963,8 @@
 				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
 				DE6D32F510346D02008A5823 /* ShuttleModule.m */,
 				5EC89F5519264B6F00E06204 /* Models */,
-				5E8CE4061922B12E00703920 /* MITShuttleHomeViewController.h */,
-				5E8CE4071922B12E00703920 /* MITShuttleHomeViewController.m */,
-				5E8CE4081922B12E00703920 /* MITShuttleHomeViewController.xib */,
-				5E8CE40B1922BBE900703920 /* MITShuttleRouteCell.h */,
-				5E8CE40C1922BBE900703920 /* MITShuttleRouteCell.m */,
-				5E8CE40D1922BBE900703920 /* MITShuttleRouteCell.xib */,
-				5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */,
-				5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */,
-				5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */,
+				5E70E397192F7FA400165B41 /* View Controllers */,
+				5E70E398192F7FBF00165B41 /* Views */,
 				5E6DEDF41925646100BA54BE /* Old */,
 			);
 			path = ShuttleTrack;
@@ -3185,7 +3321,12 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = A35W4MM59Y;
+						DevelopmentTeam = THP5EV5EJ9;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -3274,10 +3415,13 @@
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
 				442C192B10F3AE3400CB44EC /* RouteMapViewController.xib in Resources */,
+				5E70E38D192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib in Resources */,
 				448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */,
 				44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */,
+				5EB7F3FE19351D7F00C89F64 /* MITShuttleRouteStatusCell.xib in Resources */,
 				2CE1C89C18C156B0001B8FEB /* DiningMenuCompareViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
+				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */,
@@ -3290,10 +3434,15 @@
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
+				5E70E39F192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib in Resources */,
+				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
+				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
+				A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */,
+				5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
@@ -3370,10 +3519,12 @@
 				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
 				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
+				A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */,
 				44ACF76D1187884300F1F4B2 /* MITMapBookmarksViewController.m in Sources */,
 				2C9BAFBF189FD78B003B9AD0 /* MITResultsPager.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
@@ -3411,6 +3562,7 @@
 				2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */,
 				2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */,
 				2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */,
+				5E70E396192F7F9900165B41 /* MITShuttleStopViewController.m in Sources */,
 				2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */,
 				2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */,
 				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
@@ -3453,11 +3605,14 @@
 				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
+				5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
+				5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */,
 				2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */,
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
+				5E62A9B9194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
@@ -3469,6 +3624,7 @@
 				2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */,
 				2C18090518F33B95008F9775 /* MITECPResponseMessage.m in Sources */,
 				2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */,
+				A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CF89EAD18A41A6A00ABFE03 /* MITNewsImageViewController.m in Sources */,
 				2C2CB4961922B45100FCC056 /* MITLauncherListViewCell.m in Sources */,
@@ -3485,6 +3641,7 @@
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
+				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,
@@ -3635,8 +3792,10 @@
 				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
+				A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */,
 				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
 				2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */,
+				5E62A9B1194A28DF00C0B76C /* MITShuttleResourceViewController.m in Sources */,
 				5EC89F5C1926517100E06204 /* MITShuttleRoute.m in Sources */,
 				2C6528F217906DBD00BED0DF /* Secret.m in Sources */,
 				2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */,
@@ -3655,6 +3814,7 @@
 				48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */,
 				48A6E4DB170B9423004DED46 /* DiningHallDetailHeaderView.m in Sources */,
 				486B1E70170E24C900A75563 /* DiningHallMenuFooterView.m in Sources */,
+				5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */,
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
 				48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */,
@@ -3662,9 +3822,11 @@
 				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
 				2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */,
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
+				A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */,
 				2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */,
+				5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */,
 				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 				2C99DB081846867200277B25 /* MITMobile.m in Sources */,
 				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
@@ -3674,6 +3836,8 @@
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
+				5E70E39C192F87CA00165B41 /* MITShuttleMapViewController.m in Sources */,
+				5E0693031947522A009D1449 /* MITShuttleRootViewController.m in Sources */,
 				2CCF06CE18B6741F008869BC /* MITNewsConstants.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 				DED41FD8173849500048376F /* DiningData.m in Sources */,
@@ -3710,6 +3874,7 @@
 				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
 				DEBF146117699977009B6089 /* DiningRoot.m in Sources */,
 				DEBF1464176999BA009B6089 /* DiningLink.m in Sources */,
+				5E70E393192F7F7F00165B41 /* MITShuttleRouteViewController.m in Sources */,
 				DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */,
 				DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */,
 			);
@@ -3743,6 +3908,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3760,6 +3927,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "F78BFD7E-CA9B-46DB-90A3-FE12C2914772";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -3771,6 +3939,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3787,6 +3957,7 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -3881,6 +4052,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3897,6 +4070,7 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = TestFlight;

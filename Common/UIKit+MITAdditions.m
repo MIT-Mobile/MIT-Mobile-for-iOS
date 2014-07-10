@@ -80,6 +80,17 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
 }
 
++ (UIColor *)mit_systemTintColor
+{
+    static UIColor *systemTintColor = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        UIView *view = [[UIView alloc] init];
+        systemTintColor = view.tintColor;
+    });
+    return systemTintColor;
+}
+
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
 // color must be either of the format @"0099FF" or @"#0099FF" or @"0x0099FF"
 + (UIColor *)colorWithHexString:(NSString *)hexString  

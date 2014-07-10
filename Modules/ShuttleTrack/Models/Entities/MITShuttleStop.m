@@ -1,6 +1,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleRoute.h"
+#import "MITShuttleVehicle.h"
 
 
 @implementation MITShuttleStop
@@ -9,9 +10,9 @@
 @dynamic latitude;
 @dynamic longitude;
 @dynamic predictionsURL;
-@dynamic shortTitle;
+@dynamic shortName;
 @dynamic stopNumber;
-@dynamic title;
+@dynamic name;
 @dynamic url;
 @dynamic predictions;
 @dynamic routes;
@@ -21,8 +22,8 @@
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     [mapping addAttributeMappingsFromDictionary:@{@"id": @"identifier",
                                                   @"url": @"url",
-                                                  @"title": @"title",
-                                                  @"short_title": @"shortTitle",
+                                                  @"title": @"name",
+                                                  @"short_title": @"shortName",
                                                   @"stop_number": @"stopNumber",
                                                   @"lat": @"latitude",
                                                   @"lon": @"longitude",
@@ -30,6 +31,38 @@
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMapping]]];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
+}
+
+- (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route
+{
+    for (MITShuttlePrediction *prediction in self.predictions) {
+        if ([route.vehicles containsObject:prediction.vehicle]) {
+            return prediction;
+        }
+    }
+    return nil;
+}
+
+- (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
+{
+    for (MITShuttlePrediction *prediction in self.predictions) {
+        if ([vehicle isEqual:prediction.vehicle]) {
+            return prediction;
+        }
+    }
+    return nil;
+}
+
+#pragma mark - MKAnnotation
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+}
+
+- (NSString *)title
+{
+    return self.name;
 }
 
 @end

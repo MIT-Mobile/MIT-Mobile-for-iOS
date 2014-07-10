@@ -7,20 +7,19 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePredictionList.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttleRouteContainerViewController.h"
+#import "MITShuttleRouteViewController.h"
+#import "MITShuttleResourceData.h"
 #import "UIKit+MITAdditions.h"
+#import "NSDateFormatter+RelativeString.h"
+#import "UITableView+MITAdditions.h"
 
 static const NSTimeInterval kRoutesRefreshInterval = 60.0;
 static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
 
-static NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
-static NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
 static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
 
-static NSString * const kContactInformationHeaderTitle = @"Contact Information";
-static NSString * const kMBTAInformationHeaderTitle = @"MBTA Information";
-
-static const NSInteger kNumberOfSectionsInTableView = 3;
 static const NSInteger kMinimumNumberOfRowsForRoute = 1;
 static const NSInteger kNearestStopDisplayCount = 2;
 
@@ -28,11 +27,6 @@ static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
 static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
 
 static const CGFloat kContactInformationCellHeight = 60.0;
-
-static NSString * const kResourceDescriptionKey = @"description";
-static NSString * const kResourcePhoneNumberKey = @"phoneNumber";
-static NSString * const kResourceFormattedPhoneNumberKey = @"formattedPhoneNumber";
-static NSString * const kResourceURLKey = @"url";
 
 typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleSectionRoutes = 0,
@@ -61,8 +55,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (strong, nonatomic) NSTimer *routesRefreshTimer;
 @property (strong, nonatomic) NSTimer *predictionsRefreshTimer;
 
-@property (copy, nonatomic) NSArray *contactInformation;
-@property (copy, nonatomic) NSArray *mbtaInformation;
+@property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
 @end
 
@@ -117,6 +110,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = @"Shuttles";
+        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStyleBordered target:nil action:nil];
     }
     return self;
 }
@@ -145,7 +139,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES animated:animated];
     [[MITLocationManager sharedManager] stopUpdatingLocation];
     [self stopRefreshingData];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateLocationNotification object:nil];
@@ -178,24 +171,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)setupResourceData
 {
-    // TODO: these phone numbers and links should be provided by the server, not hardcoded
-	self.contactInformation = @[
-                                @{kResourceDescriptionKey:          @"Parking Office",
-                                  kResourcePhoneNumberKey:          @"16172586510",
-                                  kResourceFormattedPhoneNumberKey: @"617.258.6510"},
-                                @{kResourceDescriptionKey:          @"Saferide",
-                                  kResourcePhoneNumberKey:          @"16172532997",
-                                  kResourceFormattedPhoneNumberKey: @"617.253.2997"}
-                                ];
-	
-    self.mbtaInformation = @[
-                             @{kResourceDescriptionKey: @"Real-time Bus Arrivals",
-                               kResourceURLKey:         @"http://www.nextbus.com/webkit"},
-                             @{kResourceDescriptionKey: @"Real-time Train Arrivals",
-                               kResourceURLKey:         @"http://www.mbtainfo.com/"},
-                             @{kResourceDescriptionKey: @"Google Transit",
-                               kResourceURLKey:         @"http://www.google.com/transit"}
-                             ];
+    self.resourceData = [[MITShuttleResourceData alloc] init];
 }
 
 #pragma mark - Refresh Control
@@ -211,21 +187,25 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)startRefreshingRoutes
 {
     [self loadRoutes];
-    self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRoutesRefreshInterval
-                                                               target:self
-                                                             selector:@selector(loadRoutes)
-                                                             userInfo:nil
-                                                              repeats:YES];
+    NSTimer *routesRefreshTimer = [NSTimer timerWithTimeInterval:kRoutesRefreshInterval
+                                                          target:self
+                                                        selector:@selector(loadRoutes)
+                                                        userInfo:nil
+                                                         repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:routesRefreshTimer forMode:NSRunLoopCommonModes];
+    self.routesRefreshTimer = routesRefreshTimer;
 }
 
 - (void)startRefreshingPredictions
 {
     [self loadPredictions];
-    self.predictionsRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kPredictionsRefreshInterval
-                                                                    target:self
-                                                                  selector:@selector(loadPredictions)
-                                                                  userInfo:nil
-                                                                   repeats:YES];
+    NSTimer *predictionsRefreshTimer = [NSTimer timerWithTimeInterval:kPredictionsRefreshInterval
+                                                               target:self
+                                                             selector:@selector(loadPredictions)
+                                                             userInfo:nil
+                                                              repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:predictionsRefreshTimer forMode:NSRunLoopCommonModes];
+    self.predictionsRefreshTimer = predictionsRefreshTimer;
 }
 
 - (void)stopRefreshingData
@@ -244,8 +224,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         if (!error) {
             [self.routesFetchedResultsController performFetch:nil];
             [self refreshFlatRouteArray];
-            [self.tableView reloadData];
-            if (!self.predictionsRefreshTimer.isValid) {
+            
+            [self.tableView reloadDataAndMaintainSelection];
+            
+            // Start refreshing predications if we are still in the view hierarchy
+            if (!self.predictionsRefreshTimer.isValid && self.navigationController) {
                 [self startRefreshingPredictions];
             }
         }
@@ -259,7 +242,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
                 if (!error) {
                     [self.predictionListsFetchedResultsController performFetch:nil];
-                    [self.tableView reloadData];
+                    [self.tableView reloadDataAndMaintainSelection];
                 }
             }];
         }
@@ -289,29 +272,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (self.isUpdating) {
         lastUpdatedText = @"Updating...";
     } else {
-        NSTimeInterval secondsSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.lastUpdatedDate];
-        if (secondsSinceLastUpdate < 60) {
-            lastUpdatedText = @"Updated just now";
-        } else if (secondsSinceLastUpdate < 60 * 10) {
-            NSInteger minutesSinceLastUpdate = floor(secondsSinceLastUpdate / 60);
-            lastUpdatedText = [NSString stringWithFormat:@"Updated %d minute%@ ago", minutesSinceLastUpdate, (minutesSinceLastUpdate > 1) ? @"s" : @""];
-        } else {
-            NSString *timeString = [[[self dateFormatter] stringFromDate:self.lastUpdatedDate] lowercaseString];
-            lastUpdatedText = [NSString stringWithFormat:@"Last updated at %@", timeString];
-        }
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
+                                                                            toDate:[NSDate date]];
+        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
     }
     self.lastUpdatedLabel.text = lastUpdatedText;
-}
-
-- (NSDateFormatter *)dateFormatter
-{
-    static NSDateFormatter *_dateFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _dateFormatter = [[NSDateFormatter alloc] init];
-        _dateFormatter.timeStyle = NSDateFormatterShortStyle;
-    });
-    return _dateFormatter;
 }
 
 - (void)refreshLocationStatusLabel
@@ -334,6 +299,26 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     }
     [self refreshLocationStatusLabel];
     [self.tableView reloadData];
+}
+
+#pragma mark - Highlight Stop
+
+- (void)highlightStop:(MITShuttleStop *)stop
+{
+    if (stop) {
+        for (id object in self.flatRouteArray) {
+            if (object == stop) {
+                NSInteger index = [self.flatRouteArray indexOfObject:object];
+                [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:MITShuttleSectionRoutes] animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+                return;
+            }
+        }
+    } else {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        if (indexPath) {
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
+    }
 }
 
 #pragma mark - Route Data Helpers
@@ -408,7 +393,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return kNumberOfSectionsInTableView;
+    NSInteger sections = 1;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        sections += kResourceSectionCount;
+    }
+    return sections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -417,9 +406,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes:
             return [self.flatRouteArray count];
         case MITShuttleSectionContactInformation:
-            return [self.contactInformation count];
+            return [self.resourceData.contactInformation count];
         case MITShuttleSectionMBTAInformation:
-            return [self.mbtaInformation count];
+            return [self.resourceData.mbtaInformation count];
         default:
             return 0;
     }
@@ -498,7 +487,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITShuttlePhoneNumberCellIdentifier];
     }
-    NSDictionary *resource = self.contactInformation[indexPath.row];
+    NSDictionary *resource = self.resourceData.contactInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.detailTextLabel.text = resource[kResourceFormattedPhoneNumberKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
@@ -512,7 +501,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITShuttleURLCellIdentifier];
     }
-    NSDictionary *resource = self.mbtaInformation[indexPath.row];
+    NSDictionary *resource = self.resourceData.mbtaInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     return cell;
@@ -526,9 +515,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes:
             return nil;
         case MITShuttleSectionContactInformation:
-            return kContactInformationHeaderTitle;
+            return [kContactInformationHeaderTitle uppercaseString];
         case MITShuttleSectionMBTAInformation:
-            return kMBTAInformationHeaderTitle;
+            return [kMBTAInformationHeaderTitle uppercaseString];
         default:
             return nil;
     }
@@ -578,26 +567,39 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
     switch (indexPath.section) {
         case MITShuttleSectionRoutes: {
+            MITShuttleRoute *route;
+            MITShuttleStop *stop;
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                [self routeSelected:object];
+                route = object;
             } else {
-                [self stopSelected:object];
+                stop = object;
+                route = [self routeForStopAtIndexInFlatRouteArray:indexPath.row];
+            }
+            if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+                if ([self.delegate respondsToSelector:@selector(shuttleHomeViewController:didSelectRoute:stop:)]) {
+                    [self.delegate shuttleHomeViewController:self didSelectRoute:route stop:stop];
+                }
+                if (stop) {
+                    return;
+                }
+            } else {
+                MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];
+                [self.navigationController pushViewController:routeContainerViewController animated:YES];
             }
             break;
         }
         case MITShuttleSectionContactInformation:
-            [self phoneNumberResourceSelected:self.contactInformation[indexPath.row]];
+            [self phoneNumberResourceSelected:self.resourceData.contactInformation[indexPath.row]];
             break;
         case MITShuttleSectionMBTAInformation:
-            [self urlResourceSelected:self.mbtaInformation[indexPath.row]];
+            [self urlResourceSelected:self.resourceData.mbtaInformation[indexPath.row]];
         default:
             break;
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UITableViewDelegate Helpers
@@ -618,16 +620,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
     }
-}
-
-- (void)routeSelected:(MITShuttleRoute *)route
-{
-#warning TODO: push route view controller in route state
-}
-
-- (void)stopSelected:(MITShuttleStop *)stop
-{
-#warning TODO: push route view controller in stop state
 }
 
 @end
