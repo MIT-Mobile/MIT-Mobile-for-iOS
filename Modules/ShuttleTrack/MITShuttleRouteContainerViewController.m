@@ -321,6 +321,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         xOffset += stopViewSize.width;
     }
     self.stopsScrollView.contentSize = CGSizeMake(xOffset, stopViewSize.height);
+    
+    if (self.stop) {
+        [self selectStop:self.stop];
+    }
 }
 
 - (void)selectStop:(MITShuttleStop *)stop
