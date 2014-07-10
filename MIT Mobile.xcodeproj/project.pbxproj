@@ -293,6 +293,7 @@
 		5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */; };
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
+		A51E20A0196C68D9005608C3 /* MITMapTypeAheadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
 		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
@@ -1052,6 +1053,8 @@
 		5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		A51E209E196C68D9005608C3 /* MITMapTypeAheadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapTypeAheadTableViewController.h; sourceTree = "<group>"; };
+		A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapTypeAheadTableViewController.m; sourceTree = "<group>"; };
 		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
 		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
 		A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceDetailViewController.h; sourceTree = "<group>"; };
@@ -2613,6 +2616,8 @@
 				A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */,
 				A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */,
 				A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */,
+				A51E209E196C68D9005608C3 /* MITMapTypeAheadTableViewController.h */,
+				A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3500,6 +3505,7 @@
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
 				DEA8767F18AAE9AD00327823 /* DDContextFilterLogFormatter.m in Sources */,
 				EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */,
+				A51E20A0196C68D9005608C3 /* MITMapTypeAheadTableViewController.m in Sources */,
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,

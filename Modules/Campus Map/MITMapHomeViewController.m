@@ -9,9 +9,9 @@
 #import "UIKit+MITAdditions.h"
 #import "MITMapPlaceDetailViewController.h"
 #import "MITMapPlaceSelector.h"
+#import "MITMapTypeAheadTableViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
-static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaultCellIdentifier";
 
 typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeText,
@@ -19,13 +19,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, MITMapTypeAheadTableViewControllerDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
 @property (nonatomic) MITMapSearchQueryType searchQueryType;
+@property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
+@property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
@@ -33,12 +35,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
-
-@property (nonatomic, strong) UITableView *resultsTableView;
-@property (nonatomic, strong) NSArray *recentSearchItems;
-@property (nonatomic, strong) NSArray *webserviceSearchItems;
-@property (nonatomic, strong) NSString *currentSearchString;
-
 
 @end
 
@@ -150,15 +146,23 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setupMapBoundingBoxAnimated:NO];
 }
 
-#pragma mark - Button Actions
-
 - (void)setupResultsTableView
 {
-    self.resultsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, -100, self.view.frame.size.width, 0)];
-    self.resultsTableView.delegate = self;
-    self.resultsTableView.dataSource = self;
-    [self.view addSubview:self.resultsTableView];
+    self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.typeAheadViewController.delegate = self;
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+        self.typeAheadViewController.showsTitleHeader = YES;
+    } else {
+        [self addChildViewController:self.typeAheadViewController];
+        self.typeAheadViewController.view.frame = CGRectMake(0, -100, self.view.frame.size.width, 0);
+        [self.view addSubview:self.typeAheadViewController.view];
+        [self.typeAheadViewController didMoveToParentViewController:self];
+    }
 }
+
+#pragma mark - Button Actions
 
 - (void)registerForKeyboardNotifications
 {
@@ -249,7 +253,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)clearPlacesAnimated:(BOOL)animated
 {
-    self.webserviceSearchItems = nil;
     self.category = nil;
     self.searchQuery = nil;
     [self setPlaces:nil animated:animated];
@@ -276,70 +279,29 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    CGFloat navBarHeight = 64;
-    CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
-    self.resultsTableView.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
-    [self.resultsTableView reloadData];
-    [UIView animateWithDuration:0.5 animations:^{
-        self.resultsTableView.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
-    }];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    [UIView animateWithDuration:0.5 animations:^{
-        self.resultsTableView.frame = CGRectMake(0, -self.resultsTableView.frame.size.height, self.view.frame.size.width, self.resultsTableView.frame.size.height);
-    }];
-}
-
-- (void)updateSearchResultsForSearchString:(NSString *)searchString
-{
-    if ([searchString isEqualToString:@""]) {
-        searchString = nil;
-    }
-    
-    self.currentSearchString = searchString;
-    
-    __weak MITMapHomeViewController *blockSelf = self;
-    
-    // The error cases in these blocks are left unhandled on purpose for now. Not sure if the user ever needs to be informed
-    [[MITMapModelController sharedController] recentSearchesForPartialString:searchString loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-        if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
-            return;
-        }
-        if (fetchRequest) {
-            NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-            [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
-                if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
-                    return;
-                }
-                self.recentSearchItems = [managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
-                [self.resultsTableView reloadData];
-            }];
-        }
-    }];
-    
-    if (searchString) {
-        [[MITMapModelController sharedController] searchMapWithQuery:searchString loaded:^(NSArray *objects, NSError *error) {
-            if (![blockSelf isCurrentSearchStringEqualTo:searchString]) {
-                return;
-            }
-            self.webserviceSearchItems = objects;
-            [self.resultsTableView reloadData];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        CGFloat navBarHeight = 64;
+        CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
+        self.typeAheadViewController.view.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
+        [UIView animateWithDuration:0.5 animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
         }];
     }
 }
 
-- (BOOL)isCurrentSearchStringEqualTo:(NSString *)searchString
+- (void)keyboardWillHide:(NSNotification *)notification
 {
-    if (searchString == nil && self.currentSearchString == nil) {
-        return YES;
-    } else if ([searchString isEqualToString:self.currentSearchString]) {
-        return YES;
-    } else {
-        return NO;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [UIView animateWithDuration:0.5 animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, -self.typeAheadViewController.view.frame.size.height, self.view.frame.size.width, self.typeAheadViewController.view.frame.size.height);
+        }];
     }
+}
+
+- (void)updateSearchResultsForSearchString:(NSString *)searchString
+{
+    [self.typeAheadViewController updateResultsWithSearchTerm:searchString];
 }
 
 - (void)performSearchWithQuery:(NSString *)query
@@ -407,12 +369,45 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+- (void)showTypeAheadPopover
+{
+    [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+#pragma mark - MITMapTypeAheadTableViewControllerDelegate Methods
+
+- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectRecentQuery:(NSString *)recentQuery
+{
+    [self.searchBar resignFirstResponder];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
+    [self setPlacesWithRecentSearchQuery:recentQuery];
+}
+
+- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectPlace:(MITMapPlace *)place
+{
+    [self.searchBar resignFirstResponder];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
+    [self setPlacesWithPlace:place];
+}
+
+- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectCategory:(MITMapCategory *)category
+{
+    [self.searchBar resignFirstResponder];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
+    [self setPlacesWithCategory:category];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    self.navigationItem.leftBarButtonItem = nil;
-    self.navigationItem.rightBarButtonItem = nil;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self showTypeAheadPopover];
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    
     [searchBar setShowsCancelButton:YES animated:YES];
     [self updateSearchResultsForSearchString:nil];
 }
@@ -442,7 +437,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [self updateSearchResultsForSearchString:searchText];
     
-    if (!searchBar.isFirstResponder) {
+    if (searchBar.isFirstResponder) {
+        if (!self.typeAheadPopoverController.popoverVisible) {
+            [self showTypeAheadPopover];
+        }
+    } else {
         self.searchBarShouldBeginEditing = NO;
         [self clearPlacesAnimated:YES];
     }
@@ -544,97 +543,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self dismissViewControllerAnimated:YES completion:^{
         [self setPlaces:places category:category];
     }];
-}
-
-#pragma mark - UITableViewDelegate Methods
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 44;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self.searchBar resignFirstResponder];
-    
-    switch (indexPath.section) {
-        case 0: {
-		        MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
-		        if (searchItem.searchTerm) {
-		            [self setPlacesWithRecentSearchQuery:searchItem.searchTerm];
-		        } else if (searchItem.place) {
-		            [self setPlacesWithPlace:searchItem.place];
-		        } else if (searchItem.category) {
-		            [self setPlacesWithCategory:searchItem.category];
-		        }
-            break;
-        }
-        case 1: {
-	        	MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-	        	[self setPlacesWithPlace:place];
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-}
-
-#pragma mark - UITableViewDataSource Methods
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 2;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    switch (section) {
-        case 0: {
-            return self.recentSearchItems.count;
-            break;
-        }
-        case 1: {
-            return self.webserviceSearchItems.count;
-            break;
-        }
-        default: {
-            return 0;
-            break;
-        }
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapPlaceDefaultCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapPlaceDefaultCellIdentifier];
-    }
-    
-    switch (indexPath.section) {
-        case 0: {
-            MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
-            if (searchItem.searchTerm) {
-                cell.textLabel.text = searchItem.searchTerm;
-            } else if (searchItem.place) {
-                cell.textLabel.text = searchItem.place.name;
-            } else if (searchItem.category) {
-                cell.textLabel.text = searchItem.category.name;
-            }
-            break;
-        }
-        case 1: {
-            MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-            cell.textLabel.text = place.name;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    
-    return cell;
 }
 
 @end

@@ -173,7 +173,6 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
             
             CGFloat height = [self.placeContentCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
             ++height;   // add pt for cell separator;
-            NSLog(@"row: %i, height: %f", indexPath.row, height);
             return height;
             break;
         }
