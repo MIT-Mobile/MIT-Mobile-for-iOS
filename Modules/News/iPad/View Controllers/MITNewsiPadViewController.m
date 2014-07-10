@@ -17,7 +17,7 @@
 #import "MITNewsStoriesDataSource.h"
 #import "MITAdditions.h"
 
-@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate>
+@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
 @property (nonatomic,strong) NSString *searchQuery;
 @property (nonatomic,strong) NSOrderedSet *searchResults;
 
@@ -70,6 +70,7 @@
     self.edgesForExtendedLayout = UIRectEdgeAll;
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
+    [self updateNavigationItem:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -232,17 +233,48 @@
 #pragma mark UI Actions
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
-    
+    self.searching = YES;
+    [self updateNavigationItem:YES];
+    [self addChildViewController:self.searchController];
+    [self.view addSubview:self.searchController.view];
+    [self.searchController didMoveToParentViewController:self];
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchController.view.alpha = .5;
+                     } completion:^(BOOL finished) {
+                         
+                     }];
+    [self.searchBar becomeFirstResponder];
+}
+
+- (void)hideSearchField
+{
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchController.view.alpha = .0;
+                     } completion:^(BOOL finished) {
+                         [self.searchController removeFromParentViewController];
+                         [self.searchController.view removeFromSuperview];
+                         self.searchController = nil;
+                     }];
+    self.searching = NO;
+    [self updateNavigationItem:YES];
 }
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
     self.presentationStyle = MITNewsPresentationStyleGrid;
+    [self updateNavigationItem:YES];
 }
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
     self.presentationStyle = MITNewsPresentationStyleList;
+    [self updateNavigationItem:YES];
 }
 
 - (void)updateNavigationItem:(BOOL)animated
@@ -435,7 +467,7 @@
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
-    NSAssert(NO,@"Not Yet Implemented");
+#warning Not Yet Implemented
     return nil;
 }
 
@@ -452,6 +484,48 @@
 - (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
 {
 
+}
+
+@end
+
+@implementation MITNewsiPadViewController (MITNewsStoryDelegate)
+
+- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
+{
+    [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    return nil;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    //NSLog(@"%@",self.stories);
+    UIViewController *destinationViewController = [segue destinationViewController];
+    
+    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
+    
+    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+            storyDetailViewController.delegate = self;
+            
+            NSIndexPath *indexPath = sender;
+            
+            MITNewsStory *story = [self viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
+            if (story) {
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                managedObjectContext.parentContext = self.managedObjectContext;
+                storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                
+            }
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    } else {
+        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
+    }
 }
 
 @end
