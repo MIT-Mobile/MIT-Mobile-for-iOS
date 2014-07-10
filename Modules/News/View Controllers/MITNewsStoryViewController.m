@@ -10,6 +10,15 @@
 
 @interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryConstraintBetweenImageAndTitle;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryDekLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryDateLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
+@property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
+@property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @end
 
 @implementation MITNewsStoryViewController {
@@ -33,7 +42,22 @@
     self.bodyView.scrollView.scrollEnabled = NO;
     self.bodyView.scrollView.bounces = NO;
     self.bodyView.delegate = self;
+    
+    if (self.nextStoryView) {
+        [self updateNavigationItem:YES];
+    }
 }
+
+- (void)updateNavigationItem:(BOOL)animated
+{
+    NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
+    
+    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
+    [rightBarItems addObject:shareItem];
+    
+    [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+}
+
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -42,22 +66,28 @@
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
-    __block NSURL *imageURL = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        if (self.story) {
-            CGSize imageSize = self.coverImageView.bounds.size;
-            imageSize.height = 213.;
-
-            MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
-            imageURL = imageRepresentation.url;
-        }
-    }];
-
-    if (imageURL) {
-        [self.coverImageView setImageWithURL:imageURL
-                                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                       [self.view setNeedsUpdateConstraints];
+    if (self.nextStoryView) {
+        
+        [self setupNextStory];
+    } else {
+        
+        __block NSURL *imageURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if (self.story) {
+                CGSize imageSize = self.coverImageView.bounds.size;
+                imageSize.height = 213.;
+                
+                MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+                imageURL = imageRepresentation.url;
+            }
         }];
+        
+        if (imageURL) {
+            [self.coverImageView setImageWithURL:imageURL
+                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                                           [self.view setNeedsUpdateConstraints];
+                                       }];
+        }
     }
 }
 
@@ -65,6 +95,12 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.bounds.size.width];
+    [self.nextStoryTitleLabel setPreferredMaxLayoutWidth:self.nextStoryTitleLabel.bounds.size.width];
 }
 
 - (void)updateViewConstraints
@@ -78,16 +114,21 @@
         self.bodyViewHeightConstraint.constant = size.height;
     }
 
-
-    if (self.coverImageView.image) {
-        // Using 213 here because all the images from the News office should be around a
-        // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
-        // a point or two.
-        // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
-        // (bskinner - 2014.02.07)
-        self.coverImageViewHeightConstraint.constant = 213.;
+    if (!self.nextStoryView) {
+        if (self.coverImageView.image) {
+            // Using 213 here because all the images from the News office should be around a
+            // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
+            // a point or two.
+            // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
+            // (bskinner - 2014.02.07)
+            self.coverImageViewHeightConstraint.constant = 213.;
+        } else {
+            self.coverImageViewHeightConstraint.constant = 0;
+        }
     } else {
-        self.coverImageViewHeightConstraint.constant = 0;
+        self.nextStoryImageHeightConstraint.constant = 60;
+        self.nextStoryImageWidthConstraint.constant = 90;
+        self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
     }
 }
 
@@ -179,8 +220,14 @@
         dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"MMM dd, y"];
     });
-
-    NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];
+    
+    NSURL *templateURL;
+    
+    if (self.nextStoryView) {
+        templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+    } else {
+        templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];
+    }
     
     NSError *error = nil;
     NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
@@ -195,17 +242,29 @@
             if (publishedAt) {
                 postDate = [dateFormatter stringFromDate:publishedAt];
             }
-
+            
+            MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(400, 400)];
+            
+            CGSize resizedImage;
+            if (representation) {
+                resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(368, 400)];
+            }
             templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
                                  @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
                                  @"__DATE__": (postDate ? postDate : [NSNull null]),
                                  @"__DEK__": (story.dek ? story.dek : [NSNull null]),
                                  @"__BODY__": (story.body ? story.body : [NSNull null]),
-                                 @"__GALLERY_COUNT__": @(0),
+                                 @"__GALLERY_COUNT__": (representation ? @"1" : @"0"),
                                  @"__BOOKMARKED__": @"",
                                  @"__THUMBNAIL_URL__": @"",
                                  @"__THUMBNAIL_WIDTH__": @"",
-                                 @"__THUMBNAIL_HEIGHT__": @""};
+                                 @"__THUMBNAIL_HEIGHT__": @"",
+                                 @"__GALLERY_URL__" : ([representation.url absoluteString] ? [representation.url absoluteString] : [NSNull null]),
+                                 @"__GALLERY_WIDTH__" : ([NSString stringWithFormat:@"%f",resizedImage.width] ? [NSString stringWithFormat:@"%f",resizedImage.width] : @"0"),
+                                 @"__GALLERY_HEIGHT__" : ([NSString stringWithFormat:@"%f",resizedImage.height] ? [NSString stringWithFormat:@"%f",resizedImage.height] : @"0"),
+                                 @"__GALLERY_DESCRIPTION__" : (story.coverImage.descriptionText ? story.coverImage.descriptionText : [NSNull null]),
+                                 @"__GALLERY_CREDIT__" : (story.coverImage.credits ? story.coverImage.credits : [NSNull null])
+                                 };
         }
     }];
 
@@ -232,6 +291,19 @@
     return templateString;
 }
 
+- (CGSize)scaledSizeForSize:(CGSize)targetSize withMaximumSize:(CGSize)maximumSize
+{
+    if ((targetSize.width > maximumSize.width) || (targetSize.height > maximumSize.height)) {
+        CGFloat xScale = maximumSize.width / targetSize.width;
+        CGFloat yScale = maximumSize.height / targetSize.height;
+        
+        CGFloat scale = MIN(xScale,yScale);
+        return CGSizeMake(ceil(targetSize.width * scale), ceil(targetSize.height * scale));
+    } else {
+        return targetSize;
+    }
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self.bodyView loadHTMLString:[self htmlBody]
@@ -248,6 +320,16 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+    // Set the height to '1' here so that when we update the
+    // view constraints in updateViewConstraints, the web view
+    // returns the correct minimum size it needs to fit the content
+    // when sizeThatFitsSize: is called. '1' may or may not be a magic
+    // number here; using either '0' or leaving the frame at its
+    // default sizing results in incorrect behavior
+    CGRect frame = webView.frame;
+    frame.size.height = 1;
+    webView.frame = frame;
+    
     [self.view setNeedsUpdateConstraints];
     [self.view updateConstraintsIfNeeded];
 }
@@ -262,6 +344,11 @@
     
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		NSURL *url = [request URL];
+        if ([[url relativeString] isEqualToString:@"mitmobile://opengallery"])
+        {
+            [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
+            return NO;
+        }
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]];
         
         if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
@@ -279,6 +366,114 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
+}
+
+#pragma mark nextStory
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
+{
+    return [self.delegate newsDetailController:storyDetailController storyAfterStory:self.story];
+}
+
+- (IBAction)touchNextStoryView:(id)sender
+{
+    MITNewsStory *nextStory = [self newsDetailController:self storyAfterStory:self.story];
+    
+    [self setStory:nextStory];
+    
+    [self setupNextStory];
+    
+    [self.bodyView loadHTMLString:[self htmlBody]
+                          baseURL:nil];
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+}
+
+- (void)setupNextStory
+{
+    MITNewsStory *nextStory = [self newsDetailController:nil storyAfterStory:self.story];
+    
+    if (nextStory) {
+        __block NSString *title = nil;
+        __block NSString *dek = nil;
+        __block NSURL *imageURL = nil;
+        [nextStory.managedObjectContext performBlockAndWait:^{
+            
+            title = nextStory.title;
+            dek = nextStory.dek;
+            
+            CGSize idealImageSize = self.nextStoryImageView.frame.size;
+            
+            MITNewsImageRepresentation *representation = [nextStory.coverImage bestRepresentationForSize:idealImageSize];
+            if (representation) {
+                imageURL = representation.url;
+            }
+        }];
+        
+        if (title) {
+            NSError *error = nil;
+            NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (!titleContent) {
+                DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
+                titleContent = title;
+            }
+            self.nextStoryTitleLabel.text = titleContent;
+            
+        } else {
+            self.nextStoryTitleLabel.text = nil;
+        }
+        if (dek) {
+            NSError *error = nil;
+            NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+            if (error) {
+                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
+                dekContent = dek;
+            }
+            
+            self.nextStoryDekLabel.text = dekContent;
+        } else {
+            self.nextStoryDekLabel.text = nil;
+        }
+        
+        if (imageURL) {
+            MITNewsStory *currentStory = nextStory;
+            __weak MITNewsStoryViewController *weakSelf = self;
+            [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                MITNewsStoryViewController *blockSelf = weakSelf;
+                if (blockSelf && (blockSelf->_story == currentStory)) {
+                    if (error) {
+                        blockSelf.nextStoryImageView.image = nil;
+                    }
+                }
+            }];
+        } else {
+            self.nextStoryImageView.image = nil;
+        }
+        static NSDateFormatter *dateFormatter = nil;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"MMM dd, y"];
+        });
+        
+        NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+        
+        NSError *error = nil;
+        NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
+        NSAssert(templateString, @"failed to load News story HTML template");
+        
+        NSString *postDate = @"";
+        NSDate *publishedAt = nextStory.publishedAt;
+        if (publishedAt) {
+            postDate = [dateFormatter stringFromDate:publishedAt];
+        }
+        self.nextStoryDateLabel.text = postDate;
+    } else {
+        [self.nextStoryImageView cancelCurrentImageLoad];
+        self.nextStoryImageView.image = nil;
+        self.nextStoryTitleLabel.text = nil;
+        self.nextStoryDekLabel.text = nil;
+        self.nextStoryDateLabel.text = nil;
+        self.nextStoryNextStoryLabel.text = nil;
+    }
 }
 
 #pragma mark UIActivityItemSource

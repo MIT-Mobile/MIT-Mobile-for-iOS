@@ -5,6 +5,10 @@
 #import "MITNewsCategory.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsConstants.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITCoreDataController.h"
+#import "MITNewsStoryViewController.h"
+#import "MITNewsSearchController.h"
 
 #import "MITNewsListViewController.h"
 #import "MITNewsGridViewController.h"
@@ -29,6 +33,7 @@
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 @property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
+@property (nonatomic, strong) MITNewsSearchController *searchController;
 
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
@@ -141,6 +146,22 @@
     [self setPresentationStyle:style animated:NO];
 }
 
+#pragma mark UI Actions
+- (MITNewsSearchController *)searchController
+{
+    if(!_searchController) {
+        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.stories = self.stories;
+        searchController.delegate = self;
+        _searchController = searchController;
+    }
+
+    return _searchController;
+}
+- (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
+{
+    
+}
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
     NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
@@ -245,9 +266,19 @@
         }
     }
     
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
-    [rightBarItems addObject:searchItem];
-    
+    if (self.searching) {
+        UISearchBar *searchBar = [self.searchController returnSearchBar];
+        
+        UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
+        [barWrapper addSubview:searchBar];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
+        self.searchBar = searchBar;
+        [rightBarItems addObject:searchBarItem];
+
+    } else {
+        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
+        [rightBarItems addObject:searchItem];
+    }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 
@@ -362,16 +393,7 @@
     }
 }
 
-- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
-{
-    if (self.isSearching) {
-        return NO;
-    } else if (self.showsFeaturedStories && (section == 0)) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
+#pragma mark UITableViewDataSource
 
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
 {
@@ -411,6 +433,38 @@
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     return dataSource.objects[index];
+}
+
+#pragma mark MITNewsStoryDetailPagingDelegate
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+{
+#warning find better way to implement
+    for (int i = 0 ; i < [self.stories count] ; i ++) {
+        MITNewsStory *storyFromArray = [self.stories objectAtIndex:i];
+        if ([story.identifier isEqualToString:storyFromArray.identifier]) {
+            if ([self.stories count] > i + 1) {
+                return [self.stories objectAtIndex:i + 1];
+            }
+        }
+    };
+    
+    return nil;
+}
+
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
+{
+    return nil;
+}
+
+- (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
+{
+    return nil;
+}
+
+- (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
+{
+
 }
 
 @end
