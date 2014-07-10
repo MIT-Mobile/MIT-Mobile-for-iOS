@@ -113,7 +113,7 @@ static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdenti
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0){
-        [self.delegate placeSelectionViewController:self didSelectCategory:self.category places:self.placesInCategory];
+        [self.delegate placeSelectionViewController:self didSelectCategory:self.category];
     }
     else {
         MITMapPlace *place = self.placesInCategory[indexPath.row - 1];

@@ -8,6 +8,6 @@
 
 @optional
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector>*)viewController didSelectPlace:(MITMapPlace *)place;
-- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category places:(NSArray *)places;
+- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category;
 
 @end

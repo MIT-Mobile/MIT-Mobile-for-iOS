@@ -146,7 +146,13 @@
     
     RKEntityMapping *contentsMapping = [[RKEntityMapping alloc] initWithEntity:placeContentEntity];
     [contentsMapping addAttributeMappingsFromDictionary:@{@"name" : @"name",
-                                                          @"url" : @"url"}];
+                                                          @"url" : @"url",
+                                                          @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *contentCategoriesRelationship = [placeContentEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *contentCategoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:contentCategoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [contentsMapping addConnection:contentCategoriesConnection];
+
     [placeMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contents" withMapping:contentsMapping]];
 
     [self addMapping:placeMapping atKeyPath:nil forRequestMethod:RKRequestMethodAny];
