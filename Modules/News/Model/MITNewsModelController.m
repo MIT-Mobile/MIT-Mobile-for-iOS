@@ -153,14 +153,15 @@
         MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         
         MITNewsRecentSearchQuery *searchItem = [[MITNewsRecentSearchQuery alloc] initWithEntity:[MITNewsRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
-        
-        searchItem.text = searchTerm;
-        
-        [context transferManagedObjects:@[searchItem]];
-        
-        [recentSearchList addRecentQueriesObject:searchItem];
-        
-        [context save:updateError];
+
+        if (searchItem) {
+            searchItem.text = searchTerm;
+            [recentSearchList addRecentQueriesObject:searchItem];
+            return YES;
+        } else {
+            return NO;
+        }
+
     } error:&error];
 }
 
@@ -170,7 +171,12 @@
         MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         [context deleteObject:recentSearchList];
         recentSearchList = [self recentSearchListWithManagedObjectContext:context];
-        [context save:updateError];
+
+        if (recentSearchList) {
+            return YES;
+        } else {
+            return NO;
+        }
     } error:&error];
 }
 

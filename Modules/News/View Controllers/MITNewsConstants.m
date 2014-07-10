@@ -24,5 +24,5 @@ NSString* const MITNewsCollectionCellStoryJumboWithCellIdentifier = @"NewsStoryJ
 NSString* const MITNewsCollectionCellStoryDekWithCellIdentifier = @"NewsStoryDekCollectionViewCell";
 NSString* const MITNewsCollectionCellStoryClipWithCellIdentifier = @"NewsStoryClipCollectionViewCell";
 NSString* const MITNewsCollectionCellStoryImageWithCellIdentifier = @"NewsStoryImageCollectionViewCell";
-NSString* const MITNewsCollectionReusableHeaderWithCellIdentifier = @"NewsStoryHeaderReusableView";
-NSString* const MITNewsCollectionDecorationDividerIdentifier = @"MITNewsCollectionDecorationDividerIdentifier";
+NSString* const MITNewsCollectionReusableViewIdentifierSectionHeader = @"NewsStoryHeaderReusableView";
+NSString* const MITNewsCollectionReusableViewIdentifierDividerDecoration = @"MITNewsCollectionDecorationDividerIdentifier";

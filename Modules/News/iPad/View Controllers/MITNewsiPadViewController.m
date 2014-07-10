@@ -1,5 +1,4 @@
 #import "MITNewsiPadViewController.h"
-#import "MITNewsPadLayout.h"
 #import "MITNewsModelController.h"
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
@@ -31,6 +30,7 @@
 
 @interface MITNewsiPadViewController ()
 @property (nonatomic, weak) IBOutlet UIView *containerView;
+@property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
 @property (nonatomic, strong) MITNewsSearchController *searchController;
@@ -151,17 +151,13 @@
 {
     if(!_searchController) {
         MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
-        searchController.stories = self.stories;
         searchController.delegate = self;
         _searchController = searchController;
     }
 
     return _searchController;
 }
-- (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
-{
-    
-}
+
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
     NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
@@ -439,16 +435,7 @@
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
-#warning find better way to implement
-    for (int i = 0 ; i < [self.stories count] ; i ++) {
-        MITNewsStory *storyFromArray = [self.stories objectAtIndex:i];
-        if ([story.identifier isEqualToString:storyFromArray.identifier]) {
-            if ([self.stories count] > i + 1) {
-                return [self.stories objectAtIndex:i + 1];
-            }
-        }
-    };
-    
+    NSAssert(NO,@"Not Yet Implemented");
     return nil;
 }
 
@@ -459,7 +446,7 @@
 
 - (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
 {
-    return nil;
+    return NO;
 }
 
 - (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story

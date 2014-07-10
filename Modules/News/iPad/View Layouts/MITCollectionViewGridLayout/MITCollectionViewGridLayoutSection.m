@@ -202,7 +202,7 @@ static MITFeaturedItemLayoutContext const MITFeatureItemLayoutEmptyContext = {.r
         __block CGRect layoutBounds = UIEdgeInsetsInsetRect(_bounds, contentInsets);
         layoutBounds.size.height = CGFLOAT_MAX;
 
-        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
+        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsCollectionReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
         
         CGRect headerFrame = CGRectZero;
         CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
