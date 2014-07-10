@@ -25,7 +25,7 @@
         _lineSpacing = 8.0;
         _sectionSpacing = 20.;
         _sectionContentInsets = UIEdgeInsetsZero;
-        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsCollectionReusableViewIdentifierDividerDecoration];
+        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
 
     return self;
@@ -156,7 +156,7 @@
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
             [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-                if ([layoutAttributes.representedElementKind isEqualToString:MITNewsCollectionReusableViewIdentifierSectionHeader]) {
+                if ([layoutAttributes.representedElementKind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 } else if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];

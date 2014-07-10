@@ -20,9 +20,9 @@ NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
 
 NSUInteger const MITNewsDefaultNumberOfStoriesPerPage = 20;
 
-NSString* const MITNewsCollectionCellStoryJumboWithCellIdentifier = @"NewsStoryJumboCollectionViewCell";
-NSString* const MITNewsCollectionCellStoryDekWithCellIdentifier = @"NewsStoryDekCollectionViewCell";
-NSString* const MITNewsCollectionCellStoryClipWithCellIdentifier = @"NewsStoryClipCollectionViewCell";
-NSString* const MITNewsCollectionCellStoryImageWithCellIdentifier = @"NewsStoryImageCollectionViewCell";
-NSString* const MITNewsCollectionReusableViewIdentifierSectionHeader = @"NewsStoryHeaderReusableView";
-NSString* const MITNewsCollectionReusableViewIdentifierDividerDecoration = @"MITNewsCollectionDecorationDividerIdentifier";
+NSString* const MITNewsCellIdentifierStoryJumbo = @"NewsStoryJumboCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryDek = @"NewsStoryDekCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryClip = @"NewsStoryClipCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryWithImage = @"NewsStoryImageCollectionViewCell";
+NSString* const MITNewsReusableViewIdentifierSectionHeader = @"NewsStoryHeaderReusableView";
+NSString* const MITNewsReusableViewIdentifierDivider = @"MITNewsCollectionDecorationDividerIdentifier";

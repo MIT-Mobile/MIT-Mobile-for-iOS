@@ -165,7 +165,7 @@
     // Checking for numberOfItems here because, once we add the new layout attributes
     //  to the _itemLayoutAttributes ivar, numberOfItems will increment and we'll end up with an extra decoration.
     if (self.numberOfItems > 0) {
-        UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsCollectionReusableViewIdentifierDividerDecoration withIndexPath:[NSIndexPath indexPathWithIndex:[self numberOfItems]]];
+        UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:[NSIndexPath indexPathWithIndex:[self numberOfItems]]];
         decorationLayoutAttributes.frame = CGRectMake(0, 0, _interItemSpacing, 0);
 
         [_decorationLayoutAttributes addObject:decorationLayoutAttributes];

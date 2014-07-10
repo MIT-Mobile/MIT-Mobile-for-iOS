@@ -56,11 +56,11 @@
     [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
      */
 
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCollectionCellStoryJumboWithCellIdentifier];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCollectionCellStoryDekWithCellIdentifier];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCollectionCellStoryClipWithCellIdentifier];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCollectionCellStoryImageWithCellIdentifier];
-    [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsCollectionReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsCollectionReusableViewIdentifierSectionHeader];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+    [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
 
 }
 
@@ -111,13 +111,13 @@
 
     if ([collectionViewCell isMemberOfClass:[UICollectionViewCell class]]) {
         // Debugging!
-        if ([cellIdentifier isEqualToString:MITNewsCollectionCellStoryJumboWithCellIdentifier]) {
+        if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryJumbo]) {
             collectionViewCell.contentView.backgroundColor = [UIColor blueColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCollectionCellStoryImageWithCellIdentifier]) {
+        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryWithImage]) {
             collectionViewCell.contentView.backgroundColor = [UIColor greenColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCollectionCellStoryClipWithCellIdentifier]) {
+        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryClip]) {
             collectionViewCell.contentView.backgroundColor = [UIColor grayColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCollectionCellStoryDekWithCellIdentifier]) {
+        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryDek]) {
             collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
         }
     } else if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
@@ -130,8 +130,8 @@
 
 - (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    if ([kind isEqualToString:MITNewsCollectionReusableViewIdentifierSectionHeader]) {
-        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsCollectionReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsCollectionReusableViewIdentifierSectionHeader forIndexPath:indexPath];
+    if ([kind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
+        UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader forIndexPath:indexPath];
         headerView.backgroundColor = [UIColor redColor];
 
         return headerView;
@@ -146,13 +146,13 @@
     BOOL featuredStory = [self collectionView:collectionView layout:nil showFeaturedItemInSection:indexPath.section];
 
     if (featuredStory && indexPath.item == 0) {
-        return MITNewsCollectionCellStoryJumboWithCellIdentifier;
+        return MITNewsCellIdentifierStoryJumbo;
     } else if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-        return MITNewsCollectionCellStoryClipWithCellIdentifier;
+        return MITNewsCellIdentifierStoryClip;
     } else if (story.coverImage)  {
-        return MITNewsCollectionCellStoryImageWithCellIdentifier;
+        return MITNewsCellIdentifierStoryWithImage;
     } else {
-        return MITNewsCollectionCellStoryDekWithCellIdentifier;
+        return MITNewsCellIdentifierStoryDek;
     }
 }
 
