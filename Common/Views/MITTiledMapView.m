@@ -2,8 +2,8 @@
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 
-static CGFloat const kBottomButtonSize = 46;
-static CGFloat const kBottomButtonPadding = 20;
+static CGFloat const kBottomButtonSize = 44;
+static CGFloat const kBottomButtonPadding = 8;
 
 @interface MITTiledMapView()
 
@@ -125,6 +125,7 @@ static CGFloat const kBottomButtonPadding = 20;
 - (void)setupLeftButton
 {
     self.leftButton = [[UIButton alloc] initWithFrame:CGRectMake(kBottomButtonPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonPadding, kBottomButtonSize, kBottomButtonSize)];
+    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location"] forState:UIControlStateNormal];
     [self.leftButton addTarget:self action:@selector(leftButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.leftButton.layer.borderWidth = 1;
     self.leftButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
@@ -141,6 +142,7 @@ static CGFloat const kBottomButtonPadding = 20;
 - (void)setupRightButton
 {
     self.rightButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - kBottomButtonSize - kBottomButtonPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonPadding, kBottomButtonSize, kBottomButtonSize)];
+    [self.rightButton setImage:[UIImage imageNamed:@"map/map_list"] forState:UIControlStateNormal];
     [self.rightButton addTarget:self action:@selector(rightButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.rightButton.layer.borderWidth = 1;
     self.rightButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
