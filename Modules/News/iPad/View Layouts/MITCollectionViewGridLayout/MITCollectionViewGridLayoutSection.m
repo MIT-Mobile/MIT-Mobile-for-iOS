@@ -440,7 +440,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             const CGFloat decorationHeight = CGRectGetHeight(layoutAttributes.frame);
 
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:layoutAttributes.indexPath.item inSection:self.section];
-            UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsCollectionDecorationDividerIdentifier withIndexPath:indexPath];
+            UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:indexPath];
 
             decorationLayoutAttributes.frame = CGRectMake(decorationOriginX, decorationOriginY, decorationWidth, decorationHeight);
             allDecorationLayoutAttributes[@(decorationOriginX)] = decorationLayoutAttributes;
