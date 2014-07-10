@@ -15,7 +15,7 @@
         self.image = [UIImage imageNamed:@"map/map_place_pin"];
         self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
         self.canShowCallout = YES;
-        self.rightCalloutAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]];
+        [self setupDisclosureButton];
         [self setupNumberLabel];
     }
     return self;
@@ -30,6 +30,13 @@
     numberLabel.textAlignment = NSTextAlignmentCenter;
     [self addSubview:numberLabel];
     self.numberLabel = numberLabel;
+}
+
+- (void)setupDisclosureButton
+{
+    UIButton *disclosureButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+    [disclosureButton setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"] forState:UIControlStateNormal];
+    self.rightCalloutAccessoryView = disclosureButton;
 }
 
 - (void)setNumber:(NSInteger)number
