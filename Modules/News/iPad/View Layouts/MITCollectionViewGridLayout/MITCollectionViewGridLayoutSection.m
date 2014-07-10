@@ -429,29 +429,21 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         }
 
         const CGFloat decorationOriginX = CGRectGetMaxX(layoutAttributes.frame);
-        if (!allDecorationLayoutAttributes[@(decorationOriginX)]) {
-            // Make sure we are not at the end of the current row
-            if (CGRectGetMinY(layoutAttributes.frame) != CGRectGetMinY(nextLayoutAttributes.frame)) {
-                return;
+        if (CGRectGetMinY(layoutAttributes.frame) == CGRectGetMinY(nextLayoutAttributes.frame)) {
+            if (!allDecorationLayoutAttributes[@(decorationOriginX)]) {
+                const CGFloat decorationOriginY = CGRectGetMinY(layoutAttributes.frame);
+                const CGFloat decorationWidth = CGRectGetMinX(nextLayoutAttributes.frame) - decorationOriginX;
+                const CGFloat decorationHeight = CGRectGetMaxY(bounds) - decorationOriginY;
+
+                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:layoutAttributes.indexPath.item inSection:self.section];
+                UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:indexPath];
+
+                decorationLayoutAttributes.frame = CGRectMake(decorationOriginX, decorationOriginY, decorationWidth, decorationHeight);
+                allDecorationLayoutAttributes[@(decorationOriginX)] = decorationLayoutAttributes;
             }
-
-            const CGFloat decorationOriginY = CGRectGetMinY(layoutAttributes.frame);
-            const CGFloat decorationWidth = CGRectGetMinX(nextLayoutAttributes.frame) - decorationOriginX;
-            const CGFloat decorationHeight = CGRectGetHeight(layoutAttributes.frame);
-
-            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:layoutAttributes.indexPath.item inSection:self.section];
-            UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:indexPath];
-
-            decorationLayoutAttributes.frame = CGRectMake(decorationOriginX, decorationOriginY, decorationWidth, decorationHeight);
-            allDecorationLayoutAttributes[@(decorationOriginX)] = decorationLayoutAttributes;
-        } else {
-            UICollectionViewLayoutAttributes *decorationLayoutAttributes = allDecorationLayoutAttributes[@(decorationOriginX)];
-            CGRect frame = decorationLayoutAttributes.frame;
-            frame.size.height += CGRectGetMaxY(layoutAttributes.frame) - CGRectGetMaxY(decorationLayoutAttributes.frame);
-            decorationLayoutAttributes.frame = frame;
         }
     }];
-
+    
     return [allDecorationLayoutAttributes allValues];
 }
 
