@@ -303,7 +303,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
                 }
 
                 // Recalculate the maximum number of items in the new row
-                // since we just added the old one to the saved rows (if there was once
+                // since we just added the old one to the saved rows (if there was one)
                 // and it's time to start on a new one.
                 if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
                     // If the row would overlap the featured item's space, reduce the
