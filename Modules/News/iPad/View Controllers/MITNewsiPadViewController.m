@@ -431,6 +431,15 @@
     return dataSource.objects[index];
 }
 
+- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
+{
+    if (self.showsFeaturedStories) {
+        return (section == 0);
+    } else {
+        return NO;
+    }
+}
+
 #pragma mark MITNewsStoryDetailPagingDelegate
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
