@@ -295,16 +295,19 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
                 maximumNumberOfItemsInRow -= featuredItemLayoutContext.span.horizontal;
             }
 
-            if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
+            // Check to see if we need to create a new row layout helper. This should be triggered
+            // if we try to march through here with either a filled or non-existant row.
             if ((currentLayoutRow == nil) || currentLayoutRow.isFilled) {
                 if (currentLayoutRow) {
                     [rowLayouts addObject:currentLayoutRow];
                 }
 
                 // Recalculate the maximum number of items in the new row
-                // since we just added the old one to the saved rows and it's
-                // time to start on a new one.
+                // since we just added the old one to the saved rows (if there was once
+                // and it's time to start on a new one.
                 if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
+                    // If the row would overlap the featured item's space, reduce the
+                    // number of items we can insert by the number of columns the item spans.
                     maximumNumberOfItemsInRow = numberOfColumns - featuredItemLayoutContext.span.horizontal;
                 } else {
                     maximumNumberOfItemsInRow = numberOfColumns;
@@ -317,7 +320,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
                 // Make sure a frame with a valid width is set here. We don't care about the origin
                 // or the height at this point (the height will be ignored, anyway) but the width
                 // is vital, otherwise we'll get an incorrect height when calculating the featured item
-                // placement
+                // placement, or place items over/under the featured item.
                 CGRect initialRowFrame = CGRectMake(CGRectGetMinX(layoutBounds), 0, CGRectGetWidth(layoutBounds), 0);
                 if (numberOfRows() < featuredItemLayoutContext.span.vertical) {
                     initialRowFrame.origin.x += featuredItemLayoutContext.horizontalOffset;
@@ -384,7 +387,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             [itemLayoutAttributes addObjectsFromArray:[row itemLayoutAttributes]];
             [decorationLayoutAttributes addObjectsFromArray:[row decorationLayoutAttributes]];
 
-            // Shift the layout bounds down a bit further to account for the intraLineSpacing
+            // Shift the layout bounds down a bit further to account for the line spacing
             // if we are not on the (n-1)th row;
             NSRange spacingIndexRange = NSMakeRange(0, numberOfRows() - 1);
             NSIndexSet *spacingIndexes = [NSIndexSet indexSetWithIndexesInRange:spacingIndexRange];
@@ -444,7 +447,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             }
         }
     }];
-    
+
     return [allDecorationLayoutAttributes allValues];
 }
 
