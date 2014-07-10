@@ -288,8 +288,8 @@
 		5ED473221959C0D8001D6B78 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */; };
 		5EE17BE61962F41700F375B5 /* MITMapResultsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BE51962F41700F375B5 /* MITMapResultsListViewController.m */; };
-		5EE17BED1962FC8300F375B5 /* MITMapNumberedResultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */; };
-		5EE17BEE1962FC8300F375B5 /* MITMapNumberedResultCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */; };
+		5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BEB1962FC8300F375B5 /* MITMapPlaceCell.m */; };
+		5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BEC1962FC8300F375B5 /* MITMapPlaceCell.xib */; };
 		5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */; };
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
@@ -1043,9 +1043,9 @@
 		5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceAnnotationView.m; sourceTree = "<group>"; };
 		5EE17BE41962F41700F375B5 /* MITMapResultsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapResultsListViewController.h; sourceTree = "<group>"; };
 		5EE17BE51962F41700F375B5 /* MITMapResultsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapResultsListViewController.m; sourceTree = "<group>"; };
-		5EE17BEA1962FC8300F375B5 /* MITMapNumberedResultCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapNumberedResultCell.h; sourceTree = "<group>"; };
-		5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapNumberedResultCell.m; sourceTree = "<group>"; };
-		5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapNumberedResultCell.xib; sourceTree = "<group>"; };
+		5EE17BEA1962FC8300F375B5 /* MITMapPlaceCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceCell.h; sourceTree = "<group>"; };
+		5EE17BEB1962FC8300F375B5 /* MITMapPlaceCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceCell.m; sourceTree = "<group>"; };
+		5EE17BEC1962FC8300F375B5 /* MITMapPlaceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceCell.xib; sourceTree = "<group>"; };
 		5EE17BF119633D0300F375B5 /* MITMapBrowseContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapBrowseContainerViewController.h; sourceTree = "<group>"; };
 		5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapBrowseContainerViewController.m; sourceTree = "<group>"; };
 		5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapBrowseContainerViewController.xib; sourceTree = "<group>"; };
@@ -2622,9 +2622,9 @@
 			children = (
 				5EE17BDD196207CE00F375B5 /* MITMapPlaceAnnotationView.h */,
 				5EE17BDE196207CE00F375B5 /* MITMapPlaceAnnotationView.m */,
-				5EE17BEA1962FC8300F375B5 /* MITMapNumberedResultCell.h */,
-				5EE17BEB1962FC8300F375B5 /* MITMapNumberedResultCell.m */,
-				5EE17BEC1962FC8300F375B5 /* MITMapNumberedResultCell.xib */,
+				5EE17BEA1962FC8300F375B5 /* MITMapPlaceCell.h */,
+				5EE17BEB1962FC8300F375B5 /* MITMapPlaceCell.m */,
+				5EE17BEC1962FC8300F375B5 /* MITMapPlaceCell.xib */,
 				A544EF111965A7AF0046823E /* MITMapPlaceContentCell.h */,
 				A544EF121965A7AF0046823E /* MITMapPlaceContentCell.m */,
 				A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */,
@@ -3265,7 +3265,7 @@
 				A5BF260B1969FCB400D73AF5 /* MITMapPlaceNameCell.xib in Resources */,
 				2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
-				5EE17BEE1962FC8300F375B5 /* MITMapNumberedResultCell.xib in Resources */,
+				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */,
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
 				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
@@ -3571,7 +3571,7 @@
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
 				2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */,
 				DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */,
-				5EE17BED1962FC8300F375B5 /* MITMapNumberedResultCell.m in Sources */,
+				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,

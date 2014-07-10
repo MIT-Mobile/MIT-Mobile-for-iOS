@@ -1,14 +1,14 @@
 #import "MITMapResultsListViewController.h"
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
-#import "MITMapNumberedResultCell.h"
+#import "MITMapPlaceCell.h"
 #import "MITMapPlaceDetailViewController.h"
 
 static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedResultCell";
 
 @interface MITMapResultsListViewController ()
 
-@property (nonatomic, strong) MITMapNumberedResultCell *helperCell;
+@property (nonatomic, strong) MITMapPlaceCell *helperCell;
 
 @end
 
@@ -47,12 +47,8 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     
-    // Update helper cell frame
-    CGRect frame = self.helperCell.frame;
-    frame.size.width = self.tableView.frame.size.width;
-    self.helperCell.frame = frame;
-    
     // Reload cell heights
+    [self resetHelperCellFrame];
     [self.tableView reloadData];
 }
 
@@ -60,10 +56,11 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (void)setupTableView
 {
-    UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMapNumberedResultCell class]) bundle:nil];
+    UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
     [self.tableView registerNib:numberedResultCellNib forCellReuseIdentifier:kMITMapNumberedResultCellIdentifier];
     
     self.helperCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+    [self resetHelperCellFrame];
 }
 
 - (void)setupDoneBarButtonItem
@@ -93,10 +90,17 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 #pragma mark - Table View Helpers
 
-- (void)configureCell:(MITMapNumberedResultCell *)cell forIndexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(MITMapPlaceCell *)cell forIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger index = indexPath.row;
     [cell setPlace:self.places[index] order:(index + 1)];
+}
+
+- (void)resetHelperCellFrame
+{
+    CGRect frame = self.helperCell.frame;
+    frame.size.width = self.tableView.frame.size.width;
+    self.helperCell.frame = frame;
 }
 
 #pragma mark - UITableViewDataSource
@@ -113,8 +117,9 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITMapNumberedResultCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapNumberedResultCellIdentifier forIndexPath:indexPath];
+    MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapNumberedResultCellIdentifier forIndexPath:indexPath];
     [self configureCell:cell forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryDetailButton;
     return cell;
 }
 
@@ -122,7 +127,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return kMapNumberedResultCellEstimatedHeight;
+    return kMapPlaceCellEstimatedHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -132,7 +137,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     
     CGFloat height = [self.helperCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
     ++height; // add pixel for cell separator
-    return height;
+    return MAX(kMapPlaceCellEstimatedHeight, height);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

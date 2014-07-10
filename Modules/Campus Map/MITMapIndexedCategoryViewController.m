@@ -2,8 +2,11 @@
 #import "MITMapModelController.h"
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
+#import "MITMapPlaceCell.h"
 
 static NSString * const kMITMapIndexedPlaceCellIdentifier = @"MITMapIndexedPlaceCell";
+
+static const CGFloat kEstimatedSectionIndexWidth = 30.0; // Can't access section index view, so we have to estimate
 
 NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientation orientation)
 {
@@ -14,6 +17,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 @property (nonatomic, strong) NSMutableArray *indexedPlaces;
 @property (nonatomic, copy) NSArray *sectionIndexTitles;
+@property (nonatomic, strong) MITMapPlaceCell *helperCell;
 
 @end
 
@@ -39,6 +43,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 {
     [super viewDidLoad];
     self.navigationItem.title = self.category.name;
+    [self setupTableView];
     [self setupDoneBarButtonItem];
 }
 
@@ -53,10 +58,24 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
     [self resetSectionIndexTitles];
+    [self resetHelperCellFrame];
+    
+    // Reload cell heights
+    [self.tableView reloadData];
 }
 
 #pragma mark - Setup
+
+- (void)setupTableView
+{
+    UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
+    [self.tableView registerNib:numberedResultCellNib forCellReuseIdentifier:kMITMapIndexedPlaceCellIdentifier];
+    
+    self.helperCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+    [self resetHelperCellFrame];
+}
 
 - (void)setupDoneBarButtonItem
 {
@@ -159,6 +178,13 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
     return YES;
 }
 
+- (void)resetHelperCellFrame
+{
+    CGRect frame = self.helperCell.frame;
+    frame.size.width = self.tableView.frame.size.width - kEstimatedSectionIndexWidth;
+    self.helperCell.frame = frame;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -181,13 +207,8 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapIndexedPlaceCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapIndexedPlaceCellIdentifier];
-    }
-    MITMapPlace *place = [self placeForIndexPath:indexPath];
-    cell.textLabel.text = place.title;
-    cell.detailTextLabel.text = place.subtitle;
+    MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapIndexedPlaceCellIdentifier forIndexPath:indexPath];
+    [cell setPlace:[self placeForIndexPath:indexPath]];
     return cell;
 }
 
@@ -208,6 +229,21 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 }
 
 #pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return kMapPlaceCellEstimatedHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.helperCell setPlace:[self placeForIndexPath:indexPath]];
+    [self.helperCell layoutIfNeeded];
+    
+    CGFloat height = [self.helperCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    ++height; // add pixel for cell separator
+    return MAX(kMapPlaceCellEstimatedHeight, height);
+}
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
