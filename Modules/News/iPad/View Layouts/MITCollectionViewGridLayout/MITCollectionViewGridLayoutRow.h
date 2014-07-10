@@ -8,9 +8,11 @@
 @property (nonatomic) CGRect bounds;
 @property (nonatomic) NSUInteger maximumNumberOfItems;
 
+@property (nonatomic,readonly) BOOL isFilled;
 @property (nonatomic,readonly) NSUInteger numberOfItems;
 @property (nonatomic,readonly) NSArray *itemLayoutAttributes;
 @property (nonatomic,readonly) NSArray *decorationLayoutAttributes;
+
 
 - (instancetype)init;
 - (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight;

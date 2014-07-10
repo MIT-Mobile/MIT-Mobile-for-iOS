@@ -152,6 +152,11 @@
     }
 }
 
+- (BOOL)isFilled
+{
+    return (self.maximumNumberOfItems == self.numberOfItems);
+}
+
 - (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
 {
     if (self.maximumNumberOfItems > 0) {

@@ -296,6 +296,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             }
 
             if (!currentLayoutRow || ([currentLayoutRow numberOfItems] >= maximumNumberOfItemsInRow)) {
+            if ((currentLayoutRow == nil) || currentLayoutRow.isFilled) {
                 if (currentLayoutRow) {
                     [rowLayouts addObject:currentLayoutRow];
                 }
