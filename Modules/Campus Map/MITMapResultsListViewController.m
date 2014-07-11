@@ -4,11 +4,14 @@
 #import "MITMapPlaceCell.h"
 #import "MITMapPlaceDetailViewController.h"
 
+static NSString * const kMITMapResultsListDefaultTitle = @"Results";
+
 static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedResultCell";
 
 @interface MITMapResultsListViewController ()
 
 @property (nonatomic, strong) MITMapPlaceCell *helperCell;
+@property (nonatomic, strong) UIView *noResultsView;
 
 @end
 
@@ -33,6 +36,13 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     [self setupTableView];
     [self setupDoneBarButtonItem];
     [self setupBackBarButtonItem];
+    [self setupNoResultsView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self setNoResultsViewHidden:([self.places count] > 0)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -74,6 +84,29 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
+#pragma mark - No Results View
+
+- (void)setupNoResultsView
+{
+    UILabel *noResultsLabel = [[UILabel alloc] init];
+    noResultsLabel.text = @"No Results";
+    noResultsLabel.font = [UIFont systemFontOfSize:24.0];
+    noResultsLabel.textColor = [UIColor grayColor];
+    noResultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIView *noResultsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
+    [noResultsView addSubview:noResultsLabel];
+    [noResultsView addConstraints:@[[NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0],
+                                    [NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]]];
+    self.noResultsView = noResultsView;
+}
+
+- (void)setNoResultsViewHidden:(BOOL)hidden
+{
+    self.tableView.separatorStyle = hidden ? UITableViewCellSeparatorStyleSingleLine : UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundView = hidden ? nil : self.noResultsView;
+}
+
 #pragma mark - Button Actions
 
 - (void)doneBarButtonItemTapped:(id)sender
@@ -85,7 +118,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (void)setTitleWithSearchQuery:(NSString *)query
 {
-    self.navigationItem.title = query ? [NSString stringWithFormat:@"\"%@\"", query] : nil;
+    self.navigationItem.title = query ? [NSString stringWithFormat:@"\"%@\"", query] : kMITMapResultsListDefaultTitle;
 }
 
 #pragma mark - Table View Helpers

@@ -255,6 +255,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     self.category = nil;
     self.searchQuery = nil;
+    self.searchQueryType = MITMapSearchQueryTypeText;
     [self setPlaces:nil animated:animated];
 }
 
