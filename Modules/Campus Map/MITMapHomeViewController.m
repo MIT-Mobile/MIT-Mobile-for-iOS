@@ -506,10 +506,54 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return nil;
 }
 
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    [self addCalloutTapGestureRecognizerToAnnotationView:view];
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    [self removeCalloutTapGestureFromAnnotationView:view];
+}
+
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITMapPlace *place = view.annotation;
+        [self pushDetailViewControllerForPlace:place];
+    }
+}
+
+#pragma mark - Callout Tap Gesture Recognizer
+
+- (void)addCalloutTapGestureRecognizerToAnnotationView:(MKAnnotationView *)view
+{
+    // Make the entire callout tappable, not just the disclosure button
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mapViewDidSelectAnnotationCallout:)];
+    [view addGestureRecognizer:tapGestureRecognizer];
+}
+
+- (void)removeCalloutTapGestureFromAnnotationView:(MKAnnotationView *)view
+{
+    if ([view.gestureRecognizers count] > 0) {
+        UITapGestureRecognizer *tapGestureRecognizer = nil;
+        for (UIGestureRecognizer *gestureRecognizer in view.gestureRecognizers) {
+            if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+                tapGestureRecognizer = (UITapGestureRecognizer *)gestureRecognizer;
+                break;
+            }
+        }
+        if (tapGestureRecognizer) {
+            [view removeGestureRecognizer:tapGestureRecognizer];
+        }
+    }
+}
+
+- (void)mapViewDidSelectAnnotationCallout:(UITapGestureRecognizer *)recognizer
+{
+    MKAnnotationView *annotationView = (MKAnnotationView *)recognizer.view;
+    if ([annotationView isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
         [self pushDetailViewControllerForPlace:place];
     }
 }
