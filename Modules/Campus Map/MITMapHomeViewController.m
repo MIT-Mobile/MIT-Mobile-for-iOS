@@ -249,6 +249,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     _places = places;
     [self refreshPlaceAnnotations];
     [self setupMapBoundingBoxAnimated:animated];
+    [self showCalloutForPlace:[places firstObject]];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
@@ -333,7 +334,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setPlaces:@[place] animated:YES];
     self.searchBar.text = place.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
-    [self showCalloutForPlace:place];
 }
 
 - (void)setPlacesWithCategory:(MITMapCategory *)category
