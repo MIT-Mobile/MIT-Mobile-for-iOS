@@ -52,7 +52,7 @@
         [places addObject:placeContent.building];
     }
     [places unionSet:self.places];
-    return [places sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"buildingNumber" ascending:YES]]];
+    return [places sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedStandardCompare:)]]];
 }
 
 @end
