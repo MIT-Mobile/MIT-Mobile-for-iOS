@@ -3,7 +3,7 @@
 #import "MITMapModelController.h"
 #import "MITMapBookmark.h"
 
-static NSString *const kAddBookmarksLabelText = @"Add Bookmarks from building details screens.";
+static NSString *const kAddBookmarksLabelText = @"No Bookmarks";
 static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmarksTableCellIdentifier";
 
 @interface MITMapBookmarksViewController ()
@@ -184,12 +184,14 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 {
     if (!_tableBackgroundView) {
         _tableBackgroundView = [[UIView alloc] initWithFrame:self.tableView.frame];
-        
-        UILabel *addBookmarksLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 80, 200, 200)];
+        CGFloat centerY = (self.view.frame.size.height / 2) - 70;
+        CGFloat width = [[UIScreen mainScreen] bounds].size.width;
+        UILabel *addBookmarksLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, centerY, width, 200)];
         addBookmarksLabel.numberOfLines = 0;
         addBookmarksLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        addBookmarksLabel.font = [UIFont systemFontOfSize:14.0];
-        addBookmarksLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+        addBookmarksLabel.textAlignment = NSTextAlignmentCenter;
+        addBookmarksLabel.font = [UIFont systemFontOfSize:24.0];
+        addBookmarksLabel.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
         addBookmarksLabel.text = kAddBookmarksLabelText;
         
         [_tableBackgroundView addSubview:addBookmarksLabel];
