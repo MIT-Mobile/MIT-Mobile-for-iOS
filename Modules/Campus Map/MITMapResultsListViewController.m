@@ -70,6 +70,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     [self.tableView registerNib:numberedResultCellNib forCellReuseIdentifier:kMITMapNumberedResultCellIdentifier];
     
     self.helperCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+    self.helperCell.accessoryType = UITableViewCellAccessoryDetailButton;
     [self resetHelperCellFrame];
 }
 

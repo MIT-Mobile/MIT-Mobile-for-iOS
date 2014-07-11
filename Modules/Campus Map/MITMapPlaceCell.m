@@ -1,7 +1,7 @@
 #import "MITMapPlaceCell.h"
 #import "MITMapPlace.h"
 
-const CGFloat kMapPlaceCellEstimatedHeight = 44.0;
+const CGFloat kMapPlaceCellEstimatedHeight = 50.0;
 
 @interface MITMapPlaceCell()
 
