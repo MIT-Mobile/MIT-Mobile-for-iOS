@@ -2,6 +2,7 @@
 #import "MITCoreDataController.h"
 #import "MITMapModelController.h"
 #import "MITMapBookmark.h"
+#import "MITMapPlaceCell.h"
 
 static NSString *const kAddBookmarksLabelText = @"No Bookmarks";
 static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmarksTableCellIdentifier";
@@ -12,6 +13,8 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 @property (nonatomic, strong) UIView *tableBackgroundView;
 
 @property (nonatomic, strong) UIBarButtonItem *bookmarksDoneButton;
+
+@property (nonatomic, strong) MITMapPlaceCell *helperCell;
 
 @end
 
@@ -34,6 +37,8 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
     
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
     self.bookmarksDoneButton = self.navigationItem.rightBarButtonItem;
+    
+    [self setupTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -46,6 +51,22 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setupTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
+    
+    self.helperCell = [cellNib instantiateWithOwner:nil options:nil][0];
+    [self resetHelperCellFrame];
+}
+
+- (void)resetHelperCellFrame
+{
+    CGRect frame = self.helperCell.frame;
+    frame.size.width = self.tableView.frame.size.width;
+    self.helperCell.frame = frame;
 }
 
 - (void)updateBookmarkedPlaces
@@ -104,17 +125,8 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapsBookmarksTableCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
-        cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-    }
-   
-    MITMapPlace *bookmarkedPlace = self.bookmarkedPlaces[indexPath.row];
-    
-    cell.textLabel.text = bookmarkedPlace.title;
-    cell.detailTextLabel.text = bookmarkedPlace.subtitle;
-    
+    MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapsBookmarksTableCellIdentifier forIndexPath:indexPath];
+    [cell setPlace:self.bookmarkedPlaces[indexPath.row]];
     return cell;
 }
 
@@ -139,6 +151,16 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 {
     MITMapPlace *place = self.bookmarkedPlaces[indexPath.row];
     [self.delegate placeSelectionViewController:self didSelectPlace:place];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.helperCell setPlace:self.bookmarkedPlaces[indexPath.row]];
+    [self.helperCell layoutIfNeeded];
+    
+    CGFloat height = [self.helperCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    ++height; // add pixel for cell separator
+    return MAX(kMapPlaceCellEstimatedHeight, height);
 }
 
 - (void)deleteBookmarkAtIndexPath:(NSIndexPath *)indexPath
