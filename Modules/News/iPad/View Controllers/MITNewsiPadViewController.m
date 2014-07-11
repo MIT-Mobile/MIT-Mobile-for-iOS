@@ -71,6 +71,9 @@
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
     [self updateNavigationItem:YES];
+    //To make view not dim when popover is present
+    self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated

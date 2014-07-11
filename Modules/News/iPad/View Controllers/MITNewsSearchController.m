@@ -8,6 +8,7 @@
 #import "MITNewsStoryViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
+#import "DDPopoverBackgroundView.h"
 
 @interface MITNewsSearchController () <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
 
@@ -90,6 +91,7 @@
 {
     [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
+    [searchBar resignFirstResponder];
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
@@ -150,6 +152,10 @@
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
+#warning add if dimming effect not wanted.
+    //recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
+    //[[DDPopoverBackgroundView class] setContentInset:0];
+    //[[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
