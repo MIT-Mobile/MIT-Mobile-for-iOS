@@ -119,7 +119,7 @@
 - (MITNewsRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsRecentSearchList entityName]];
-    NSError *error;
+    NSError *error = nil;
 
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     if (error) {

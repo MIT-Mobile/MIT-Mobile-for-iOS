@@ -5,7 +5,6 @@
 @interface MITNewsSearchController : UIViewController
 
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
-@property (nonatomic, strong) NSArray *stories;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 - (void)showSearchRecents;

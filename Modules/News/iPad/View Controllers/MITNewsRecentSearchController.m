@@ -100,7 +100,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self.searchController getResultsForString:[self.recentResults objectAtIndex:indexPath.row]];
+    MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
+    [self.searchController getResultsForString:query.text];
 }
 
 #pragma mark - View lifecycle

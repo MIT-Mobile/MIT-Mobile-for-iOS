@@ -10,17 +10,25 @@
 #import "MITCoreDataController.h"
 #import "DDPopoverBackgroundView.h"
 
-@interface MITNewsSearchController () <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
+#import "MITNewsStoriesDataSource.h"
 
+@interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
+
+@end
+
+@interface MITNewsSearchController()
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (weak, nonatomic) IBOutlet UITableView *searchTableView;
 @property (nonatomic) BOOL unwindFromStoryDetail;
+@property (nonatomic) MITNewsDataSource *dataSource;
 
 @end
 
 @implementation MITNewsSearchController
+
+@synthesize recentSearchController = _recentSearchController;
 
 #pragma mark - Dynamic Properties
 
@@ -58,7 +66,6 @@
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -89,8 +96,13 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    self.dataSource = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.searchTableView reloadData];
+    });
     [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
+
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
@@ -109,6 +121,15 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    if ([searchText isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+        self.view.alpha = .5;
+        self.dataSource = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.searchTableView reloadData];
+        });
+
+    }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
 
@@ -126,6 +147,24 @@
 
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    self.searchBar.text = searchTerm;
+    __block NSError *updateError = nil;
+    self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
+    [self.dataSource refresh:^(NSError *error) {
+        if (error) {
+            DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+            
+            if (!updateError) {
+                updateError = error;
+            }
+        } else {
+            DDLogVerbose(@"refreshed data source %@",self.dataSource);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.searchTableView reloadData];
+            });
+        }
+    }];
     [self.searchBar resignFirstResponder];
 
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
@@ -210,16 +249,17 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.stories count];
+    return [self.dataSource.objects count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
-    
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 44.; // Fixed height for the load more cells
     } else {
+        return 100;
+#warning correct height not calculated
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     }
 }
@@ -227,7 +267,7 @@
 #pragma mark UITableView Data Source/Delegate Helper Methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-    MITNewsStory *story = self.stories[indexPath.row];//[self storyAtIndexPath:indexPath forTableView:tableView];
+    MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
     
     if (story) {
         __block NSString *identifier = nil;
@@ -271,7 +311,7 @@
     //        }
         }
     } else {
-        MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
+        MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         
         if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
             MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
@@ -290,7 +330,7 @@
     MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
     storyDetailViewController.delegate = self;
 
-    MITNewsStory *story = [self.stories objectAtIndex:indexPath.row];
+    MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
     if (story) {
         NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         managedObjectContext.parentContext = self.managedObjectContext;
@@ -306,16 +346,6 @@
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
-#warning find better way to implement
-    for (int i = 0 ; i < [self.stories count] ; i ++) {
-        MITNewsStory *storyFromArray = [self.stories objectAtIndex:i];
-        if ([story.identifier isEqualToString:storyFromArray.identifier]) {
-            if ([self.stories count] > i + 1) {
-                return [self.stories objectAtIndex:i + 1];
-            }
-        }
-    };
-    
     return nil;
 }
 
@@ -326,7 +356,7 @@
 
 - (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
 {
-    return nil;
+    return NO;
 }
 
 - (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
@@ -335,3 +365,5 @@
 }
 
 @end
+
+
