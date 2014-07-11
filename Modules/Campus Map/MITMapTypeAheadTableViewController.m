@@ -3,11 +3,8 @@
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaultCellIdentifier";
-
 @interface MITMapTypeAheadTableViewController ()
 
-@property (nonatomic, strong) NSArray *recentSearchItems;
 @property (nonatomic, strong) NSArray *webserviceSearchItems;
 @property (nonatomic, strong) NSString *currentSearchString;
 
@@ -74,6 +71,9 @@ static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaul
             self.webserviceSearchItems = objects;
             [self.tableView reloadData];
         }];
+    } else {
+        self.webserviceSearchItems = nil;
+        [self.tableView reloadData];
     }
 }
 
@@ -92,52 +92,13 @@ static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaul
 {
     if (self.showsTitleHeader) {
         if (self.currentSearchString == nil || self.currentSearchString.length < 1) {
-            [self showRecentsHeader];
+            [super showTitleHeaderIfNecessary];
         } else {
             [self showSuggestionsHeader];
         }
     } else {
         self.tableView.tableHeaderView = nil;
     }
-}
-
-- (void)setShowsTitleHeader:(BOOL)showsTitleHeader
-{
-    _showsTitleHeader = showsTitleHeader;
-    
-    [self showTitleHeaderIfNecessary];
-}
-
-- (void)showRecentsHeader
-{
-    static UIView *recentsHeaderView;
-    
-    if (!recentsHeaderView) {
-        recentsHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 44)];
-        
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:recentsHeaderView.bounds];
-        titleLabel.textAlignment = NSTextAlignmentCenter;
-        titleLabel.font = [UIFont boldSystemFontOfSize:18];
-        titleLabel.text = @"Recents";
-        [recentsHeaderView addSubview:titleLabel];
-        titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [recentsHeaderView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[titleLabel(>=0)]-0-|" options:0 metrics:nil views:@{@"titleLabel": titleLabel}]];
-        [recentsHeaderView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleLabel(>=0)]-0-|" options:0 metrics:nil views:@{@"titleLabel": titleLabel}]];
-        
-        UIButton *clearButton = [[UIButton alloc] init];
-        CGSize buttonTextSize = [@"Clear" sizeWithFont:clearButton.titleLabel.font];
-        clearButton.frame = CGRectMake(20, 0, buttonTextSize.width, 44);
-        [clearButton setTitle:@"Clear" forState:UIControlStateNormal];
-        clearButton.titleLabel.textColor = [UIColor mit_tintColor];
-        //TODO: make this button clear the recent searches, once this functionality exists
-        [recentsHeaderView addSubview:clearButton];
-        
-        UIView *dividerLine = [[UIView alloc] initWithFrame:CGRectMake(0, recentsHeaderView.bounds.size.height - 1, recentsHeaderView.bounds.size.width, 0.5)];
-        dividerLine.backgroundColor = [UIColor lightGrayColor];
-        [recentsHeaderView addSubview:dividerLine];
-    }
-    
-    self.tableView.tableHeaderView = recentsHeaderView;
 }
 
 - (void)showSuggestionsHeader
@@ -173,33 +134,12 @@ static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaul
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.section) {
-        case 0: {
-            MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
-            if (searchItem.searchTerm) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectRecentQuery:)]) {
-                    [self.delegate typeAheadViewController:self didSelectRecentQuery:searchItem.searchTerm];
-                }
-            } else if (searchItem.place) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectPlace:)]) {
-                    [self.delegate typeAheadViewController:self didSelectPlace:searchItem.place];
-                }
-            } else if (searchItem.category) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectCategory:)]) {
-                    [self.delegate typeAheadViewController:self didSelectCategory:searchItem.category];
-                }
-            }
-            break;
-        }
-        case 1: {
-            MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-            if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectPlace:)]) {
-                [self.delegate typeAheadViewController:self didSelectPlace:place];
-            }
-            break;
-        }
-        default: {
-            break;
+    if (indexPath.section < [super numberOfSectionsInTableView:tableView]) {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+    } else {
+        MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
+        if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectPlace:)]) {
+            [self.delegate typeAheadViewController:self didSelectPlace:place];
         }
     }
 }
@@ -208,57 +148,33 @@ static NSString * const kMITMapPlaceDefaultCellIdentifier = @"kMITMapPlaceDefaul
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return [super numberOfSectionsInTableView:tableView] + 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (section) {
-        case 0: {
-            return self.recentSearchItems.count;
-            break;
-        }
-        case 1: {
-            return self.webserviceSearchItems.count;
-            break;
-        }
-        default: {
-            return 0;
-            break;
-        }
+    if (section < [super numberOfSectionsInTableView:tableView]) {
+        return [super tableView:tableView numberOfRowsInSection:section];
+    } else {
+        return self.webserviceSearchItems.count;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapPlaceDefaultCellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapPlaceDefaultCellIdentifier];
+    if (indexPath.section < [super numberOfSectionsInTableView:tableView]) {
+        return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    } else {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapRecentSearchCellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapRecentSearchCellIdentifier];
+        }
+        
+        MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
+        cell.textLabel.text = place.name;
+        
+        return cell;
     }
-    
-    switch (indexPath.section) {
-        case 0: {
-            MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
-            if (searchItem.searchTerm) {
-                cell.textLabel.text = searchItem.searchTerm;
-            } else if (searchItem.place) {
-                cell.textLabel.text = searchItem.place.name;
-            } else if (searchItem.category) {
-                cell.textLabel.text = searchItem.category.name;
-            }
-            break;
-        }
-        case 1: {
-            MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-            cell.textLabel.text = place.name;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    
-    return cell;
 }
 
 @end

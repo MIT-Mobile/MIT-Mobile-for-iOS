@@ -3,6 +3,8 @@
 #import "MITMapCategoriesViewController.h"
 #import "MITMapPlaceSelector.h"
 #import "MITMapBookmarksViewController.h"
+#import "MITMapTypeAheadTableViewController.h"
+#import "MITMapModelController.h"
 
 @interface MITMapBrowseContainerViewController ()
 
@@ -84,9 +86,11 @@
     bookmarksViewController.navigationItem.title = @"Bookmarks";
     bookmarksViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
     
-    UIViewController *recentsViewController = [[UIViewController alloc] init];
+    MITMapRecentsTableViewController *recentsViewController = [[MITMapRecentsTableViewController alloc] init];
+    recentsViewController.showsTitleHeader = NO;
     recentsViewController.navigationItem.title = @"Recents";
     recentsViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    recentsViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:recentsViewController action:@selector(clearRecentSearchesButtonTapped:)];
     
     self.viewControllers = @[[[UINavigationController alloc] initWithRootViewController:categoriesViewController],
                              [[UINavigationController alloc] initWithRootViewController:bookmarksViewController],

@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, MITMapTypeAheadTableViewControllerDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, MITMapRecentsTableViewControllerDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -370,7 +370,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
-#pragma mark - MITMapTypeAheadTableViewControllerDelegate Methods
+#pragma mark - MITMapRecentsTableViewControllerDelegate Methods
 
 - (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectRecentQuery:(NSString *)recentQuery
 {
@@ -402,10 +402,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     } else {
         self.navigationItem.leftBarButtonItem = nil;
         self.navigationItem.rightBarButtonItem = nil;
+        [searchBar setShowsCancelButton:YES animated:YES];
     }
     
-    [searchBar setShowsCancelButton:YES animated:YES];
-    [self updateSearchResultsForSearchString:nil];
+    [self updateSearchResultsForSearchString:self.searchQuery];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -416,6 +416,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     self.searchQueryType = MITMapSearchQueryTypeText;
     [self performSearchWithQuery:searchBar.text];
 }

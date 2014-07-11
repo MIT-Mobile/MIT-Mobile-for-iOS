@@ -16,6 +16,7 @@
 - (NSManagedObjectID*)addRecentSearch:(id)query;
 - (NSFetchRequest*)recentSearches:(MITMobileManagedResult)block;
 - (NSFetchRequest*)recentSearchesForPartialString:(NSString*)string loaded:(MITMobileManagedResult)block;
+- (void)clearRecentSearchesWithCompletion:(void (^)(NSError* error))block;
 
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMobileResult)block;
 - (NSFetchRequest*)places:(MITMobileManagedResult)block;

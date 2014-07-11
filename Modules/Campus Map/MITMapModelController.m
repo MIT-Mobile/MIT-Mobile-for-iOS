@@ -114,7 +114,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         NSArray *searches = [context executeFetchRequest:fetchRequest
                                                    error:error];
 
-        if (!error) {
+        if (!*error) {
             [searches enumerateObjectsUsingBlock:^(MITMapSearch *search, NSUInteger idx, BOOL *stop) {
                 NSTimeInterval searchInterval = fabs([search.date timeIntervalSinceNow]);
                 if (searchInterval > self.searchExpiryInterval) {
@@ -141,6 +141,30 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     return fetchRequest;
 }
 
+- (void)clearRecentSearchesWithCompletion:(void (^)(NSError* error))block
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
+        NSArray *searches = [context executeFetchRequest:fetchRequest
+                                                   error:error];
+        
+        if (!*error) {
+            [searches enumerateObjectsUsingBlock:^(MITMapSearch *search, NSUInteger idx, BOOL *stop) {
+                [context deleteObject:search];
+            }];
+            
+            [context save:error];
+            
+            if (error && (*error)) {
+                DDLogWarn(@"Failed to save search results: %@", *error);
+            }
+        }
+    } completion:^(NSError *error) {
+        if (block) {
+            block(error);
+        }
+    }];
+}
 
 - (void)searchMapWithQuery:(NSString*)queryString loaded:(MITMobileResult)block
 {
