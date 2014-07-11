@@ -91,12 +91,11 @@
 {
     [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
-    [searchBar resignFirstResponder];
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    if (self.unwindFromStoryDetail) {
+    if (self.unwindFromStoryDetail || self.recentSearchController.confirmSheet != nil) {
         self.unwindFromStoryDetail = NO;
         return NO;
     }
@@ -127,9 +126,18 @@
 
 - (void)getResultsForString:(NSString *)searchTerm
 {
-    [self.recentSearchPopoverController dismissPopoverAnimated:NO];
-    self.searchTableView.alpha = 1;
-    self.view.alpha = 1;
+    [self.searchBar resignFirstResponder];
+
+    [self.recentSearchPopoverController dismissPopoverAnimated:YES];
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchTableView.alpha = 1;
+                         self.view.alpha = 1;
+                     } completion:^(BOOL finished) {
+                         
+                     }];
 }
 
 #pragma mark - hide/show Recents
@@ -138,6 +146,7 @@
 {
     if (self.recentSearchPopoverController != nil) {
         if (self.recentSearchController.confirmSheet == nil) {
+
             [self.recentSearchPopoverController dismissPopoverAnimated:YES];
             self.recentSearchPopoverController = nil;
         }
@@ -146,7 +155,9 @@
 
 - (void)showSearchRecents
 {
-    
+    if (self.recentSearchPopoverController) {
+        return;
+    }
     UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
     
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
@@ -159,6 +170,7 @@
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
+        
 }
 
 - (void)hideSearchField
