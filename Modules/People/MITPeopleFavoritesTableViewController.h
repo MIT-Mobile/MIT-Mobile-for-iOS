@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MITPeopleSearchViewController_iPad.h"
+#import "MITPeopleSearchRootViewController.h"
 
 @interface MITPeopleFavoritesTableViewController : UITableViewController
 

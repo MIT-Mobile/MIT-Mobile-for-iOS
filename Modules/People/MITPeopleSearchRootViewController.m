@@ -7,12 +7,24 @@
 //
 
 #import "MITPeopleSearchRootViewController.h"
+#import "MITPeopleSearchHandler.h"
+#import "MITPeopleFavoritesTableViewController.h"
+#import "MITPeopleSearchResultsViewController.h"
+#import "PeopleDetailsViewController.h"
+#import "MITLoadingActivityView.h"
 
-@interface MITPeopleSearchRootViewController () <UISearchBarDelegate>
+@interface MITPeopleSearchRootViewController () <UISplitViewControllerDelegate, UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *barItem;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
+@property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
+
+@property (nonatomic, strong) UIPopoverController *favoritesPopover;
+
+@property (nonatomic, weak) MITPeopleSearchResultsViewController *searchResultsViewController;
+@property (nonatomic, weak) PeopleDetailsViewController *searchDetailsViewController;
 
 @end
 
@@ -33,6 +45,15 @@
     // Do any additional setup after loading the view.
     
     [self configureNavigationBar];
+    
+    [self configureChildControllers];
+    
+    self.searchHandler = [MITPeopleSearchHandler new];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -42,6 +63,18 @@
 }
 
 #pragma mark - configs
+
+- (void)configureChildControllers
+{
+    UISplitViewController *splitViewController = [self childViewControllers][0];
+    splitViewController.delegate = self;
+    
+    UINavigationController *navController = splitViewController.viewControllers[0];
+    self.searchResultsViewController = navController.viewControllers[0];
+    self.searchResultsViewController.delegate = self;
+    
+    self.searchDetailsViewController = splitViewController.viewControllers[1];
+}
 
 - (void)configureNavigationBar
 {
@@ -55,6 +88,8 @@
     UIView *searchBarWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, self.navigationController.navigationBar.frame.size.height)];
     searchBarWrapperView.center = self.navigationController.navigationBar.center;
     self.searchBar = [[UISearchBar alloc] init];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.searchBar.placeholder = @"Search People Directory";
     self.searchBar.frame = searchBarWrapperView.bounds;
     self.searchBar.delegate = self;
@@ -69,6 +104,98 @@
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
+#pragma mark - search methods
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    self.searchHandler.searchTerms = searchBar.text;
+	[self performSearch];
+    
+    [self.searchBar resignFirstResponder];
+}
+
+- (void)performSearch
+{
+    [self showLoadingView];
+    
+    __weak MITPeopleSearchRootViewController *weakSelf = self;
+    
+    [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
+     {
+         BOOL showSearchResults = [weakSelf.searchHandler.searchResults count] > 0;
+         
+         if( showSearchResults  )
+         {
+             [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
+             [weakSelf.searchResultsViewController reload];
+         }
+         
+         [weakSelf.searchResultsLoadingView removeFromSuperview];
+     }];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if ([searchBar.text length] <= 0)
+    {
+        self.searchHandler.searchResults = nil;
+        self.searchHandler.searchTerms = nil;
+        self.searchHandler.searchCancelled = YES;
+        
+//        [self showRecentsPopoverIfNeeded];
+        
+        return;
+    }
+    
+//    if( [self.recentsPickerPopover isPopoverVisible] )
+//    {
+//        [self dismissRecentsPopover];
+//    }
+    
+    searchBar.showsCancelButton = NO;
+}
+
+- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    return [self shouldPerformSearchAction];
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    return [self shouldPerformSearchAction];
+}
+
+#pragma mark - search, recent and favorite delegates
+
+- (void) didSelectPerson:(PersonDetails *)person
+{
+    self.searchDetailsViewController.personDetails = person;
+    
+    [self.searchDetailsViewController reload];
+}
+
+- (void) didSelectFavoritePerson:(PersonDetails *)person
+{
+    
+}
+
+- (void) didDismissFavoritesPopover
+{
+    self.favoritesPopover = nil;
+}
+
+- (BOOL) shouldPerformSearchAction
+{
+    if( [self favoritesPopover] )
+    {
+        [[self favoritesPopover] dismissPopoverAnimated:YES];
+        
+        return NO;
+    }
+    
+    return YES;
+}
+
 
 #pragma mark - Navigation
 
@@ -77,6 +204,33 @@
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
+    
+    if( [[segue identifier] isEqualToString:@"MITFavoritesSegue"] )
+    {
+        UINavigationController *navController = [segue destinationViewController];
+        MITPeopleFavoritesTableViewController *favoritesTableViewController = [[navController viewControllers] firstObject];
+        favoritesTableViewController.delegate = self;
+        
+        // keeping a reference to popoverController, so that it can be programmatically dismissed later
+        self.favoritesPopover = [(UIStoryboardPopoverSegue *)segue popoverController];
+        self.favoritesPopover.passthroughViews = nil;
+    }
+}
+
+#pragma mark - UISplitViewControllerDelegate
+
+- (BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation
+{
+    return NO;  // show both view controllers in all orientations
+}
+
+#pragma mark - utils
+
+- (void)showLoadingView
+{
+    MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+    self.searchResultsLoadingView = loadingView;
+    [self.view addSubview:loadingView];
 }
 
 

@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MITPeopleSearchViewController_iPad.h"
+#import "MITPeopleSearchRootViewController.h"
 
 @interface MITPeopleRecentResultsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-@property (nonatomic, weak) id<PeopleRecentsViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<MITPeopleRecentsViewControllerDelegate> delegate;
 
 @end

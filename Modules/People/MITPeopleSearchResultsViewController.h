@@ -9,13 +9,13 @@
 #import <UIKit/UIKit.h>
 
 #import "MITPeopleSearchHandler.h"
-#import "MITPeopleSearchViewController_iPad.h"
+#import "MITPeopleSearchRootViewController.h"
 
 @interface MITPeopleSearchResultsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate>
 
 @property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
 
-@property (nonatomic, strong) id<PeopleSearchViewControllerDelegate> delegate;
+@property (nonatomic, strong) id<MITPeopleSearchViewControllerDelegate> delegate;
 
 - (void) reload;
 

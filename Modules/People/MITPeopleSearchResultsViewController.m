@@ -30,6 +30,13 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [self adjustTableViewInsets];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -43,37 +50,33 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void) didMoveToParentViewController:(UIViewController *)parent
-{
-    if( parent )
-    {
-        CGFloat top = parent.topLayoutGuide.length;
-        CGFloat bottom = parent.bottomLayoutGuide.length;
-        
-        if( self.tableView.contentInset.top != top )
-        {
-            UIEdgeInsets newInsets = UIEdgeInsetsMake(top, 0, bottom, 0);
-            self.tableView.contentInset = newInsets;
-            self.tableView.scrollIndicatorInsets = newInsets;
-        }
-    }
-    
-    [self adjustViewHeight];
-    
-    [super didMoveToParentViewController:parent];
-}
-
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self adjustViewHeight];
+    [self adjustTableViewInsets];
 }
 
-- (void) adjustViewHeight
+- (void) adjustTableViewInsets
 {
-    self.tableView.frame = CGRectMake(self.tableView.frame.origin.x,
-                                      self.tableView.frame.origin.y,
-                                      self.tableView.frame.size.width,
-                                      self.parentViewController.view.frame.size.height);
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    CGFloat topInset = CGRectGetHeight(self.navigationController.navigationBar.frame) + MIN(statusBarSize.width, statusBarSize.height);
+    
+    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, 0 , 0);
+    
+    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if( UIInterfaceOrientationIsLandscape(currentOrientation) )
+    {
+        CGSize size = [UIScreen mainScreen].bounds.size;
+        insets = UIEdgeInsetsMake(topInset, 0, size.height - size.width, 0);
+    }
+    
+    self.tableView.contentInset = insets;
+    self.tableView.scrollIndicatorInsets = insets;
 }
 
 #pragma mark - Table view methods

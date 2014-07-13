@@ -9,26 +9,26 @@
 #import <UIKit/UIKit.h>
 #import "PersonDetails.h"
 
-@protocol PeopleSearchViewControllerDelegate
+@protocol PeopleSearchViewControllerDelegate_
 
 - (void) didSelectPerson:(PersonDetails *)person;
 
 @end
 
-@protocol PeopleRecentsViewControllerDelegate
+@protocol PeopleRecentsViewControllerDelegate_
 
 - (void) didSelectRecentPerson:(PersonDetails *)person;
 - (void) didClearRecents;
 
 @end
 
-@protocol MITPeopleFavoritesViewControllerDelegate
+@protocol MITPeopleFavoritesViewControllerDelegate_
 
 - (void) didSelectFavoritePerson:(PersonDetails *)person;
 - (void) didDismissFavoritesPopover;
 
 @end
 
-@interface MITPeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate, PeopleRecentsViewControllerDelegate, MITPeopleFavoritesViewControllerDelegate>
+@interface MITPeopleSearchViewController_iPad : UIViewController<PeopleSearchViewControllerDelegate_, PeopleRecentsViewControllerDelegate_, MITPeopleFavoritesViewControllerDelegate_>
 
 @end
