@@ -67,6 +67,7 @@
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
+    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
     [self.searchBar becomeFirstResponder];
 }
 
@@ -153,6 +154,7 @@
     } else {
         searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
     }
+    
     searchBar.delegate = self;
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.showsCancelButton = YES;
@@ -267,7 +269,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.dataSource.objects count];
+    if ([self.dataSource.objects count]) {
+        return [self.dataSource.objects count] + 1;
+    }
+
+    return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -285,8 +291,10 @@
 #pragma mark UITableView Data Source/Delegate Helper Methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-    MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-    
+    MITNewsStory *story = nil;
+    if ([self.dataSource.objects count] > indexPath.row) {
+        story = self.dataSource.objects[indexPath.row];
+    }
     if (story) {
         __block NSString *identifier = nil;
         [self.managedObjectContext performBlockAndWait:^{
@@ -306,8 +314,7 @@
         }];
         
         return identifier;
-#warning loading more cells not implemented yet.
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+    } else if ([self.dataSource.objects count]) {
         return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
