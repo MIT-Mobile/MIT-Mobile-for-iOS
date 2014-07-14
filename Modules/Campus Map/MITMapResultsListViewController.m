@@ -10,7 +10,6 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 @interface MITMapResultsListViewController ()
 
-@property (nonatomic, strong) MITMapPlaceCell *helperCell;
 @property (nonatomic, strong) UIView *noResultsView;
 
 @end
@@ -57,8 +56,6 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     
-    // Reload cell heights
-    [self resetHelperCellFrame];
     [self.tableView reloadData];
 }
 
@@ -68,10 +65,6 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
     [self.tableView registerNib:numberedResultCellNib forCellReuseIdentifier:kMITMapNumberedResultCellIdentifier];
-    
-    self.helperCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
-    self.helperCell.accessoryType = UITableViewCellAccessoryDetailButton;
-    [self resetHelperCellFrame];
 }
 
 - (void)setupDoneBarButtonItem
@@ -130,13 +123,6 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     [cell setPlace:self.places[index] order:(index + 1)];
 }
 
-- (void)resetHelperCellFrame
-{
-    CGRect frame = self.helperCell.frame;
-    frame.size.width = self.tableView.frame.size.width;
-    self.helperCell.frame = frame;
-}
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -166,12 +152,9 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self configureCell:self.helperCell forIndexPath:indexPath];
-    [self.helperCell layoutIfNeeded];
-    
-    CGFloat height = [self.helperCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    ++height; // add pixel for cell separator
-    return MAX(kMapPlaceCellEstimatedHeight, height);
+    return [MITMapPlaceCell heightForPlace:self.places[indexPath.row] order:(indexPath.row + 1)
+                            tableViewWidth:self.tableView.frame.size.width
+                             accessoryType:UITableViewCellAccessoryDetailButton];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

@@ -14,8 +14,6 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 
 @property (nonatomic, strong) UIBarButtonItem *bookmarksDoneButton;
 
-@property (nonatomic, strong) MITMapPlaceCell *helperCell;
-
 @end
 
 @implementation MITMapBookmarksViewController
@@ -57,16 +55,6 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 {
     UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
-    
-    self.helperCell = [cellNib instantiateWithOwner:nil options:nil][0];
-    [self resetHelperCellFrame];
-}
-
-- (void)resetHelperCellFrame
-{
-    CGRect frame = self.helperCell.frame;
-    frame.size.width = self.tableView.frame.size.width;
-    self.helperCell.frame = frame;
 }
 
 - (void)updateBookmarkedPlaces
@@ -155,12 +143,7 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.helperCell setPlace:self.bookmarkedPlaces[indexPath.row]];
-    [self.helperCell layoutIfNeeded];
-    
-    CGFloat height = [self.helperCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    ++height; // add pixel for cell separator
-    return MAX(kMapPlaceCellEstimatedHeight, height);
+    return [MITMapPlaceCell heightForPlace:self.bookmarkedPlaces[indexPath.row] tableViewWidth:self.tableView.frame.size.width accessoryType:UITableViewCellAccessoryNone];
 }
 
 - (void)deleteBookmarkAtIndexPath:(NSIndexPath *)indexPath

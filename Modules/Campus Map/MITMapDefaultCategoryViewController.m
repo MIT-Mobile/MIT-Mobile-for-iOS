@@ -3,6 +3,7 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapPlaceCell.h"
 
 static NSString *const kViewAllTableCellIdentifier = @"kViewAllTableCellIdentifier";
 static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdentifier";
@@ -31,7 +32,15 @@ static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdenti
 {
     [super viewDidLoad];
     self.title = self.category.name;
+    [self setupTableView];
 }
+
+- (void)setupTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kCategoryTableCellIdentifier];
+}
+
 
 - (void)updatePlacesInCategory
 {
@@ -74,13 +83,23 @@ static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdenti
     return self.placesInCategory ? [self.placesInCategory count] + 1 : 0; // +1 for the View All Results Cell
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0){
+        return 50.0;
+    }
+    
+    return [MITMapPlaceCell heightForPlace:self.placesInCategory[indexPath.row - 1] tableViewWidth:self.tableView.frame.size.width accessoryType:UITableViewCellAccessoryNone];
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0){
         return [self viewAllCell];
     }
     else{
-        return [self categoryCellForIndex:indexPath.row - 1];
+        return [self categoryCellForIndexPath:indexPath];
     }
 }
 
@@ -95,18 +114,11 @@ static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdenti
     return cell;
 }
 
-- (UITableViewCell *)categoryCellForIndex:(NSInteger)rowIndex
+- (UITableViewCell *)categoryCellForIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kCategoryTableCellIdentifier];
-    if (!cell){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kCategoryTableCellIdentifier];
-        cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-    }
-    
-    MITMapPlace *place = self.placesInCategory[rowIndex];
-    cell.textLabel.text = place.title;
-    cell.detailTextLabel.text = place.subtitle;
-    
+    NSIndexPath *adjustedIndexPath = [NSIndexPath indexPathForRow:(indexPath.row - 1) inSection:0];
+    MITMapPlaceCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kCategoryTableCellIdentifier forIndexPath:adjustedIndexPath];
+    [cell setPlace:self.placesInCategory[adjustedIndexPath.row]];
     return cell;
 }
 
