@@ -111,7 +111,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    [self setupMapBoundingBoxAnimated:YES];
 }
 
 #pragma mark - Setup
