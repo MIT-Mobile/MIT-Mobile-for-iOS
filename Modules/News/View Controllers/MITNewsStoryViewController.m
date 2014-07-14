@@ -387,93 +387,104 @@
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
 }
 
+- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block
+{
+    [self.delegate storyAfterStory:story return:^(MITNewsStory *nextStory, NSError *error) {
+        if (block) {
+            block(nextStory, error);
+        }
+    }];
+}
+
 - (void)setupNextStory
 {
-    MITNewsStory *nextStory = [self newsDetailController:nil storyAfterStory:self.story];
-    
-    if (nextStory) {
-        __block NSString *title = nil;
-        __block NSString *dek = nil;
-        __block NSURL *imageURL = nil;
-        [nextStory.managedObjectContext performBlockAndWait:^{
-            
-            title = nextStory.title;
-            dek = nextStory.dek;
-            
-            CGSize idealImageSize = self.nextStoryImageView.frame.size;
-            
-            MITNewsImageRepresentation *representation = [nextStory.coverImage bestRepresentationForSize:idealImageSize];
-            if (representation) {
-                imageURL = representation.url;
-            }
-        }];
-        
-        if (title) {
-            NSError *error = nil;
-            NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-            if (!titleContent) {
-                DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
-                titleContent = title;
-            }
-            self.nextStoryTitleLabel.text = titleContent;
-            
-        } else {
-            self.nextStoryTitleLabel.text = nil;
-        }
-        if (dek) {
-            NSError *error = nil;
-            NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-            if (error) {
-                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
-                dekContent = dek;
-            }
-            
-            self.nextStoryDekLabel.text = dekContent;
-        } else {
-            self.nextStoryDekLabel.text = nil;
-        }
-        
-        if (imageURL) {
-            MITNewsStory *currentStory = nextStory;
-            __weak MITNewsStoryViewController *weakSelf = self;
-            [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                MITNewsStoryViewController *blockSelf = weakSelf;
-                if (blockSelf && (blockSelf->_story == currentStory)) {
-                    if (error) {
-                        blockSelf.nextStoryImageView.image = nil;
-                    }
+    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+        if (nextStory) {
+            __block NSString *title = nil;
+            __block NSString *dek = nil;
+            __block NSURL *imageURL = nil;
+            [nextStory.managedObjectContext performBlockAndWait:^{
+                
+                title = nextStory.title;
+                dek = nextStory.dek;
+                
+                CGSize idealImageSize = self.nextStoryImageView.frame.size;
+                
+                MITNewsImageRepresentation *representation = [nextStory.coverImage bestRepresentationForSize:idealImageSize];
+                if (representation) {
+                    imageURL = representation.url;
                 }
             }];
+            
+            if (title) {
+                NSError *error = nil;
+                NSString *titleContent = [title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+                if (!titleContent) {
+                    DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
+                    titleContent = title;
+                }
+                self.nextStoryTitleLabel.text = titleContent;
+                
+            } else {
+                self.nextStoryTitleLabel.text = nil;
+            }
+            if (dek) {
+                NSError *error = nil;
+                NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+                if (error) {
+                    DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
+                    dekContent = dek;
+                }
+                
+                self.nextStoryDekLabel.text = dekContent;
+            } else {
+                self.nextStoryDekLabel.text = nil;
+            }
+            
+            if (imageURL) {
+                MITNewsStory *currentStory = nextStory;
+                __weak MITNewsStoryViewController *weakSelf = self;
+                [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                    MITNewsStoryViewController *blockSelf = weakSelf;
+                    if (blockSelf && (blockSelf->_story == currentStory)) {
+                        if (error) {
+                            blockSelf.nextStoryImageView.image = nil;
+                        }
+                    }
+                }];
+            } else {
+                self.nextStoryImageView.image = nil;
+            }
+            static NSDateFormatter *dateFormatter = nil;
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"MMM dd, y"];
+            });
+            
+            NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+            
+            NSError *error = nil;
+            NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
+            NSAssert(templateString, @"failed to load News story HTML template");
+            
+            NSString *postDate = @"";
+            NSDate *publishedAt = nextStory.publishedAt;
+            if (publishedAt) {
+                postDate = [dateFormatter stringFromDate:publishedAt];
+            }
+            self.nextStoryDateLabel.text = postDate;
         } else {
+            [self.nextStoryImageView cancelCurrentImageLoad];
             self.nextStoryImageView.image = nil;
+            self.nextStoryTitleLabel.text = nil;
+            self.nextStoryDekLabel.text = nil;
+            self.nextStoryDateLabel.text = nil;
+            self.nextStoryNextStoryLabel.text = nil;
         }
-        static NSDateFormatter *dateFormatter = nil;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"MMM dd, y"];
-        });
-        
-        NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
-        
-        NSError *error = nil;
-        NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
-        NSAssert(templateString, @"failed to load News story HTML template");
-        
-        NSString *postDate = @"";
-        NSDate *publishedAt = nextStory.publishedAt;
-        if (publishedAt) {
-            postDate = [dateFormatter stringFromDate:publishedAt];
-        }
-        self.nextStoryDateLabel.text = postDate;
-    } else {
-        [self.nextStoryImageView cancelCurrentImageLoad];
-        self.nextStoryImageView.image = nil;
-        self.nextStoryTitleLabel.text = nil;
-        self.nextStoryDekLabel.text = nil;
-        self.nextStoryDateLabel.text = nil;
-        self.nextStoryNextStoryLabel.text = nil;
-    }
+    }];
+    
+    
 }
 
 #pragma mark UIActivityItemSource

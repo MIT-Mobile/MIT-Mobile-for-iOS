@@ -392,34 +392,33 @@
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
     if (currentIndex != NSNotFound) {
-
-    if (currentIndex + 1 < [self.dataSource.objects count]) {
-
-        return self.dataSource.objects[currentIndex + 1];
-    } else {
-        __block NSError *updateError = nil;
-        if ([self.dataSource hasNextPage]) {
-            [self.dataSource nextPage:^(NSError *error) {
-                if (error) {
-                    DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                    
-                    if (!updateError) {
-                        updateError = error;
+        
+        if (currentIndex + 1 < [self.dataSource.objects count]) {
+            
+            return self.dataSource.objects[currentIndex + 1];
+        } else {
+            __block NSError *updateError = nil;
+            if ([self.dataSource hasNextPage]) {
+                [self.dataSource nextPage:^(NSError *error) {
+                    if (error) {
+                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                        
+                        if (!updateError) {
+                            updateError = error;
+                        }
+                    } else {
+                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                        NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+                        
+                        if (currentIndex++ < [self.dataSource.objects count]) {
+                        }
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self.searchTableView reloadData];
+                        }];
                     }
-                } else {
-                    DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-                    
-                    if (currentIndex++ < [self.dataSource.objects count]) {
-#warning next story is now available
-                    }
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.searchTableView reloadData];
-                    }];
-                }
-            }];
+                }];
+            }
         }
-    }
     }
     
     return nil;
@@ -438,6 +437,45 @@
 - (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
 {
     
+}
+
+- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
+{
+    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+    if (currentIndex != NSNotFound) {
+        
+        if (currentIndex + 1 < [self.dataSource.objects count]) {
+            if(block) {
+                block(self.dataSource.objects[currentIndex +1], nil);
+            }
+        } else {
+            __block NSError *updateError = nil;
+            if ([self.dataSource hasNextPage]) {
+                [self.dataSource nextPage:^(NSError *error) {
+                    if (error) {
+                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                        
+                        if (!updateError) {
+                            updateError = error;
+                        }
+                    } else {
+                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                        NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+                        
+                        if (currentIndex + 1 < [self.dataSource.objects count]) {
+                            if(block) {
+                                block(self.dataSource.objects[currentIndex + 1], nil);
+                            }
+                        }
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self.searchTableView reloadData];
+                        }];
+                    }
+                }];
+            }
+        }
+    }
 }
 
 @end

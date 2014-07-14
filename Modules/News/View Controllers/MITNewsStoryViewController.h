@@ -28,8 +28,7 @@
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
 
-- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *story, NSError *error))block;
-
+- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block;
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story;
 
