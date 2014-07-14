@@ -9,7 +9,7 @@
 
 - (void)showSearchRecents;
 - (void)getResultsForString:(NSString *)searchTerm;
-- (UISearchBar *)returnSearchBar;
+- (UISearchBar *)returnSearchBarWithWidth:(CGFloat)width;
 
 @end
 

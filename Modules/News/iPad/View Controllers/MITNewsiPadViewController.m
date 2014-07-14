@@ -30,7 +30,6 @@
 
 @interface MITNewsiPadViewController ()
 @property (nonatomic, weak) IBOutlet UIView *containerView;
-@property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
 @property (nonatomic, strong) MITNewsSearchController *searchController;
@@ -61,6 +60,10 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self.gridViewController.collectionView reloadData];
+}
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self updateNavigationItem:YES];
 }
 
 - (void)viewDidLoad
@@ -249,7 +252,6 @@
                      } completion:^(BOOL finished) {
                          
                      }];
-    [self.searchBar becomeFirstResponder];
 }
 
 - (void)hideSearchField
@@ -296,14 +298,11 @@
             [rightBarItems addObject:listItem];
         }
     }
-    
     if (self.searching) {
-        UISearchBar *searchBar = [self.searchController returnSearchBar];
-        
+        UISearchBar *searchBar = [self.searchController returnSearchBarWithWidth:self.view.bounds.size.width - 50];
         UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
         [barWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
-        self.searchBar = searchBar;
         [rightBarItems addObject:searchBarItem];
 
     } else {

@@ -59,13 +59,15 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-	self.view.frame = self.navigationController.view.frame;
+	self.view.frame = self.navigationController.view.bounds;
+    
     self.searchTableView.alpha = 0;
     
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
+    [self.searchBar becomeFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
@@ -96,13 +98,8 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    self.dataSource = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.searchTableView reloadData];
-    });
     [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
-
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
@@ -116,26 +113,46 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    [self showSearchRecents];
+#warning Needs better screen size handling
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self showSearchRecents];
+    }
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
-        self.searchTableView.alpha = 0;
-        self.view.alpha = .5;
-        self.dataSource = nil;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.searchTableView reloadData];
-        });
-
+        [self clearTable];
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
 
-- (UISearchBar *)returnSearchBar
+- (void)clearTable
 {
-    UISearchBar * searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
+    self.dataSource = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.searchTableView reloadData];
+    });
+}
+
+
+- (UISearchBar *)returnSearchBarWithWidth:(CGFloat)width
+{
+#warning Needs better screen size handling
+    if (self.searchBar) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+        } else {
+            self.searchBar.frame = CGRectMake(0, 0, width, 44);
+        }
+        return self.searchBar;
+    }
+    UISearchBar *searchBar = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
+    } else {
+        searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
+    }
     searchBar.delegate = self;
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.showsCancelButton = YES;
@@ -147,6 +164,7 @@
 
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self clearTable];
     self.searchBar.text = searchTerm;
     __block NSError *updateError = nil;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
@@ -288,6 +306,7 @@
         }];
         
         return identifier;
+#warning loading more cells not implemented yet.
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         return MITNewsLoadMoreCellIdentifier;
     } else {
@@ -298,6 +317,7 @@
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
+    
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (self.searchDisplayController.searchResultsTableView == tableView) {
           //  cell.textLabel.enabled = !_storySearchInProgressToken;
