@@ -1578,6 +1578,7 @@
 				0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */,
 			);
 			name = ThumbnailPickerView;
+			path = External/ThumbnailPickerView;
 			sourceTree = "<group>";
 		};
 		0BD7B96A194A36BC00B0EDBD /* Collection View Cells */ = {
@@ -1609,7 +1610,8 @@
 				0BE0C3EC19704D9500961025 /* DDPopoverBackgroundView.h */,
 				0BE0C3ED19704D9500961025 /* DDPopoverBackgroundView.m */,
 			);
-			path = DDPopoverBackgroundView;
+			name = DDPopoverBackgroundView;
+			path = External/DDPopoverBackgroundView;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
@@ -2648,6 +2650,8 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				0BE0C3EB19704D9500961025 /* DDPopoverBackgroundView */,
+				0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */,
 				2C0454C218F33D8A0018073D /* AFNetworking */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C3C5D81191F076800D59D33 /* ECSlidingViewController */,
@@ -3039,8 +3043,6 @@
 				0B1689C91937D13A001EB3B1 /* iPad */,
 				DE81CF6010C6BC390085573D /* NewsModule.h */,
 				DE81CF6110C6BC390085573D /* NewsModule.m */,
-				0BE0C3EB19704D9500961025 /* DDPopoverBackgroundView */,
-				0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */,
 				DE4AAFAC10ED4E63007476D9 /* Model */,
 				2C3C53431896A7D300D1F9B5 /* News_iPhone.storyboard */,
 				2C7A58BC1937C44C0041DBFC /* News_iPad.storyboard */,
