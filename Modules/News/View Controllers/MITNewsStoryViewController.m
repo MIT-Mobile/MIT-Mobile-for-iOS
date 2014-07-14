@@ -398,6 +398,11 @@
 
 - (void)setupNextStory
 {
+    self.nextStoryImageView.image = nil;
+    self.nextStoryTitleLabel.text = nil;
+    self.nextStoryDekLabel.text = nil;
+    self.nextStoryDateLabel.text = nil;
+    self.nextStoryNextStoryLabel.text = nil;
     [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
             __block NSString *title = nil;
@@ -474,6 +479,7 @@
                 postDate = [dateFormatter stringFromDate:publishedAt];
             }
             self.nextStoryDateLabel.text = postDate;
+            self.nextStoryNextStoryLabel.text = @"NEXT STORY";
         } else {
             [self.nextStoryImageView cancelCurrentImageLoad];
             self.nextStoryImageView.image = nil;
