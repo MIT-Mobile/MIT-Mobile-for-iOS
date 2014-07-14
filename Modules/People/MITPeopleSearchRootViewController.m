@@ -13,8 +13,9 @@
 #import "PeopleDetailsViewController.h"
 #import "MITLoadingActivityView.h"
 #import "PeopleRecentsData.h"
+#import "MITPeopleSearchSplitContainerViewController.h"
 
-@interface MITPeopleSearchRootViewController () <UISplitViewControllerDelegate, UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
+@interface MITPeopleSearchRootViewController () <UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *barItem;
 
@@ -24,8 +25,8 @@
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
 
-@property  MITPeopleSearchResultsViewController *searchResultsViewController;
-@property  PeopleDetailsViewController *searchDetailsViewController;
+@property (nonatomic, weak) MITPeopleSearchResultsViewController *searchResultsViewController;
+@property (nonatomic, weak) PeopleDetailsViewController *searchDetailsViewController;
 
 @end
 
@@ -67,14 +68,13 @@
 
 - (void)configureChildControllers
 {
-    UISplitViewController *splitViewController = [self childViewControllers][0];
-    splitViewController.delegate = self;
+    MITPeopleSearchSplitContainerViewController *splitContainer = [self childViewControllers][0];
     
-    UINavigationController *navController = splitViewController.viewControllers[0];
+    UINavigationController *navController = splitContainer.childViewControllers[0];
     self.searchResultsViewController = navController.viewControllers[0];
     self.searchResultsViewController.delegate = self;
     
-    self.searchDetailsViewController = splitViewController.viewControllers[1];
+    self.searchDetailsViewController = splitContainer.childViewControllers[1];
 }
 
 - (void)configureNavigationBar

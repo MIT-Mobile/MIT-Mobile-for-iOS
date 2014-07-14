@@ -18,6 +18,7 @@
 		2748873A193413AB00414552 /* MITPeopleSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27488739193413AB00414552 /* MITPeopleSearchDisplayController.m */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
+		27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */; };
 		27D2CC3B19528740003F447F /* MITEmergencyContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */; };
 		27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */; };
 		27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */; };
@@ -501,6 +502,8 @@
 		277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchRootViewController.m; sourceTree = "<group>"; };
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
 		277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleRecentResultsViewController.m; sourceTree = "<group>"; };
+		27AB921419737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchSplitContainerViewController.h; sourceTree = "<group>"; };
+		27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchSplitContainerViewController.m; sourceTree = "<group>"; };
 		27D2CC3919528740003F447F /* MITEmergencyContactsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyContactsTableViewController.h; sourceTree = "<group>"; };
 		27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyContactsTableViewController.m; sourceTree = "<group>"; };
 		27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleFavoriteData.h; sourceTree = "<group>"; };
@@ -1474,6 +1477,8 @@
 				27D2CC3A19528740003F447F /* MITEmergencyContactsTableViewController.m */,
 				27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */,
 				27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */,
+				27AB921419737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.h */,
+				27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */,
 			);
 			name = iPad;
 			sourceTree = "<group>";
@@ -3646,6 +3651,7 @@
 				DE654522173D90A900562C20 /* SDWebImagePrefetcher.m in Sources */,
 				DE654523173D90A900562C20 /* UIButton+WebCache.m in Sources */,
 				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
+				27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */,
 				DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */,
 				2C3C5D90191F076800D59D33 /* ECSlidingAnimationController.m in Sources */,
 				48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */,
