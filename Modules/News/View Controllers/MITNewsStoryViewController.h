@@ -20,11 +20,16 @@
 
 @property (nonatomic, weak) id <MITNewsStoryViewControllerDelegate> delegate;
 
+- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
+
 @end
 
 @protocol MITNewsStoryViewControllerDelegate <NSObject>
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
+
+- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *story, NSError *error))block;
+
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story;
 

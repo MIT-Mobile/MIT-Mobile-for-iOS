@@ -17,10 +17,8 @@
 @end
 
 @interface MITNewsSearchController()
-@property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
-@property (weak, nonatomic) IBOutlet UITableView *searchTableView;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
 
@@ -59,16 +57,19 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-	self.view.frame = self.navigationController.view.bounds;
     
     self.searchTableView.alpha = 0;
-    
+
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
-    [self.searchBar becomeFirstResponder];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,6 +96,8 @@
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self hideSearchRecents];
+    self.searchTableView.alpha = 1;
+
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -115,6 +118,9 @@
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
 #warning Needs better screen size handling
+    searchBar.showsCancelButton = YES;
+    self.searchTableView.alpha = .5;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
     }
@@ -131,35 +137,9 @@
 - (void)clearTable
 {
     self.dataSource = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.searchTableView reloadData];
-    });
-}
-
-
-- (UISearchBar *)returnSearchBarWithWidth:(CGFloat)width
-{
-#warning Needs better screen size handling
-    if (self.searchBar) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
-        } else {
-            self.searchBar.frame = CGRectMake(0, 0, width, 44);
-        }
-        return self.searchBar;
-    }
-    UISearchBar *searchBar = nil;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
-    } else {
-        searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
-    }
-    
-    searchBar.delegate = self;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    searchBar.showsCancelButton = YES;
-    self.searchBar = searchBar;
-    return searchBar;
+    }];
 }
 
 #pragma mark - search
@@ -179,10 +159,9 @@
             }
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.searchTableView reloadData];
-            });
+            }];
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -223,9 +202,9 @@
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
 #warning add if dimming effect not wanted.
-    //recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
-    //[[DDPopoverBackgroundView class] setContentInset:0];
-    //[[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
+    recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
+    [[DDPopoverBackgroundView class] setContentInset:0];
+    [[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
@@ -261,10 +240,45 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     
+    if ([identifier isEqualToString:@"TEST"]) {
+        static NSString *CellIdentifier = @"Cell";
+        
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [view startAnimating];
+        cell.accessoryView = view;
+        [self getMoreStories];
+        return cell;
+    }
+    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
+}
+
+- (void)getMoreStories
+{
+    __block NSError *updateError = nil;
+    if ([self.dataSource hasNextPage]) {
+        [self.dataSource nextPage:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                
+                if (!updateError) {
+                    updateError = error;
+                }
+            } else {
+                DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.searchTableView reloadData];
+                }];
+            }
+        }];
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -315,7 +329,7 @@
         
         return identifier;
     } else if ([self.dataSource.objects count]) {
-        return MITNewsLoadMoreCellIdentifier;
+        return @"TEST";
     } else {
         return nil;
     }
@@ -325,18 +339,19 @@
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (self.searchDisplayController.searchResultsTableView == tableView) {
+    if ([cell.reuseIdentifier isEqualToString:@"TEST"]) {
+       // if (self.searchDisplayController.searchResultsTableView == tableView) {
           //  cell.textLabel.enabled = !_storySearchInProgressToken;
             
            // if (_storySearchInProgressToken) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
                 cell.accessoryView = view;
+        
         //    } else {
       //          cell.accessoryView = nil;
     //        }
-        }
+       // }
     } else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         
@@ -373,6 +388,40 @@
 
 - (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
 {
+    
+    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+    if (currentIndex != NSNotFound) {
+
+    if (currentIndex + 1 < [self.dataSource.objects count]) {
+
+        return self.dataSource.objects[currentIndex + 1];
+    } else {
+        __block NSError *updateError = nil;
+        if ([self.dataSource hasNextPage]) {
+            [self.dataSource nextPage:^(NSError *error) {
+                if (error) {
+                    DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                    
+                    if (!updateError) {
+                        updateError = error;
+                    }
+                } else {
+                    DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+                    
+                    if (currentIndex++ < [self.dataSource.objects count]) {
+#warning next story is now available
+                    }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.searchTableView reloadData];
+                    }];
+                }
+            }];
+        }
+    }
+    }
+    
     return nil;
 }
 

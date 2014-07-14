@@ -36,6 +36,7 @@
 
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
+@property (nonatomic, strong) UISearchBar *searchBar;
 
 #pragma mark Data Source
 @property (nonatomic,copy) NSArray *categories;
@@ -154,16 +155,6 @@
 }
 
 #pragma mark UI Actions
-- (MITNewsSearchController *)searchController
-{
-    if(!_searchController) {
-        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
-        searchController.delegate = self;
-        _searchController = searchController;
-    }
-
-    return _searchController;
-}
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
@@ -282,6 +273,31 @@
     [self updateNavigationItem:YES];
 }
 
+- (MITNewsSearchController *)searchController
+{
+    if(!_searchController) {
+        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.delegate = self;
+        _searchController = searchController;
+    }
+    
+    return _searchController;
+}
+
+- (UISearchBar *)searchBar
+{
+    if(!_searchBar) {
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
+        searchBar.delegate = self.searchController;
+        self.searchController.searchBar = searchBar;
+
+        searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        searchBar.showsCancelButton = YES;
+        _searchBar = searchBar;
+    }
+    return _searchBar;
+}
+
 - (void)updateNavigationItem:(BOOL)animated
 {
     NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
@@ -299,7 +315,13 @@
         }
     }
     if (self.searching) {
-        UISearchBar *searchBar = [self.searchController returnSearchBarWithWidth:self.view.bounds.size.width - 50];
+        UISearchBar *searchBar = self.searchBar;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+        } else {
+            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+        }
+        
         UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
         [barWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
@@ -310,6 +332,13 @@
         [rightBarItems addObject:searchItem];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    if (self.searching) {
+        [self.searchBar becomeFirstResponder];
+        self.searchController.searchTableView.frame = self.navigationController.view.bounds;
+        self.searchController.automaticallyAdjustsScrollViewInsets=NO;
+        
+
+    }
 }
 
 @end
