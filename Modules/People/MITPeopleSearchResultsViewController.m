@@ -12,6 +12,8 @@
 @interface MITPeopleSearchResultsViewController ()
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
+@property (nonatomic, weak) IBOutlet UILabel *hintLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hintLabelYConstraint;
 
 @end
 
@@ -32,11 +34,21 @@
     // Do any additional setup after loading the view.
     
     [self adjustTableViewInsets];
+    
+    // to avoid extra empty cells
+    self.tableView.tableFooterView = [UIView new];
+    
+    // adjust hintLabel position
+    self.hintLabelYConstraint.constant += [self topBarHeight];
+    [self adjustHintLabelYConstraintForOrientation:[UIApplication sharedApplication].statusBarOrientation];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self setHintLabelWithText:@"Search by name, email, or phone number. For Directory Assistance call 617-253-1000"
+                          font:[UIFont systemFontOfSize:17]];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -55,6 +67,29 @@
     [self adjustTableViewInsets];
 }
 
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self adjustHintLabelYConstraintForOrientation:toInterfaceOrientation];
+}
+
+- (void) adjustHintLabelYConstraintForOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    if( UIInterfaceOrientationIsLandscape(interfaceOrientation) )
+    {
+        self.hintLabelYConstraint.constant -= [self landscapeHeightDelta]/2;
+    }
+    else if( self.hintLabelYConstraint.constant < (self.view.frame.size.height/2 - [self topBarHeight]) )
+    {
+        self.hintLabelYConstraint.constant += [self landscapeHeightDelta]/2;
+    }
+        
+}
+
 - (void) adjustTableViewInsets
 {
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
@@ -62,21 +97,30 @@
         return;
     }
     
-    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    CGFloat topInset = CGRectGetHeight(self.navigationController.navigationBar.frame) + MIN(statusBarSize.width, statusBarSize.height);
+    CGFloat topInset = [self topBarHeight];
     
-    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, 0 , 0);
+    CGFloat toolbarHeight = self.navigationController.toolbar.frame.size.height;
+    
+    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight, 0);
     
     UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    
     if( UIInterfaceOrientationIsLandscape(currentOrientation) )
     {
-        CGSize size = [UIScreen mainScreen].bounds.size;
-        insets = UIEdgeInsetsMake(topInset, 0, size.height - size.width, 0);
+        insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight + [self landscapeHeightDelta], 0);
     }
     
     self.tableView.contentInset = insets;
     self.tableView.scrollIndicatorInsets = insets;
+}
+
+- (void) setHintLabelWithText:(NSString *)text font:(UIFont *)font
+{
+    [self.hintLabel setText:text];
+    [self.hintLabel setFont:font];
+    [self.hintLabel setTextColor:[UIColor colorWithWhite:0.5 alpha:1]];
+    [self.hintLabel setNumberOfLines:0];
+    
+    [self.hintLabel setHidden:NO];
 }
 
 #pragma mark - Table view methods
@@ -124,6 +168,11 @@
     return cell;
 }
 
+- (NSIndexPath *) tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return indexPath;
+}
+
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     PersonDetails *searchResult = self.searchHandler.searchResults[indexPath.row];
@@ -134,6 +183,16 @@
 - (void) reload
 {
     [self.tableView reloadData];
+ 
+    if( [self.searchHandler.searchResults count] == 0 )
+    {
+        [self setHintLabelWithText:@"No Results" font:[UIFont systemFontOfSize:24]];
+    }
+    else
+    {
+        [self selectFirstResult];
+        [self.hintLabel setHidden:YES];
+    }
 }
 
 - (void) selectFirstResult
@@ -144,19 +203,26 @@
         return;
     }
     
-    [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    
+    [self tableView:self.tableView willSelectRowAtIndexPath:indexPath];
+    [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
 }
 
+#pragma mark - helpers
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (CGFloat) topBarHeight
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    return CGRectGetHeight(self.navigationController.navigationBar.frame) + MIN(statusBarSize.width, statusBarSize.height);
 }
-*/
+
+- (CGFloat) landscapeHeightDelta
+{
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    
+    return size.height - size.width;
+}
 
 @end

@@ -12,6 +12,7 @@
 #import "MITPeopleSearchResultsViewController.h"
 #import "PeopleDetailsViewController.h"
 #import "MITLoadingActivityView.h"
+#import "PeopleRecentsData.h"
 
 @interface MITPeopleSearchRootViewController () <UISplitViewControllerDelegate, UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
 
@@ -23,8 +24,8 @@
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
 
-@property (nonatomic, weak) MITPeopleSearchResultsViewController *searchResultsViewController;
-@property (nonatomic, weak) PeopleDetailsViewController *searchDetailsViewController;
+@property  MITPeopleSearchResultsViewController *searchResultsViewController;
+@property  PeopleDetailsViewController *searchDetailsViewController;
 
 @end
 
@@ -104,6 +105,17 @@
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
+
+- (void) showRecentsPopoverIfNeeded
+{
+    // TODO: implement recents
+    
+    if( [[[PeopleRecentsData sharedData] recents] count] <= 0 )
+    {
+        return;
+    }
+}
+
 #pragma mark - search methods
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -122,14 +134,8 @@
     
     [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {
-         BOOL showSearchResults = [weakSelf.searchHandler.searchResults count] > 0;
-         
-         if( showSearchResults  )
-         {
-             [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
-             [weakSelf.searchResultsViewController reload];
-         }
-         
+         [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
+         [weakSelf.searchResultsViewController reload];         
          [weakSelf.searchResultsLoadingView removeFromSuperview];
      }];
 }
@@ -142,7 +148,7 @@
         self.searchHandler.searchTerms = nil;
         self.searchHandler.searchCancelled = YES;
         
-//        [self showRecentsPopoverIfNeeded];
+        [self showRecentsPopoverIfNeeded];
         
         return;
     }
@@ -160,6 +166,16 @@
     return [self shouldPerformSearchAction];
 }
 
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    searchBar.showsCancelButton = NO;
+    
+    if ([searchBar.text length] <= 0)
+    {
+        [self showRecentsPopoverIfNeeded];
+    }
+}
+
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
     return [self shouldPerformSearchAction];
@@ -168,7 +184,7 @@
 #pragma mark - search, recent and favorite delegates
 
 - (void) didSelectPerson:(PersonDetails *)person
-{
+{    
     self.searchDetailsViewController.personDetails = person;
     
     [self.searchDetailsViewController reload];

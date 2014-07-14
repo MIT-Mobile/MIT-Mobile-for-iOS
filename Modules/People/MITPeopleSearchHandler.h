@@ -12,7 +12,7 @@
 
 @property (nonatomic, copy) NSString *searchTerms;
 @property (nonatomic, copy) NSArray *searchTokens;
-@property (nonatomic,copy) NSArray *searchResults;
+@property (nonatomic, copy) NSArray *searchResults;
 
 @property BOOL searchCancelled;
 
