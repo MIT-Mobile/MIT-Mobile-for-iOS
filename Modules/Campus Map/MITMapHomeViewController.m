@@ -106,13 +106,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Rotation
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-}
-
 #pragma mark - Setup
 
 - (void)setupNavigationBar
@@ -284,8 +277,12 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        CGFloat navBarHeight = 64;
+        CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height + 20; // +20 for the status bar
         CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        
+        // Apple doesn't give the keyboard frame in the current view's coordinate system, it gives it in the window one, so width/height can be reversed when in landscape mode.
+        endFrame = [self.view convertRect:endFrame fromView:nil];
+        
         CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
         self.typeAheadViewController.view.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
         [UIView animateWithDuration:0.5 animations:^{
@@ -299,6 +296,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [UIView animateWithDuration:0.5 animations:^{
             self.typeAheadViewController.view.frame = CGRectMake(0, -self.typeAheadViewController.view.frame.size.height, self.view.frame.size.width, self.typeAheadViewController.view.frame.size.height);
+        } completion:^(BOOL finished) {
+            // We need to set the frame to nothing, as interface orientation changes can accidentally leave this table in view
+            if (finished) {
+                self.typeAheadViewController.view.frame = CGRectZero;
+            }
         }];
     }
 }
