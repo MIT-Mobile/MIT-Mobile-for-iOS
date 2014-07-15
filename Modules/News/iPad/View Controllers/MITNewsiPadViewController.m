@@ -241,7 +241,7 @@
                      animations:^{
                          self.searchController.view.alpha = .5;
                      } completion:^(BOOL finished) {
-                         
+                         [self.searchBar becomeFirstResponder];
                      }];
 }
 
@@ -253,6 +253,7 @@
                      animations:^{
                          self.searchController.view.alpha = .0;
                      } completion:^(BOOL finished) {
+                         self.searchBar = nil;
                          [self.searchController removeFromParentViewController];
                          [self.searchController.view removeFromSuperview];
                          self.searchController = nil;
@@ -332,12 +333,9 @@
         [rightBarItems addObject:searchItem];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    
     if (self.searching) {
-        [self.searchBar becomeFirstResponder];
-        self.searchController.searchTableView.frame = self.navigationController.view.bounds;
-        self.searchController.automaticallyAdjustsScrollViewInsets=NO;
-        
-
+        self.searchController.view.frame = self.navigationController.view.bounds;
     }
 }
 
