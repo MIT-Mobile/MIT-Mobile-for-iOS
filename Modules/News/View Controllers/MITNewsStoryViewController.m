@@ -368,15 +368,10 @@
     return YES;
 }
 
-#pragma mark nextStory
-- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story;
-{
-    return [self.delegate newsDetailController:storyDetailController storyAfterStory:self.story];
-}
-
 - (IBAction)touchNextStoryView:(id)sender
-{
-    MITNewsStory *nextStory = [self newsDetailController:self storyAfterStory:self.story];
+{    
+    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+        if (nextStory) {
     
     [self setStory:nextStory];
     
@@ -385,6 +380,8 @@
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+        }
+        }];
 }
 
 - (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block

@@ -11,7 +11,6 @@
 
 - (void)showSearchRecents;
 - (void)getResultsForString:(NSString *)searchTerm;
-- (UISearchBar *)returnSearchBarWithWidth:(CGFloat)width;
 
 @end
 

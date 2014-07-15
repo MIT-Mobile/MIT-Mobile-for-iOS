@@ -9,8 +9,9 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
 #import "DDPopoverBackgroundView.h"
-
 #import "MITNewsStoriesDataSource.h"
+#import "MITLoadingActivityView.h"
+#import "MITNoResultsView.h"
 
 @interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
 
@@ -21,7 +22,7 @@
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
-
+@property (nonatomic) BOOL moreResults;
 @end
 
 @implementation MITNewsSearchController
@@ -72,6 +73,15 @@
     [super viewDidAppear:animated];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+
+}
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -97,7 +107,6 @@
 {
     [self hideSearchRecents];
     self.searchTableView.alpha = 1;
-
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -117,7 +126,6 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-#warning Needs better screen size handling
     searchBar.showsCancelButton = YES;
     self.searchTableView.alpha = .5;
 
@@ -146,6 +154,7 @@
 
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self addLoadingView];
     [self clearTable];
     self.searchBar.text = searchTerm;
     __block NSError *updateError = nil;
@@ -159,6 +168,17 @@
             }
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
+            [self removeLoadingView];
+            if (self.dataSource.hasNextPage) {
+                self.moreResults = YES;
+            } else {
+                self.moreResults = NO;
+            }
+            if ([self.dataSource.objects count] == 0) {
+                [self addNoResultsView];
+            } else {
+                [self removeNoResultsView];
+            }
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.searchTableView reloadData];
             }];
@@ -176,6 +196,30 @@
                      } completion:^(BOOL finished) {
                          
                      }];
+}
+
+- (void)getMoreStories
+{
+    __block NSError *updateError = nil;
+    if ([self.dataSource hasNextPage]) {
+        self.moreResults = YES;
+        [self.dataSource nextPage:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                
+                if (!updateError) {
+                    updateError = error;
+                }
+            } else {
+                DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.searchTableView reloadData];
+                }];
+            }
+        }];
+    } else {
+        self.moreResults = NO;
+    }
 }
 
 #pragma mark - hide/show Recents
@@ -201,8 +245,8 @@
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
-#warning add if dimming effect not wanted.
     recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
+
     [[DDPopoverBackgroundView class] setContentInset:0];
     [[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -240,7 +284,7 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     
-    if ([identifier isEqualToString:@"TEST"]) {
+    if ([identifier isEqualToString:@"LoadingMore"]) {
         static NSString *CellIdentifier = @"Cell";
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -260,33 +304,14 @@
     return cell;
 }
 
-- (void)getMoreStories
-{
-    __block NSError *updateError = nil;
-    if ([self.dataSource hasNextPage]) {
-        [self.dataSource nextPage:^(NSError *error) {
-            if (error) {
-                DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                
-                if (!updateError) {
-                    updateError = error;
-                }
-            } else {
-                DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.searchTableView reloadData];
-                }];
-            }
-        }];
-    }
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if ([self.dataSource.objects count]) {
-        return [self.dataSource.objects count] + 1;
+        if (self.moreResults) {
+            return [self.dataSource.objects count] + 1;
+        }
+        return [self.dataSource.objects count];
     }
-
     return 0;
 }
 
@@ -329,7 +354,7 @@
         
         return identifier;
     } else if ([self.dataSource.objects count]) {
-        return @"TEST";
+        return @"LoadingMore";
     } else {
         return nil;
     }
@@ -339,19 +364,10 @@
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    if ([cell.reuseIdentifier isEqualToString:@"TEST"]) {
-       // if (self.searchDisplayController.searchResultsTableView == tableView) {
-          //  cell.textLabel.enabled = !_storySearchInProgressToken;
-            
-           // if (_storySearchInProgressToken) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-        
-        //    } else {
-      //          cell.accessoryView = nil;
-    //        }
-       // }
+    if ([cell.reuseIdentifier isEqualToString:@"LoadingMore"]) {
+        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [view startAnimating];
+        cell.accessoryView = view;
     } else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         
@@ -386,59 +402,6 @@
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
-- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
-{
-    
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
-        
-        if (currentIndex + 1 < [self.dataSource.objects count]) {
-            
-            return self.dataSource.objects[currentIndex + 1];
-        } else {
-            __block NSError *updateError = nil;
-            if ([self.dataSource hasNextPage]) {
-                [self.dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                        
-                        if (!updateError) {
-                            updateError = error;
-                        }
-                    } else {
-                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                        NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex++ < [self.dataSource.objects count]) {
-                        }
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.searchTableView reloadData];
-                        }];
-                    }
-                }];
-            }
-        }
-    }
-    
-    return nil;
-}
-
-- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
-{
-    return nil;
-}
-
-- (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
-{
-    return NO;
-}
-
-- (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
-{
-    
-}
-
 - (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
 {
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
@@ -452,6 +415,7 @@
         } else {
             __block NSError *updateError = nil;
             if ([self.dataSource hasNextPage]) {
+                self.moreResults = YES;
                 [self.dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
@@ -473,11 +437,39 @@
                         }];
                     }
                 }];
+            } else {
+                self.moreResults = NO;
             }
         }
     }
 }
 
+#pragma mark No Results / Loading More View
+
+- (void)addNoResultsView
+{
+    NSUInteger tag = (int)"noResultsView";
+    MITNoResultsView *loadingActivityView = [[MITNoResultsView alloc] initWithFrame:self.searchTableView.frame];
+    loadingActivityView.tag = tag;
+    [self.view addSubview:loadingActivityView];
+}
+
+- (void)removeNoResultsView
+{
+    [[self.view viewWithTag:(int)"noResultsView"] removeFromSuperview];
+}
+
+- (void)addLoadingView
+{
+    NSUInteger tag = (int)"loadingActivityView";
+    MITLoadingActivityView *loadingActivityView = [[MITLoadingActivityView alloc] initWithFrame:self.searchTableView.frame];
+    loadingActivityView.tag = tag;
+    [self.view addSubview:loadingActivityView];
+}
+
+- (void)removeLoadingView
+{
+    [[self.view viewWithTag:(int)"loadingActivityView"] removeFromSuperview];
+}
+
 @end
-
-
