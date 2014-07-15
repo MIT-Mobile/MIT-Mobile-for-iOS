@@ -129,6 +129,7 @@
 {
     searchBar.showsCancelButton = YES;
     self.searchTableView.alpha = .5;
+    [self removeNoResultsView];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
