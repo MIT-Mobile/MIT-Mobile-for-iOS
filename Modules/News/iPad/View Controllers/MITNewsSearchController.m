@@ -155,6 +155,7 @@
 
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self removeNoResultsView];
     [self addLoadingView];
     [self clearTable];
     self.searchBar.text = searchTerm;
@@ -177,8 +178,6 @@
             }
             if ([self.dataSource.objects count] == 0) {
                 [self addNoResultsView];
-            } else {
-                [self removeNoResultsView];
             }
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.searchTableView reloadData];
@@ -452,6 +451,7 @@
 {
     NSUInteger tag = (int)"noResultsView";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
+    noResultsView.frame = self.searchTableView.frame;
     noResultsView.tag = tag;
     [self.view addSubview:noResultsView];
 }
@@ -467,9 +467,10 @@
 - (void)addLoadingView
 {
     NSUInteger tag = (int)"loadingActivityView";
-    MITViewWithCenterTextAndIndicator *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
-    noResultsView.tag = tag;
-    [self.view addSubview:noResultsView];
+    MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
+    loadingActivityView.frame = self.searchTableView.frame;
+    loadingActivityView.tag = tag;
+    [self.view addSubview:loadingActivityView];
 }
 
 - (void)removeLoadingView
