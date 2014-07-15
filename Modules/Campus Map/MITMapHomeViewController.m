@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic) MITMapSearchQueryType searchQueryType;
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
+@property (nonatomic) BOOL isShowingIpadResultsList;
+@property (nonatomic, strong) UIPopoverController *currentPlacePopoverController;
+@property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
@@ -175,10 +178,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] initWithNibName:nil bundle:nil];
     [browseContainerViewController setDelegate:self];
+    
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browseContainerViewController];
     navigationController.navigationBarHidden = YES;
     navigationController.toolbarHidden = NO;
-    [self presentViewController:navigationController animated:YES completion:nil];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.bookmarksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+        [self.bookmarksPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    } else {
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
 }
 
 - (void)menuButtonPressed
@@ -188,7 +199,33 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)ipadListButtonPressed
 {
-    
+    if (self.isShowingIpadResultsList) {
+        [self closeIpadResultsList];
+    } else {
+        [self openIpadResultsList];
+    }
+}
+
+- (void)closeIpadResultsList
+{
+    if (self.isShowingIpadResultsList) {
+        MITMapResultsListViewController *resultsVC = [self resultsListViewController];
+        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
+        } completion:nil];
+        self.isShowingIpadResultsList = NO;
+    }
+}
+
+- (void)openIpadResultsList
+{
+    if (!self.isShowingIpadResultsList) {
+        MITMapResultsListViewController *resultsVC = [self resultsListViewController];
+        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
+        } completion:nil];
+        self.isShowingIpadResultsList = YES;
+    }
 }
 
 - (void)ipadCurrentLocationButtonPressed
@@ -243,6 +280,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     _places = places;
     [self refreshPlaceAnnotations];
+    [[self resultsListViewController] setPlaces:places];
     [self setupMapBoundingBoxAnimated:animated];
     [self showCalloutForPlace:[places firstObject]];
 }
@@ -360,8 +398,37 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)showCalloutForPlace:(MITMapPlace *)place
 {
-    if ([self.places containsObject:place]) {
-        [self.mapView selectAnnotation:place animated:YES];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self closeIpadResultsList];
+        
+        MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+        detailVC.place = place;
+        self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+        UIView *annotationView = [self.mapView viewForAnnotation:place];
+        
+        CGFloat tableHeight = 0;
+        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
+            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
+                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            }
+        }
+        
+        CGFloat navbarHeight = 44;
+        CGFloat statusBarHeight = 20;
+        CGFloat toolbarHeight = 44;
+        CGFloat padding = 30;
+        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
+        
+        if (tableHeight > maxPopoverHeight) {
+            tableHeight = maxPopoverHeight;
+        }
+        
+        [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+        [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        if ([self.places containsObject:place]) {
+            [self.mapView selectAnnotation:place animated:YES];
+        }
     }
 }
 
@@ -370,23 +437,65 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
+- (MITMapResultsListViewController *)resultsListViewController
+{
+    static MITMapResultsListViewController *resultsListViewController;
+    if (!resultsListViewController) {
+        resultsListViewController = [[MITMapResultsListViewController alloc] initWithPlaces:self.places];
+        resultsListViewController.delegate = self;
+        
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            resultsListViewController.view.frame = CGRectMake(-320, 64, 320, self.view.bounds.size.height - 64 - 44);
+            resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+            self.isShowingIpadResultsList = NO;
+            
+            [self addChildViewController:resultsListViewController];
+            [resultsListViewController beginAppearanceTransition:YES animated:NO];
+            [self.view addSubview:resultsListViewController.view];
+            
+            [resultsListViewController endAppearanceTransition];
+            [resultsListViewController didMoveToParentViewController:self];
+        }
+    }
+    
+    switch (self.searchQueryType) {
+        case MITMapSearchQueryTypeText: {
+            [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
+            break;
+        }
+        case MITMapSearchQueryTypePlace: {
+            MITMapPlace *place = [self.places firstObject];
+            [resultsListViewController setTitle:place.name];
+            break;
+        }
+        case MITMapSearchQueryTypeCategory: {
+            [resultsListViewController setTitle:self.category.name];
+            break;
+        }
+        default:
+            break;
+    }
+    
+    return resultsListViewController;
+}
+
 #pragma mark - MITMapRecentsTableViewControllerDelegate Methods
 
-- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectRecentQuery:(NSString *)recentQuery
+- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectRecentQuery:(NSString *)recentQuery
 {
     [self.searchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     [self setPlacesWithRecentSearchQuery:recentQuery];
 }
 
-- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectPlace:(MITMapPlace *)place
+- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectPlace:(MITMapPlace *)place
 {
     [self.searchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     [self setPlacesWithPlace:place];
 }
 
-- (void)typeAheadViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectCategory:(MITMapCategory *)category
+- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectCategory:(MITMapCategory *)category
 {
     [self.searchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
@@ -463,27 +572,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView
 {
-    MITMapResultsListViewController *resultsListViewController = [[MITMapResultsListViewController alloc] initWithPlaces:self.places];
-    resultsListViewController.delegate = self;
-    switch (self.searchQueryType) {
-        case MITMapSearchQueryTypeText: {
-            [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
-            break;
-        }
-        case MITMapSearchQueryTypePlace: {
-            MITMapPlace *place = [self.places firstObject];
-            [resultsListViewController setTitle:place.name];
-            break;
-        }
-        case MITMapSearchQueryTypeCategory: {
-            [resultsListViewController setTitle:self.category.name];
-            break;
-        }
-        default:
-            break;
-    }
-    
-    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:resultsListViewController];
+    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
     [self presentViewController:resultsListNavigationController animated:YES completion:nil];
 }
 
@@ -518,7 +607,12 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    [self removeCalloutTapGestureFromAnnotationView:view];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        MITMapPlace *place = view.annotation;
+        [self showCalloutForPlace:place];
+    } else {
+        [self removeCalloutTapGestureFromAnnotationView:view];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control

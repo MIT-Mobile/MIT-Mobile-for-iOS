@@ -19,8 +19,8 @@ extern NSString * const kMITMapRecentSearchCellIdentifier;
 
 @protocol MITMapRecentsTableViewControllerDelegate <NSObject>
 
-- (void)typeAheadViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectRecentQuery:(NSString *)recentQuery;
-- (void)typeAheadViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectPlace:(MITMapPlace *)place;
-- (void)typeAheadViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectCategory:(MITMapCategory *)category;
+- (void)recentsViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectRecentQuery:(NSString *)recentQuery;
+- (void)recentsViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectPlace:(MITMapPlace *)place;
+- (void)recentsViewController:(MITMapRecentsTableViewController *)recentsViewController didSelectCategory:(MITMapCategory *)category;
 
 @end

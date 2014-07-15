@@ -118,16 +118,16 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
         case 0: {
             MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
             if (searchItem.searchTerm) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectRecentQuery:)]) {
-                    [self.delegate typeAheadViewController:self didSelectRecentQuery:searchItem.searchTerm];
+                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectRecentQuery:)]) {
+                    [self.delegate recentsViewController:self didSelectRecentQuery:searchItem.searchTerm];
                 }
             } else if (searchItem.place) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectPlace:)]) {
-                    [self.delegate typeAheadViewController:self didSelectPlace:searchItem.place];
+                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectPlace:)]) {
+                    [self.delegate recentsViewController:self didSelectPlace:searchItem.place];
                 }
             } else if (searchItem.category) {
-                if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectCategory:)]) {
-                    [self.delegate typeAheadViewController:self didSelectCategory:searchItem.category];
+                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectCategory:)]) {
+                    [self.delegate recentsViewController:self didSelectCategory:searchItem.category];
                 }
             }
             break;

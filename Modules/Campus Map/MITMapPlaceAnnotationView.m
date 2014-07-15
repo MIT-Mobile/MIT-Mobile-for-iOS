@@ -14,7 +14,13 @@
     if (self) {
         self.image = [UIImage imageNamed:@"map/map_place_pin"];
         self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
-        self.canShowCallout = YES;
+        
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+            self.canShowCallout = YES;
+        } else {
+            self.canShowCallout = NO;
+        }
+        
         [self setupDisclosureButton];
         [self setupNumberLabel];
     }

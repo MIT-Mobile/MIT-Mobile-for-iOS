@@ -81,15 +81,22 @@
     // TODO: add done bar button item to each view controller
     
     MITMapCategoriesViewController *categoriesViewController = [[MITMapCategoriesViewController alloc] initWithStyle:UITableViewStylePlain];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        categoriesViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    }
     
     MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] initWithStyle:UITableViewStylePlain];
     bookmarksViewController.navigationItem.title = @"Bookmarks";
-    bookmarksViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        bookmarksViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    }
     
     MITMapRecentsTableViewController *recentsViewController = [[MITMapRecentsTableViewController alloc] init];
     recentsViewController.showsTitleHeader = NO;
     recentsViewController.navigationItem.title = @"Recents";
-    recentsViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        recentsViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
+    }
     recentsViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:recentsViewController action:@selector(clearRecentSearchesButtonTapped:)];
     
     self.viewControllers = @[[[UINavigationController alloc] initWithRootViewController:categoriesViewController],

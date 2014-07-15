@@ -101,6 +101,14 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
     self.tableView.backgroundView = hidden ? nil : self.noResultsView;
 }
 
+#pragma mark - Public Methods
+
+- (void)setPlaces:(NSArray *)places
+{
+    _places = places;
+    [self.tableView reloadData];
+}
+
 #pragma mark - Button Actions
 
 - (void)doneBarButtonItemTapped:(id)sender
@@ -159,12 +167,19 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self dismissViewControllerAnimated:YES completion:^{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
             MITMapPlace *place = self.places[indexPath.row];
             [self.delegate resultsListViewController:self didSelectPlace:place];
         }
-    }];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:^{
+            if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
+                MITMapPlace *place = self.places[indexPath.row];
+                [self.delegate resultsListViewController:self didSelectPlace:place];
+            }
+        }];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath

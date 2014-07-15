@@ -138,8 +138,8 @@
         [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     } else {
         MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
-        if ([self.delegate respondsToSelector:@selector(typeAheadViewController:didSelectPlace:)]) {
-            [self.delegate typeAheadViewController:self didSelectPlace:place];
+        if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectPlace:)]) {
+            [self.delegate recentsViewController:self didSelectPlace:place];
         }
     }
 }

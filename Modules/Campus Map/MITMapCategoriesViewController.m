@@ -45,20 +45,12 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
     [super viewDidLoad];
     self.navigationItem.title = @"Categories";
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
-    [self setupDoneBarButtonItem];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Setup
-
-- (void)setupDoneBarButtonItem
-{
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
 }
 
 #pragma mark - Button Actions

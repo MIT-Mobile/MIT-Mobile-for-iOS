@@ -30,9 +30,8 @@ static NSInteger const kMITMapPlaceBottomButtonAddToBookmarksRow = 0;
 static NSInteger const kMITMapPlaceBottomButtonOpenInMapsRow = 1;
 static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
-@interface MITMapPlaceDetailViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MITMapPlaceDetailViewController ()
 
-@property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) MITMapPlaceContentCell *placeContentCell;
 @property (strong, nonatomic) MITMapPlacePhotoCell *placePhotoCell;
 
