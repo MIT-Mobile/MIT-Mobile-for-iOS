@@ -37,6 +37,8 @@
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) UIView *searchBarWrapper;
+
 
 #pragma mark Data Source
 @property (nonatomic,copy) NSArray *categories;
@@ -64,7 +66,10 @@
 }
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self updateNavigationItem:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+        self.searchBarWrapper.frame = self.searchBar.bounds;
+    }
 }
 
 - (void)viewDidLoad
@@ -323,9 +328,9 @@
             self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
         }
         
-        UIView *barWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
-        [barWrapper addSubview:searchBar];
-        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:barWrapper];
+        self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
+        [self.searchBarWrapper addSubview:searchBar];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
         [rightBarItems addObject:searchBarItem];
 
     } else {
@@ -337,6 +342,7 @@
     if (self.searching) {
         self.searchController.view.frame = self.navigationController.view.bounds;
     }
+
 }
 
 @end
