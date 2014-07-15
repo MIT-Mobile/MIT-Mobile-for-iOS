@@ -151,7 +151,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         self.typeAheadViewController.showsTitleHeader = YES;
     } else {
         [self addChildViewController:self.typeAheadViewController];
-        self.typeAheadViewController.view.frame = CGRectMake(0, -100, self.view.frame.size.width, 0);
+        self.typeAheadViewController.view.frame = CGRectZero;
         [self.view addSubview:self.typeAheadViewController.view];
         [self.typeAheadViewController didMoveToParentViewController:self];
     }
