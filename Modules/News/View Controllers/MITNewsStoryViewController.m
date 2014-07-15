@@ -181,7 +181,6 @@
         [self.managedObjectContext performBlockAndWait:^{
             viewController.galleryImages = [self.story.galleryImages array];
         }];
-
     }
 }
 
@@ -369,7 +368,7 @@
 }
 
 - (IBAction)touchNextStoryView:(id)sender
-{    
+{
     [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
     

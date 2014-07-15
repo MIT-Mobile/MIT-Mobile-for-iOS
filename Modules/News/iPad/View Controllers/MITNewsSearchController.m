@@ -11,7 +11,8 @@
 #import "DDPopoverBackgroundView.h"
 #import "MITNewsStoriesDataSource.h"
 #import "MITLoadingActivityView.h"
-#import "MITNoResultsView.h"
+#import "MITViewWithCenterTextAndIndicator.h"
+#import "MITViewWithCenterText.h"
 
 @interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
 
@@ -249,6 +250,7 @@
 
     [[DDPopoverBackgroundView class] setContentInset:0];
     [[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
+    
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
@@ -449,27 +451,32 @@
 - (void)addNoResultsView
 {
     NSUInteger tag = (int)"noResultsView";
-    MITNoResultsView *loadingActivityView = [[MITNoResultsView alloc] initWithFrame:self.searchTableView.frame];
-    loadingActivityView.tag = tag;
-    [self.view addSubview:loadingActivityView];
+    MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
+    noResultsView.tag = tag;
+    [self.view addSubview:noResultsView];
 }
 
 - (void)removeNoResultsView
 {
-    [[self.view viewWithTag:(int)"noResultsView"] removeFromSuperview];
+    UIView *view = [self.view viewWithTag:(int)"noResultsView"];
+    if (view) {
+        [view removeFromSuperview];
+    }
 }
 
 - (void)addLoadingView
 {
     NSUInteger tag = (int)"loadingActivityView";
-    MITLoadingActivityView *loadingActivityView = [[MITLoadingActivityView alloc] initWithFrame:self.searchTableView.frame];
-    loadingActivityView.tag = tag;
-    [self.view addSubview:loadingActivityView];
+    MITViewWithCenterTextAndIndicator *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
+    noResultsView.tag = tag;
+    [self.view addSubview:noResultsView];
 }
 
 - (void)removeLoadingView
 {
-    [[self.view viewWithTag:(int)"loadingActivityView"] removeFromSuperview];
+    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    if (view) {
+        [view removeFromSuperview];
+    }
 }
-
 @end
