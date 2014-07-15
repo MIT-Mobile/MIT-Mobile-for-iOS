@@ -307,7 +307,7 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     }
                     [cell setTopSeparatorHidden:YES];
-                    [cell setBottomSeparatorHidden:NO];
+                    [cell setBottomSeparatorHidden:YES];
                     break;
                 }
                 default: {
