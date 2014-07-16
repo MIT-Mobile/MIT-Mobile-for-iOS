@@ -282,7 +282,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self refreshPlaceAnnotations];
     [[self resultsListViewController] setPlaces:places];
     [self setupMapBoundingBoxAnimated:animated];
-    [self showCalloutForPlace:[places firstObject]];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
