@@ -102,6 +102,8 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     [self.searchController getResultsForString:query.text];
+    [self filterResultsUsingString:query.text];
+
 }
 
 #pragma mark - View lifecycle

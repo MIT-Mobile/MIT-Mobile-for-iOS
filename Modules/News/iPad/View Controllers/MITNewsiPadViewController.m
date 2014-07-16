@@ -246,8 +246,8 @@
                      animations:^{
                          self.searchController.view.alpha = .5;
                      } completion:^(BOOL finished) {
-                         [self.searchBar becomeFirstResponder];
                      }];
+    [self.searchBar becomeFirstResponder];
 }
 
 - (void)hideSearchField
