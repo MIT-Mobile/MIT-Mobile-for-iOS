@@ -41,7 +41,7 @@
 
 - (void)addRecentSearchItem:(NSString *)searchTerm
 {
-    NSError *error;
+    NSError *error = nil;
     [self.modelController addRecentSearchItem:searchTerm error:error];
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
 
@@ -63,7 +63,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     if (buttonIndex == 0) {
-        NSError *error;
+        NSError *error = nil;
         [self.modelController clearRecentSearchesWithError:error];
         self.recentResults = nil;
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -101,6 +101,8 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
+    NSError *error = nil;
+    [self.modelController addRecentSearchItem:query.text error:error];
     [self.searchController getResultsForString:query.text];
     [self filterResultsUsingString:query.text];
 
