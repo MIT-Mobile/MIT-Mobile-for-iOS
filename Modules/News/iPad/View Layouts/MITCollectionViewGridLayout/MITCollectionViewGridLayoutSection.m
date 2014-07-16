@@ -221,18 +221,11 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
 - (void)layoutIfNeeded
 {
-    const NSUInteger numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
-    if (numberOfItems == 0) {
-        // Nothing to layout so just mark the layout as up-to-date
-        // and bail.
-        _needsLayout = NO;
-        return;
-    }
-
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is laid out, we'll go back and give the heights a correct value
         const NSInteger numberOfColumns = self.numberOfColumns;
+        const NSUInteger numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
 
         // Apply the content insets to the actual content so things appear properly. We only care
         //  about the left and right insets here. The top will be ignored and the
@@ -251,6 +244,14 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         // over everything else.
         headerLayoutAttributes.zIndex = 1024;
         _headerLayoutAttributes = headerLayoutAttributes;
+
+
+        if (numberOfItems == 0) {
+            // Nothing to layout so just mark the layout as up-to-date
+            // and bail.
+            _needsLayout = NO;
+            return;
+        }
 
         const CGFloat minimumInterItemPadding = 2 * floor(self.layout.minimumInterItemPadding / 2.0) + 1;
         CGFloat maximumPaddingPerRow = (minimumInterItemPadding * (numberOfColumns - 1));
