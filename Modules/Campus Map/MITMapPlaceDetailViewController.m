@@ -149,11 +149,16 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
         case kMITMapPlaceNameAndImageSection: {
             switch (indexPath.row) {
                 case kMITMapPlaceNameRow: {
-                    return 44;
+                    return 60;
                     break;
                 }
                 case kMITMapPlaceImageRow: {
-                    return 161;
+                    if (self.place.imageURL) {
+                        return 161;
+                    }
+                    else {
+                        return 0;
+                    }
                     break;
                 }
                 default: {
