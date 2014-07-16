@@ -25,7 +25,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 @property (nonatomic) NSInteger section;
 @property (nonatomic) CGPoint origin;
 @property (nonatomic) NSUInteger numberOfColumns;
-
+@property (nonatomic,getter = isFeatured) BOOL featured;
 @end
 
 @implementation MITCollectionViewGridLayoutSection {
@@ -58,6 +58,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         _layout = layout;
         _numberOfColumns = 3;
         _stickyHeaders = YES;
+        _featured = NO;
         [self invalidateLayout];
     }
 
@@ -254,8 +255,8 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
 
         MITSpannedItemContext featuredItemLayoutContext = MITSpannedItemEmptyContext;
-        const BOOL hasFeaturedItem = MITCollectionViewGridSpanIsValid(self.featuredItemSpan);
-        if (hasFeaturedItem) {
+        self.featured = MITCollectionViewGridSpanIsValid(self.featuredItemSpan);
+        if (self.isFeatured) {
             featuredItemLayoutContext.span = self.featuredItemSpan;
 
             if (featuredItemLayoutContext.span.horizontal > 0) {
@@ -281,7 +282,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         NSUInteger (^numberOfRows)(void) = ^{ return [rowLayouts count]; };
         
         NSInteger item = 0;
-        if (hasFeaturedItem) {
+        if (self.isFeatured) {
             ++item; // The featured item is always item 0, so start at item 1 if a featured item is present
         }
 
@@ -342,7 +343,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         // the featured item should be (and position it). One thing to note is that if an
         // invalid frame or a frame with an improper width is assigned to the row when
         // paritioning the elements, the results here will be interesting.
-        if (hasFeaturedItem) {
+        if (self.isFeatured) {
             UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:0 inSection:self.section]];
 
             __block CGFloat featuredItemHeight = 0;
@@ -401,18 +402,14 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         _bounds.size.height = CGRectGetMaxY(lastRowLayout.frame);
         _itemLayoutAttributes = itemLayoutAttributes;
 
-        if (hasFeaturedItem) {
-            NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
-            if (hasFeaturedItem) {
-                [allLayoutAttributes addObject:_featuredItemLayoutAttributes];
-            }
 
-            [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
-
-            _decorationLayoutAttributes = [self _featuredDecorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
-        } else {
-            _decorationLayoutAttributes = decorationLayoutAttributes;
+        NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
+        if (_featuredItemLayoutAttributes) {
+            [allLayoutAttributes addObject:_featuredItemLayoutAttributes];
         }
+
+        [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
+        _decorationLayoutAttributes = [self _featuredDecorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
 
         _needsLayout = NO;
     }
@@ -420,7 +417,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
 - (NSArray*)_featuredDecorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
 {
-    if (!itemLayoutAttributes) {
+    if ([itemLayoutAttributes count] == 0) {
         return nil;
     }
 
