@@ -2,7 +2,6 @@
 #import "MITNewsModelController.h"
 #import "MITNewsRecentSearchController.h"
 #import "MITNewsConstants.h"
-#import "UITableView+DynamicSizing.h"
 #import "MITNewsStory.h"
 #import "MITNewsStoryCell.h"
 #import "MITNewsStoryViewController.h"
@@ -14,7 +13,8 @@
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
 
-@interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, UITableViewDataSourceDynamicSizing, MITNewsStoryViewControllerDelegate>
+
+@interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
 
@@ -24,6 +24,9 @@
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
 @property (nonatomic) BOOL moreResults;
+
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
+
 @end
 
 @implementation MITNewsSearchController
@@ -66,7 +69,6 @@
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -283,9 +285,9 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    
+
     if ([identifier isEqualToString:@"LoadingMore"]) {
         static NSString *CellIdentifier = @"Cell";
         
@@ -301,7 +303,6 @@
     }
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-    
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
 }
@@ -319,18 +320,17 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath forTableView:tableView];
-    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+
+    if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
         return 44.; // Fixed height for the load more cells
     } else {
-        return 100;
-#warning correct height not calculated
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     }
 }
 
 #pragma mark UITableView Data Source/Delegate Helper Methods
-- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
     if ([self.dataSource.objects count] > indexPath.row) {

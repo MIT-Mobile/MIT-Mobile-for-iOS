@@ -1,8 +1,9 @@
 #import <UIKit/UIKit.h>
+#import "UITableView+DynamicSizing.h"
 
 @protocol MITNewsSearchDelegate;
 
-@interface MITNewsSearchController : UIViewController <UISearchBarDelegate>
+@interface MITNewsSearchController : UIViewController <UITableViewDataSourceDynamicSizing>
 
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
