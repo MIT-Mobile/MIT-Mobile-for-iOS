@@ -105,7 +105,9 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 {
     UICollectionViewLayoutAttributes *headerLayoutAttributes = self.headerLayoutAttributes;
 
-    if (self.stickyHeaders) {
+    if (!headerLayoutAttributes) {
+        return nil;
+    } else if (self.stickyHeaders) {
         const CGRect sectionFrame = self.frame;
         const CGRect headerFrame = headerLayoutAttributes.frame;
 
@@ -212,6 +214,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     _featuredItemLayoutAttributes = nil;
     _headerLayoutAttributes = nil;
     _itemLayoutAttributes = nil;
+    _decorationLayoutAttributes = nil;
     _bounds.size.height = 0;
     _needsLayout = YES;
 }
