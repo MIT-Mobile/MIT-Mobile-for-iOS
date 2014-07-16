@@ -25,7 +25,7 @@
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
         _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
-        
+
         [self registerClass:[MITCollectionViewGridDividerView class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
 
@@ -137,7 +137,7 @@
 
     if (section == 0) {
         CGRect frame = layoutBounds;
-        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);;
+        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);
     } else {
         MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
         CGRect frame = layoutBounds;
@@ -171,7 +171,9 @@
             contentOffset.y += self.collectionView.contentInset.top;
             contentOffset.x += self.collectionView.contentInset.left;
             UICollectionViewLayoutAttributes *headerLayoutAttributes = [sectionLayout headerLayoutAttributesWithContentOffset:contentOffset];
-            [visibleLayoutAttributes addObject:headerLayoutAttributes];
+            if (headerLayoutAttributes) {
+                [visibleLayoutAttributes addObject:headerLayoutAttributes];
+            }
         }
     }
 
@@ -194,7 +196,7 @@
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
 
     __block UICollectionViewLayoutAttributes *attributes = nil;
-    [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes* layoutAttributes, NSUInteger idx, BOOL *stop) {
+    [[sectionLayout decorationLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes* layoutAttributes, NSUInteger idx, BOOL *stop) {
         if ([layoutAttributes.representedElementKind isEqualToString:decorationViewKind]) {
             if ([layoutAttributes.indexPath isEqual:indexPath]) {
                 attributes = layoutAttributes;
@@ -208,9 +210,16 @@
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (!indexPath) {
+        return nil;
+    }
+
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
-    return [sectionLayout layoutAttributesForItemAtIndexPath:indexPath];
+    UICollectionViewLayoutAttributes *layoutAttributes = [sectionLayout layoutAttributesForItemAtIndexPath:indexPath];
+    NSAssert(layoutAttributes, @"no layout attributes for index path %@",indexPath);
+    return layoutAttributes;
 }
+
 
 #pragma mark Delegate Pass-Thru
 - (NSUInteger)numberOfColumnsInSection:(NSInteger)section
