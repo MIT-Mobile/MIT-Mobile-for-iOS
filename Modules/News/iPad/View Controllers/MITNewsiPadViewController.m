@@ -502,25 +502,12 @@
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
-- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyAfterStory:(MITNewsStory*)story
+- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
 {
 #warning Not Yet Implemented
-    return nil;
-}
-
-- (MITNewsStory*)newsDetailController:(MITNewsStoryViewController*)storyDetailController storyBeforeStory:(MITNewsStory*)story
-{
-    return nil;
-}
-
-- (BOOL)newsDetailController:(MITNewsStoryViewController*)storyDetailController canPageToStory:(MITNewsStory*)story
-{
-    return NO;
-}
-
-- (void)newsDetailController:(MITNewsStoryViewController*)storyDetailController didPageToStory:(MITNewsStory*)story
-{
-
+    if (block) {
+        block(nil, nil);
+    }
 }
 
 @end
