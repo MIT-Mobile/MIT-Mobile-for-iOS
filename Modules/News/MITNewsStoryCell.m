@@ -94,7 +94,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
                 DDLogWarn(@"failed to sanitize title, falling back to the original content: %@",error);
                 titleContent = title;
             }
-            [self.titleLabel setPreferredMaxLayoutWidth:self.frame.size.width];
             self.titleLabel.text = titleContent;
         } else {
             self.titleLabel.text = nil;
@@ -107,7 +106,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
                 DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
                 dekContent = dek;
             }
-            [self.dekLabel setPreferredMaxLayoutWidth:self.frame.size.width];
             self.dekLabel.text = dekContent;
         } else {
             self.dekLabel.text = nil;

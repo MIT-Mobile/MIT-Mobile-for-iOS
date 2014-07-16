@@ -97,12 +97,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [self.nextStoryDekLabel setPreferredMaxLayoutWidth:self.nextStoryDekLabel.bounds.size.width];
-    [self.nextStoryTitleLabel setPreferredMaxLayoutWidth:self.nextStoryTitleLabel.bounds.size.width];
-}
-
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];

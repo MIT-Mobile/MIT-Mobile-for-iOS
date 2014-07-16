@@ -109,7 +109,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
                 titleContent = title;
             }
             self.titleLabel.text = titleContent;
-            [self.titleLabel setPreferredMaxLayoutWidth:self.frame.size.width];
 
         } else {
             self.titleLabel.text = nil;
@@ -123,7 +122,6 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             }
             
             self.dekLabel.text = dekContent;
-            [self.dekLabel setPreferredMaxLayoutWidth:self.frame.size.width];
         } else {
             self.dekLabel.text = nil;
         }
