@@ -23,7 +23,7 @@
         <!--News Pad View Controller-->
         <scene sceneID="epG-x7-7U3">
             <objects>
-                <viewController storyboardIdentifier="StoryPadHome" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="559-UV-zry" userLabel="News Pad View Controller" customClass="MITNewsiPadViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryPadHome" useStoryboardIdentifierAsRestorationIdentifier="YES" id="559-UV-zry" userLabel="News Pad View Controller" customClass="MITNewsiPadViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bmT-Es-5r1"/>
                         <viewControllerLayoutGuide type="bottom" id="M09-Rc-lpu"/>
