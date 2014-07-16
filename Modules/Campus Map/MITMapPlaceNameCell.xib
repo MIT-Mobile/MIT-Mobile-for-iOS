@@ -14,20 +14,31 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="7cL-Kw-ptV">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="15" translatesAutoresizingMaskIntoConstraints="NO" id="7cL-Kw-ptV">
                         <rect key="frame" x="15" y="7" width="295" height="28"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="28" id="sUd-UL-oBD"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iw5-ud-iUF">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iw5-ud-iUF">
                         <rect key="frame" x="15" y="41" width="295" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="Iw5-ud-iUF" firstAttribute="top" secondItem="7cL-Kw-ptV" secondAttribute="bottom" constant="6" id="3N3-mk-D89"/>
+                    <constraint firstItem="7cL-Kw-ptV" firstAttribute="trailing" secondItem="Iw5-ud-iUF" secondAttribute="trailing" id="I1Q-yd-RGX"/>
+                    <constraint firstItem="7cL-Kw-ptV" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="7" id="Jew-RX-sRY"/>
+                    <constraint firstItem="7cL-Kw-ptV" firstAttribute="leading" secondItem="Iw5-ud-iUF" secondAttribute="leading" id="LLE-xr-UP7"/>
+                    <constraint firstAttribute="trailing" secondItem="7cL-Kw-ptV" secondAttribute="trailing" constant="10" id="eMW-lh-vr5"/>
+                    <constraint firstItem="7cL-Kw-ptV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="qdM-LM-ZtT"/>
+                </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="addressLabel" destination="Iw5-ud-iUF" id="DxB-iN-lmY"/>

@@ -6,6 +6,7 @@
 #import "MITMapPlaceBottomButtonCell.h"
 #import "MITMapModelController.h"
 #import "MIT_MobileAppDelegate.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString * const kMITMapPlaceContentCellNibName = @"MITMapPlaceContentCell";
 static NSString * const kMITMapPlaceContentCellIdentifier = @"kMITMapPlaceContentCellIdentifier";
@@ -76,7 +77,7 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
 #pragma mark - Private Methods
 
-- (void)bookmarksButtonPressed
+- (void)addOrRemoveBookmark
 {
     if (self.place.bookmark == nil) {
         [self addToBookmarks];
@@ -197,7 +198,7 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
         case kMITMapPlaceBottomButtonsSection: {
             switch (indexPath.row) {
                 case kMITMapPlaceBottomButtonAddToBookmarksRow: {
-                    [self addToBookmarks];
+                    [self addOrRemoveBookmark];
                     break;
                 }
                 case kMITMapPlaceBottomButtonOpenInMapsRow: {
@@ -285,38 +286,32 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
             
             switch (indexPath.row) {
                 case kMITMapPlaceBottomButtonAddToBookmarksRow: {
+                    cell.label.textColor = [UIColor mit_tintColor];
                     if (self.place.bookmark == nil) {
-                        [cell.button setTitle:@"Add to Bookmarks" forState:UIControlStateNormal];
+                        cell.label.text = @"Add to Bookmarks";
                     } else {
-                        [cell.button setTitle:@"Remove from Bookmarks" forState:UIControlStateNormal];
+                        cell.label.text = @"Remove from Bookmarks";
                     }
-                    
-                    [cell setTopSeparatorHidden:NO];
-                    [cell setBottomSeparatorHidden:NO];
-                    
                     break;
                 }
                 case kMITMapPlaceBottomButtonOpenInMapsRow: {
-                    [cell.button setTitle:@"Open in Maps" forState:UIControlStateNormal];
-                    [cell setTopSeparatorHidden:YES];
-                    [cell setBottomSeparatorHidden:NO];
+                    cell.label.textColor = [UIColor mit_tintColor];
+                    cell.label.text = @"Open in Maps";
                     break;
                 }
                 case kMITMapPlaceBottomButtonOpenInGoogleMapsRow: {
-                    [cell.button setTitle:@"Open in Google Maps" forState:UIControlStateNormal];
+                    cell.label.text = @"Open in Google Maps";
                     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
-                        cell.button.enabled = YES;
+                        cell.label.textColor = [UIColor mit_tintColor];
                         cell.selectionStyle = UITableViewCellSelectionStyleGray;
                     } else {
-                        cell.button.enabled = NO;
+                        cell.label.textColor = [UIColor lightGrayColor];
                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     }
-                    [cell setTopSeparatorHidden:YES];
-                    [cell setBottomSeparatorHidden:YES];
                     break;
                 }
                 default: {
-                    [cell.button setTitle:@"" forState:UIControlStateNormal];
+                    cell.label.text = @"";
                     break;
                 }
             }

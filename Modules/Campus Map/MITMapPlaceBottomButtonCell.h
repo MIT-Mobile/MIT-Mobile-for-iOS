@@ -2,9 +2,8 @@
 
 @interface MITMapPlaceBottomButtonCell : UITableViewCell
 
-@property (nonatomic, weak) IBOutlet UIButton *button;
+@property (weak, nonatomic) IBOutlet UILabel *label;
 
 - (void)setTopSeparatorHidden:(BOOL)hidden;
-- (void)setBottomSeparatorHidden:(BOOL)hidden;
 
 @end

@@ -14,29 +14,30 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3oH-JE-Qcm">
-                        <rect key="frame" x="15" y="7" width="295" height="30"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <state key="normal" title="Button">
-                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                        </state>
-                    </button>
-                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hBU-mR-ag3">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hBU-mR-ag3">
                         <rect key="frame" x="15" y="0.0" width="305" height="1"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="0.82972171532846717" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8H8-4D-y7L">
-                        <rect key="frame" x="15" y="42" width="305" height="1"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kej-A4-297">
+                        <rect key="frame" x="15" y="11" width="285" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="0.82658531021897808" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="kej-A4-297" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="2mB-eT-p7n"/>
+                    <constraint firstItem="kej-A4-297" firstAttribute="top" secondItem="hBU-mR-ag3" secondAttribute="bottom" constant="10" id="5bc-gR-iq9"/>
+                    <constraint firstAttribute="trailing" secondItem="hBU-mR-ag3" secondAttribute="trailing" id="RFG-lq-x8U"/>
+                    <constraint firstItem="kej-A4-297" firstAttribute="leading" secondItem="hBU-mR-ag3" secondAttribute="leading" id="bJ2-hi-AEY"/>
+                    <constraint firstAttribute="trailing" secondItem="kej-A4-297" secondAttribute="trailing" constant="20" symbolic="YES" id="gKK-Df-3nP"/>
+                    <constraint firstItem="kej-A4-297" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="hrH-aa-1x3"/>
+                    <constraint firstItem="hBU-mR-ag3" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="nty-x8-pe7"/>
+                </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="bottomSeparator" destination="8H8-4D-y7L" id="VdF-Pi-wCK"/>
-                <outlet property="button" destination="3oH-JE-Qcm" id="Q6A-Nr-LdA"/>
+                <outlet property="label" destination="kej-A4-297" id="9w7-Xn-oCU"/>
                 <outlet property="topSeparator" destination="hBU-mR-ag3" id="gu4-Zv-IhV"/>
             </connections>
         </tableViewCell>
