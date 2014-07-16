@@ -13,8 +13,6 @@
 }
 
 @synthesize bounds = _bounds;
-
-@dynamic decorationLayoutAttributes;
 @dynamic frame;
 @dynamic itemLayoutAttributes;
 @dynamic numberOfItems;
@@ -66,16 +64,6 @@
             }
         }];
 
-        [_decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *decorationLayoutAttributes, NSUInteger idx, BOOL *stop) {
-            CGRect frame = CGRectMake(0, CGRectGetMinY(layoutBounds), interItemSpacing, maximumItemHeight);
-            frame.origin.x = CGRectGetMinX(layoutBounds) + (itemWidth * (idx + 1)) + (interItemSpacing * idx);
-
-            frame.origin.y = CGRectGetMinY(layoutBounds);
-            frame.size.width = interItemSpacing;
-            frame.size.height = maximumItemHeight;
-            decorationLayoutAttributes.frame = frame;
-        }];
-
         bounds.size.height = maximumItemHeight;
         _bounds = bounds;
         _needsLayout = NO;
@@ -98,22 +86,6 @@
         layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
     }];
 
-    return layoutAttributes;
-}
-
-- (NSArray*)decorationLayoutAttributes
-{
-    if (!_decorationLayoutAttributes) {
-        return nil;
-    }
-
-    CGRect frame = self.frame;
-
-    NSMutableArray *layoutAttributes = [[NSMutableArray alloc] initWithArray:_decorationLayoutAttributes copyItems:YES];
-    [layoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-        layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, CGRectGetMinX(frame), CGRectGetMinY(frame));
-    }];
-    
     return layoutAttributes;
 }
 
@@ -163,16 +135,6 @@
         if (self.numberOfItems >= self.maximumNumberOfItems) {
             return NO;
         }
-    }
-
-    // Checking for numberOfItems here because, once we add the new layout attributes
-    //  to the _itemLayoutAttributes ivar, numberOfItems will increment and we'll end up with an extra decoration.
-    if (self.numberOfItems > 0) {
-        NSIndexPath *decorationIndexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:indexPath.section];
-        UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:decorationIndexPath];
-        decorationLayoutAttributes.frame = CGRectMake(0, 0, _interItemSpacing, 0);
-
-        [_decorationLayoutAttributes addObject:decorationLayoutAttributes];
     }
 
     UICollectionViewLayoutAttributes *itemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];

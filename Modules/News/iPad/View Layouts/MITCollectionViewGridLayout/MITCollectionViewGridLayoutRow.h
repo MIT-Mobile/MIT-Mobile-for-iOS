@@ -11,7 +11,6 @@
 @property (nonatomic,readonly) BOOL isFilled;
 @property (nonatomic,readonly) NSUInteger numberOfItems;
 @property (nonatomic,readonly) NSArray *itemLayoutAttributes;
-@property (nonatomic,readonly) NSArray *decorationLayoutAttributes;
 
 
 - (instancetype)init;
