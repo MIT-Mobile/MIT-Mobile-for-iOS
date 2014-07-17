@@ -108,8 +108,10 @@
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
+    if ([searchBar.text isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+    }
     [self hideSearchRecents];
-    self.searchTableView.alpha = 1;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -141,6 +143,8 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+        self.view.alpha = .5;
         [self clearTable];
     }
     [self.recentSearchController filterResultsUsingString:searchText];
