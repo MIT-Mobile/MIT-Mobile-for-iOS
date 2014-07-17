@@ -92,6 +92,7 @@
     }
     
     MITMapRecentsTableViewController *recentsViewController = [[MITMapRecentsTableViewController alloc] init];
+    recentsViewController.showsNoRecentsMessage = YES;
     recentsViewController.showsTitleHeader = NO;
     recentsViewController.navigationItem.title = @"Recents";
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {

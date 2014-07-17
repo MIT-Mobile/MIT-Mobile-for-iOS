@@ -7,6 +7,8 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 
 @interface MITMapRecentsTableViewController ()
 
+@property (nonatomic, strong) UIView *noResultsView;
+
 @end
 
 @implementation MITMapRecentsTableViewController
@@ -24,6 +26,7 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 {
     [super viewDidLoad];
     
+    [self setupNoResultsView];
     [self reloadAllRecents];
 }
 
@@ -52,6 +55,36 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 }
 
 #pragma mark - Private Methods
+- (void)updateTableState
+{
+    if (self.showsNoRecentsMessage){
+
+    if ([self hasRecentSearchItems]) {
+        [self showTable];
+    }
+    else {
+        [self hideTable];
+    }
+
+    }
+}
+- (BOOL)hasRecentSearchItems
+{
+    return (self.recentSearchItems.count > 0);
+}
+
+- (void)showTable
+{
+    [self setNoResultsViewHidden:YES];
+    self.navigationItem.leftBarButtonItem.enabled = YES;
+}
+
+- (void)hideTable
+{
+    [self setEditing:NO animated:YES];
+    [self setNoResultsViewHidden:NO];
+    self.navigationItem.leftBarButtonItem.enabled = NO;
+}
 
 - (void)reloadAllRecents
 {
@@ -61,6 +94,7 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
             [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
                 self.recentSearchItems = [managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
                 [self.tableView reloadData];
+                    [self updateTableState];
             }];
         }
     }];
@@ -184,6 +218,29 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
     }
     
     return cell;
+}
+
+#pragma mark - No Results View
+
+- (void)setupNoResultsView
+{
+    UILabel *noResultsLabel = [[UILabel alloc] init];
+    noResultsLabel.text = @"No Recents";
+    noResultsLabel.font = [UIFont systemFontOfSize:24.0];
+    noResultsLabel.textColor = [UIColor grayColor];
+    noResultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIView *noResultsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
+    [noResultsView addSubview:noResultsLabel];
+    [noResultsView addConstraints:@[[NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0],
+                                    [NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]]];
+    self.noResultsView = noResultsView;
+}
+
+- (void)setNoResultsViewHidden:(BOOL)hidden
+{
+    self.tableView.separatorStyle = hidden ? UITableViewCellSeparatorStyleSingleLine : UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundView = hidden ? nil : self.noResultsView;
 }
 
 @end

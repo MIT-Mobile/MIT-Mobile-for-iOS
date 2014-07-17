@@ -12,6 +12,7 @@ extern NSString * const kMITMapRecentSearchCellIdentifier;
 @property (nonatomic, weak) id<MITMapRecentsTableViewControllerDelegate> delegate;
 @property (nonatomic, strong) NSArray *recentSearchItems;
 @property (nonatomic) BOOL showsTitleHeader;
+@property (nonatomic) BOOL showsNoRecentsMessage;
 
 - (void)showTitleHeaderIfNecessary;
 
