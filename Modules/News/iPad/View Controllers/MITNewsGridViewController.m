@@ -70,11 +70,24 @@
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     }
+
+    [self updateLayoutForOrientation:self.interfaceOrientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self updateLayoutForOrientation:toInterfaceOrientation];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 
@@ -84,6 +97,20 @@
     UICollectionView *collectionView = self.collectionView;
     NSIndexPath* selectedIndexPath = [[collectionView indexPathsForSelectedItems] firstObject];
     return [self storyAtIndexPath:selectedIndexPath];
+}
+
+- (void)updateLayoutForOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if ([self.collectionViewLayout isKindOfClass:[MITCollectionViewGridLayout class]]) {
+        MITCollectionViewGridLayout *gridLayout = (MITCollectionViewGridLayout*)self.collectionViewLayout;
+        if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+            gridLayout.numberOfColumns = 3;
+        } else {
+            gridLayout.numberOfColumns = 5;
+        }
+    }
+
+    [self.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - Delegation
