@@ -10,7 +10,7 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 @interface MITMapBookmarksViewController ()
 
 @property (nonatomic, strong) NSArray *bookmarkedPlaces;
-@property (nonatomic, strong) UIView *tableBackgroundView;
+@property (nonatomic, strong) UIView *noResultsView;
 
 @property (nonatomic, strong) UIBarButtonItem *bookmarksDoneButton;
 
@@ -37,12 +37,18 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
     self.bookmarksDoneButton = self.navigationItem.rightBarButtonItem;
     
     [self setupTableView];
+    [self setupNoResultsView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [self updateBookmarkedPlaces];
     [self updateTableState];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+   // [self updateNoBookmarksLabel];
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,16 +92,14 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 
 - (void)showTable
 {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    self.tableView.backgroundView = nil;
+    [self setNoResultsViewHidden:YES];
     self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
 - (void)hideTable
 {
     [self setEditing:NO animated:YES];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundView = self.tableBackgroundView;
+    [self setNoResultsViewHidden:NO];
     self.navigationItem.leftBarButtonItem.enabled = NO;
 }
 
@@ -183,25 +187,27 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
     }
 }
 
-#pragma mark - Getters
+#pragma mark - No Results View
 
-- (UIView *)tableBackgroundView
+- (void)setupNoResultsView
 {
-    if (!_tableBackgroundView) {
-        _tableBackgroundView = [[UIView alloc] initWithFrame:self.tableView.frame];
-        CGFloat centerY = (self.view.frame.size.height / 2) - 70;
-        CGFloat width = [[UIScreen mainScreen] bounds].size.width;
-        UILabel *addBookmarksLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, centerY, width, 200)];
-        addBookmarksLabel.numberOfLines = 0;
-        addBookmarksLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        addBookmarksLabel.textAlignment = NSTextAlignmentCenter;
-        addBookmarksLabel.font = [UIFont systemFontOfSize:24.0];
-        addBookmarksLabel.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
-        addBookmarksLabel.text = kAddBookmarksLabelText;
-        
-        [_tableBackgroundView addSubview:addBookmarksLabel];
-    }
-    return _tableBackgroundView;
+    UILabel *noResultsLabel = [[UILabel alloc] init];
+    noResultsLabel.text = @"No Bookmarks";
+    noResultsLabel.font = [UIFont systemFontOfSize:24.0];
+    noResultsLabel.textColor = [UIColor grayColor];
+    noResultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIView *noResultsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
+    [noResultsView addSubview:noResultsLabel];
+    [noResultsView addConstraints:@[[NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0],
+                                    [NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]]];
+    self.noResultsView = noResultsView;
+}
+
+- (void)setNoResultsViewHidden:(BOOL)hidden
+{
+    self.tableView.separatorStyle = hidden ? UITableViewCellSeparatorStyleSingleLine : UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundView = hidden ? nil : self.noResultsView;
 }
 
 @end
