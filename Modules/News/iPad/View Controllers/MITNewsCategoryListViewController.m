@@ -1,10 +1,49 @@
 #import "MITNewsCategoryListViewController.h"
+#import "MITNewsiPadViewController.h"
 
 @interface MITNewsCategoryListViewController ()
 
 @end
 
 @implementation MITNewsCategoryListViewController
+
+
+#pragma mark MITNewsStory delegate/datasource passthru methods
+- (NSUInteger)numberOfCategories
+{
+    if ([self.dataSource respondsToSelector:@selector(numberOfCategoriesInViewController:)]) {
+        return 1;//[self.dataSource numberOfCategoriesInViewController:self];
+    } else {
+        return 0;
+    }
+}
+
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)index
+{
+    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex];
+    } else {
+        return 0;
+    }
+}
+
+- (NSString*)titleForCategoryInSection:(NSUInteger)section
+{
+    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryInSection:)]) {
+        return nil;//[self.dataSource viewController:self titleForCategoryInSection:section];
+    } else {
+        return nil;
+    }
+}
+
+- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
+        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:self.currentDataSourceIndex];
+    } else {
+        return nil;
+    }
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
