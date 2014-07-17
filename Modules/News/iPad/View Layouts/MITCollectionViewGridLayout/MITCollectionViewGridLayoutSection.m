@@ -424,79 +424,86 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
     NSMutableDictionary *scratchDecorationLayoutAttributes = [[NSMutableDictionary alloc] init];
     NSMutableOrderedSet *resultDecorationLayoutAttributes = [[NSMutableOrderedSet alloc] init];
-    __block CGFloat rowMaxY = 0;
+    __block CGFloat maximumRowHeight = 0;
     __block NSUInteger decorationCount = 0;
-    [itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+    [itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttribute, NSUInteger idx, BOOL *stop) {
         UICollectionViewLayoutAttributes *nextLayoutAttributes = nil;
-        BOOL isLastItem = NO;
-        BOOL isEndOfRow = NO;
+        BOOL isLastItemInRow = NO;
 
         if (idx < ([itemLayoutAttributes count] - 1)) {
             nextLayoutAttributes = itemLayoutAttributes[idx + 1];
-        } else {
-            isLastItem = YES;
-            isEndOfRow = YES;
-        }
 
-        if (nextLayoutAttributes) {
-            if (CGRectGetMinY(layoutAttributes.frame) != CGRectGetMinY(nextLayoutAttributes.frame)) {
+            if (CGRectGetMinY(itemLayoutAttribute.frame) != CGRectGetMinY(nextLayoutAttributes.frame)) {
                 // If the Y origin of the frames differ, then we have reached the end of the
                 // current row.
                 nextLayoutAttributes = nil;
-                isEndOfRow = YES;
+                isLastItemInRow = YES;
             }
-        }
-
-        if (![layoutAttributes.representedElementKind isEqualToString:MITNewsCellIdentifierStoryJumbo]) {
-            if ((rowMaxY <= CGRectGetMaxY(layoutAttributes.frame))) {
-                rowMaxY = CGRectGetMaxY(layoutAttributes.frame);
-            }
-        }
-
-        const CGFloat decorationOriginX = floor(CGRectGetMaxX(layoutAttributes.frame));
-        if (isEndOfRow) {
-            // The row has ended! Run back through and grow each of the decorations as needed
-            // so that they all have the proper height. If this is not a featured section,
-            // this code shoud move all the attributes from the scratch dictionary to the result
-            // array and clear the dictionary. If this is a featured section, don't move anything
-            // since there should be a single decoration per column.
-            [scratchDecorationLayoutAttributes enumerateKeysAndObjectsUsingBlock:^(NSNumber *columnOriginX, UICollectionViewLayoutAttributes *decorationLayoutAttributes, BOOL *stop) {
-                NSNumber *attributesOriginX = @(CGRectGetMaxX(layoutAttributes.frame));
-
-                // For any decorations which are either before or at the current column origin,
-                // run back and extend them to match our current height
-                if (!isLastItem || ([columnOriginX compare:attributesOriginX] == NSOrderedAscending)) {
-                    CGRect newFrame = decorationLayoutAttributes.frame;
-                    newFrame.size.height = rowMaxY - CGRectGetMinY(newFrame);
-
-                    decorationLayoutAttributes.frame = newFrame;
-                }
-            }];
-
-            // If we aren't in a featured section, we do not use column-height rows so make sure
-            // we clear out scratch space before continuing on
-            [resultDecorationLayoutAttributes addObjectsFromArray:[scratchDecorationLayoutAttributes allValues]];
-
-            if (!self.isFeatured) {
-                [scratchDecorationLayoutAttributes removeAllObjects];
-            }
-
-            // and finally reset the row height
-            rowMaxY = 0;
         } else {
-            // If it's not the end of the row, we (may) need to create a new decoration
+            isLastItemInRow = YES;
+        }
+
+        // Don't update the height if the current layout attribute is the featured item.
+        // This item's height is equal to several rows and will skew the height heuristics
+        if (itemLayoutAttribute.representedElementCategory == UICollectionElementCategoryCell) {
+            if (!self.isFeatured || !(itemLayoutAttribute.indexPath.item == 0)) {
+                CGFloat itemHeight = CGRectGetHeight(itemLayoutAttribute.frame);
+                if (maximumRowHeight < itemHeight) {
+                    maximumRowHeight = itemHeight;
+                }
+            }
+        }
+
+        if (!isLastItemInRow) {
+            const CGFloat decorationOriginX = floor(CGRectGetMaxX(itemLayoutAttribute.frame));
             if (!scratchDecorationLayoutAttributes[@(decorationOriginX)]) {
-                const CGFloat decorationOriginY = ceil(CGRectGetMinY(layoutAttributes.frame));
+                const CGFloat decorationOriginY = ceil(CGRectGetMinY(itemLayoutAttribute.frame));
                 const CGFloat decorationWidth = ceil(CGRectGetMinX(nextLayoutAttributes.frame) - decorationOriginX);
 
-                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:decorationCount++ inSection:self.section];
+                NSIndexPath *indexPath = [NSIndexPath indexPathWithIndex:self.section];
+                indexPath = [indexPath indexPathByAddingIndex:decorationCount];
 
                 UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:indexPath];
 
-                decorationLayoutAttributes.zIndex = 512;
+                decorationLayoutAttributes.zIndex = 2048;
                 decorationLayoutAttributes.frame = CGRectMake(decorationOriginX, decorationOriginY, decorationWidth, 0);
+
                 scratchDecorationLayoutAttributes[@(decorationOriginX)] = decorationLayoutAttributes;
+                decorationCount += 1;
             }
+        } else {
+            [scratchDecorationLayoutAttributes enumerateKeysAndObjectsUsingBlock:^(NSNumber *decorationKey, UICollectionViewLayoutAttributes *decorationLayoutAttributes, BOOL *stop) {
+                if (CGRectGetHeight(decorationLayoutAttributes.frame) == 0) {
+                    CGRect frame = decorationLayoutAttributes.frame;
+                    frame.size.height = maximumRowHeight;
+                    decorationLayoutAttributes.frame = frame;
+                }
+            }];
+
+            [resultDecorationLayoutAttributes addObjectsFromArray:[scratchDecorationLayoutAttributes allValues]];
+
+            if (self.isFeatured) {
+                [scratchDecorationLayoutAttributes enumerateKeysAndObjectsUsingBlock:^(NSNumber *decorationKey, UICollectionViewLayoutAttributes *decorationLayoutAttributes, BOOL *stop) {
+                    const CGFloat decorationOriginX = [decorationKey doubleValue];
+                    const CGFloat decorationMaxY = CGRectGetMaxY(decorationLayoutAttributes.frame);
+                    const CGFloat itemOriginY = CGRectGetMinY(itemLayoutAttribute.frame);
+                    const CGFloat itemOriginX = CGRectGetMinX(itemLayoutAttribute.frame);
+
+                    if (decorationOriginX < itemOriginX) {
+                        if (decorationMaxY < itemOriginY) {
+                            CGFloat offset = itemOriginY - CGRectGetMaxY(decorationLayoutAttributes.frame);
+
+                            CGRect frame = decorationLayoutAttributes.frame;
+                            frame.size.height += offset + maximumRowHeight;
+                            decorationLayoutAttributes.frame = frame;
+                        }
+                    }
+                 }];
+            } else {
+                [scratchDecorationLayoutAttributes removeAllObjects];
+            }
+
+            maximumRowHeight = 0;
         }
     }];
 
