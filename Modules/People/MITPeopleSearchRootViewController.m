@@ -14,6 +14,7 @@
 #import "MITLoadingActivityView.h"
 #import "PeopleRecentsData.h"
 #import "MITPeopleSearchSplitContainerViewController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITPeopleSearchRootViewController () <UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
 
@@ -48,7 +49,7 @@
     // Do any additional setup after loading the view.
     
     [self configureNavigationBar];
-    
+    [self configureBottomToolbar];
     [self configureChildControllers];
     
     self.searchHandler = [MITPeopleSearchHandler new];
@@ -101,15 +102,26 @@
     self.navigationItem.titleView = searchBarWrapperView;
 }
 
+- (void)configureBottomToolbar
+{
+    UIBarButtonItem *emergencyContactsItem = [[UIBarButtonItem alloc] initWithTitle:@"Emergency Contacts" style:UIBarButtonItemStylePlain target:self action:@selector(emergencyContactsButtonTapped:)];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], emergencyContactsItem] animated:YES];
+}
+
 #pragma mark - actions
 
-- (void) handleFavorites
+- (void)emergencyContactsButtonTapped:(id)sender
+{
+    [self performSegueWithIdentifier:@"MITEmergencyContactsModalSegue" sender:self];
+}
+
+- (void)handleFavorites
 {
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
 
-- (void) showRecentsPopoverIfNeeded
+- (void)showRecentsPopoverIfNeeded
 {
     // TODO: implement recents
     
