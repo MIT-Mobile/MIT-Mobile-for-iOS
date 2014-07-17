@@ -14,7 +14,7 @@
 #import "MITViewWithCenterText.h"
 
 
-@interface MITNewsSearchController (NewsDataSource) <UISearchBarDelegate, UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
 

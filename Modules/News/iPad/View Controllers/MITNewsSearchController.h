@@ -3,7 +3,7 @@
 
 @protocol MITNewsSearchDelegate;
 
-@interface MITNewsSearchController : UIViewController <UITableViewDataSourceDynamicSizing>
+@interface MITNewsSearchController : UIViewController <UISearchBarDelegate, UITableViewDataSourceDynamicSizing>
 
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
