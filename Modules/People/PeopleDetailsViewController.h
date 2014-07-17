@@ -15,7 +15,6 @@
 - (void)emailIconTapped:(NSString *)email;
 
 - (void) reloadDataIfNeeded;
-- (void) reload;
 
 @end
 

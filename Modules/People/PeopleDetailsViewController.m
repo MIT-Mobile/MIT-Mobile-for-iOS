@@ -90,8 +90,19 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void) setPersonDetails:(PersonDetails *)personDetails
 {
-    _personDetails = [PeopleRecentsData updatePerson:personDetails];
-    [self mapPersonAttributes];
+    if( personDetails != nil )
+    {
+        _personDetails = [PeopleRecentsData updatePerson:personDetails];
+        [self mapPersonAttributes];
+    }
+    else
+    {
+        _personDetails = nil;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self reload];
+    });
 }
 
 

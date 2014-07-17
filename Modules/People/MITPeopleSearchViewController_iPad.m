@@ -199,7 +199,6 @@
     
     // update search results controller
     [self.searchResultsViewController setSearchHandler:searchHandler];
-    [self.searchResultsViewController reload];
     [self.searchResultsViewController selectFirstResult];
     
     // update search details controller
@@ -343,7 +342,6 @@
          if( showSearchResults  )
          {
              [weakSelf.searchResultsViewController setSearchHandler:searchHandler];
-             [weakSelf.searchResultsViewController reload];
          }
          
          [weakSelf setSearchResultViewsHidden:!showSearchResults];
@@ -377,8 +375,6 @@
 - (void) didSelectPerson:(PersonDetails *)person
 {
     self.searchDetailsViewController.personDetails = person;
-    
-    [self.searchDetailsViewController reload];
 }
 
 - (void) didSelectFavoritePerson:(PersonDetails *)person
@@ -386,7 +382,6 @@
     [self setSearchResultViewsHidden:NO];
     
     self.searchDetailsViewController.personDetails = person;
-    [self.searchDetailsViewController reload];
     
     [self.favoritesPopover dismissPopoverAnimated:YES];
 }

@@ -17,8 +17,6 @@
 
 @property (nonatomic, strong) id<MITPeopleSearchViewControllerDelegate> delegate;
 
-- (void) reload;
-
 - (void) selectFirstResult;
 
 @end

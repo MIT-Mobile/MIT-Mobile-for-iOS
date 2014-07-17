@@ -9,6 +9,9 @@
 #import "MITPeopleSearchResultsViewController.h"
 #import "PersonDetails.h"
 
+NSString * const MITDefaultHintLabelText = @"Search by name, email, or phone number. For Directory Assistance call 617-253-1000";
+NSString * const MITNoResultsHintLabelText = @"No Results";
+
 @interface MITPeopleSearchResultsViewController ()
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
@@ -47,8 +50,7 @@
 {
     [super viewWillAppear:animated];
     
-    [self setHintLabelWithText:@"Search by name, email, or phone number. For Directory Assistance call 617-253-1000"
-                          font:[UIFont systemFontOfSize:17]];
+    [self setHintLabelWithText:MITDefaultHintLabelText font:[UIFont systemFontOfSize:17]];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -70,6 +72,29 @@
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self adjustHintLabelYConstraintForOrientation:toInterfaceOrientation];
+}
+
+#pragma mark - getters/setters
+
+- (void)setSearchHandler:(MITPeopleSearchHandler *)searchHandler
+{
+    _searchHandler = searchHandler;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self reload];
+    });
+}
+
+#pragma mark - UI configs
+
+- (void) setHintLabelWithText:(NSString *)text font:(UIFont *)font
+{
+    [self.hintLabel setText:text];
+    [self.hintLabel setFont:font];
+    [self.hintLabel setTextColor:[UIColor colorWithWhite:0.5 alpha:1]];
+    [self.hintLabel setNumberOfLines:0];
+    
+    [self.hintLabel setHidden:NO];
 }
 
 - (void) adjustHintLabelYConstraintForOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -111,16 +136,6 @@
     
     self.tableView.contentInset = insets;
     self.tableView.scrollIndicatorInsets = insets;
-}
-
-- (void) setHintLabelWithText:(NSString *)text font:(UIFont *)font
-{
-    [self.hintLabel setText:text];
-    [self.hintLabel setFont:font];
-    [self.hintLabel setTextColor:[UIColor colorWithWhite:0.5 alpha:1]];
-    [self.hintLabel setNumberOfLines:0];
-    
-    [self.hintLabel setHidden:NO];
 }
 
 #pragma mark - Table view methods
@@ -186,13 +201,26 @@
  
     if( [self.searchHandler.searchResults count] == 0 )
     {
-        [self setHintLabelWithText:@"No Results" font:[UIFont systemFontOfSize:24]];
+        NSString *hintText;
+        CGFloat fontSize;
+        if( self.searchHandler.searchCancelled )
+        {
+            hintText = MITDefaultHintLabelText;
+            fontSize = 17;
+        }
+        else
+        {
+            hintText = MITNoResultsHintLabelText;
+            fontSize = 24;
+        }
+        
+        [self setHintLabelWithText:hintText font:[UIFont systemFontOfSize:fontSize]];
+        
+        return;
     }
-    else
-    {
-        [self selectFirstResult];
-        [self.hintLabel setHidden:YES];
-    }
+    
+    [self selectFirstResult];
+    [self.hintLabel setHidden:YES];
 }
 
 - (void) selectFirstResult

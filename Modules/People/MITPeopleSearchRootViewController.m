@@ -22,6 +22,7 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
 @property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
+@property (nonatomic, assign) BOOL searchBarShouldBeginEditing;
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
 
@@ -51,6 +52,7 @@
     [self configureChildControllers];
     
     self.searchHandler = [MITPeopleSearchHandler new];
+    self.searchBarShouldBeginEditing = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -135,7 +137,6 @@
     [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {
          [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
-         [weakSelf.searchResultsViewController reload];         
          [weakSelf.searchResultsLoadingView removeFromSuperview];
      }];
 }
@@ -148,17 +149,17 @@
         self.searchHandler.searchTerms = nil;
         self.searchHandler.searchCancelled = YES;
         
-        [self showRecentsPopoverIfNeeded];
+        [self.searchResultsViewController setSearchHandler:self.searchHandler];
+        self.searchDetailsViewController.personDetails = nil;
+        
+        // clearing search while keyboard is not visible.. hence we should keep it that way.
+        if( ![searchBar isFirstResponder] )
+        {
+            self.searchBarShouldBeginEditing = NO;
+        }
         
         return;
     }
-    
-//    if( [self.recentsPickerPopover isPopoverVisible] )
-//    {
-//        [self dismissRecentsPopover];
-//    }
-    
-    searchBar.showsCancelButton = NO;
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -178,7 +179,12 @@
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    return [self shouldPerformSearchAction];
+    BOOL shouldBeginEditing = self.searchBarShouldBeginEditing;
+    
+    // reset bool property
+    self.searchBarShouldBeginEditing = YES;
+    
+    return shouldBeginEditing && [self shouldPerformSearchAction];
 }
 
 #pragma mark - search, recent and favorite delegates
@@ -186,8 +192,6 @@
 - (void) didSelectPerson:(PersonDetails *)person
 {    
     self.searchDetailsViewController.personDetails = person;
-    
-    [self.searchDetailsViewController reload];
 }
 
 - (void) didSelectFavoritePerson:(PersonDetails *)person
