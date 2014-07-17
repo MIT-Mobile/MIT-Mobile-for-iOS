@@ -143,6 +143,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    // TODO: how to differentiate between deleting last char in searchbar and clear all event?
     if ([searchBar.text length] <= 0)
     {
         self.searchHandler.searchResults = nil;
