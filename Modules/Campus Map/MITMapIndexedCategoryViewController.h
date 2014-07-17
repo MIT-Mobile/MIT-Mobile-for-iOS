@@ -6,6 +6,7 @@
 @interface MITMapIndexedCategoryViewController : UITableViewController <MITMapPlaceSelector>
 
 @property (nonatomic, strong) MITMapCategory *category;
+@property (nonatomic) BOOL shouldSortCategory;
 
 - (instancetype)initWithCategory:(MITMapCategory *)category;
 

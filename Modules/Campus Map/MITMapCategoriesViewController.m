@@ -94,6 +94,10 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
     
     if ([category.children count] > 0) {
         viewController = [[MITMapIndexedCategoryViewController alloc] initWithCategory:category];
+        if ([category.identifier isEqualToString:@"building_name"]) // This is the map place category
+        {
+            ((MITMapIndexedCategoryViewController *)viewController).shouldSortCategory = YES;
+        }
     }
     else {
         viewController = [[MITMapDefaultCategoryViewController alloc] initWithCategory:category];

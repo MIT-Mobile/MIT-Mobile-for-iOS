@@ -13,6 +13,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */; };
 		22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AEC227196C2EF3006AA3BA /* MITMapBookmarksViewController.m */; };
+		22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C238461978744A00A8BA87 /* MITMapPlace+Comparison.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -499,6 +500,8 @@
 		2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapDefaultCategoryViewController.m; sourceTree = "<group>"; };
 		22AEC226196C2EF3006AA3BA /* MITMapBookmarksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapBookmarksViewController.h; sourceTree = "<group>"; };
 		22AEC227196C2EF3006AA3BA /* MITMapBookmarksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapBookmarksViewController.m; sourceTree = "<group>"; };
+		22C238451978744A00A8BA87 /* MITMapPlace+Comparison.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MITMapPlace+Comparison.h"; path = "Model/MITMapPlace+Comparison.h"; sourceTree = "<group>"; };
+		22C238461978744A00A8BA87 /* MITMapPlace+Comparison.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MITMapPlace+Comparison.m"; path = "Model/MITMapPlace+Comparison.m"; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -2046,6 +2049,8 @@
 				2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */,
 				2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */,
 				2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */,
+				22C238451978744A00A8BA87 /* MITMapPlace+Comparison.h */,
+				22C238461978744A00A8BA87 /* MITMapPlace+Comparison.m */,
 				2C5D6ABC1861374300182C19 /* MITMapPlaceContent.h */,
 				2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */,
 				44C1A4C211A412E2000FD653 /* MITMapSearch.h */,
@@ -3483,6 +3488,7 @@
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
+				22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */,
 				DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */,
 				2C7DA7EB18D226B100260352 /* MITEventListTableViewCell.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,

@@ -2,6 +2,7 @@
 #import "MITMapModelController.h"
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
+#import "MITMapPlace+Comparison.h"
 #import "MITMapPlaceCell.h"
 
 static NSString * const kMITMapIndexedPlaceCellIdentifier = @"MITMapIndexedPlaceCell";
@@ -89,13 +90,19 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 - (void)refreshPlaces
 {
     [self showRefreshControlLoadingAnimation];
-
+    
     MITMapModelController *mapModelController = [MITMapModelController sharedController];
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
     [self.category.children enumerateObjectsUsingBlock:^(MITMapCategory *childCategory, NSUInteger idx, BOOL *stop) {
         [mapModelController placesInCategory:childCategory loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
             NSError *fetchError = nil;
-            self.indexedPlaces[idx] = [mainQueueContext executeFetchRequest:fetchRequest error:&fetchError];
+            NSArray *unsortedSection = [mainQueueContext executeFetchRequest:fetchRequest error:&fetchError];
+            if (self.shouldSortCategory){
+                self.indexedPlaces[idx] =  unsortedSection = [unsortedSection sortedArrayUsingSelector:@selector(compare:)];
+            }
+            else {
+                self.indexedPlaces[idx] = unsortedSection;
+            }
             [self.tableView reloadData];
             if ([self isCategoryLoadingComplete]) {
                 [self hideRefreshControlLoadingAnimation];
