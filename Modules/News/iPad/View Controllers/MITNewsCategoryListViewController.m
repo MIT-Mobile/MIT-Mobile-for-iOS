@@ -1,11 +1,3 @@
-//
-//  MITNewsCategoryListViewController.m
-//  MIT Mobile
-//
-//  Created by Mark on 7/17/14.
-//
-//
-
 #import "MITNewsCategoryListViewController.h"
 
 @interface MITNewsCategoryListViewController ()
