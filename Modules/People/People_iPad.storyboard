@@ -20,61 +20,14 @@
             </objects>
             <point key="canvasLocation" x="-4647" y="-6076"/>
         </scene>
-        <!--Emergency Contacts Table View Controller-->
+        <!--Emergency Contacts View Controller-->
         <scene sceneID="OH6-Xz-mNH">
             <objects>
-                <tableViewController id="YO0-6q-KuQ" customClass="MITEmergencyContactsTableViewController" sceneMemberID="viewController">
+                <tableViewController id="YO0-6q-KuQ" customClass="EmergencyContactsViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="5LE-qk-ETc">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MITEmergencyContactTableCell" rowHeight="56" id="jOi-t6-5gJ">
-                                <rect key="frame" x="0.0" y="86" width="768" height="56"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jOi-t6-5gJ" id="zI7-BS-Ki8">
-                                    <rect key="frame" x="0.0" y="0.0" width="768" height="55"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Name" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kAw-aa-tWj">
-                                            <rect key="frame" x="20" y="8" width="129" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="JE9-Tc-7Lt"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Phone" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Wh-VP-uwg">
-                                            <rect key="frame" x="164" y="8" width="133" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.70000000000000007" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Emergency Contact Subtitle" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="3Kj-6b-Pj9">
-                                            <rect key="frame" x="20" y="29" width="728" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" white="0.0" alpha="0.70000000000000007" colorSpace="calibratedWhite"/>
-                                            <color key="highlightedColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="bottom" id="2Ge-xg-kps"/>
-                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="top" secondItem="zI7-BS-Ki8" secondAttribute="top" constant="29" id="3K8-ip-j8N"/>
-                                        <constraint firstItem="3Kj-6b-Pj9" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="leading" id="AyX-g2-D7K"/>
-                                        <constraint firstAttribute="trailing" secondItem="3Kj-6b-Pj9" secondAttribute="trailing" constant="20" symbolic="YES" id="OiR-x5-CIG"/>
-                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="leading" secondItem="zI7-BS-Ki8" secondAttribute="leading" constant="20" symbolic="YES" id="Sko-c8-UA3"/>
-                                        <constraint firstItem="kAw-aa-tWj" firstAttribute="baseline" secondItem="2Wh-VP-uwg" secondAttribute="baseline" id="Wpw-xq-ZsE"/>
-                                        <constraint firstAttribute="bottom" secondItem="3Kj-6b-Pj9" secondAttribute="bottom" constant="5" id="Ypj-jf-ncw"/>
-                                        <constraint firstItem="2Wh-VP-uwg" firstAttribute="top" secondItem="kAw-aa-tWj" secondAttribute="top" id="noU-mu-GXR"/>
-                                        <constraint firstItem="2Wh-VP-uwg" firstAttribute="leading" secondItem="kAw-aa-tWj" secondAttribute="trailing" constant="15" id="pYH-iJ-CiI"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="YO0-6q-KuQ" id="tOZ-yA-1tJ"/>
                             <outlet property="delegate" destination="YO0-6q-KuQ" id="vvR-to-fcj"/>
