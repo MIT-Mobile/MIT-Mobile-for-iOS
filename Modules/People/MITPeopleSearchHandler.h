@@ -17,6 +17,7 @@
 @property BOOL searchCancelled;
 
 - (void)performSearchWithCompletionHandler:(void(^)(BOOL isSuccess))completionHandler;
+- (void)updateSearchTokensForSearchQuery:(NSString *)searchQuery;
 
 - (NSMutableAttributedString *) hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont;
 

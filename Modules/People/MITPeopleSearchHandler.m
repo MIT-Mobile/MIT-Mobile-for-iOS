@@ -14,13 +14,8 @@
 - (void)performSearchWithCompletionHandler:(void(^)(BOOL isSuccess))completionHandler
 {
 	// save search tokens for drawing table cells
-    NSString *searchQuery = [self.searchTerms lowercaseString];
-    NSArray *searchTokens = [searchQuery componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    searchTokens = [searchTokens sortedArrayUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
-        return [@([string1 length]) compare:@([string2 length])];
-    }];
+    [self updateSearchTokensForSearchQuery:[self.searchTerms lowercaseString]];
     
-	self.searchTokens = searchTokens;
 	self.searchCancelled = NO;
     
     NSString *currentQueryString = self.searchTerms;
@@ -40,7 +35,17 @@
     }];
 }
 
-- (NSMutableAttributedString *) hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont
+- (void)updateSearchTokensForSearchQuery:(NSString *)searchQuery
+{
+    NSArray *searchTokens = [searchQuery componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    searchTokens = [searchTokens sortedArrayUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
+        return [@([string1 length]) compare:@([string2 length])];
+    }];
+    
+	self.searchTokens = searchTokens;
+}
+
+- (NSMutableAttributedString *)hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont
 {
     UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
     

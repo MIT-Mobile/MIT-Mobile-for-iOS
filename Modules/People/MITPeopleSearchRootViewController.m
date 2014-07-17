@@ -210,7 +210,16 @@
 
 - (void) didSelectFavoritePerson:(PersonDetails *)person
 {
+    self.searchHandler.searchResults = @[person];
+    [self.searchHandler updateSearchTokensForSearchQuery:[person name]];
     
+    [self.searchResultsViewController setSearchHandler:self.searchHandler];
+    self.searchBar.text = [person name];
+    self.searchDetailsViewController.personDetails = person;
+    
+    [self.searchBar resignFirstResponder];
+    
+    [self.favoritesPopover dismissPopoverAnimated:YES];
 }
 
 - (void) didDismissFavoritesPopover
