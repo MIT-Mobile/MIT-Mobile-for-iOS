@@ -17,11 +17,14 @@ BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span);
 
 @property (nonatomic) BOOL stickyHeaders;
 @property (nonatomic) CGRect frame;
-@property (nonatomic) CGRect bounds;
+@property (nonatomic,readonly) CGRect bounds;
 
 @property (nonatomic) MITCollectionViewGridSpan featuredItemSpan;
-@property (nonatomic) CGFloat interItemPadding;
+@property (nonatomic) CGFloat minimumInterItemPadding;
 @property (nonatomic) CGFloat lineSpacing;
+
+@property (nonatomic,readonly) CGFloat interItemPadding;
+@property (nonatomic,readonly) CGFloat columnWidth;
 
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *headerLayoutAttributes;
 @property (nonatomic,readonly,copy) UICollectionViewLayoutAttributes *featuredItemLayoutAttributes;
@@ -31,7 +34,10 @@ BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span);
 + (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns;
 
 - (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewGridLayout*)layout;
+
 - (void)invalidateLayout;
+- (void)layoutIfNeeded;
+
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;
 - (UICollectionViewLayoutAttributes*)headerLayoutAttributesWithContentOffset:(CGPoint)contentOffset;
