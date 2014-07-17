@@ -76,7 +76,8 @@
     self.searchResultsViewController = navController.viewControllers[0];
     self.searchResultsViewController.delegate = self;
     
-    self.searchDetailsViewController = splitContainer.childViewControllers[1];
+    UINavigationController *navDetailsController = splitContainer.childViewControllers[1];
+    self.searchDetailsViewController = navDetailsController.viewControllers[0];
 }
 
 - (void)configureNavigationBar
@@ -253,6 +254,8 @@
     self.searchResultsLoadingView = loadingView;
     [self.view addSubview:loadingView];
 }
+
+
 
 
 @end

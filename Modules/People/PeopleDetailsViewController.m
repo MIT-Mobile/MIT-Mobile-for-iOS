@@ -35,6 +35,7 @@ static NSInteger AccessoryIconIndex     = 2;
 static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 @implementation PeopleDetailsViewController
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -43,11 +44,18 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         self.headerLeftIndentLayoutConstraint.constant = 10.;
     }
     
+    [self adjustTableViewInsets];
+    
     [self updateTableViewHeaderView];
 	
     [self reloadDataIfNeeded];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
 }
 
 - (void) reloadDataIfNeeded
@@ -193,31 +201,49 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void) didMoveToParentViewController:(UIViewController *)parent
-{
-    BOOL is_iPad = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
-
-    if( parent && is_iPad)
-    {
-        CGFloat top = parent.topLayoutGuide.length;
-        CGFloat bottom = parent.bottomLayoutGuide.length;
-        
-        if( self.tableView.contentInset.top != top )
-        {
-            UIEdgeInsets newInsets = UIEdgeInsetsMake(top, 0, bottom, 0);
-            self.tableView.contentInset = newInsets;
-            self.tableView.scrollIndicatorInsets = newInsets;
-        }
-    }
-    
-    [super didMoveToParentViewController:parent];
-}
-
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
+}
+
+#pragma mark - UI configs
+
+- (void) adjustTableViewInsets
+{
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    CGFloat topInset = [self topBarHeight];
+    
+    CGFloat toolbarHeight = self.navigationController.toolbar.frame.size.height;
+    
+    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight, 0);
+    
+    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    if( UIInterfaceOrientationIsLandscape(currentOrientation) )
+    {
+        insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight + [self landscapeHeightDelta], 0);
+    }
+    
+    self.tableView.contentInset = insets;
+    self.tableView.scrollIndicatorInsets = insets;
+}
+
+- (CGFloat) topBarHeight
+{
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    return CGRectGetHeight(self.navigationController.navigationBar.frame) + MIN(statusBarSize.width, statusBarSize.height);
+}
+
+- (CGFloat) landscapeHeightDelta
+{
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    
+    return size.height - size.width;
 }
 
 #pragma mark - Table view methods
@@ -274,6 +300,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 			cell.textLabel.text = @"Add to Existing Contact";
 		} else if( row == 2 ) {
             cell.textLabel.text = @"Add to Favorites";
+            
+            if( [cell respondsToSelector:@selector(setSeparatorInset:)] )
+            {
+                cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, cell.bounds.size.width);
+            }
         }
 		
 	} else { // (section == 0) cells for displaying person details

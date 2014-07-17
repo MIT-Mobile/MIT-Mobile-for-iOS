@@ -192,10 +192,25 @@
             </objects>
             <point key="canvasLocation" x="-4152" y="-4259"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Veg-PH-6Ib">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" definesPresentationContext="YES" navigationBarHidden="YES" id="cag-2w-FbR" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="7wL-Yl-Csh">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="EBR-Lr-2sq" kind="relationship" relationship="rootViewController" id="P2o-hY-A7l"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tx2-C6-zyw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1297" y="-3305"/>
+        </scene>
         <!--People Details View Controller-->
         <scene sceneID="AWY-w1-VSz">
             <objects>
-                <viewController storyboardIdentifier="PeopleSearchDetailsViewController" id="EBR-Lr-2sq" customClass="PeopleDetailsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PeopleSearchDetailsViewController" automaticallyAdjustsScrollViewInsets="NO" id="EBR-Lr-2sq" customClass="PeopleDetailsViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Fy1-CJ-Baz">
                         <rect key="frame" x="0.0" y="0.0" width="446" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -272,6 +287,7 @@
                         </prototypes>
                     </tableView>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="hQP-A3-HwM"/>
                     <size key="freeformSize" width="500" height="1024"/>
                     <connections>
                         <outlet property="personName" destination="DC7-Gz-o6z" id="VbH-Gp-y4q"/>
@@ -282,7 +298,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tnn-o9-ysC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1196" y="-3369"/>
+            <point key="canvasLocation" x="-488" y="-3305"/>
         </scene>
         <!--People Search Split Container View Controller-->
         <scene sceneID="fPK-Hg-G4K">
@@ -309,7 +325,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="EBR-Lr-2sq" kind="embed" identifier="MITDetailsController" id="pAN-uT-7zC"/>
+                                    <segue destination="cag-2w-FbR" kind="embed" id="bnM-oD-1SM"/>
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vcm-HH-ETs" userLabel="lineSeparatorView">

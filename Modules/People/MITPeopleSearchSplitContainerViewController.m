@@ -88,12 +88,11 @@ static CGFloat masterViewContainerWidthPortrait  = 320;
     self.lineSeparator.frame = separatorFrame;
     
     // adjust details view container
+    CGFloat screenWidth = isLandscape ? self.view.bounds.size.height : self.view.bounds.size.width;
     CGRect detailsFrame = self.detailsViewContainer.frame;
     detailsFrame.origin.x = separatorFrame.origin.x + 1;
-    detailsFrame.size.width = self.view.bounds.size.width - masterFrame.size.width - 1;
-    self.detailsViewContainer.frame = detailsFrame;
-    
-    [self.view sendSubviewToBack:self.detailsViewContainer];
+    detailsFrame.size.width = screenWidth - masterFrame.size.width - 1;
+    self.detailsViewContainer.frame = detailsFrame;    
 }
 
 #pragma mark - Navigation
