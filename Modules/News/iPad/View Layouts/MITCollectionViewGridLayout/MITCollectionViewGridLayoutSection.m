@@ -205,7 +205,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     if (!CGRectEqualToRect(newBounds, oldBounds)) {
         bounds.size.height = 0;
         _bounds = bounds;
-        _needsLayout = YES;
     }
 }
 
