@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@class MITCollectionViewNewsGridLayout;
+@class MITCollectionViewGridLayout;
 
 typedef struct {
     NSUInteger horizontal;
@@ -12,7 +12,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span);
 
 @interface MITCollectionViewGridLayoutSection : NSObject
-@property (nonatomic,readonly,weak) MITCollectionViewNewsGridLayout *layout;
+@property (nonatomic,readonly,weak) MITCollectionViewGridLayout *layout;
 @property (nonatomic,readonly) NSInteger section;
 
 @property (nonatomic) BOOL stickyHeaders;
@@ -28,9 +28,9 @@ BOOL MITCollectionViewGridSpanIsValid(MITCollectionViewGridSpan span);
 @property (nonatomic,readonly,copy) NSArray *itemLayoutAttributes;
 @property (nonatomic,readonly,copy) NSArray *decorationLayoutAttributes;
 
-+ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns;
++ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns;
 
-- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout;
+- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewGridLayout*)layout;
 - (void)invalidateLayout;
 - (NSArray*)allLayoutAttributes;
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath*)indexPath;

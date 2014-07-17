@@ -2,7 +2,7 @@
 
 @protocol MITCollectionViewDelegateNewsGrid;
 
-@interface MITCollectionViewNewsGridLayout : UICollectionViewLayout
+@interface MITCollectionViewGridLayout : UICollectionViewLayout
 @property (nonatomic,readonly,weak) id<MITCollectionViewDelegateNewsGrid> collectionViewDelegate;
 
 // Set these if you aren't using the associated delegate methods
@@ -26,13 +26,13 @@
 
 @protocol MITCollectionViewDelegateNewsGrid <UICollectionViewDelegate>
 @optional
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout numberOfColumnsInSection:(NSInteger)section;
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout numberOfColumnsInSection:(NSInteger)section;
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath;
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath;
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForHeaderInSection:(NSInteger)section;
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section;
 
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section;
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section;
 
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section;
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section;
 @end

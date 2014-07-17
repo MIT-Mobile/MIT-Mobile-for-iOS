@@ -1,14 +1,14 @@
-#import "MITCollectionViewNewsGridLayout.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITCollectionViewGridLayoutSection.h"
 #import "MITNewsConstants.h"
 #import "MITCollectionViewGridDividerView.h"
 
-@interface MITCollectionViewNewsGridLayout ()
+@interface MITCollectionViewGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
 @property (nonatomic) CGFloat dividerDecorationWidth;
 @end
 
-@implementation MITCollectionViewNewsGridLayout
+@implementation MITCollectionViewGridLayout
 @dynamic collectionViewDelegate;
 
 - (instancetype)init

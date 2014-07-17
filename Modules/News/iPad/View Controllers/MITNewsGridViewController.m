@@ -5,7 +5,7 @@
 #import "MITNewsModelController.h"
 #import "MITNewsCategory.h"
 #import "MITNewsStory.h"
-#import "MITCollectionViewNewsGridLayout.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsiPadViewController.h"
@@ -17,8 +17,7 @@
 @implementation MITNewsGridViewController
 - (instancetype)init
 {
-    MITCollectionViewNewsGridLayout *layout = [[MITCollectionViewNewsGridLayout alloc] init];
-    layout.numberOfColumns = 3;
+    MITCollectionViewGridLayout *layout = [[MITCollectionViewGridLayout alloc] init];
     layout.headerHeight = 44.;
     
     self = [super initWithCollectionViewLayout:layout];
@@ -177,12 +176,12 @@
     return height;
 }
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
     return [self _heightForItemAtIndexPath:indexPath];
 }
 
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
 {
     if ([self isFeaturedCategoryInSection:section]) {
         return 2;
@@ -191,7 +190,7 @@
     }
 }
 
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
     if ([self isFeaturedCategoryInSection:section]) {
         return 2;

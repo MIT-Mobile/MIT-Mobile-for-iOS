@@ -1,5 +1,5 @@
 #import "MITCollectionViewGridLayoutSection.h"
-#import "MITCollectionViewNewsGridLayout.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITCollectionViewGridLayoutRow.h"
 #import "MITNewsConstants.h"
 
@@ -42,7 +42,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
 @dynamic frame;
 
-+ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns
++ (instancetype)sectionWithIndex:(NSUInteger)section layout:(MITCollectionViewGridLayout*)layout numberOfColumns:(NSInteger)numberOfColumns
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [[self alloc] initWithSection:section layout:layout];
     sectionLayout.numberOfColumns = numberOfColumns;
@@ -50,7 +50,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     return sectionLayout;
 }
 
-- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewNewsGridLayout *)layout
+- (instancetype)initWithSection:(NSUInteger)section layout:(MITCollectionViewGridLayout *)layout
 {
     self = [super init];
     if (self) {
