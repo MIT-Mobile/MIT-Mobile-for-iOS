@@ -475,6 +475,7 @@
 		EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		FF1C445C197832A200385D5D /* MITNewsCategoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C445B197832A200385D5D /* MITNewsCategoryListViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1429,6 +1430,8 @@
 		EF3B3B15103F072400E8AA0D /* MITNavigationActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationActivityView.h; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+MITAdditions.m"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+MITAdditions.h"; sourceTree = "<group>"; };
+		FF1C445A197832A200385D5D /* MITNewsCategoryListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoryListViewController.h; sourceTree = "<group>"; };
+		FF1C445B197832A200385D5D /* MITNewsCategoryListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoryListViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1561,6 +1564,8 @@
 				0BE0C3F019704DAA00961025 /* MITNewsGridViewController.m */,
 				2CE355641959F673004011C5 /* MITNewsListViewController.h */,
 				2CE355651959F673004011C5 /* MITNewsListViewController.m */,
+				FF1C445A197832A200385D5D /* MITNewsCategoryListViewController.h */,
+				FF1C445B197832A200385D5D /* MITNewsCategoryListViewController.m */,
 				0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */,
 				0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */,
 				0BCC90CF19631BF000440544 /* MITNewsRecentSearchController.h */,
@@ -3663,6 +3668,7 @@
 				0BD7B972194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m in Sources */,
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
 				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
+				FF1C445C197832A200385D5D /* MITNewsCategoryListViewController.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
