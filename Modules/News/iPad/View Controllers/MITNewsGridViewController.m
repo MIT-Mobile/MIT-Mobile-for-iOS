@@ -43,23 +43,25 @@
     collectionView.backgroundColor = [UIColor clearColor];
     collectionView.backgroundView = nil;
 
-    /*
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryClipCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
-     */
+    const BOOL debug = YES;
 
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
-    [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    if (!debug) {
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    } else {
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+        [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    }
 
 }
 
