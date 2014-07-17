@@ -14,6 +14,10 @@
 @property (nonatomic) UIEdgeInsets sectionInsets;
 @property (nonatomic) CGFloat lineSpacing;
 
+@property (nonatomic,readonly) CGFloat columnWidth;
+@property (nonatomic,readonly) CGFloat interItemPadding;
+
+
 - (instancetype)init;
 
 - (NSUInteger)numberOfColumnsInSection:(NSInteger)section;
@@ -28,9 +32,9 @@
 @optional
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout numberOfColumnsInSection:(NSInteger)section;
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath;
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section;
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section;
 

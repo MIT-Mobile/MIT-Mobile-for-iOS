@@ -6,9 +6,15 @@
 @interface MITCollectionViewGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
 @property (nonatomic) CGFloat dividerDecorationWidth;
+
+@property (nonatomic) CGFloat columnWidth;
+@property (nonatomic) CGFloat interItemPadding;
 @end
 
 @implementation MITCollectionViewGridLayout
+@synthesize columnWidth = _columnWidth;
+@synthesize interItemPadding = _interItemPadding;
+
 @dynamic collectionViewDelegate;
 
 - (instancetype)init
@@ -34,7 +40,6 @@
 
 
 #pragma mark Properties
-
 - (id<MITCollectionViewDelegateNewsGrid>)collectionViewDelegate
 {
     id<UICollectionViewDelegate> collectionViewDelegate = self.collectionView.delegate;
@@ -67,8 +72,7 @@
         }
 
         if (minimumNumberOfItems > numberOfItems) {
-            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,span.horizontal,span.vertical,numberOfItems];
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+            DDLogError(@"layout may fail: section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,span.horizontal,span.vertical,numberOfItems);
         }
     }];
 }
@@ -95,6 +99,8 @@
     const NSUInteger featuredHorizontalSpan = [self featuredStoryHorizontalSpanInSection:section];
     const NSUInteger featuredVerticalSpan = [self featuredStoryVerticalSpanInSection:section];
     sectionLayout.featuredItemSpan = MITCollectionViewGridSpanMake(featuredHorizontalSpan, featuredVerticalSpan);
+    sectionLayout.minimumInterItemPadding = self.minimumInterItemPadding;
+    sectionLayout.lineSpacing = self.lineSpacing;
 
     return sectionLayout;
 }
@@ -156,13 +162,13 @@
         MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:section];
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
-            [[sectionLayout itemLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+            [sectionLayout.itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
                 if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 }
             }];
 
-            [[sectionLayout decorationLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+            [sectionLayout.decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
                 if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 }
@@ -234,8 +240,8 @@
 
 - (CGFloat)heightForHeaderInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section];
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:withWidth:)]) {
+        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section withWidth:CGRectGetWidth(self.collectionView.bounds)];
     } else {
         return self.headerHeight;
     }
@@ -243,8 +249,8 @@
 
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath];
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:withWidth:)]) {
+        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:CGRectGetWidth(self.collectionView.bounds)];
     } else {
         return self.itemHeight;
     }
