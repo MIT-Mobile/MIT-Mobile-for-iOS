@@ -18,8 +18,8 @@
 #import "MITAdditions.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
-@property (nonatomic,strong) NSString *searchQuery;
-@property (nonatomic,strong) NSOrderedSet *searchResults;
+@property (nonatomic, strong) NSString *searchQuery;
+@property (nonatomic, strong) NSOrderedSet *searchResults;
 
 - (BOOL)canLoadMoreItems;
 - (void)loadMoreItems:(void(^)(NSError *error))block;
@@ -39,6 +39,7 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIView *searchBarWrapper;
 
+@property (nonatomic) NSUInteger currentDataSource;
 
 #pragma mark Data Source
 @property (nonatomic,copy) NSArray *categories;
@@ -504,9 +505,41 @@
 
 - (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
 {
-#warning Not Yet Implemented
-    if (block) {
-        block(nil, nil);
+    
+    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+    
+    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSource];
+    
+    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+    if (currentIndex != NSNotFound) {
+        
+        if (currentIndex + 1 < [dataSource.objects count]) {
+            if(block) {
+                block(dataSource.objects[currentIndex +1], nil);
+            }
+        } else {
+            __block NSError *updateError = nil;
+            if ([dataSource hasNextPage]) {
+                [dataSource nextPage:^(NSError *error) {
+                    if (error) {
+                        DDLogWarn(@"failed to refresh data source %@",dataSource);
+                        
+                        if (!updateError) {
+                            updateError = error;
+                        }
+                    } else {
+                        DDLogVerbose(@"refreshed data source %@",dataSource);
+                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                        
+                        if (currentIndex + 1 < [dataSource.objects count]) {
+                            if(block) {
+                                block(dataSource.objects[currentIndex + 1], nil);
+                            }
+                        }
+                    }
+                }];
+            }
+        }
     }
 }
 
@@ -514,8 +547,15 @@
 
 @implementation MITNewsiPadViewController (MITNewsStoryDelegate)
 
+- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
+{
+    return nil;
+}
+
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 {
+    self.currentDataSource = section;
+ 
     [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
     return nil;
 }
