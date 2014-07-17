@@ -239,7 +239,11 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    if( [[segue identifier] isEqualToString:@"MITFavoritesSegue"] )
+    if( [[segue identifier] isEqualToString:@"MITEmergencyContactsModalSegue"] )
+    {
+        [segue.destinationViewController setModalPresentationStyle:UIModalPresentationFormSheet];
+    }
+    else if( [[segue identifier] isEqualToString:@"MITFavoritesSegue"] )
     {
         UINavigationController *navController = [segue destinationViewController];
         MITPeopleFavoritesTableViewController *favoritesTableViewController = [[navController viewControllers] firstObject];
