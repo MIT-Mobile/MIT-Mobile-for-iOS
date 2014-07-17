@@ -17,6 +17,8 @@
 #import "MITNewsStoriesDataSource.h"
 #import "MITAdditions.h"
 
+#import "MITNewsCategoryListViewController.h"
+
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
 @property (nonatomic, strong) NSString *searchQuery;
 @property (nonatomic, strong) NSOrderedSet *searchResults;
@@ -39,7 +41,7 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIView *searchBarWrapper;
 
-@property (nonatomic) NSUInteger currentDataSource;
+@property (nonatomic) NSUInteger currentDataSourceIndex;
 
 #pragma mark Data Source
 @property (nonatomic,copy) NSArray *categories;
@@ -508,7 +510,7 @@
     
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     
-    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSource];
+    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
     
     NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
     if (currentIndex != NSNotFound) {
@@ -549,12 +551,19 @@
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
+    self.currentDataSourceIndex = index;
+
+    MITNewsCategoryListViewController *categoryListController = [[MITNewsCategoryListViewController alloc] init];
+    categoryListController.currentDataSourceIndex = self.currentDataSourceIndex;
+    categoryListController.delegate = self;
+    categoryListController.dataSource = self;
+    [self.navigationController pushViewController:categoryListController animated:YES];
     return nil;
 }
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 {
-    self.currentDataSource = section;
+    self.currentDataSourceIndex = section;
  
     [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
     return nil;
