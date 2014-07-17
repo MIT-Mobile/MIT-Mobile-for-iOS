@@ -71,11 +71,6 @@
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
         }
     }];
-
-    // Run through and update the frames of any existing layouts
-    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
-        sectionLayout.frame = [self _layoutFrameForSection:[sectionNumber unsignedIntegerValue]];
-    }];
 }
 
 - (MITCollectionViewGridLayoutSection*)layoutForSection:(NSInteger)section
@@ -124,6 +119,12 @@
 - (void)invalidateLayout
 {
     [super invalidateLayout];
+
+    // TODO: Handle invalidation better. There shouldn't be too many items
+    // (500 max per category) so this won't be a huge processor hog
+    // but it's less than ideal and makes animation difficult.
+    // (bskinner - 2014.07.16)
+    [self.sectionLayouts removeAllObjects];
 }
 
 - (CGRect)_layoutFrameForSection:(NSUInteger)section
