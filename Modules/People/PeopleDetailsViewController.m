@@ -379,17 +379,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
-    if (section == 1) {
-        return [[UIView alloc] init];
-    }
     return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    if (section == 1) {
-        return 44.;
-    }
     return 0;
 }
 

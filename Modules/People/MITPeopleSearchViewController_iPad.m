@@ -15,7 +15,6 @@
 #import "PeopleFavoriteData.h"
 #import "MITLoadingActivityView.h"
 #import "MITPeopleRecentResultsViewController.h"
-#import "MITEmergencyContactsTableViewController.h"
 #import "MITPeopleFavoritesTableViewController.h"
 
 @interface MITPeopleSearchViewController_iPad () <UISearchBarDelegate>
