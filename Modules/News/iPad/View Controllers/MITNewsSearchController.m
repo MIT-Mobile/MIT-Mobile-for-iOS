@@ -23,7 +23,6 @@
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
-@property (nonatomic) BOOL moreResults;
 
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 
@@ -178,11 +177,7 @@
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [self removeLoadingView];
-            if (self.dataSource.hasNextPage) {
-                self.moreResults = YES;
-            } else {
-                self.moreResults = NO;
-            }
+            
             if ([self.dataSource.objects count] == 0) {
                 [self addNoResultsView];
             }
@@ -209,7 +204,6 @@
 {
     __block NSError *updateError = nil;
     if ([self.dataSource hasNextPage]) {
-        self.moreResults = YES;
         [self.dataSource nextPage:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
@@ -224,8 +218,6 @@
                 }];
             }
         }];
-    } else {
-        self.moreResults = NO;
     }
 }
 
@@ -298,7 +290,7 @@
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
+        }   
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
         cell.accessoryView = view;
@@ -314,7 +306,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if ([self.dataSource.objects count]) {
-        if (self.moreResults) {
+        if (self.dataSource.hasNextPage) {
             return [self.dataSource.objects count] + 1;
         }
         return [self.dataSource.objects count];
@@ -421,7 +413,7 @@
         } else {
             __block NSError *updateError = nil;
             if ([self.dataSource hasNextPage]) {
-                self.moreResults = YES;
+
                 [self.dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
@@ -443,8 +435,6 @@
                         }];
                     }
                 }];
-            } else {
-                self.moreResults = NO;
             }
         }
     }
