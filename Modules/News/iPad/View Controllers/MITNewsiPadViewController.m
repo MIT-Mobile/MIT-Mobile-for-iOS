@@ -577,7 +577,6 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    //NSLog(@"%@",self.stories);
     UIViewController *destinationViewController = [segue destinationViewController];
     
     DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);

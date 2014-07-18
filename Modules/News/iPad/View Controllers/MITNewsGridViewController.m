@@ -11,7 +11,8 @@
 #import "MITNewsiPadViewController.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid>
-
+@property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
+@property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @end
 
 @implementation MITNewsGridViewController
@@ -35,6 +36,8 @@
 {
     [super viewDidLoad];
     [self didLoadCollectionView:self.collectionView];
+    self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
+    self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
 }
 
 - (void)didLoadCollectionView:(UICollectionView*)collectionView
@@ -87,6 +90,16 @@
     return [self storyAtIndexPath:selectedIndexPath];
 }
 
+#pragma mark - Responding to UI events
+- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+
+    if (categoryIndexPath) {
+        [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
+    }
+}
+
 #pragma mark - Delegation
 #pragma mark UICollectionViewDelegate
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -133,6 +146,18 @@
     if ([kind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
         UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader forIndexPath:indexPath];
         headerView.backgroundColor = [UIColor redColor];
+        UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+        if (!recognizer) {
+            recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+            [headerView addGestureRecognizer:recognizer];
+        }
+        
+        // Keep track of the gesture recognizers we create so we can remove
+        // them later
+        [self.gestureRecognizersByView setObject:recognizer forKey:headerView];
+        
+        NSIndexPath *categoryIndexPath = [NSIndexPath indexPathWithIndex:indexPath.section];
+        [self.categoriesByGestureRecognizer setObject:categoryIndexPath forKey:recognizer];
 
         return headerView;
     }

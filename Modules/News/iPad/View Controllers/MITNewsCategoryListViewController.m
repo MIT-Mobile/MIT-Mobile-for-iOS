@@ -22,6 +22,13 @@
     }
 }
 
+- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
+        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
@@ -48,6 +55,11 @@
     } else {
         return nil;
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:self.currentDataSourceIndex]];
 }
 
 #pragma mark UITableViewDataSource
