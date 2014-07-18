@@ -442,14 +442,16 @@
 
 - (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:index];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     return [dataSource hasNextPage];
 }
 
 - (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:index];
-    return [dataSource nextPage:block];
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    [dataSource nextPage:block];
+    
+    return YES;
 }
 
 - (void)reloadItems:(void(^)(NSError *error))block
@@ -489,6 +491,10 @@
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
+    if (viewController != self) {
+        MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+        return [dataSource.objects count];
+    }
     if (self.showsFeaturedStories && (section == 0)) {
         return 5;
     } else {

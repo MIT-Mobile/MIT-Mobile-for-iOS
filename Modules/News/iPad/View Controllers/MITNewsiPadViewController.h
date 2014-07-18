@@ -21,6 +21,8 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 @protocol MITNewsStoryDataSource <NSObject>
 @optional
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section;
+- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
+- (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section;
 
 @required
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController;
