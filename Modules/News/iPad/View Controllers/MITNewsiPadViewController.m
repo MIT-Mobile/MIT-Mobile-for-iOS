@@ -491,7 +491,7 @@
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if (viewController != self) {
+    if ([viewController class] == [MITNewsCategoryListViewController class]) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
