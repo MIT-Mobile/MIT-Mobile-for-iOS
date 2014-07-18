@@ -8,6 +8,7 @@
 
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, weak) id <MITMapResultsListViewControllerDelegate> delegate;
+@property (nonatomic) BOOL hideDetailButton;
 
 - (instancetype)initWithPlaces:(NSArray *)places;
 - (void)setTitleWithSearchQuery:(NSString *)query;

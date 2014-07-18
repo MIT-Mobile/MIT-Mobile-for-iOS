@@ -444,6 +444,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         resultsListViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            resultsListViewController.hideDetailButton = YES;
             resultsListViewController.view.frame = CGRectMake(-320, 64, 320, self.view.bounds.size.height - 64 - 44);
             resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;

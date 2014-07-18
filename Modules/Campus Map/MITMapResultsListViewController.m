@@ -147,7 +147,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapNumberedResultCellIdentifier forIndexPath:indexPath];
     [self configureCell:cell forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryDetailButton;
+    cell.accessoryType = self.hideDetailButton ? UITableViewCellAccessoryNone : UITableViewCellAccessoryDetailButton;
     return cell;
 }
 
