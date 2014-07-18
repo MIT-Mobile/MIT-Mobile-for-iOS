@@ -6,7 +6,7 @@ static CGFloat const kBottomButtonSize = 44;
 static CGFloat const kBottomButtonXPadding = 8;
 static CGFloat const kBottomButtonYPadding = 20;
 
-@interface MITTiledMapView()
+@interface MITTiledMapView() <UIAlertViewDelegate>
 
 @property (nonatomic, strong) UIButton *leftButton;
 @property (nonatomic, strong) UIButton *rightButton;
@@ -109,9 +109,34 @@ static CGFloat const kBottomButtonYPadding = 20;
 - (void)centerMapOnUserLocation
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
-        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
-    } else {
-        [[[UIAlertView alloc] initWithTitle:nil message:@"Location services not enabled." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+    } else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted ||
+               [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+        [self showLocationServicesAlert];
+    }
+}
+
+- (void)showLocationServicesAlert
+{
+    NSString *alertMessage = @"Turn on Location Services to Allow \"MIT Mobile\" to Determine Your Location";
+    UIAlertView *alert;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
+        alert = [[UIAlertView alloc] initWithTitle:alertMessage message:nil delegate:self cancelButtonTitle:@"Settings" otherButtonTitles:@"Cancel", nil];
+    }
+    else {
+        alert = [[UIAlertView alloc] initWithTitle:alertMessage message:nil delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil];
+
+    }
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0)
+    {
+#ifdef __IPHONE_8_0 // This allows us to compile with XCode 5/iOS 7 SDK
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:&UjhkbkIApplicationOpenSettingsURLString != NULL]];
+#endif
     }
 }
 
