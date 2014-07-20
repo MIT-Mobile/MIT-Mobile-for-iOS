@@ -178,6 +178,7 @@
 {
     [super viewDidLoad];
     [self updateNavigationItem:YES];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     // Do any additional setup after loading the view.
 }
 
@@ -191,6 +192,7 @@
 {
     if(!_searchController) {
         MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.view.frame = self.view.bounds;
         searchController.delegate = self;
         _searchController = searchController;
     }
@@ -233,16 +235,12 @@
         [rightBarItems addObject:searchItem];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
-    
-    if (self.searching) {
-        self.searchController.view.frame = self.navigationController.view.bounds;
-    }
-    
 }
 
 #pragma mark UI Actions
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
+    self.tableView.scrollEnabled = NO;
     self.searching = YES;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
@@ -266,6 +264,7 @@
     self.searchController = nil;
     self.searching = NO;
     [self updateNavigationItem:YES];
+    self.tableView.scrollEnabled = YES;
 }
 
 @end
