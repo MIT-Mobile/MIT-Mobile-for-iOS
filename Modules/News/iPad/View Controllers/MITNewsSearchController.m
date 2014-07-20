@@ -301,7 +301,7 @@
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
         cell.accessoryView = view;
-        //[self getMoreStories];
+        [self getMoreStories];
         return cell;
     }
     
