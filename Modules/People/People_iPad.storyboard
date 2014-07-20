@@ -344,13 +344,15 @@
                             <outlet property="delegate" destination="eQy-sL-uqG" id="ML3-yE-vMR"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="H2K-XP-Tpt"/>
                     <connections>
+                        <outlet property="clearButton" destination="9V3-IW-cxy" id="NSa-9I-q5N"/>
                         <outlet property="tableView" destination="Qic-0h-H35" id="Ki7-1x-CXn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QfZ-4X-HpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4582" y="-2756"/>
+            <point key="canvasLocation" x="-3780" y="-2994"/>
         </scene>
         <!--People Search Results View Controller-->
         <scene sceneID="uvw-dk-Gnd">

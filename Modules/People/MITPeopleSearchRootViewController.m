@@ -14,9 +14,10 @@
 #import "MITLoadingActivityView.h"
 #import "PeopleRecentsData.h"
 #import "MITPeopleSearchSplitContainerViewController.h"
+#import "MITPeopleRecentResultsViewController.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITPeopleSearchRootViewController () <UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate>
+@interface MITPeopleSearchRootViewController () <UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate, MITPeopleRecentsViewControllerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *barItem;
 
@@ -26,6 +27,9 @@
 @property (nonatomic, assign) BOOL searchBarShouldBeginEditing;
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
+@property (nonatomic, strong) UIPopoverController *recentsPopover;
+
+@property (nonatomic, weak) MITPeopleRecentResultsViewController *recentsViewController;
 
 @property (nonatomic, weak) MITPeopleSearchResultsViewController *searchResultsViewController;
 @property (nonatomic, weak) PeopleDetailsViewController *searchDetailsViewController;
@@ -120,25 +124,57 @@
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
-
-- (void)showRecentsPopoverIfNeeded
+- (void)showRecentSearchTermsInPopover
 {
-    // TODO: implement recents
-    
-    if( [[[PeopleRecentsData sharedData] recents] count] <= 0 )
+    if( self.recentsViewController == nil )
     {
-        return;
+        self.recentsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
+        self.recentsViewController.delegate = self;
+        self.recentsViewController.searchHandler = self.searchHandler;
     }
+    
+    if( self.recentsPopover == nil )
+    {
+        self.recentsPopover = [[UIPopoverController alloc] initWithContentViewController:self.recentsViewController];
+        self.recentsPopover.passthroughViews = @[self.searchBar];
+        self.recentsPopover.delegate = self;
+    }
+    
+    [self.recentsViewController reloadRecentResultsWithFilterString:self.searchBar.text];
+    
+    [self.recentsPopover presentPopoverFromRect:self.searchBar.frame inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (void)didSelectRecentSearchTerm:(NSString *)searchTerm
+{
+    self.searchBar.text = searchTerm;
+    
+    [self prepareForSearch];
+    
+    [self performSearch];
+}
+
+- (void) didClearRecents
+{
+    //
 }
 
 #pragma mark - search methods
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    self.searchHandler.searchTerms = searchBar.text;
-	[self performSearch];
+    [self prepareForSearch];
+    
+    [self performSearch];
+}
+
+- (void)prepareForSearch
+{
+    self.searchHandler.searchTerms = self.searchBar.text;
+    [self.searchHandler addRecentSearchTerm:self.searchBar.text];
     
     [self.searchBar resignFirstResponder];
+    [self.recentsPopover dismissPopoverAnimated:YES];
 }
 
 - (void)performSearch
@@ -156,6 +192,11 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    if( [searchBar isFirstResponder] )
+    {
+        [self.recentsViewController reloadRecentResultsWithFilterString:searchText];
+    }
+    
     // TODO: how to differentiate between deleting last char in searchbar and clear all event?
     if ([searchBar.text length] <= 0)
     {
@@ -183,12 +224,7 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    searchBar.showsCancelButton = NO;
-    
-    if ([searchBar.text length] <= 0)
-    {
-        [self showRecentsPopoverIfNeeded];
-    }
+    [self showRecentSearchTermsInPopover];
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
@@ -203,12 +239,12 @@
 
 #pragma mark - search, recent and favorite delegates
 
-- (void) didSelectPerson:(PersonDetails *)person
+- (void)didSelectPerson:(PersonDetails *)person
 {    
     self.searchDetailsViewController.personDetails = person;
 }
 
-- (void) didSelectFavoritePerson:(PersonDetails *)person
+- (void)didSelectFavoritePerson:(PersonDetails *)person
 {
     self.searchHandler.searchResults = @[person];
     [self.searchHandler updateSearchTokensForSearchQuery:[person name]];
@@ -222,12 +258,12 @@
     [self.favoritesPopover dismissPopoverAnimated:YES];
 }
 
-- (void) didDismissFavoritesPopover
+- (void)didDismissFavoritesPopover
 {
     self.favoritesPopover = nil;
 }
 
-- (BOOL) shouldPerformSearchAction
+- (BOOL)shouldPerformSearchAction
 {
     if( [self favoritesPopover] )
     {
@@ -235,6 +271,13 @@
         
         return NO;
     }
+    
+    return YES;
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
+{
+    [self.searchBar resignFirstResponder];
     
     return YES;
 }

@@ -19,6 +19,10 @@
 - (void)performSearchWithCompletionHandler:(void(^)(BOOL isSuccess))completionHandler;
 - (void)updateSearchTokensForSearchQuery:(NSString *)searchQuery;
 
-- (NSMutableAttributedString *) hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont;
+- (NSMutableAttributedString *)hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont;
+
+- (BOOL)addRecentSearchTerm:(NSString *)recentSearchTerm;
+- (NSArray *)recentSearchTermsWithFilterString:(NSString *)filterString;
+- (BOOL)clearRecentSearches;
 
 @end

@@ -7,9 +7,13 @@
 //
 
 #import "MITPeopleRecentResultsViewController.h"
-#import "PeopleRecentsData.h"
+#import "PeopleRecentSearchTerm.h"
 
-@interface MITPeopleRecentResultsViewController ()
+@interface MITPeopleRecentResultsViewController () <UIActionSheetDelegate, UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic, strong) NSArray *recentResults;
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *clearButton;
 
 @end
 
@@ -37,7 +41,9 @@
 {
     [super viewWillAppear:animated];
     
-    [self.tableView reloadData];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,12 +52,23 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)reloadRecentResultsWithFilterString:(NSString *)filterString
+{
+    self.recentResults = [self.searchHandler recentSearchTermsWithFilterString:filterString];
+    
+    [self.clearButton setEnabled:([self.recentResults count] > 0)];
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+}
+
 
 #pragma mark - uitableview delegate methods
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[[PeopleRecentsData sharedData] recents] count];
+    return [self.recentResults count];
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
@@ -63,12 +80,9 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"recentTableViewCell" forIndexPath:indexPath];
     
-    NSArray *recentPeople = [[PeopleRecentsData sharedData] recents];
+    PeopleRecentSearchTerm *recentTermObject = self.recentResults[indexPath.row];
     
-    if (indexPath.row < [recentPeople count]) {
-        PersonDetails *recent = recentPeople[indexPath.row];
-        cell.textLabel.text = recent.name;
-    }
+    cell.textLabel.text = recentTermObject.recentSearchTerm;
     
     return cell;
 }
@@ -77,22 +91,49 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSArray *recentPeople = [[PeopleRecentsData sharedData] recents];
+    PeopleRecentSearchTerm *recentTermObject = self.recentResults[indexPath.row];
     
-    if (indexPath.row < [recentPeople count]) {
-        PersonDetails *recent = recentPeople[indexPath.row];
-        
-        [self.delegate didSelectRecentPerson:recent];
-    }
+    [self.delegate didSelectRecentSearchTerm:recentTermObject.recentSearchTerm];
 }
 
 - (IBAction)clearRecents:(id)sender
 {
-    [PeopleRecentsData eraseAll];
+    NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
+    NSString *clearAllRecentsButtonTitle = NSLocalizedString(@"Clear All Recents", @"Clear All Recents button title");
     
-    [self.tableView reloadData];
+    UIActionSheet *confirmSheet = [[UIActionSheet alloc] initWithTitle:@""
+                                                              delegate:self
+                                                     cancelButtonTitle:cancelButtonTitle
+                                                destructiveButtonTitle:clearAllRecentsButtonTitle
+                                                     otherButtonTitles:nil];
+    [confirmSheet showInView:self.view];
+}
+
+#pragma mark - actionSheet delegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if( buttonIndex == actionSheet.cancelButtonIndex )
+    {
+        return;
+    }
+    
+    if( ![self.searchHandler clearRecentSearches] )
+    {
+        // TODO: something went wrong.. handle error case
+        
+        return;
+    }
+    
+    self.recentResults = nil;
+    
+    [self.clearButton setEnabled:NO];
     
     [self.delegate didClearRecents];
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
 #pragma mark - Navigation

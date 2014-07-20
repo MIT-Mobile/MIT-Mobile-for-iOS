@@ -17,7 +17,7 @@
 
 @protocol MITPeopleRecentsViewControllerDelegate
 
-- (void) didSelectRecentPerson:(PersonDetails *)person;
+- (void) didSelectRecentSearchTerm:(NSString *)searchTerm;
 - (void) didClearRecents;
 
 @end
