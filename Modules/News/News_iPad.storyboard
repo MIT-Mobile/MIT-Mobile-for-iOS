@@ -29,11 +29,11 @@
                         <viewControllerLayoutGuide type="bottom" id="M09-Rc-lpu"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="zNq-uU-O8v">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VXG-S7-4t7" userLabel="Container View">
-                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
@@ -42,10 +42,11 @@
                         <constraints>
                             <constraint firstItem="VXG-S7-4t7" firstAttribute="leading" secondItem="zNq-uU-O8v" secondAttribute="leading" id="Flk-Oo-gzg"/>
                             <constraint firstItem="VXG-S7-4t7" firstAttribute="top" secondItem="bmT-Es-5r1" secondAttribute="bottom" id="MNw-tK-bwJ"/>
-                            <constraint firstItem="M09-Rc-lpu" firstAttribute="bottom" secondItem="VXG-S7-4t7" secondAttribute="bottom" id="UV3-JG-y3E"/>
+                            <constraint firstItem="M09-Rc-lpu" firstAttribute="top" secondItem="VXG-S7-4t7" secondAttribute="bottom" id="dAi-St-VL6"/>
                             <constraint firstAttribute="trailing" secondItem="VXG-S7-4t7" secondAttribute="trailing" id="neJ-IX-izs"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="sB4-3N-XVH"/>
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
