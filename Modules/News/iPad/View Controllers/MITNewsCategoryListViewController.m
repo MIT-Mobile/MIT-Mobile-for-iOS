@@ -4,8 +4,14 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "UITableView+DynamicSizing.h"
+#import "MITNewsSearchController.h"
 
-@interface MITNewsCategoryListViewController ()
+@interface MITNewsCategoryListViewController () <MITNewsSearchDelegate>
+
+@property (nonatomic, getter=isSearching) BOOL searching;
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) UIView *searchBarWrapper;
+@property (nonatomic, strong) MITNewsSearchController *searchController;
 
 @end
 
@@ -33,7 +39,7 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:self.currentDataSourceIndex] && section != 0) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:self.currentDataSourceIndex] && self.currentDataSourceIndex != 0) {
         return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex] + 1;
     }
     return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex];
@@ -171,6 +177,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self updateNavigationItem:YES];
     // Do any additional setup after loading the view.
 }
 
@@ -180,15 +187,85 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (MITNewsSearchController *)searchController
 {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if(!_searchController) {
+        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.delegate = self;
+        _searchController = searchController;
+    }
+    
+    return _searchController;
 }
-*/
+
+- (UISearchBar *)searchBar
+{
+    if(!_searchBar) {
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
+        searchBar.delegate = self.searchController;
+        self.searchController.searchBar = searchBar;
+        
+        searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        searchBar.showsCancelButton = YES;
+        _searchBar = searchBar;
+    }
+    return _searchBar;
+}
+
+- (void)updateNavigationItem:(BOOL)animated
+{
+    NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
+    if (self.searching) {
+        UISearchBar *searchBar = self.searchBar;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+        } else {
+            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+        }
+        
+        self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
+        [self.searchBarWrapper addSubview:searchBar];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
+        [rightBarItems addObject:searchBarItem];
+        
+    } else {
+        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
+        [rightBarItems addObject:searchItem];
+    }
+    [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    
+    if (self.searching) {
+        self.searchController.view.frame = self.navigationController.view.bounds;
+    }
+    
+}
+
+#pragma mark UI Actions
+- (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
+{
+    self.searching = YES;
+    [self updateNavigationItem:YES];
+    [self addChildViewController:self.searchController];
+    [self.view addSubview:self.searchController.view];
+    [self.searchController didMoveToParentViewController:self];
+    [UIView animateWithDuration:(0.33)
+                          delay:0.
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         self.searchController.view.alpha = .5;
+                     } completion:^(BOOL finished) {
+                     }];
+    [self.searchBar becomeFirstResponder];
+}
+
+- (void)hideSearchField
+{
+    self.searchBar = nil;
+    [self.searchController.view removeFromSuperview];
+    [self.searchController removeFromParentViewController];
+    self.searchController = nil;
+    self.searching = NO;
+    [self updateNavigationItem:YES];
+}
 
 @end

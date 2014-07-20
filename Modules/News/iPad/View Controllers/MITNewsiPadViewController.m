@@ -243,7 +243,8 @@
     self.searching = YES;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
-    [self.view addSubview:self.searchController.view];
+    
+    [self.containerView addSubview:self.searchController.view];
     [self.searchController didMoveToParentViewController:self];
     [UIView animateWithDuration:(0.33)
                           delay:0.
@@ -257,17 +258,10 @@
 
 - (void)hideSearchField
 {
-    [UIView animateWithDuration:(0.33)
-                          delay:0.
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                         self.searchController.view.alpha = .0;
-                     } completion:^(BOOL finished) {
-                         self.searchBar = nil;
-                         [self.searchController removeFromParentViewController];
-                         [self.searchController.view removeFromSuperview];
-                         self.searchController = nil;
-                     }];
+    self.searchBar = nil;
+    [self.searchController.view removeFromSuperview];
+    [self.searchController removeFromParentViewController];
+    self.searchController = nil;
     self.searching = NO;
     [self updateNavigationItem:YES];
 }
