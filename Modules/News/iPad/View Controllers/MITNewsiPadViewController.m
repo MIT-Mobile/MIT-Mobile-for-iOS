@@ -243,7 +243,6 @@
     self.searching = YES;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
-    
     [self.containerView addSubview:self.searchController.view];
     [self.searchController didMoveToParentViewController:self];
     [UIView animateWithDuration:(0.33)
@@ -282,6 +281,7 @@
 {
     if(!_searchController) {
         MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.view.frame = self.containerView.bounds;
         searchController.delegate = self;
         _searchController = searchController;
     }
@@ -337,11 +337,6 @@
         [rightBarItems addObject:searchItem];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
-    
-    if (self.searching) {
-        self.searchController.view.frame = self.navigationController.view.bounds;
-    }
-
 }
 
 @end
