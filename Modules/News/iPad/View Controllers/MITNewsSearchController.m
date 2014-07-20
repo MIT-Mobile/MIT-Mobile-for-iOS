@@ -62,12 +62,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.searchTableView.alpha = 0;
-
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
+
+    self.searchTableView.alpha = 0;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -108,7 +108,13 @@
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self hideSearchRecents];
-    self.searchTableView.alpha = 1;
+    if ([searchBar.text isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+        self.view.alpha = .5;
+    } else {
+        self.searchTableView.alpha = 1;
+        self.view.alpha = 1;
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -140,7 +146,12 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+        self.view.alpha = .5;
         [self clearTable];
+    } else {
+        self.searchTableView.alpha = .5;
+        self.view.alpha = 1;
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -185,7 +196,7 @@
     [self.searchBar resignFirstResponder];
 
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
-    [UIView animateWithDuration:(0.33)
+    [UIView animateWithDuration:0.33
                           delay:0.
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
@@ -290,7 +301,7 @@
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
         cell.accessoryView = view;
-        [self getMoreStories];
+        //[self getMoreStories];
         return cell;
     }
     
