@@ -310,12 +310,18 @@
     if (self.presentationStyle == MITNewsPresentationStyleList) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
+            if (self.searching) {
+                gridItem.enabled = NO;
+            }
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleList]) {
             UIImage *listImage = [UIImage imageNamed:@"map/item_list"];
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
+            if (self.searching) {
+                listItem.enabled = NO;
+            }
             [rightBarItems addObject:listItem];
         }
     }
