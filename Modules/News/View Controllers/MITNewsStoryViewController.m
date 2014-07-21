@@ -216,7 +216,7 @@
     
     NSURL *templateURL;
     
-    if (self.nextStoryView) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
     } else {
         templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];

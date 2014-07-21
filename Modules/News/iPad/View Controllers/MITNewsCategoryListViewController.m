@@ -149,7 +149,7 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
-        return 44.; // Fixed height for the load more cells
+        return 75; // Fixed height for the load more cells
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     }

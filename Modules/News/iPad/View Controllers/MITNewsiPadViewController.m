@@ -82,7 +82,6 @@
     self.edgesForExtendedLayout = UIRectEdgeAll;
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
-    [self updateNavigationItem:YES];
     //If not set any view has a 64p gap between navigation bar and view
     self.automaticallyAdjustsScrollViewInsets = NO;
     //To make view not dim when popover is present
@@ -109,6 +108,7 @@
             DDLogWarn(@"update failed; %@",error);
         }
     }];
+    [self updateNavigationItem:YES];
 }
 
 - (void)didReceiveMemoryWarning
