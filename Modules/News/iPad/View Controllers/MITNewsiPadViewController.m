@@ -19,16 +19,17 @@
 
 #import "MITNewsCategoryListViewController.h"
 
-@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource,MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate, MITNewsSearchDelegate>
-@property (nonatomic, strong) NSString *searchQuery;
-@property (nonatomic, strong) NSOrderedSet *searchResults;
+@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
-- (BOOL)canLoadMoreItems;
-- (void)loadMoreItems:(void(^)(NSError *error))block;
 - (void)reloadItems:(void(^)(NSError *error))block;
 
 - (void)loadDataSources:(void(^)(NSError*))completion;
 @end
+
+@interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
+
+@end
+
 
 @interface MITNewsiPadViewController ()
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -157,12 +158,36 @@
     return listViewController;
 }
 
+- (MITNewsSearchController *)searchController
+{
+    if(!_searchController) {
+        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        searchController.view.frame = self.containerView.bounds;
+        searchController.delegate = self;
+        _searchController = searchController;
+    }
+    
+    return _searchController;
+}
+
+- (UISearchBar *)searchBar
+{
+    if(!_searchBar) {
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
+        searchBar.delegate = self.searchController;
+        self.searchController.searchBar = searchBar;
+        searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        searchBar.showsCancelButton = YES;
+        _searchBar = searchBar;
+    }
+    return _searchBar;
+}
+
+#pragma mark UI Actions
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style
 {
     [self setPresentationStyle:style animated:NO];
 }
-
-#pragma mark UI Actions
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
@@ -220,22 +245,6 @@
     }
 }
 
-#pragma mark Utility Methods
-- (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style
-{
-    if (style == MITNewsPresentationStyleList) {
-        return YES;
-    } else if (style == MITNewsPresentationStyleGrid) {
-        const CGFloat minimumWidthForGrid = 768.;
-        const CGFloat boundsWidth = CGRectGetWidth(self.view.bounds);
-
-        return (boundsWidth >= minimumWidthForGrid);
-    }
-
-    return NO;
-}
-
-#pragma mark UI Actions
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
     self.searching = YES;
@@ -253,16 +262,6 @@
     [self.searchBar becomeFirstResponder];
 }
 
-- (void)hideSearchField
-{
-    self.searchBar = nil;
-    [self.searchController.view removeFromSuperview];
-    [self.searchController removeFromParentViewController];
-    self.searchController = nil;
-    self.searching = NO;
-    [self updateNavigationItem:YES];
-}
-
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
     self.presentationStyle = MITNewsPresentationStyleGrid;
@@ -275,30 +274,18 @@
     [self updateNavigationItem:YES];
 }
 
-- (MITNewsSearchController *)searchController
+#pragma mark Utility Methods
+- (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style
 {
-    if(!_searchController) {
-        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
-        searchController.view.frame = self.containerView.bounds;
-        searchController.delegate = self;
-        _searchController = searchController;
+    if (style == MITNewsPresentationStyleList) {
+        return YES;
+    } else if (style == MITNewsPresentationStyleGrid) {
+        const CGFloat minimumWidthForGrid = 768.;
+        const CGFloat boundsWidth = CGRectGetWidth(self.view.bounds);
+        
+        return (boundsWidth >= minimumWidthForGrid);
     }
-    
-    return _searchController;
-}
-
-- (UISearchBar *)searchBar
-{
-    if(!_searchBar) {
-        UISearchBar *searchBar = [[UISearchBar alloc] init];
-        searchBar.delegate = self.searchController;
-        self.searchController.searchBar = searchBar;
-
-        searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        searchBar.showsCancelButton = YES;
-        _searchBar = searchBar;
-    }
-    return _searchBar;
+    return NO;
 }
 
 - (void)updateNavigationItem:(BOOL)animated
@@ -335,10 +322,11 @@
         [self.searchBarWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
         [rightBarItems addObject:searchBarItem];
-
+        [self.navigationItem setTitle:@""];
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
+        [self.navigationItem setTitle:@"MIT News"];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
@@ -346,6 +334,7 @@
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
+
 - (void)loadDataSources:(void (^)(NSError*))completion
 {
     NSMutableArray *dataSources = [[NSMutableArray alloc] init];
@@ -456,8 +445,6 @@
     }
 }
 
-#pragma mark UITableViewDataSource
-
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
 {
     return [self.dataSources count];
@@ -502,51 +489,9 @@
     return dataSource.objects[index];
 }
 
-#pragma mark MITNewsStoryDetailPagingDelegate
-
-- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
-{
-    
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    
-    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
-    
-    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
-        
-        if (currentIndex + 1 < [dataSource.objects count]) {
-            if(block) {
-                block(dataSource.objects[currentIndex +1], nil);
-            }
-        } else {
-            __block NSError *updateError = nil;
-            if ([dataSource hasNextPage]) {
-                [dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to refresh data source %@",dataSource);
-                        
-                        if (!updateError) {
-                            updateError = error;
-                        }
-                    } else {
-                        DDLogVerbose(@"refreshed data source %@",dataSource);
-                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [dataSource.objects count]) {
-                            if(block) {
-                                block(dataSource.objects[currentIndex + 1], nil);
-                            }
-                        }
-                    }
-                }];
-            }
-        }
-    }
-}
-
 @end
 
-@implementation MITNewsiPadViewController (MITNewsStoryDelegate)
+@implementation MITNewsiPadViewController (NewsDelegate)
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
@@ -597,6 +542,59 @@
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
+}
+
+
+#pragma mark MITNewsStoryDetailPagingDelegate
+
+- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
+{
+    
+    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+    
+    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
+    
+    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+    if (currentIndex != NSNotFound) {
+        
+        if (currentIndex + 1 < [dataSource.objects count]) {
+            if(block) {
+                block(dataSource.objects[currentIndex +1], nil);
+            }
+        } else {
+            __block NSError *updateError = nil;
+            if ([dataSource hasNextPage]) {
+                [dataSource nextPage:^(NSError *error) {
+                    if (error) {
+                        DDLogWarn(@"failed to refresh data source %@",dataSource);
+                        
+                        if (!updateError) {
+                            updateError = error;
+                        }
+                    } else {
+                        DDLogVerbose(@"refreshed data source %@",dataSource);
+                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                        
+                        if (currentIndex + 1 < [dataSource.objects count]) {
+                            if(block) {
+                                block(dataSource.objects[currentIndex + 1], nil);
+                            }
+                        }
+                    }
+                }];
+            }
+        }
+    }
+}
+
+- (void)hideSearchField
+{
+    self.searchBar = nil;
+    [self.searchController.view removeFromSuperview];
+    [self.searchController removeFromParentViewController];
+    self.searchController = nil;
+    self.searching = NO;
+    [self updateNavigationItem:YES];
 }
 
 @end
