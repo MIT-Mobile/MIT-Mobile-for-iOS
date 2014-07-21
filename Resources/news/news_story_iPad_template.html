@@ -57,9 +57,10 @@
             #image a div { margin-top: -4px; }
             #image a+a div { margin-top: 2px; }
             #body {line-height: 20px;color: #202020; margin-top: 14px;}
-            .imageDescription {float:right; font-size:15px; line-height: 15px; margin: 0 0 0 8px;padding-top: 10; word-wrap:break-word; opacity:0.7;}
-            .imageCredit {float:right; font-size:14px; line-height: 14px; margin: 0 0 0 8px;padding-top: 0; word-wrap:break-word; opacity:0.6;}
-            .image, .imageDescription, .imageCredit{
+            .imageDescription {font-size:15px; line-height: 15px; margin: 0 0 0 8px;padding-top: 10; word-wrap:break-word; opacity:0.7;}
+            .imageCredit {font-size:14px; line-height: 14px; margin: 0 0 0 8px;padding-top: 0; word-wrap:break-word; opacity:0.6;}
+            .gallery_image {margin-top: 14px;}
+            .gallery_image, .imageDescription, .imageCredit{
                 float: right;
                 clear: right;
             }
@@ -83,11 +84,8 @@
             <span class="postdate">__DATE__</span>
         </p>    
         <div id="content">
-            <div id="image"><a id="thumbnailLink" href="image"><img class="thumbnail" src="__THUMBNAIL_URL__" width="__THUMBNAIL_WIDTH__" height="__THUMBNAIL_HEIGHT__">
-                <br /></a>
-                <a href="mitmobile://opengallery"><div><img class="enlarge" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__" alt="zoom"></div>
-            </a></div>
-            <p class="imageDescription" style="width:__GALLERY_WIDTH__">__GALLERY_DESCRIPTION__</p>
+            <a href="mitmobile://opengallery"><img class="gallery_image" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__"></a>
+            <p class="imageDescription" style="width:__GALLERY_WIDTH__;">__GALLERY_DESCRIPTION__</p>
             <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
             <p class="dek">__DEK__</p><div id="body">__BODY__</div>
         </div>
