@@ -120,6 +120,10 @@
             self.nextStoryImageHeightConstraint.constant = 60;
             self.nextStoryImageWidthConstraint.constant = 90;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+        } else {
+            self.nextStoryImageHeightConstraint.constant = 0;
+            self.nextStoryImageWidthConstraint.constant = 0;
+            self.nextStoryConstraintBetweenImageAndTitle.constant = 0;
         }
     }
 }
