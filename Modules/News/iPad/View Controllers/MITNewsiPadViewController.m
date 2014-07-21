@@ -79,11 +79,9 @@
 {
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = YES;
-    self.edgesForExtendedLayout = UIRectEdgeAll;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
-    //If not set any view has a 64p gap between navigation bar and view
-    self.automaticallyAdjustsScrollViewInsets = NO;
     //To make view not dim when popover is present
     self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
 

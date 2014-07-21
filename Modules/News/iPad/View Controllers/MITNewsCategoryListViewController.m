@@ -177,9 +177,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self updateNavigationItem:YES];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self updateNavigationItem:YES];
 }
 
 - (void)didReceiveMemoryWarning
