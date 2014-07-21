@@ -116,9 +116,11 @@
             self.coverImageViewHeightConstraint.constant = 0;
         }
     } else {
-        self.nextStoryImageHeightConstraint.constant = 60;
-        self.nextStoryImageWidthConstraint.constant = 90;
-        self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+        if (self.nextStoryImageView.image != NULL) {
+            self.nextStoryImageHeightConstraint.constant = 60;
+            self.nextStoryImageWidthConstraint.constant = 90;
+            self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+        }
     }
 }
 
