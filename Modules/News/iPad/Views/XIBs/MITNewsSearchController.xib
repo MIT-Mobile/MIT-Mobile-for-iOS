@@ -32,7 +32,6 @@
                 <constraint firstAttribute="trailing" secondItem="7yj-ya-VE7" secondAttribute="trailing" id="OaZ-fu-35r"/>
                 <constraint firstItem="7yj-ya-VE7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="QKA-fz-C6f"/>
                 <constraint firstItem="7yj-ya-VE7" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Y8L-Jx-gmE"/>
-                <constraint firstAttribute="centerX" secondItem="7yj-ya-VE7" secondAttribute="centerX" id="hVf-34-e1G"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
         </view>

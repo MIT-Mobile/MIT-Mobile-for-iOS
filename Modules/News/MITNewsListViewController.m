@@ -181,7 +181,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         if( headerRect.origin.y <= MITNewsViewControllerHeightOffset )
         {
             // grey color
-            headerView.containerView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1];
+#warning gray color needed?
+            //headerView.containerView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1];
         }
         else
         {

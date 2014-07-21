@@ -12,6 +12,8 @@
 		0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0B9A2FAD194B746600A36C94 /* NewsStoryHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */; };
+		0BA975C1197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BA975C0197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.m */; };
+		0BA975C4197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BA975C3197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.m */; };
 		0BB48BF21976EDB700C7E920 /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */; };
 		0BCC90C11963188900440544 /* MITNewsRecentSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BCC90C01963188900440544 /* MITNewsRecentSearchList.m */; };
 		0BCC90C71963188A00440544 /* MITNewsRecentSearchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BCC90C61963188A00440544 /* MITNewsRecentSearchQuery.m */; };
@@ -525,6 +527,10 @@
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
 		0B9A2FAC194B746600A36C94 /* NewsStoryHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryHeaderReusableView.xib; path = XIBs/NewsStoryHeaderReusableView.xib; sourceTree = "<group>"; };
+		0BA975BF197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCustomWidthTableViewCell.h; sourceTree = "<group>"; };
+		0BA975C0197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCustomWidthTableViewCell.m; sourceTree = "<group>"; };
+		0BA975C2197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCustomWidthTableHeaderFooterView.h; sourceTree = "<group>"; };
+		0BA975C3197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCustomWidthTableHeaderFooterView.m; sourceTree = "<group>"; };
 		0BB48BF01976EDB700C7E920 /* MultiLineLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineLabel.h; sourceTree = "<group>"; };
 		0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineLabel.m; sourceTree = "<group>"; };
 		0BCC90BF1963188900440544 /* MITNewsRecentSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsRecentSearchList.h; path = Model/MITNewsRecentSearchList.h; sourceTree = "<group>"; };
@@ -1570,6 +1576,10 @@
 				0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */,
 				0BCC90CF19631BF000440544 /* MITNewsRecentSearchController.h */,
 				0BCC90D019631BF000440544 /* MITNewsRecentSearchController.m */,
+				0BA975BF197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.h */,
+				0BA975C0197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.m */,
+				0BA975C2197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.h */,
+				0BA975C3197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -3731,6 +3741,7 @@
 				2C698F4718650A870010B0C0 /* MITNewsImageRepresentation.m in Sources */,
 				DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */,
 				DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */,
+				0BA975C1197D563A00C338A4 /* MITNewsCustomWidthTableViewCell.m in Sources */,
 				2C18090818F33B95008F9775 /* NSMutableURLRequest+ECP.m in Sources */,
 				2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */,
 				EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */,
@@ -3775,6 +3786,7 @@
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
 				DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */,
 				29974B711160F1DA009D03B9 /* URLShortener.m in Sources */,
+				0BA975C4197D629800C338A4 /* MITNewsCustomWidthTableHeaderFooterView.m in Sources */,
 				2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */,
 				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
 				2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */,

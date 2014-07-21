@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
-
-@interface MITDisclosureHeaderView : UITableViewHeaderFooterView
+#import "MITNewsCustomWidthTableHeaderFooterView.h"
+@interface MITDisclosureHeaderView : MITNewsCustomWidthTableHeaderFooterView
 @property (nonatomic,weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic,weak) IBOutlet UIView *accessoryView;
 @property (nonatomic,weak) IBOutlet UIView *containerView;
