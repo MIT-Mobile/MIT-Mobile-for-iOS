@@ -1,7 +1,6 @@
 #import "PeopleSearchViewController.h"
 #import "PersonDetails.h"
 #import "PeopleDetailsViewController.h"
-#import "PeopleRecentsData.h"
 #import "MIT_MobileAppDelegate.h"
 #import "ConnectionDetector.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
@@ -14,20 +13,22 @@
 #import "MITPeopleResource.h"
 #import "MITPeopleSearchHandler.h"
 
+#import "PeopleFavoriteData.h"
+
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
     MITPeopleSearchTableViewSectionContacts = 1,
-    MITPeopleSearchTableViewSectionRecentlyViewed = 2,
-    MITPeopleSearchTableViewSectionClearRecentlyViewed = 3
+    MITPeopleSearchTableViewSectionFavorites = 2
 };
 
 // Hard-code this for now, should be pulled from the API in the future
 static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
-@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate>
 
 @property (nonatomic,weak) UITableView *searchResultsTableView;
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
+@property (nonatomic, strong) NSArray *peopleFavorites;
 
 @end
 
@@ -75,14 +76,22 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
 	[super viewWillAppear:animated];
 
-    if ([self.searchDisplayController isActive]) {
+    self.peopleFavorites = [PeopleFavoriteData retrieveFavoritePeople];
+    
+    if ([self.searchDisplayController isActive])
+    {
         NSIndexPath *selectedRow = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
-        if (selectedRow && self.clearsSelectionOnViewWillAppear) {
+        if (selectedRow && self.clearsSelectionOnViewWillAppear)
+        {
             [self.searchDisplayController.searchResultsTableView deselectRowAtIndexPath:selectedRow animated:animated];
         }
-    } else {
-        [self.tableView reloadData];
+        
+        return;
     }
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
 #pragma mark - Search methods
@@ -173,8 +182,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (tableView == self.tableView) {
-        if ([[[PeopleRecentsData sharedData] recents] count] > 0) {
-            return 4; // Examples + Directory Assistance/Contacts + Recents + Clear Recents
+        if ([self.peopleFavorites count] > 0) {
+            return 3; // Examples + Directory Assistance/Contacts + Favorites
         } else {
             return 2; // Examples + Directory Assistance/Contacts, no recents
         }
@@ -193,10 +202,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                 return 1;
 			case MITPeopleSearchTableViewSectionContacts: // phone directory, & emergency contacts
 				return 2;
-			case MITPeopleSearchTableViewSectionRecentlyViewed: // recently viewed
-				return [[[PeopleRecentsData sharedData] recents] count];
-            case MITPeopleSearchTableViewSectionClearRecentlyViewed: // clear recently viewed
-                return 1;
+			case MITPeopleSearchTableViewSectionFavorites: // recently viewed
+				return [self.peopleFavorites count];
 			default:
 				return 0;
 		}
@@ -233,13 +240,14 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             } else if (indexPath.row == 1) {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
             }
-        } else if (MITPeopleSearchTableViewSectionRecentlyViewed == indexPath.section) {
+        } else if (MITPeopleSearchTableViewSectionFavorites == indexPath.section) {
             cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
 
-            NSArray *recentPeople = [[PeopleRecentsData sharedData] recents];
-            if (indexPath.row < [recentPeople count]) {
-                PersonDetails *recent = recentPeople[indexPath.row];
-                cell.textLabel.text = recent.name;
+            NSArray *favoritePeople = self.peopleFavorites;
+            if (indexPath.row < [favoritePeople count])
+            {
+                PersonDetails *favorite = favoritePeople[indexPath.row];
+                cell.textLabel.text = favorite.name;
 
                 // show person's title, dept, or email as cell's subtitle text
                 // Setting the detailTextLabel's text to a space solves 2 issues:
@@ -250,18 +258,13 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                 cell.detailTextLabel.text = @" ";
                 NSString *displayText = nil;
                 for (NSString *tag in @[@"title", @"dept"]) {
-                    displayText = [recent valueForKey:tag];
+                    displayText = [favorite valueForKey:tag];
                     if (displayText) {
                         cell.detailTextLabel.text = displayText;
                         break;
                     }
                 }
             }
-        } else if( MITPeopleSearchTableViewSectionClearRecentlyViewed == indexPath.section) {
-            cell = [tableView dequeueReusableCellWithIdentifier:clearRecentsCellID forIndexPath:indexPath];
-            
-            cell.textLabel.text = @"Clear Recents";
-            [cell.textLabel setTextColor:[UIColor mit_tintColor]];
         }
 
         return cell;
@@ -317,9 +320,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	if (tableView == self.tableView) {
         MITPeopleSearchTableViewSection section = indexPath.section;
 
-        if (MITPeopleSearchTableViewSectionExample == section) {
+        if (MITPeopleSearchTableViewSectionExample == section)
+        {
             return 86.;
-        } else if (MITPeopleSearchTableViewSectionContacts == section) {
+        }
+        else if (MITPeopleSearchTableViewSectionContacts == section)
+        {
             switch (indexPath.row) {
                 case 0: // Directory Assistance
                     return 60.;
@@ -329,13 +335,16 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                      // There shouldn't be anything else in this section but, just in case
                     return UITableViewAutomaticDimension;
             }
-        } else if (MITPeopleSearchTableViewSectionRecentlyViewed == section ||
-                   MITPeopleSearchTableViewSectionClearRecentlyViewed == section)
+        }
+        else if (MITPeopleSearchTableViewSectionFavorites == section)
         {
             return UITableViewAutomaticDimension;
         }
-	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        if ([searchHandler.searchResults count]) {
+	}
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
+        if ([searchHandler.searchResults count])
+        {
             return 60.;
         }
 	}
@@ -346,8 +355,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (MITPeopleSearchTableViewSectionRecentlyViewed == section) {
-            return @"Recently Viewed";
+        if (MITPeopleSearchTableViewSectionFavorites == section) {
+            return @"Favorites";
         }
     }
 
@@ -368,10 +377,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                     break;
             }
         }
-        else if( MITPeopleSearchTableViewSectionClearRecentlyViewed == indexPath.section )
-        {
-            [self showActionSheet];
-        }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
 		PersonDetails *personDetails = nil;
 
@@ -381,7 +386,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 		if (tableView == self.searchDisplayController.searchResultsTableView) {
 			personDetails = searchHandler.searchResults[indexPath.row];
 		} else {
-			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
+			personDetails = self.peopleFavorites[indexPath.row];
 		}
 
 		vc.personDetails = personDetails;
@@ -391,7 +396,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if( MITPeopleSearchTableViewSectionRecentlyViewed == indexPath.section )
+    if( MITPeopleSearchTableViewSectionFavorites == indexPath.section )
     {
         return YES;
     }
@@ -411,9 +416,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         return;
     }
     
-    NSArray *recentPeople = [[PeopleRecentsData sharedData] recents];
-    
-    NSUInteger numberOfRecentPeople = [recentPeople count];
+    NSUInteger numberOfRecentPeople = [self.peopleFavorites count];
     
     // shouldn't ever happen, but just a precaution to avoid any crashes in case of an error.
     if( indexPath.row >= numberOfRecentPeople )
@@ -421,26 +424,30 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         return;
     }
     
-    PersonDetails *recent = recentPeople[indexPath.row];
+    PersonDetails *favorite = self.peopleFavorites[indexPath.row];
+    [PeopleFavoriteData setPerson:favorite asFavorite:NO];
     
-    [PeopleRecentsData erasePerson:recent.uid];
-    
-    NSUInteger updatedNumberOfRecentPeople = [[[PeopleRecentsData sharedData] recents] count];
+    self.peopleFavorites = [PeopleFavoriteData retrieveFavoritePeople];
     
     //  a safety check to make sure deletion was successful
-    if( updatedNumberOfRecentPeople >= numberOfRecentPeople )
+    if( [self.peopleFavorites count] >= numberOfRecentPeople )
     {
         // deletion failed.. just reload the tableview.
-        [self.tableView reloadData];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadData];
+        }];
+        
         return;
     }
     
-    if( updatedNumberOfRecentPeople == 0 )
+    if( [self.peopleFavorites count] == 0 )
     {
-        //  need to delete both "clear recent" and "recently viewed" sections
-        [self.tableView reloadData];
-        
-        [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            //  need to delete both "clear recent" and "recently viewed" sections
+            [self.tableView reloadData];
+            
+            [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
+        }];
     }
     else
     {
@@ -470,45 +477,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
     if ([segue.identifier isEqualToString:@"showPerson"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-        PersonDetails *personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
         PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
-        vc.personDetails = personDetails;
+        vc.personDetails = self.peopleFavorites[indexPath.row];
     }
 }
 
 #pragma mark -
-#pragma mark Action sheet methods
-- (void)showActionSheet
-{
-	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Clear Recents?"
-                                                       delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                         destructiveButtonTitle:@"Clear"
-                                              otherButtonTitles:nil];
-    [sheet showFromAppDelegate];
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-	if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"Clear"]) {
-		[PeopleRecentsData eraseAll];
-
-        if( [[[PeopleRecentsData sharedData] recents] count] == 0 )
-        {
-            NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
-            [indexSet addIndex:MITPeopleSearchTableViewSectionClearRecentlyViewed];
-            [indexSet addIndex:MITPeopleSearchTableViewSectionRecentlyViewed];
-            [self.tableView deleteSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
-            
-            [self.tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:YES];
-        }
-        else
-        {
-            // erase didn't quite work.. just reload the tableView
-            [self.tableView reloadData];
-        }
-	}
-}
 
 - (void)phoneIconTapped
 {

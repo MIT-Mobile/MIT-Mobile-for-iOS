@@ -38,16 +38,12 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.headerLeftIndentLayoutConstraint.constant = 10.;
-    }
     
     [self adjustTableViewInsets];
     
     [self updateTableViewHeaderView];
 	
-    [self reloadDataIfNeeded];
+//    [self reloadDataIfNeeded];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
@@ -62,9 +58,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     // if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
     // TODO: let Cache-Control headers from API response determine how long data is fresh
-	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
+	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300)
+    { // 5 mins for testing
         [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
-            if (!error) {
+            if ( !error && [objects lastObject] != nil )
+            {
                 self.personDetails = [objects lastObject];
                 
                 [self reload];
@@ -264,14 +262,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
         case 1:
             
-            if( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad )
-            {
-                return 3; // additional row for 'add to favorites' on iPad
-            }
-            else
-            {
-                return 2;
-            }
+            return 3;
 
         default:
             return 0;
@@ -385,99 +376,113 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (indexPath.section == 1) { // user selected create/add to contacts
-		if (indexPath.row == 0) { // create addressbook entry
-			ABRecordRef person = ABPersonCreate();
-			CFErrorRef error = NULL;
-			NSString *value = nil;;
-		
-			// set single value properties
-			if ((value = [self.personDetails valueForKey:@"givenname"]))
-				ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"surname"]))
-				ABRecordSetValue(person, kABPersonLastNameProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"title"]))
-				ABRecordSetValue(person, kABPersonJobTitleProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"dept"]))
-				ABRecordSetValue(person, kABPersonDepartmentProperty, (__bridge CFTypeRef)value, &error);
-		
-			// set multivalue properties: email and phone numbers
-			ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if ((value = [self.personDetails valueForKey:@"email"])) {
-				for (NSString *email in self.personDetails.email)
-					ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)email, kABWorkLabel, NULL);
-				ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
-			}
-
-			CFRelease(multiEmail);
-		
-			BOOL haveValues = NO;
-			ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if ((value = [self.personDetails valueForKey:@"phone"])) {
-				for (NSString *phone in self.personDetails.phone) {
-					ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)phone, kABWorkLabel, NULL);
-                }
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-				haveValues = YES;
-			}
-
-			if ((value = [self.personDetails valueForKey:@"fax"])) {
-				for (NSString *fax in self.personDetails.fax) {
-                    ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)fax, kABPersonPhoneWorkFAXLabel, NULL);
-                }
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-				haveValues = YES;
-			}
-
-			if (haveValues) {
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-			}
-
-			CFRelease(multiPhone);
-			
-			ABNewPersonViewController *creator = [[ABNewPersonViewController alloc] init];
-			creator.displayedPerson = person;
-			[creator setNewPersonViewDelegate:self];
-			
-			// present newPersonController in a separate navigationController
-			// since it doesn't have its own nav bar
-			UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
-			
-			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-			[appDelegate presentAppModalViewController:navController animated:YES];
-
-            CFRelease(person);
-		} else if( indexPath.row == 1 ){
-			ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
-			[picker setPeoplePickerDelegate:self];
-			
-			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-			[appDelegate presentAppModalViewController:picker animated:YES];
-		} else if( indexPath.row == 2 )
-        {
-            [PeopleFavoriteData setPerson:self.personDetails asFavorite:YES];
-        }
-
-        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-	} else {
-		NSArray *personInfo = self.attributes[indexPath.row];
-		NSString *actionIcon = personInfo[AccessoryIconIndex];
-        NSString * value = personInfo[AttributeValueIndex];
-		
-		if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
-			[self emailIconTapped:value];
-        } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
-			[self phoneIconTapped:value];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
-			[self mapIconTapped:value];
-        } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
-            [self externalIconTapped:value];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else {
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        }
+	if (indexPath.section == 0)
+    {
+        [self tableView:tableView didSelectAttributeRowAtIndexPath:indexPath];
 	}
+    else
+    {
+        // user selected create/add to contacts/favorites
+        [self tableView:tableView didSelectActionRowAtIndexPath:indexPath];
+	}
+    
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectAttributeRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *personInfo = self.attributes[indexPath.row];
+    NSString *actionIcon = personInfo[AccessoryIconIndex];
+    NSString * value = personInfo[AttributeValueIndex];
+    
+    if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
+        [self emailIconTapped:value];
+    } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
+        [self phoneIconTapped:value];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
+        [self mapIconTapped:value];
+    } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
+        [self externalIconTapped:value];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectActionRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) { // create addressbook entry
+        ABRecordRef person = ABPersonCreate();
+        CFErrorRef error = NULL;
+        NSString *value = nil;;
+		
+        // set single value properties
+        if ((value = [self.personDetails valueForKey:@"givenname"]))
+            ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"surname"]))
+            ABRecordSetValue(person, kABPersonLastNameProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"title"]))
+            ABRecordSetValue(person, kABPersonJobTitleProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"dept"]))
+            ABRecordSetValue(person, kABPersonDepartmentProperty, (__bridge CFTypeRef)value, &error);
+		
+        // set multivalue properties: email and phone numbers
+        ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        if ((value = [self.personDetails valueForKey:@"email"])) {
+            for (NSString *email in self.personDetails.email)
+                ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)email, kABWorkLabel, NULL);
+            ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
+        }
+        
+        CFRelease(multiEmail);
+		
+        BOOL haveValues = NO;
+        ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        if ((value = [self.personDetails valueForKey:@"phone"])) {
+            for (NSString *phone in self.personDetails.phone) {
+                ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)phone, kABWorkLabel, NULL);
+            }
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+            haveValues = YES;
+        }
+        
+        if ((value = [self.personDetails valueForKey:@"fax"])) {
+            for (NSString *fax in self.personDetails.fax) {
+                ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)fax, kABPersonPhoneWorkFAXLabel, NULL);
+            }
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+            haveValues = YES;
+        }
+        
+        if (haveValues) {
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+        }
+        
+        CFRelease(multiPhone);
+        
+        ABNewPersonViewController *creator = [[ABNewPersonViewController alloc] init];
+        creator.displayedPerson = person;
+        [creator setNewPersonViewDelegate:self];
+        
+        // present newPersonController in a separate navigationController
+        // since it doesn't have its own nav bar
+        UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
+        
+        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+        [appDelegate presentAppModalViewController:navController animated:YES];
+        
+        CFRelease(person);
+    } else if( indexPath.row == 1 ){
+        ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
+        [picker setPeoplePickerDelegate:self];
+        
+        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+        [appDelegate presentAppModalViewController:picker animated:YES];
+    } else if( indexPath.row == 2 )
+    {
+        [PeopleFavoriteData setPerson:self.personDetails asFavorite:YES];
+    }
 }
 
 #pragma mark -

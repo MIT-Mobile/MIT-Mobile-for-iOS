@@ -101,6 +101,8 @@
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
     NSString *clearAllRecentsButtonTitle = NSLocalizedString(@"Clear All Recents", @"Clear All Recents button title");
     
+    self.tableView.scrollEnabled = NO;
+    
     UIActionSheet *confirmSheet = [[UIActionSheet alloc] initWithTitle:@""
                                                               delegate:self
                                                      cancelButtonTitle:cancelButtonTitle
@@ -113,6 +115,8 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    self.tableView.scrollEnabled = YES;
+    
     if( buttonIndex == actionSheet.cancelButtonIndex )
     {
         return;

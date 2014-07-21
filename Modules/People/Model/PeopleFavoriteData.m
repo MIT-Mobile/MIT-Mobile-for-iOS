@@ -40,4 +40,15 @@
     [CoreDataManager saveData];
 }
 
++ (void)removeAll
+{
+    NSMutableArray *favorites = [[self retrieveFavoritePeople] mutableCopy];
+    for( PersonDetails *personDetails in favorites )
+    {
+        [personDetails setValue:@(NO) forKey:@"favorite"];
+    }
+    
+    [CoreDataManager saveData];
+}
+
 @end
