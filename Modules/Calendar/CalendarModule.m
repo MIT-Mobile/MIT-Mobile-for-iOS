@@ -6,6 +6,8 @@
 #import "CalendarEventMapAnnotation.h"
 #import "MITEventList.h"
 
+#import "MITEventsHomeViewController.h"
+
 
 @implementation CalendarModule
 @dynamic calendarVC;
@@ -23,28 +25,15 @@
     return self;
 }
 
-- (void)loadModuleHomeController
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
-    CalendarEventsViewController *controller = [[CalendarEventsViewController alloc] init];
-    controller.showList = YES;
-    controller.showScroller = YES;
-    
-    self.moduleHomeController = controller;
+    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
-
-- (CalendarEventsViewController*)calendarVC;
+- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    if ([self.moduleHomeController isKindOfClass:[CalendarEventsViewController class]]) {
-        return (CalendarEventsViewController*) self.moduleHomeController;
-    } else {
-        return nil;
-    }
+    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
-{
-	return NO;
-}
 
 @end
