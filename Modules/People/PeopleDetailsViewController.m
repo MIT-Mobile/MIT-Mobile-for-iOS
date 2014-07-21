@@ -1,6 +1,5 @@
 #import "PeopleDetailsViewController.h"
 #import "ConnectionDetector.h"
-#import "PeopleRecentsData.h"
 #import "PeopleFavoriteData.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITUIConstants.h"
@@ -76,8 +75,10 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void) reload
 {
-    [self updateTableViewHeaderView];
-    [self.tableView reloadData];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self updateTableViewHeaderView];
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -98,19 +99,14 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void) setPersonDetails:(PersonDetails *)personDetails
 {
-    if( personDetails != nil )
+    _personDetails = personDetails;
+    
+    if( _personDetails )
     {
-        _personDetails = [PeopleRecentsData updatePerson:personDetails];
         [self mapPersonAttributes];
     }
-    else
-    {
-        _personDetails = nil;
-    }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self reload];
-    });
+    [self reload];
 }
 
 

@@ -64,6 +64,11 @@
 
 - (NSMutableAttributedString *)hightlightSearchTokenWithinString:(NSString *)searchResultStr currentFont:(UIFont *)labelFont
 {
+    if( searchResultStr == nil )
+    {
+        return nil;
+    }
+    
     UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
     
     __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:searchResultStr];

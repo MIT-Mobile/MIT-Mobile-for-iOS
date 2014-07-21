@@ -12,7 +12,6 @@
 #import "MITPeopleSearchResultsViewController.h"
 #import "PeopleDetailsViewController.h"
 #import "MITLoadingActivityView.h"
-#import "PeopleRecentsData.h"
 #import "MITPeopleSearchSplitContainerViewController.h"
 #import "MITPeopleRecentResultsViewController.h"
 #import "UIKit+MITAdditions.h"

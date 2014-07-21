@@ -150,9 +150,17 @@ NSString * const MITNoResultsHintLabelText = @"No Results";
     return [self.searchHandler.searchResults count];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"SearchResultsCell"];
+    
+    [cell.textLabel setFont:[UIFont systemFontOfSize:17]];
+    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14]];
     
     if( indexPath.row < [self.searchHandler.searchResults count] )
     {

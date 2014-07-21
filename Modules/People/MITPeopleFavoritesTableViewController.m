@@ -73,12 +73,19 @@
     return [self.favoritesData count];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MITPeopleFavoriteCell" forIndexPath:indexPath];
     
     // Configure the cell...
+    
+    [cell.textLabel setFont:[UIFont systemFontOfSize:17]];
+    [cell.detailTextLabel setFont:[UIFont systemFontOfSize:14]];
     
     if( indexPath.row >= [self.favoritesData count] )
     {
