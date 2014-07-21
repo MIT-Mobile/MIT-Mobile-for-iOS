@@ -42,10 +42,7 @@
     self.bodyView.scrollView.scrollEnabled = NO;
     self.bodyView.scrollView.bounces = NO;
     self.bodyView.delegate = self;
-    
-    if (self.nextStoryView) {
-        [self updateNavigationItem:YES];
-    }
+    [self updateNavigationItem:YES];
 }
 
 - (void)updateNavigationItem:(BOOL)animated
@@ -66,8 +63,7 @@
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
-    if (self.nextStoryView) {
-        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self setupNextStory];
     } else {
         
@@ -108,7 +104,7 @@
         self.bodyViewHeightConstraint.constant = size.height;
     }
 
-    if (!self.nextStoryView) {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         if (self.coverImageView.image) {
             // Using 213 here because all the images from the News office should be around a
             // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
