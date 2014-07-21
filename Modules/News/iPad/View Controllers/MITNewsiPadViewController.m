@@ -17,7 +17,7 @@
 #import "MITNewsStoriesDataSource.h"
 #import "MITAdditions.h"
 
-#import "MITNewsCategoryListViewController.h"
+#import "MITNewsiPadCategoryListViewController.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -471,7 +471,7 @@
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if ([viewController class] == [MITNewsCategoryListViewController class]) {
+    if ([viewController class] == [MITNewsiPadCategoryListViewController class]) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -497,7 +497,7 @@
 {
     self.currentDataSourceIndex = index;
 
-    MITNewsCategoryListViewController *categoryListController = [[MITNewsCategoryListViewController alloc] init];
+    MITNewsiPadCategoryListViewController *categoryListController = [[MITNewsiPadCategoryListViewController alloc] init];
     categoryListController.currentDataSourceIndex = self.currentDataSourceIndex;
     categoryListController.delegate = self;
     categoryListController.dataSource = self;
