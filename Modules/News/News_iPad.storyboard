@@ -47,7 +47,7 @@
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="sB4-3N-XVH"/>
+                    <navigationItem key="navigationItem" title="MIT News" id="sB4-3N-XVH"/>
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
                         <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="g55-fq-NLw"/>
