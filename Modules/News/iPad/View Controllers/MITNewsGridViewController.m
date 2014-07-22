@@ -112,7 +112,7 @@
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
 
-    if (categoryIndexPath) {
+    if (categoryIndexPath && categoryIndexPath.section != 0) {
         [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
     }
 }

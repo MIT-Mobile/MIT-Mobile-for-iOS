@@ -77,12 +77,14 @@
     if ([identifier isEqualToString:@"LoadingMore"]) {
         static NSString *CellIdentifier = @"Cell";
         
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
+        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
+        cell.textLabel.text = @"Loading...";
         cell.accessoryView = view;
         [self getMoreStories];
         return cell;

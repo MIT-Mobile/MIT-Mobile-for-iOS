@@ -297,9 +297,11 @@
         MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
             cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }   
+        }
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
+        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
+        cell.textLabel.text = @"Loading...";
         cell.accessoryView = view;
         [self getMoreStories];
         return cell;
