@@ -1,13 +1,20 @@
-#import "MITCollectionViewNewsGridLayout.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITCollectionViewGridLayoutSection.h"
 #import "MITNewsConstants.h"
+#import "MITCollectionViewGridDividerView.h"
 
-@interface MITCollectionViewNewsGridLayout ()
+@interface MITCollectionViewGridLayout ()
 @property (nonatomic,strong) NSMutableDictionary *sectionLayouts;
 @property (nonatomic) CGFloat dividerDecorationWidth;
+
+@property (nonatomic) CGFloat columnWidth;
+@property (nonatomic) CGFloat interItemPadding;
 @end
 
-@implementation MITCollectionViewNewsGridLayout
+@implementation MITCollectionViewGridLayout
+@synthesize columnWidth = _columnWidth;
+@synthesize interItemPadding = _interItemPadding;
+
 @dynamic collectionViewDelegate;
 
 - (instancetype)init
@@ -17,15 +24,15 @@
     if (self) {
         _itemHeight = 128.;
         _headerHeight = 0;
-        _numberOfColumns = 4;
+        _numberOfColumns = 5;
         _sectionLayouts = [[NSMutableDictionary alloc] init];
 
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 8.0;
         _lineSpacing = 8.0;
-        _sectionSpacing = 20.;
-        _sectionContentInsets = UIEdgeInsetsZero;
-        [self registerClass:[UICollectionViewCell class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
+        _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
+
+        [self registerClass:[MITCollectionViewGridDividerView class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
 
     return self;
@@ -33,7 +40,6 @@
 
 
 #pragma mark Properties
-
 - (id<MITCollectionViewDelegateNewsGrid>)collectionViewDelegate
 {
     id<UICollectionViewDelegate> collectionViewDelegate = self.collectionView.delegate;
@@ -50,23 +56,23 @@
 {
     NSRange sectionRange = NSMakeRange(0, [self.collectionView numberOfSections]);
 
+    // Perform a sanity check of our data source before attempting to lay things out
     [[NSIndexSet indexSetWithIndexesInRange:sectionRange] enumerateIndexesUsingBlock:^(NSUInteger section, BOOL *stop) {
         const NSUInteger numberOfItems = [self.collectionView numberOfItemsInSection:section];
         const NSUInteger numberOfColumns  = [self numberOfColumnsInSection:section];
-        const BOOL sectionHasFeaturedItem = [self showFeaturedItemInSection:section];
         const NSUInteger featuredHorizontalSpan = [self featuredStoryHorizontalSpanInSection:section];
         const NSUInteger featuredVerticalSpan = [self featuredStoryVerticalSpanInSection:section];
+        const MITCollectionViewGridSpan span = MITCollectionViewGridSpanMake(featuredHorizontalSpan, featuredVerticalSpan);
 
         // At a minimum, we need at least N - 1 filled rows (where N is the vertical span of the
         // featured item cell), plus a final cell on the Nth row so we can get a valid height
-        NSUInteger minimumNumberOfCells = 0;
-        if (sectionHasFeaturedItem) {
-            minimumNumberOfCells = ((numberOfColumns - featuredHorizontalSpan) * (featuredVerticalSpan - 1)) + 1;
+        NSUInteger minimumNumberOfItems = 0;
+        if (MITCollectionViewGridSpanIsValid(span)) {
+            minimumNumberOfItems = ((numberOfColumns - featuredHorizontalSpan) * (featuredVerticalSpan - 1)) + 1;
         }
 
-        if (minimumNumberOfCells > numberOfItems) {
-            NSString *message = [NSString stringWithFormat:@"section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfCells,featuredHorizontalSpan,featuredVerticalSpan,numberOfItems];
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+        if (minimumNumberOfItems > numberOfItems) {
+            DDLogError(@"layout may fail: section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,span.horizontal,span.vertical,numberOfItems);
         }
     }];
 }
@@ -84,30 +90,17 @@
     return sectionLayout;
 }
 
-- (CGRect)minimumContentBounds
-{
-    CGRect collectionViewBounds = self.collectionView.bounds;
-    collectionViewBounds.origin = CGPointZero;
-    collectionViewBounds.size.height = CGFLOAT_MAX;
-    collectionViewBounds.size.height = 0;
-    return collectionViewBounds;
-}
-
 - (MITCollectionViewGridLayoutSection*)_layoutForSection:(NSInteger)section
 {
     NSUInteger numberOfColumns = [self numberOfColumnsInSection:section];
-    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithLayout:self forSection:section numberOfColumns:numberOfColumns];
+    MITCollectionViewGridLayoutSection *sectionLayout = [MITCollectionViewGridLayoutSection sectionWithIndex:section layout:self numberOfColumns:numberOfColumns];
+    sectionLayout.frame = [self _layoutFrameForSection:section];
 
-    if (section == 0) {
-        sectionLayout.frame = [self minimumContentBounds];
-    } else {
-        MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
-        CGRect frame = previousSectionLayout.frame;
-        frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
-        sectionLayout.frame = frame;
-    }
-
-    sectionLayout.contentInsets = self.sectionContentInsets;
+    const NSUInteger featuredHorizontalSpan = [self featuredStoryHorizontalSpanInSection:section];
+    const NSUInteger featuredVerticalSpan = [self featuredStoryVerticalSpanInSection:section];
+    sectionLayout.featuredItemSpan = MITCollectionViewGridSpanMake(featuredHorizontalSpan, featuredVerticalSpan);
+    sectionLayout.minimumInterItemPadding = self.minimumInterItemPadding;
+    sectionLayout.lineSpacing = self.lineSpacing;
 
     return sectionLayout;
 }
@@ -133,17 +126,31 @@
 {
     [super invalidateLayout];
 
-    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *sectionNumber, MITCollectionViewGridLayoutSection *sectionLayout, BOOL *stop) {
-        NSUInteger section = [sectionNumber unsignedIntegerValue];
-        if (section == 0) {
-            sectionLayout.frame = [self minimumContentBounds];
-        } else {
-            MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
-            CGRect frame = previousSectionLayout.frame;
-            frame.origin = CGPointMake(CGRectGetMinX(frame), CGRectGetMaxY(frame) + self.sectionSpacing);
-            sectionLayout.frame = frame;
-        }
-    }];
+    // TODO: Handle invalidation better. There shouldn't be too many items
+    // (500 max per category) so this won't be a huge processor hog
+    // but it's less than ideal and makes animation difficult.
+    // (bskinner - 2014.07.16)
+    [self.sectionLayouts removeAllObjects];
+}
+
+- (CGRect)_layoutFrameForSection:(NSUInteger)section
+{
+    CGRect layoutBounds = self.collectionView.bounds;
+    layoutBounds.origin = CGPointZero;
+
+    // Set the height to zero since it will be variable (this is a
+    // vertically scrolling layout).
+    layoutBounds.size.height = 0;
+
+    if (section == 0) {
+        CGRect frame = layoutBounds;
+        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);
+    } else {
+        MITCollectionViewGridLayoutSection *previousSectionLayout = [self layoutForSection:section - 1];
+        CGRect frame = layoutBounds;
+        frame.origin.y = CGRectGetMaxY(previousSectionLayout.frame) + self.sectionInsets.bottom;
+        return UIEdgeInsetsInsetRect(frame, self.sectionInsets);
+    }
 }
 
 #pragma mark Returning layout attributes
@@ -155,13 +162,25 @@
         MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:section];
 
         if (CGRectIntersectsRect(rect, sectionLayout.frame)) {
-            [[sectionLayout allLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-                if ([layoutAttributes.representedElementKind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
-                    [visibleLayoutAttributes addObject:layoutAttributes];
-                } else if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+            [sectionLayout.itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
                     [visibleLayoutAttributes addObject:layoutAttributes];
                 }
             }];
+
+            [sectionLayout.decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
+                if (CGRectIntersectsRect(rect, layoutAttributes.frame)) {
+                    [visibleLayoutAttributes addObject:layoutAttributes];
+                }
+            }];
+
+            CGPoint contentOffset = self.collectionView.contentOffset;
+            contentOffset.y += self.collectionView.contentInset.top;
+            contentOffset.x += self.collectionView.contentInset.left;
+            UICollectionViewLayoutAttributes *headerLayoutAttributes = [sectionLayout headerLayoutAttributesWithContentOffset:contentOffset];
+            if (headerLayoutAttributes) {
+                [visibleLayoutAttributes addObject:headerLayoutAttributes];
+            }
         }
     }
 
@@ -182,14 +201,32 @@
 - (UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)decorationViewKind atIndexPath:(NSIndexPath *)indexPath
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
-    return nil;
+
+    __block UICollectionViewLayoutAttributes *attributes = nil;
+    [[sectionLayout decorationLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes* layoutAttributes, NSUInteger idx, BOOL *stop) {
+        if ([layoutAttributes.representedElementKind isEqualToString:decorationViewKind]) {
+            if ([layoutAttributes.indexPath isEqual:indexPath]) {
+                attributes = layoutAttributes;
+                (*stop) = YES;
+            }
+        }
+    }];
+
+    return attributes;
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (!indexPath) {
+        return nil;
+    }
+
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
-    return [sectionLayout layoutAttributesForItemAtIndexPath:indexPath];
+    UICollectionViewLayoutAttributes *layoutAttributes = [sectionLayout layoutAttributesForItemAtIndexPath:indexPath];
+    NSAssert(layoutAttributes, @"no layout attributes for index path %@",indexPath);
+    return layoutAttributes;
 }
+
 
 #pragma mark Delegate Pass-Thru
 - (NSUInteger)numberOfColumnsInSection:(NSInteger)section
@@ -203,8 +240,8 @@
 
 - (CGFloat)heightForHeaderInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section];
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:withWidth:)]) {
+        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section withWidth:CGRectGetWidth(self.collectionView.bounds)];
     } else {
         return self.headerHeight;
     }
@@ -212,27 +249,16 @@
 
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath];
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:withWidth:)]) {
+        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:CGRectGetWidth(self.collectionView.bounds)];
     } else {
         return self.itemHeight;
     }
 }
 
-- (BOOL)showFeaturedItemInSection:(NSInteger)section
-{
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:showFeaturedItemInSection:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self showFeaturedItemInSection:section];
-    } else {
-        return NO;
-    }
-}
-
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
-    if (![self showFeaturedItemInSection:section]) {
-        return 0;
-    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryHorizontalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryHorizontalSpanInSection:section];
     } else {
         return 0;
@@ -241,9 +267,7 @@
 
 - (NSUInteger)featuredStoryVerticalSpanInSection:(NSInteger)section
 {
-    if (![self showFeaturedItemInSection:section]) {
-        return 0;
-    } else if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
+    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:featuredStoryVerticalSpanInSection:)]) {
         return [self.collectionViewDelegate collectionView:self.collectionView layout:self featuredStoryVerticalSpanInSection:section];
     } else {
         return 0;

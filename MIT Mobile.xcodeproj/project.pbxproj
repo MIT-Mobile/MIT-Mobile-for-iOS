@@ -97,6 +97,7 @@
 		2C2CB48F19229A6300FCC056 /* MITLauncherListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CB48E19229A6300FCC056 /* MITLauncherListViewController.m */; };
 		2C2CB4961922B45100FCC056 /* MITLauncherListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CB4951922B45100FCC056 /* MITLauncherListViewCell.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
+		2C2F779D196DBA6500284AE7 /* MITCollectionViewGridDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2F779C196DBA6500284AE7 /* MITCollectionViewGridDividerView.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348F162DCF2600BBB312 /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -183,7 +184,7 @@
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD1AE8219520E40003D7601 /* MITCollectionViewGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */; };
 		2CD1AE8319520E40003D7601 /* MITCollectionViewGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */; };
-		2CD1AE8419520E40003D7601 /* MITCollectionViewNewsGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE8119520E40003D7601 /* MITCollectionViewNewsGridLayout.m */; };
+		2CD1AE8419520E40003D7601 /* MITCollectionViewGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -698,6 +699,8 @@
 		2C2CB4951922B45100FCC056 /* MITLauncherListViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLauncherListViewCell.m; path = "App Delegate/Module Launcher/MITLauncherListViewCell.m"; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
+		2C2F779B196DBA6500284AE7 /* MITCollectionViewGridDividerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridDividerView.h; sourceTree = "<group>"; };
+		2C2F779C196DBA6500284AE7 /* MITCollectionViewGridDividerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridDividerView.m; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
 		2C33348E162DCF2600BBB312 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C33348F162DCF2600BBB312 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
@@ -858,8 +861,8 @@
 		2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayoutRow.m; sourceTree = "<group>"; };
 		2CD1AE7E19520E40003D7601 /* MITCollectionViewGridLayoutSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridLayoutSection.h; sourceTree = "<group>"; };
 		2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayoutSection.m; sourceTree = "<group>"; };
-		2CD1AE8019520E40003D7601 /* MITCollectionViewNewsGridLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewNewsGridLayout.h; sourceTree = "<group>"; };
-		2CD1AE8119520E40003D7601 /* MITCollectionViewNewsGridLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewNewsGridLayout.m; sourceTree = "<group>"; };
+		2CD1AE8019520E40003D7601 /* MITCollectionViewGridLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridLayout.h; sourceTree = "<group>"; };
+		2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayout.m; sourceTree = "<group>"; };
 		2CD27AA91709D3EF002E220E /* MGSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSGeometry.h; sourceTree = "<group>"; };
 		2CD27AAA1709D3EF002E220E /* MGSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSGeometry.m; sourceTree = "<group>"; };
 		2CD4F69B188ED4EB003F2C46 /* MITManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITManagedObject.h; sourceTree = "<group>"; };
@@ -2344,8 +2347,10 @@
 				2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */,
 				2CD1AE7E19520E40003D7601 /* MITCollectionViewGridLayoutSection.h */,
 				2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */,
-				2CD1AE8019520E40003D7601 /* MITCollectionViewNewsGridLayout.h */,
-				2CD1AE8119520E40003D7601 /* MITCollectionViewNewsGridLayout.m */,
+				2CD1AE8019520E40003D7601 /* MITCollectionViewGridLayout.h */,
+				2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */,
+				2C2F779B196DBA6500284AE7 /* MITCollectionViewGridDividerView.h */,
+				2C2F779C196DBA6500284AE7 /* MITCollectionViewGridDividerView.m */,
 			);
 			name = MITCollectionViewGridLayout;
 			path = "Modules/News/iPad/View Layouts/MITCollectionViewGridLayout";
@@ -3703,6 +3708,7 @@
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
+				2C2F779D196DBA6500284AE7 /* MITCollectionViewGridDividerView.m in Sources */,
 				2C5D787C19181F4000ECB388 /* MITLauncherGridViewCell.m in Sources */,
 				2CED900018BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m in Sources */,
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
@@ -3796,7 +3802,7 @@
 				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
 				EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */,
 				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
-				2CD1AE8419520E40003D7601 /* MITCollectionViewNewsGridLayout.m in Sources */,
+				2CD1AE8419520E40003D7601 /* MITCollectionViewGridLayout.m in Sources */,
 				EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */,
 				EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */,
 				2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */,

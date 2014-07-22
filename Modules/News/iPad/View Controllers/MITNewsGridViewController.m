@@ -5,7 +5,7 @@
 #import "MITNewsModelController.h"
 #import "MITNewsCategory.h"
 #import "MITNewsStory.h"
-#import "MITCollectionViewNewsGridLayout.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsiPadViewController.h"
@@ -18,8 +18,7 @@
 @implementation MITNewsGridViewController
 - (instancetype)init
 {
-    MITCollectionViewNewsGridLayout *layout = [[MITCollectionViewNewsGridLayout alloc] init];
-    layout.numberOfColumns = 4;
+    MITCollectionViewGridLayout *layout = [[MITCollectionViewGridLayout alloc] init];
     layout.headerHeight = 44.;
     
     self = [super initWithCollectionViewLayout:layout];
@@ -47,23 +46,25 @@
     collectionView.backgroundColor = [UIColor clearColor];
     collectionView.backgroundView = nil;
 
-    /*
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryJumboCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryJumboCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryDekCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryDekCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryClipCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryClipCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryImageCollectionViewCell bundle:nil] forCellWithReuseIdentifier:MITNewsStoryImageCollectionViewCell];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:MITNewsStoryHeaderReusableView bundle:nil] forSupplementaryViewOfKind:MITNewsStoryHeaderReusableView withReuseIdentifier:MITNewsStoryHeaderReusableView];
-     */
+    const BOOL debug = YES;
 
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
-    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
-    [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    if (!debug) {
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+    
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    } else {
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+        [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
+    }
 
 }
 
@@ -74,11 +75,24 @@
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     }
+
+    [self updateLayoutForOrientation:self.interfaceOrientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self updateLayoutForOrientation:toInterfaceOrientation];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 
@@ -98,6 +112,20 @@
     if (categoryIndexPath) {
         [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
     }
+}
+
+- (void)updateLayoutForOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if ([self.collectionViewLayout isKindOfClass:[MITCollectionViewGridLayout class]]) {
+        MITCollectionViewGridLayout *gridLayout = (MITCollectionViewGridLayout*)self.collectionViewLayout;
+        if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+            gridLayout.numberOfColumns = 3;
+        } else {
+            gridLayout.numberOfColumns = 5;
+        }
+    }
+
+    [self.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - Delegation
@@ -168,7 +196,7 @@
 - (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    BOOL featuredStory = [self collectionView:collectionView layout:nil showFeaturedItemInSection:indexPath.section];
+    BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
 
     if (featuredStory && indexPath.item == 0) {
         return MITNewsCellIdentifierStoryJumbo;
@@ -193,7 +221,7 @@
 
     CGFloat height = 0;
     if (!heights[indexPath]) {
-        height = 64. + arc4random_uniform(96);
+        height = 96. + arc4random_uniform(96);
         heights[indexPath] = @(height);
     } else {
         height = [heights[indexPath] doubleValue];
@@ -202,28 +230,27 @@
     return height;
 }
 
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
     return [self _heightForItemAtIndexPath:indexPath];
 }
 
-- (BOOL)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout showFeaturedItemInSection:(NSInteger)section
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return YES;
+    if ([self isFeaturedCategoryInSection:section]) {
+        return 2;
     } else {
-        return NO;
+        return 0;
     }
 }
 
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
+- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
 {
-    return 2;
-}
-
-- (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewNewsGridLayout*)layout featuredStoryHorizontalSpanInSection:(NSInteger)section
-{
-    return 2;
+    if ([self isFeaturedCategoryInSection:section]) {
+        return 2;
+    } else {
+        return 0;
+    }
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods

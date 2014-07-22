@@ -2,19 +2,15 @@
 #import "MITNewsConstants.h"
 
 @interface MITCollectionViewGridLayoutRow ()
-@property (nonatomic) CGPoint origin;
+@property (nonatomic) BOOL needsLayout;
 @end
 
 @implementation MITCollectionViewGridLayoutRow {
     NSMutableArray *_itemLayoutAttributes;
-    NSMutableArray *_decorationLayoutAttributes;
-    CGFloat _interItemSpacing;
     BOOL _needsLayout;
 }
 
 @synthesize bounds = _bounds;
-
-@dynamic decorationLayoutAttributes;
 @dynamic frame;
 @dynamic itemLayoutAttributes;
 @dynamic numberOfItems;
@@ -23,6 +19,7 @@
 {
     self = [super init];
     if (self) {
+        _itemLayoutAttributes = [[NSMutableArray alloc] init];
         _needsLayout = YES;
     }
 
@@ -31,51 +28,27 @@
 
 - (void)setNeedsLayout
 {
-    _bounds.size.height = 0;
     _needsLayout = YES;
-}
-
-- (BOOL)needsLayout
-{
-    return (_needsLayout && ([_itemLayoutAttributes count] > 0));
 }
 
 - (void)layoutIfNeeded
 {
     if ([self needsLayout]) {
-        CGRect bounds = _bounds;
-        CGRect layoutBounds = bounds; // Leave an entry point if we want to add edge insets later
-
-        const CGFloat layoutWidth = CGRectGetWidth(layoutBounds);
-        const NSUInteger numberOfItems = (self.maximumNumberOfItems > 0 ? self.maximumNumberOfItems : self.numberOfItems);
-        const CGFloat interItemSpacing = _interItemSpacing;
-        CGFloat itemWidth = (layoutWidth - (interItemSpacing * (numberOfItems - 1))) / numberOfItems;
-
-        __block CGFloat maximumItemHeight = -CGFLOAT_MAX;
+        const CGFloat itemWidth = self.columnWidth;
+        const CGFloat interItemSpacing = self.interItemPadding;
+        
+        __block CGPoint origin = CGPointMake(0, 0);
         [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
-            CGFloat itemOriginY = CGRectGetMinY(layoutBounds);
-            CGFloat itemOriginX = CGRectGetMinX(layoutBounds) + (itemWidth * idx) + (interItemSpacing * idx);
-
-            CGRect itemFrame = CGRectMake(itemOriginX, itemOriginY, itemWidth, CGRectGetHeight(itemLayoutAttributes.frame));
+            CGRect itemFrame = itemLayoutAttributes.frame;
+            itemFrame.origin = origin;
+            itemFrame.size.width = itemWidth;
             itemLayoutAttributes.frame = itemFrame;
-
-            if (maximumItemHeight < CGRectGetHeight(itemFrame)) {
-                maximumItemHeight = CGRectGetHeight(itemFrame);
-            }
+            
+            origin.x += itemWidth;
+            origin.x += interItemSpacing;
         }];
-
-        [_decorationLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *decorationLayoutAttributes, NSUInteger idx, BOOL *stop) {
-            CGRect frame = CGRectMake(0, CGRectGetMinY(layoutBounds), interItemSpacing, maximumItemHeight);
-            frame.origin.x = CGRectGetMinX(layoutBounds) + (itemWidth * (idx + 1)) + (interItemSpacing * idx);
-
-            frame.origin.y = CGRectGetMinY(layoutBounds);
-            frame.size.width = interItemSpacing;
-            frame.size.height = maximumItemHeight;
-            decorationLayoutAttributes.frame = frame;
-        }];
-
-        bounds.size.height = maximumItemHeight;
-        _bounds = bounds;
+        
+        _bounds = [self _bounds];
         _needsLayout = NO;
     }
 }
@@ -87,31 +60,13 @@
 
 - (NSArray*)itemLayoutAttributes
 {
-    if (!_itemLayoutAttributes) {
-        return nil;
-    }
-
+    [self layoutIfNeeded];
+    
     NSMutableArray *layoutAttributes = [[NSMutableArray alloc] initWithArray:_itemLayoutAttributes copyItems:YES];
     [layoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
         layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
     }];
 
-    return layoutAttributes;
-}
-
-- (NSArray*)decorationLayoutAttributes
-{
-    if (!_decorationLayoutAttributes) {
-        return nil;
-    }
-
-    CGRect frame = self.frame;
-
-    NSMutableArray *layoutAttributes = [[NSMutableArray alloc] initWithArray:_decorationLayoutAttributes copyItems:YES];
-    [layoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
-        layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, CGRectGetMinX(frame), CGRectGetMinY(frame));
-    }];
-    
     return layoutAttributes;
 }
 
@@ -122,10 +77,16 @@
     return frame;
 }
 
-- (void)setFrame:(CGRect)frame
+- (CGRect)_bounds
 {
-    self.origin = frame.origin;
-    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    __block CGRect contentFrame = CGRectZero;
+    [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
+        contentFrame = CGRectUnion(contentFrame, itemLayoutAttributes.frame);
+    }];
+    
+    contentFrame.origin = CGPointZero;
+    
+    return contentFrame;
 }
 
 - (CGRect)bounds
@@ -134,41 +95,28 @@
     return _bounds;
 }
 
-- (void)setBounds:(CGRect)bounds
+- (void)setColumnWidth:(CGFloat)columnWidth
 {
-    CGRect newBounds = bounds;
-    newBounds.size.height = 0;
+    _columnWidth = columnWidth;
+    [self setNeedsLayout];
+}
 
-    CGRect oldBounds = _bounds;
-    oldBounds.size.height = 0;
+- (void)setInterItemPadding:(CGFloat)interItemPadding
+{
+    _interItemPadding = interItemPadding;
+    [self setNeedsLayout];
+}
 
-    if (!CGRectEqualToRect(newBounds, oldBounds)) {
-        bounds.size.height = 0;
-        _bounds = bounds;
 
-        [self setNeedsLayout];
-    }
+- (BOOL)isFilled
+{
+    return (!self.maximumNumberOfItems || (self.maximumNumberOfItems == self.numberOfItems));
 }
 
 - (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
 {
-    if (self.maximumNumberOfItems > 0) {
-        if (self.numberOfItems >= self.maximumNumberOfItems) {
-            return NO;
-        }
-    }
-    
-    if (!_itemLayoutAttributes) {
-        _itemLayoutAttributes = [[NSMutableArray alloc] init];
-    }
-
-    // Checking for numberOfItems here because, once we add the new layout attributes
-    //  to the _itemLayoutAttributes ivar, numberOfItems will increment and we'll end up with an extra decoration.
-    if (self.numberOfItems > 0) {
-        UICollectionViewLayoutAttributes *decorationLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITNewsReusableViewIdentifierDivider withIndexPath:[NSIndexPath indexPathWithIndex:[self numberOfItems]]];
-        decorationLayoutAttributes.frame = CGRectMake(0, 0, _interItemSpacing, 0);
-
-        [_decorationLayoutAttributes addObject:decorationLayoutAttributes];
+    if (self.isFilled) {
+        return NO;
     }
 
     UICollectionViewLayoutAttributes *itemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
