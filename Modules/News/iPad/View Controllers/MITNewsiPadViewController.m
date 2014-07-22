@@ -498,7 +498,6 @@
     return dataSource.objects[index];
 }
 
-@end
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
 {
     if (self.showsFeaturedStories) {
@@ -507,6 +506,7 @@
         return NO;
     }
 }
+@end
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
