@@ -3,6 +3,7 @@
 #import "MITNewsiPadViewController.h"
 #import "MITNewsStoryCell.h"
 #import "MITNewsStory.h"
+#import "MITCollectionViewGridLayout.h"
 #import "MITNewsConstants.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITNewsSearchController.h"
@@ -95,6 +96,11 @@
                                                 }];
     }
 
+}
+
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
+{
+    return 0;
 }
 
 @end
