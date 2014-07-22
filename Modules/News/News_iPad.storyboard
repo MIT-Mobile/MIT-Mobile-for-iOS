@@ -53,11 +53,12 @@
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
                         <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="g55-fq-NLw"/>
+                        <segue destination="9si-nV-Co1" kind="push" identifier="showCategoryList" id="GI6-4h-82h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e52-0i-HFC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-585" y="184"/>
+            <point key="canvasLocation" x="-637" y="216"/>
         </scene>
         <!--News iPad Story View Controller-->
         <scene sceneID="Gpk-Vd-bz5">
@@ -188,7 +189,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="247" y="184"/>
+            <point key="canvasLocation" x="431" y="456"/>
         </scene>
         <!--News Media Gallery View Controller-->
         <scene sceneID="lfy-ef-cx3">
@@ -326,7 +327,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1299" y="196"/>
+            <point key="canvasLocation" x="1575" y="216"/>
         </scene>
         <!--Page View Controller-->
         <scene sceneID="JDA-nB-dF2">
@@ -334,7 +335,46 @@
                 <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" pageSpacing="20" navigationOrientation="horizontal" spineLocation="none" id="Aln-jB-QhS" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xbf-Hi-0dX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2227" y="206"/>
+            <point key="canvasLocation" x="2503" y="226"/>
+        </scene>
+        <!--News Pad View Controller-->
+        <scene sceneID="WRe-cX-FaI">
+            <objects>
+                <viewController storyboardIdentifier="StoryCategoryList" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9si-nV-Co1" userLabel="News Pad View Controller" customClass="MITNewsiPadCategoryListViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="WO6-n8-c6z"/>
+                        <viewControllerLayoutGuide type="bottom" id="IGu-Bh-h2H"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="qGJ-7p-zto">
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dgq-K8-XLL" userLabel="Container View">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="IGu-Bh-h2H" firstAttribute="top" secondItem="dgq-K8-XLL" secondAttribute="bottom" id="Euf-eC-vAk"/>
+                            <constraint firstItem="dgq-K8-XLL" firstAttribute="top" secondItem="WO6-n8-c6z" secondAttribute="bottom" id="JMr-p5-CD6"/>
+                            <constraint firstItem="dgq-K8-XLL" firstAttribute="leading" secondItem="qGJ-7p-zto" secondAttribute="leading" id="NyP-Dd-umH"/>
+                            <constraint firstAttribute="trailing" secondItem="dgq-K8-XLL" secondAttribute="trailing" id="Zk7-st-iug"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <navigationItem key="navigationItem" title="MIT News" id="BNq-CK-i0o">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="hSj-K1-8Id"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="containerView" destination="dgq-K8-XLL" id="Qv4-s2-dsB"/>
+                        <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="IoT-Lw-NVS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PSv-oH-qsV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="431" y="-882"/>
         </scene>
     </scenes>
     <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
@@ -343,4 +383,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="IoT-Lw-NVS"/>
+    </inferredMetricsTieBreakers>
 </document>

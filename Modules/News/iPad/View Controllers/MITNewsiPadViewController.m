@@ -495,13 +495,7 @@
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
-    self.currentDataSourceIndex = index;
-
-    MITNewsiPadCategoryListViewController *categoryListController = [[MITNewsiPadCategoryListViewController alloc] init];
-    categoryListController.currentDataSourceIndex = self.currentDataSourceIndex;
-    categoryListController.delegate = self;
-    categoryListController.dataSource = self;
-    [self.navigationController pushViewController:categoryListController animated:YES];
+    [self performSegueWithIdentifier:@"showCategoryList" sender:[NSIndexPath indexPathForItem:0 inSection:index]];
     return nil;
 }
 
@@ -521,11 +515,11 @@
     
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+
+            NSIndexPath *indexPath = sender;
+
             MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
             storyDetailViewController.delegate = self;
-            
-            NSIndexPath *indexPath = sender;
-            
             MITNewsStory *story = [self viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
@@ -539,6 +533,13 @@
                       NSStringFromClass([MITNewsStoryViewController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
+    } else if ([segue.identifier isEqualToString:@"showCategoryList"]) {
+        
+        NSIndexPath *indexPath = sender;
+
+        MITNewsiPadCategoryListViewController *iPadCategoryListViewController  = (MITNewsiPadCategoryListViewController*)destinationViewController;
+        iPadCategoryListViewController.dataSource = self.dataSources[indexPath.section];
+        
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }

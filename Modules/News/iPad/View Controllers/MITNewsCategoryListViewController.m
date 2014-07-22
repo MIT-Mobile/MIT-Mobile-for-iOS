@@ -39,10 +39,11 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:self.currentDataSourceIndex] && self.currentDataSourceIndex != 0) {
+#warning fix for auto load
+    /*if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && self.currentDataSourceIndex != 0) {
         return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex] + 1;
-    }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex];
+    }*/
+    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
@@ -57,7 +58,7 @@
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:self.currentDataSourceIndex];
+        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:0];
     } else {
         return nil;
     }
@@ -65,7 +66,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:self.currentDataSourceIndex]];
+    [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
 }
 
 #pragma mark UITableViewDataSource
@@ -112,7 +113,7 @@
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
-    if ([self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex] > indexPath.row) {
+    if ([self numberOfStoriesForCategoryInSection:0] > indexPath.row) {
         story = [self storyAtIndexPath:indexPath];
     }
     if (story) {
@@ -137,7 +138,7 @@
        // }];
         
         return identifier;
-    } else if ([self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex]) {
+    } else if ([self numberOfStoriesForCategoryInSection:0]) {
         return @"LoadingMore";
     } else {
         return nil;
@@ -157,8 +158,8 @@
 
 - (void)getMoreStories
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:self.currentDataSourceIndex]) {
-        [self.dataSource loadMoreItemsForCategoryInSection:self.currentDataSourceIndex
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
+        [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
                                                     [self.tableView reloadData];
                                                 }];

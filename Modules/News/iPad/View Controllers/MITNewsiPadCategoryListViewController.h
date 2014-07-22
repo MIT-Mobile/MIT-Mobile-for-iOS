@@ -1,10 +1,13 @@
 #import "MITNewsiPadViewController.h"
+#import "MITNewsDataSource.h"
 
-@interface MITNewsiPadCategoryListViewController : MITNewsiPadViewController
+@class MITNewsStory;
+@class MITNewsCategory;
 
-@property (nonatomic) NSUInteger currentDataSourceIndex;
+@interface MITNewsiPadCategoryListViewController : UIViewController
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic) MITNewsPresentationStyle presentationStyle;
 
-@property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property (nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+@property (nonatomic, retain) MITNewsDataSource *dataSource;
 
 @end
