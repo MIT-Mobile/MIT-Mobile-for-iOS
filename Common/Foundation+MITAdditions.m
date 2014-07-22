@@ -22,7 +22,7 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
         // This is liable to break in unexpected & infuriating ways if
         // things are not perfectly formed
         // (bskinner - 2014.05.28)
-        NSString *pattern = @"^<(.+)>;\\s+rel=\"([^\"]+)\"";
+        NSString *pattern = @"<(.+)>;\\s+rel=\"(.+)\"";
         NSError *error = nil;
         linkHeaderRegularExpression = [NSRegularExpression regularExpressionWithPattern:pattern
                                                                                 options:NSRegularExpressionCaseInsensitive
@@ -57,11 +57,11 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
                 //  2: The relation type from the Link reference
                 if ([result numberOfRanges] != 3) {
                     NSRange fullRange = [result rangeAtIndex:0];
-                    DDLogCWarn(@"invalid 'Link' value '%@'",[link substringWithRange:fullRange]);
+                    DDLogCWarn(@"invalid 'Link' value '%@'",[trimmedLink substringWithRange:fullRange]);
                 } else {
-                    NSString *urlString = [link substringWithRange:[result rangeAtIndex:1]];
+                    NSString *urlString = [trimmedLink substringWithRange:[result rangeAtIndex:1]];
                     NSURL *url = [NSURL URLWithString:urlString];
-                    NSString *relation = [link substringWithRange:[result rangeAtIndex:2]];
+                    NSString *relation = [trimmedLink substringWithRange:[result rangeAtIndex:2]];
 
                     if (!url) {
                         DDLogCWarn(@"url '%@' for relation type '%@' is malformed", url, relation);

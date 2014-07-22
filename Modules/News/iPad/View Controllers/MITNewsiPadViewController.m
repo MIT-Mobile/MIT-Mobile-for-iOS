@@ -68,8 +68,10 @@
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.edgesForExtendedLayout = UIRectEdgeAll;
+
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
+    self.containerView.autoresizesSubviews = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -119,6 +121,8 @@
         gridViewController = [[MITNewsGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
+        gridViewController.automaticallyAdjustsScrollViewInsets = NO;
+        gridViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _gridViewController = gridViewController;
     }
 
@@ -135,6 +139,9 @@
         listViewController = [[MITNewsListViewController alloc] init];
         listViewController.delegate = self;
         listViewController.dataSource = self;
+
+        listViewController.automaticallyAdjustsScrollViewInsets = NO;
+        listViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _listViewController = listViewController;
     }
     
@@ -179,7 +186,9 @@
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
+        fromViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
         toViewController.view.frame = viewFrame;
+        toViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
 
         const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
         _isTransitioningToPresentationStyle = YES;
@@ -429,6 +438,15 @@
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     return dataSource.objects[index];
+}
+
+- (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section
+{
+    if (self.showsFeaturedStories) {
+        return (section == 0);
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark MITNewsStoryDetailPagingDelegate
