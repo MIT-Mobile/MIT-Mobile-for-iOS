@@ -14,6 +14,7 @@
 #import "MITPeopleSearchHandler.h"
 
 #import "PeopleFavoriteData.h"
+#import "PeopleRecentSearchTerm.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -30,12 +31,13 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
 @property (nonatomic, strong) NSArray *peopleFavorites;
 
+@property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
+
+@property (nonatomic, strong) NSArray *recentSearchTerms;
+
 @end
 
 @implementation PeopleSearchViewController
-{
-    MITPeopleSearchHandler *searchHandler;
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil
                bundle:(NSBundle *)nibBundleOrNil
@@ -59,22 +61,18 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
 	[super viewDidLoad];
-
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.tableView.backgroundView = nil;
-        self.tableView.backgroundColor = [UIColor mit_backgroundColor];
-
-        self.searchBar.tintColor = [UIColor mit_tintColor];
-    }
     
-    searchHandler = [MITPeopleSearchHandler new];
+    self.searchHandler = [MITPeopleSearchHandler new];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
+    
+    [self registerForKeyboardNotifications];
 
     self.peopleFavorites = [PeopleFavoriteData retrieveFavoritePeople];
     
@@ -94,12 +92,34 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     }];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self unregisterForKeyboardNotifications];
+}
+
+- (void)keyboardDidShow:(id)sender
+{
+//    [self.searchDisplayController.searchResultsTableView setHidden:NO];
+}
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+}
+
+- (void)unregisterForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+}
+
 #pragma mark - Search methods
 #pragma mark UISearchDisplay Delegate
 - (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
-    if (searchHandler.searchTerms) {
-        controller.searchBar.text = searchHandler.searchTerms;
+    if (self.searchHandler.searchTerms) {
+        controller.searchBar.text = self.searchHandler.searchTerms;
         [self performSearch];
     }
 }
@@ -114,43 +134,72 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     [self.tableView reloadData];
 }
 
+//- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+//{
+//    NSLog(@"");
+//}
+//
+//- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
+//{
+//    NSLog(@"");
+//}
+//- (void)searchDisplayController:(UISearchDisplayController *)controller didShowSearchResultsTableView:(UITableView *)tableView
+//{
+//    NSLog(@"");
+//}
+//- (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView
+//{
+//    NSLog(@"");
+//}
+//- (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView
+//{
+//    NSLog(@"");
+//}
+
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
-    searchHandler.searchTerms = nil;
-    searchHandler.searchTokens = nil;
-    searchHandler.searchResults = nil;
+    self.searchHandler.searchTerms = nil;
+    self.searchHandler.searchTokens = nil;
+    self.searchHandler.searchResults = nil;
     [self.searchResultsLoadingView removeFromSuperview];
 }
 
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+//    [self reloadRecentResultsWithFilterString:searchBar.text];
+//    [self.searchDisplayController setActive:YES animated:YES];
+}
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    [self reloadRecentResultsWithFilterString:searchBar.text];
+    
     if ([searchBar.text length] <= 0) {
-        searchHandler.searchResults = nil;
-        searchHandler.searchTerms = nil;
-        searchHandler.searchCancelled = YES;
+        self.searchHandler.searchResults = nil;
+        self.searchHandler.searchTerms = nil;
+        self.searchHandler.searchCancelled = YES;
         [self.searchDisplayController.searchResultsTableView reloadData];
     }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-	searchHandler.searchTerms = searchBar.text;
+	self.searchHandler.searchTerms = searchBar.text;
 	[self performSearch];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
 {
-    searchHandler.searchTerms = nil;
-    searchHandler.searchTokens = nil;
-    searchHandler.searchResults = nil;
+    self.searchHandler.searchTerms = nil;
+    self.searchHandler.searchTokens = nil;
+    self.searchHandler.searchResults = nil;
     
     [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
-	searchHandler.searchTerms = externalSearchTerms;
+	self.searchHandler.searchTerms = externalSearchTerms;
 
     if ([self.searchDisplayController isActive]) {
         self.searchDisplayController.searchBar.text = externalSearchTerms;
@@ -163,8 +212,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)performSearch
 {
+    self.recentSearchTerms = nil;
+    
+    [self.searchHandler addRecentSearchTerm:self.searchBar.text];
+    
     __weak PeopleSearchViewController *weakSelf = self;
-    [searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
+    [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
     {
         [weakSelf.searchDisplayController.searchResultsTableView reloadData];
         [weakSelf.searchResultsLoadingView removeFromSuperview];
@@ -175,7 +228,21 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (NSArray *)searchResults
 {
-    return searchHandler.searchResults;
+    return self.searchHandler.searchResults;
+}
+
+#pragma mark - recents logic
+
+- (void)reloadRecentResultsWithFilterString:(NSString *)filterString
+{
+    self.recentSearchTerms = [self.searchHandler recentSearchTermsWithFilterString:filterString];
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if( [self.recentSearchTerms count] > 0 )
+        {
+            [self.searchDisplayController.searchResultsTableView reloadData];
+        }
+    }];
 }
 
 #pragma mark - Table view methods
@@ -194,126 +261,176 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     }
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (tableView == self.tableView) {
-        MITPeopleSearchTableViewSection tableViewSection = section;
-		switch (tableViewSection) {
-            case MITPeopleSearchTableViewSectionExample: // sample cell
-                return 1;
-			case MITPeopleSearchTableViewSectionContacts: // phone directory, & emergency contacts
-				return 2;
-			case MITPeopleSearchTableViewSectionFavorites: // recently viewed
-				return [self.peopleFavorites count];
-			default:
-				return 0;
-		}
-	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		return ([searchHandler.searchResults count] ? [searchHandler.searchResults count] : 1); //Force a single row
-	} else {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+	if (tableView == self.tableView)
+    {
+        return [self numberOfRowsInDefaultScreenSection:section];
+	}
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
+        if( [self.recentSearchTerms count] > 0 )
+        {
+            return [self.recentSearchTerms count];
+        }
+        
+		return ([self.searchHandler.searchResults count] ? [self.searchHandler.searchResults count] : 1); //Force a single row
+	}
+    else
+    {
         return 0;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *recentCellID = @"RecentCell";
-    static NSString *directoryAssistanceID = @"DirectoryAssistanceCell";
-    static NSString *clearRecentsCellID = @"ClearRecents";
+- (NSInteger)numberOfRowsInDefaultScreenSection:(NSInteger)section
+{
+    MITPeopleSearchTableViewSection tableViewSection = section;
+    switch (tableViewSection) {
+        case MITPeopleSearchTableViewSectionExample: // sample cell
+            return 1;
+        case MITPeopleSearchTableViewSectionContacts: // phone directory, & emergency contacts
+            return 2;
+        case MITPeopleSearchTableViewSectionFavorites: // recently viewed
+            return [self.peopleFavorites count];
+        default:
+            return 0;
+    }
+}
 
-    UITableViewCell *cell = nil;
-
-	if (tableView == self.tableView) { // show phone directory tel #, recents
-        if (MITPeopleSearchTableViewSectionExample == indexPath.section) {
-            cell = [tableView dequeueReusableCellWithIdentifier:@"SampleCell" forIndexPath:indexPath];
-
-            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-                cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGRectGetWidth(tableView.bounds));
-            }
-        } else if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
-            if (indexPath.row == 0) {
-                cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
-                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-                
-                // Overwrite whatever text there is in the prototyped cell (even if it's correct)
-                // and replace it with our local value. Eventually, this information should be
-                // pulled from the server instead of a constant.
-                cell.detailTextLabel.text = MITPeopleDirectoryAssistancePhone;
-            } else if (indexPath.row == 1) {
-                cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
-            }
-        } else if (MITPeopleSearchTableViewSectionFavorites == indexPath.section) {
-            cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
-
-            NSArray *favoritePeople = self.peopleFavorites;
-            if (indexPath.row < [favoritePeople count])
-            {
-                PersonDetails *favorite = favoritePeople[indexPath.row];
-                cell.textLabel.text = favorite.name;
-
-                // show person's title, dept, or email as cell's subtitle text
-                // Setting the detailTextLabel's text to a space solves 2 issues:
-                //  * Top-aligns the primary text field
-                //  * In the case of cell reuse, clears out the detail field in case
-                //      the person we are currently display does not have values for
-                //      the below tags.
-                cell.detailTextLabel.text = @" ";
-                NSString *displayText = nil;
-                for (NSString *tag in @[@"title", @"dept"]) {
-                    displayText = [favorite valueForKey:tag];
-                    if (displayText) {
-                        cell.detailTextLabel.text = displayText;
-                        break;
-                    }
-                }
-            }
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	if (tableView == self.tableView)
+    {
+        // show phone directory tel #, recents
+        return [self tableView:self.tableView cellForDefaultRowAtIndexPath:indexPath];
+	}
+    else if (tableView == self.searchDisplayController.searchResultsTableView) // search results
+    {
+        if( [self.recentSearchTerms count] > 0 )
+        {
+            return [self tableView:self.tableView cellForRecentSearchRowAtIndexPath:indexPath];
         }
-
-        return cell;
-	} else if (tableView == self.searchDisplayController.searchResultsTableView) { // search results
-		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
-
-		if (!cell) {
-			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
-		}
-
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-        // Make sure to sanity check the current row. Since tableView:numberOfRowsInSection:
-        //  returns a minimum value of 1 (even if there are no actual results). If the table
-        //  view is asking for a cell and we don't have anything to display, just return a blank cell
-        // (bskinner - 2014.02.27)
-        if (indexPath.row < [searchHandler.searchResults count]) {
-            PersonDetails *searchResult = searchHandler.searchResults[indexPath.row];
-            NSString *fullname = searchResult.name;
-
-            if (searchResult.title) {
-                cell.detailTextLabel.text = searchResult.title;
-            } else if (searchResult.dept) {
-                cell.detailTextLabel.text = searchResult.dept;
-            } else {
-                cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
-            }
-            
-            
-            // in this section we try to highlight the parts of the results that match the search terms            
-            cell.textLabel.attributedText = [searchHandler hightlightSearchTokenWithinString:fullname
-                                                                                 currentFont:cell.textLabel.font];
-        } else {
-            // Clear out the text fields in the event of cell reuse
-            // Needs to be done if there is not a valid person object for this row
-            // because we may be displaying an empty cell (for example, in search results
-            // to suppress the "No Results" text)
-            cell.textLabel.text = nil;
-            cell.detailTextLabel.text = nil;
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.hidden = YES;
-        }
-
-        return cell;
-	} else {
+        
+        return [self tableView:self.tableView cellForSearchRowAtIndexPath:indexPath];
+    }
+    else
+    {
         return nil;
     }
 }
 
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRecentSearchRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"RecentTermsCell"];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"RecentTermsCell"];
+    }
+    
+    PeopleRecentSearchTerm *recentSearchItem = self.recentSearchTerms[indexPath.row];
+    cell.textLabel.text = recentSearchItem.recentSearchTerm;
+    
+    return cell;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForSearchRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
+    }
+    
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    // Make sure to sanity check the current row. Since tableView:numberOfRowsInSection:
+    //  returns a minimum value of 1 (even if there are no actual results). If the table
+    //  view is asking for a cell and we don't have anything to display, just return a blank cell
+    // (bskinner - 2014.02.27)
+    if (indexPath.row < [self.searchHandler.searchResults count]) {
+        PersonDetails *searchResult = self.searchHandler.searchResults[indexPath.row];
+        NSString *fullname = searchResult.name;
+        
+        if (searchResult.title) {
+            cell.detailTextLabel.text = searchResult.title;
+        } else if (searchResult.dept) {
+            cell.detailTextLabel.text = searchResult.dept;
+        } else {
+            cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
+        }
+        
+        
+        // in this section we try to highlight the parts of the results that match the search terms
+        cell.textLabel.attributedText = [self.searchHandler hightlightSearchTokenWithinString:fullname
+                                                                                  currentFont:cell.textLabel.font];
+    } else {
+        // Clear out the text fields in the event of cell reuse
+        // Needs to be done if there is not a valid person object for this row
+        // because we may be displaying an empty cell (for example, in search results
+        // to suppress the "No Results" text)
+        cell.textLabel.text = nil;
+        cell.detailTextLabel.text = nil;
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.hidden = YES;
+    }
+    
+    return cell;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForDefaultRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *recentCellID = @"RecentCell";
+    static NSString *directoryAssistanceID = @"DirectoryAssistanceCell";
+    
+    UITableViewCell *cell = nil;
+    
+    if (MITPeopleSearchTableViewSectionExample == indexPath.section) {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"SampleCell" forIndexPath:indexPath];
+        
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGRectGetWidth(tableView.bounds));
+        }
+    } else if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
+        if (indexPath.row == 0) {
+            cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+            
+            // Overwrite whatever text there is in the prototyped cell (even if it's correct)
+            // and replace it with our local value. Eventually, this information should be
+            // pulled from the server instead of a constant.
+            cell.detailTextLabel.text = MITPeopleDirectoryAssistancePhone;
+        } else if (indexPath.row == 1) {
+            cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
+        }
+    } else if (MITPeopleSearchTableViewSectionFavorites == indexPath.section) {
+        cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
+        
+        NSArray *favoritePeople = self.peopleFavorites;
+        if (indexPath.row < [favoritePeople count])
+        {
+            PersonDetails *favorite = favoritePeople[indexPath.row];
+            cell.textLabel.text = favorite.name;
+            
+            // show person's title, dept, or email as cell's subtitle text
+            // Setting the detailTextLabel's text to a space solves 2 issues:
+            //  * Top-aligns the primary text field
+            //  * In the case of cell reuse, clears out the detail field in case
+            //      the person we are currently display does not have values for
+            //      the below tags.
+            cell.detailTextLabel.text = @" ";
+            NSString *displayText = nil;
+            for (NSString *tag in @[@"title", @"dept"]) {
+                displayText = [favorite valueForKey:tag];
+                if (displayText) {
+                    cell.detailTextLabel.text = displayText;
+                    break;
+                }
+            }
+        }
+    }
+    
+    return cell;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -343,7 +460,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView)
     {
-        if ([searchHandler.searchResults count])
+        if ([self.searchHandler.searchResults count] || [self.recentSearchTerms count])
         {
             return 60.;
         }
@@ -384,7 +501,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
         PeopleDetailsViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"PeopleDetailsVC"];
 		if (tableView == self.searchDisplayController.searchResultsTableView) {
-			personDetails = searchHandler.searchResults[indexPath.row];
+			personDetails = self.searchHandler.searchResults[indexPath.row];
 		} else {
 			personDetails = self.peopleFavorites[indexPath.row];
 		}

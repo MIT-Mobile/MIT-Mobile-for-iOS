@@ -98,7 +98,7 @@ Phone: '6172531000', '31000'</string>
                                     <segue destination="SLF-7G-oqw" kind="push" identifier="showEmergencyContacts" id="t9d-xE-boi"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RecentCell" textLabel="Gj7-2R-eYQ" detailTextLabel="QTM-L6-epc" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="ql5-at-axz">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FavoriteCell" textLabel="Gj7-2R-eYQ" detailTextLabel="QTM-L6-epc" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="ql5-at-axz">
                                 <rect key="frame" x="0.0" y="289" width="320" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ql5-at-axz" id="TbU-RR-s1d">
@@ -125,23 +125,6 @@ Phone: '6172531000', '31000'</string>
                                 <connections>
                                     <segue destination="Iur-hm-NJE" kind="push" identifier="showPerson" id="RXr-JH-48W"/>
                                 </connections>
-                            </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ClearRecents" textLabel="o1U-d8-Kyj" style="IBUITableViewCellStyleDefault" id="TPI-JQ-nd8">
-                                <rect key="frame" x="0.0" y="349" width="320" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TPI-JQ-nd8" id="FR3-mF-PoF">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Clear Recents" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o1U-d8-Kyj">
-                                            <rect key="frame" x="15" y="0.0" width="290" height="59"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <sections/>
