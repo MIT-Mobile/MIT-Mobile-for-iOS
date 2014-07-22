@@ -29,5 +29,6 @@ extern NSString* const MITNewsCellIdentifierStoryJumbo;
 extern NSString* const MITNewsCellIdentifierStoryDek;
 extern NSString* const MITNewsCellIdentifierStoryClip;
 extern NSString* const MITNewsCellIdentifierStoryWithImage;
+extern NSString* const MITNewsCellIdentifierStoryLoadMore;
 extern NSString* const MITNewsReusableViewIdentifierSectionHeader;
 extern NSString* const MITNewsReusableViewIdentifierDivider;

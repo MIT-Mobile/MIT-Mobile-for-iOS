@@ -558,6 +558,8 @@
 
         MITNewsiPadCategoryListViewController *iPadCategoryListViewController  = (MITNewsiPadCategoryListViewController*)destinationViewController;
         iPadCategoryListViewController.dataSource = self.dataSources[indexPath.section];
+        iPadCategoryListViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+        
         
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);

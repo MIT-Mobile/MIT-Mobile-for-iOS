@@ -320,7 +320,7 @@
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
-        [self.navigationItem setTitle:@"MIT News"];
+        [self.navigationItem setTitle:self.categoryTitle];
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
@@ -458,7 +458,11 @@
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
-    return dataSource.objects[index];
+    if ([dataSource.objects count ] > index) {
+        return dataSource.objects[index];
+    } else {
+        return nil;
+    }
 }
 
 @end
@@ -472,7 +476,9 @@
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 {
-    [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    if ([self.dataSource.objects count] > index) {
+        [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    }
     return nil;
 }
 

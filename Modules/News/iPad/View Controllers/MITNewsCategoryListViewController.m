@@ -3,7 +3,6 @@
 #import "MITNewsStoryCell.h"
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
-#import "UITableView+DynamicSizing.h"
 #import "MITNewsSearchController.h"
 
 @interface MITNewsCategoryListViewController () <MITNewsSearchDelegate>
@@ -39,10 +38,9 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-#warning fix for auto load
-    /*if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && self.currentDataSourceIndex != 0) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:self.currentDataSourceIndex] + 1;
-    }*/
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
+    }
     return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
 }
 

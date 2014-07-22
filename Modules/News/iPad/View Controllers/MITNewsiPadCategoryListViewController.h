@@ -9,5 +9,6 @@
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 
 @property (nonatomic, retain) MITNewsDataSource *dataSource;
+@property (nonatomic, strong) NSString *categoryTitle;
 
 @end
