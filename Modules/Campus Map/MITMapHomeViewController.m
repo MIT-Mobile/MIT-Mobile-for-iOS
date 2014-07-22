@@ -34,6 +34,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
+@property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
@@ -299,6 +300,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self refreshPlaceAnnotations];
     [[self resultsListViewController] setPlaces:places];
     [self setupMapBoundingBoxAnimated:animated];
+    self.showFirstCalloutOnNextMapRegionChange = YES;
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
@@ -414,37 +416,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)showCalloutForPlace:(MITMapPlace *)place
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self closeIpadResultsList];
-        
-        MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-        detailVC.place = place;
-        self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
-        UIView *annotationView = [self.mapView viewForAnnotation:place];
-        
-        CGFloat tableHeight = 0;
-        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
-            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
-                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-            }
-        }
-        
-        CGFloat navbarHeight = 44;
-        CGFloat statusBarHeight = 20;
-        CGFloat toolbarHeight = 44;
-        CGFloat padding = 30;
-        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
-        
-        if (tableHeight > maxPopoverHeight) {
-            tableHeight = maxPopoverHeight;
-        }
-        
-        [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-        [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    } else {
-        if ([self.places containsObject:place]) {
-            [self.mapView selectAnnotation:place animated:YES];
-        }
+    if ([self.places containsObject:place]) {
+        [self.mapView selectAnnotation:place animated:YES];
     }
 }
 
@@ -596,15 +569,40 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-    [self addCalloutTapGestureRecognizerToAnnotationView:view];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        MITMapPlace *place = view.annotation;
+        MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+        detailVC.place = place;
+        self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+        UIView *annotationView = [self.mapView viewForAnnotation:place];
+        
+        CGFloat tableHeight = 0;
+        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
+            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
+                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+            }
+        }
+        
+        CGFloat navbarHeight = 44;
+        CGFloat statusBarHeight = 20;
+        CGFloat toolbarHeight = 44;
+        CGFloat padding = 30;
+        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
+        
+        if (tableHeight > maxPopoverHeight) {
+            tableHeight = maxPopoverHeight;
+        }
+        
+        [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+        [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        [self addCalloutTapGestureRecognizerToAnnotationView:view];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
-        [self showCalloutForPlace:place];
-    } else {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self removeCalloutTapGestureFromAnnotationView:view];
     }
 }
@@ -614,6 +612,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITMapPlace *place = view.annotation;
         [self pushDetailViewControllerForPlace:place];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    if (self.showFirstCalloutOnNextMapRegionChange) {
+        if (self.places.count > 0) {
+            [self showCalloutForPlace:[self.places firstObject]];
+        }
+        
+        self.showFirstCalloutOnNextMapRegionChange = NO;
     }
 }
 
