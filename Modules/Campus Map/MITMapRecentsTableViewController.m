@@ -13,6 +13,8 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 
 @implementation MITMapRecentsTableViewController
 
+@synthesize delegate = _delegate;
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -152,16 +154,16 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
         case 0: {
             MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
             if (searchItem.searchTerm) {
-                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectRecentQuery:)]) {
-                    [self.delegate recentsViewController:self didSelectRecentQuery:searchItem.searchTerm];
+                if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectQuery:)]) {
+                    [self.delegate placeSelectionViewController:self didSelectQuery:searchItem.searchTerm];
                 }
             } else if (searchItem.place) {
-                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectPlace:)]) {
-                    [self.delegate recentsViewController:self didSelectPlace:searchItem.place];
+                if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectPlace:)]) {
+                    [self.delegate placeSelectionViewController:self didSelectPlace:searchItem.place];
                 }
             } else if (searchItem.category) {
-                if ([self.delegate respondsToSelector:@selector(recentsViewController:didSelectCategory:)]) {
-                    [self.delegate recentsViewController:self didSelectCategory:searchItem.category];
+                if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectCategory:)]) {
+                    [self.delegate placeSelectionViewController:self didSelectCategory:searchItem.category];
                 }
             }
             break;

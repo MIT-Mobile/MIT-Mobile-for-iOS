@@ -9,5 +9,6 @@
 @optional
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector>*)viewController didSelectPlace:(MITMapPlace *)place;
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category;
+- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector>*)viewController didSelectQuery:(NSString *)query;
 
 @end

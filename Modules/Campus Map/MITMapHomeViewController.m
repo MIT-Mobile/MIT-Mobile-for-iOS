@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, MITMapRecentsTableViewControllerDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -160,8 +160,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
-#pragma mark - Button Actions
-
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -173,6 +171,25 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
+
+#pragma mark - Private Methods
+
+- (void)closePopoversAnimated:(BOOL)animated
+{
+    if (self.typeAheadPopoverController.isPopoverVisible) {
+        [self.typeAheadPopoverController dismissPopoverAnimated:animated];
+    }
+    
+    if (self.bookmarksPopoverController.isPopoverVisible) {
+        [self.bookmarksPopoverController dismissPopoverAnimated:animated];
+    }
+    
+    if (self.currentPlacePopoverController.isPopoverVisible) {
+        [self.currentPlacePopoverController dismissPopoverAnimated:animated];
+    }
+}
+
+#pragma mark - Button Actions
 
 - (void)bookmarksButtonPressed
 {
@@ -359,7 +376,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
                                                           }];
 }
 
-- (void)setPlacesWithRecentSearchQuery:(NSString *)query
+- (void)setPlacesWithQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
     self.category = nil;
@@ -477,29 +494,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
     
     return resultsListViewController;
-}
-
-#pragma mark - MITMapRecentsTableViewControllerDelegate Methods
-
-- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectRecentQuery:(NSString *)recentQuery
-{
-    [self.searchBar resignFirstResponder];
-    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    [self setPlacesWithRecentSearchQuery:recentQuery];
-}
-
-- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectPlace:(MITMapPlace *)place
-{
-    [self.searchBar resignFirstResponder];
-    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    [self setPlacesWithPlace:place];
-}
-
-- (void)recentsViewController:(MITMapTypeAheadTableViewController *)typeAheadViewController didSelectCategory:(MITMapCategory *)category
-{
-    [self.searchBar resignFirstResponder];
-    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    [self setPlacesWithCategory:category];
 }
 
 #pragma mark - UISearchBarDelegate Methods
@@ -668,16 +662,41 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectPlace:(MITMapPlace *)place
 {
-    [self dismissViewControllerAnimated:YES completion:^{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self setPlacesWithPlace:place];
+        }];
+    } else {
+        [self.searchBar resignFirstResponder];
+        [self closePopoversAnimated:YES];
         [self setPlacesWithPlace:place];
-    }];
+    }
 }
 
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
 {
-    [self dismissViewControllerAnimated:YES completion:^{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self setPlacesWithCategory:category];
+        }];
+    } else {
+        [self.searchBar resignFirstResponder];
+        [self closePopoversAnimated:YES];
         [self setPlacesWithCategory:category];
-    }];
+    }
+}
+
+- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectQuery:(NSString *)query
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self setPlacesWithQuery:query];
+        }];
+    } else {
+        [self.searchBar resignFirstResponder];
+        [self closePopoversAnimated:YES];
+        [self setPlacesWithQuery:query];
+    }
 }
 
 @end
