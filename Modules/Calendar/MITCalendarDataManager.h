@@ -10,20 +10,19 @@
 extern NSString * const CalendarStateEventList; // selected list type on home screen
 extern NSString * const CalendarStateCategoryList; // top-level or subcategories
 extern NSString * const CalendarStateCategoryEventList; // event list within one category
-//extern NSString * const CalendarStateSearchHome;
-//extern NSString * const CalendarStateSearchResults;
 extern NSString * const CalendarStateEventDetail;
+
+extern NSString * const kCalendarListsLoaded;
+extern NSString * const kCalendarListsFailedToLoad;
 
 // server API parameters
 extern NSString * const CalendarEventAPISearch;
 
-@protocol CalendarDataManagerDelegate;
 @class MITEventList;
 
-@interface CalendarDataManager : NSObject
-@property (weak) id<CalendarDataManagerDelegate> delegate;
+@interface MITCalendarDataManager : NSObject
 
-+ (CalendarDataManager *)sharedManager;
++ (MITCalendarDataManager *)sharedManager;
 - (NSArray *)eventLists;
 - (NSArray *)staticEventListIDs;
 - (MITEventList *)eventListWithID:(NSString *)listID; // grabs from memory
@@ -52,12 +51,7 @@ extern NSString * const CalendarEventAPISearch;
 + (NSTimeInterval)intervalForEventType:(MITEventList *)listType fromDate:(NSDate *)aDate forward:(BOOL)forward;
 + (NSString *)dateStringForEventType:(MITEventList *)listType forDate:(NSDate *)aDate;
 
-@end
++ (void)performEventsRequestForDate:(NSDate *)date eventList:(MITEventList *)eventList completion:(void (^)(NSArray *events, NSError *error))completion;
 
-
-@protocol CalendarDataManagerDelegate <NSObject>
-
-- (void)calendarListsLoaded;
-- (void)calendarListsFailedToLoad;
 
 @end

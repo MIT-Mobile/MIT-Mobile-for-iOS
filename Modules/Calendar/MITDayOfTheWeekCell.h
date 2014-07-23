@@ -1,14 +1,5 @@
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
-    MITDayOfTheWeekSunday,
-    MITDayOfTheWeekMonday,
-    MITDayOfTheWeekTuesday,
-    MITDayOfTheWeekWednesday,
-    MITDayOfTheWeekThursday,
-    MITDayOfTheWeekFriday,
-    MITDayOfTheWeekSaturday
-};
+#import "NSDate+MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, MITDayOfTheWeekState) {
     MITDayOfTheWeekStateUnselected = 1,

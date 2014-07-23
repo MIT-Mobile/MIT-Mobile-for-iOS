@@ -1,7 +1,7 @@
 #import "CalendarModule.h"
 #import "CalendarEventsViewController.h"
 #import "CalendarDetailViewController.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import "MITModuleURL.h"
 #import "CalendarEventMapAnnotation.h"
 #import "MITEventList.h"
@@ -20,7 +20,7 @@
         self.longName = @"Events Calendar";
         self.iconName = @"calendar";
         
-        [[CalendarDataManager sharedManager] requestEventLists];
+        [[MITCalendarDataManager sharedManager] requestEventLists];
     }
     return self;
 }

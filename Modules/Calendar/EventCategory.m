@@ -1,5 +1,5 @@
 #import "EventCategory.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import "MITCalendarEvent.h"
 #import "CoreDataManager.h"
 
@@ -27,7 +27,7 @@
     [subcategories enumerateObjectsUsingBlock:^(NSDictionary *category, NSUInteger idx, BOOL *stop) {
         NSInteger subcatID = [category[@"catid"] integerValue];
         
-        EventCategory *subCategory = [CalendarDataManager categoryWithID:subcatID
+        EventCategory *subCategory = [MITCalendarDataManager categoryWithID:subcatID
                                                                forListID:listID];
         subCategory.title = category[@"name"];
         subCategory.parentCategory = self;

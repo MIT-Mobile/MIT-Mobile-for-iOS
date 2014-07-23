@@ -44,6 +44,10 @@
         case MITDayOfTheWeekFriday:
             self.dayOfTheWeekLabel.text = @"F";
             break;
+            
+        case MITDayOfTheWeekOther:
+            self.dayOfTheWeekLabel.text = @"...";
+            break;
     }
 }
 
@@ -59,6 +63,7 @@
     
     if ((_state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected) {
         self.dayOfTheWeekLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        self.dayOfTheWeekLabel.textColor = [UIColor blackColor];
     }
     
     if ((_state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {

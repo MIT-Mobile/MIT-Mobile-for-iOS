@@ -2,7 +2,7 @@
 #import "MITUIConstants.h"
 #import "CalendarModule.h"
 #import "CalendarDetailViewController.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import "CalendarEventMapAnnotation.h"
 #import "MultiLineTableViewCell.h"
 #import <QuartzCore/QuartzCore.h>
@@ -102,7 +102,7 @@
     [MultiLineTableViewCell setNeedsRedrawing:YES];
 	
 	if (!self.activeEventList) {
-		NSArray *lists = [[CalendarDataManager sharedManager] eventLists];
+		NSArray *lists = [[MITCalendarDataManager sharedManager] eventLists];
 		if ([lists count]) {
 			self.activeEventList = lists[0];
 		} else {
@@ -110,7 +110,7 @@
 		}
 	}
     
-    NSArray *categories = [CalendarDataManager topLevelCategories];
+    NSArray *categories = [MITCalendarDataManager topLevelCategories];
     if ([categories count] == 0) {
         [self makeCategoriesRequest];
     }
@@ -165,7 +165,7 @@
     
 	self.dateRangeDidChange = YES;
 	
-	[CalendarDataManager sharedManager].delegate = self;
+	//[MITEventsDataManager sharedManager].delegate = self;
 	[self setupScrollButtons];
 }
 
@@ -191,12 +191,12 @@
 #pragma mark MITScrollingNavigationBarDataSource
 - (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar
 {
-    return [[[CalendarDataManager sharedManager] eventLists] count];
+    return [[[MITCalendarDataManager sharedManager] eventLists] count];
 }
 
 - (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndex:(NSInteger)index
 {
-    NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+    NSArray *eventLists = [[MITCalendarDataManager sharedManager] eventLists];
     MITEventList *eventList = eventLists[index];
     return eventList.title;
 }
@@ -222,7 +222,7 @@
 
 - (void)navigationBar:(MITScrollingNavigationBar *)navigationBar didSelectItemAtIndex:(NSInteger)index
 {
-    NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+    NSArray *eventLists = [[MITCalendarDataManager sharedManager] eventLists];
     MITEventList *eventList = eventLists[index];
     [self reloadView:eventList];
 }
@@ -376,7 +376,7 @@
 	}
     
 	if ([self.activeEventList.listID isEqualToString:@"categories"]) {
-        NSArray *someEvents = [CalendarDataManager eventsWithStartDate:self.startDate
+        NSArray *someEvents = [MITCalendarDataManager eventsWithStartDate:self.startDate
                                                               listType:self.activeEventList
                                                               category:self.category.catID];
         
@@ -412,7 +412,7 @@
                 [subCategories insertObject:self.category atIndex:0];
                 categories = subCategories;
             } else {
-                categories = [CalendarDataManager topLevelCategories];
+                categories = [MITCalendarDataManager topLevelCategories];
                 if ([categories count] == 0) {
                     [self makeCategoriesRequest];
                 }
@@ -429,8 +429,8 @@
             self.tableView.delegate = openHouseTV;
             self.tableView.dataSource = openHouseTV;
             openHouseTV.parentViewController = self;
-            [[CalendarDataManager sharedManager] makeOpenHouseCategoriesRequest];
-            NSArray *categories = [CalendarDataManager openHouseCategories];
+            [[MITCalendarDataManager sharedManager] makeOpenHouseCategoriesRequest];
+            NSArray *categories = [MITCalendarDataManager openHouseCategories];
             openHouseTV.categories = categories;
             [self.tableView reloadData];
             requestNeeded = NO;
@@ -496,7 +496,7 @@
 
 - (void)incrementStartDate:(BOOL)forward
 {
-	NSTimeInterval interval = [CalendarDataManager intervalForEventType:self.activeEventList
+	NSTimeInterval interval = [MITCalendarDataManager intervalForEventType:self.activeEventList
                                                                fromDate:self.startDate
                                                                 forward:forward];
     
@@ -516,7 +516,7 @@
 }
 
 - (BOOL)canShowMap:(MITEventList *)listType {
-	return [[CalendarDataManager sharedManager] isDailyEvent:listType];
+	return [[MITCalendarDataManager sharedManager] isDailyEvent:listType];
 }
 
 - (BOOL)shouldShowDatePicker:(MITEventList *)listType {
@@ -571,7 +571,7 @@
 	
 	UIButton *dateButton = (UIButton *)[self.datePicker viewWithTag:randomTag];
     
-    NSString *dateText = [CalendarDataManager dateStringForEventType:self.activeEventList
+    NSString *dateText = [MITCalendarDataManager dateStringForEventType:self.activeEventList
                                                              forDate:self.startDate];
     [dateButton setTitle:dateText
                 forState:UIControlStateNormal];
@@ -700,7 +700,7 @@
 	if (pressedButton.tag == SEARCH_BUTTON_TAG) {
 		[self showSearchBar];
 	} else {
-        NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+        NSArray *eventLists = [[MITCalendarDataManager sharedManager] eventLists];
 		MITEventList *eventList = eventLists[pressedButton.tag];
 		[self reloadView:eventList];
 	}
@@ -770,7 +770,7 @@
                 NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
 
                 for (NSDictionary *eventDict in resultEvents) {
-                    MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                    MITCalendarEvent *event = [MITCalendarDataManager eventWithDict:eventDict];
                     [arrayForTable addObject:event];
                 }
 
@@ -825,8 +825,8 @@
 - (void)makeCategoriesRequest
 {
 
-	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-    NSString *command = [CalendarDataManager apiCommandForEventType:categories];
+	MITEventList *categories = [[MITCalendarDataManager sharedManager] eventListWithID:@"categories"];
+    NSString *command = [MITCalendarDataManager apiCommandForEventType:categories];
 
     NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:command parameters:nil];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
@@ -836,13 +836,13 @@
         CalendarEventsViewController *blockSelf = weakSelf;
 
         for (NSDictionary *categoryObject in categoryObjects) {
-            [CalendarDataManager categoryWithDict:categoryObject forListID:nil]; // save this to core data
+            [MITCalendarDataManager categoryWithDict:categoryObject forListID:nil]; // save this to core data
             [CoreDataManager saveData];
         }
 
         if ([blockSelf.activeEventList.listID isEqualToString:@"categories"]) {
             EventCategoriesTableView *categoriesTableView = (EventCategoriesTableView*)blockSelf.tableView;
-            [categoriesTableView setCategories:[CalendarDataManager topLevelCategories]];
+            [categoriesTableView setCategories:[MITCalendarDataManager topLevelCategories]];
             [blockSelf.tableView reloadData];
         }
 
@@ -864,7 +864,7 @@
     }
 
     NSURLRequest *request = nil;
-	if ([[CalendarDataManager sharedManager] isDailyEvent:self.activeEventList]) {
+	if ([[MITCalendarDataManager sharedManager] isDailyEvent:self.activeEventList]) {
 		NSTimeInterval interval = [self.startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
 		
@@ -881,7 +881,7 @@
 		} else {
             NSDictionary *params = @{@"type" : self.activeEventList.listID,
                                      @"time" : timeString};
-            NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
+            NSString *command = [MITCalendarDataManager apiCommandForEventType:self.activeEventList];
             request = [NSURLRequest requestForModule:CalendarTag command:command parameters:params];
 		}
     
@@ -894,10 +894,10 @@
 
         NSDictionary *params = @{@"year" : year,
                                  @"month" : month};
-        NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
+        NSString *command = [MITCalendarDataManager apiCommandForEventType:self.activeEventList];
         request = [NSURLRequest requestForModule:CalendarTag command:command parameters:params];
 	} else {
-        NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
+        NSString *command = [MITCalendarDataManager apiCommandForEventType:self.activeEventList];
         request = [NSURLRequest requestForModule:CalendarTag command:command parameters:nil];
 	}
 
@@ -922,13 +922,13 @@
                 EventCategory *category = nil;
 
                 if ([blockSelf.activeEventList.listID isEqualToString:@"Exhibits"]) {
-                    category = [CalendarDataManager categoryForExhibits];
+                    category = [MITCalendarDataManager categoryForExhibits];
                 } else {
                     category = blockSelf.category;
                 }
 
                 for (NSDictionary *eventDict in eventObjects) {
-                    MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                    MITCalendarEvent *event = [MITCalendarDataManager eventWithDict:eventDict];
                     // assign a category if we know already what it is
                     if (category != nil) {
                         [event addCategoriesObject:category];

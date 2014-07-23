@@ -77,7 +77,7 @@
     multilineCell.headlineLabel.text = event.title;
 
 	// show time only if date is shown; date plus time otherwise
-    NSTimeInterval eventInterval = [CalendarDataManager intervalForEventType:self.parentViewController.activeEventList
+    NSTimeInterval eventInterval = [MITCalendarDataManager intervalForEventType:self.parentViewController.activeEventList
                                                                     fromDate:self.parentViewController.startDate
                                                                      forward:YES];
 

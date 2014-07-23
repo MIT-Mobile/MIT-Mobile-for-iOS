@@ -6,7 +6,7 @@
 #import "CalendarMapView.h"
 #import "DatePickerViewController.h"
 #import "MITSearchDisplayController.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import "MITScrollingNavigationBar.h"
 
 @class MITSearchDisplayController;
@@ -17,7 +17,7 @@
 
 @interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
 MITMapViewDelegate, MITScrollingNavigationBarDelegate, MITScrollingNavigationBarDataSource,
-DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
+DatePickerViewControllerDelegate>
 
 
 @property (nonatomic, strong) EventCategory *category;

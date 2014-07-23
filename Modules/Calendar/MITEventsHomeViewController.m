@@ -1,15 +1,33 @@
 #import "MITEventsHomeViewController.h"
 #import "MITDayOfTheWeekCell.h"
+#import "MITCalendarDataManager.h"
 #import "UIKit+MITAdditions.h"
+#import "NSDate+MITAdditions.h"
+#import "MITEventList.h"
 
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
+static NSString *const kMITEventCell = @"kMITEventCell";
 
-@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
 
+@property (weak, nonatomic) IBOutlet UITableView *eventsListTableView;
+
+
 @property (weak, nonatomic) UIView *navBarSeparatorView;
+
+@property (nonatomic) CGFloat pageWidth;
+
+@property (nonatomic, strong) NSDate *startDate;
+
+@property (nonatomic, strong) MITEventList *activeEventList;
+@property (nonatomic, strong) NSArray *activeEvents;
+
+@property (nonatomic, strong) NSDate *startOfDisplayedWeekDate;
+@property (nonatomic, strong) NSDate *currentlyDisplayedDate;
+
 
 @end
 
@@ -29,8 +47,32 @@ static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
    // self.view.backgroundColor = [UIColor mit_backgroundColor];
+    
+    self.currentlyDisplayedDate = [NSDate date];
+
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.navBarSeparatorView.hidden = YES;
+    
+    self.startDate = [NSDate date];
+        
+    [self centerDayPickerView];
+    
+    [self registerForNotifications];
+    
+    [self loadActiveEventList];
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    self.navBarSeparatorView.hidden = NO;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,11 +88,40 @@ static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
     self.navBarSeparatorView = [self findHairlineImageViewUnder:navigationBar];
     navigationBar.opaque = YES;
     navigationBar.translucent = NO;
-    [navigationBar setBarTintColor:[UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0]];
-    self.dayPickerContainerView.backgroundColor = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    [navigationBar setBarTintColor:navbarGrey];
+    self.dayPickerContainerView.backgroundColor = navbarGrey;
     
 }
 
+- (void)registerForNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoaded:) name:kCalendarListsLoaded object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoadedFailed:) name:kCalendarListsFailedToLoad object:nil];
+}
+
+- (void)loadActiveEventList
+{
+    if (!self.activeEventList) {
+		NSArray *lists = [[MITCalendarDataManager sharedManager] eventLists];
+		if ([lists count]) {
+			self.activeEventList = lists[0];
+		}
+	}
+    [self reloadEvents];
+    
+}
+
+- (void)reloadEvents
+{
+    [MITCalendarDataManager performEventsRequestForDate:self.currentlyDisplayedDate
+                                             eventList:self.activeEventList completion:^(NSArray *events, NSError *error) {
+                                                 if (events) {
+                                                     self.activeEvents = events;
+                                                     [self.eventsListTableView reloadData];
+                                                 }
+                                             }];
+}
 - (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
     if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
         return (UIImageView *)view;
@@ -71,17 +142,11 @@ static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
     
     UINib *cellNib = [UINib nibWithNibName:kMITDayOfTheWeekCell bundle:nil];
     [self.dayPickerCollectionView registerNib:cellNib forCellWithReuseIdentifier:kMITDayOfTheWeekCell];
+    
+    self.pageWidth = self.dayPickerCollectionView.frame.size.width;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    self.navBarSeparatorView.hidden = YES;
-}
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navBarSeparatorView.hidden = NO;
-}
 
 #pragma mark - Day of the week Collection View Datasource/Delegate
 
@@ -92,7 +157,7 @@ static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 7;
+    return 24;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -100,10 +165,97 @@ static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
     MITDayOfTheWeekCell *cell = [self.dayPickerCollectionView dequeueReusableCellWithReuseIdentifier:kMITDayOfTheWeekCell
                                                                                         forIndexPath:indexPath];
     
-    cell.dayOfTheWeek = indexPath.row;
+    MITDayOfTheWeek dayOfTheWeek = indexPath.row  % 8;
+
+    cell.dayOfTheWeek = dayOfTheWeek;
     cell.state = MITDayOfTheWeekStateUnselected;
+    
+    if (dayOfTheWeek == MITDayOfTheWeekOther) {
+        cell.state = MITDayOfTheWeekStateSelected;
+    }
+    else {
+        
+        if (dayOfTheWeek == [[NSDate date] dayOfTheWeek]) {
+            cell.state = MITDayOfTheWeekStateToday;
+        }
+    }
+    
     return cell;
 }
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.dayPickerCollectionView deselectItemAtIndexPath:indexPath animated:NO];
+    MITDayOfTheWeek dayOfTheWeek = indexPath.row  % 8;
+
+    if (dayOfTheWeek == MITDayOfTheWeekOther) {
+        NSLog(@"Present Date Picker");
+    }
+    else {
+        MITDayOfTheWeekCell *cell = (MITDayOfTheWeekCell *)[self.dayPickerCollectionView cellForItemAtIndexPath:indexPath];
+        cell.state = MITDayOfTheWeekStateSelected;
+    }
+        
+}
+
+#pragma mark - Tableview Datasource/Delegate
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.activeEvents count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventCell];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITEventCell];
+    }
+    
+    cell.textLabel.text = [NSString stringWithFormat:@"%d", indexPath.row];
+    NSLog(@"Event: %@", self.activeEvents[indexPath.row]);
+    return cell;
+}
+
+#pragma mark - Handle infinite paging of calendar view
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == self.dayPickerCollectionView) {
+        [self updateDayPickerOffsetForInfiniteScrolling];
+    }
+}
+
+- (void)updateDayPickerOffsetForInfiniteScrolling
+{
+    if (self.dayPickerCollectionView.contentOffset.x == 0 || self.dayPickerCollectionView.contentOffset.x >= self.pageWidth * 2)
+    {
+#warning reset the data here
+        [self centerDayPickerView];
+    }
+}
+
+- (void)centerDayPickerView
+{
+    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:8 inSection:0]
+                                         atScrollPosition:UICollectionViewScrollPositionLeft
+                                                 animated:NO];
+}
+
+- (void)calendarListLoaded:(NSNotification *)ntfn
+{
+    
+}
+
+- (void)calendarListLoadedFailed:(NSNotification *)ntfn
+{
+    
+}
+
 
 
 @end

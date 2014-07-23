@@ -5,7 +5,7 @@
 #import "MultiLineTableViewCell.h"
 #import "Foundation+MITAdditions.h"
 #import "URLShortener.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import <EventKit/EventKit.h>
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 

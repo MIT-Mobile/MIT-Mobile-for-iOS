@@ -43,7 +43,7 @@
 
 	if ([category hasSubCategories] && ![self isSubcategoryView]) {
 		//vc.activeEventList = CalendarEventListTypeCategory;
-		vc.activeEventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
+		vc.activeEventList = [[MITCalendarDataManager sharedManager] eventListWithID:@"categories"];
 		
 	} else {
 	

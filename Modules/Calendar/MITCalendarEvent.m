@@ -1,6 +1,6 @@
 #import "MITCalendarEvent.h"
 #import "EventCategory.h"
-#import "CalendarDataManager.h"
+#import "MITCalendarDataManager.h"
 #import "CoreDataManager.h"
 
 @implementation MITCalendarEvent
@@ -33,7 +33,7 @@
 - (BOOL)hasMoreDetails {
 	MITEventList *aList = [self.lists anyObject];
 	if (aList) {
-		return [[CalendarDataManager sharedManager] isDailyEvent:aList];
+		return [[MITCalendarDataManager sharedManager] isDailyEvent:aList];
 	}
     
 	return YES; // if we have no idea what the source is, then always try to get more details
@@ -139,7 +139,7 @@
 	// populate event-category relationships
 	NSArray *categories = dict[@"categories"];
 	[categories enumerateObjectsUsingBlock:^(NSDictionary *category, NSUInteger idx, BOOL *stop) {
-        EventCategory *categoryObject = [CalendarDataManager categoryWithID:[category[@"catid"] integerValue]
+        EventCategory *categoryObject = [MITCalendarDataManager categoryWithID:[category[@"catid"] integerValue]
                                                                   forListID:nil];
         if (!categoryObject.title) {
             categoryObject.title = category[@"name"];
