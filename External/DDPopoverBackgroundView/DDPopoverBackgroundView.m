@@ -42,10 +42,10 @@
 #import "DDPopoverBackgroundView.h"
 
 
-#define DEFAULT_ARROW_BASE 35.0f
+#define DEFAULT_ARROW_BASE 27.0f
 static CGFloat s_ArrowBase = DEFAULT_ARROW_BASE;
 
-#define DEFAULT_ARROW_HEIGHT 19.0f
+#define DEFAULT_ARROW_HEIGHT 14.0f
 static CGFloat s_ArrowHeight = DEFAULT_ARROW_HEIGHT;
 
 #define BKG_IMAGE_SIZE 40.0f

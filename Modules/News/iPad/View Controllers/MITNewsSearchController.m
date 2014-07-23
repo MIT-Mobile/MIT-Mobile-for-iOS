@@ -258,7 +258,7 @@
     recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
 
     [[DDPopoverBackgroundView class] setContentInset:0];
-    [[DDPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
+    [[DDPopoverBackgroundView class] setTintColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:.8]];
     
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
