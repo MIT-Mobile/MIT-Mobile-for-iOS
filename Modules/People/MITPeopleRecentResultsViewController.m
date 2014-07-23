@@ -133,7 +133,9 @@
     
     [self.clearButton setEnabled:NO];
     
-    [self.delegate didClearRecents];
+    if ([self.delegate respondsToSelector:@selector(didClearRecents)]) {
+        [self.delegate didClearRecents];
+    }
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];

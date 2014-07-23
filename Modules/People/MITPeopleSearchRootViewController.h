@@ -15,13 +15,6 @@
 
 @end
 
-@protocol MITPeopleRecentsViewControllerDelegate
-
-- (void) didSelectRecentSearchTerm:(NSString *)searchTerm;
-- (void) didClearRecents;
-
-@end
-
 @protocol MITPeopleFavoritesViewControllerDelegate
 
 - (void) didSelectFavoritePerson:(PersonDetails *)person;

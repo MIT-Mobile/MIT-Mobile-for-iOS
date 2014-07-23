@@ -153,11 +153,6 @@
     [self performSearch];
 }
 
-- (void) didClearRecents
-{
-    //
-}
-
 #pragma mark - search methods
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar

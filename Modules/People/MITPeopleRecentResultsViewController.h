@@ -10,6 +10,16 @@
 #import "MITPeopleSearchRootViewController.h"
 #import "MITPeopleSearchHandler.h"
 
+@protocol MITPeopleRecentsViewControllerDelegate <NSObject>
+
+- (void) didSelectRecentSearchTerm:(NSString *)searchTerm;
+
+@optional
+
+- (void) didClearRecents;
+
+@end
+
 @interface MITPeopleRecentResultsViewController : UIViewController
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;

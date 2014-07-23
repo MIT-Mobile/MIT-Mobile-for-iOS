@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 
 @interface PeopleSearchViewController : UITableViewController <UISearchDisplayDelegate>
+
 @property (nonatomic,strong) IBOutlet UISearchBar *searchBar;
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms;

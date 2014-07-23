@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 // Hard-code this for now, should be pulled from the API in the future
 static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
-@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate>
+@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, MITPeopleRecentsViewControllerDelegate>
 
 @property (nonatomic,weak) UITableView *searchResultsTableView;
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
@@ -132,33 +132,30 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                                                    recentResultsViewHeight)];
 }
 
-- (void)configureRecentResultsController
-{
-    self.recentResultsVC = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
-    self.recentResultsVC.searchHandler = self.searchHandler;
-    
-    [self.recentResultsVC.view setFrame:CGRectZero];
-
-    [self addChildViewController:self.recentResultsVC];
-    [self.view addSubview:self.recentResultsVC.view];
-    [self.recentResultsVC didMoveToParentViewController:self];
-    
-    [self setRecentResultsHidden:YES];
-}
-
-- (void)setRecentResultsHidden:(BOOL)isHidden
-{
-    [self.recentResultsVC.view setHidden:isHidden];
-    
-    if( !isHidden )
-    {
-        [self.recentResultsVC reloadRecentResultsWithFilterString:self.searchBar.text];
-        [self.view bringSubviewToFront:self.recentResultsVC.view];
-    }
-}
-
 #pragma mark - Search methods
-#pragma mark UISearchDisplay Delegate
+
+- (void)performSearch
+{
+    [self setRecentResultsHidden:YES];
+    
+    [self.searchHandler addRecentSearchTerm:self.searchBar.text];
+    
+    __weak PeopleSearchViewController *weakSelf = self;
+    [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
+     {
+         [weakSelf.searchDisplayController.searchResultsTableView reloadData];
+         [weakSelf.searchResultsLoadingView removeFromSuperview];
+     }];
+    
+    [self showLoadingView];
+}
+
+- (NSArray *)searchResults
+{
+    return self.searchHandler.searchResults;
+}
+
+#pragma mark - UISearchDisplay Delegate
 
 - (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
@@ -197,6 +194,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     self.didBeginSearch = NO;
 }
 
+#pragma mark UISearchBar delegate
+
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     if( self.didBeginSearch )
@@ -214,6 +213,11 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         self.searchHandler.searchTerms = nil;
         self.searchHandler.searchCancelled = YES;
         [self.searchDisplayController.searchResultsTableView reloadData];
+        
+        if( [self.searchBar isFirstResponder] )
+        {
+            [self setRecentResultsHidden:NO];
+        }
     }
 }
 
@@ -245,25 +249,40 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     }
 }
 
-- (void)performSearch
+#pragma mark - recents logic
+
+- (void)configureRecentResultsController
 {
+    self.recentResultsVC = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
+    self.recentResultsVC.searchHandler = self.searchHandler;
+    self.recentResultsVC.delegate = self;
+    
+    [self.recentResultsVC.view setFrame:CGRectZero];
+    
+    [self addChildViewController:self.recentResultsVC];
+    [self.view addSubview:self.recentResultsVC.view];
+    [self.recentResultsVC didMoveToParentViewController:self];
+    
     [self setRecentResultsHidden:YES];
-    
-    [self.searchHandler addRecentSearchTerm:self.searchBar.text];
-    
-    __weak PeopleSearchViewController *weakSelf = self;
-    [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
-    {
-        [weakSelf.searchDisplayController.searchResultsTableView reloadData];
-        [weakSelf.searchResultsLoadingView removeFromSuperview];
-    }];
-    
-    [self showLoadingView];
 }
 
-- (NSArray *)searchResults
+- (void)setRecentResultsHidden:(BOOL)isHidden
 {
-    return self.searchHandler.searchResults;
+    [self.recentResultsVC.view setHidden:isHidden];
+    
+    if( !isHidden )
+    {
+        [self.recentResultsVC reloadRecentResultsWithFilterString:self.searchBar.text];
+        [self.view bringSubviewToFront:self.recentResultsVC.view];
+    }
+}
+
+- (void) didSelectRecentSearchTerm:(NSString *)searchTerm
+{
+    self.searchHandler.searchTerms = searchTerm;
+    [self.searchBar setText:searchTerm];
+    
+    [self performSearch];
 }
 
 #pragma mark - Table view methods
@@ -381,14 +400,15 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     
     UITableViewCell *cell = nil;
     
-    if (MITPeopleSearchTableViewSectionExample == indexPath.section) {
+    if (MITPeopleSearchTableViewSectionExample == indexPath.section)
+    {
         cell = [tableView dequeueReusableCellWithIdentifier:@"SampleCell" forIndexPath:indexPath];
-        
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGRectGetWidth(tableView.bounds));
-        }
-    } else if (MITPeopleSearchTableViewSectionContacts == indexPath.section) {
-        if (indexPath.row == 0) {
+        cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, CGRectGetWidth(tableView.bounds));
+    }
+    else if (MITPeopleSearchTableViewSectionContacts == indexPath.section)
+    {
+        if (indexPath.row == 0)
+        {
             cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             
@@ -396,10 +416,14 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             // and replace it with our local value. Eventually, this information should be
             // pulled from the server instead of a constant.
             cell.detailTextLabel.text = MITPeopleDirectoryAssistancePhone;
-        } else if (indexPath.row == 1) {
+        }
+        else if (indexPath.row == 1)
+        {
             cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
         }
-    } else if (MITPeopleSearchTableViewSectionFavorites == indexPath.section) {
+    }
+    else if (MITPeopleSearchTableViewSectionFavorites == indexPath.section)
+    {
         cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
         
         NSArray *favoritePeople = self.peopleFavorites;
@@ -491,20 +515,11 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
                     break;
             }
         }
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
-		PersonDetails *personDetails = nil;
+    }
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    { // user selected search result
 
-        // TODO: Switch to using the segues
-		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
-        PeopleDetailsViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"PeopleDetailsVC"];
-		if (tableView == self.searchDisplayController.searchResultsTableView) {
-			personDetails = self.searchHandler.searchResults[indexPath.row];
-		} else {
-			personDetails = self.peopleFavorites[indexPath.row];
-		}
-
-		vc.personDetails = personDetails;
-		[self.navigationController pushViewController:vc animated:YES];
+        [self performSegueWithIdentifier:@"showPerson" sender:[tableView cellForRowAtIndexPath:indexPath]];
 	}
 }
 
@@ -589,10 +604,22 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 #pragma mark - Storyboard Segues
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"showPerson"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-        PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
-        vc.personDetails = self.peopleFavorites[indexPath.row];
+    if ([segue.identifier isEqualToString:@"showPerson"])
+    {
+        UITableViewCell *cell = (UITableViewCell *)sender;
+        
+        if( self.didBeginSearch )
+        {
+            NSIndexPath *indexPath = [self.searchDisplayController.searchResultsTableView indexPathForCell:cell];
+            PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
+            vc.personDetails = self.searchHandler.searchResults[indexPath.row];
+        }
+        else
+        {
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+            PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
+            vc.personDetails = self.peopleFavorites[indexPath.row];
+        }
     }
 }
 
