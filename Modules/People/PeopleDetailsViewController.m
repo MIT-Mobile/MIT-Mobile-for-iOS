@@ -286,7 +286,15 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         } else if( row == 1 ) {
 			cell.textLabel.text = @"Add to Existing Contact";
 		} else if( row == 2 ) {
-            cell.textLabel.text = @"Add to Favorites";
+            
+            if( self.personDetails.favorite )
+            {
+                cell.textLabel.text = @"Remove from Favorites";
+            }
+            else
+            {
+                cell.textLabel.text = @"Add to Favorites";
+            }
             
             if( [cell respondsToSelector:@selector(setSeparatorInset:)] )
             {
@@ -481,7 +489,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         [appDelegate presentAppModalViewController:picker animated:YES];
     } else if( indexPath.row == 2 )
     {
-        [PeopleFavoriteData setPerson:self.personDetails asFavorite:YES];
+        [PeopleFavoriteData setPerson:self.personDetails asFavorite:!self.personDetails.favorite];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
 
