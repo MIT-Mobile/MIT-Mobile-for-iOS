@@ -15,6 +15,7 @@
 
 #import "PeopleFavoriteData.h"
 #import "PeopleRecentSearchTerm.h"
+#import "MITPeopleRecentResultsViewController.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -33,7 +34,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 @property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
 
-@property (nonatomic, strong) NSArray *recentSearchTerms;
+@property (nonatomic, strong) MITPeopleRecentResultsViewController *recentResultsVC;
+
+@property (nonatomic, assign) BOOL didBeginSearch;
 
 @end
 
@@ -66,6 +69,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	[super viewDidLoad];
     
     self.searchHandler = [MITPeopleSearchHandler new];
+    
+    [self configureRecentResultsController];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -73,7 +78,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	[super viewWillAppear:animated];
     
     [self registerForKeyboardNotifications];
-
+    
     self.peopleFavorites = [PeopleFavoriteData retrieveFavoritePeople];
     
     if ([self.searchDisplayController isActive])
@@ -99,26 +104,70 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     [self unregisterForKeyboardNotifications];
 }
 
-- (void)keyboardDidShow:(id)sender
-{
-//    [self.searchDisplayController.searchResultsTableView setHidden:NO];
-}
-
 - (void)registerForKeyboardNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 }
 
 - (void)unregisterForKeyboardNotifications
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    NSDictionary *info  = notification.userInfo;
+    NSValue      *value = info[UIKeyboardFrameEndUserInfoKey];
+    
+    CGRect rawFrame      = [value CGRectValue];
+    CGRect keyboardFrame = [self.view convertRect:rawFrame fromView:nil];
+    
+    CGFloat statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
+    
+    CGFloat recentResultsViewHeight = self.view.frame.size.height - self.searchBar.frame.size.height - keyboardFrame.size.height - statusBarHeight;
+    
+    [self.recentResultsVC.view setFrame:CGRectMake(0,
+                                                   self.searchBar.frame.size.height,
+                                                   self.view.frame.size.width,
+                                                   recentResultsViewHeight)];
+}
+
+- (void)configureRecentResultsController
+{
+    self.recentResultsVC = [self.storyboard instantiateViewControllerWithIdentifier:@"peopleRecentResults"];
+    self.recentResultsVC.searchHandler = self.searchHandler;
+    
+    [self.recentResultsVC.view setFrame:CGRectZero];
+
+    [self addChildViewController:self.recentResultsVC];
+    [self.view addSubview:self.recentResultsVC.view];
+    [self.recentResultsVC didMoveToParentViewController:self];
+    
+    [self setRecentResultsHidden:YES];
+}
+
+- (void)setRecentResultsHidden:(BOOL)isHidden
+{
+    [self.recentResultsVC.view setHidden:isHidden];
+    
+    if( !isHidden )
+    {
+        [self.recentResultsVC reloadRecentResultsWithFilterString:self.searchBar.text];
+        [self.view bringSubviewToFront:self.recentResultsVC.view];
+    }
 }
 
 #pragma mark - Search methods
 #pragma mark UISearchDisplay Delegate
+
 - (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
-    if (self.searchHandler.searchTerms) {
+    self.didBeginSearch = YES;
+    
+    [self setRecentResultsHidden:NO];
+    
+    if (self.searchHandler.searchTerms)
+    {
         controller.searchBar.text = self.searchHandler.searchTerms;
         [self performSearch];
     }
@@ -131,30 +180,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
-    [self.tableView reloadData];
+    [self setRecentResultsHidden:YES];
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
-
-//- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
-//{
-//    NSLog(@"");
-//}
-//
-//- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
-//{
-//    NSLog(@"");
-//}
-//- (void)searchDisplayController:(UISearchDisplayController *)controller didShowSearchResultsTableView:(UITableView *)tableView
-//{
-//    NSLog(@"");
-//}
-//- (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView
-//{
-//    NSLog(@"");
-//}
-//- (void)searchDisplayController:(UISearchDisplayController *)controller didHideSearchResultsTableView:(UITableView *)tableView
-//{
-//    NSLog(@"");
-//}
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
@@ -162,17 +193,21 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     self.searchHandler.searchTokens = nil;
     self.searchHandler.searchResults = nil;
     [self.searchResultsLoadingView removeFromSuperview];
+    
+    self.didBeginSearch = NO;
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-//    [self reloadRecentResultsWithFilterString:searchBar.text];
-//    [self.searchDisplayController setActive:YES animated:YES];
+    if( self.didBeginSearch )
+    {
+        [self setRecentResultsHidden:NO];
+    }
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [self reloadRecentResultsWithFilterString:searchBar.text];
+    [self.recentResultsVC reloadRecentResultsWithFilterString:searchBar.text];
     
     if ([searchBar.text length] <= 0) {
         self.searchHandler.searchResults = nil;
@@ -212,7 +247,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)performSearch
 {
-    self.recentSearchTerms = nil;
+    [self setRecentResultsHidden:YES];
     
     [self.searchHandler addRecentSearchTerm:self.searchBar.text];
     
@@ -229,20 +264,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 - (NSArray *)searchResults
 {
     return self.searchHandler.searchResults;
-}
-
-#pragma mark - recents logic
-
-- (void)reloadRecentResultsWithFilterString:(NSString *)filterString
-{
-    self.recentSearchTerms = [self.searchHandler recentSearchTermsWithFilterString:filterString];
-    
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if( [self.recentSearchTerms count] > 0 )
-        {
-            [self.searchDisplayController.searchResultsTableView reloadData];
-        }
-    }];
 }
 
 #pragma mark - Table view methods
@@ -269,11 +290,6 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView)
     {
-        if( [self.recentSearchTerms count] > 0 )
-        {
-            return [self.recentSearchTerms count];
-        }
-        
 		return ([self.searchHandler.searchResults count] ? [self.searchHandler.searchResults count] : 1); //Force a single row
 	}
     else
@@ -306,31 +322,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView) // search results
     {
-        if( [self.recentSearchTerms count] > 0 )
-        {
-            return [self tableView:self.tableView cellForRecentSearchRowAtIndexPath:indexPath];
-        }
-        
         return [self tableView:self.tableView cellForSearchRowAtIndexPath:indexPath];
     }
     else
     {
         return nil;
     }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRecentSearchRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"RecentTermsCell"];
-    
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"RecentTermsCell"];
-    }
-    
-    PeopleRecentSearchTerm *recentSearchItem = self.recentSearchTerms[indexPath.row];
-    cell.textLabel.text = recentSearchItem.recentSearchTerm;
-    
-    return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForSearchRowAtIndexPath:(NSIndexPath *)indexPath
@@ -379,7 +376,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForDefaultRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *recentCellID = @"RecentCell";
+    static NSString *recentCellID = @"FavoriteCell";
     static NSString *directoryAssistanceID = @"DirectoryAssistanceCell";
     
     UITableViewCell *cell = nil;
@@ -460,7 +457,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView)
     {
-        if ([self.searchHandler.searchResults count] || [self.recentSearchTerms count])
+        if ([self.searchHandler.searchResults count])
         {
             return 60.;
         }
