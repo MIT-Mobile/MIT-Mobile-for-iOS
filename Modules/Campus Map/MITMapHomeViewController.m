@@ -70,11 +70,12 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     [self setupNavigationBar];
     [self setupMapView];
-    [self setupResultsTableView];
+    [self setupTypeAheadTableView];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO];
         [self.tiledMapView setButtonsHidden:YES animated:NO];
+        
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
         UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/location"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -145,7 +146,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setupMapBoundingBoxAnimated:NO];
 }
 
-- (void)setupResultsTableView
+- (void)setupTypeAheadTableView
 {
     self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
     self.typeAheadViewController.delegate = self;
@@ -155,6 +156,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         self.typeAheadViewController.showsTitleHeader = YES;
     } else {
         [self addChildViewController:self.typeAheadViewController];
+        self.typeAheadViewController.view.alpha = 0;
         self.typeAheadViewController.view.frame = CGRectZero;
         [self.view addSubview:self.typeAheadViewController.view];
         [self.typeAheadViewController didMoveToParentViewController:self];
@@ -253,11 +255,12 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - Search Bar
 
-- (void)closeSearchBar:(UISearchBar *)searchBar
+- (void)closeSearchBar
 {
-    self.navigationItem.leftBarButtonItem = self.menuBarButton;
-    self.navigationItem.rightBarButtonItem = self.bookmarksBarButton;
-    [searchBar setShowsCancelButton:NO animated:YES];
+    [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
+    [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
+    [self.searchBar setShowsCancelButton:NO animated:YES];
+    
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
@@ -340,9 +343,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         endFrame = [self.view convertRect:endFrame fromView:nil];
         
         CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
-        self.typeAheadViewController.view.frame = CGRectMake(0, -tableViewHeight, self.view.frame.size.width, tableViewHeight);
+        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
         [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+            self.typeAheadViewController.view.alpha = 1;
         }];
     }
 }
@@ -351,7 +354,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.frame = CGRectMake(0, -self.typeAheadViewController.view.frame.size.height, self.view.frame.size.width, self.typeAheadViewController.view.frame.size.height);
+            self.typeAheadViewController.view.alpha = 0;
         } completion:^(BOOL finished) {
             // We need to set the frame to nothing, as interface orientation changes can accidentally leave this table in view
             if (finished) {
@@ -476,9 +479,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self showTypeAheadPopover];
     } else {
-        self.navigationItem.leftBarButtonItem = nil;
-        self.navigationItem.rightBarButtonItem = nil;
-        [searchBar setShowsCancelButton:YES animated:YES];
+        [self.navigationItem setLeftBarButtonItem:nil animated:YES];
+        [self.navigationItem setRightBarButtonItem:nil animated:YES];
+        [self.searchBar setShowsCancelButton:YES animated:YES];
+
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -486,7 +490,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    [self closeSearchBar:searchBar];
+    [self closeSearchBar];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -593,6 +597,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             tableHeight = maxPopoverHeight;
         }
         
+        self.currentPlacePopoverController.passthroughViews = @[self.navigationController.toolbar];
         [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
         [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     } else {
