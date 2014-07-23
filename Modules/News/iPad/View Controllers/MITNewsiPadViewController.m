@@ -84,9 +84,6 @@
 
     self.showsFeaturedStories = YES;
     self.containerView.backgroundColor = [UIColor mit_backgroundColor];
-    //To make view not dim when popover is present
-    self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
-
     self.containerView.autoresizesSubviews = YES;
 }
 
@@ -332,10 +329,13 @@
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
         [rightBarItems addObject:searchBarItem];
         [self.navigationItem setTitle:@""];
+        self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         [self.navigationItem setTitle:@"MIT News"];
+        self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }

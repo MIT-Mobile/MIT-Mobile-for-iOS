@@ -317,10 +317,12 @@
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
         [rightBarItems addObject:searchBarItem];
         [self.navigationItem setTitle:@""];
+        self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         [self.navigationItem setTitle:self.categoryTitle];
+        self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
     }
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }

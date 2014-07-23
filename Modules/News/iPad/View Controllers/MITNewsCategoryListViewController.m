@@ -5,17 +5,11 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 
-@interface MITNewsCategoryListViewController () <MITNewsSearchDelegate>
-
-@property (nonatomic, getter=isSearching) BOOL searching;
-@property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) UIView *searchBarWrapper;
-@property (nonatomic, strong) MITNewsSearchController *searchController;
+@interface MITNewsCategoryListViewController ()
 
 @end
 
 @implementation MITNewsCategoryListViewController
-
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
@@ -185,92 +179,12 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self updateNavigationItem:YES];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (MITNewsSearchController *)searchController
-{
-    if(!_searchController) {
-        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
-        searchController.view.frame = self.view.bounds;
-        searchController.delegate = self;
-        _searchController = searchController;
-    }
-    
-    return _searchController;
-}
-
-- (UISearchBar *)searchBar
-{
-    if(!_searchBar) {
-        UISearchBar *searchBar = [[UISearchBar alloc] init];
-        searchBar.delegate = self.searchController;
-        self.searchController.searchBar = searchBar;
-        
-        searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        searchBar.showsCancelButton = YES;
-        _searchBar = searchBar;
-    }
-    return _searchBar;
-}
-
-- (void)updateNavigationItem:(BOOL)animated
-{
-    NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
-    if (self.searching) {
-        UISearchBar *searchBar = self.searchBar;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
-        } else {
-            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
-        }
-        
-        self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
-        [self.searchBarWrapper addSubview:searchBar];
-        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
-        [rightBarItems addObject:searchBarItem];
-        
-    } else {
-        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
-        [rightBarItems addObject:searchItem];
-    }
-    [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
-}
-
-#pragma mark UI Actions
-- (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
-{
-    self.tableView.scrollEnabled = NO;
-    self.searching = YES;
-    [self updateNavigationItem:YES];
-    [self addChildViewController:self.searchController];
-    [self.view addSubview:self.searchController.view];
-    [self.searchController didMoveToParentViewController:self];
-    [UIView animateWithDuration:(0.33)
-                          delay:0.
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                         self.searchController.view.alpha = .5;
-                     } completion:^(BOOL finished) {
-                     }];
-    [self.searchBar becomeFirstResponder];
-}
-
-- (void)hideSearchField
-{
-    self.searchBar = nil;
-    [self.searchController.view removeFromSuperview];
-    [self.searchController removeFromParentViewController];
-    self.searchController = nil;
-    self.searching = NO;
-    [self updateNavigationItem:YES];
-    self.tableView.scrollEnabled = YES;
 }
 
 @end
