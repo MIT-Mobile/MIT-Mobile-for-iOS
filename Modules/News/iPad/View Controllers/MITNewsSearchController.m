@@ -135,7 +135,11 @@
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     searchBar.showsCancelButton = YES;
-    self.searchTableView.alpha = .5;
+    if ([searchBar.text isEqualToString:@""]) {
+        self.searchTableView.alpha = 0;
+    } else {
+        self.searchTableView.alpha = .5;
+    }
     [self removeNoResultsView];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
