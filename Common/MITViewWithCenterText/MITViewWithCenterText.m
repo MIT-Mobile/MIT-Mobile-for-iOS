@@ -1,11 +1,3 @@
-//
-//  MITOverviewView.m
-//  MIT Mobile
-//
-//  Created by Mark Novak on 7/15/14.
-//
-//
-
 #import "MITViewWithCenterText.h"
 
 @implementation MITViewWithCenterText
