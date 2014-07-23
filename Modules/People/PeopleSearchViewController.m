@@ -309,7 +309,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView)
     {
-		return ([self.searchHandler.searchResults count] ? [self.searchHandler.searchResults count] : 1); //Force a single row
+        return [self.searchHandler.searchResults count];
 	}
     else
     {

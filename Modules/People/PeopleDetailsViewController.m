@@ -481,13 +481,16 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         [appDelegate presentAppModalViewController:navController animated:YES];
         
         CFRelease(person);
-    } else if( indexPath.row == 1 ){
+    }
+    else if( indexPath.row == 1 )
+    {
         ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
         [picker setPeoplePickerDelegate:self];
         
         MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate presentAppModalViewController:picker animated:YES];
-    } else if( indexPath.row == 2 )
+    }
+    else if( indexPath.row == 2 )
     {
         [PeopleFavoriteData setPerson:self.personDetails asFavorite:!self.personDetails.favorite];
         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
