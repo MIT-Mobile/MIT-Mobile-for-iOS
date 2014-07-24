@@ -211,12 +211,9 @@
     if ([cell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
-        storyCell.storyImageView.layer.cornerRadius = 5.;
-        storyCell.titleLabel.backgroundColor = [UIColor blueColor];
     }
 
-    cell.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
-    cell.contentView.backgroundColor = [UIColor purpleColor];
+    cell.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
@@ -246,38 +243,27 @@
 {
     UICollectionViewCell *cell = [self _collectionView:collectionView dequeueLayoutCellForItemAtIndexPath:indexPath];
     [self _collectionView:collectionView configureCell:cell atIndexPath:indexPath];
-    DDLogVerbose(@"%@",cell.contentView.subviews);
-
-    CGRect frame = cell.frame;
-    frame.size.width = width;
-    frame.size.height = 2048;
-    cell.frame = frame;
-
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell.contentView
+    
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
-                                                                     toItem:cell
-                                                                  attribute:NSLayoutAttributeWidth
+                                                                     toItem:nil
+                                                                  attribute:NSLayoutAttributeNotAnAttribute
                                                                  multiplier:1
-                                                                   constant:0];
-    [cell addConstraint:constraint];
+                                                                   constant:width];
 
+    [cell addConstraint:constraint];
+    
     [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+    
     [cell setNeedsLayout];
     [cell layoutIfNeeded];
-
 
     CGSize cellSize = [cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
 
     [cell removeConstraint:constraint];
-
-    if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryClip]) {
-        MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
-        UILabel *dekLabel = storyCell.dekLabel;
-        CGSize idealSize = [dekLabel sizeThatFits:CGSizeMake(width, 2048)];
-        DDLogVerbose(@"Hello!");
-    }
-
+    
     return ceil(cellSize.height);
 }
 
