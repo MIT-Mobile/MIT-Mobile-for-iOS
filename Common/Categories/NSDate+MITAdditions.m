@@ -36,6 +36,31 @@
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
+- (NSDate *)dateByAddingDay
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.day = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSArray *)datesInWeek
+{
+    NSDate *day = [self startOfWeek];
+    NSMutableArray *datesInWeek = [[NSMutableArray alloc] initWithArray:@[day]];
+    for (int i = 0; i < 6; i++) {
+        day = [day dateByAddingDay];
+        [datesInWeek addObject:day];
+    }
+    return [datesInWeek copy];
+}
+
+- (BOOL)isSameDayAsDate:(NSDate *)date
+{
+    NSDate *startOfSelfDay = [self beginningOfDay];
+    date = [date beginningOfDay];
+    return ([startOfSelfDay compare:date] == NSOrderedSame);
+}
+
 - (NSDate *)beginningOfDay
 {
     NSCalendar *cal = [NSCalendar currentCalendar];

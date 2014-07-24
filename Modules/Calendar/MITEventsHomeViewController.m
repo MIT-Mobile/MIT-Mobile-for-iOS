@@ -26,6 +26,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (nonatomic, strong) MITEventList *activeEventList;
 @property (nonatomic, strong) NSArray *activeEvents;
 
+@property (nonatomic, strong) NSArray *datesArray;
+
 @property (nonatomic, strong) NSDate *startOfDisplayedWeekDate;
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
@@ -47,9 +49,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-   // self.view.backgroundColor = [UIColor mit_backgroundColor];
     
-    self.currentlyDisplayedDate = [NSDate date];
+    self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
+    [self updateDatesArray];
 
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
@@ -61,13 +63,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.navBarSeparatorView.hidden = YES;
     
-    self.startDate = [NSDate date];
-        
-    [self centerDayPickerView];
+    self.startDate = [[NSDate date] beginningOfDay];
     
     [self registerForNotifications];
     
     [self loadActiveEventList];
+    [self centerDayPickerCollectionView];
     
 }
 
@@ -154,7 +155,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.eventsListTableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
 }
 
-
 #pragma mark - Day of the week Collection View Datasource/Delegate
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -172,22 +172,11 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     MITDayOfTheWeekCell *cell = [self.dayPickerCollectionView dequeueReusableCellWithReuseIdentifier:kMITDayOfTheWeekCell
                                                                                         forIndexPath:indexPath];
     
-    MITDayOfTheWeek dayOfTheWeek = indexPath.row  % 8;
 
-    cell.dayOfTheWeek = dayOfTheWeek;
-    cell.state = MITDayOfTheWeekStateUnselected;
-    
-    if (dayOfTheWeek == MITDayOfTheWeekOther) {
-        cell.state = MITDayOfTheWeekStateSelected;
-    }
-    else {
-        
-        if (dayOfTheWeek == [[NSDate date] dayOfTheWeek]) {
-            cell.state = MITDayOfTheWeekStateToday;
-        }
-    }
+   [self configureCell:cell forIndexPath:indexPath];
     
     return cell;
+
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -199,8 +188,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         NSLog(@"Present Date Picker");
     }
     else {
-        MITDayOfTheWeekCell *cell = (MITDayOfTheWeekCell *)[self.dayPickerCollectionView cellForItemAtIndexPath:indexPath];
-        cell.state = MITDayOfTheWeekStateSelected;
+        [self daySelectedAtIndexPath:indexPath];
+        [self updateDisplayedDay];
     }
         
 }
@@ -232,7 +221,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     return cell;
 }
 
-#pragma mark - Handle infinite paging of calendar view
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     if (scrollView == self.dayPickerCollectionView) {
@@ -242,18 +230,86 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)updateDayPickerOffsetForInfiniteScrolling
 {
-    if (self.dayPickerCollectionView.contentOffset.x == 0 || self.dayPickerCollectionView.contentOffset.x >= self.pageWidth * 2)
-    {
-#warning reset the data here
-        [self centerDayPickerView];
+    if (self.dayPickerCollectionView.contentOffset.x <= 0 ) {
+        self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateBySubtractingWeek];
+        [self updateDisplayedDay];
+
+    }
+    else if (self.dayPickerCollectionView.contentOffset.x >= self.pageWidth * 2) {
+        self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateByAddingWeek];
+        [self updateDisplayedDay];
     }
 }
 
-- (void)centerDayPickerView
+- (void)updateDisplayedDay
+{
+    [self reloadEvents];
+    [self updateDatesArray];
+    [self centerDayPickerCollectionView];
+
+}
+
+- (void)updateDatesArray
+{
+    NSMutableArray *newDatesArray = [[NSMutableArray alloc] init];
+
+    NSDate *lastWeek = [self.currentlyDisplayedDate dateBySubtractingWeek];
+    NSDate *nextWeek = [self.currentlyDisplayedDate dateByAddingWeek];
+    
+    [newDatesArray addObjectsFromArray:[lastWeek datesInWeek]];
+    [newDatesArray addObjectsFromArray:[self.currentlyDisplayedDate datesInWeek]];
+    [newDatesArray addObjectsFromArray:[nextWeek datesInWeek]];
+    
+    self.datesArray = newDatesArray;
+}
+
+- (void)centerDayPickerCollectionView
 {
     [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:8 inSection:0]
                                          atScrollPosition:UICollectionViewScrollPositionLeft
                                                  animated:NO];
+}
+
+- (void)daySelectedAtIndexPath:(NSIndexPath *)indexPath
+{
+    self.currentlyDisplayedDate = [self dateForIndexPath:indexPath];
+    for (MITDayOfTheWeekCell *cell in self.dayPickerCollectionView.visibleCells) {
+        NSIndexPath *cellIndexPath = [self.dayPickerCollectionView indexPathForCell:cell];
+        [self configureCell:cell forIndexPath:cellIndexPath];
+    }
+}
+
+- (void)configureCell:(MITDayOfTheWeekCell *)cell  forIndexPath:(NSIndexPath *)indexPath
+{
+    cell.dayOfTheWeek = indexPath.row  % 8;
+    
+    if (cell.dayOfTheWeek == MITDayOfTheWeekOther) {
+        cell.state = MITDayOfTheWeekStateSelected;
+    }
+    else {
+        NSDate *cellDate = [self dateForIndexPath:indexPath];
+        if ([cellDate isSameDayAsDate:self.currentlyDisplayedDate]) {
+            cell.state = MITDayOfTheWeekStateSelected;
+        }
+        else {
+            cell.state = MITDayOfTheWeekStateUnselected;
+        }
+        if ([cellDate isSameDayAsDate:[NSDate date]]){
+            cell.state |= MITDayOfTheWeekStateToday;
+        }
+    }
+}
+
+- (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath
+{
+    NSInteger adjustedIndex = indexPath.row;
+    if (indexPath.row > 6) {
+        adjustedIndex--;
+    }
+    if (indexPath.row > 14) {
+        adjustedIndex--;
+    }
+    return self.datesArray[adjustedIndex];
 }
 
 - (void)calendarListLoaded:(NSNotification *)ntfn
@@ -265,7 +321,5 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     
 }
-
-
 
 @end
