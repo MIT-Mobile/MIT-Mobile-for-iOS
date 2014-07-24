@@ -151,6 +151,7 @@
 		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
+		2C7F8DFC197EE1C600F92894 /* MITNewsGridHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C893ABF18BE3090002690CE /* MITNavigationController.m */; };
 		2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A074718BE690900284F8A /* MITImageScrollView.m */; };
@@ -799,6 +800,8 @@
 		2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoriesResource.m; sourceTree = "<group>"; };
 		2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileRouteConstants.h; sourceTree = "<group>"; };
 		2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileRouteConstants.m; sourceTree = "<group>"; };
+		2C7F8DFA197EE1C600F92894 /* MITNewsGridHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsGridHeaderView.h; path = "Collection View Cells/MITNewsGridHeaderView.h"; sourceTree = "<group>"; };
+		2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsGridHeaderView.m; path = "Collection View Cells/MITNewsGridHeaderView.m"; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
 		2C868B0616D52D81000B2414 /* MGSAnnotationTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MGSAnnotationTypes.h; sourceTree = "<group>"; };
@@ -1656,6 +1659,8 @@
 			children = (
 				0BD7B970194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.h */,
 				0BD7B971194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m */,
+				2C7F8DFA197EE1C600F92894 /* MITNewsGridHeaderView.h */,
+				2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */,
 			);
 			name = "Collection View Cells";
 			sourceTree = "<group>";
@@ -3971,6 +3976,7 @@
 				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
 				48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */,
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
+				2C7F8DFC197EE1C600F92894 /* MITNewsGridHeaderView.m in Sources */,
 				2C276713184CC90E00E53E9F /* MITMobileResource.m in Sources */,
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
