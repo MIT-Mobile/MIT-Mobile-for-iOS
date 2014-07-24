@@ -322,4 +322,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     
 }
 
+#pragma mark - Toolbar Buttons
+
+- (IBAction)todayButtonPressed:(id)sender
+{
+    self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
+    [self updateDisplayedDay];
+    [self.dayPickerCollectionView reloadData];
+}
+
 @end
