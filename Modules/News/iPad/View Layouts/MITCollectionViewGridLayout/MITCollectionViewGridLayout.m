@@ -250,7 +250,8 @@
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:withWidth:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:CGRectGetWidth(self.collectionView.bounds)];
+        MITCollectionViewGridLayoutSection *section = [self layoutForSection:indexPath.section];
+        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:section.columnWidth];
     } else {
         return self.itemHeight;
     }
