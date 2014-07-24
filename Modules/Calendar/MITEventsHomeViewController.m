@@ -1,12 +1,13 @@
 #import "MITEventsHomeViewController.h"
 #import "MITDayOfTheWeekCell.h"
+#import "MITCalendarEventCell.h"
 #import "MITCalendarDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDate+MITAdditions.h"
 #import "MITEventList.h"
 
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
-static NSString *const kMITEventCell = @"kMITEventCell";
+static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -52,6 +53,8 @@ static NSString *const kMITEventCell = @"kMITEventCell";
 
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
+    [self setupEventsTableView];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -135,7 +138,6 @@ static NSString *const kMITEventCell = @"kMITEventCell";
     return nil;
 }
 
-
 - (void)setupDayPickerCollectionView
 {
     self.dayPickerCollectionView.backgroundColor = [UIColor clearColor];
@@ -146,6 +148,11 @@ static NSString *const kMITEventCell = @"kMITEventCell";
     self.pageWidth = self.dayPickerCollectionView.frame.size.width;
 }
 
+- (void)setupEventsTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
+    [self.eventsListTableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
+}
 
 
 #pragma mark - Day of the week Collection View Datasource/Delegate
@@ -210,15 +217,18 @@ static NSString *const kMITEventCell = @"kMITEventCell";
     return [self.activeEvents count];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITCalendarEvent *event = self.activeEvents[indexPath.row];
+    return [MITCalendarEventCell heightForEvent:event tableViewWidth:self.eventsListTableView.frame.size.width];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventCell];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITEventCell];
-    }
-    
-    cell.textLabel.text = [NSString stringWithFormat:@"%d", indexPath.row];
-    NSLog(@"Event: %@", self.activeEvents[indexPath.row]);
+    MITCalendarEventCell *cell = [self.eventsListTableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
+
+    [cell setEvent:self.activeEvents[indexPath.row]];
+
     return cell;
 }
 

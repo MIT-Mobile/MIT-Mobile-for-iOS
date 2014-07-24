@@ -20,6 +20,8 @@
 		225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */; };
 		225F219C197EA47F00F34DE9 /* NSDate+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F219B197EA47F00F34DE9 /* NSDate+MITAdditions.m */; };
 		225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */; };
+		22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */; };
+		22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -542,6 +544,9 @@
 		225F219B197EA47F00F34DE9 /* NSDate+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDate+MITAdditions.m"; path = "Categories/NSDate+MITAdditions.m"; sourceTree = "<group>"; };
 		225F21A3197EBB6D00F34DE9 /* MITCalendarsResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsResource.h; sourceTree = "<group>"; };
 		225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsResource.m; sourceTree = "<group>"; };
+		22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEventCell.h; sourceTree = "<group>"; };
+		22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarEventCell.m; sourceTree = "<group>"; };
+		22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITCalendarEventCell.xib; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1608,6 +1613,9 @@
 				225F2193197D9A8A00F34DE9 /* MITDayOfTheWeekCell.h */,
 				225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */,
 				225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */,
+				22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */,
+				22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */,
+				22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -3496,6 +3504,7 @@
 			files = (
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
+				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
@@ -3794,6 +3803,7 @@
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
+				22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */,
 				225F219C197EA47F00F34DE9 /* NSDate+MITAdditions.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
 				DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */,
