@@ -24,7 +24,8 @@
     self = [super initWithCollectionViewLayout:layout];
 
     if (self) {
-
+        _numberOfColumnsForLandscapeOrientation = 4;
+        _numberOfColumnsForPortraitOrientation = 3;
     }
 
     return self;
@@ -122,9 +123,9 @@
     if ([self.collectionViewLayout isKindOfClass:[MITCollectionViewGridLayout class]]) {
         MITCollectionViewGridLayout *gridLayout = (MITCollectionViewGridLayout*)self.collectionViewLayout;
         if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-            gridLayout.numberOfColumns = 3;
+            gridLayout.numberOfColumns = self.numberOfColumnsForPortraitOrientation;
         } else {
-            gridLayout.numberOfColumns = 5;
+            gridLayout.numberOfColumns = self.numberOfColumnsForLandscapeOrientation;
         }
     }
 
