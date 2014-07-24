@@ -9,13 +9,19 @@
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsiPadViewController.h"
+#import "MITNewsGridHeaderView.h"
+#import "MITAdditions.h"
+#import "MITNewsStoryCollectionViewCell.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @end
 
-@implementation MITNewsGridViewController
+@implementation MITNewsGridViewController {
+    NSMutableDictionary *_layoutCellsByIdentifier;
+}
+
 - (instancetype)init
 {
     MITCollectionViewGridLayout *layout = [[MITCollectionViewGridLayout alloc] init];
@@ -47,28 +53,12 @@
     collectionView.backgroundColor = [UIColor clearColor];
     collectionView.backgroundView = nil;
 
-    const BOOL debug = YES;
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
 
-    if (!debug) {
-        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
-    
-        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
-    
-        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
-    
-        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
-        
-        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
-    
         [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
-    } else {
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
-        [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
-    }
 
 }
 
@@ -151,24 +141,10 @@
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    NSString *cellIdentifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
-    if ([collectionViewCell isMemberOfClass:[UICollectionViewCell class]]) {
-        // Debugging!
-        if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryJumbo]) {
-            collectionViewCell.contentView.backgroundColor = [UIColor blueColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryWithImage]) {
-            collectionViewCell.contentView.backgroundColor = [UIColor greenColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryClip]) {
-            collectionViewCell.contentView.backgroundColor = [UIColor grayColor];
-        } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryDek]) {
-            collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
-        }
-    } else if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
-        MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
-        storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
-    }
+    [self _collectionView:collectionView configureCell:collectionViewCell atIndexPath:indexPath];
 
     return collectionViewCell;
 }
@@ -177,11 +153,19 @@
 {
     if ([kind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
         UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader forIndexPath:indexPath];
-        headerView.backgroundColor = [UIColor redColor];
-        UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-        if (!recognizer) {
-            recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
-            [headerView addGestureRecognizer:recognizer];
+        NSUInteger sectionIndex = [indexPath indexAtPosition:0];
+
+        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
+            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView*)headerView;
+            newsHeaderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
+			 UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+        	if (!recognizer) {
+            	recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+            	[headerView addGestureRecognizer:recognizer];
+			}
+
+            newsHeaderView.headerLabel.text = [self titleForCategoryInSection:sectionIndex];
+
         }
         
         // Keep track of the gesture recognizers we create so we can remove
@@ -197,7 +181,16 @@
     return nil;
 }
 
-- (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+- (void)_collectionView:(UICollectionView*)collectionView registerNib:(UINib*)nib forCellWithReuseIdentifier:(NSString*)reuseIdentifier
+{
+    [collectionView registerNib:nib forCellWithReuseIdentifier:reuseIdentifier];
+
+    UICollectionViewCell *layoutCell = [[nib instantiateWithOwner:nil options:nil] firstObject];
+    [self _setCollectionViewLayoutCell:layoutCell];
+
+}
+
+- (NSString*)_collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
@@ -213,30 +206,79 @@
     }
 }
 
-#pragma mark MITCollectionViewDelegateNewsGrid
-- (CGFloat)_heightForItemAtIndexPath:(NSIndexPath*)indexPath
+- (void)_collectionView:(UICollectionView*)collectionView configureCell:(UICollectionViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
 {
-    NSMutableDictionary *heights = objc_getAssociatedObject(self, _cmd);
-
-    if (!heights) {
-        heights = [[NSMutableDictionary alloc] init];
-        objc_setAssociatedObject(self, _cmd, heights, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if ([cell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
+        MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
+        storyCell.story = [self storyAtIndexPath:indexPath];
+        storyCell.storyImageView.layer.cornerRadius = 5.;
+        storyCell.titleLabel.backgroundColor = [UIColor blueColor];
     }
 
-    CGFloat height = 0;
-    if (!heights[indexPath]) {
-        height = 96. + arc4random_uniform(96);
-        heights[indexPath] = @(height);
-    } else {
-        height = [heights[indexPath] doubleValue];
-    }
-
-    return height;
+    cell.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
+    cell.contentView.backgroundColor = [UIColor purpleColor];
 }
 
+#pragma mark MITCollectionViewDelegateNewsGrid
+- (void)_setCollectionViewLayoutCell:(UICollectionViewCell*)cell
+{
+    if (!_layoutCellsByIdentifier) {
+        _layoutCellsByIdentifier = [[NSMutableDictionary alloc] init];
+    }
+
+    _layoutCellsByIdentifier[cell.reuseIdentifier] = cell;
+    }
+
+- (UICollectionViewCell*)_collectionView:(UICollectionView*)collectionView dequeueLayoutCellForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+    if (!_layoutCellsByIdentifier) {
+        return nil;
+    }
+
+    NSString *identifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    UICollectionViewCell *cell = _layoutCellsByIdentifier[identifier];
+
+    return cell;
+}
+
+#pragma mark MITCollectionViewDelegateNewsGrid
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
-    return [self _heightForItemAtIndexPath:indexPath];
+    UICollectionViewCell *cell = [self _collectionView:collectionView dequeueLayoutCellForItemAtIndexPath:indexPath];
+    [self _collectionView:collectionView configureCell:cell atIndexPath:indexPath];
+    DDLogVerbose(@"%@",cell.contentView.subviews);
+
+    CGRect frame = cell.frame;
+    frame.size.width = width;
+    frame.size.height = 2048;
+    cell.frame = frame;
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell.contentView
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:cell
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                 multiplier:1
+                                                                   constant:0];
+    [cell addConstraint:constraint];
+
+    [cell setNeedsUpdateConstraints];
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+
+
+    CGSize cellSize = [cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+    [cell removeConstraint:constraint];
+
+    if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryClip]) {
+        MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
+        UILabel *dekLabel = storyCell.dekLabel;
+        CGSize idealSize = [dekLabel sizeThatFits:CGSizeMake(width, 2048)];
+        DDLogVerbose(@"Hello!");
+    }
+
+    return ceil(cellSize.height);
 }
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
