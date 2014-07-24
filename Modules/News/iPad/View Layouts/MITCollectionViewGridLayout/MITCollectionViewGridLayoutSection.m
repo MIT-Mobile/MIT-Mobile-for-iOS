@@ -269,7 +269,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is laid out, we'll go back and give the heights a correct value
-        const NSInteger numberOfColumns = self.numberOfColumns;
         const NSUInteger numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
         
         // Apply the content insets to the actual content so things appear properly. We only care
@@ -277,18 +276,23 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         //  bottom will be handled after everything is laid out.
         __block CGRect layoutBounds = _bounds;
         layoutBounds.size.height = CGFLOAT_MAX;
-        
-        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
-        
-        CGRect headerFrame = CGRectZero;
-        CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section ];
-        CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
-        headerLayoutAttributes.frame = headerFrame;
-        
-        // Set a high value for the zIndex to make sure that the header 'floats'
-        // over everything else.
-        headerLayoutAttributes.zIndex = 1024;
-        _headerLayoutAttributes = headerLayoutAttributes;
+
+        CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
+
+        if (headerHeight > 1.) {
+            UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
+            
+            CGRect headerFrame = CGRectZero;
+            CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
+            headerLayoutAttributes.frame = headerFrame;
+            
+            // Set a high value for the zIndex to make sure that the header 'floats'
+            // over everything else.
+            headerLayoutAttributes.zIndex = 1024;
+            _headerLayoutAttributes = headerLayoutAttributes;
+        } else {
+            _headerLayoutAttributes = nil;
+        }
         
         
         if (numberOfItems == 0) {
@@ -301,7 +305,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         const CGFloat interItemPadding = self.interItemPadding;
         const CGFloat columnWidth = self.columnWidth;
         const CGFloat lineSpacing = self.lineSpacing;
-        
         
         MITSpannedItemContext featuredItemLayoutContext = MITSpannedItemEmptyContext;
         self.featured = MITCollectionViewGridSpanIsValid(self.featuredItemSpan);
