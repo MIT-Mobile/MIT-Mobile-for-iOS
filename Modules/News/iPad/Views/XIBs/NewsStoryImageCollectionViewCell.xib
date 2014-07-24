@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -8,35 +8,42 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" reuseIdentifier="NewsStoryImageCollectionViewCell" id="kaU-Et-mRD" userLabel="NewsStoryImageCollectionViewCell" customClass="MITNewsStoryCollectionViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="178" height="134"/>
+            <rect key="frame" x="0.0" y="0.0" width="277" height="246"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="178" height="134"/>
+                <rect key="frame" x="0.0" y="0.0" width="277" height="246"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
-                        <rect key="frame" x="0.0" y="0.0" width="178" height="100"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
+                        <rect key="frame" x="0.0" y="0.0" width="277" height="210"/>
+                        <constraints>
+                            <constraint firstAttribute="height" priority="750" constant="208" id="Yub-sA-1Cc"/>
+                        </constraints>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="178" translatesAutoresizingMaskIntoConstraints="NO" id="Lch-jy-yVG" customClass="MultiLineLabel">
-                        <rect key="frame" x="0.0" y="108" width="178" height="26"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="title" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="277" translatesAutoresizingMaskIntoConstraints="NO" id="Lch-jy-yVG" userLabel="Title">
+                        <rect key="frame" x="0.0" y="218" width="277" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" id="hto-li-xH6"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="H2F-9T-m4h" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="6dg-rb-ZT1"/>
-                <constraint firstAttribute="trailing" secondItem="Lch-jy-yVG" secondAttribute="trailing" id="Ium-NS-5tt"/>
-                <constraint firstItem="Lch-jy-yVG" firstAttribute="top" secondItem="H2F-9T-m4h" secondAttribute="bottom" constant="8" symbolic="YES" id="Lj9-86-VDa"/>
-                <constraint firstAttribute="bottom" secondItem="Lch-jy-yVG" secondAttribute="bottom" id="ewF-5f-Zyw"/>
-                <constraint firstAttribute="trailing" secondItem="H2F-9T-m4h" secondAttribute="trailing" id="laX-NE-oYA"/>
-                <constraint firstItem="H2F-9T-m4h" firstAttribute="top" secondItem="kaU-Et-mRD" secondAttribute="top" id="usa-lT-TE0"/>
-                <constraint firstItem="Lch-jy-yVG" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="uzK-hB-dHa"/>
+                <constraint firstAttribute="bottom" secondItem="Lch-jy-yVG" secondAttribute="bottom" constant="8" id="HLQ-nP-WKd"/>
+                <constraint firstItem="H2F-9T-m4h" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="Wyd-la-bcA"/>
+                <constraint firstItem="H2F-9T-m4h" firstAttribute="top" secondItem="kaU-Et-mRD" secondAttribute="top" id="XHO-G5-RyZ"/>
+                <constraint firstAttribute="trailing" secondItem="Lch-jy-yVG" secondAttribute="trailing" id="a5Y-xl-Ulc"/>
+                <constraint firstItem="Lch-jy-yVG" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="wMb-ED-9SK"/>
+                <constraint firstAttribute="trailing" secondItem="H2F-9T-m4h" secondAttribute="trailing" id="xS1-1R-H0D"/>
+                <constraint firstItem="Lch-jy-yVG" firstAttribute="top" secondItem="H2F-9T-m4h" secondAttribute="bottom" constant="8" id="yIF-sv-wQe"/>
             </constraints>
-            <size key="customSize" width="155" height="108"/>
+            <size key="customSize" width="254" height="220"/>
             <connections>
+                <outlet property="imageHeightConstraint" destination="Yub-sA-1Cc" id="BAH-Sk-PfG"/>
                 <outlet property="storyImageView" destination="H2F-9T-m4h" id="aEr-dI-sGf"/>
                 <outlet property="titleLabel" destination="Lch-jy-yVG" id="J5g-A7-rru"/>
             </connections>

@@ -7,26 +7,51 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewsStoryHeaderReusableView" id="VOo-JH-Ppe" userLabel="NewsStoryHeaderReusableView">
-            <rect key="frame" x="0.0" y="0.0" width="399" height="44"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewsStoryHeaderReusableView" id="VOo-JH-Ppe" userLabel="NewsStoryHeaderReusableView" customClass="MITNewsGridHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="399" height="46"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Section Header" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ts3-dj-FYh">
-                    <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m1A-Gh-OC6" userLabel="Content View">
+                    <rect key="frame" x="0.0" y="0.0" width="399" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <rect key="contentStretch" x="0.050000000000000003" y="0.0" width="1" height="1"/>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="15"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.24999999999999967" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2k0-hM-LHr">
-                    <rect key="frame" x="0.0" y="37" width="768" height="1"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                    <subviews>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Section Header" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ts3-dj-FYh">
+                            <rect key="frame" x="0.0" y="8" width="399" height="22"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <rect key="contentStretch" x="0.050000000000000003" y="0.0" width="1" height="1"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XDc-Pn-D5s" userLabel="Separator">
+                            <rect key="frame" x="0.0" y="38" width="399" height="4"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.90000000000000002" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="4" id="deB-2m-SZz"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="XDc-Pn-D5s" firstAttribute="leading" secondItem="m1A-Gh-OC6" secondAttribute="leading" id="2zg-7i-Suc"/>
+                        <constraint firstAttribute="trailing" secondItem="XDc-Pn-D5s" secondAttribute="trailing" id="Aw6-di-ZyP"/>
+                        <constraint firstItem="Ts3-dj-FYh" firstAttribute="leading" secondItem="m1A-Gh-OC6" secondAttribute="leading" id="S4y-ll-iPr"/>
+                        <constraint firstItem="XDc-Pn-D5s" firstAttribute="top" secondItem="Ts3-dj-FYh" secondAttribute="bottom" constant="8" symbolic="YES" id="cCo-jG-PjL"/>
+                        <constraint firstItem="Ts3-dj-FYh" firstAttribute="top" secondItem="m1A-Gh-OC6" secondAttribute="top" constant="8" id="eO9-ex-RdC"/>
+                        <constraint firstAttribute="trailing" secondItem="Ts3-dj-FYh" secondAttribute="trailing" id="etI-IQ-Hx3"/>
+                        <constraint firstAttribute="bottom" secondItem="XDc-Pn-D5s" secondAttribute="bottom" constant="4" id="moO-FL-zqE"/>
+                    </constraints>
+                </view>
             </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="m1A-Gh-OC6" secondAttribute="bottom" id="1S3-Dy-lU9"/>
+                <constraint firstItem="m1A-Gh-OC6" firstAttribute="leading" secondItem="VOo-JH-Ppe" secondAttribute="leading" id="Fpf-0S-Ehq"/>
+                <constraint firstAttribute="trailing" secondItem="m1A-Gh-OC6" secondAttribute="trailing" id="Ssw-4y-Sdy"/>
+                <constraint firstItem="m1A-Gh-OC6" firstAttribute="top" secondItem="VOo-JH-Ppe" secondAttribute="top" id="pzs-gx-a6V"/>
+            </constraints>
+            <connections>
+                <outlet property="headerLabel" destination="Ts3-dj-FYh" id="53A-bC-ajG"/>
+                <outlet property="separatorView" destination="XDc-Pn-D5s" id="Vkv-qD-dXZ"/>
+            </connections>
         </collectionReusableView>
     </objects>
 </document>
