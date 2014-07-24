@@ -53,6 +53,9 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 
     self.imageHeightConstraint.constant = imageSize.height;
     self.imageWidthConstraint.constant = imageSize.width;
+    
+    self.titleLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.titleLabel.frame);
+    self.dekLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.dekLabel.frame);
 
     [super updateConstraints];
 }
