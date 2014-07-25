@@ -5,6 +5,7 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDate+MITAdditions.h"
 #import "MITEventList.h"
+#import "MITDatePickerViewController.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -18,7 +19,7 @@ static const NSTimeInterval kSlidingAnimationDuration = 0.3;
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
-@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITDatePickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
@@ -200,7 +201,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     MITDayOfTheWeek dayOfTheWeek = indexPath.row  % 8;
 
     if (dayOfTheWeek == MITDayOfTheWeekOther) {
-        NSLog(@"Present Date Picker");
+        [self presentDatePicker];
     }
     else {
         [self daySelectedAtIndexPath:indexPath];
@@ -424,6 +425,30 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         [_dayLabelDateFormatter setDateStyle:NSDateFormatterFullStyle];
     }
     return _dayLabelDateFormatter;
+}
+
+#pragma mark - Date Picker 
+- (void)presentDatePicker
+{
+    MITDatePickerViewController *datePicker = [[MITDatePickerViewController alloc] initWithNibName:nil bundle:nil];
+    datePicker.delegate = self;
+    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:datePicker];
+    [self presentViewController:navContainerController animated:YES completion:NULL];
+}
+
+- (void)datePickerDidCancel:(MITDatePickerViewController *)datePicker
+{
+    [self dismissViewControllerAnimated:datePicker completion:NULL];
+}
+
+- (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
+{
+    self.currentlyDisplayedDate = date;
+    [self setDateLabelWithDate:date animationType:MITSlidingAnimationTypeNone];
+    [self.dayPickerCollectionView reloadData];
+    [self updateDisplayedDay];
+    
+    [self dismissViewControllerAnimated:datePicker completion:NULL];
 }
 
 @end
