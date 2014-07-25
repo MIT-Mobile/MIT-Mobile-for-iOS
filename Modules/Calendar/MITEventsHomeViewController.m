@@ -32,12 +32,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
 @property (strong, nonatomic) NSDateFormatter *dayLabelDateFormatter;
 
-
 @property (weak, nonatomic) UIView *navBarSeparatorView;
+@property (strong, nonatomic) UIView *repositionedNavBarSeparatorView;
 
 @property (nonatomic) CGFloat pageWidth;
-
-@property (nonatomic, strong) NSDate *startDate;
 
 @property (nonatomic, strong) MITEventList *activeEventList;
 @property (nonatomic, strong) NSArray *activeEvents;
@@ -45,7 +43,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (nonatomic, strong) NSArray *datesArray;
 
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
-@property (nonatomic, strong) NSDate *previouslyDisplayedDate;
 
 @end
 
@@ -82,8 +79,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.navBarSeparatorView.hidden = YES;
     
-    self.startDate = [[NSDate date] beginningOfDay];
-    
     [self registerForNotifications];
     
     [self loadActiveEventList];
@@ -108,6 +103,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     
     self.navBarSeparatorView = [self findHairlineImageViewUnder:navigationBar];
+    
+    self.repositionedNavBarSeparatorView = [[UIImageView alloc] initWithFrame:self.navBarSeparatorView.frame];
+    self.repositionedNavBarSeparatorView.backgroundColor = [UIColor colorWithRed:150.0/255.0 green:152.0/255.0 blue:156.0/255.0 alpha:1.0];
+    CGRect repositionedFrame = self.repositionedNavBarSeparatorView.frame;
+    repositionedFrame.origin.y = 63.5;
+    self.repositionedNavBarSeparatorView.frame = repositionedFrame;
+    self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.dayPickerContainerView addSubview:self.repositionedNavBarSeparatorView];
+    
     navigationBar.opaque = YES;
     navigationBar.translucent = NO;
     UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
