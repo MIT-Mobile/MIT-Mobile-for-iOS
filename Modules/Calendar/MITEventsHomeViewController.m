@@ -6,6 +6,15 @@
 #import "NSDate+MITAdditions.h"
 #import "MITEventList.h"
 
+typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
+    MITSlidingAnimationTypeNone,
+    MITSlidingAnimationTypeForward,
+    MITSlidingAnimationTypeBackward
+};
+
+static const CGFloat kSlidingAnimationSpan = 40.0;
+static const NSTimeInterval kSlidingAnimationDuration = 0.3;
+
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
@@ -15,6 +24,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
 
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTableView;
+
+@property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
+@property (strong, nonatomic) NSDateFormatter *dayLabelDateFormatter;
 
 
 @property (weak, nonatomic) UIView *navBarSeparatorView;
@@ -28,9 +41,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (nonatomic, strong) NSArray *datesArray;
 
-@property (nonatomic, strong) NSDate *startOfDisplayedWeekDate;
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
-
+@property (nonatomic, strong) NSDate *previouslyDisplayedDate;
 
 @end
 
@@ -50,12 +62,16 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    self.title = @"MIT Events";
+    
     self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
     [self updateDatesArray];
+    [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeNone];
 
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
     [self setupEventsTableView];
+    
     
 }
 
@@ -69,7 +85,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     
     [self loadActiveEventList];
     [self centerDayPickerCollectionView];
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -232,11 +247,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     if (self.dayPickerCollectionView.contentOffset.x <= 0 ) {
         self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateBySubtractingWeek];
+        [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeBackward];
         [self updateDisplayedDay];
-
     }
     else if (self.dayPickerCollectionView.contentOffset.x >= self.pageWidth * 2) {
         self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateByAddingWeek];
+        [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeForward];
         [self updateDisplayedDay];
     }
 }
@@ -246,7 +262,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self reloadEvents];
     [self updateDatesArray];
     [self centerDayPickerCollectionView];
-
 }
 
 - (void)updateDatesArray
@@ -272,11 +287,25 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)daySelectedAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSDate *previousDate = self.currentlyDisplayedDate;
     self.currentlyDisplayedDate = [self dateForIndexPath:indexPath];
-    for (MITDayOfTheWeekCell *cell in self.dayPickerCollectionView.visibleCells) {
-        NSIndexPath *cellIndexPath = [self.dayPickerCollectionView indexPathForCell:cell];
-        [self configureCell:cell forIndexPath:cellIndexPath];
+    
+    NSComparisonResult dateComparison = [self.currentlyDisplayedDate compare:previousDate];
+    switch (dateComparison) {
+        case NSOrderedSame:
+            [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeNone];
+            break;
+        case NSOrderedAscending:
+            [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeBackward];
+            break;
+        case NSOrderedDescending:
+            [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeForward];
+            break;
+        default:
+            break;
     }
+    
+    [self.dayPickerCollectionView reloadData];
 }
 
 - (void)configureCell:(MITDayOfTheWeekCell *)cell  forIndexPath:(NSIndexPath *)indexPath
@@ -329,6 +358,72 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
     [self updateDisplayedDay];
     [self.dayPickerCollectionView reloadData];
+}
+
+#pragma mark - Animating Date Label
+
+- (void)setDateLabelWithDate:(NSDate *)date animationType:(MITSlidingAnimationType)animationType
+{
+    NSString *dateString = [self.dayLabelDateFormatter stringFromDate:date];
+    if (animationType == MITSlidingAnimationTypeNone) {
+        self.todaysDateLabel.text = dateString;
+    } else {
+        CGPoint dateLabelCenter = self.todaysDateLabel.center;
+        CGPoint initialTempLabelCenter;
+        switch (animationType) {
+            case MITSlidingAnimationTypeForward:
+                initialTempLabelCenter = CGPointApplyAffineTransform(dateLabelCenter,
+                                                                     CGAffineTransformMakeTranslation(kSlidingAnimationSpan, 0));
+                self.todaysDateLabelCenterConstraint.constant = kSlidingAnimationSpan;
+                break;
+            case MITSlidingAnimationTypeBackward:
+                initialTempLabelCenter = CGPointApplyAffineTransform(dateLabelCenter,
+                                                                     CGAffineTransformMakeTranslation(-kSlidingAnimationSpan, 0));
+                self.todaysDateLabelCenterConstraint.constant = -kSlidingAnimationSpan;
+                break;
+            default:
+                break;
+        }
+        
+        UILabel *tempLabel = [self tempDateLabelWithDateString:dateString];
+        tempLabel.center = initialTempLabelCenter;
+        tempLabel.alpha = 0;
+        [self.dayPickerContainerView addSubview:tempLabel];
+        
+        [UIView animateWithDuration:kSlidingAnimationDuration animations:^{
+            tempLabel.center = dateLabelCenter;
+            tempLabel.alpha = 1;
+            self.todaysDateLabel.alpha = 0;
+            [self.dayPickerContainerView layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [tempLabel removeFromSuperview];
+            self.todaysDateLabel.text = dateString;
+            self.todaysDateLabelCenterConstraint.constant = 0;
+            self.todaysDateLabel.alpha = 1;
+            [self.dayPickerContainerView layoutIfNeeded];
+        }];
+    }
+}
+
+- (UILabel *)tempDateLabelWithDateString:(NSString *)dateString
+{
+    UILabel *tempLabel = [[UILabel alloc] initWithFrame:self.todaysDateLabel.frame];
+    tempLabel.backgroundColor = [UIColor clearColor];
+    tempLabel.textAlignment = NSTextAlignmentCenter;
+    tempLabel.textColor = self.todaysDateLabel.textColor;
+    tempLabel.font = self.todaysDateLabel.font;
+    tempLabel.text = dateString;
+    [tempLabel sizeToFit];
+    return tempLabel;
+}
+
+- (NSDateFormatter *)dayLabelDateFormatter
+{
+    if (!_dayLabelDateFormatter) {
+        _dayLabelDateFormatter = [[NSDateFormatter alloc] init];
+        [_dayLabelDateFormatter setDateStyle:NSDateFormatterFullStyle];
+    }
+    return _dayLabelDateFormatter;
 }
 
 @end

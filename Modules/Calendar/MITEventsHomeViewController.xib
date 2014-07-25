@@ -10,6 +10,8 @@
                 <outlet property="dayPickerCollectionView" destination="jXL-Oq-1hD" id="x6c-dO-bT4"/>
                 <outlet property="dayPickerContainerView" destination="Tgr-Jh-tU3" id="Q0e-7U-M4E"/>
                 <outlet property="eventsListTableView" destination="jWN-e8-Rp0" id="13h-hw-jul"/>
+                <outlet property="todaysDateLabel" destination="Ocu-70-5sQ" id="sWa-IA-QSf"/>
+                <outlet property="todaysDateLabelCenterConstraint" destination="27z-i8-Aft" id="mIu-zi-sfq"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -54,12 +56,21 @@
                                 <outlet property="delegate" destination="-1" id="M9p-Aw-rfk"/>
                             </connections>
                         </collectionView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
+                            <rect key="frame" x="114" y="42" width="90" height="18"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
+                        <constraint firstAttribute="centerX" secondItem="Ocu-70-5sQ" secondAttribute="centerX" constant="0.5" id="27z-i8-Aft"/>
                         <constraint firstAttribute="centerX" secondItem="jXL-Oq-1hD" secondAttribute="centerX" id="6TO-yI-XfE"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="Lvx-uZ-XMF"/>
                         <constraint firstAttribute="height" constant="64" id="UBW-f3-u73"/>
+                        <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="4" id="uPg-oe-Bw9"/>
                     </constraints>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="jWN-e8-Rp0">
