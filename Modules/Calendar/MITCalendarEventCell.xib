@@ -15,27 +15,21 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Name Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="y8P-wj-Mbq">
-                        <rect key="frame" x="20" y="12" width="280" height="23"/>
+                        <rect key="frame" x="20" y="12" width="280" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Location Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="XUH-A3-Biw">
-                        <rect key="frame" x="20" y="35" width="280" height="17"/>
+                        <rect key="frame" x="20" y="33" width="280" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="17" id="DBl-JR-ZZ5"/>
-                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Time Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="FsU-6m-KjD">
-                        <rect key="frame" x="20" y="52" width="280" height="17"/>
+                        <rect key="frame" x="20" y="50" width="280" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="17" id="Efv-va-uTo"/>
-                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -44,13 +38,13 @@
                     <constraint firstItem="FsU-6m-KjD" firstAttribute="top" secondItem="XUH-A3-Biw" secondAttribute="bottom" id="6v9-Vp-aVT"/>
                     <constraint firstItem="FsU-6m-KjD" firstAttribute="trailing" secondItem="XUH-A3-Biw" secondAttribute="trailing" id="IIv-WZ-0mb"/>
                     <constraint firstItem="XUH-A3-Biw" firstAttribute="trailing" secondItem="y8P-wj-Mbq" secondAttribute="trailing" id="JOS-f0-aeW"/>
-                    <constraint firstAttribute="bottom" secondItem="FsU-6m-KjD" secondAttribute="bottom" constant="16" id="Kpe-PO-mGU"/>
                     <constraint firstItem="y8P-wj-Mbq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" symbolic="YES" id="e9i-dZ-NZl"/>
                     <constraint firstItem="y8P-wj-Mbq" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="fUO-tE-tOZ"/>
                     <constraint firstItem="y8P-wj-Mbq" firstAttribute="leading" secondItem="XUH-A3-Biw" secondAttribute="leading" id="uZ4-Ro-nHR"/>
                     <constraint firstItem="XUH-A3-Biw" firstAttribute="top" secondItem="y8P-wj-Mbq" secondAttribute="bottom" id="vBq-4m-Kek"/>
                     <constraint firstAttribute="trailing" secondItem="y8P-wj-Mbq" secondAttribute="trailing" constant="20" symbolic="YES" id="vlp-QA-ghT"/>
                     <constraint firstItem="FsU-6m-KjD" firstAttribute="leading" secondItem="XUH-A3-Biw" secondAttribute="leading" id="yIV-vV-g8S"/>
+                    <constraint firstAttribute="bottom" secondItem="FsU-6m-KjD" secondAttribute="bottom" constant="18" id="yKX-Dk-X18"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

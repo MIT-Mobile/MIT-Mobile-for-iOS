@@ -40,9 +40,11 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 {
     self.eventNameLabel.text = event.title;
     self.eventLocationLabel.text = event.location;
-    
-    // TODO: DATES
-    self.eventTimeLabel.text = event.start.description;
+  
+    self.eventTimeLabel.text = [event dateStringWithDateStyle:NSDateFormatterNoStyle
+                                                timeStyle:NSDateFormatterShortStyle
+                                                separator:@" "];
+    [self layoutIfNeeded];
 }
 
 #pragma mark - Cell Sizing
