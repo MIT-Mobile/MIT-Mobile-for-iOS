@@ -10,6 +10,7 @@
                 <outlet property="dayPickerCollectionView" destination="jXL-Oq-1hD" id="x6c-dO-bT4"/>
                 <outlet property="dayPickerContainerView" destination="Tgr-Jh-tU3" id="Q0e-7U-M4E"/>
                 <outlet property="eventsListTableView" destination="jWN-e8-Rp0" id="13h-hw-jul"/>
+                <outlet property="reloadActivityIndicator" destination="ubL-Bf-962" id="VfT-hA-Wut"/>
                 <outlet property="todaysDateLabel" destination="Ocu-70-5sQ" id="sWa-IA-QSf"/>
                 <outlet property="todaysDateLabelCenterConstraint" destination="27z-i8-Aft" id="mIu-zi-sfq"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -82,6 +83,10 @@
                         <outlet property="delegate" destination="-1" id="WmX-qL-XbN"/>
                     </connections>
                 </tableView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ubL-Bf-962">
+                    <rect key="frame" x="150" y="242" width="20" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>

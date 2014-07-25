@@ -26,6 +26,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTableView;
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *reloadActivityIndicator;
+
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
 @property (strong, nonatomic) NSDateFormatter *dayLabelDateFormatter;
@@ -134,11 +136,17 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)reloadEvents
 {
+    self.eventsListTableView.hidden = YES;
+    self.reloadActivityIndicator.hidden = NO;
+    [self.reloadActivityIndicator startAnimating];
     [MITCalendarDataManager performEventsRequestForDate:self.currentlyDisplayedDate
                                              eventList:self.activeEventList completion:^(NSArray *events, NSError *error) {
                                                  if (events) {
                                                      self.activeEvents = events;
                                                      [self.eventsListTableView reloadData];
+                                                     self.eventsListTableView.hidden = NO;
+                                                     self.reloadActivityIndicator.hidden = YES;
+                                                     [self.reloadActivityIndicator stopAnimating];
                                                  }
                                              }];
 }
