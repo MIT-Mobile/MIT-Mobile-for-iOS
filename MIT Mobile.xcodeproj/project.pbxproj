@@ -343,6 +343,14 @@
 		A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */; };
 		A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */; };
 		A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */; };
+		A5A303CA19804F0B00C9C273 /* MITEventDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303C819804F0B00C9C273 /* MITEventDetailViewController.m */; };
+		A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303C919804F0B00C9C273 /* MITEventDetailViewController.xib */; };
+		A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303CD1980500000C9C273 /* MITEventDetailCell.m */; };
+		A5A303D01980500000C9C273 /* MITEventDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303CE1980500000C9C273 /* MITEventDetailCell.xib */; };
+		A5A303DA1982041200C9C273 /* MITWebviewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303D81982041200C9C273 /* MITWebviewCell.m */; };
+		A5A303DB1982041200C9C273 /* MITWebviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303D91982041200C9C273 /* MITWebviewCell.xib */; };
+		A5A303E2198677B400C9C273 /* MITEventHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */; };
+		A5A303E3198677B400C9C273 /* MITEventHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1171,6 +1179,18 @@
 		A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopNotificationManager.m; sourceTree = "<group>"; };
 		A5960A101940B98D0028E86C /* MITShuttleMapBusAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleMapBusAnnotationView.h; sourceTree = "<group>"; };
 		A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleMapBusAnnotationView.m; sourceTree = "<group>"; };
+		A5A303C719804F0B00C9C273 /* MITEventDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventDetailViewController.h; sourceTree = "<group>"; };
+		A5A303C819804F0B00C9C273 /* MITEventDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventDetailViewController.m; sourceTree = "<group>"; };
+		A5A303C919804F0B00C9C273 /* MITEventDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventDetailViewController.xib; sourceTree = "<group>"; };
+		A5A303CC1980500000C9C273 /* MITEventDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventDetailCell.h; sourceTree = "<group>"; };
+		A5A303CD1980500000C9C273 /* MITEventDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventDetailCell.m; sourceTree = "<group>"; };
+		A5A303CE1980500000C9C273 /* MITEventDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventDetailCell.xib; sourceTree = "<group>"; };
+		A5A303D71982041200C9C273 /* MITWebviewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITWebviewCell.h; sourceTree = "<group>"; };
+		A5A303D81982041200C9C273 /* MITWebviewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITWebviewCell.m; sourceTree = "<group>"; };
+		A5A303D91982041200C9C273 /* MITWebviewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITWebviewCell.xib; sourceTree = "<group>"; };
+		A5A303DF198677B400C9C273 /* MITEventHeaderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventHeaderCell.h; sourceTree = "<group>"; };
+		A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventHeaderCell.m; sourceTree = "<group>"; };
+		A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventHeaderCell.xib; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
 		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
@@ -1611,6 +1631,9 @@
 				225A22BE19829D2300276F27 /* MITDatePickerViewController.h */,
 				225A22BF19829D2300276F27 /* MITDatePickerViewController.m */,
 				225A22C019829D2300276F27 /* MITDatePickerViewController.xib */,
+				A5A303C719804F0B00C9C273 /* MITEventDetailViewController.h */,
+				A5A303C819804F0B00C9C273 /* MITEventDetailViewController.m */,
+				A5A303C919804F0B00C9C273 /* MITEventDetailViewController.xib */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -1624,6 +1647,15 @@
 				22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */,
 				22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */,
 				22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */,
+				A5A303CC1980500000C9C273 /* MITEventDetailCell.h */,
+				A5A303CD1980500000C9C273 /* MITEventDetailCell.m */,
+				A5A303CE1980500000C9C273 /* MITEventDetailCell.xib */,
+				A5A303D71982041200C9C273 /* MITWebviewCell.h */,
+				A5A303D81982041200C9C273 /* MITWebviewCell.m */,
+				A5A303D91982041200C9C273 /* MITWebviewCell.xib */,
+				A5A303DF198677B400C9C273 /* MITEventHeaderCell.h */,
+				A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */,
+				A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -3523,6 +3555,7 @@
 				2CDF301F134DF504007C6813 /* qrreader in Resources */,
 				2CFFF00818C8B06600680694 /* DiningHallMenuViewController.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
+				A5A303D01980500000C9C273 /* MITEventDetailCell.xib in Resources */,
 				EB5C625C1201D93A00805EBE /* shuttle in Resources */,
 				2C5D7880191828B700ECB388 /* LauncherModuleGridCell.xib in Resources */,
 				2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */,
@@ -3564,6 +3597,7 @@
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
 				5E70E39F192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib in Resources */,
+				A5A303DB1982041200C9C273 /* MITWebviewCell.xib in Resources */,
 				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
@@ -3577,7 +3611,9 @@
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
+				A5A303E3198677B400C9C273 /* MITEventHeaderCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
+				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3685,6 +3721,7 @@
 				2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
+				A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
 				EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */,
@@ -3692,6 +3729,7 @@
 				EB976D18116CF6630036A18E /* EventListTableView.m in Sources */,
 				2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */,
 				2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */,
+				A5A303DA1982041200C9C273 /* MITWebviewCell.m in Sources */,
 				2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */,
 				2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */,
 				2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */,
@@ -3716,6 +3754,7 @@
 				DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */,
 				EB8392471163EF340067C0A3 /* MITCalendarEvent.m in Sources */,
 				DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */,
+				A5A303CA19804F0B00C9C273 /* MITEventDetailViewController.m in Sources */,
 				2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */,
 				EB07AD9812B886DF005D6A4C /* MITEventList.m in Sources */,
 				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
@@ -3904,6 +3943,7 @@
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
+				A5A303E2198677B400C9C273 /* MITEventHeaderCell.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
 				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,
@@ -4062,7 +4102,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "F78BFD7E-CA9B-46DB-90A3-FE12C2914772";
+				PROVISIONING_PROFILE = "347BE2E8-9409-40AC-8366-8F65C6A350E1";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};

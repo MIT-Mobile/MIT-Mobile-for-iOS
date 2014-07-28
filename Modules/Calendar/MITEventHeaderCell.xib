@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MITEventHeaderCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="48"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="47"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dtH-xh-zWm">
+                        <rect key="frame" x="10" y="2" width="300" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="This event is part of a series" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SoN-4k-MBA">
+                        <rect key="frame" x="10" y="24" width="300" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="SoN-4k-MBA" secondAttribute="trailing" constant="10" id="2co-1n-spC"/>
+                    <constraint firstAttribute="trailing" secondItem="dtH-xh-zWm" secondAttribute="trailing" constant="10" id="Kw4-hB-rWg"/>
+                    <constraint firstItem="dtH-xh-zWm" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="S5i-wk-iBe"/>
+                    <constraint firstItem="dtH-xh-zWm" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="XgC-Hc-KOc"/>
+                    <constraint firstItem="SoN-4k-MBA" firstAttribute="top" secondItem="dtH-xh-zWm" secondAttribute="bottom" constant="1" id="kuE-FM-r6p"/>
+                    <constraint firstAttribute="bottom" secondItem="SoN-4k-MBA" secondAttribute="bottom" constant="2" id="mTg-j0-OHp"/>
+                    <constraint firstItem="SoN-4k-MBA" firstAttribute="top" secondItem="dtH-xh-zWm" secondAttribute="bottom" constant="1" id="qXg-0i-P38"/>
+                    <constraint firstItem="SoN-4k-MBA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="qwC-Jj-luO"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="eventTitleLabel" destination="dtH-xh-zWm" id="844-bB-aq9"/>
+                <outlet property="partOfSeriesLabel" destination="SoN-4k-MBA" id="GGP-j5-VSv"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+</document>
