@@ -11,7 +11,8 @@
 #import "MITNewsiPadViewController.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid>
-
+@property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
+@property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @end
 
 @implementation MITNewsGridViewController
@@ -34,6 +35,8 @@
 {
     [super viewDidLoad];
     [self didLoadCollectionView:self.collectionView];
+    self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
+    self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
 }
 
 - (void)didLoadCollectionView:(UICollectionView*)collectionView
@@ -53,6 +56,8 @@
         [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
     
         [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+        
+        [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
     
         [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
     } else {
@@ -60,6 +65,7 @@
         [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
         [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
         [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
         [collectionView registerClass:[UICollectionViewCell class] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
     }
 
@@ -99,6 +105,16 @@
     UICollectionView *collectionView = self.collectionView;
     NSIndexPath* selectedIndexPath = [[collectionView indexPathsForSelectedItems] firstObject];
     return [self storyAtIndexPath:selectedIndexPath];
+}
+
+#pragma mark - Responding to UI events
+- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+
+    if (categoryIndexPath && categoryIndexPath.section != 0) {
+        [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
+    }
 }
 
 - (void)updateLayoutForOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -161,6 +177,18 @@
     if ([kind isEqualToString:MITNewsReusableViewIdentifierSectionHeader]) {
         UICollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader forIndexPath:indexPath];
         headerView.backgroundColor = [UIColor redColor];
+        UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+        if (!recognizer) {
+            recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+            [headerView addGestureRecognizer:recognizer];
+        }
+        
+        // Keep track of the gesture recognizers we create so we can remove
+        // them later
+        [self.gestureRecognizersByView setObject:recognizer forKey:headerView];
+        
+        NSIndexPath *categoryIndexPath = [NSIndexPath indexPathWithIndex:indexPath.section];
+        [self.categoriesByGestureRecognizer setObject:categoryIndexPath forKey:recognizer];
 
         return headerView;
     }

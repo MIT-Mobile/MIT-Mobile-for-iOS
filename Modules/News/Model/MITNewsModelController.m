@@ -119,7 +119,7 @@
 - (MITNewsRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsRecentSearchList entityName]];
-    NSError *error;
+    NSError *error = nil;
 
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     if (error) {
@@ -156,7 +156,17 @@
 
         if (searchItem) {
             searchItem.text = searchTerm;
+            
+            NSArray *recentSearchItems = [recentSearchList.recentQueries array];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchItem.text ];
+            NSArray *previous = [recentSearchItems filteredArrayUsingPredicate:predicate];
+            
+            if ([previous count]) {
+                [recentSearchList removeRecentQueriesObject:[previous firstObject]];
+            }
+            
             [recentSearchList addRecentQueriesObject:searchItem];
+            
             return YES;
         } else {
             return NO;
