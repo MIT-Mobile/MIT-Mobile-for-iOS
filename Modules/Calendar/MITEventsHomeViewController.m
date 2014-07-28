@@ -7,6 +7,7 @@
 #import "MITEventList.h"
 #import "MITDatePickerViewController.h"
 #import "MITEventDetailViewController.h"
+#import "MITCalendarSelectionViewController.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -469,6 +470,16 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self updateDisplayedDay];
     
     [self dismissViewControllerAnimated:datePicker completion:NULL];
+}
+
+#pragma mark - Calendar
+- (IBAction)presentCalendarSelectionPressed:(id)sender
+{
+    MITCalendarSelectionViewController *calendarVC = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStylePlain];
+    calendarVC.categories = [MITCalendarDataManager topLevelCategories];
+    
+    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:calendarVC];
+    [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
 @end

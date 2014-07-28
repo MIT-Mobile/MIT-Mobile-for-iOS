@@ -24,6 +24,7 @@
 		225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */; };
 		22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */; };
 		22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */; };
+		22CC201A19869A5700E0A5B1 /* MITCalendarSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22CC201919869A5700E0A5B1 /* MITCalendarSelectionViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -558,6 +559,8 @@
 		22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEventCell.h; sourceTree = "<group>"; };
 		22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarEventCell.m; sourceTree = "<group>"; };
 		22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITCalendarEventCell.xib; sourceTree = "<group>"; };
+		22CC201819869A5700E0A5B1 /* MITCalendarSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarSelectionViewController.h; sourceTree = "<group>"; };
+		22CC201919869A5700E0A5B1 /* MITCalendarSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarSelectionViewController.m; sourceTree = "<group>"; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1629,6 +1632,8 @@
 				A5A303C719804F0B00C9C273 /* MITEventDetailViewController.h */,
 				A5A303C819804F0B00C9C273 /* MITEventDetailViewController.m */,
 				A5A303C919804F0B00C9C273 /* MITEventDetailViewController.xib */,
+				22CC201819869A5700E0A5B1 /* MITCalendarSelectionViewController.h */,
+				22CC201919869A5700E0A5B1 /* MITCalendarSelectionViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3926,6 +3931,8 @@
 				DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
+				2C040E1617EBA20A00A603A6 /* MITCampusMapViewController.m in Sources */,
+				22CC201A19869A5700E0A5B1 /* MITCalendarSelectionViewController.m in Sources */,
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,

@@ -444,6 +444,32 @@ NSString * const kCalendarListsFailedToLoad = @"kCalendarListsFailedToLoad";
     return cachedIdentifiers[identifier];
 }
 
++ (void)performCategoriesRequestWithCompletion:(void (^)(NSArray *categories, NSError *error))completion
+{
+    
+	MITEventList *categories = [[MITCalendarDataManager sharedManager] eventListWithID:@"categories"];
+    NSString *command = [MITCalendarDataManager apiCommandForEventType:categories];
+    
+    NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:command parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *categoryObjects) {
+        
+        for (NSDictionary *categoryObject in categoryObjects) {
+            [MITCalendarDataManager categoryWithDict:categoryObject forListID:nil]; // save this to core data
+            [CoreDataManager saveData];
+        }
+    
+        completion([MITCalendarDataManager topLevelCategories], nil);
+        
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogVerbose(@"request for v2:%@/%@ failed with error %@",CalendarTag,command,[error localizedDescription]);
+        completion(nil, error);
+    }];
+    
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
+}
+
 // Note: this was migrated to here and adapted from the old CalendarEventsViewController
 + (void)performEventsRequestForDate:(NSDate *)date eventList:(MITEventList *)eventList completion:(void (^)(NSArray *events, NSError *error))completion
 {

@@ -51,7 +51,9 @@ extern NSString * const CalendarEventAPISearch;
 + (NSTimeInterval)intervalForEventType:(MITEventList *)listType fromDate:(NSDate *)aDate forward:(BOOL)forward;
 + (NSString *)dateStringForEventType:(MITEventList *)listType forDate:(NSDate *)aDate;
 
++ (void)performCategoriesRequestWithCompletion:(void (^)(NSArray *events, NSError *error))completion;
 + (void)performEventsRequestForDate:(NSDate *)date eventList:(MITEventList *)eventList completion:(void (^)(NSArray *events, NSError *error))completion;
+
 
 
 @end
