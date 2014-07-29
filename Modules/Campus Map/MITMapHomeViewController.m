@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
+@property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
@@ -284,7 +285,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
     if ([self.places count] > 0) {
-        [self.mapView showAnnotations:self.places animated:animated];
+        MKMapRect zoomRect = MKMapRectNull;
+        for (id <MKAnnotation> annotation in self.places)
+        {
+            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
+            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+            zoomRect = MKMapRectUnion(zoomRect, pointRect);
+        }
+        double inset = -zoomRect.size.width * 0.1;
+        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
@@ -300,10 +309,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)setPlaces:(NSArray *)places animated:(BOOL)animated
 {
     _places = places;
-    [self refreshPlaceAnnotations];
     [[self resultsListViewController] setPlaces:places];
-    [self setupMapBoundingBoxAnimated:animated];
+    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
     self.showFirstCalloutOnNextMapRegionChange = YES;
+    [self setupMapBoundingBoxAnimated:animated];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
@@ -628,6 +637,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
+    }
+    
+    if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
+        [self refreshPlaceAnnotations];
+        self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
     }
 }
 
