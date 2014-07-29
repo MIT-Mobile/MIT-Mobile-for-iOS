@@ -9,6 +9,7 @@
 
 @property (nonatomic) CGFloat columnWidth;
 @property (nonatomic) CGFloat interItemPadding;
+@property (nonatomic,strong) NSMutableDictionary *cachedItemHeights;
 @end
 
 @implementation MITCollectionViewGridLayout
@@ -122,15 +123,21 @@
     return contentFrame.size;
 }
 
-- (void)invalidateLayout
+- (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context
 {
-    [super invalidateLayout];
-
-    // TODO: Handle invalidation better. There shouldn't be too many items
-    // (500 max per category) so this won't be a huge processor hog
-    // but it's less than ideal and makes animation difficult.
-    // (bskinner - 2014.07.16)
-    [self.sectionLayouts removeAllObjects];
+    [super invalidateLayoutWithContext:context];
+    
+    if (context.invalidateEverything) {
+        [self.sectionLayouts removeAllObjects];
+        [self.cachedItemHeights removeAllObjects];
+    } else if (context.invalidateDataSourceCounts) {
+        [self.cachedItemHeights removeAllObjects];
+        [self.sectionLayouts removeAllObjects];
+    }
+    
+    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, MITCollectionViewGridLayoutSection *layout, BOOL *stop) {
+        layout.frame = [self _layoutFrameForSection:[key unsignedIntegerValue]];
+    }];
 }
 
 - (CGRect)_layoutFrameForSection:(NSUInteger)section
@@ -195,7 +202,7 @@
 - (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     MITCollectionViewGridLayoutSection *sectionLayout = [self layoutForSection:indexPath.section];
-    return sectionLayout.headerLayoutAttributes;
+    return [sectionLayout headerLayoutAttributesWithContentOffset:self.collectionView.contentOffset];
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)decorationViewKind atIndexPath:(NSIndexPath *)indexPath
@@ -227,6 +234,16 @@
     return layoutAttributes;
 }
 
+#pragma mark Cache Properties
+- (NSMutableDictionary*)cachedItemHeights
+{
+    if (!_cachedItemHeights) {
+        _cachedItemHeights = [[NSMutableDictionary alloc] init];
+    }
+    
+    return _cachedItemHeights;
+}
+
 
 #pragma mark Delegate Pass-Thru
 - (NSUInteger)numberOfColumnsInSection:(NSInteger)section
@@ -240,21 +257,35 @@
 
 - (CGFloat)heightForHeaderInSection:(NSInteger)section
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:withWidth:)]) {
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section withWidth:CGRectGetWidth(self.collectionView.bounds)];
-    } else {
-        return self.headerHeight;
+    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndex:section];
+    if (!self.cachedItemHeights[indexPath]) {
+        CGFloat headerHeight = self.headerHeight;
+        
+        if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:withWidth:)]) {
+            MITCollectionViewGridLayoutSection *section = [self layoutForSection:indexPath.section];
+            headerHeight = [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section withWidth:CGRectGetWidth(self.collectionView.bounds)];
+        }
+        
+        self.cachedItemHeights[indexPath] = @(headerHeight);
     }
+    
+    return [self.cachedItemHeights[indexPath] doubleValue];
 }
 
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:withWidth:)]) {
-        MITCollectionViewGridLayoutSection *section = [self layoutForSection:indexPath.section];
-        return [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:section.columnWidth];
-    } else {
-        return self.itemHeight;
+    if (!self.cachedItemHeights[indexPath]) {
+        CGFloat itemHeight = self.itemHeight;
+        
+        if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:withWidth:)]) {
+            MITCollectionViewGridLayoutSection *section = [self layoutForSection:indexPath.section];
+            itemHeight = [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath withWidth:section.columnWidth];
+        }
+        
+        self.cachedItemHeights[indexPath] = @(itemHeight);
     }
+    
+    return [self.cachedItemHeights[indexPath] doubleValue];
 }
 
 - (NSUInteger)featuredStoryHorizontalSpanInSection:(NSInteger)section
