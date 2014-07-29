@@ -302,6 +302,10 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
             headerLayoutAttributes.frame = headerFrame;
             
+            // Offset the header further down so there is a bit of spacing between the bottom of the header and the top of the section
+            CGRect scratchFrame = CGRectZero;
+            CGRectDivide(layoutBounds, &scratchFrame, &layoutBounds, self.lineSpacing, CGRectMinYEdge);
+            
             // Set a high value for the zIndex to make sure that the header 'floats'
             // over everything else.
             headerLayoutAttributes.zIndex = 1024;
