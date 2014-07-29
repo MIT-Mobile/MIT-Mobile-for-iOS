@@ -36,7 +36,10 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     // failures when a cell is about to be dequeued for reuse.
     // The constraint failures don't seem to affect the app, they just look
     // terrible.
-    self.imageHeightConstraint.constant = 0;
+    _imageSize = CGSizeZero;
+    [self needsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
+    
     [self.storyImageView cancelCurrentImageLoad];
 }
 
@@ -47,6 +50,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
         maximumImageSize = MITNewsStoryCellExternalMaximumImageSize;
     } else {
         maximumImageSize = CGSizeMake(CGRectGetWidth(self.bounds), NSIntegerMax);
+
     }
 
     CGSize imageSize = [self scaledSizeForSize:_imageSize withMaximumSize:maximumImageSize];

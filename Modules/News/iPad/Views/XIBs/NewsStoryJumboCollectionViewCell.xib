@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -21,16 +21,12 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
                                 <rect key="frame" x="0.0" y="0.0" width="347" height="246"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="347" id="KBe-9j-iRv"/>
                                     <constraint firstAttribute="height" constant="246" id="U9t-XR-rWW"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="347" translatesAutoresizingMaskIntoConstraints="NO" id="rJ0-gW-PwR">
                                 <rect key="frame" x="0.0" y="254" width="347" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" id="9bS-kR-LGV"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
@@ -38,9 +34,6 @@
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="Dek" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="347" translatesAutoresizingMaskIntoConstraints="NO" id="xfl-zq-sIP">
                                 <rect key="frame" x="0.0" y="282" width="347" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" id="ShK-zz-xFh"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -72,7 +65,6 @@
             <connections>
                 <outlet property="dekLabel" destination="xfl-zq-sIP" id="qjk-Uo-ZhL"/>
                 <outlet property="imageHeightConstraint" destination="U9t-XR-rWW" id="jjs-ot-8jb"/>
-                <outlet property="imageWidthConstraint" destination="KBe-9j-iRv" id="DoV-D6-mkh"/>
                 <outlet property="storyImageView" destination="H2F-9T-m4h" id="aEr-dI-sGf"/>
                 <outlet property="titleLabel" destination="rJ0-gW-PwR" id="qNn-tg-o0v"/>
             </connections>
