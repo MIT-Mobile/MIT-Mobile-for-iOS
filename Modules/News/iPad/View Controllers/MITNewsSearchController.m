@@ -257,7 +257,6 @@
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
     recentSearchPopoverController.popoverBackgroundViewClass = [MITPopoverBackgroundView class];
-    [[MITPopoverBackgroundView class] setTintColor:[UIColor whiteColor]];
     
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
