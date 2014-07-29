@@ -1,5 +1,4 @@
 #import "MITPopoverBackgroundView.h"
-#import "UIImage+Resize.h"
 
 #define CONTENT_INSET 0.0
 #define CAP_INSET 50.0
@@ -53,13 +52,23 @@ static UIColor *popoverTintColor = nil;
 - (id)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         
-        UIGraphicsBeginImageContextWithOptions(CGRectMake(0, 0, 174, 104-26).size, NO, 1);
-        [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDown@2x"]  drawAtPoint:(CGPoint){-CGRectMake(0, 0, 174, 104-26).origin.x, -CGRectMake(0, 0, 174, 104-26).origin.y}];
+        UIImage *popOverImage = [UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDown@2x"];
+        
+        CGFloat popOverImageWidth = popOverImage.size.width;
+        CGFloat popOverImageHeight = popOverImage.size.height;
+        CGFloat arrowWidth = 74;
+        
+        
+        UIGraphicsBeginImageContextWithOptions(CGRectMake(0, 0, popOverImageWidth, popOverImageHeight- ARROW_HEIGHT*2).size, NO, 0);
+        [popOverImage drawAtPoint:(CGPoint){-CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.x, -CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.y}];
+        
         UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        UIGraphicsBeginImageContextWithOptions(CGRectMake(172/2-76/2, 104-26, 76, 26).size, NO, 1);
-        [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDown@2x"]  drawAtPoint:(CGPoint){-CGRectMake(172/2-76/2, 104-26, 76, 26).origin.x, -CGRectMake(172/2-76/2, 104-26, 76, 26).origin.y}];
+        UIGraphicsBeginImageContextWithOptions(CGRectMake(popOverImageWidth/2 - arrowWidth/2, popOverImageHeight - ARROW_HEIGHT*2, arrowWidth, ARROW_HEIGHT*2).size, NO, 0);
+        
+        [popOverImage drawAtPoint:(CGPoint){-CGRectMake(popOverImageWidth/2 - arrowWidth/2, popOverImageHeight - ARROW_HEIGHT*2, arrowWidth, ARROW_HEIGHT*2).origin.x, -CGRectMake(popOverImageWidth/2 - arrowWidth/2, popOverImageHeight - ARROW_HEIGHT*2, arrowWidth, ARROW_HEIGHT*2).origin.y}];
+        
         UIImage *croppedArrow = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
@@ -83,7 +92,7 @@ static UIColor *popoverTintColor = nil;
     CGFloat _left = 0.0;
     CGFloat _top = 0.0;
     CGFloat _coordinate = 0.0;
-    
+        
     switch (self.arrowDirection) {
         case UIPopoverArrowDirectionAny:
             break;
