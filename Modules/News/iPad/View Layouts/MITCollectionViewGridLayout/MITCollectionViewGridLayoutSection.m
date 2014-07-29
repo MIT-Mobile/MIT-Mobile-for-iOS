@@ -436,7 +436,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         }
         
         [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
-        _decorationLayoutAttributes = [self _featuredDecorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
+        _decorationLayoutAttributes = [self _decorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
         
         _needsLayout = NO;
     }
@@ -458,7 +458,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     return numberOfItems;
 }
 
-- (NSArray*)_featuredDecorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
+- (NSArray*)_decorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
 {
     if ([itemLayoutAttributes count] == 0) {
         return nil;
