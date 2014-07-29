@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITCalendarSelectionViewController : UITableViewController
+@interface MITCalenderSubCategoryViewController : UITableViewController
 
 @property (nonatomic, strong) NSArray *categories;
 

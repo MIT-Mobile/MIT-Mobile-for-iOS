@@ -7,7 +7,7 @@
 #import "MITEventList.h"
 #import "MITDatePickerViewController.h"
 #import "MITEventDetailViewController.h"
-#import "MITCalendarSelectionViewController.h"
+#import "MITCalendarSelectionHomeViewController.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -21,7 +21,7 @@ static const NSTimeInterval kSlidingAnimationDuration = 0.3;
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
-@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITDatePickerViewControllerDelegate>
+@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITDatePickerViewControllerDelegate, MITCalendarSelectionDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
@@ -137,7 +137,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 		}
 	}
     [self reloadEvents];
-    
 }
 
 - (void)reloadEvents
@@ -475,11 +474,16 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 #pragma mark - Calendar
 - (IBAction)presentCalendarSelectionPressed:(id)sender
 {
-    MITCalendarSelectionViewController *calendarVC = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStylePlain];
-    calendarVC.categories = [MITCalendarDataManager topLevelCategories];
+    MITCalendarSelectionHomeViewController *calendarVC = [[MITCalendarSelectionHomeViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    calendarVC.delegate = self;
     
     UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:calendarVC];
     [self presentViewController:navContainerController animated:YES completion:NULL];
+}
+
+- (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController didSelectEventList:(MITEventList *)eventList
+{
+    [viewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

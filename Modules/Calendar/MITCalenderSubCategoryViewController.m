@@ -1,13 +1,13 @@
-#import "MITCalendarSelectionViewController.h"
+#import "MITCalenderSubCategoryViewController.h"
 #import "EventCategory.h"
 
 static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
-@interface MITCalendarSelectionViewController ()
+@interface MITCalenderSubCategoryViewController ()
 
 @end
 
-@implementation MITCalendarSelectionViewController
+@implementation MITCalenderSubCategoryViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -41,27 +41,15 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     return [self.categories count];
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITCalendarCell];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITCalendarCell];
     }
-    
     EventCategory *category = self.categories[indexPath.row];
-	if (self.navigationController.viewControllers.count > 1 && !category.parentCategory) {
-		cell.textLabel.text = [NSString stringWithFormat:@"All %@", category.title];
-	} else {
-		cell.textLabel.text = category.title;
-	}
-	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-	
+    cell.textLabel.text = category.title;
+    
     return cell;
-
 }
-
-
-
-
 @end
