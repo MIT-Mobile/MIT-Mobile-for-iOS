@@ -7,12 +7,13 @@
 #import "MITNewsStoryViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "DDPopoverBackgroundView.h"
+
 #import "MITNewsStoriesDataSource.h"
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
 #import "MITNewsCustomWidthTableViewCell.h"
+#import "MITPopoverBackgroundView.h"
 
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
@@ -255,10 +256,7 @@
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
-    recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
-
-    [[DDPopoverBackgroundView class] setContentInset:0];
-    [[DDPopoverBackgroundView class] setTintColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:.8]];
+    recentSearchPopoverController.popoverBackgroundViewClass = [MITPopoverBackgroundView class];
     
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
