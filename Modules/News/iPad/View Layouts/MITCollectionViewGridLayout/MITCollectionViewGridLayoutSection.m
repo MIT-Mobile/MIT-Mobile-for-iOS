@@ -206,6 +206,28 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     }
 }
 
+- (void)setNumberOfColumns:(NSUInteger)numberOfColumns
+{
+    if (numberOfColumns < 2) {
+        _numberOfColumns = 2;
+    } else {
+        _numberOfColumns = numberOfColumns;
+    }
+    
+    [self setNeedsLayout];
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    bounds.size.height = 0;
+    
+    if (CGRectGetWidth(_bounds) != CGRectGetWidth(bounds)) {
+        [self setNeedsLayout];
+    }
+    
+    _bounds = bounds;
+}
+
 - (CGRect)frame
 {
     CGRect frame = self.bounds;
@@ -216,19 +238,13 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 - (void)setFrame:(CGRect)frame
 {
     self.origin = frame.origin;
-    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), 0);
 }
 
 - (CGRect)bounds
 {
     [self layoutIfNeeded];
     return _bounds;
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    _bounds = bounds;
-    [self setNeedsLayout];
 }
 
 - (CGFloat)columnWidth
