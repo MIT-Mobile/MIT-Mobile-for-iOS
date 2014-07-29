@@ -12,6 +12,6 @@
 
 @protocol MITWebviewCellDelegate <NSObject>
 
-- (void)webviewCellDidResize:(MITWebviewCell *)webviewCell;
+- (void)webviewCellDidResize:(MITWebviewCell *)webviewCell toHeight:(CGFloat)newHeight;
 
 @end

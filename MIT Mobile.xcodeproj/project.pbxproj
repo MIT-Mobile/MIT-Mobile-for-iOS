@@ -349,8 +349,6 @@
 		A5A303D01980500000C9C273 /* MITEventDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303CE1980500000C9C273 /* MITEventDetailCell.xib */; };
 		A5A303DA1982041200C9C273 /* MITWebviewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303D81982041200C9C273 /* MITWebviewCell.m */; };
 		A5A303DB1982041200C9C273 /* MITWebviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303D91982041200C9C273 /* MITWebviewCell.xib */; };
-		A5A303E2198677B400C9C273 /* MITEventHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */; };
-		A5A303E3198677B400C9C273 /* MITEventHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1188,9 +1186,6 @@
 		A5A303D71982041200C9C273 /* MITWebviewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITWebviewCell.h; sourceTree = "<group>"; };
 		A5A303D81982041200C9C273 /* MITWebviewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITWebviewCell.m; sourceTree = "<group>"; };
 		A5A303D91982041200C9C273 /* MITWebviewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITWebviewCell.xib; sourceTree = "<group>"; };
-		A5A303DF198677B400C9C273 /* MITEventHeaderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventHeaderCell.h; sourceTree = "<group>"; };
-		A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventHeaderCell.m; sourceTree = "<group>"; };
-		A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventHeaderCell.xib; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
 		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
@@ -1653,9 +1648,6 @@
 				A5A303D71982041200C9C273 /* MITWebviewCell.h */,
 				A5A303D81982041200C9C273 /* MITWebviewCell.m */,
 				A5A303D91982041200C9C273 /* MITWebviewCell.xib */,
-				A5A303DF198677B400C9C273 /* MITEventHeaderCell.h */,
-				A5A303E0198677B400C9C273 /* MITEventHeaderCell.m */,
-				A5A303E1198677B400C9C273 /* MITEventHeaderCell.xib */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -3611,7 +3603,6 @@
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
-				A5A303E3198677B400C9C273 /* MITEventHeaderCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
 				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */,
@@ -3943,7 +3934,6 @@
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
-				A5A303E2198677B400C9C273 /* MITEventHeaderCell.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
 				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,

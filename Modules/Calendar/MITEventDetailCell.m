@@ -6,6 +6,7 @@
 @property (nonatomic, weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic, weak) IBOutlet UILabel *detailsLabel;
 @property (nonatomic, weak) IBOutlet UIButton *iconActionButton;
+@property (nonatomic, weak) IBOutlet UIView *separatorView;
 
 @end
 
@@ -15,6 +16,7 @@
 {
     // Initialization code
     self.titleLabel.textColor = [UIColor mit_tintColor];
+    self.iconActionButton.backgroundColor = [UIColor greenColor];
 }
 
 - (void)layoutSubviews
@@ -40,6 +42,18 @@
 - (void)setDetailText:(NSString *)detailText
 {
     self.detailsLabel.text = detailText;
+}
+
+- (void)setIconForRowType:(MITEventDetailRowType)rowType
+{
+//    switch (rowType) {
+//        case MITEventDetailRowTypeLocation:
+//            <#statements#>
+//            break;
+//            
+//        default:
+//            break;
+//    }
 }
 
 @end

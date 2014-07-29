@@ -6,6 +6,7 @@
 #import "NSDate+MITAdditions.h"
 #import "MITEventList.h"
 #import "MITDatePickerViewController.h"
+#import "MITEventDetailViewController.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -247,6 +248,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [cell setEvent:self.activeEvents[indexPath.row]];
 
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.event = self.activeEvents[indexPath.row];
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView

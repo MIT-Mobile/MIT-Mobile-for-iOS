@@ -34,10 +34,17 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-    // resize height and send delegate call
+    CGFloat newHeight = self.webView.scrollView.contentSize.height;
     
-    if ([self.delegate respondsToSelector:@selector(webviewCellDidResize:)]) {
-        [self.delegate webviewCellDidResize:self];
+    if (self.webView.frame.size.height != newHeight) {
+        CGRect frame = webView.frame;
+        frame.size.height = newHeight;
+        webView.frame = frame;
+        
+        if ([self.delegate respondsToSelector:@selector(webviewCellDidResize:toHeight:)]) {
+            CGFloat verticalPadding = 6;
+            [self.delegate webviewCellDidResize:self toHeight:(newHeight + verticalPadding * 2)];
+        }
     }
 }
 
