@@ -59,7 +59,7 @@ static UIColor *popoverTintColor = nil;
         CGFloat arrowWidth = 74;
         
         
-        UIGraphicsBeginImageContextWithOptions(CGRectMake(0, 0, popOverImageWidth, popOverImageHeight- ARROW_HEIGHT*2).size, NO, 0);
+        UIGraphicsBeginImageContextWithOptions(CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).size, NO, 0);
         [popOverImage drawAtPoint:(CGPoint){-CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.x, -CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.y}];
         
         UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -76,8 +76,9 @@ static UIColor *popoverTintColor = nil;
         
         _arrowView = [[UIImageView alloc] initWithImage:croppedArrow];
         
-        [self addSubview:_borderImageView];
-        //[self addSubview:_arrowView];
+        _theBigPicture = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30)]];
+        
+        [self addSubview:_theBigPicture];
         self.layer.shadowColor = [[UIColor clearColor] CGColor];
         
     }
@@ -92,7 +93,7 @@ static UIColor *popoverTintColor = nil;
     CGFloat _left = 0.0;
     CGFloat _top = 0.0;
     CGFloat _coordinate = 0.0;
-        
+    
     switch (self.arrowDirection) {
         case UIPopoverArrowDirectionAny:
             break;
@@ -103,9 +104,9 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"UP");
             
             _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
-            _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
+            _theBigPicture.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT), NO, 0);
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_theBigPicture.frame.size.width, _theBigPicture.frame.size.height + ARROW_HEIGHT), NO, 0);
             
             [_borderImageView.image drawInRect:CGRectMake(_left, ARROW_HEIGHT, _width, _height)];
             _arrowView.frame = CGRectMake(_coordinate, 0, ARROW_BASE, ARROW_HEIGHT);
@@ -114,7 +115,7 @@ static UIColor *popoverTintColor = nil;
                                                     orientation: UIImageOrientationDown];
             [_arrowView.image drawInRect:_arrowView.frame];
             
-            _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+            _theBigPicture.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             break;
@@ -178,11 +179,11 @@ static UIColor *popoverTintColor = nil;
             
     }
     if (popoverTintColor) {
-        _borderImageView.image = [_borderImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _borderImageView.tintColor = popoverTintColor;
+        _theBigPicture.image = [_theBigPicture.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _theBigPicture.tintColor = popoverTintColor;
     } else {
-        _borderImageView.image = [_borderImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _borderImageView.tintColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:.86];
+        _theBigPicture.image = [_theBigPicture.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _theBigPicture.tintColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:.86];
     }
 }
 
