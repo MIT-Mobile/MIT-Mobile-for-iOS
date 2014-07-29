@@ -32,7 +32,7 @@
         _lineSpacing = 8.0;
         _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
 
-        [self registerClass:[MITCollectionViewGridDividerView class] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
+        [self registerNib:[UINib nibWithNibName:@"GridDividerView" bundle:nil] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
 
     return self;
