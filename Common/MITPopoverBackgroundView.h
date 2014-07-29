@@ -6,4 +6,7 @@
     CGFloat _arrowOffset;
     UIPopoverArrowDirection _arrowDirection;
 }
+
++ (void)setTintColor:(UIColor *)tintColor;
+
 @end

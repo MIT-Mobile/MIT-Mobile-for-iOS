@@ -44,6 +44,12 @@
     return ARROW_BASE;
 }
 
+static UIColor *popoverTintColor = nil;
++ (void)setTintColor:(UIColor *)tintColor
+{
+    popoverTintColor = tintColor;
+}
+
 -(id)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         
@@ -81,33 +87,33 @@
     switch (self.arrowDirection) {
         case UIPopoverArrowDirectionAny:
             break;
-            case UIPopoverArrowDirectionUnknown:
+        case UIPopoverArrowDirectionUnknown:
             break;
-        
+            
         case UIPopoverArrowDirectionUp:
             NSLog(@"UP");
+            
             _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
             
             _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContext(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT));
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT), NO, 0);
             [_borderImageView.image drawInRect:CGRectMake(_left, ARROW_HEIGHT, _width, _height)];
+            
             _arrowView.frame = CGRectMake(_coordinate, 0, ARROW_BASE, ARROW_HEIGHT);
             
             _arrowView.image = [[UIImage alloc] initWithCGImage: _arrowView.image.CGImage
-             scale: 1.0
-             orientation: UIImageOrientationDown];
-
+                                                          scale: 1.0
+                                                    orientation: UIImageOrientationDown];
+            
             [_arrowView.image drawInRect:_arrowView.frame];
             
             _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             _borderImageView.image = [_borderImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            _borderImageView.tintColor = [UIColor whiteColor];
-
-            break;
             
+            break;
             
         case UIPopoverArrowDirectionDown:
             NSLog(@"Down");
@@ -115,7 +121,7 @@
             
             _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContext(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT));
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT), NO, 0);
             [_borderImageView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
             _arrowView.frame = CGRectMake(_coordinate, _height, ARROW_BASE, ARROW_HEIGHT);
             
@@ -124,18 +130,16 @@
             _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
-            _borderImageView.backgroundColor = [UIColor grayColor];
-            
             break;
             
         case UIPopoverArrowDirectionLeft:
             NSLog(@"Left");
-
+            
             _coordinate = ((self.frame.size.height / 2) + self.arrowOffset) - (ARROW_BASE / 2);
             
             _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContext(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height));
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height), NO, 0);
             [_borderImageView.image drawInRect:CGRectMake(ARROW_HEIGHT, _top, _width, _height)];
             _arrowView.frame = CGRectMake(0, _coordinate, ARROW_HEIGHT, ARROW_BASE);
             
@@ -147,35 +151,36 @@
             
             _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
-            _borderImageView.backgroundColor = [UIColor grayColor];
-
+            
             break;
             
         case UIPopoverArrowDirectionRight:
             NSLog(@"Right");
-
+            
             _coordinate = ((self.frame.size.height / 2) + self.arrowOffset) - (ARROW_BASE / 2);
             
             _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContext(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height));
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height), NO, 0);
             [_borderImageView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
             _arrowView.frame = CGRectMake(_width, _coordinate, ARROW_HEIGHT, ARROW_BASE);
             
             _arrowView.image = [[UIImage alloc] initWithCGImage: _arrowView.image.CGImage
-                                                                 scale: 1.0
-                                                           orientation: UIImageOrientationLeft];
+                                                          scale: 1.0
+                                                    orientation: UIImageOrientationLeft];
             
             [_arrowView.image drawInRect:_arrowView.frame];
             
             _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
-            _borderImageView.backgroundColor = [UIColor grayColor];
-
+            
             break;
             
     }
-
+    if (popoverTintColor) {
+        _borderImageView.image = [_borderImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _borderImageView.tintColor = popoverTintColor;
+    }
 }
 
 @end
