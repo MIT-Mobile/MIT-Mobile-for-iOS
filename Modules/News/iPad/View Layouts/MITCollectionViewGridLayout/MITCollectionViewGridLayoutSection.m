@@ -94,17 +94,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     return self;
 }
 
-- (void)setNumberOfColumns:(NSUInteger)numberOfColumns
-{
-    if (numberOfColumns < 2) {
-        _numberOfColumns = 2;
-    } else {
-        _numberOfColumns = numberOfColumns;
-    }
-    
-    [self setNeedsLayout];
-}
-
 - (UICollectionViewLayoutAttributes*)featuredItemLayoutAttributes
 {
     [self layoutIfNeeded];
