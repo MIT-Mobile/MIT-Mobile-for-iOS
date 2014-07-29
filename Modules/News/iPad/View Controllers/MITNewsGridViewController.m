@@ -212,8 +212,6 @@
         MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
     }
-
-    cell.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
