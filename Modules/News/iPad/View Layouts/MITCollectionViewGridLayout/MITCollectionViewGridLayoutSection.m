@@ -366,7 +366,8 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             }
             
             CGFloat itemHeight = [self.layout heightForItemAtIndexPath:indexPath];
-            [currentLayoutRow addItemForIndexPath:indexPath withHeight:itemHeight];
+            [currentLayoutRow addItemForIndexPath:indexPath];
+            [currentLayoutRow setHeight:itemHeight forItemWithIndexPath:indexPath];
         }
         
         // Now that the rows have their items partitioned out we can figure out how high

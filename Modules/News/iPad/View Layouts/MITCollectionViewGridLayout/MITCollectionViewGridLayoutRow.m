@@ -1,16 +1,16 @@
+#import <Foundation/Foundation.h>
+
 #import "MITCollectionViewGridLayoutRow.h"
 #import "MITNewsConstants.h"
 
 @interface MITCollectionViewGridLayoutRow ()
+@property (nonatomic,strong) NSMutableDictionary *mutableItemLayoutAttributes;
 @property (nonatomic) BOOL needsLayout;
 @end
 
-@implementation MITCollectionViewGridLayoutRow {
-    NSMutableArray *_itemLayoutAttributes;
-    BOOL _needsLayout;
-}
-
+@implementation MITCollectionViewGridLayoutRow
 @synthesize bounds = _bounds;
+
 @dynamic frame;
 @dynamic itemLayoutAttributes;
 @dynamic numberOfItems;
@@ -19,10 +19,9 @@
 {
     self = [super init];
     if (self) {
-        _itemLayoutAttributes = [[NSMutableArray alloc] init];
         _needsLayout = YES;
     }
-
+    
     return self;
 }
 
@@ -37,8 +36,8 @@
         const CGFloat itemWidth = self.columnWidth;
         const CGFloat interItemSpacing = self.interItemPadding;
         
-        __block CGPoint origin = CGPointMake(0, 0);
-        [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
+        __block CGPoint origin = CGPointMake(0,0);
+        [[self _itemLayoutAttributes] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
             CGRect itemFrame = itemLayoutAttributes.frame;
             itemFrame.origin = origin;
             itemFrame.size.width = itemWidth;
@@ -55,19 +54,35 @@
 
 - (NSUInteger)numberOfItems
 {
-    return [_itemLayoutAttributes count];
+    return [self.mutableItemLayoutAttributes count];
+}
+
+- (NSArray*)_itemLayoutAttributes
+{
+    return [[self.mutableItemLayoutAttributes allValues] sortedArrayUsingComparator:^NSComparisonResult(UICollectionViewLayoutAttributes* obj1, UICollectionViewLayoutAttributes* obj2) {
+        return [obj1.indexPath compare:obj2.indexPath];
+    }];
 }
 
 - (NSArray*)itemLayoutAttributes
 {
     [self layoutIfNeeded];
     
-    NSMutableArray *layoutAttributes = [[NSMutableArray alloc] initWithArray:_itemLayoutAttributes copyItems:YES];
+    NSMutableArray *layoutAttributes = [[NSMutableArray alloc] initWithArray:[self _itemLayoutAttributes] copyItems:YES];
     [layoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *layoutAttributes, NSUInteger idx, BOOL *stop) {
         layoutAttributes.frame = CGRectOffset(layoutAttributes.frame, self.origin.x, self.origin.y);
     }];
-
+    
     return layoutAttributes;
+}
+
+- (NSMutableDictionary*)mutableItemLayoutAttributes
+{
+    if (!_mutableItemLayoutAttributes) {
+        _mutableItemLayoutAttributes = [[NSMutableDictionary alloc] init];
+    }
+    
+    return _mutableItemLayoutAttributes;
 }
 
 - (CGRect)frame
@@ -80,7 +95,9 @@
 - (CGRect)_bounds
 {
     __block CGRect contentFrame = CGRectZero;
-    [_itemLayoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
+    
+    // No need to worry about ordering here since union is commutative
+    [[self.mutableItemLayoutAttributes allValues] enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *itemLayoutAttributes, NSUInteger idx, BOOL *stop) {
         contentFrame = CGRectUnion(contentFrame, itemLayoutAttributes.frame);
     }];
     
@@ -107,25 +124,39 @@
     [self setNeedsLayout];
 }
 
-
 - (BOOL)isFilled
 {
     return (!self.maximumNumberOfItems || (self.maximumNumberOfItems == self.numberOfItems));
 }
 
-- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight
+- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath
 {
     if (self.isFilled) {
         return NO;
     }
-
+    
     UICollectionViewLayoutAttributes *itemLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-    itemLayoutAttributes.frame = CGRectMake(0, 0, 0, itemHeight);
-    [_itemLayoutAttributes addObject:itemLayoutAttributes];
-
+    itemLayoutAttributes.frame = CGRectMake(0, 0, 0, 0);
+    self.mutableItemLayoutAttributes[indexPath] = itemLayoutAttributes;
+    
     [self setNeedsLayout];
-
+    
     return YES;
+}
+
+- (void)setHeight:(CGFloat)height forItemWithIndexPath:(NSIndexPath*)indexPath
+{
+    if (!self.mutableItemLayoutAttributes[indexPath]) {
+        [self addItemForIndexPath:indexPath];
+    }
+    
+    UICollectionViewLayoutAttributes *layoutAttributes = self.mutableItemLayoutAttributes[indexPath];
+    CGRect frame = layoutAttributes.frame;
+    frame.size.height = height;
+    layoutAttributes.frame = frame;
+    
+    // No need to force a re-layout after this action since, if an item was added, it should be set to true and if not,
+    // we are only tweaking the height (and the bounds is calculated dynamically)
 }
 
 @end

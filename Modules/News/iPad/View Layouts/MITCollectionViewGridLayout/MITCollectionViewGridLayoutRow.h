@@ -16,5 +16,6 @@
 
 
 - (instancetype)init;
-- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath withHeight:(CGFloat)itemHeight;
+- (BOOL)addItemForIndexPath:(NSIndexPath*)indexPath;
+- (void)setHeight:(CGFloat)height forItemWithIndexPath:(NSIndexPath*)indexPath;
 @end
