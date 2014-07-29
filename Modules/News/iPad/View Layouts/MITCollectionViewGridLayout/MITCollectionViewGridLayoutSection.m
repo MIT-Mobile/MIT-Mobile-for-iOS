@@ -208,13 +208,11 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 
 - (void)setBounds:(CGRect)bounds
 {
-    bounds.size.height = 0;
-    
     if (CGRectGetWidth(_bounds) != CGRectGetWidth(bounds)) {
+        bounds.size.height = 0;
         [self setNeedsLayout];
+        _bounds = bounds;
     }
-    
-    _bounds = bounds;
 }
 
 - (CGRect)frame
