@@ -1,11 +1,3 @@
-//
-//  MITPopoverBackgroundView.m
-//  boundstest
-//
-//  Created by Mark Novak on 7/24/14.
-//  Copyright (c) 2014 mit. All rights reserved.
-//
-
 #import "MITPopoverBackgroundView.h"
 #import "UIImage+Resize.h"
 #define CONTENT_INSET 0.0
