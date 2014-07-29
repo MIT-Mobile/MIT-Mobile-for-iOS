@@ -1,9 +1,9 @@
 #import <UIKit/UIKit.h>
 
 @interface MITPopoverBackgroundView : UIPopoverBackgroundView {
-    UIImageView *_theBigPicture;
-    UIImageView *_borderImageView;
-    UIImageView *_arrowView;
+    UIImageView *popoverArrowBubbleView;
+    UIImageView *popoverBubbleView;
+    UIImageView *_popoverArrowView;
     CGFloat _arrowOffset;
     UIPopoverArrowDirection _arrowDirection;
 }

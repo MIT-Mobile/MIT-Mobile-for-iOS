@@ -58,7 +58,6 @@ static UIColor *popoverTintColor = nil;
         CGFloat popOverImageHeight = popOverImage.size.height;
         CGFloat arrowWidth = 74;
         
-        
         UIGraphicsBeginImageContextWithOptions(CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).size, NO, 0);
         [popOverImage drawAtPoint:(CGPoint){-CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.x, -CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2).origin.y}];
         
@@ -72,13 +71,13 @@ static UIColor *popoverTintColor = nil;
         UIImage *croppedArrow = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        _borderImageView = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30)]];
+        popoverBubbleView = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30)]];
         
-        _arrowView = [[UIImageView alloc] initWithImage:croppedArrow];
+        popoverArrowBubbleView = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30)]];
         
-        _theBigPicture = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30)]];
+        _popoverArrowView = [[UIImageView alloc] initWithImage:croppedArrow];
         
-        [self addSubview:_theBigPicture];
+        [self addSubview:popoverArrowBubbleView];
         self.layer.shadowColor = [[UIColor clearColor] CGColor];
         
     }
@@ -104,18 +103,18 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"UP");
             
             _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
-            _theBigPicture.frame =  CGRectMake(0, 0, _width, _height);
+            popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_theBigPicture.frame.size.width, _theBigPicture.frame.size.height + ARROW_HEIGHT), NO, 0);
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(popoverArrowBubbleView.frame.size.width, popoverArrowBubbleView.frame.size.height + ARROW_HEIGHT), NO, 0);
             
-            [_borderImageView.image drawInRect:CGRectMake(_left, ARROW_HEIGHT, _width, _height)];
-            _arrowView.frame = CGRectMake(_coordinate, 0, ARROW_BASE, ARROW_HEIGHT);
-            _arrowView.image = [[UIImage alloc] initWithCGImage: _arrowView.image.CGImage
+            [popoverBubbleView.image drawInRect:CGRectMake(_left, ARROW_HEIGHT, _width, _height)];
+            _popoverArrowView.frame = CGRectMake(_coordinate, 0, ARROW_BASE, ARROW_HEIGHT);
+            _popoverArrowView.image = [[UIImage alloc] initWithCGImage: _popoverArrowView.image.CGImage
                                                           scale: 1.0
                                                     orientation: UIImageOrientationDown];
-            [_arrowView.image drawInRect:_arrowView.frame];
+            [_popoverArrowView.image drawInRect:_popoverArrowView.frame];
             
-            _theBigPicture.image = UIGraphicsGetImageFromCurrentImageContext();
+            popoverArrowBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             break;
@@ -124,15 +123,15 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"Down");
             
             _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
-            _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
+            popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width, _borderImageView.frame.size.height + ARROW_HEIGHT), NO, 0);
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(popoverArrowBubbleView.frame.size.width, popoverArrowBubbleView.frame.size.height + ARROW_HEIGHT), NO, 0);
             
-            [_borderImageView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
-            _arrowView.frame = CGRectMake(_coordinate, _height, ARROW_BASE, ARROW_HEIGHT);
-            [_arrowView.image drawInRect:_arrowView.frame];
+            [popoverBubbleView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
+            _popoverArrowView.frame = CGRectMake(_coordinate, _height, ARROW_BASE, ARROW_HEIGHT);
+            [_popoverArrowView.image drawInRect:_popoverArrowView.frame];
             
-            _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+            popoverArrowBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             break;
@@ -141,18 +140,18 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"Left");
             
             _coordinate = ((self.frame.size.height / 2) + self.arrowOffset) - (ARROW_BASE / 2);
-            _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
+            popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height), NO, 0);
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(popoverArrowBubbleView.frame.size.width + ARROW_HEIGHT, popoverArrowBubbleView.frame.size.height), NO, 0);
             
-            [_borderImageView.image drawInRect:CGRectMake(ARROW_HEIGHT, _top, _width, _height)];
-            _arrowView.frame = CGRectMake(0, _coordinate, ARROW_HEIGHT, ARROW_BASE);
-            _arrowView.image = [[UIImage alloc] initWithCGImage: _arrowView.image.CGImage
+            [popoverBubbleView.image drawInRect:CGRectMake(ARROW_HEIGHT, _top, _width, _height)];
+            _popoverArrowView.frame = CGRectMake(0, _coordinate, ARROW_HEIGHT, ARROW_BASE);
+            _popoverArrowView.image = [[UIImage alloc] initWithCGImage: _popoverArrowView.image.CGImage
                                                           scale: 1.0
                                                     orientation: UIImageOrientationRight];
-            [_arrowView.image drawInRect:_arrowView.frame];
+            [_popoverArrowView.image drawInRect:_popoverArrowView.frame];
             
-            _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+            popoverArrowBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             break;
@@ -161,29 +160,29 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"Right");
             
             _coordinate = ((self.frame.size.height / 2) + self.arrowOffset) - (ARROW_BASE / 2);
-            _borderImageView.frame =  CGRectMake(0, 0, _width, _height);
+            popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
             
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_borderImageView.frame.size.width + ARROW_HEIGHT, _borderImageView.frame.size.height), NO, 0);
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(popoverArrowBubbleView.frame.size.width + ARROW_HEIGHT, popoverArrowBubbleView.frame.size.height), NO, 0);
             
-            [_borderImageView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
-            _arrowView.frame = CGRectMake(_width, _coordinate, ARROW_HEIGHT, ARROW_BASE);
-            _arrowView.image = [[UIImage alloc] initWithCGImage: _arrowView.image.CGImage
+            [popoverBubbleView.image drawInRect:CGRectMake(_left, _top, _width, _height)];
+            _popoverArrowView.frame = CGRectMake(_width, _coordinate, ARROW_HEIGHT, ARROW_BASE);
+            _popoverArrowView.image = [[UIImage alloc] initWithCGImage: _popoverArrowView.image.CGImage
                                                           scale: 1.0
                                                     orientation: UIImageOrientationLeft];
-            [_arrowView.image drawInRect:_arrowView.frame];
+            [popoverArrowBubbleView.image drawInRect:_popoverArrowView.frame];
             
-            _borderImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+            popoverBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
             
             break;
             
     }
     if (popoverTintColor) {
-        _theBigPicture.image = [_theBigPicture.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _theBigPicture.tintColor = popoverTintColor;
+        popoverArrowBubbleView.image = [popoverArrowBubbleView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        popoverArrowBubbleView.tintColor = popoverTintColor;
     } else {
-        _theBigPicture.image = [_theBigPicture.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _theBigPicture.tintColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:.86];
+        popoverArrowBubbleView.image = [popoverArrowBubbleView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        popoverArrowBubbleView.tintColor = [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:.86];
     }
 }
 
