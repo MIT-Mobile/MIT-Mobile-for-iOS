@@ -116,20 +116,24 @@ static UIColor *popoverTintColor = nil;
         case UIPopoverArrowDirectionUp:
             NSLog(@"UP");
             
-            if( self.frame.size.width/2 + self.arrowOffset < 38) {
+            if (self.frame.size.width/2 + self.arrowOffset < 38 || self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
                 
                 _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
                 _popoverArrowBubbleView.image = nil;
                 
                 _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
                 
-                CGAffineTransform translate = CGAffineTransformMakeTranslation(0,0);
-                CGAffineTransform scale = CGAffineTransformMakeScale(.5, .5);
-                CGAffineTransform transform =  CGAffineTransformConcat(translate, scale);
-                transform = CGAffineTransformRotate(transform, -M_PI);
+                NSInteger sign = 1;
+                
+                if (self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
+                    sign = -1;
+                }
+                
+                CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
+                CGAffineTransform transform = CGAffineTransformRotate(scale, -M_PI);
                 _popoverArrowBubbleView.transform = transform;
                 
-                _popoverArrowBubbleView.frame =  CGRectMake(self.frame.size.width/2 + self.arrowOffset - ARROW_BASE / 2, 0, _width, _height);
+                _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (ARROW_BASE / 2) * sign)), 0, _width, _height);
                 
             } else {
                 
