@@ -104,7 +104,7 @@ static UIColor *popoverTintColor = nil;
     CGFloat _left = 0.0;
     CGFloat _top = 0.0;
     CGFloat _coordinate = 0.0;
-        
+    
     switch (self.arrowDirection) {
         case UIPopoverArrowDirectionAny:
             break;
@@ -203,7 +203,7 @@ static UIColor *popoverTintColor = nil;
                 
                 NSInteger sign = -1;
                 
-                if (self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
+                if (self.frame.size.height/2 + self.arrowOffset + 38 > self.frame.size.height) {
                     sign = 1;
                 }
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
@@ -244,7 +244,7 @@ static UIColor *popoverTintColor = nil;
                 
                 NSInteger sign = 1;
                 
-                if (self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
+                if (self.frame.size.height/2 + self.arrowOffset + 38 > self.frame.size.height) {
                     sign = -1;
                 }
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
