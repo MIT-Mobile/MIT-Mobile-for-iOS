@@ -3,6 +3,7 @@
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,19 +16,19 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
-                        <rect key="frame" x="0.0" y="0.0" width="277" height="210"/>
+                        <rect key="frame" x="0.0" y="0.0" width="277" height="185"/>
                         <constraints>
-                            <constraint firstAttribute="height" priority="750" constant="208" id="Yub-sA-1Cc"/>
+                            <constraint firstAttribute="width" secondItem="H2F-9T-m4h" secondAttribute="height" multiplier="3:2" id="m6S-u3-ht3"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="title" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="277" translatesAutoresizingMaskIntoConstraints="NO" id="Lch-jy-yVG" userLabel="Title">
-                        <rect key="frame" x="0.0" y="218" width="277" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <rect key="frame" x="0.0" y="193" width="277" height="45"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             </view>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="Lch-jy-yVG" secondAttribute="bottom" constant="8" id="HLQ-nP-WKd"/>
@@ -40,7 +41,6 @@
             </constraints>
             <size key="customSize" width="254" height="220"/>
             <connections>
-                <outlet property="imageHeightConstraint" destination="Yub-sA-1Cc" id="BAH-Sk-PfG"/>
                 <outlet property="storyImageView" destination="H2F-9T-m4h" id="aEr-dI-sGf"/>
                 <outlet property="titleLabel" destination="Lch-jy-yVG" id="J5g-A7-rru"/>
             </connections>

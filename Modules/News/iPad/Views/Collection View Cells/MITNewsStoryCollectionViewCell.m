@@ -48,15 +48,11 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     CGSize maximumImageSize = CGSizeZero;
     if (_isExternalStory) {
         maximumImageSize = MITNewsStoryCellExternalMaximumImageSize;
-    } else {
-        maximumImageSize = CGSizeMake(CGRectGetWidth(self.bounds), NSIntegerMax);
-
+        CGSize imageSize = [self scaledSizeForSize:_imageSize withMaximumSize:maximumImageSize];
+        
+        self.imageHeightConstraint.constant = imageSize.height;
+        self.imageWidthConstraint.constant = imageSize.width;
     }
-
-    CGSize imageSize = [self scaledSizeForSize:_imageSize withMaximumSize:maximumImageSize];
-
-    self.imageHeightConstraint.constant = imageSize.height;
-    self.imageWidthConstraint.constant = imageSize.width;
     
     self.titleLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.titleLabel.frame);
     self.dekLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.dekLabel.frame);
@@ -96,7 +92,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
                 idealImageSize = MITNewsStoryCellExternalMaximumImageSize;
                 _isExternalStory = YES;
             } else {
-                idealImageSize = CGSizeMake(1000, 1000);
+                idealImageSize = CGSizeMake(512, 512);
                 _isExternalStory = NO;
             }
 

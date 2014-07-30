@@ -3,6 +3,7 @@
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -16,24 +17,21 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s0f-BP-SUG" userLabel="Content View">
                         <rect key="frame" x="0.0" y="0.0" width="347" height="320"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H2F-9T-m4h" userLabel="Image">
-                                <rect key="frame" x="0.0" y="0.0" width="347" height="246"/>
+                                <rect key="frame" x="0.0" y="0.0" width="347" height="231"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="246" id="U9t-XR-rWW"/>
+                                    <constraint firstAttribute="width" secondItem="H2F-9T-m4h" secondAttribute="height" multiplier="3:2" id="A27-zx-Vuh"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="347" translatesAutoresizingMaskIntoConstraints="NO" id="rJ0-gW-PwR">
-                                <rect key="frame" x="0.0" y="254" width="347" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="0.0" y="239" width="347" height="20"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="Dek" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="347" translatesAutoresizingMaskIntoConstraints="NO" id="xfl-zq-sIP">
-                                <rect key="frame" x="0.0" y="282" width="347" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="0.0" y="267" width="347" height="17"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -54,6 +52,7 @@
                     </view>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             </view>
             <constraints>
                 <constraint firstItem="s0f-BP-SUG" firstAttribute="leading" secondItem="kaU-Et-mRD" secondAttribute="leading" id="1Dm-F7-5Zb"/>
@@ -64,7 +63,6 @@
             <size key="customSize" width="324" height="190"/>
             <connections>
                 <outlet property="dekLabel" destination="xfl-zq-sIP" id="qjk-Uo-ZhL"/>
-                <outlet property="imageHeightConstraint" destination="U9t-XR-rWW" id="jjs-ot-8jb"/>
                 <outlet property="storyImageView" destination="H2F-9T-m4h" id="aEr-dI-sGf"/>
                 <outlet property="titleLabel" destination="rJ0-gW-PwR" id="qNn-tg-o0v"/>
             </connections>
