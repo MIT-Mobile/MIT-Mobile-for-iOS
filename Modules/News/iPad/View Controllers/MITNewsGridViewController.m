@@ -242,7 +242,7 @@
 {
     UICollectionViewCell *cell = [self _collectionView:collectionView dequeueLayoutCellForItemAtIndexPath:indexPath];
     [self _collectionView:collectionView configureCell:cell atIndexPath:indexPath];
-    
+
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
@@ -251,11 +251,25 @@
                                                                  multiplier:1
                                                                    constant:width];
     
+
+    
     [cell addConstraint:constraint];
     
-    [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];
+    // Make sure the cell's frame matched the width we were given
+    CGRect frame = cell.frame;
+    frame.size.width = width;
+    cell.frame = frame;
     
+    // Let this re-layout to account for the updated width
+    // (such as re-positioning the content view)
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+    
+    // Now that the view has been laid out for the proper width
+    // give it a chance to update any constraints which need tweaking
+    [cell setNeedsUpdateConstraints];
+    
+    // ...and then relayout again!
     [cell setNeedsLayout];
     [cell layoutIfNeeded];
     
