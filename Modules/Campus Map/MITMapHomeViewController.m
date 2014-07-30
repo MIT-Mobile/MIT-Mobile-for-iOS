@@ -631,17 +631,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
+    if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
+        [self refreshPlaceAnnotations];
+        self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
+    }
+    
     if (self.showFirstCalloutOnNextMapRegionChange) {
         if (self.places.count > 0) {
             [self showCalloutForPlace:[self.places firstObject]];
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
-    }
-    
-    if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
-        [self refreshPlaceAnnotations];
-        self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
     }
 }
 
