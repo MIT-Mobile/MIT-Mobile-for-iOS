@@ -156,18 +156,41 @@ static UIColor *popoverTintColor = nil;
             
         case UIPopoverArrowDirectionDown:
             NSLog(@"Down");
-            _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
             
-            _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
-            
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(_popoverArrowBubbleView.frame.size.width, _popoverArrowBubbleView.frame.size.height + ARROW_HEIGHT), NO, 0);
-            
-            [self.popoverBubbleImage drawInRect:CGRectMake(_left, _top, _width, _height)];
-            [self.popoverArrowImage drawInRect:CGRectMake(_coordinate, _height, ARROW_BASE, ARROW_HEIGHT)];
-            
-            _popoverArrowBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
+            if (self.frame.size.width/2 + self.arrowOffset < 38 || self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
+                
+                _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
+                _popoverArrowBubbleView.image = nil;
+                
+                _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
+                
+                NSInteger sign = -1;
+                
+                if (self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
+                    sign = 1;
+                }
+                CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
+                CGAffineTransform transform = CGAffineTransformRotate(scale, 0);
+                _popoverArrowBubbleView.transform = transform;
+                
+                sign = -sign;
+                
+                _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (ARROW_BASE / 2) * sign)), 0, _width, _height);
+                
+            } else {
+                
+                _coordinate = ((self.frame.size.width / 2) + self.arrowOffset) - (ARROW_BASE / 2);
+                
+                _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
+                
+                UIGraphicsBeginImageContextWithOptions(CGSizeMake(_popoverArrowBubbleView.frame.size.width, _popoverArrowBubbleView.frame.size.height + ARROW_HEIGHT), NO, 0);
+                
+                [self.popoverBubbleImage drawInRect:CGRectMake(_left, _top, _width, _height)];
+                [self.popoverArrowImage drawInRect:CGRectMake(_coordinate, _height, ARROW_BASE, ARROW_HEIGHT)];
+                
+                _popoverArrowBubbleView.image = UIGraphicsGetImageFromCurrentImageContext();
+                UIGraphicsEndImageContext();
+            }
             break;
             
         case UIPopoverArrowDirectionLeft:
