@@ -421,6 +421,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
     [self updateDisplayedDay];
+    [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeNone];
     [self.dayPickerCollectionView reloadData];
 }
 
