@@ -10,6 +10,9 @@
 @property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
 @property (nonatomic,weak) id<MITNewsStoryDelegate> delegate;
 
+@property (nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
+@property (nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
+
 - (instancetype)init;
 
 - (NSUInteger)numberOfCategories;

@@ -94,17 +94,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     return self;
 }
 
-- (void)setNumberOfColumns:(NSUInteger)numberOfColumns
-{
-    if (numberOfColumns < 2) {
-        _numberOfColumns = 2;
-    } else {
-        _numberOfColumns = numberOfColumns;
-    }
-    
-    [self setNeedsLayout];
-}
-
 - (UICollectionViewLayoutAttributes*)featuredItemLayoutAttributes
 {
     [self layoutIfNeeded];
@@ -206,6 +195,26 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     }
 }
 
+- (void)setNumberOfColumns:(NSUInteger)numberOfColumns
+{
+    if (numberOfColumns < 2) {
+        _numberOfColumns = 2;
+    } else {
+        _numberOfColumns = numberOfColumns;
+    }
+    
+    [self setNeedsLayout];
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    if (CGRectGetWidth(_bounds) != CGRectGetWidth(bounds)) {
+        bounds.size.height = 0;
+        [self setNeedsLayout];
+        _bounds = bounds;
+    }
+}
+
 - (CGRect)frame
 {
     CGRect frame = self.bounds;
@@ -216,19 +225,13 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 - (void)setFrame:(CGRect)frame
 {
     self.origin = frame.origin;
-    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    self.bounds = CGRectMake(0, 0, CGRectGetWidth(frame), 0);
 }
 
 - (CGRect)bounds
 {
     [self layoutIfNeeded];
     return _bounds;
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    _bounds = bounds;
-    [self setNeedsLayout];
 }
 
 - (CGFloat)columnWidth
@@ -269,7 +272,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     if (_needsLayout) {
         // When performing the layout, assume we have an infinite vertical canvas to work with.
         // Once everything is laid out, we'll go back and give the heights a correct value
-        const NSInteger numberOfColumns = self.numberOfColumns;
         const NSUInteger numberOfItems = [self.layout.collectionView numberOfItemsInSection:self.section];
         
         // Apply the content insets to the actual content so things appear properly. We only care
@@ -277,18 +279,27 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         //  bottom will be handled after everything is laid out.
         __block CGRect layoutBounds = _bounds;
         layoutBounds.size.height = CGFLOAT_MAX;
-        
-        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
-        
-        CGRect headerFrame = CGRectZero;
-        CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section ];
-        CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
-        headerLayoutAttributes.frame = headerFrame;
-        
-        // Set a high value for the zIndex to make sure that the header 'floats'
-        // over everything else.
-        headerLayoutAttributes.zIndex = 1024;
-        _headerLayoutAttributes = headerLayoutAttributes;
+
+        CGFloat headerHeight = [self.layout heightForHeaderInSection:self.section];
+
+        if (headerHeight > 1.) {
+            UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withIndexPath:[NSIndexPath indexPathWithIndex:self.section]];
+            
+            CGRect headerFrame = CGRectZero;
+            CGRectDivide(layoutBounds, &headerFrame, &layoutBounds, headerHeight, CGRectMinYEdge);
+            headerLayoutAttributes.frame = headerFrame;
+            
+            // Offset the header further down so there is a bit of spacing between the bottom of the header and the top of the section
+            CGRect scratchFrame = CGRectZero;
+            CGRectDivide(layoutBounds, &scratchFrame, &layoutBounds, self.lineSpacing, CGRectMinYEdge);
+            
+            // Set a high value for the zIndex to make sure that the header 'floats'
+            // over everything else.
+            headerLayoutAttributes.zIndex = 1024;
+            _headerLayoutAttributes = headerLayoutAttributes;
+        } else {
+            _headerLayoutAttributes = nil;
+        }
         
         
         if (numberOfItems == 0) {
@@ -301,7 +312,6 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         const CGFloat interItemPadding = self.interItemPadding;
         const CGFloat columnWidth = self.columnWidth;
         const CGFloat lineSpacing = self.lineSpacing;
-        
         
         MITSpannedItemContext featuredItemLayoutContext = MITSpannedItemEmptyContext;
         self.featured = MITCollectionViewGridSpanIsValid(self.featuredItemSpan);
@@ -354,7 +364,8 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
             }
             
             CGFloat itemHeight = [self.layout heightForItemAtIndexPath:indexPath];
-            [currentLayoutRow addItemForIndexPath:indexPath withHeight:itemHeight];
+            [currentLayoutRow addItemForIndexPath:indexPath];
+            [currentLayoutRow setHeight:itemHeight forItemWithIndexPath:indexPath];
         }
         
         // Now that the rows have their items partitioned out we can figure out how high
@@ -433,7 +444,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
         }
         
         [allLayoutAttributes addObjectsFromArray:_itemLayoutAttributes];
-        _decorationLayoutAttributes = [self _featuredDecorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
+        _decorationLayoutAttributes = [self _decorationLayoutAttributesForItemLayoutAttributes:allLayoutAttributes withBounds:_bounds];
         
         _needsLayout = NO;
     }
@@ -455,7 +466,7 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
     return numberOfItems;
 }
 
-- (NSArray*)_featuredDecorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
+- (NSArray*)_decorationLayoutAttributesForItemLayoutAttributes:(NSArray*)itemLayoutAttributes withBounds:(CGRect)bounds
 {
     if ([itemLayoutAttributes count] == 0) {
         return nil;

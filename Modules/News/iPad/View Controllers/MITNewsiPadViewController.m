@@ -83,7 +83,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
 
     self.showsFeaturedStories = YES;
-    self.containerView.backgroundColor = [UIColor mit_backgroundColor];
+    self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
 }
 
