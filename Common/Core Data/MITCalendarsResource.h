@@ -1,17 +1,17 @@
 #import "MITMobileManagedResource.h"
 
-@interface MITCalendarsResource : MITMobileManagedResource
+@interface MITCalendarsCalendarsResource : MITMobileManagedResource
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 @end
 
-@interface MITCalendarResource : MITMobileManagedResource
+@interface MITCalendarsCalendarResource : MITMobileManagedResource
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 @end
 
-@interface MITEventsResource : MITMobileManagedResource
+@interface MITCalendarsEventsResource : MITMobileManagedResource
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 @end
 
-@interface MITEventResource : MITMobileManagedResource
+@interface MITCalendarsEventResource : MITMobileManagedResource
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 @end

@@ -10,7 +10,7 @@
 #import "MITCalendarsSponsor.h"
 #import "MITCalendarsSeriesInfo.h"
 
-@implementation MITCalendarsResource
+@implementation MITCalendarsCalendarsResource
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
@@ -26,7 +26,7 @@
 
 @end
 
-@implementation MITCalendarResource
+@implementation MITCalendarsCalendarResource
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
@@ -42,7 +42,7 @@
 
 @end
 
-@implementation MITEventsResource
+@implementation MITCalendarsEventsResource
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
@@ -58,7 +58,7 @@
 
 @end
 
-@implementation MITEventResource
+@implementation MITCalendarsEventResource
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {

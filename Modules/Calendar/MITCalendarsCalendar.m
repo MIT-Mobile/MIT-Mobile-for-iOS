@@ -20,7 +20,7 @@
                                                   @"short_name"  : @"shortName"}];
     [mapping addAttributeMappingsFromArray:@[@"url", @"name"]];
     
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"categories" toKeyPath:@"parentCategory" withMapping:[MITCalendarsCalendar objectMapping]]];
+    //[mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"categories" toKeyPath:@"parentCategory" withMapping:[MITCalendarsCalendar objectMapping]]];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
 }

@@ -3,7 +3,7 @@
 #pragma mark - Route Definitions
 #pragma mark calendars
 NSString* const MITCalendarsResourceName = @"MITCalendarsResourceName";
-NSString* const MITCalendarsPathPattern = @"apis/calendars";
+NSString* const MITCalendarsPathPattern = @"apis/calendars/";
 
 #pragma mark calendars/:calendar
 NSString* const MITCalendarResourceName = @"MITCalendarResourceName";

@@ -20,7 +20,7 @@
 		223EDB771988384D00832ACD /* MITCalendarsCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB761988384D00832ACD /* MITCalendarsCalendar.m */; };
 		223EDB831988384E00832ACD /* MITCalendarsSponsor.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB821988384E00832ACD /* MITCalendarsSponsor.m */; };
 		223EDB8719883C7F00832ACD /* MITCalendarsEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB8619883C7F00832ACD /* MITCalendarsEvent.m */; };
-		223EDB8A1988428A00832ACD /* MITCalendarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB891988428A00832ACD /* MITCalendarController.m */; };
+		223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB891988428A00832ACD /* MITCalendarWebservices.m */; };
 		225A22C119829D2300276F27 /* MITDatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225A22BF19829D2300276F27 /* MITDatePickerViewController.m */; };
 		225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225A22C019829D2300276F27 /* MITDatePickerViewController.xib */; };
 		225F2190197D5AD500F34DE9 /* MITEventsHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F218E197D5AD500F34DE9 /* MITEventsHomeViewController.m */; };
@@ -563,8 +563,8 @@
 		223EDB821988384E00832ACD /* MITCalendarsSponsor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsSponsor.m; sourceTree = "<group>"; };
 		223EDB8519883C7F00832ACD /* MITCalendarsEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsEvent.h; sourceTree = "<group>"; };
 		223EDB8619883C7F00832ACD /* MITCalendarsEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsEvent.m; sourceTree = "<group>"; };
-		223EDB881988428A00832ACD /* MITCalendarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarController.h; sourceTree = "<group>"; };
-		223EDB891988428A00832ACD /* MITCalendarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarController.m; sourceTree = "<group>"; };
+		223EDB881988428A00832ACD /* MITCalendarWebservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarWebservices.h; sourceTree = "<group>"; };
+		223EDB891988428A00832ACD /* MITCalendarWebservices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarWebservices.m; sourceTree = "<group>"; };
 		225A22BE19829D2300276F27 /* MITDatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITDatePickerViewController.h; sourceTree = "<group>"; };
 		225A22BF19829D2300276F27 /* MITDatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITDatePickerViewController.m; sourceTree = "<group>"; };
 		225A22C019829D2300276F27 /* MITDatePickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITDatePickerViewController.xib; sourceTree = "<group>"; };
@@ -3468,8 +3468,8 @@
 			children = (
 				223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */,
 				223EDB8419883BE700832ACD /* Entities */,
-				223EDB881988428A00832ACD /* MITCalendarController.h */,
-				223EDB891988428A00832ACD /* MITCalendarController.m */,
+				223EDB881988428A00832ACD /* MITCalendarWebservices.h */,
+				223EDB891988428A00832ACD /* MITCalendarWebservices.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -3911,7 +3911,7 @@
 				22C97AFB1986CDD5005915ED /* MITCalenderSubCategoryViewController.m in Sources */,
 				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
 				EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */,
-				223EDB8A1988428A00832ACD /* MITCalendarController.m in Sources */,
+				223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */,
 				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
 				EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */,
 				EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */,

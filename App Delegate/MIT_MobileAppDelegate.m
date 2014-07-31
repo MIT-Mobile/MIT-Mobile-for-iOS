@@ -619,7 +619,19 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
     MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:shuttleVehiclesResource];
+    
+    MITMobileResource *calendarsCalendarsResource = [[MITCalendarsCalendarsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsCalendarsResource];
 
+    MITMobileResource *calendarsCalendarResource = [[MITCalendarsCalendarResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsCalendarResource];
+    
+    MITMobileResource *calendarsEventsResource = [[MITCalendarsEventsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsEventsResource];
+    
+    MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsEventResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 
