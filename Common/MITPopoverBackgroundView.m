@@ -2,8 +2,8 @@
 
 #define CONTENT_INSET 0.0
 #define CAP_INSET 50.0
-#define ARROW_BASE 31.0
-#define ARROW_HEIGHT 13.0
+#define ARROW_BASE 33.0
+#define ARROW_HEIGHT 14.0
 
 @interface MITPopoverBackgroundView()
 
@@ -61,11 +61,14 @@ static UIColor *popoverTintColor = nil;
         
         UIImage *popOverImage = [UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDown@2x"];
         
+        popOverImage = [[UIImage alloc] initWithCGImage: popOverImage.CGImage
+                                                  scale: 2
+                                            orientation: UIImageOrientationUp];
+        
         CGFloat popOverImageWidth = popOverImage.size.width;
         CGFloat popOverImageHeight = popOverImage.size.height;
-        CGFloat arrowWidth = 74;
         
-        CGRect bubbleImageRect = CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT*2);
+        CGRect bubbleImageRect = CGRectMake(0, 0, popOverImageWidth, popOverImageHeight - ARROW_HEIGHT + 1);
         
         UIGraphicsBeginImageContextWithOptions(bubbleImageRect.size, NO, 0);
         [popOverImage drawAtPoint:CGPointZero];
@@ -74,7 +77,7 @@ static UIColor *popoverTintColor = nil;
         UIGraphicsEndImageContext();
         
         
-        CGRect arrowImageRect = CGRectMake((popOverImageWidth - arrowWidth)/2, popOverImageHeight - (ARROW_HEIGHT*2), arrowWidth, (ARROW_HEIGHT*2));
+        CGRect arrowImageRect = CGRectMake((popOverImageWidth - ARROW_BASE)/2, popOverImageHeight - (ARROW_HEIGHT - 1), ARROW_BASE, ARROW_HEIGHT - 1);
         
         UIGraphicsBeginImageContextWithOptions(arrowImageRect.size, NO, 0);
         
@@ -83,9 +86,9 @@ static UIColor *popoverTintColor = nil;
         UIImage *croppedArrow = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        self.popoverBubbleImage = [croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 25, 25)];
+        self.popoverBubbleImage = [croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(25/2, 25/2, 25/2, 25/2)];
         
-        _popoverArrowBubbleView = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 25, 25)]];
+        _popoverArrowBubbleView = [[UIImageView alloc] initWithImage:[croppedImage resizableImageWithCapInsets:UIEdgeInsetsMake(25/2, 25/2, 25/2, 25/2)]];
         
         self.popoverArrowImage = croppedArrow;
         
@@ -236,7 +239,6 @@ static UIColor *popoverTintColor = nil;
             NSLog(@"Right");
             
             if (self.frame.size.height/2 + self.arrowOffset < 38 || self.frame.size.height/2 + self.arrowOffset + 38 > self.frame.size.height) {
-                
                 _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
                 _popoverArrowBubbleView.image = nil;
                 
@@ -254,7 +256,6 @@ static UIColor *popoverTintColor = nil;
                 _popoverArrowBubbleView.frame =  CGRectMake(0, sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (ARROW_BASE / 2) * sign)), _width, _height);
                 
             } else {
-                
                 _coordinate = ((self.frame.size.height / 2) + self.arrowOffset) - (ARROW_BASE / 2);
                 _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
                 
