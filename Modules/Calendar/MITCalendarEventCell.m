@@ -1,4 +1,5 @@
 #import "MITCalendarEventCell.h"
+#import "MITCalendarsLocation.h"
 
 static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 
@@ -36,11 +37,11 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 
 #pragma mark - Event
 
-- (void)setEvent:(MITCalendarEvent *)event
+- (void)setEvent:(MITCalendarsEvent *)event
 {
     self.eventNameLabel.text = event.title;
-    self.eventLocationLabel.text = event.location;
-  
+    self.eventLocationLabel.text = event.location.roomNumber;
+    
     self.eventTimeLabel.text = [event dateStringWithDateStyle:NSDateFormatterNoStyle
                                                 timeStyle:NSDateFormatterShortStyle
                                                 separator:@" "];
@@ -49,7 +50,7 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 
 #pragma mark - Cell Sizing
 
-+ (CGFloat)heightForEvent:(MITCalendarEvent *)event
++ (CGFloat)heightForEvent:(MITCalendarsEvent *)event
            tableViewWidth:(CGFloat)width
 {
     [[MITCalendarEventCell sizingCell] setEvent:event];

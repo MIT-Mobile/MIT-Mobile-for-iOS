@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
 
 + (NSDate *)startDateForCurrentWeek;
 
+- (NSString *)ISO8601String;
+
 - (NSDate *)startOfWeek;
 - (NSDate *)endOfWeek;
 - (NSDate *)dateByAddingWeek;
@@ -24,6 +26,7 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
 - (BOOL)isSameDayAsDate:(NSDate *)date;
 
 - (NSDate *)beginningOfDay;
+- (NSDate *)endOfDay;
 - (NSTimeInterval)timeIntervalSinceStartOfDay;
 
 - (MITDayOfTheWeek)dayOfTheWeek;

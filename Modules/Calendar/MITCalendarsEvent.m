@@ -54,4 +54,56 @@
     return mapping;
 }
 
+- (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator
+{
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	NSMutableArray *parts = [[NSMutableArray alloc] init];
+    
+	if (dateStyle != NSDateFormatterNoStyle) {
+		[formatter setDateStyle:dateStyle];
+        
+		NSString *dateString = [formatter stringFromDate:self.startAt];
+		if ([self.endAt timeIntervalSinceDate:self.startAt] >= 86400.0) {
+			dateString = [NSString stringWithFormat:@"%@-%@", dateString, [formatter stringFromDate:self.endAt]];
+		}
+        
+		[parts addObject:dateString];
+		[formatter setDateStyle:NSDateFormatterNoStyle];
+	}
+    
+	if (timeStyle != NSDateFormatterNoStyle) {
+		[formatter setTimeStyle:timeStyle];
+		NSString *timeString = nil;
+        
+        if (self.endAt) {
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDateComponents *startComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.startAt];
+            NSDateComponents *endComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.endAt];
+            NSTimeInterval interval = [self.endAt timeIntervalSinceDate:self.startAt];
+            // only a date with no time -> no time displayed
+            if (startComps.hour == 0 && startComps.minute == 0 && endComps.hour == 0 && endComps.minute == 0) {
+                timeString = @"";
+                // identical start and end times -> just start time displayed
+            } else if (interval == 0 ||
+                       // starts at the same time every day -> just start time displayed
+                       // TODO: account for daylight savings time boundaries
+                       fmod(interval, 24 * 60 * 60) == 0) {
+                timeString = [formatter stringFromDate:self.startAt];
+                // ?
+            } else if (interval == 86340.0) { // seconds between 12:00am and 11:59pm
+                timeString = @"All day";
+                // fallback to showing time range
+            } else {
+                timeString = [NSString stringWithFormat:@"%@-%@", [formatter stringFromDate:self.startAt], [formatter stringFromDate:self.endAt]];
+            }
+        } else {
+            timeString = [formatter stringFromDate:self.startAt];
+        }
+		
+		[parts addObject:timeString];
+	}
+	
+	return [parts componentsJoinedByString:separator];
+}
+
 @end

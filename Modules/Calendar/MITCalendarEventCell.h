@@ -1,10 +1,10 @@
 #import <UIKit/UIKit.h>
-#import "MITCalendarEvent.h"
+#import "MITCalendarsEvent.h"
 
 @interface MITCalendarEventCell : UITableViewCell
 
-- (void)setEvent:(MITCalendarEvent *)event;
-+ (CGFloat)heightForEvent:(MITCalendarEvent *)event
+- (void)setEvent:(MITCalendarsEvent *)event;
++ (CGFloat)heightForEvent:(MITCalendarsEvent *)event
            tableViewWidth:(CGFloat)width;
 
 @end

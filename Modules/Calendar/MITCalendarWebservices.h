@@ -12,4 +12,10 @@ typedef void(^MITEventsCompletionBlock)(NSArray *events, NSError *error);
                         date:(NSDate *)date
                   completion:(MITEventsCompletionBlock)completion;
 
++ (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                 queryString:(NSString *)queryString
+                    category:(MITCalendarsCalendar *)category
+                   startDate:(NSDate *)startDate
+                     endDate:(NSDate *)endDate
+                  completion:(MITEventsCompletionBlock)completion;
 @end

@@ -3,9 +3,11 @@
 #import "MITCoreData.h"
 #import "MITMobileResources.h"
 #import "MITAdditions.h"
+#import "NSDate+MITAdditions.h"
 
 #import "MITCalendarsCalendar.h"
 
+typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
 
 @implementation MITCalendarWebservices
 
@@ -27,20 +29,54 @@
                         date:(NSDate *)date
                   completion:(MITEventsCompletionBlock)completion
 {
+    [MITCalendarWebservices getEventsForCalendar:calendar queryString:nil category:nil startDate:date endDate:[date endOfDay] completion:completion];
+}
 
++ (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                 queryString:(NSString *)queryString
+                    category:(MITCalendarsCalendar *)category
+                   startDate:(NSDate *)startDate
+                     endDate:(NSDate *)endDate
+                  completion:(MITEventsCompletionBlock)completion
+{
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    
+    if (queryString){
+        [params setObject:queryString forKey:@"q"];
+    }
+    if (category) {
+        [params setObject:category.identifier forKey:@"category"];
+    }
+    if (startDate) {
+        [params setObject:[startDate ISO8601String] forKey:@"start"];
+    }
+    if (endDate) {
+        [params setObject:[endDate ISO8601String] forKey:@"end"];
+    }
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName
                                                     object:@{@"calendar" : calendar.identifier}
-                                                parameters:@{@"category" : @"19"}
+                                                parameters:params
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    NSLog(@"results: %@", result.array);
-                                                    if (result.array) {
-                                                        completion(result.array, nil);
-                                                    }
-                                                    else {
-                                                        completion(nil, error);
-                                                    }
-                                                }];
+                                                    [MITCalendarWebservices handleResult:result error:error completion:completion];                                               }];
+    
+}
+
++ (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITCalendarCompletionBlock)completion
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!error) {
+            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+            if (completion) {
+                completion(objects, nil);
+            }
+        } else {
+            if (completion) {
+                completion(nil, error);
+            }
+        }
+    }];
 }
 
 @end

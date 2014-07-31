@@ -4,12 +4,12 @@
 #import "MITCalendarDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDate+MITAdditions.h"
-#import "MITEventList.h"
 #import "MITDatePickerViewController.h"
 #import "MITEventDetailViewController.h"
 #import "MITCalendarSelectionHomeViewController.h"
 #import "MITCalendarWebservices.h"
 #import "MITCalendarManager.h"
+
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -42,8 +42,11 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (nonatomic) CGFloat pageWidth;
 
-@property (nonatomic, strong) MITEventList *activeEventList;
-@property (nonatomic, strong) NSArray *activeEvents;
+
+
+@property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCalendar;
+@property (nonatomic, strong) MITCalendarsCalendar *currentlSelectedCategory;
+@property (nonatomic, strong) NSArray *currentlySelectedEvents;
 
 @property (nonatomic, strong) NSArray *datesArray;
 
@@ -77,7 +80,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupDayPickerCollectionView];
     [self setupEventsTableView];
     [self setupDatePickerButton];
-    
+   
+    [self hideTableView];
+    [[MITCalendarManager sharedManager] loadCalendarsCompletion:^(BOOL successful) {
+        if (successful) {
+            self.currentlySelectedCalendar = [MITCalendarManager sharedManager].eventsCalendar;
+            [self loadEvents];
+        }
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -86,7 +96,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     
     [self registerForNotifications];
     
-    [self loadActiveEventList];
+//    [self loadActiveEventList];
     [self centerDayPickerCollectionView];
 }
 
@@ -131,33 +141,42 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoadedFailed:) name:kCalendarListsFailedToLoad object:nil];
 }
 
-- (void)loadActiveEventList
+- (void)loadEvents
 {
-    if (!self.activeEventList) {
-		NSArray *lists = [[MITCalendarDataManager sharedManager] eventLists];
-		if ([lists count]) {
-			self.activeEventList = lists[0];
-		}
-	}
-    [self reloadEvents];
+    [self hideTableView];
+    
+   [MITCalendarWebservices getEventsForCalendar:self.currentlySelectedCalendar
+                                    queryString:nil
+                                       category:self.currentlSelectedCategory
+                                      startDate:self.currentlyDisplayedDate
+                                        endDate:self.currentlyDisplayedDate
+                                     completion:^(NSArray *events, NSError *error) {
+       if (events) {
+           self.currentlySelectedEvents = events;
+           [self.eventsListTableView reloadData];
+           [self showTableView];
+
+       }
+       else {
+           NSLog(@"Events Fetching Error: %@", error);
+       }
+   }];
 }
 
-- (void)reloadEvents
+- (void)hideTableView
 {
     self.eventsListTableView.hidden = YES;
     self.reloadActivityIndicator.hidden = NO;
     [self.reloadActivityIndicator startAnimating];
-    [MITCalendarDataManager performEventsRequestForDate:self.currentlyDisplayedDate
-                                             eventList:self.activeEventList completion:^(NSArray *events, NSError *error) {
-                                                 if (events) {
-                                                     self.activeEvents = events;
-                                                     [self.eventsListTableView reloadData];
-                                                     self.eventsListTableView.hidden = NO;
-                                                     self.reloadActivityIndicator.hidden = YES;
-                                                     [self.reloadActivityIndicator stopAnimating];
-                                                 }
-                                             }];
 }
+
+- (void)showTableView
+{
+    self.eventsListTableView.hidden = NO;
+    self.reloadActivityIndicator.hidden = YES;
+    [self.reloadActivityIndicator stopAnimating];
+}
+
 - (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
     if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
         return (UIImageView *)view;
@@ -282,12 +301,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.activeEvents count];
+    return [self.currentlySelectedEvents count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITCalendarEvent *event = self.activeEvents[indexPath.row];
+    MITCalendarsEvent *event = self.currentlySelectedEvents[indexPath.row];
     return [MITCalendarEventCell heightForEvent:event tableViewWidth:self.eventsListTableView.frame.size.width];
 }
 
@@ -295,7 +314,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     MITCalendarEventCell *cell = [self.eventsListTableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
 
-    [cell setEvent:self.activeEvents[indexPath.row]];
+    [cell setEvent:self.currentlySelectedEvents[indexPath.row]];
 
     return cell;
 }
@@ -303,7 +322,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.event = self.activeEvents[indexPath.row];
+    detailVC.event = self.currentlySelectedEvents[indexPath.row];
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 
@@ -337,7 +356,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)updateDisplayedDay
 {
-    [self reloadEvents];
+    [self loadEvents];
     [self updateDatesArray];
     [self centerDayPickerCollectionView];
 }

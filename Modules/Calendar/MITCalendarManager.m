@@ -45,23 +45,6 @@ static NSString *const kAcademicHolidaysCalendarID = @"academic_holidays";
     }];
 }
 
-//- (void)loadEventsForCalendar:(MITCalendarsCalendar *)calendar completion:(MITCalendarManagerCompletionBlock)completion
-//{
-//    [self loadEentsForCalendar:calendar date:[NSDate date] completion:completion];
-//}
-//
-//- (void)loadEentsForCalendar:(MITCalendarsCalendar *)calendar date:(NSDate *)date completion:(MITCalendarManagerCompletionBlock)completion
-//{
-//    [MITCalendarWebservices getEventsForCalendar:calendar date:date completion:^(NSArray *events, NSError *error) {
-//        if (events) {
-//            self.currentCalendar = calendar;
-//            self.currentEvents = events;
-//            completion(YES);
-//        }
-//        else {
-//            completion(NO);
-//        }
-//    }];
-//}
+
 
 @end

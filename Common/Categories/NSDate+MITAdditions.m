@@ -7,7 +7,21 @@
     return [currentDate startOfWeek];
 }
 
-- (NSDate *)startOfWeek {
+- (NSString *)ISO8601String
+{
+	struct tm *timeinfo;
+	char buffer[80];
+    
+	time_t rawtime = (time_t)[self timeIntervalSince1970];
+	timeinfo = gmtime(&rawtime);
+    
+	strftime(buffer, 80, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
+    
+	return [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
+}
+
+- (NSDate *)startOfWeek
+{
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSDateComponents *currentDateWeekdayComponents = [calendar components:NSWeekdayCalendarUnit fromDate:self];
     NSDateComponents *dateComponentsToSubtract = [[NSDateComponents alloc] init];
@@ -17,20 +31,23 @@
     return [calendar dateFromComponents:components];
 }
 
-- (NSDate *)endOfWeek {
+- (NSDate *)endOfWeek
+{
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
     componentsToAdd.week = 1;
     componentsToAdd.second = -1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:[self startOfWeek] options:0];
 }
 
-- (NSDate *)dateByAddingWeek {
+- (NSDate *)dateByAddingWeek
+{
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
     componentsToAdd.week = 1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
-- (NSDate *)dateBySubtractingWeek {
+- (NSDate *)dateBySubtractingWeek
+{
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
     componentsToAdd.week = -1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];

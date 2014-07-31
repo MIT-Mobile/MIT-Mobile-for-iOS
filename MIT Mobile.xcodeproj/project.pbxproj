@@ -3483,9 +3483,9 @@
 			isa = PBXGroup;
 			children = (
 				225F2192197D9A5E00F34DE9 /* Cells */,
+				EB83923F1163ED140067C0A3 /* Model */,
 				225F218C197D5A8800F34DE9 /* View Controllers */,
 				225F2188197D5A5C00F34DE9 /* Old */,
-				EB83923F1163ED140067C0A3 /* Model */,
 				EB86CA6D115D276700C8F3D1 /* CalendarModule.h */,
 				EB86CA6E115D276700C8F3D1 /* CalendarModule.m */,
 			);

@@ -30,6 +30,9 @@
 @property (nonatomic, retain) NSSet *sponsors;
 @property (nonatomic, retain) MITCalendarsContact *contact;
 @property (nonatomic, retain) MITCalendarsSeriesInfo *seriesInfo;
+
+- (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator;
+
 @end
 
 @interface MITCalendarsEvent (CoreDataGeneratedAccessors)
