@@ -170,6 +170,7 @@
                         <outlet property="bodyView" destination="ZMx-FN-0Ky" id="F5r-na-07C"/>
                         <outlet property="bodyViewHeightConstraint" destination="EtD-ah-Jgu" id="WpS-js-SBI"/>
                         <outlet property="nextStoryConstraintBetweenImageAndTitle" destination="w2e-dE-rk9" id="C6o-Jc-9Nv"/>
+                        <outlet property="nextStoryDateBottomVerticalConstraint" destination="vCr-Ar-v6y" id="yRf-2T-gnC"/>
                         <outlet property="nextStoryDateLabel" destination="aRd-O6-eP4" id="h8d-Ab-Mc6"/>
                         <outlet property="nextStoryDekLabel" destination="DJg-5Q-Y2i" id="OsE-K5-l4J"/>
                         <outlet property="nextStoryImageHeightConstraint" destination="nX8-sr-rAA" id="DcF-5N-RyF"/>
