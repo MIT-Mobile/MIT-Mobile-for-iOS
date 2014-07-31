@@ -115,7 +115,6 @@ static UIColor *popoverTintColor = nil;
             break;
             
         case UIPopoverArrowDirectionUp:
-            NSLog(@"UP");
             
             if (self.frame.size.width/2 + self.arrowOffset < 38 || self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
                 
@@ -155,7 +154,6 @@ static UIColor *popoverTintColor = nil;
             break;
             
         case UIPopoverArrowDirectionDown:
-            NSLog(@"Down");
             
             if (self.frame.size.width/2 + self.arrowOffset < 38 || self.frame.size.width/2 + self.arrowOffset + 38 > self.frame.size.width) {
                 
@@ -194,7 +192,6 @@ static UIColor *popoverTintColor = nil;
             break;
             
         case UIPopoverArrowDirectionLeft:
-            NSLog(@"Left");
             
             if (self.frame.size.height/2 + self.arrowOffset < 38 || self.frame.size.height/2 + self.arrowOffset + 38 > self.frame.size.height) {
                 
@@ -235,7 +232,6 @@ static UIColor *popoverTintColor = nil;
             break;
             
         case UIPopoverArrowDirectionRight:
-            NSLog(@"Right");
             
             if (self.frame.size.height/2 + self.arrowOffset < 38 || self.frame.size.height/2 + self.arrowOffset + 38 > self.frame.size.height) {
                 _popoverArrowBubbleView.frame =  CGRectMake(0, 0, _width, _height);
