@@ -44,10 +44,6 @@
         case MITDayOfTheWeekFriday:
             self.dayOfTheWeekLabel.text = @"F";
             break;
-            
-        case MITDayOfTheWeekOther:
-            self.dayOfTheWeekLabel.text = @"...";
-            break;
     }
 }
 

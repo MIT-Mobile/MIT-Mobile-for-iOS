@@ -25,6 +25,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
+@property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTableView;
 
@@ -73,8 +74,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
     [self setupEventsTableView];
-    
-    
+    [self setupDatePickerButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -178,6 +178,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.pageWidth = self.dayPickerCollectionView.frame.size.width;
 }
 
+- (void)setupDatePickerButton
+{
+    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(datePickerButtonPanned:)];
+    [self.datePickerButton addGestureRecognizer:panGestureRecognizer];
+    
+    [self.datePickerButton addTarget:self action:@selector(datePickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+}
+
 - (void)setupEventsTableView
 {
     UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
@@ -200,10 +208,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     MITDayOfTheWeekCell *cell = [self.dayPickerCollectionView dequeueReusableCellWithReuseIdentifier:kMITDayOfTheWeekCell
                                                                                         forIndexPath:indexPath];
-    
-
-   [self configureCell:cell forIndexPath:indexPath];
-    
+    [self configureCell:cell forIndexPath:indexPath];
     return cell;
 
 }
@@ -211,16 +216,58 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.dayPickerCollectionView deselectItemAtIndexPath:indexPath animated:NO];
-    MITDayOfTheWeek dayOfTheWeek = indexPath.row  % 8;
+    [self daySelectedAtIndexPath:indexPath];
+    [self updateDisplayedDay];
+}
 
-    if (dayOfTheWeek == MITDayOfTheWeekOther) {
-        [self presentDatePicker];
+#pragma mark - Date Picker Button
+
+- (void)datePickerButtonPressed
+{
+    [self presentDatePicker];
+}
+
+- (void)datePickerButtonPanned:(UIPanGestureRecognizer *)pan
+{
+    static CGFloat dayPickerCollectionViewStartXOffset;
+    
+    if (pan.state == UIGestureRecognizerStateBegan) {
+        dayPickerCollectionViewStartXOffset = self.dayPickerCollectionView.contentOffset.x;
     }
-    else {
-        [self daySelectedAtIndexPath:indexPath];
-        [self updateDisplayedDay];
-    }
+    if (pan.state == UIGestureRecognizerStateEnded) {
+        CGPoint velocity = [pan velocityInView:self.view];
         
+        if (ABS(velocity.x) > 250) {
+            if (velocity.x > 0) {
+                // Scroll left one week
+                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+            } else {
+                // Scroll right one week
+                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+            }
+        } else {
+            CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
+            
+            if (ABS(xTranslation) > 190) {
+                if (xTranslation > 0) {
+                    // Scroll left one week
+                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+                } else {
+                    // Scroll right one week
+                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+                }
+            } else {
+                // Return daypicker collectionview to current week
+                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+            }
+        }
+    } else {
+        CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
+        
+        CGPoint dayPickerOffset = self.dayPickerCollectionView.contentOffset;
+        dayPickerOffset.x = dayPickerCollectionViewStartXOffset - xTranslation;
+        self.dayPickerCollectionView.contentOffset = dayPickerOffset;
+    }
 }
 
 #pragma mark - Tableview Datasource/Delegate
@@ -264,6 +311,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     }
 }
 
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    if (scrollView == self.dayPickerCollectionView) {
+        [self updateDayPickerOffsetForInfiniteScrolling];
+    }
+}
+
 - (void)updateDayPickerOffsetForInfiniteScrolling
 {
     if (self.dayPickerCollectionView.contentOffset.x <= 0 ) {
@@ -301,7 +355,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)centerDayPickerCollectionView
 {
-    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:8 inSection:0]
+    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0]
                                          atScrollPosition:UICollectionViewScrollPositionLeft
                                                  animated:NO];
 }
@@ -331,34 +385,23 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)configureCell:(MITDayOfTheWeekCell *)cell  forIndexPath:(NSIndexPath *)indexPath
 {
-    cell.dayOfTheWeek = indexPath.row  % 8;
+    cell.dayOfTheWeek = indexPath.row % 7;
     
-    if (cell.dayOfTheWeek == MITDayOfTheWeekOther) {
+    NSDate *cellDate = [self dateForIndexPath:indexPath];
+    if ([cellDate isSameDayAsDate:self.currentlyDisplayedDate]) {
         cell.state = MITDayOfTheWeekStateSelected;
     }
     else {
-        NSDate *cellDate = [self dateForIndexPath:indexPath];
-        if ([cellDate isSameDayAsDate:self.currentlyDisplayedDate]) {
-            cell.state = MITDayOfTheWeekStateSelected;
-        }
-        else {
-            cell.state = MITDayOfTheWeekStateUnselected;
-        }
-        if ([cellDate isSameDayAsDate:[NSDate date]]){
-            cell.state |= MITDayOfTheWeekStateToday;
-        }
+        cell.state = MITDayOfTheWeekStateUnselected;
+    }
+    if ([cellDate isSameDayAsDate:[NSDate date]]){
+        cell.state |= MITDayOfTheWeekStateToday;
     }
 }
 
 - (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger adjustedIndex = indexPath.row;
-    if (indexPath.row > 6) {
-        adjustedIndex--;
-    }
-    if (indexPath.row > 14) {
-        adjustedIndex--;
-    }
     return self.datesArray[adjustedIndex];
 }
 

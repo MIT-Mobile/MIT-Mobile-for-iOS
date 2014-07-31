@@ -7,8 +7,7 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
     MITDayOfTheWeekWednesday,
     MITDayOfTheWeekThursday,
     MITDayOfTheWeekFriday,
-    MITDayOfTheWeekSaturday,
-    MITDayOfTheWeekOther
+    MITDayOfTheWeekSaturday
 };
 
 @interface NSDate (MITAdditions)
