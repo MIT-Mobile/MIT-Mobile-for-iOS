@@ -49,7 +49,7 @@
                                                   @"modified_at" : @"modifiedAt"}];
     [mapping addAttributeMappingsFromArray:@[@"url", @"title", @"tickets", @"cost", @"lecturer", @"cancelled"]];
     
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"location" toKeyPath:nil withMapping:[MITCalendarsLocation objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"location" toKeyPath:@"location" withMapping:[MITCalendarsLocation objectMapping]]];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
 }

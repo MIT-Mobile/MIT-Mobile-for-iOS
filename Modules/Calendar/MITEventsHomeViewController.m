@@ -9,6 +9,7 @@
 #import "MITEventDetailViewController.h"
 #import "MITCalendarSelectionHomeViewController.h"
 #import "MITCalendarWebservices.h"
+#import "MITCalendarManager.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -76,11 +77,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupDayPickerCollectionView];
     [self setupEventsTableView];
     [self setupDatePickerButton];
-    
-    [MITCalendarWebservices getCalendarsWithCompletion:^(NSArray *calendars, NSError *error) {
-        
-    }];
-    
     
 }
 
