@@ -1,20 +1,17 @@
 #import <Foundation/Foundation.h>
-
-typedef void(^MITCalendarManagerCompletionBlock)(BOOL successful);
-
-
 #import "MITCalendarsCalendar.h"
 #import "MITCalendarsEvent.h"
+#import "MITMasterCalendar.h"
+
+typedef void(^MITCalendarManagerCompletionBlock)(MITMasterCalendar *masterCalendar,
+                                                 NSError *error);
 
 @interface MITCalendarManager : NSObject
 
 + (instancetype)sharedManager;
 
-@property (nonatomic, strong) MITCalendarsCalendar *eventsCalendar;
-@property (nonatomic, strong) MITCalendarsCalendar *academicCalendar;
-@property (nonatomic, strong) MITCalendarsCalendar *academicHolidaysCalendar;
-@property (nonatomic) BOOL calendarsLoaded;
+@property (nonatomic, strong) MITMasterCalendar *masterCalendar;
 
-- (void)loadCalendarsCompletion:(MITCalendarManagerCompletionBlock)completion;
+- (void)getCalendarsCompletion:(MITCalendarManagerCompletionBlock)completion;
 
 @end

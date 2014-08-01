@@ -1,9 +1,21 @@
 #import "MITCalendarSelectionHomeViewController.h"
 #import "MITCalendarManager.h"
 
+typedef NS_ENUM(NSInteger, kEventsSection) {
+    kEventsSectionRegistrar,
+    kEventsSectionEvents
+};
+
+typedef NS_ENUM(NSInteger, kEventsCellRow) {
+    kEventsCellRowAcademicHolidays,
+    kEventsCellRowAcademic
+};
+
 static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 @interface MITCalendarSelectionHomeViewController ()
+
+@property (nonatomic, strong) MITMasterCalendar *masterCalendar;
 
 @property (nonatomic, strong) MITCalendarsCalendar *selectedCalendar;
 @property (nonatomic, strong) MITCalendarsCalendar *selectedCategory;
@@ -26,6 +38,13 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     [super viewDidLoad];
     [self setupNavBar];
 
+    [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
+        if (masterCalendar){
+            self.masterCalendar = masterCalendar;
+            [self.tableView reloadData];
+        }
+    }];
+    
 }
 
 - (void)setupNavBar
@@ -57,7 +76,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         return 2;
     }
     else {
-        return [[MITCalendarManager sharedManager].eventsCalendar.categories count];
+        return [self.masterCalendar.eventsCalendar.categories count];
     }
 }
 
@@ -78,20 +97,32 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITCalendarCell];
     }
     
-    if (indexPath.section == 0){
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"Holidays";
+    switch (indexPath.section) {
+        case kEventsSectionRegistrar:
+            
+            switch (indexPath.row) {
+                case kEventsCellRowAcademicHolidays:
+                    cell.textLabel.text = @"Holidays";
+                    break;
+                case kEventsCellRowAcademic:
+                    cell.textLabel.text = @"Academic Calendar";
+                    break;
+                default:
+                    break;
+            }
+            break;
+            
+        case kEventsSectionEvents:
+        {
+            MITCalendarsCalendar *category = self.masterCalendar.eventsCalendar.categories[indexPath.row];
+            cell.textLabel.text = category.name;
+            
+            cell.accessoryType = [category.categories count] > 0 ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
         }
-        else {
-            cell.textLabel.text = @"Academic Calendar";
-        }
+        default:
+            break;
     }
-    if (indexPath.section == 1) {
-        MITCalendarsCalendar *category = [MITCalendarManager sharedManager].eventsCalendar.categories[indexPath.row];
-		cell.textLabel.text = category.name;
-        
-        cell.accessoryType = [category.categories count] > 0 ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
-	}
+    
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -102,16 +133,52 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self unselectAllCells];
-    if (indexPath.section == 0) {
-        
+    
+    switch (indexPath.section) {
+        case kEventsSectionRegistrar:
+            switch (indexPath.row) {
+                case kEventsCellRowAcademicHolidays:
+                    [self selectAcademicHolidaysCalendar];
+                    break;
+                
+                case kEventsCellRowAcademic:
+                    [self selectAcademicCalendar];
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        case kEventsSectionEvents:
+        {
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            self.selectedCalendar = self.masterCalendar.eventsCalendar;
+            self.selectedCategory = self.masterCalendar.eventsCalendar.categories[indexPath.row];
+        }
+            
+            break;
+        default:
+            break;
     }
-    else if (indexPath.section == 1) {
-        
-        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        self.selectedCalendar = [MITCalendarManager sharedManager].eventsCalendar;
-        self.selectedCategory = [MITCalendarManager sharedManager].eventsCalendar.categories[indexPath.row];
-    }
+ 
+}
+
+- (void)selectAcademicHolidaysCalendar
+{
+    self.selectedCalendar = self.masterCalendar.academicHolidaysCalendar;
+    self.selectedCategory = nil;
+}
+
+- (void)selectAcademicCalendar
+{
+    self.selectedCalendar = self.masterCalendar.academicCalendar;
+    self.selectedCategory = nil;
+}
+
+- (void)selectEventsCalendarAtIndexPath:(NSIndexPath *)indexPath
+{
+    //MITCalendarsCalendar *selectedCategory = sel
 }
 
 - (void)showSubCategory:(MITCalendarsCalendar *)subCategory

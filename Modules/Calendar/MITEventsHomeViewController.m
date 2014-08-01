@@ -42,10 +42,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (nonatomic) CGFloat pageWidth;
 
-
+@property (nonatomic, strong) MITMasterCalendar *masterCalendar;
 
 @property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCalendar;
-@property (nonatomic, strong) MITCalendarsCalendar *currentlSelectedCategory;
+@property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCategory;
 @property (nonatomic, strong) NSArray *currentlySelectedEvents;
 
 @property (nonatomic, strong) NSArray *datesArray;
@@ -81,12 +81,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupDatePickerButton];
    
     [self hideTableView];
-    [[MITCalendarManager sharedManager] loadCalendarsCompletion:^(BOOL successful) {
-        if (successful) {
-            self.currentlySelectedCalendar = [MITCalendarManager sharedManager].eventsCalendar;
+
+    [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
+        if (masterCalendar) {
+            self.masterCalendar = masterCalendar;
+            self.currentlySelectedCalendar = masterCalendar.eventsCalendar;
             [self loadEvents];
         }
     }];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -143,10 +146,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (void)loadEvents
 {
     [self hideTableView];
-    self.title = self.currentlSelectedCategory ? self.currentlSelectedCategory.name : self.currentlySelectedCalendar.name;
+    self.title = self.currentlySelectedCategory ? self.currentlySelectedCategory.name : self.currentlySelectedCalendar.name;
     [MITCalendarWebservices getEventsForCalendar:self.currentlySelectedCalendar
                                      queryString:nil
-                                        category:self.currentlSelectedCategory
+                                        category:self.currentlySelectedCategory
                                        startDate:self.currentlyDisplayedDate
                                          endDate:self.currentlyDisplayedDate
                                       completion:^(NSArray *events, NSError *error) {
@@ -551,7 +554,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     if (calendar) {
         self.currentlySelectedCalendar = calendar;
-        self.currentlSelectedCategory = category;
+        self.currentlySelectedCategory = category;
         [self loadEvents];
     }
     

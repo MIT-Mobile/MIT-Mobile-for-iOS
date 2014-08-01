@@ -18,6 +18,8 @@
 
 @interface MITCalendarsCalendar (CoreDataGeneratedAccessors)
 
+- (BOOL)hasSubCategories;
+
 - (void)insertObject:(MITCalendarsCalendar *)value inCategoriesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromCategoriesAtIndex:(NSUInteger)idx;
 - (void)insertCategories:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
