@@ -6,7 +6,7 @@
 #import "NSDate+MITAdditions.h"
 #import "MITDatePickerViewController.h"
 #import "MITEventDetailViewController.h"
-#import "MITCalendarSelectionHomeViewController.h"
+#import "MITCalendarSelectionViewController.h"
 #import "MITCalendarWebservices.h"
 #import "MITCalendarManager.h"
 
@@ -541,14 +541,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 #pragma mark - Calendar
 - (IBAction)presentCalendarSelectionPressed:(id)sender
 {
-    MITCalendarSelectionHomeViewController *calendarVC = [[MITCalendarSelectionHomeViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    MITCalendarSelectionViewController *calendarVC = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStyleGrouped];
     calendarVC.delegate = self;
     
     UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:calendarVC];
     [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
-- (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController
+- (void)calendarSelectionViewController:(MITCalendarSelectionViewController *)viewController
                       didSelectCalendar:(MITCalendarsCalendar *)calendar
                                category:(MITCalendarsCalendar *)category
 {

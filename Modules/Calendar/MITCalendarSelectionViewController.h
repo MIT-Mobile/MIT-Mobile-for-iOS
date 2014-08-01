@@ -1,20 +1,20 @@
 #import <UIKit/UIKit.h>
 #import "MITEventList.h"
 
-@class MITCalendarSelectionHomeViewController;
+@class MITCalendarSelectionViewController;
 @class MITCalendarsCalendar;
 
 @protocol MITCalendarSelectionDelegate <NSObject>
 
-- (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController
+- (void)calendarSelectionViewController:(MITCalendarSelectionViewController *)viewController
                       didSelectCalendar:(MITCalendarsCalendar *)calendar
                                category:(MITCalendarsCalendar *)category;
 
 @end
 
-@interface MITCalendarSelectionHomeViewController : UITableViewController
+@interface MITCalendarSelectionViewController : UITableViewController <MITCalendarSelectionDelegate>
 
-//@property (nonatomic, strong) NSArray *categories;
+@property (nonatomic, strong) MITCalendarsCalendar *category;
 
 @property (nonatomic, weak) id<MITCalendarSelectionDelegate> delegate;
 

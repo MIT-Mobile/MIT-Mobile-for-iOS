@@ -14,12 +14,10 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSOrderedSet *categories;
 @property (nonatomic, retain) NSOrderedSet *parentCategory;
+@property (nonatomic, readonly) BOOL hasSubCategories;
 @end
 
 @interface MITCalendarsCalendar (CoreDataGeneratedAccessors)
-
-- (BOOL)hasSubCategories;
-
 - (void)insertObject:(MITCalendarsCalendar *)value inCategoriesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromCategoriesAtIndex:(NSUInteger)idx;
 - (void)insertCategories:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
