@@ -45,6 +45,4 @@ static NSString *const kAcademicHolidaysCalendarID = @"academic_holidays";
     }];
 }
 
-
-
 @end

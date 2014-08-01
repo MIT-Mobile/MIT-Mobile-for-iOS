@@ -56,6 +56,21 @@
     return self;
 }
 
+- (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[url relativePath] stringByAppendingString:@"/"]];
+    
+    NSDictionary *parameters = nil;
+    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+    
+    if (matches) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITCalendarsEvent entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        return fetchRequest;
+    }
+    return nil;
+}
+
 @end
 
 @implementation MITCalendarsEventResource

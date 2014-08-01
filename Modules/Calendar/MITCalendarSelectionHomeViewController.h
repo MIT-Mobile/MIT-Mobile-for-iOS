@@ -2,11 +2,13 @@
 #import "MITEventList.h"
 
 @class MITCalendarSelectionHomeViewController;
+@class MITCalendarsCalendar;
 
 @protocol MITCalendarSelectionDelegate <NSObject>
 
 - (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController
-                     didSelectEventList:(MITEventList *)eventList;
+                      didSelectCalendar:(MITCalendarsCalendar *)calendar
+                               category:(MITCalendarsCalendar *)category;
 
 @end
 

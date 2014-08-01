@@ -7,13 +7,13 @@
 
 @interface MITCalendarsCalendar : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSString * identifier;
-@property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSString * eventsUrl;
+@property (nonatomic, retain) NSString * identifier;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * shortName;
+@property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSOrderedSet *categories;
-@property (nonatomic, retain) MITCalendarsCalendar *parentCategory;
+@property (nonatomic, retain) NSOrderedSet *parentCategory;
 @end
 
 @interface MITCalendarsCalendar (CoreDataGeneratedAccessors)
@@ -28,4 +28,14 @@
 - (void)removeCategoriesObject:(MITCalendarsCalendar *)value;
 - (void)addCategories:(NSOrderedSet *)values;
 - (void)removeCategories:(NSOrderedSet *)values;
+- (void)insertObject:(MITCalendarsCalendar *)value inParentCategoryAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromParentCategoryAtIndex:(NSUInteger)idx;
+- (void)insertParentCategory:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeParentCategoryAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInParentCategoryAtIndex:(NSUInteger)idx withObject:(MITCalendarsCalendar *)value;
+- (void)replaceParentCategoryAtIndexes:(NSIndexSet *)indexes withParentCategory:(NSArray *)values;
+- (void)addParentCategoryObject:(MITCalendarsCalendar *)value;
+- (void)removeParentCategoryObject:(MITCalendarsCalendar *)value;
+- (void)addParentCategory:(NSOrderedSet *)values;
+- (void)removeParentCategory:(NSOrderedSet *)values;
 @end

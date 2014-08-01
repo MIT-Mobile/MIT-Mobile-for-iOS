@@ -69,8 +69,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    
-    self.title = @"MIT Events";
+    self.title = @"Events";
     
     self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
     [self updateDatesArray];
@@ -144,23 +143,22 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (void)loadEvents
 {
     [self hideTableView];
-    
-   [MITCalendarWebservices getEventsForCalendar:self.currentlySelectedCalendar
-                                    queryString:nil
-                                       category:self.currentlSelectedCategory
-                                      startDate:self.currentlyDisplayedDate
-                                        endDate:self.currentlyDisplayedDate
-                                     completion:^(NSArray *events, NSError *error) {
-       if (events) {
-           self.currentlySelectedEvents = events;
-           [self.eventsListTableView reloadData];
-           [self showTableView];
-
-       }
-       else {
-           NSLog(@"Events Fetching Error: %@", error);
-       }
-   }];
+    self.title = self.currentlSelectedCategory ? self.currentlSelectedCategory.name : self.currentlySelectedCalendar.name;
+    [MITCalendarWebservices getEventsForCalendar:self.currentlySelectedCalendar
+                                     queryString:nil
+                                        category:self.currentlSelectedCategory
+                                       startDate:self.currentlyDisplayedDate
+                                         endDate:self.currentlyDisplayedDate
+                                      completion:^(NSArray *events, NSError *error) {
+                                          if (events) {
+                                              self.currentlySelectedEvents = events;
+                                              [self.eventsListTableView reloadData];
+                                              [self showTableView];
+                                          }
+                                          else {
+                                              NSLog(@"Events Fetching Error: %@", error);
+                                          }
+                                      }];
 }
 
 - (void)hideTableView
@@ -547,9 +545,18 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
-- (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController didSelectEventList:(MITEventList *)eventList
+- (void)calendarSelectionViewController:(MITCalendarSelectionHomeViewController *)viewController
+                      didSelectCalendar:(MITCalendarsCalendar *)calendar
+                               category:(MITCalendarsCalendar *)category
 {
+    if (calendar) {
+        self.currentlySelectedCalendar = calendar;
+        self.currentlSelectedCategory = category;
+        [self loadEvents];
+    }
+    
     [viewController dismissViewControllerAnimated:YES completion:NULL];
 }
+
 
 @end

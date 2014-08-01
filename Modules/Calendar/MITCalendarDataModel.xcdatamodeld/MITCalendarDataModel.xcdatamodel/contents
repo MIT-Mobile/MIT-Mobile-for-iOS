@@ -7,7 +7,7 @@
         <attribute name="shortName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" inverseName="parentCategory" inverseEntity="CalendarsCalendar" syncable="YES"/>
-        <relationship name="parentCategory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsCalendar" inverseName="categories" inverseEntity="CalendarsCalendar" syncable="YES"/>
+        <relationship name="parentCategory" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" inverseName="categories" inverseEntity="CalendarsCalendar" syncable="YES"/>
     </entity>
     <entity name="CalendarsContact" representedClassName="MITCalendarsContact" syncable="YES">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
@@ -59,11 +59,11 @@
         <attribute name="websiteURL" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="CalendarsCalendar" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="CalendarsContact" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="CalendarsEvent" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="CalendarsLocation" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="CalendarsSeriesInfo" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="CalendarsSponsor" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="CalendarsCalendar" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="CalendarsContact" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="CalendarsEvent" positionX="0" positionY="0" width="128" height="390"/>
+        <element name="CalendarsLocation" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="CalendarsSeriesInfo" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="CalendarsSponsor" positionX="0" positionY="0" width="128" height="135"/>
     </elements>
 </model>
