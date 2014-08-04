@@ -324,7 +324,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     MITCalendarEventCell *cell = [self.eventsListTableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
 
     [cell setEvent:self.currentlySelectedEvents[indexPath.row]];
-
+    
     return cell;
 }
 

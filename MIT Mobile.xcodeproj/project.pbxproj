@@ -33,6 +33,10 @@
 		22643F0819892D8800BCE9D4 /* MITCalendarsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 22643F0719892D8800BCE9D4 /* MITCalendarsLocation.m */; };
 		229FFAB9198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */; };
 		229FFABA198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 229FFAB8198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib */; };
+		229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 229FFABF198FFBEF00ABF029 /* MITAcademicCalendarViewController.m */; };
+		229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 229FFAC0198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib */; };
+		229FFAC6199002E500ABF029 /* MITAcademicCalendarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 229FFAC4199002E400ABF029 /* MITAcademicCalendarCell.m */; };
+		229FFAC7199002E500ABF029 /* MITAcademicCalendarCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 229FFAC5199002E500ABF029 /* MITAcademicCalendarCell.xib */; };
 		22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */; };
 		22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */; };
 		22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADAF198C00A4003AEF43 /* MITMasterCalendar.m */; };
@@ -592,6 +596,12 @@
 		229FFAB6198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAcademicHolidaysCalendarViewController.h; sourceTree = "<group>"; };
 		229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAcademicHolidaysCalendarViewController.m; sourceTree = "<group>"; };
 		229FFAB8198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITAcademicHolidaysCalendarViewController.xib; sourceTree = "<group>"; };
+		229FFABE198FFBEF00ABF029 /* MITAcademicCalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAcademicCalendarViewController.h; sourceTree = "<group>"; };
+		229FFABF198FFBEF00ABF029 /* MITAcademicCalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAcademicCalendarViewController.m; sourceTree = "<group>"; };
+		229FFAC0198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITAcademicCalendarViewController.xib; sourceTree = "<group>"; };
+		229FFAC3199002E400ABF029 /* MITAcademicCalendarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAcademicCalendarCell.h; sourceTree = "<group>"; };
+		229FFAC4199002E400ABF029 /* MITAcademicCalendarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAcademicCalendarCell.m; sourceTree = "<group>"; };
+		229FFAC5199002E500ABF029 /* MITAcademicCalendarCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITAcademicCalendarCell.xib; sourceTree = "<group>"; };
 		22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEventCell.h; sourceTree = "<group>"; };
 		22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarEventCell.m; sourceTree = "<group>"; };
 		22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITCalendarEventCell.xib; sourceTree = "<group>"; };
@@ -1721,6 +1731,9 @@
 				229FFAB6198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.h */,
 				229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */,
 				229FFAB8198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib */,
+				229FFABE198FFBEF00ABF029 /* MITAcademicCalendarViewController.h */,
+				229FFABF198FFBEF00ABF029 /* MITAcademicCalendarViewController.m */,
+				229FFAC0198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -1740,6 +1753,9 @@
 				A5A303D71982041200C9C273 /* MITWebviewCell.h */,
 				A5A303D81982041200C9C273 /* MITWebviewCell.m */,
 				A5A303D91982041200C9C273 /* MITWebviewCell.xib */,
+				229FFAC3199002E400ABF029 /* MITAcademicCalendarCell.h */,
+				229FFAC4199002E400ABF029 /* MITAcademicCalendarCell.m */,
+				229FFAC5199002E500ABF029 /* MITAcademicCalendarCell.xib */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -3633,6 +3649,7 @@
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
+				229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
@@ -3654,6 +3671,7 @@
 				A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */,
 				A5BF260B1969FCB400D73AF5 /* MITMapPlaceNameCell.xib in Resources */,
 				2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */,
+				229FFAC7199002E500ABF029 /* MITAcademicCalendarCell.xib in Resources */,
 				A5A30407198AD0FB00C9C273 /* MITEventSearchViewController.xib in Resources */,
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
@@ -3987,6 +4005,7 @@
 				2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */,
 				4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */,
 				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
+				229FFAC6199002E500ABF029 /* MITAcademicCalendarCell.m in Sources */,
 				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
 				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
@@ -4034,6 +4053,7 @@
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
 				DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */,
+				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
 				DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */,
 				DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */,
 				DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */,

@@ -4,7 +4,7 @@
 
 @implementation MITCalendarEventDateParser
 
-- (NSArray *)getSortedDatesForEvents:(NSArray *)events {
++ (NSArray *)getSortedDatesForEvents:(NSArray *)events {
     if (events.count == 0 || !events) {
         return nil;
     }
@@ -21,28 +21,28 @@
     return sortedArray;
 }
 
-- (NSDictionary *)getDateKeyedDictionaryForEvents:(NSArray *)events {
++ (NSDictionary *)getDateKeyedDictionaryForEvents:(NSArray *)events {
     if (!events || events.count == 0) {
         return nil;
     }
     
     NSArray *dates = [self getSortedDatesForEvents:events];
     
-    NSMutableDictionary *dateKeyedPerformances = [NSMutableDictionary dictionaryWithCapacity:[dates count]];
+    NSMutableDictionary *dateKeyedEvents = [NSMutableDictionary dictionaryWithCapacity:[dates count]];
     
     for (NSDate *date in dates) {
-        NSMutableArray *currentDatePerformances = [NSMutableArray array];
+        NSMutableArray *currentDateEvents = [NSMutableArray array];
         
         for (MITCalendarsEvent *event in events) {
             if ([[event.startAt dateWithoutTime] isEqualToDate:date]) {
-                [currentDatePerformances addObject:event];
+                [currentDateEvents addObject:event];
             }
         }
         
-        [dateKeyedPerformances setObject:[NSArray arrayWithArray:currentDatePerformances] forKey:date];
+        [dateKeyedEvents setObject:[NSArray arrayWithArray:currentDateEvents] forKey:date];
     }
     
-    return [NSDictionary dictionaryWithDictionary:dateKeyedPerformances];
+    return [NSDictionary dictionaryWithDictionary:dateKeyedEvents];
 }
 
 @end

@@ -5,10 +5,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITAcademicHolidaysCalendarViewController">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITAcademicCalendarViewController">
             <connections>
-                <outlet property="activityIndicator" destination="7Mo-Py-EyM" id="eqt-cG-dIX"/>
-                <outlet property="tableView" destination="ahe-aD-CVH" id="2PJ-9a-I1V"/>
+                <outlet property="activityIndicator" destination="5vJ-aF-dXF" id="do9-Tg-nqY"/>
+                <outlet property="tableView" destination="9ek-ka-mWz" id="5vp-54-EZn"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -17,28 +17,28 @@
             <rect key="frame" x="0.0" y="64" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="ahe-aD-CVH">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="9ek-ka-mWz">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="Hf7-28-2ms"/>
-                        <outlet property="delegate" destination="-1" id="M7e-cY-fcn"/>
+                        <outlet property="dataSource" destination="-1" id="i3f-Zb-fSf"/>
+                        <outlet property="delegate" destination="-1" id="iAA-le-eku"/>
                     </connections>
                 </tableView>
-                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="7Mo-Py-EyM">
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="5vJ-aF-dXF">
                     <rect key="frame" x="150" y="242" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="centerY" secondItem="7Mo-Py-EyM" secondAttribute="centerY" id="BB8-DK-fCt"/>
-                <constraint firstAttribute="bottom" secondItem="ahe-aD-CVH" secondAttribute="bottom" id="L0I-Qo-uoe"/>
-                <constraint firstAttribute="centerX" secondItem="7Mo-Py-EyM" secondAttribute="centerX" id="XGB-gi-5Wh"/>
-                <constraint firstItem="ahe-aD-CVH" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="c5t-6K-Vnc"/>
-                <constraint firstItem="ahe-aD-CVH" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="r3F-0m-nCz"/>
-                <constraint firstAttribute="trailing" secondItem="ahe-aD-CVH" secondAttribute="trailing" id="sFq-Xn-cEb"/>
+                <constraint firstAttribute="trailing" secondItem="9ek-ka-mWz" secondAttribute="trailing" id="5S2-cC-zi9"/>
+                <constraint firstAttribute="bottom" secondItem="9ek-ka-mWz" secondAttribute="bottom" id="Gbg-WY-RR4"/>
+                <constraint firstItem="9ek-ka-mWz" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="jU0-3S-QBi"/>
+                <constraint firstAttribute="centerX" secondItem="5vJ-aF-dXF" secondAttribute="centerX" id="jbj-eQ-ZxO"/>
+                <constraint firstItem="9ek-ka-mWz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lf0-Qq-xEH"/>
+                <constraint firstAttribute="centerY" secondItem="5vJ-aF-dXF" secondAttribute="centerY" id="uNb-aN-sfW"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>

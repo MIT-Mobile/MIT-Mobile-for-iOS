@@ -5,15 +5,12 @@
 
 @interface MITCalendarEventDateGroupedDataSource ()
 
-@property (strong, nonatomic) MITCalendarEventDateParser *parser;
-
 @end
 
 @implementation MITCalendarEventDateGroupedDataSource
 
 - (id)initWithEvents:(NSArray *)events {
     if (self = [super init]) {
-        _parser = [[MITCalendarEventDateParser alloc] init];
         [self parseEvents:events];
     }
     
@@ -23,8 +20,8 @@
 - (void)parseEvents:(NSArray *)events {
     if (events && events.count > 0) {
         self.events = events;
-        self.eventDates = [self.parser getSortedDatesForEvents:events];
-        self.eventsByDate = [self.parser getDateKeyedDictionaryForEvents:events];
+        self.eventDates = [MITCalendarEventDateParser getSortedDatesForEvents:events];
+        self.eventsByDate = [MITCalendarEventDateParser getDateKeyedDictionaryForEvents:events];
     } else {
         self.events = nil;
         self.eventDates = nil;
@@ -108,7 +105,6 @@
     if (!eventDateFormatter) {
         eventDateFormatter = [[NSDateFormatter alloc] init];
         NSString *localizedDateFormat = [NSDateFormatter dateFormatFromTemplate:@"EEEE, MMMM dd" options:0 locale:[NSLocale currentLocale]];
-//        localizedDateFormat = [localizedDateFormat stringByReplacingOccurrencesOfString:@"/" withString:@"."];
         eventDateFormatter.dateFormat = localizedDateFormat;
     }
     

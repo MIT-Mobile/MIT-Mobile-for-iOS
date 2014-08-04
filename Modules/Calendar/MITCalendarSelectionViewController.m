@@ -1,5 +1,6 @@
 #import "MITCalendarSelectionViewController.h"
 #import "MITAcademicHolidaysCalendarViewController.h"
+#import "MITAcademicCalendarViewController.h"
 #import "MITCalendarManager.h"
 
 typedef NS_ENUM(NSInteger, kEventsSection) {
@@ -166,9 +167,8 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (void)showAcademicCalendar
 {
-    [self unselectAllCells];
-    self.selectedCalendar = self.masterCalendar.academicCalendar;
-    self.selectedCategory = nil;
+    MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
+    [self.navigationController pushViewController:academicVC animated:YES];
 }
 
 - (void)selectCalendarAtIndexPath:(NSIndexPath *)indexPath
