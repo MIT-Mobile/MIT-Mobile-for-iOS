@@ -1,4 +1,5 @@
 #import "MITCalendarSelectionViewController.h"
+#import "MITAcademicHolidaysCalendarViewController.h"
 #import "MITCalendarManager.h"
 
 typedef NS_ENUM(NSInteger, kEventsSection) {
@@ -98,8 +99,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 {
     if (section == kEventsSectionRegistrar && self.mode == kCalendarSelectionModeRoot) {
         return 2;
-    }
-    else {
+    } else {
         return (self.mode == kCalendarSelectionModeRoot) ? [self.selectedCalendar.categories count] : [self.category.categories count];
     }
 }
@@ -132,7 +132,6 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
             cell.textLabel.text = self.masterCalendar.academicCalendar.name;
         }
     } else {
-    
         MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row] : self.category.categories[indexPath.row];
         cell.textLabel.text = category.name;
         
@@ -150,23 +149,22 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
         if (indexPath.row == kEventsCellRowAcademicHolidays) {
-            [self selectAcademicHolidaysCalendar];
+            [self showAcademicHolidaysCalendar];
         } else {
-            [self selectAcademicCalendar];
+            [self showAcademicCalendar];
         }
     } else {
         [self selectCalendarAtIndexPath:indexPath];
     }
 }
 
-- (void)selectAcademicHolidaysCalendar
+- (void)showAcademicHolidaysCalendar
 {
-    [self unselectAllCells];
-    self.selectedCalendar = self.masterCalendar.academicHolidaysCalendar;
-    self.selectedCategory = nil;
+    MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
+    [self.navigationController pushViewController:holidaysVC animated:YES];
 }
 
-- (void)selectAcademicCalendar
+- (void)showAcademicCalendar
 {
     [self unselectAllCells];
     self.selectedCalendar = self.masterCalendar.academicCalendar;

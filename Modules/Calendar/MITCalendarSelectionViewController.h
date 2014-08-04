@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "MITEventList.h"
 
 @class MITCalendarSelectionViewController;
 @class MITCalendarsCalendar;

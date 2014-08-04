@@ -26,6 +26,12 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
 }
 
 + (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                  completion:(MITEventsCompletionBlock)completion
+{
+    [MITCalendarWebservices getEventsForCalendar:calendar queryString:nil category:nil startDate:nil endDate:nil completion:completion];
+}
+
++ (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
                         date:(NSDate *)date
                   completion:(MITEventsCompletionBlock)completion
 {
@@ -58,8 +64,8 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
                                                     object:@{@"calendar" : calendar.identifier}
                                                 parameters:params
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [MITCalendarWebservices handleResult:result error:error completion:completion];                                               }];
-    
+                                                    [MITCalendarWebservices handleResult:result error:error completion:completion];
+                                                }];
 }
 
 + (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITCalendarCompletionBlock)completion
