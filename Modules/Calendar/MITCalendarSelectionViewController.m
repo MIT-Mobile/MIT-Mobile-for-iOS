@@ -101,7 +101,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     if (section == kEventsSectionRegistrar && self.mode == kCalendarSelectionModeRoot) {
         return 2;
     } else {
-        return (self.mode == kCalendarSelectionModeRoot) ? [self.selectedCalendar.categories count] : [self.category.categories count];
+        return (self.mode == kCalendarSelectionModeRoot) ? [self.selectedCalendar.categories count] + 1 : [self.category.categories count];
     }
 }
 
@@ -124,6 +124,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITCalendarCell];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITCalendarCell];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
@@ -132,14 +133,15 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         } else {
             cell.textLabel.text = self.masterCalendar.academicCalendar.name;
         }
+    } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
+        cell.textLabel.text = @"All Events";
+        cell.accessoryType = UITableViewCellAccessoryNone;
     } else {
-        MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row] : self.category.categories[indexPath.row];
+        MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row];
         cell.textLabel.text = category.name;
         
         cell.accessoryType = [category.categories count] > 0 ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
     }
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     return cell;
 }
@@ -154,7 +156,11 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         } else {
             [self showAcademicCalendar];
         }
-    } else {
+    } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
+        self.selectedCategory = nil;
+        [self showCheckmarkForCellAtIndexPath:indexPath];
+    }
+    else {
         [self selectCalendarAtIndexPath:indexPath];
     }
 }
@@ -173,17 +179,22 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (void)selectCalendarAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITCalendarsCalendar *selectedCategory = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row] : self.category.categories[indexPath.row];
+    MITCalendarsCalendar *selectedCategory = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row];
     
     if (selectedCategory.hasSubCategories) {
         [self showSubCategory:selectedCategory];
     }
     else {
-        [self unselectAllCells];
-        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        [self showCheckmarkForCellAtIndexPath:indexPath];
         self.selectedCategory = selectedCategory;
     }
+}
+
+- (void)showCheckmarkForCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self unselectAllCells];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
 - (void)showSubCategory:(MITCalendarsCalendar *)subCategory
@@ -197,7 +208,9 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 - (void)unselectAllCells
 {
     for (UITableViewCell *cell in self.tableView.visibleCells) {
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
     }
 }
 
