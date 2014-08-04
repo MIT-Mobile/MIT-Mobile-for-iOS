@@ -60,6 +60,12 @@
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
+- (NSDate *)dateWithoutTime
+{
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    return [[NSCalendar currentCalendar] dateFromComponents:comps];
+}
+
 - (NSArray *)datesInWeek
 {
     NSDate *day = [self startOfWeek];

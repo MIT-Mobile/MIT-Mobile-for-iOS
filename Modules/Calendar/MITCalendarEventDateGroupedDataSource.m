@@ -1,0 +1,119 @@
+#import "MITCalendarEventDateGroupedDataSource.h"
+#import "MITCalendarEventDateParser.h"
+#import "MITCalendarsEvent.h"
+#import "NSDate+MITAdditions.h"
+
+@interface MITCalendarEventDateGroupedDataSource ()
+
+@property (strong, nonatomic) MITCalendarEventDateParser *parser;
+
+@end
+
+@implementation MITCalendarEventDateGroupedDataSource
+
+- (id)initWithEvents:(NSArray *)events {
+    if (self = [super init]) {
+        _parser = [[MITCalendarEventDateParser alloc] init];
+        [self parseEvents:events];
+    }
+    
+    return self;
+}
+
+- (void)parseEvents:(NSArray *)events {
+    if (events && events.count > 0) {
+        self.events = events;
+        self.eventDates = [self.parser getSortedDatesForEvents:events];
+        self.eventsByDate = [self.parser getDateKeyedDictionaryForEvents:events];
+    } else {
+        self.events = nil;
+        self.eventDates = nil;
+        self.eventsByDate = nil;
+    }
+}
+
+- (void)replaceAllEvents:(NSArray *)events {
+    [self parseEvents:events];
+}
+
+- (void)addEvents:(NSArray *)events {
+    NSArray *newEvents = [self.events arrayByAddingObjectsFromArray:events];
+    [self parseEvents:newEvents];
+}
+
+- (NSDate *)dateForSection:(NSInteger)section {
+    return [self.eventDates objectAtIndex:section];
+}
+
+- (NSInteger)weekdayForSection:(NSInteger)section {
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSWeekdayCalendarUnit fromDate:[self dateForSection:section]];
+    return components.weekday;
+}
+
+- (NSArray *)eventsForDate:(NSDate *)date {
+    NSArray *events = nil;
+    
+    date = [date dateWithoutTime];
+    for (NSDate *storedDate in self.eventDates) {
+        if ([date compare:storedDate] == NSOrderedSame) {
+            events = [self.eventsByDate objectForKey:storedDate];
+        }
+    }
+    
+    return events;
+}
+
+- (NSArray *)allSections
+{
+    return self.eventDates;
+}
+
+- (NSArray *)eventsInSection:(NSUInteger)section
+{
+    if (section < self.eventDates.count) {
+        id key = [self.eventDates objectAtIndex:section];
+        return [self.eventsByDate objectForKey:key];
+    }
+    return nil;
+}
+
+- (MITCalendarsEvent *)eventForIndex:(NSUInteger)index
+{
+    if (index < self.events.count) {
+        return [self.events objectAtIndex:index];
+    }
+    return nil;
+}
+
+- (MITCalendarsEvent *)eventForIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *eventsInSection = [self eventsInSection:indexPath.section];
+    if (indexPath.row < eventsInSection.count) {
+        return eventsInSection[indexPath.row];
+    }
+    return nil;
+}
+
+- (NSIndexPath *)indexPathForEvent:(MITCalendarsEvent *)event
+{
+    int section = [self.eventDates indexOfObject:event.startAt];
+    int row = [[self.eventsByDate objectForKey:event.startAt] indexOfObject:event];
+    return [NSIndexPath indexPathForRow:row inSection:section];
+}
+
+- (NSString *)headerForSection:(NSUInteger)section
+{
+    static NSDateFormatter *eventDateFormatter = nil;
+    
+    if (!eventDateFormatter) {
+        eventDateFormatter = [[NSDateFormatter alloc] init];
+        NSString *localizedDateFormat = [NSDateFormatter dateFormatFromTemplate:@"EEEE, MMMM dd" options:0 locale:[NSLocale currentLocale]];
+//        localizedDateFormat = [localizedDateFormat stringByReplacingOccurrencesOfString:@"/" withString:@"."];
+        eventDateFormatter.dateFormat = localizedDateFormat;
+    }
+    
+    NSDate *date = [self.eventDates objectAtIndex:section];
+    return [eventDateFormatter stringFromDate:date];
+}
+
+@end

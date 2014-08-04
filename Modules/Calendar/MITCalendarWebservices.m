@@ -11,7 +11,7 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
 
 @implementation MITCalendarWebservices
 
-+(void)getCalendarsWithCompletion:(MITCalendarsCompletionBlock)completion
++ (void)getCalendarsWithCompletion:(MITCalendarsCompletionBlock)completion
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarsResourceName
                                                 parameters:nil
@@ -75,6 +75,37 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
             if (completion) {
                 completion(nil, error);
             }
+        }
+    }];
+}
+
++ (void)getEventsWithinOneMonthInCalendar:(MITCalendarsCalendar *)calendar forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
+{
+    // Per webservice documentation, the default end date is 1 month from the current date
+    NSDictionary *params = @{@"q": query};
+    
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName object:@{@"calendar": calendar.identifier} parameters:params completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(result.array, nil);
+        }
+    }];
+}
+
++ (void)getEventsWithinOneYearInCalendar:(MITCalendarsCalendar *)calendar forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.year = 1;
+    NSDate *oneYearFromNow = [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:[NSDate date] options:0];
+    NSDictionary *params = @{@"q": query,
+                             @"end": [oneYearFromNow ISO8601String]};
+    
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName object:@{@"calendar": calendar.identifier} parameters:params completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        if (error) {
+            completion(nil, error);
+        } else {
+            completion(result.array, nil);
         }
     }];
 }

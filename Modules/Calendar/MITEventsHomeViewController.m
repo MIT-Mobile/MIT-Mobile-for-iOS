@@ -9,6 +9,7 @@
 #import "MITCalendarSelectionViewController.h"
 #import "MITCalendarWebservices.h"
 #import "MITCalendarManager.h"
+#import "MITEventSearchViewController.h"
 
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
@@ -70,6 +71,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.title = @"Events";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search_magnifier.png"] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
     
     self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
     [self updateDatesArray];
@@ -134,7 +136,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
     [navigationBar setBarTintColor:navbarGrey];
     self.dayPickerContainerView.backgroundColor = navbarGrey;
-    
 }
 
 - (void)registerForNotifications
@@ -213,6 +214,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
     [self.eventsListTableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
+}
+
+- (void)searchButtonPressed
+{
+    MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    [self presentViewController:searchNavController animated:YES completion:nil];
 }
 
 #pragma mark - Day of the week Collection View Datasource/Delegate
