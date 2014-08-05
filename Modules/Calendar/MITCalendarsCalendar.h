@@ -15,6 +15,8 @@
 @property (nonatomic, retain) NSOrderedSet *categories;
 @property (nonatomic, retain) NSOrderedSet *parentCategory;
 @property (nonatomic, readonly) BOOL hasSubCategories;
+- (BOOL)isEqualToCalendar:(MITCalendarsCalendar *)calendar;
+
 @end
 
 @interface MITCalendarsCalendar (CoreDataGeneratedAccessors)

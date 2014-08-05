@@ -53,6 +53,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
+@property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
+
 @end
 
 @implementation MITEventsHomeViewController
@@ -549,10 +551,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 #pragma mark - Calendar
 - (IBAction)presentCalendarSelectionPressed:(id)sender
 {
-    MITCalendarSelectionViewController *calendarVC = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    calendarVC.delegate = self;
-    
-    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:calendarVC];
+    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:self.calendarSelectionViewController];
     [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
@@ -569,5 +568,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [viewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
+- (MITCalendarSelectionViewController *)calendarSelectionViewController
+{
+    if (!_calendarSelectionViewController)
+    {
+        _calendarSelectionViewController = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        _calendarSelectionViewController.delegate = self;
+    }
+    return _calendarSelectionViewController;
+}
 
 @end

@@ -32,4 +32,9 @@
     return mapping;
 }
 
+- (BOOL)isEqualToCalendar:(MITCalendarsCalendar *)calendar
+{
+    return [self.identifier isEqualToString:calendar.identifier];
+}
+
 @end

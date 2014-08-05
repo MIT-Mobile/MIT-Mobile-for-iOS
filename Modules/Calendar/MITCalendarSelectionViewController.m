@@ -2,6 +2,7 @@
 #import "MITAcademicHolidaysCalendarViewController.h"
 #import "MITAcademicCalendarViewController.h"
 #import "MITCalendarManager.h"
+#import "UIKit+MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, kEventsSection) {
     kEventsSectionRegistrar,
@@ -28,6 +29,10 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 @property (nonatomic, strong) MITCalendarsCalendar *selectedCategory;
 
 @property (nonatomic) kCalendarSelectionMode mode;
+
+@end
+
+@interface MITColoredChevron : UIView
 
 @end
 
@@ -69,6 +74,11 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
             }
         }];
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.tableView reloadData];
 }
 
 - (void)setupNavBar
@@ -127,6 +137,8 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
        if (indexPath.row == kEventsCellRowAcademicHolidays) {
             cell.textLabel.text = self.masterCalendar.academicHolidaysCalendar.name;
@@ -135,15 +147,37 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         }
     } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
         cell.textLabel.text = @"All Events";
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        
+        // This will force All Events to be the default selected event until the user has selected something else:
+        cell.accessoryType = (self.categoriesPath.count > 0) ?  UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark;
     } else {
         MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row];
-        cell.textLabel.text = category.name;
-        
-        cell.accessoryType = [category.categories count] > 0 ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+        cell.textLabel.text = (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) ? @"All Events" :category.name;
+        [self setAccessoryForCell:cell forCategory:category];
     }
     
     return cell;
+}
+
+- (void)setAccessoryForCell:(UITableViewCell *)cell forCategory:(MITCalendarsCalendar *)category
+{
+    cell.accessoryView = nil;
+    if (category.categories.count > 0) {
+        if ([self pathContainsCategory:category]) {
+            cell.accessoryView = [[MITColoredChevron alloc] initWithFrame:CGRectMake(0, 0, 13, 18)];
+        }
+        else {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
+    }
+    else {
+        if ([category isEqualToCalendar:self.selectedCategory] || [self pathContainsCategory:category]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
+        else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -158,7 +192,8 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         }
     } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
         self.selectedCategory = nil;
-        [self showCheckmarkForCellAtIndexPath:indexPath];
+        [self.categoriesPath removeAllObjects];
+        [self.tableView reloadData];
     }
     else {
         [self selectCalendarAtIndexPath:indexPath];
@@ -185,16 +220,21 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         [self showSubCategory:selectedCategory];
     }
     else {
-        [self showCheckmarkForCellAtIndexPath:indexPath];
-        self.selectedCategory = selectedCategory;
+        [self selectCategory:selectedCategory];
+        [self.tableView reloadData];
     }
 }
 
-- (void)showCheckmarkForCellAtIndexPath:(NSIndexPath *)indexPath
+- (void)selectCategory:(MITCalendarsCalendar *)category
 {
-    [self unselectAllCells];
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    self.selectedCategory = category;
+    [self.categoriesPath removeAllObjects];
+    for (MITCalendarSelectionViewController *vc in [self.navigationController viewControllers]) {
+        if (vc.category) {
+            [self.categoriesPath addObject:vc.category];
+        }
+    }
+    [self.categoriesPath addObject:self.selectedCategory];
 }
 
 - (void)showSubCategory:(MITCalendarsCalendar *)subCategory
@@ -202,16 +242,8 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     MITCalendarSelectionViewController *subCategoryVC = [[MITCalendarSelectionViewController alloc] initWithNibName:nil bundle:nil];
     subCategoryVC.category = subCategory;
     subCategoryVC.delegate = self;
+    subCategoryVC.categoriesPath = self.categoriesPath;
     [self.navigationController pushViewController:subCategoryVC animated:YES];
-}
-
-- (void)unselectAllCells
-{
-    for (UITableViewCell *cell in self.tableView.visibleCells) {
-        if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
-            cell.accessoryType = UITableViewCellAccessoryNone;
-        }
-    }
 }
 
 - (void)doneButtonPressed:(id)sender
@@ -225,6 +257,53 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 {
     // This will eventually chain back up to the presenting view controller
     [self.delegate calendarSelectionViewController:viewController didSelectCalendar:calendar category:category];
+}
+
+#pragma mark - Selection State Tracking
+
+- (NSMutableArray *)categoriesPath {
+    if (!_categoriesPath) {
+        _categoriesPath = [[NSMutableArray alloc] init];
+    }
+    return _categoriesPath;
+}
+
+- (BOOL)pathContainsCategory:(MITCalendarsCalendar *)category
+{
+    for (MITCalendarsCalendar *categoryInPath in self.categoriesPath) {
+        if ([category isEqualToCalendar:categoryInPath]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+@end
+
+@implementation MITColoredChevron
+
+- (id)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+        [self setBackgroundColor:[UIColor clearColor]];
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    CGFloat padding = 4.0;
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetStrokeColorWithColor(context, [UIColor mit_tintColor].CGColor);
+    CGContextSetLineWidth(context, 3.f);
+    CGContextSetLineJoin(context, kCGLineJoinMiter);
+    
+    CGContextMoveToPoint(context, padding, padding);
+    CGContextAddLineToPoint(context, self.frame.size.width - padding, self.frame.size.height/2);
+    CGContextAddLineToPoint(context, padding, self.frame.size.height - padding);
+    
+    CGContextStrokePath(context);
 }
 
 @end
