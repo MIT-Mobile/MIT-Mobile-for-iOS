@@ -97,7 +97,7 @@
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
 {
-    return 20;
+    return 0;
 }
 
 @end
