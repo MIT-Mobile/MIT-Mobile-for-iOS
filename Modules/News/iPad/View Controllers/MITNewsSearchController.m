@@ -116,6 +116,10 @@
         self.searchTableView.alpha = 1;
         self.view.alpha = 1;
     }
+    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    if (view) {
+        view.alpha = 1;
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -135,6 +139,10 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    if (view) {
+        view.alpha = .5;
+    }
     searchBar.showsCancelButton = YES;
     if ([searchBar.text isEqualToString:@""]) {
         self.searchTableView.alpha = 0;
