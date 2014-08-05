@@ -44,10 +44,6 @@
     NSError *error = nil;
     [self.modelController addRecentSearchItem:searchTerm error:error];
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
     self.clearButtonItem.enabled = YES;
 }
 
@@ -128,6 +124,13 @@
         self.clearButtonItem.enabled = NO;
     }
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];}
 
 - (void)didReceiveMemoryWarning
 {
