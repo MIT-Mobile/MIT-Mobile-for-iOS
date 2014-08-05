@@ -33,10 +33,8 @@
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
     if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        NSLog(@"! %d", [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1);
         return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
     }
-    NSLog(@"!! %d", [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0]);
     return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
 }
 
