@@ -19,6 +19,9 @@
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDateBottomVerticalConstraint;
+@property (nonatomic) CGFloat originalNextStoryDateBottomVerticalConstraint;
+
 @end
 
 @implementation MITNewsStoryViewController {
@@ -85,6 +88,7 @@
                                        }];
         }
     }
+    self.originalNextStoryDateBottomVerticalConstraint = self.nextStoryDateBottomVerticalConstraint.constant;
 }
 
 - (void)didReceiveMemoryWarning
@@ -120,6 +124,12 @@
             self.nextStoryImageHeightConstraint.constant = 60;
             self.nextStoryImageWidthConstraint.constant = 90;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+            
+            if (self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant + self.nextStoryDateBottomVerticalConstraint.constant > self.nextStoryView.frame.size.height) {
+                
+                self.nextStoryDateBottomVerticalConstraint.constant = (self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant) - self.nextStoryView.frame.size.height + self.originalNextStoryDateBottomVerticalConstraint * 2;
+            }
+            
         } else {
             self.nextStoryImageHeightConstraint.constant = 0;
             self.nextStoryImageWidthConstraint.constant = 0;
