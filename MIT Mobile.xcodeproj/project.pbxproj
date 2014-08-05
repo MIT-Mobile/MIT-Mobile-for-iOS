@@ -7,14 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1493D01987DD1E009B7EA8 /* MITPopoverBackgroundView.m */; };
+		0B1493D31987DF55009B7EA8 /* _UIPopoverViewBlurMaskBackgroundArrowDown@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B1493D21987DF55009B7EA8 /* _UIPopoverViewBlurMaskBackgroundArrowDown@2x.png */; };
 		0B1689D11937D1EB001EB3B1 /* MITNewsiPadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */; };
 		0B26D8B5197DC0FF0024BB18 /* MITNewsiPadCategoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B26D8B4197DC0FF0024BB18 /* MITNewsiPadCategoryListViewController.m */; };
 		0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */; };
 		0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */; };
-		0B45AE9B197FF5570036671A /* DDPopoverBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B45AE97197FF5570036671A /* DDPopoverBackgroundView.m */; };
-		0B45AE9C197FF5570036671A /* DDPopoverBackgroundView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 0B45AE98197FF5570036671A /* DDPopoverBackgroundView.podspec */; };
-		0B45AE9D197FF5570036671A /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0B45AE99197FF5570036671A /* LICENSE */; };
-		0B45AE9E197FF5570036671A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0B45AE9A197FF5570036671A /* README.md */; };
 		0B893A0F197EB4D100609A38 /* MITNewsCategoryGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B893A0E197EB4D100609A38 /* MITNewsCategoryGridViewController.m */; };
 		0B893A3F197EEE5500609A38 /* MITNewsLoadingMoreCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B893A3E197EEE5500609A38 /* MITNewsLoadingMoreCollectionViewCell.xib */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
@@ -35,6 +33,7 @@
 		0BE0C4101975B42B00961025 /* MITViewWithCenterTextAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE0C40C1975B42B00961025 /* MITViewWithCenterTextAndIndicator.m */; };
 		0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */; };
 		0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C4121975B95900961025 /* MITNewsSearchController.xib */; };
+		0BE5C1F01989438B004C147A /* _UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BE5C1EF1989438B004C147A /* _UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png */; };
 		0BFBCA20195DD6940064D02C /* MITNewsSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */; };
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -534,6 +533,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B1493CF1987DD1E009B7EA8 /* MITPopoverBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPopoverBackgroundView.h; sourceTree = "<group>"; };
+		0B1493D01987DD1E009B7EA8 /* MITPopoverBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPopoverBackgroundView.m; sourceTree = "<group>"; };
+		0B1493D21987DF55009B7EA8 /* _UIPopoverViewBlurMaskBackgroundArrowDown@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_UIPopoverViewBlurMaskBackgroundArrowDown@2x.png"; sourceTree = "<group>"; };
 		0B1689CF1937D1EB001EB3B1 /* MITNewsiPadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsiPadViewController.h; sourceTree = "<group>"; };
 		0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsiPadViewController.m; sourceTree = "<group>"; };
 		0B26D8B3197DC0FF0024BB18 /* MITNewsiPadCategoryListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsiPadCategoryListViewController.h; sourceTree = "<group>"; };
@@ -541,11 +543,6 @@
 		0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryImageCollectionViewCell.xib; path = XIBs/NewsStoryImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryDekCollectionViewCell.xib; path = XIBs/NewsStoryDekCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B385D3819631733009A3A4B /* News v4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News v4.xcdatamodel"; sourceTree = "<group>"; };
-		0B45AE96197FF5570036671A /* DDPopoverBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDPopoverBackgroundView.h; sourceTree = "<group>"; };
-		0B45AE97197FF5570036671A /* DDPopoverBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDPopoverBackgroundView.m; sourceTree = "<group>"; };
-		0B45AE98197FF5570036671A /* DDPopoverBackgroundView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DDPopoverBackgroundView.podspec; sourceTree = "<group>"; };
-		0B45AE99197FF5570036671A /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		0B45AE9A197FF5570036671A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0B893A0D197EB4D100609A38 /* MITNewsCategoryGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoryGridViewController.h; sourceTree = "<group>"; };
 		0B893A0E197EB4D100609A38 /* MITNewsCategoryGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoryGridViewController.m; sourceTree = "<group>"; };
 		0B893A3E197EEE5500609A38 /* MITNewsLoadingMoreCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITNewsLoadingMoreCollectionViewCell.xib; path = XIBs/MITNewsLoadingMoreCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -578,6 +575,7 @@
 		0BE0C40C1975B42B00961025 /* MITViewWithCenterTextAndIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITViewWithCenterTextAndIndicator.m; sourceTree = "<group>"; };
 		0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITViewWithCenterTextAndIndicator.xib; sourceTree = "<group>"; };
 		0BE0C4121975B95900961025 /* MITNewsSearchController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITNewsSearchController.xib; path = XIBs/MITNewsSearchController.xib; sourceTree = "<group>"; };
+		0BE5C1EF1989438B004C147A /* _UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"; sourceTree = "<group>"; };
 		0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsSearchController.h; sourceTree = "<group>"; };
 		0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsSearchController.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1532,6 +1530,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0B1493CE1987DD05009B7EA8 /* MITPopoverBackgroundView */,
 				0BB48BEF1976EDB700C7E920 /* MultiLineLabel */,
 				2C101A451653E931000E40E3 /* MapCore */,
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
@@ -1589,6 +1588,17 @@
 				2C893ABF18BE3090002690CE /* MITNavigationController.m */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		0B1493CE1987DD05009B7EA8 /* MITPopoverBackgroundView */ = {
+			isa = PBXGroup;
+			children = (
+				0B1493CF1987DD1E009B7EA8 /* MITPopoverBackgroundView.h */,
+				0B1493D01987DD1E009B7EA8 /* MITPopoverBackgroundView.m */,
+				0B1493D21987DF55009B7EA8 /* _UIPopoverViewBlurMaskBackgroundArrowDown@2x.png */,
+				0BE5C1EF1989438B004C147A /* _UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png */,
+			);
+			name = MITPopoverBackgroundView;
 			sourceTree = "<group>";
 		};
 		0B1689C91937D13A001EB3B1 /* iPad */ = {
@@ -1698,19 +1708,6 @@
 				0BE0C4121975B95900961025 /* MITNewsSearchController.xib */,
 			);
 			name = XIBs;
-			sourceTree = "<group>";
-		};
-		0BE0C3EB19704D9500961025 /* DDPopoverBackgroundView */ = {
-			isa = PBXGroup;
-			children = (
-				0B45AE96197FF5570036671A /* DDPopoverBackgroundView.h */,
-				0B45AE97197FF5570036671A /* DDPopoverBackgroundView.m */,
-				0B45AE98197FF5570036671A /* DDPopoverBackgroundView.podspec */,
-				0B45AE99197FF5570036671A /* LICENSE */,
-				0B45AE9A197FF5570036671A /* README.md */,
-			);
-			name = DDPopoverBackgroundView;
-			path = External/DDPopoverBackgroundView;
 			sourceTree = "<group>";
 		};
 		0BE0C4061975B42B00961025 /* MITViewWithCenterText */ = {
@@ -2812,7 +2809,6 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
-				0BE0C3EB19704D9500961025 /* DDPopoverBackgroundView */,
 				0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */,
 				2C0454C218F33D8A0018073D /* AFNetworking */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
@@ -3555,10 +3551,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B1493D31987DF55009B7EA8 /* _UIPopoverViewBlurMaskBackgroundArrowDown@2x.png in Resources */,
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
-				0B45AE9C197FF5570036671A /* DDPopoverBackgroundView.podspec in Resources */,
 				0BCC90D519631C2C00440544 /* MITNewsRecentSearchController.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
@@ -3579,7 +3575,6 @@
 				2C5D7882191828E700ECB388 /* LauncherModuleListCell.xib in Resources */,
 				0B893A3F197EEE5500609A38 /* MITNewsLoadingMoreCollectionViewCell.xib in Resources */,
 				0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */,
-				0B45AE9D197FF5570036671A /* LICENSE in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
 				2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */,
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
@@ -3610,11 +3605,11 @@
 				0B9A2FAD194B746600A36C94 /* NewsStoryHeaderReusableView.xib in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
-				0B45AE9E197FF5570036671A /* README.md in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
+				0BE5C1F01989438B004C147A /* _UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
@@ -3803,7 +3798,6 @@
 				2C2CB4961922B45100FCC056 /* MITLauncherListViewCell.m in Sources */,
 				2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */,
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
-				0B45AE9B197FF5570036671A /* DDPopoverBackgroundView.m in Sources */,
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */,
@@ -3937,6 +3931,7 @@
 				DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
+				0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
 				DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */,
