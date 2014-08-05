@@ -15,6 +15,10 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
+static NSUInteger loadingActivityViewTag = (int)"loadingActivityView";
+static NSUInteger noResultsViewTag = (int)"noResultsView";
+static NSString *loadingMoreIdentifier = @"LoadingMore";
+
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
@@ -116,7 +120,7 @@
         self.searchTableView.alpha = 1;
         self.view.alpha = 1;
     }
-    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
     if (view) {
         view.alpha = 1;
     }
@@ -139,7 +143,7 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
     if (view) {
         view.alpha = .5;
     }
@@ -301,7 +305,7 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     
-    if ([identifier isEqualToString:@"LoadingMore"]) {
+    if ([identifier isEqualToString:loadingMoreIdentifier]) {
         static NSString *CellIdentifier = @"Cell";
         
         MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -338,7 +342,7 @@
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
-    if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
+    if ([reuseIdentifier isEqualToString:loadingMoreIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
@@ -382,7 +386,7 @@
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    if ([cell.reuseIdentifier isEqualToString:@"LoadingMore"]) {
+    if ([cell.reuseIdentifier isEqualToString:loadingMoreIdentifier]) {
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [view startAnimating];
         cell.accessoryView = view;
@@ -464,16 +468,15 @@
 
 - (void)addNoResultsView
 {
-    NSUInteger tag = (int)"noResultsView";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
-    noResultsView.tag = tag;
+    noResultsView.tag = noResultsViewTag;
     [self.view addSubview:noResultsView];
 }
 
 - (void)removeNoResultsView
 {
-    UIView *view = [self.view viewWithTag:(int)"noResultsView"];
+    UIView *view = [self.view viewWithTag:noResultsViewTag];
     if (view) {
         [view removeFromSuperview];
     }
@@ -481,16 +484,15 @@
 
 - (void)addLoadingView
 {
-    NSUInteger tag = (int)"loadingActivityView";
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
     loadingActivityView.frame = self.searchTableView.frame;
-    loadingActivityView.tag = tag;
+    loadingActivityView.tag = loadingActivityViewTag;
     [self.view addSubview:loadingActivityView];
 }
 
 - (void)removeLoadingView
 {
-    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
+    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
     if (view) {
         [view removeFromSuperview];
     }
