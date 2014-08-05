@@ -116,4 +116,15 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
     }];
 }
 
++ (void) getEventDetailsForEventURL:(NSURL *)eventURL withCompletion:(MITEventDetailCompletionBLock)completion
+{
+    [[MITMobile defaultManager] getObjectsForURL:eventURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        if (result.array.firstObject) {
+            completion(result.array.firstObject, nil);
+        } else {
+            completion(nil, error);
+        }
+    }];
+}
+
 @end

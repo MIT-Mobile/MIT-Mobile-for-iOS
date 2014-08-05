@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 
+@class MITCalendarsCalendar, MITCalendarsEvent;
+
 typedef void(^MITCalendarsCompletionBlock)(NSArray *calendars, NSError *error);
 typedef void(^MITEventsCompletionBlock)(NSArray *events, NSError *error);
-
-@class MITCalendarsCalendar;
+typedef void(^MITEventDetailCompletionBLock)(MITCalendarsEvent *event, NSError *error);
 
 @interface MITCalendarWebservices : NSObject
 
@@ -23,4 +24,7 @@ typedef void(^MITEventsCompletionBlock)(NSArray *events, NSError *error);
                    startDate:(NSDate *)startDate
                      endDate:(NSDate *)endDate
                   completion:(MITEventsCompletionBlock)completion;
+
++ (void) getEventDetailsForEventURL:(NSURL *)eventURL
+                     withCompletion:(MITEventDetailCompletionBLock)completion;
 @end

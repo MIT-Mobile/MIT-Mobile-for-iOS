@@ -1,18 +1,23 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
+    MITEventDetailRowTypeSpeaker,
     MITEventDetailRowTypeTime,
     MITEventDetailRowTypeLocation,
     MITEventDetailRowTypePhone,
+    MITEventDetailRowTypeDescription,
     MITEventDetailRowTypeWebsite,
-    MITEventDetailRowTypeDescription
+    MITEventDetailRowTypeOpenTo,
+    MITEventDetailRowTypeCost,
+    MITEventDetailRowTypeSponsors,
+    MITEventDetailRowTypeContact
 };
 
-@class MITCalendarEvent;
+@class MITCalendarsEvent;
 
 @interface MITEventDetailViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) MITCalendarEvent *event;
+@property (nonatomic, strong) MITCalendarsEvent *event;
 
 @end

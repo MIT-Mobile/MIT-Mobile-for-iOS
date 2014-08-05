@@ -9,4 +9,6 @@
 @property (nonatomic, retain) NSString * roomNumber;
 @property (nonatomic, retain) id coordinates;
 
+- (NSString *)locationString;
+
 @end

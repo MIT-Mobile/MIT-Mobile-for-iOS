@@ -2,8 +2,10 @@
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
+#import "MITCalendarsContact.h"
+#import "MITCalendarsLocation.h"
 
-@class MITCalendarsContact, MITCalendarsLocation, MITCalendarsSeriesInfo, MITCalendarsSponsor, MITCalendarsCalendar;
+@class MITCalendarsSeriesInfo, MITCalendarsSponsor, MITCalendarsCalendar, EKEvent;
 
 @interface MITCalendarsEvent : MITManagedObject <MITMappedObject>
 
@@ -32,6 +34,7 @@
 @property (nonatomic, retain) MITCalendarsSeriesInfo *seriesInfo;
 
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator;
+- (void)setUpEKEvent:(EKEvent *)ekEvent;
 
 @end
 

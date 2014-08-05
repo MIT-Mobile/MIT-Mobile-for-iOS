@@ -1,10 +1,9 @@
 #import "MITCalendarsEvent.h"
-#import "MITCalendarsContact.h"
-#import "MITCalendarsLocation.h"
 #import "MITCalendarsSeriesInfo.h"
 #import "MITCalendarsSponsor.h"
 #import "MITCalendarsCalendar.h"
 
+#import <EventKit/EventKit.h>
 
 @implementation MITCalendarsEvent
 
@@ -50,6 +49,10 @@
     [mapping addAttributeMappingsFromArray:@[@"url", @"title", @"tickets", @"cost", @"lecturer", @"cancelled"]];
     
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"location" toKeyPath:@"location" withMapping:[MITCalendarsLocation objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contact" toKeyPath:@"contact" withMapping:[MITCalendarsContact objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"series_info" toKeyPath:@"seriesInfo" withMapping:[MITCalendarsSeriesInfo objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"sponsors" toKeyPath:@"sponsors" withMapping:[MITCalendarsSponsor objectMapping]]];
+    
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
 }
@@ -104,6 +107,17 @@
 	}
 	
 	return [parts componentsJoinedByString:separator];
+}
+
+- (void)setUpEKEvent:(EKEvent *)ekEvent {
+    ekEvent.title = self.title;
+    ekEvent.startDate = self.startAt;
+    ekEvent.endDate = self.endAt;
+    if (self.contact.websiteURL) {
+        ekEvent.URL = [NSURL URLWithString:self.contact.websiteURL];
+    }
+    ekEvent.location = [self.location locationString];
+    ekEvent.notes = self.htmlDescription;
 }
 
 @end

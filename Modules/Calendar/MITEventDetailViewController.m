@@ -1,12 +1,14 @@
 #import "MITEventDetailViewController.h"
 #import "MITEventDetailCell.h"
-#import "MITCalendarEvent.h"
+#import "MITCalendarsEvent.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITWebviewCell.h"
+#import "MITCalendarWebservices.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import <EventKit/EventKit.h>
 #import <EventKitUI/EventKitUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
 static NSString * const kMITEventHeaderCellNibName = @"MITEventHeaderCell";
 static NSString * const kMITEventHeaderCellIdentifier = @"kMITEventHeaderIdentifier";
@@ -19,14 +21,14 @@ static NSString * const kMITEventWebviewCellIdentifier = @"kMITEventWebviewIdent
 
 static NSInteger const kMITEventDetailsSection = 0;
 
-static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
+static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
+static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 
-@interface MITEventDetailViewController () <MITWebviewCellDelegate, EKEventEditViewDelegate, UIAlertViewDelegate>
+@interface MITEventDetailViewController () <MITWebviewCellDelegate, EKEventEditViewDelegate, UIAlertViewDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *rowTypes;
 @property (nonatomic) BOOL isLoadingEventDetails;
 @property (nonatomic) CGFloat descriptionWebviewCellHeight;
-@property (nonatomic, strong) NSString *descriptionHtmlString;
 
 @end
 
@@ -49,7 +51,12 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventDetailCellNibName bundle:nil] forCellReuseIdentifier:kMITEventDetailCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventWebviewCellNibName bundle:nil] forCellReuseIdentifier:kMITEventWebviewCellIdentifier];
     
+    // To prevent showing empty cells
+    self.tableView.tableFooterView = [UIView new];
+    
     [self setupHeader];
+    
+    self.title = @"Event Details";
 }
 
 - (void)didReceiveMemoryWarning
@@ -60,16 +67,15 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
 
 #pragma mark - Public Methods
 
-- (void)setEvent:(MITCalendarEvent *)event
+- (void)setEvent:(MITCalendarsEvent *)event
 {
     if (![self.event isEqual:event]) {
         _event = event;
         
         [self refreshEventRows];
         
-        if ([self.event hasMoreDetails] && [self.event.summary length] == 0) {
-            [self requestEventDetails];
-        }
+        [self requestEventDetails];
+        
     }
 }
 
@@ -81,28 +87,39 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     
     NSMutableArray *rowTypes = [NSMutableArray array];
     
-	if (self.event.start) {
+    if (self.event.lecturer) {
+        [rowTypes addObject:@(MITEventDetailRowTypeSpeaker)];
+    }
+	if (self.event.startAt) {
 		[rowTypes addObject:@(MITEventDetailRowTypeTime)];
 	}
-    
-	if (self.event.shortloc || self.event.location) {
+	if (self.event.location) {
 		[rowTypes addObject:@(MITEventDetailRowTypeLocation)];
 	}
-    
-	if (self.event.phone) {
-		[rowTypes addObject:@(MITEventDetailRowTypePhone)];
-	}
-    
-	if (self.event.url) {
-		[rowTypes addObject:@(MITEventDetailRowTypeWebsite)];
-	}
-    
-	if (self.event.summary.length) {
-		[rowTypes addObject:@(MITEventDetailRowTypeDescription)];
-        self.descriptionHtmlString = [self htmlStringFromString:self.event.summary];
-	}
+    if (self.event.contact.phone) {
+        [rowTypes addObject:@(MITEventDetailRowTypePhone)];
+    }
+    if (self.event.htmlDescription) {
+        [rowTypes addObject:@(MITEventDetailRowTypeDescription)];
+    }
+    if (self.event.contact.websiteURL) {
+        [rowTypes addObject:@(MITEventDetailRowTypeWebsite)];
+    }
+    if (self.event.openTo) {
+        [rowTypes addObject:@(MITEventDetailRowTypeOpenTo)];
+    }
+    if (self.event.cost) {
+        [rowTypes addObject:@(MITEventDetailRowTypeCost)];
+    }
+    if (self.event.sponsors.anyObject) {
+        [rowTypes addObject:@(MITEventDetailRowTypeSponsors)];
+    }
+    if (self.event.contact.email) {
+        [rowTypes addObject:@(MITEventDetailRowTypeContact)];
+    }
     
     self.rowTypes = rowTypes;
+    
     [self.tableView reloadData];
 }
 
@@ -125,7 +142,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     UIView *headerView = [[UIView alloc] initWithFrame:headerFrame];
 	[headerView addSubview:titleLabel];
     
-    if (YES) {
+    if (self.event.seriesInfo) {
         UILabel *partOfSeriesLabel = [[UILabel alloc] initWithFrame:CGRectMake(titlePadding, titleLabel.frame.origin.y + titleLabel.frame.size.height + 5, tableFrame.size.width - titlePadding * 2, 21)];
         partOfSeriesLabel.font = [UIFont systemFontOfSize:15];
         partOfSeriesLabel.textColor = [UIColor darkGrayColor];
@@ -139,6 +156,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     self.tableView.tableHeaderView = headerView;
 }
 
+
 - (void)requestEventDetails
 {
     if (self.isLoadingEventDetails) {
@@ -147,24 +165,17 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     
     self.isLoadingEventDetails = YES;
     
-    NSURLRequest *request = [NSURLRequest requestForModule:CalendarTag command:@"detail" parameters:@{@"id":[self.event.eventID stringValue]}];
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *jsonResult) {
-        self.isLoadingEventDetails = NO;
-        
-        if ([jsonResult isKindOfClass:[NSDictionary class]]) {
-            if ([jsonResult[@"id"] integerValue] == [self.event.eventID integerValue]) {
-                [self.event updateWithDict:jsonResult];
-                [self refreshEventRows];
-            }
+    [MITCalendarWebservices getEventDetailsForEventURL:[NSURL URLWithString:self.event.url] withCompletion:^(MITCalendarsEvent *event, NSError *error) {
+        //
+        if (event) {
+            self.event = event;
+            [self refreshEventRows];
         }
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         self.isLoadingEventDetails = NO;
-        DDLogVerbose(@"Calendar 'detail' request failed: %@",[error localizedDescription]);
     }];
     
-    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
+
 
 - (NSString *)htmlStringFromString:(NSString *)source {
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
@@ -189,12 +200,12 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
 
 - (void)addToCalendar
 {
+    
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     
-    void (^presentEventEditViewController)(MITCalendarEvent *mitEvent, EKEventStore *eventStore) = ^(MITCalendarEvent *mitEvent, EKEventStore *eventStore) {
+    void (^presentEventEditViewController)(MITCalendarsEvent *mitEvent, EKEventStore *eventStore) = ^(MITCalendarsEvent *mitEvent, EKEventStore *eventStore) {
         EKEvent *event = [EKEvent eventWithEventStore:eventStore];
         event.calendar = [eventStore defaultCalendarForNewEvents];
-        event.notes = mitEvent.summary;
         [mitEvent setUpEKEvent:event];
         
         EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
@@ -225,6 +236,12 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
 - (void)configureDetailCell:(MITEventDetailCell *)detailCell ofType:(MITEventDetailRowType)type
 {
     switch (type) {
+        case MITEventDetailRowTypeSpeaker: {
+            [detailCell setTitle:@"speaker"];
+            [detailCell setDetailText:self.event.lecturer];
+            detailCell.accessoryView = nil;
+            break;
+        }
         case MITEventDetailRowTypeTime: {
             [detailCell setTitle:@"time"];
             NSString *timeDetailString = [self.event dateStringWithDateStyle:NSDateFormatterFullStyle
@@ -236,25 +253,54 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
         }
         case MITEventDetailRowTypeLocation: {
             [detailCell setTitle:@"location"];
-            NSString *locationDetailString = (self.event.location != nil) ? self.event.location : self.event.shortloc;
-            [detailCell setDetailText:locationDetailString];
+            [detailCell setDetailText:[self.event.location locationString]];
             detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+            
             break;
         }
         case MITEventDetailRowTypePhone: {
             [detailCell setTitle:@"phone"];
-            [detailCell setDetailText:self.event.phone];
+            [detailCell setDetailText:self.event.contact.phone];
             detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-            break;
-        }
-        case MITEventDetailRowTypeWebsite: {
-            [detailCell setTitle:@"web site"];
-            [detailCell setDetailText:self.event.url];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            
             break;
         }
         case MITEventDetailRowTypeDescription: {
             // Special case, handled by webview cell
+            break;
+        }
+        case MITEventDetailRowTypeWebsite: {
+            [detailCell setTitle:@"web site"];
+            [detailCell setDetailText:self.event.contact.websiteURL];
+            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            break;
+        }
+        case MITEventDetailRowTypeOpenTo: {
+            [detailCell setTitle:@"open to"];
+            [detailCell setDetailText:self.event.openTo];
+            detailCell.accessoryView = nil;
+            break;
+        }
+        case MITEventDetailRowTypeCost: {
+            [detailCell setTitle:@"cost"];
+            NSString *costString = self.event.cost;
+            [detailCell setDetailText:costString];
+            detailCell.accessoryView = nil;
+            break;
+        }
+        case MITEventDetailRowTypeSponsors: {
+            [detailCell setTitle:@"sponsor(s)"];
+            NSString *detailText = [[self.event.sponsors.allObjects valueForKey:@"name"] componentsJoinedByString:@"\n"];
+            [detailCell setDetailText:detailText];
+            detailCell.accessoryView = nil;
+            break;
+        }
+        case MITEventDetailRowTypeContact: {
+            [detailCell setTitle:@"for more information, contact"];
+            NSString *contactName = self.event.contact.name ? [NSString stringWithFormat:@"%@ ", self.event.contact.name] : @"";
+            NSString *detailText = [NSString stringWithFormat:@"%@(%@)", contactName, self.event.contact.email];
+            [detailCell setDetailText:detailText];
+            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
             break;
         }
     }
@@ -304,8 +350,10 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (alertView.tag == kMITEventDetailsPhoneCallAlertTag && buttonIndex == 1) {
-        NSString *phoneURLString = [NSString stringWithFormat:@"tel:%@", self.event.phone];
+    if (alertView.tag == kMITEventDetailsEmailAlertTag && buttonIndex == 1) {
+        [UIPasteboard generalPasteboard].string = self.event.contact.email;
+    } else if (alertView.tag == kMITEventDetailsPhoneCallAlertTag && buttonIndex == 1) {
+        NSString *phoneURLString = [NSString stringWithFormat:@"tel:%@", self.event.contact.phone];
         NSURL *phoneURL = [NSURL URLWithString:phoneURLString];
         [[UIApplication sharedApplication] openURL:phoneURL];
     }
@@ -319,7 +367,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
         case kMITEventDetailsSection: {
             MITEventDetailRowType rowType = [self.rowTypes[indexPath.row] integerValue];
             CGFloat h = [self heightForDetailCellOfType:rowType];
-            NSLog(@"height: %f", h);
             return h;
             break;
         }
@@ -335,29 +382,61 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
     NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
     
     switch (rowType) {
+        case MITEventDetailRowTypeSpeaker: {
+            // Nothing
+            break;
+        }
         case MITEventDetailRowTypeTime: {
             [self addToCalendar];
             break;
         }
         case MITEventDetailRowTypeLocation: {
+#warning Location details aren't yet implemented
             // Will need to somehow pop to MITMapPlace? Discussion about how to do this was not conclusive
             // Depends on how we are setting up the hamburger menu navigation and such
             break;
         }
         case MITEventDetailRowTypePhone: {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", self.event.phone] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", self.event.contact.phone] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
             alert.tag = kMITEventDetailsPhoneCallAlertTag;
             [alert show];
             
             break;
         }
+        case MITEventDetailRowTypeDescription:
+            break;
         case MITEventDetailRowTypeWebsite: {
-            NSURL *websiteURL = [NSURL URLWithString:self.event.url];
+            NSString *websiteURLString = self.event.contact.websiteURL;
+            NSString *urlPrefix = @"http://";
+            if (![websiteURLString hasPrefix:urlPrefix]) {
+                websiteURLString = [NSString stringWithFormat:@"%@%@", urlPrefix, websiteURLString];
+            }
+            NSURL *websiteURL = [NSURL URLWithString:websiteURLString];
             [[UIApplication sharedApplication] openURL:websiteURL];
             break;
         }
-        case MITEventDetailRowTypeDescription: {
-            // Do nothing
+        case MITEventDetailRowTypeOpenTo:
+        case MITEventDetailRowTypeCost:
+        case MITEventDetailRowTypeSponsors:
+            break;
+        case MITEventDetailRowTypeContact: {
+
+            if ([MFMailComposeViewController canSendMail]) {
+                
+                MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] init];
+                mailController.mailComposeDelegate = self;
+                [mailController setSubject:self.event.title];
+                [mailController setToRecipients:@[self.event.contact.email]];
+                
+                if (mailController) [self presentViewController:mailController animated:YES completion:nil];
+                
+            } else {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Email Unavailable" message:@"This device doesn't appear to have native email setup properly.  Would you like to copy this email to your clipboard?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Copy Email", nil];
+                alert.tag = kMITEventDetailsEmailAlertTag;
+                [alert show];
+                
+            }
             break;
         }
     }
@@ -395,7 +474,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
             if (rowType == MITEventDetailRowTypeDescription) {
                 // return webview cell height
                 MITWebviewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventWebviewCellIdentifier];
-                [cell setHTMLString:self.descriptionHtmlString];
+                [cell setHTMLString:self.event.htmlDescription];
                 cell.delegate = self;
                 return cell;
             } else {
@@ -408,6 +487,15 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 200;
             return [UITableViewCell new];
         }
     }
+}
+
+#pragma mark MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError*)error;
+{
+    [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
