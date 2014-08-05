@@ -7,7 +7,6 @@
 #import "MITNewsStoryViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-
 #import "MITNewsStoriesDataSource.h"
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"

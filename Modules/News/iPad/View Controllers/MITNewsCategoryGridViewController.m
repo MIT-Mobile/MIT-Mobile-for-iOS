@@ -95,7 +95,6 @@
                                                     [self.collectionView reloadData];
                                                 }];
     }
-
 }
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;

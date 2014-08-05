@@ -17,7 +17,7 @@
 #import "MITNewsStoriesDataSource.h"
 #import "MITAdditions.h"
 
-#import "MITNewsiPadCategoryListViewController.h"
+#import "MITNewsiPadCategoryViewController.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -29,7 +29,6 @@
 @interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
-
 
 @interface MITNewsiPadViewController ()
 @property (nonatomic, weak) IBOutlet UIView *containerView;
@@ -82,15 +81,18 @@
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.edgesForExtendedLayout = UIRectEdgeNone;
 
-    self.showsFeaturedStories = YES;
-    self.containerView.backgroundColor = [UIColor whiteColor];
-    self.containerView.autoresizesSubviews = YES;
+    if ([self class] == [MITNewsiPadViewController class]) {
+        self.showsFeaturedStories = YES;
+        self.containerView.backgroundColor = [UIColor whiteColor];
+        self.containerView.autoresizesSubviews = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
+    
     if (!self.activeViewController) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
@@ -98,15 +100,17 @@
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
         }
     }
-
+    
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-
-    [self reloadItems:^(NSError *error) {
-        if (error) {
-            DDLogWarn(@"update failed; %@",error);
-        }
-    }];
-    [self updateNavigationItem:YES];
+    if ([self class] == [MITNewsiPadViewController class]) {
+        
+        [self reloadItems:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"update failed; %@",error);
+            }
+        }];
+        [self updateNavigationItem:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -480,7 +484,7 @@
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if ([viewController class] == [MITNewsiPadCategoryListViewController class]) {
+    if ([viewController class] == [MITNewsiPadCategoryViewController class]) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -514,7 +518,7 @@
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
-    [self performSegueWithIdentifier:@"showCategoryList" sender:[NSIndexPath indexPathForItem:0 inSection:index]];
+    [self performSegueWithIdentifier:@"showCategory" sender:[NSIndexPath indexPathForItem:0 inSection:index]];
     return nil;
 }
 
@@ -552,13 +556,13 @@
                       NSStringFromClass([MITNewsStoryViewController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
-    } else if ([segue.identifier isEqualToString:@"showCategoryList"]) {
+    } else if ([segue.identifier isEqualToString:@"showCategory"]) {
         
         NSIndexPath *indexPath = sender;
 
-        MITNewsiPadCategoryListViewController *iPadCategoryListViewController  = (MITNewsiPadCategoryListViewController*)destinationViewController;
-        iPadCategoryListViewController.dataSource = self.dataSources[indexPath.section];
-        iPadCategoryListViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+        MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
+        iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
+        iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
         
         
     } else {

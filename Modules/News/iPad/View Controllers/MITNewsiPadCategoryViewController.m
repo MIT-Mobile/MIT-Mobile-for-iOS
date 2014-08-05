@@ -1,37 +1,21 @@
-#import "MITNewsModelController.h"
-#import "MITNewsStory.h"
-#import "MITNewsCategory.h"
-#import "MITNewsStoryCollectionViewCell.h"
-#import "MITNewsConstants.h"
-#import "MIT_MobileAppDelegate.h"
-#import "MITCoreDataController.h"
-#import "MITNewsStoryViewController.h"
-#import "MITNewsSearchController.h"
-
+#import "MITNewsiPadCategoryViewController.h"
 #import "MITNewsCategoryListViewController.h"
 #import "MITNewsCategoryGridViewController.h"
-
-#import "MITMobile.h"
+#import "MITNewsSearchController.h"
 #import "MITCoreData.h"
-
+#import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesDataSource.h"
-#import "MITAdditions.h"
 
-#import "MITNewsiPadCategoryListViewController.h"
 
-@interface MITNewsiPadCategoryListViewController (NewsDataSource) <MITNewsStoryDataSource>
-
-- (void)reloadItems:(void(^)(NSError *error))block;
-
-- (void)loadDataSources:(void(^)(NSError*))completion;
-@end
-
-@interface MITNewsiPadCategoryListViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
 
 @end
 
+@interface MITNewsiPadCategoryViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
 
-@interface MITNewsiPadCategoryListViewController ()
+@end
+
+@interface MITNewsiPadCategoryViewController ()
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryListViewController *listViewController;
@@ -44,10 +28,11 @@
 
 @end
 
-@implementation MITNewsiPadCategoryListViewController {
+@implementation MITNewsiPadCategoryViewController {
     BOOL _isTransitioningToPresentationStyle;
 }
 
+@synthesize presentationStyle = _presentationStyle;
 @synthesize activeViewController = _activeViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -59,49 +44,10 @@
     return self;
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [self.gridViewController.collectionView reloadData];
-}
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
-        self.searchBarWrapper.frame = self.searchBar.bounds;
-    }
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.automaticallyAdjustsScrollViewInsets = YES;
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.containerView.backgroundColor = [UIColor mit_backgroundColor];
-    //To make view not dim when popover is present
-    self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
-    
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    if (!self.activeViewController) {
-        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-            [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
-        } else {
-            [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
-        }
-    }
-    
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-    
-    /*[self reloadItems:^(NSError *error) {
-        if (error) {
-            DDLogWarn(@"update failed; %@",error);
-        }
-    }];*/
-    [self updateNavigationItem:YES];
+    // Do any additional setup after loading the view.
 }
 
 - (void)didReceiveMemoryWarning
@@ -110,14 +56,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark Dynamic Properties
-- (NSManagedObjectContext*)managedObjectContext
+- (void)viewWillAppear:(BOOL)animated
 {
-    if (!_managedObjectContext) {
-        _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-    }
-    
-    return _managedObjectContext;
+    [super viewWillAppear:animated];
+    [self updateNavigationItem:YES];
 }
 
 - (MITNewsCategoryGridViewController*)gridViewController
@@ -239,6 +181,7 @@
     }
 }
 
+
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
     self.searching = YES;
@@ -254,18 +197,6 @@
                      } completion:^(BOOL finished) {
                      }];
     [self.searchBar becomeFirstResponder];
-}
-
-- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
-{
-    self.presentationStyle = MITNewsPresentationStyleGrid;
-    [self updateNavigationItem:YES];
-}
-
-- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
-{
-    self.presentationStyle = MITNewsPresentationStyleList;
-    [self updateNavigationItem:YES];
 }
 
 #pragma mark Utility Methods
@@ -329,118 +260,11 @@
 
 @end
 
-@implementation MITNewsiPadCategoryListViewController (NewsDataSource)
-/*
-- (void)loadDataSources:(void (^)(NSError*))completion
-{
-    NSMutableArray *dataSources = [[NSMutableArray alloc] init];
-    
-    if (self.showsFeaturedStories) {
-        MITNewsDataSource *featuredDataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
-        featuredDataSource.maximumNumberOfItemsPerPage = 5;
-        [dataSources addObject:featuredDataSource];
-    }
-    
-    __weak MITNewsiPadCategoryListViewController *weakSelf = self;
-    [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
-        MITNewsiPadCategoryListViewController *blockSelf = weakSelf;
-        
-        if (!blockSelf) {
-            return;
-        } else {
-            NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
-            
-            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-                NSManagedObjectID *objectID = [category objectID];
-                NSError *error = nil;
-                NSManagedObject *object = [blockSelf.managedObjectContext existingObjectWithID:objectID error:&error];
-                
-                if (!object) {
-                    DDLogWarn(@"failed to retreive object for ID %@: %@",object,error);
-                } else {
-                    [categorySet addObject:object];
-                }
-            }];
-            
-            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-                MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
-                [dataSources addObject:dataSource];
-            }];
-            
-            blockSelf.categories = [categorySet array];
-            blockSelf.dataSources = dataSources;
-            [blockSelf refreshDataSources:completion];
-        }
-    }];
-}
-*/
-/*
-- (void)refreshDataSources:(void (^)(NSError*))completion
-{
-    __block dispatch_group_t refreshGroup = dispatch_group_create();
-    __block NSError *updateError = nil;
-    
-    [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
-        dispatch_group_enter(refreshGroup);
-        
-        [dataSource refresh:^(NSError *error) {
-            if (error) {
-                DDLogWarn(@"failed to refresh data source %@",dataSource);
-                
-                if (!updateError) {
-                    updateError = error;
-                }
-            } else {
-                DDLogVerbose(@"refreshed data source %@",dataSource);
-            }
-            
-            dispatch_group_leave(refreshGroup);
-        }];
-    }];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(updateError);
-        });
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (self.activeViewController == self.gridViewController) {
-                [self.gridViewController.collectionView reloadData];
-            } else if (self.activeViewController == self.listViewController) {
-                [self.listViewController.tableView reloadData];
-            }
-        }];
-    });
-}
-*/
+@implementation MITNewsiPadCategoryViewController (NewsDataSource)
 - (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
 {
     return self.dataSource;
 }
-
-- (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section
-{
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
-    return [dataSource hasNextPage];
-}
-
-- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
-{
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
-    [dataSource nextPage:block];
-    
-    return YES;
-}
-/*
-- (void)reloadItems:(void(^)(NSError *error))block
-{
-    if (_dataSources) {
-        [self refreshDataSources:block];
-    } else {
-        [self loadDataSources:block];
-    }
-}*/
 
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
 {
@@ -469,7 +293,9 @@
 
 @end
 
-@implementation MITNewsiPadCategoryListViewController (NewsDelegate)
+@implementation MITNewsiPadCategoryViewController (NewsDelegate)
+
+#pragma mark MITNewsStoryDetailPagingDelegate
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
@@ -567,5 +393,4 @@
     self.searching = NO;
     [self updateNavigationItem:YES];
 }
-
 @end

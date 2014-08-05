@@ -53,7 +53,7 @@
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
                         <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="g55-fq-NLw"/>
-                        <segue destination="9si-nV-Co1" kind="push" identifier="showCategoryList" id="GI6-4h-82h"/>
+                        <segue destination="9si-nV-Co1" kind="push" identifier="showCategory" id="GI6-4h-82h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e52-0i-HFC" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -341,7 +341,7 @@
         <!--News Pad View Controller-->
         <scene sceneID="WRe-cX-FaI">
             <objects>
-                <viewController storyboardIdentifier="StoryCategoryList" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9si-nV-Co1" userLabel="News Pad View Controller" customClass="MITNewsiPadCategoryListViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryCategoryList" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9si-nV-Co1" userLabel="News Pad View Controller" customClass="MITNewsiPadCategoryViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="WO6-n8-c6z"/>
                         <viewControllerLayoutGuide type="bottom" id="IGu-Bh-h2H"/>
