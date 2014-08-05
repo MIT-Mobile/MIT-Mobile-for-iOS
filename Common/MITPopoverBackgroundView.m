@@ -261,7 +261,6 @@ static UIColor *popoverTintColor = nil;
     } else {
         _popoverArrowBubbleView.image = [_popoverArrowBubbleView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         _popoverArrowBubbleView.tintColor = [UIColor whiteColor];
-        _popoverArrowBubbleView.alpha = .9;
     }
 }
 
