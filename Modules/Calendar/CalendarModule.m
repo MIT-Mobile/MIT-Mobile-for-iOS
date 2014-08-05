@@ -7,7 +7,7 @@
 #import "MITEventList.h"
 
 #import "MITEventsHomeViewController.h"
-
+#import "MITEventsRootViewController.h"
 
 @implementation CalendarModule
 @dynamic calendarVC;
@@ -25,15 +25,19 @@
     return self;
 }
 
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+{
+    return YES;
+}
+
 - (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
     return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
-- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITEventsRootViewController alloc] initWithNibName:nil bundle:nil];
 }
-
 
 @end

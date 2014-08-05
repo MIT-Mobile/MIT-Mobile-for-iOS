@@ -354,6 +354,9 @@
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
 		5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */; };
+		80885CB61991410700D6661C /* MITEventsRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsRootViewController.m */; };
+		80F0219E199159D90056CA06 /* MITDateNavigationBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */; };
+		80F021A0199159EE0056CA06 /* MITDateNavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */; };
 		A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */; };
 		A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */; };
 		A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */; };
@@ -1193,6 +1196,11 @@
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
 		5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITableView+MITAdditions.h"; path = "Categories/UITableView+MITAdditions.h"; sourceTree = "<group>"; };
 		5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITableView+MITAdditions.m"; path = "Categories/UITableView+MITAdditions.m"; sourceTree = "<group>"; };
+		80885CB41991410700D6661C /* MITEventsRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsRootViewController.h; path = iPad/MITEventsRootViewController.h; sourceTree = "<group>"; };
+		80885CB51991410700D6661C /* MITEventsRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsRootViewController.m; path = iPad/MITEventsRootViewController.m; sourceTree = "<group>"; };
+		80F0219C199159D90056CA06 /* MITDateNavigationBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDateNavigationBarView.h; path = iPad/DateNavigationBar/MITDateNavigationBarView.h; sourceTree = "<group>"; };
+		80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDateNavigationBarView.m; path = iPad/DateNavigationBar/MITDateNavigationBarView.m; sourceTree = "<group>"; };
+		80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDateNavigationBarView.xib; path = iPad/DateNavigationBar/MITDateNavigationBarView.xib; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A51E209E196C68D9005608C3 /* MITMapTypeAheadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapTypeAheadTableViewController.h; sourceTree = "<group>"; };
 		A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapTypeAheadTableViewController.m; sourceTree = "<group>"; };
@@ -1714,6 +1722,7 @@
 		225F218C197D5A8800F34DE9 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				80885CAD19913F4E00D6661C /* iPad */,
 				225F218D197D5AD500F34DE9 /* MITEventsHomeViewController.h */,
 				225F218E197D5AD500F34DE9 /* MITEventsHomeViewController.m */,
 				225F218F197D5AD500F34DE9 /* MITEventsHomeViewController.xib */,
@@ -3061,6 +3070,26 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		80885CAD19913F4E00D6661C /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				80F02198199159A20056CA06 /* DateNavigationBar */,
+				80885CB41991410700D6661C /* MITEventsRootViewController.h */,
+				80885CB51991410700D6661C /* MITEventsRootViewController.m */,
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
+		80F02198199159A20056CA06 /* DateNavigationBar */ = {
+			isa = PBXGroup;
+			children = (
+				80F0219C199159D90056CA06 /* MITDateNavigationBarView.h */,
+				80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */,
+				80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */,
+			);
+			name = DateNavigationBar;
+			sourceTree = "<group>";
+		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -3657,6 +3686,7 @@
 				EB5C625A1201D93A00805EBE /* news in Resources */,
 				EB5C625B1201D93A00805EBE /* people in Resources */,
 				2CDF301F134DF504007C6813 /* qrreader in Resources */,
+				80F021A0199159EE0056CA06 /* MITDateNavigationBarView.xib in Resources */,
 				2CFFF00818C8B06600680694 /* DiningHallMenuViewController.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
 				A5A303D01980500000C9C273 /* MITEventDetailCell.xib in Resources */,
@@ -3934,6 +3964,7 @@
 				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
+				80885CB61991410700D6661C /* MITEventsRootViewController.m in Sources */,
 				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,
 				EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */,
 				A5A24B5D198F255500AA1CFC /* MITCalendarEventDateParser.m in Sources */,
@@ -3979,6 +4010,7 @@
 				22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */,
 				225F219C197EA47F00F34DE9 /* NSDate+MITAdditions.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
+				80F0219E199159D90056CA06 /* MITDateNavigationBarView.m in Sources */,
 				DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */,
 				29974B711160F1DA009D03B9 /* URLShortener.m in Sources */,
 				2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */,
