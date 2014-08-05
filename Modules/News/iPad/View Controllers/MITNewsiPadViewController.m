@@ -82,7 +82,7 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
 
     if ([self class] == [MITNewsiPadViewController class]) {
-        self.showsFeaturedStories = YES;
+        self.showsFeaturedStories = NO;
         self.containerView.backgroundColor = [UIColor whiteColor];
         self.containerView.autoresizesSubviews = YES;
     }
@@ -284,6 +284,20 @@
     [self updateNavigationItem:YES];
 }
 
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.firstOtherButtonIndex) {
+        NSURL *url = [NSURL URLWithString:alertView.message];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+    if (_presentationStyle == MITNewsPresentationStyleList) {
+        [self.listViewController.tableView deselectRowAtIndexPath:[self.listViewController.tableView indexPathForSelectedRow] animated:YES];
+    }
+}
+
 #pragma mark Utility Methods
 - (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style
 {
@@ -471,7 +485,8 @@
         return @"Featured";
     } else {
         __block NSString *title = nil;
-        --section;
+        if (self.showsFeaturedStories)
+            --section;
 
         MITNewsCategory *category = self.categories[section];
         [category.managedObjectContext performBlockAndWait:^{
@@ -526,7 +541,25 @@
 {
     self.currentDataSourceIndex = section;
  
-    [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    MITNewsStory *story = [self viewController:self storyAtIndex:index forCategoryInSection:section];
+    if (story) {
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+        
+        if (isExternalStory) {
+            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+            [willOpenInExternalBrowserAlertView show];
+        } else {
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+        }
+    }
     return nil;
 }
 

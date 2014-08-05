@@ -29,9 +29,9 @@
         _sectionLayouts = [[NSMutableDictionary alloc] init];
 
         _dividerDecorationWidth = 5.0;
-        _minimumInterItemPadding = 8.0;
-        _lineSpacing = 8.0;
-        _sectionInsets = UIEdgeInsetsMake(0, 30, 10, 30);
+        _minimumInterItemPadding = 60.0;
+        _lineSpacing = 15.0;
+        _sectionInsets = UIEdgeInsetsMake(0, 60, 10, 60);
 
         [self registerNib:[UINib nibWithNibName:@"GridDividerView" bundle:nil] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
