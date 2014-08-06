@@ -45,7 +45,7 @@
             collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
         } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
             collectionViewCell.contentView.backgroundColor = [UIColor cyanColor];
-            [self getMoreStories];
+            //[self getMoreStories];
         }
     } else if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;

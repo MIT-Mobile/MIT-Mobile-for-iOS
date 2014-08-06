@@ -316,7 +316,7 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
         cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
         cell.textLabel.text = @"Loading...";
         cell.accessoryView = view;
-        [self getMoreStories];
+        //[self getMoreStories];
         return cell;
     }
     
