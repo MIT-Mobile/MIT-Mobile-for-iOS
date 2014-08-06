@@ -122,10 +122,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="a1i-NR-2dN" secondAttribute="bottom" id="8Pf-lk-Mho"/>
                             <constraint firstItem="a1i-NR-2dN" firstAttribute="leading" secondItem="Kk4-dC-CEs" secondAttribute="leading" id="AHu-VQ-vqw"/>
+                            <constraint firstItem="a1i-NR-2dN" firstAttribute="top" secondItem="awp-1b-cmw" secondAttribute="bottom" constant="-64" id="Ckv-hm-VPO"/>
+                            <constraint firstItem="Wco-pH-dv3" firstAttribute="top" secondItem="a1i-NR-2dN" secondAttribute="bottom" id="IIV-xg-ttL"/>
                             <constraint firstAttribute="trailing" secondItem="a1i-NR-2dN" secondAttribute="trailing" id="boc-eO-3PP"/>
-                            <constraint firstItem="a1i-NR-2dN" firstAttribute="top" secondItem="Kk4-dC-CEs" secondAttribute="top" id="em4-EF-WiV"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>

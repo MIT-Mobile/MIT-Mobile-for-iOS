@@ -42,7 +42,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     [self adjustTableViewInsets];
     
     [self updateTableViewHeaderView];
-	    
+	   
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
@@ -191,17 +191,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         return;
     }
     
-    CGFloat topInset = [self topBarHeight];
-    
-    CGFloat toolbarHeight = self.navigationController.toolbar.frame.size.height;
-    
-    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight, 0);
-    
-    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    if( UIInterfaceOrientationIsLandscape(currentOrientation) )
-    {
-        insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight + [self landscapeHeightDelta], 0);
-    }
+    UIEdgeInsets insets = UIEdgeInsetsMake([self topBarHeight], 0, 0, 0);
     
     self.tableView.contentInset = insets;
     self.tableView.scrollIndicatorInsets = insets;

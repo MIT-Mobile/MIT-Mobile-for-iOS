@@ -124,18 +124,8 @@ NSString * const MITNoResultsHintLabelText = @"No Results";
         return;
     }
     
-    CGFloat topInset = [self topBarHeight];
-    
-    CGFloat toolbarHeight = self.navigationController.toolbar.frame.size.height;
-    
-    UIEdgeInsets insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight, 0);
-    
-    UIInterfaceOrientation currentOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    if( UIInterfaceOrientationIsLandscape(currentOrientation) )
-    {
-        insets = UIEdgeInsetsMake(topInset, 0, toolbarHeight + [self landscapeHeightDelta], 0);
-    }
-    
+    UIEdgeInsets insets = UIEdgeInsetsMake([self topBarHeight], 0, 0, 0);
+        
     self.tableView.contentInset = insets;
     self.tableView.scrollIndicatorInsets = insets;
 }
