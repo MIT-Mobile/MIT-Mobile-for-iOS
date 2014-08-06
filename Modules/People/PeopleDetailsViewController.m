@@ -298,7 +298,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             
             if( [cell respondsToSelector:@selector(setSeparatorInset:)] )
             {
-                cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, cell.bounds.size.width);
+                cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, self.view.frame.size.height);
             }
         }
 		
