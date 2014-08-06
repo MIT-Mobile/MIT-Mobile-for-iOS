@@ -175,6 +175,8 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
     
     [self.searchBar resignFirstResponder];
     [self.recentsPopover dismissPopoverAnimated:YES];
+    
+    [self setSearchQueryType:MITPeopleSearchQueryTypeFreeText];
 }
 
 - (void)performSearch
@@ -249,16 +251,10 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
 
 - (void)setSearchQueryType:(MITPeopleSearchQueryType)searchQueryType
 {
-    _searchQueryType = searchQueryType;
+    UIColor *searchBarTextColor = (searchQueryType == MITPeopleSearchQueryTypeFavorites) ? [UIColor mit_tintColor] : [UIColor blackColor];
+    [self.searchBar setSearchTextColor:searchBarTextColor];
     
-    if( searchQueryType == MITPeopleSearchQueryTypeFavorites )
-    {
-        [self.searchBar setSearchTextColor:[UIColor mit_tintColor]];
-    }
-    else
-    {
-        [self.searchBar setSearchTextColor:[UIColor blackColor]];
-    }
+    _searchQueryType = searchQueryType;
 }
 
 - (void)didSelectPerson:(PersonDetails *)person
@@ -268,14 +264,13 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
 
 - (void)didSelectFavoritePerson:(PersonDetails *)person
 {
-    [self setSearchQueryType:MITPeopleSearchQueryTypeFavorites];
-    
     self.searchHandler.searchResults = @[person];
     [self.searchHandler updateSearchTokensForSearchQuery:[person name]];
     
     [self.searchResultsViewController setSearchHandler:self.searchHandler];
     self.searchBar.text = [person name];
     self.searchDetailsViewController.personDetails = person;
+    [self setSearchQueryType:MITPeopleSearchQueryTypeFavorites];
     
     [self.searchBar resignFirstResponder];
     

@@ -429,6 +429,9 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 @implementation UISearchBar (MITUIAdditions)
 
+// have to iterate through the subviews to change text color. Using appearance proxy doesn't
+// work unless it's changed once at searchBar creation time.
+// http://stackoverflow.com/questions/19048766/uisearchbar-text-color-change-in-ios-7
 - (void)setSearchTextColor:(UIColor *)color
 {
     for (UIView *subView in self.subviews)
@@ -438,9 +441,9 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
             if ([secondLevelSubview isKindOfClass:[UITextField class]])
             {
                 UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
+                [searchBarTextField setTextColor:color];
                 
-                //set font color here
-                searchBarTextField.textColor = color;
+                break;
             }
         }
     }
