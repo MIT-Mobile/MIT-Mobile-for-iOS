@@ -485,9 +485,9 @@
         return @"Featured";
     } else {
         __block NSString *title = nil;
-        if (self.showsFeaturedStories)
+        if (self.showsFeaturedStories) {
             --section;
-
+        }
         MITNewsCategory *category = self.categories[section];
         [category.managedObjectContext performBlockAndWait:^{
             title = category.name;
