@@ -189,6 +189,11 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
      {
          [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
          
+         if( [self.searchHandler.searchResults count] == 0 )
+         {
+             weakSelf.searchDetailsViewController.personDetails = nil;
+         }
+         
          [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
      }];
 }
