@@ -104,15 +104,17 @@ NSString * const MITNoResultsHintLabelText = @"No Results";
         return;
     }
     
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    
     if( UIInterfaceOrientationIsLandscape(interfaceOrientation) )
     {
-        self.hintLabelYConstraint.constant -= [self landscapeHeightDelta]/2;
+        self.hintLabelYConstraint.constant = (screenSize.width / 2) - 20;
     }
-    else if( self.hintLabelYConstraint.constant < (self.view.frame.size.height/2 - [self topBarHeight]) )
+    else
     {
-        self.hintLabelYConstraint.constant += [self landscapeHeightDelta]/2;
+        self.hintLabelYConstraint.constant = (screenSize.height / 2) - 20;
     }
-        
+    
 }
 
 - (void) adjustTableViewInsets

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="NWW-oP-5J1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="NWW-oP-5J1">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -90,7 +90,6 @@
                 <navigationController definesPresentationContext="YES" id="748-1u-aQR" sceneMemberID="viewController">
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="XVK-z6-Udv">
-                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -115,7 +114,6 @@
                         <subviews>
                             <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a1i-NR-2dN">
                                 <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
                                     <segue destination="gGw-Dh-PHc" kind="embed" id="Prd-9W-dPF"/>
@@ -174,19 +172,16 @@
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="552" translatesAutoresizingMaskIntoConstraints="NO" id="DC7-Gz-o6z">
                                     <rect key="frame" x="15" y="15" width="552" height="24"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Title (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="552" translatesAutoresizingMaskIntoConstraints="NO" id="ALL-0V-hd0">
                                     <rect key="frame" x="15" y="43" width="552" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Organization (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="552" translatesAutoresizingMaskIntoConstraints="NO" id="qhg-d6-Hds">
                                     <rect key="frame" x="15" y="64" width="552" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -241,7 +236,6 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="hQP-A3-HwM"/>
-                    <size key="freeformSize" width="500" height="1024"/>
                     <connections>
                         <outlet property="personName" destination="DC7-Gz-o6z" id="VbH-Gp-y4q"/>
                         <outlet property="personOrganization" destination="qhg-d6-Hds" id="2ve-Ss-Jng"/>
@@ -267,7 +261,6 @@
                         <subviews>
                             <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VxC-qc-ukJ" userLabel="masterViewContainer">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
                                     <segue destination="W7n-GO-dUE" kind="embed" identifier="MITMasterController" id="cgv-2s-R48"/>
@@ -275,7 +268,6 @@
                             </containerView>
                             <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="exx-QV-HLE" userLabel="detailsViewContainer">
                                 <rect key="frame" x="322" y="0.0" width="446" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
                                     <segue destination="cag-2w-FbR" kind="embed" id="bnM-oD-1SM"/>
@@ -283,7 +275,6 @@
                             </containerView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vcm-HH-ETs" userLabel="lineSeparatorView">
                                 <rect key="frame" x="321" y="0.0" width="1" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
@@ -368,7 +359,6 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Y87-AR-WhZ">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SearchResultsCell" textLabel="0za-Ax-tiP" detailTextLabel="WrM-0x-Txy" style="IBUITableViewCellStyleSubtitle" id="lyF-ub-7Bg">
@@ -403,10 +393,6 @@
                             </tableView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="labelHint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="lhW-K5-DbC">
                                 <rect key="frame" x="20" y="415" width="280" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="280" id="sFH-3S-R89"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -414,7 +400,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Y87-AR-WhZ" firstAttribute="width" secondItem="ZuP-B6-qQe" secondAttribute="width" id="0ae-6R-8by"/>
+                            <constraint firstItem="lhW-K5-DbC" firstAttribute="leading" secondItem="ZuP-B6-qQe" secondAttribute="leading" constant="20" id="BBE-IJ-0g1"/>
                             <constraint firstAttribute="centerY" secondItem="Y87-AR-WhZ" secondAttribute="centerY" id="C0A-FI-LcO"/>
+                            <constraint firstAttribute="trailing" secondItem="lhW-K5-DbC" secondAttribute="trailing" constant="20" id="MSg-lP-FCj"/>
                             <constraint firstAttribute="centerX" secondItem="lhW-K5-DbC" secondAttribute="centerX" id="XeZ-cU-xV0"/>
                             <constraint firstItem="lhW-K5-DbC" firstAttribute="top" secondItem="fsx-Bv-Gl1" secondAttribute="bottom" constant="415" id="f7i-iw-bcw"/>
                             <constraint firstItem="Y87-AR-WhZ" firstAttribute="height" secondItem="ZuP-B6-qQe" secondAttribute="height" id="uaf-7C-Nzc"/>
@@ -436,7 +424,6 @@
         <scene sceneID="NOu-cB-MFl">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" definesPresentationContext="YES" navigationBarHidden="YES" id="W7n-GO-dUE" sceneMemberID="viewController">
-                    <size key="freeformSize" width="420" height="852"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="B4I-Sy-5Tu">
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

@@ -1546,7 +1546,6 @@
 				569DC33B1282ADBC00BA0794 /* CoreMedia.framework */,
 				2C99DCDF1370782200114A9A /* CoreText.framework */,
 				569DC33E1282ADC000BA0794 /* CoreVideo.framework */,
-				A63DEE271353CF37001C52BF /* EventKit.framework */,
 				A69826E41354A488004A8258 /* EventKitUI.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */,
@@ -3713,6 +3712,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
 				PROVISIONING_PROFILE = "0975E861-99D0-4C64-AC49-D8144D6864B3";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3762,7 +3762,7 @@
 					"\"${BUILT_PRODUCTS_DIR}/../../Headers\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
 					"-ObjC",
