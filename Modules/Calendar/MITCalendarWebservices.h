@@ -15,6 +15,11 @@ typedef void(^MITEventDetailCompletionBLock)(MITCalendarsEvent *event, NSError *
 + (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
                         date:(NSDate *)date
                   completion:(MITEventsCompletionBlock)completion;
++ (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                     category:(MITCalendarsCalendar *)category
+                        date:(NSDate *)date
+                  completion:(MITEventsCompletionBlock)completion;
+
 + (void)getEventsWithinOneMonthInCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion;
 + (void)getEventsWithinOneYearInCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion;
 

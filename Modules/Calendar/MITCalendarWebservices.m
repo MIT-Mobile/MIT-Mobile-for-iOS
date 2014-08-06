@@ -39,6 +39,14 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
 }
 
 + (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                     category:(MITCalendarsCalendar *)category
+                        date:(NSDate *)date
+                  completion:(MITEventsCompletionBlock)completion
+{
+    [MITCalendarWebservices getEventsForCalendar:calendar queryString:nil category:category startDate:date endDate:[date endOfDay] completion:completion];
+}
+
++ (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
                  queryString:(NSString *)queryString
                     category:(MITCalendarsCalendar *)category
                    startDate:(NSDate *)startDate

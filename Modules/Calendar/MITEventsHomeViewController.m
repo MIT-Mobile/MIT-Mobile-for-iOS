@@ -11,6 +11,8 @@
 #import "MITCalendarManager.h"
 #import "MITEventSearchViewController.h"
 
+#import "MITCalendarPageViewController.h"
+
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -24,15 +26,13 @@ static const NSTimeInterval kSlidingAnimationDuration = 0.3;
 static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
-@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDataSource, UITableViewDelegate, MITDatePickerViewControllerDelegate, MITCalendarSelectionDelegate>
+@interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, MITDatePickerViewControllerDelegate, MITCalendarSelectionDelegate, MITCalendarPageViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
 @property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
-@property (weak, nonatomic) IBOutlet UITableView *eventsListTableView;
 
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *reloadActivityIndicator;
 
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
@@ -54,6 +54,11 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
 @property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
+
+
+
+@property (nonatomic, strong) MITCalendarPageViewController *eventsController;
+@property (weak, nonatomic) IBOutlet UIView *eventsTableContainerView;
 
 @end
 
@@ -81,11 +86,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
-    [self setupEventsTableView];
+    [self setupEventsContainer];
     [self setupDatePickerButton];
    
-    [self hideTableView];
-
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
@@ -101,8 +104,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.navBarSeparatorView.hidden = YES;
     
     [self registerForNotifications];
-    
-//    [self loadActiveEventList];
     [self centerDayPickerCollectionView];
 }
 
@@ -140,6 +141,20 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.dayPickerContainerView.backgroundColor = navbarGrey;
 }
 
+- (void)setupEventsContainer
+{
+    self.eventsController = [[MITCalendarPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+                                                                     navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
+                                                                                   options:nil];
+    self.eventsController.calendarSelectionDelegate = self;
+    [self addChildViewController:self.eventsController];
+    self.eventsController.view.frame = self.eventsTableContainerView.bounds;
+    [self.eventsTableContainerView addSubview:self.eventsController.view];
+    [self.eventsController didMoveToParentViewController:self];
+    [self.eventsController loadEvents];
+    
+}
+
 - (void)registerForNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoaded:) name:kCalendarListsLoaded object:nil];
@@ -148,37 +163,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)loadEvents
 {
-    [self hideTableView];
-    self.title = self.currentlySelectedCategory ? self.currentlySelectedCategory.name : self.currentlySelectedCalendar.name;
-    [MITCalendarWebservices getEventsForCalendar:self.currentlySelectedCalendar
-                                     queryString:nil
-                                        category:self.currentlySelectedCategory
-                                       startDate:self.currentlyDisplayedDate
-                                         endDate:self.currentlyDisplayedDate
-                                      completion:^(NSArray *events, NSError *error) {
-                                          if (events) {
-                                              self.currentlySelectedEvents = events;
-                                              [self.eventsListTableView reloadData];
-                                              [self showTableView];
-                                          }
-                                          else {
-                                              NSLog(@"Events Fetching Error: %@", error);
-                                          }
-                                      }];
-}
-
-- (void)hideTableView
-{
-    self.eventsListTableView.hidden = YES;
-    self.reloadActivityIndicator.hidden = NO;
-    [self.reloadActivityIndicator startAnimating];
-}
-
-- (void)showTableView
-{
-    self.eventsListTableView.hidden = NO;
-    self.reloadActivityIndicator.hidden = YES;
-    [self.reloadActivityIndicator stopAnimating];
+    self.eventsController.calendar = self.currentlySelectedCalendar;
+    self.eventsController.category = self.currentlySelectedCategory;
+    self.eventsController.date = self.currentlyDisplayedDate;
+    [self.eventsController loadEvents];
 }
 
 - (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
@@ -210,12 +198,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.datePickerButton addGestureRecognizer:panGestureRecognizer];
     
     [self.datePickerButton addTarget:self action:@selector(datePickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)setupEventsTableView
-{
-    UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
-    [self.eventsListTableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
 }
 
 - (void)searchButtonPressed
@@ -303,39 +285,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     }
 }
 
-#pragma mark - Tableview Datasource/Delegate
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [self.currentlySelectedEvents count];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITCalendarsEvent *event = self.currentlySelectedEvents[indexPath.row];
-    return [MITCalendarEventCell heightForEvent:event tableViewWidth:self.eventsListTableView.frame.size.width];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITCalendarEventCell *cell = [self.eventsListTableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
-
-    [cell setEvent:self.currentlySelectedEvents[indexPath.row]];
-    
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.event = self.currentlySelectedEvents[indexPath.row];
-    [self.navigationController pushViewController:detailVC animated:YES];
-}
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
@@ -576,6 +526,21 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         _calendarSelectionViewController.delegate = self;
     }
     return _calendarSelectionViewController;
+}
+
+#pragma mark - Events Controller Delegate
+
+- (void)calendarPageViewController:(MITCalendarPageViewController *)viewController didSelectEvent:(MITCalendarsEvent *)event
+{
+    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.event = event;
+    [self.navigationController pushViewController:detailVC animated:YES];
+
+}
+
+- (void)calendarPageViewController:(MITCalendarPageViewController *)viewController didSwipeToDate:(NSDate *)date
+{
+    
 }
 
 @end

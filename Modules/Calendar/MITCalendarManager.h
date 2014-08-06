@@ -3,8 +3,10 @@
 #import "MITCalendarsEvent.h"
 #import "MITMasterCalendar.h"
 
-typedef void(^MITCalendarManagerCompletionBlock)(MITMasterCalendar *masterCalendar,
+typedef void(^MITMasterCalendarCompletionBlock)(MITMasterCalendar *masterCalendar,
                                                  NSError *error);
+typedef void(^MITCachedEventsCompletionBlock)(NSArray *events,
+                                                NSError *error);
 
 @interface MITCalendarManager : NSObject
 
@@ -12,6 +14,10 @@ typedef void(^MITCalendarManagerCompletionBlock)(MITMasterCalendar *masterCalend
 
 @property (nonatomic, strong) MITMasterCalendar *masterCalendar;
 
-- (void)getCalendarsCompletion:(MITCalendarManagerCompletionBlock)completion;
+- (void)getCalendarsCompletion:(MITMasterCalendarCompletionBlock)completion;
 
+- (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
+                    category:(MITCalendarsCalendar *)category
+                        date:(NSDate *)date
+                  completion:(MITCachedEventsCompletionBlock)completion;
 @end
