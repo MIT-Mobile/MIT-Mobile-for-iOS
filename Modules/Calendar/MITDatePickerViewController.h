@@ -12,5 +12,6 @@
 @interface MITDatePickerViewController : UIViewController
 
 @property (nonatomic, weak) id<MITDatePickerViewControllerDelegate> delegate;
+@property (nonatomic) BOOL shouldHideCancelButton;
 
 @end

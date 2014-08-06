@@ -202,7 +202,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 #pragma mark - Loading Events Into Map
 
-- (void) updateMapWithEvents:(NSArray *)eventsArray
+- (void)updateMapWithEvents:(NSArray *)eventsArray
 {
     NSMutableArray *annotationsToAdd = [NSMutableArray array];
     for (MITCalendarsEvent *event in eventsArray) {

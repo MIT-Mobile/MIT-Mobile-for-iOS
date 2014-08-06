@@ -5,8 +5,9 @@
 #import "MITDateNavigationBarView.h"
 #import "UIKit+MITAdditions.h"
 #import "MITEventsMapViewController.h"
+#import "MITDatePickerViewController.h"
 
-@interface MITEventsRootViewController ()
+@interface MITEventsRootViewController () <MITDatePickerViewControllerDelegate>
 
 @property (strong, nonatomic) UISplitViewController *splitViewController;
 @property (strong, nonatomic) UINavigationController *masterNavigationController;
@@ -19,6 +20,8 @@
 
 @property (strong, nonatomic) MITEventsHomeViewController *eventsHomeViewController;
 @property (strong, nonatomic) MITDateNavigationBarView *dateNavigationBarView;
+
+@property (strong, nonatomic) UIPopoverController *currentPopoverController;
 
 @end
 
@@ -82,14 +85,14 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self alignDateNavigationBar];
 }
 
 #pragma mark - BarButtonItems Setup
 
-- (void) setupLeftBarButtonItems
+- (void)setupLeftBarButtonItems
 {
     [self setupDateNavigationBar];
     
@@ -111,7 +114,7 @@
     
 }
 
-- (void) setupDateNavigationButtonPresses
+- (void)setupDateNavigationButtonPresses
 {
     [self.dateNavigationBarView.previousDateButton addTarget:self action:@selector(previousDayButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.dateNavigationBarView.nextDateButton addTarget:self action:@selector(nextDayButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -178,10 +181,22 @@
 
 - (void)showDatePickerButtonPressed:(UIButton *)sender
 {
+    CGSize targetPopoverSize = CGSizeMake(320, 320);
+    CGRect actualButtonRect = [self.view convertRect:sender.bounds fromView:sender];
+    actualButtonRect.size.height -= 8; // small offset to bring pointer closer
     
+    MITDatePickerViewController *datePickerViewController = [MITDatePickerViewController new];
+    datePickerViewController.delegate = self;
+    datePickerViewController.shouldHideCancelButton = YES;
+    UINavigationController *datePickerNavController = [[UINavigationController alloc] initWithRootViewController:datePickerViewController];
+    UIPopoverController *popOverController = [[UIPopoverController alloc] initWithContentViewController:datePickerNavController];
+    [popOverController setPopoverContentSize:targetPopoverSize];
+    [popOverController presentPopoverFromRect:actualButtonRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    self.currentPopoverController = popOverController;
 }
 
-- (void)searchButtonPressed:(UIBarButtonItem *)barButtonItem {
+- (void)searchButtonPressed:(UIBarButtonItem *)barButtonItem
+{
     if (barButtonItem == self.searchMagnifyingGlassBarButtonItem) {
         [self showSearchBar];
     }
@@ -192,13 +207,15 @@
 
 #pragma mark - ViewControllers Setup
 
-- (void)setupViewControllers {
+- (void)setupViewControllers
+{
     [self setupEventsHomeViewController];
     [self setupMapViewController];
     [self setupSplitViewController];
 }
 
-- (void)setupEventsHomeViewController {
+- (void)setupEventsHomeViewController
+{
     self.eventsHomeViewController = [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
     self.masterNavigationController = [[UINavigationController alloc] initWithRootViewController:self.eventsHomeViewController];
     
@@ -209,12 +226,14 @@
     [self.eventsHomeViewController addObserver:self forKeyPath:@"currentlySelectedEvents" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
 }
 
-- (void)setupMapViewController {
+- (void)setupMapViewController
+{
     self.mapsViewController = [MITEventsMapViewController new];
     self.mapsViewController.view.backgroundColor = [UIColor magentaColor];
 }
 
-- (void)setupSplitViewController {
+- (void)setupSplitViewController
+{
     self.splitViewController = [[UISplitViewController alloc] init];
     self.splitViewController.viewControllers = @[self.masterNavigationController, self.mapsViewController];
     self.splitViewController.delegate = self;
@@ -232,14 +251,14 @@
     [self setToolbarItems:@[[self leftToolbarItem], [self flexibleSpaceBarButtonItem], [self middleToolbarItem], [self flexibleSpaceBarButtonItem], [self rightToolbarItem]]];
 }
 
-- (UIBarButtonItem *) leftToolbarItem {
+- (UIBarButtonItem *)leftToolbarItem
+{
     return [[UIBarButtonItem alloc] initWithTitle:@"Today" style:UIBarButtonItemStylePlain target:self action:@selector(todayButtonPressed:)];
 }
-
-- (UIBarButtonItem *) middleToolbarItem {
+- (UIBarButtonItem *)middleToolbarItem
+{
     return [[UIBarButtonItem alloc] initWithTitle:@"Calendars" style:UIBarButtonItemStylePlain target:self action:@selector(calendarsButtonPressed:)];
 }
-
 - (UIBarButtonItem *)rightToolbarItem
 {
     UIImage *locationImage = [UIImage imageNamed:@"global/location"];
@@ -248,7 +267,6 @@
                                            target:self
                                            action:@selector(currentLocationButtonPressed:)];
 }
-
 - (UIBarButtonItem *)flexibleSpaceBarButtonItem
 {
     return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -268,9 +286,11 @@
 {
     [self.mapsViewController showCurrentLocation];
 }
+
 #pragma mark KVO
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
     NSArray *new = change[@"new"];
     if (new) {
         [self.mapsViewController updateMapWithEvents:new];
@@ -282,6 +302,15 @@
 - (BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation
 {
     return NO;  // show both view controllers in all orientations
+}
+
+#pragma mark - MITDatePickerControllerDelegate
+
+- (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
+{
+    [self.currentPopoverController dismissPopoverAnimated:YES];
+    
+    // TODO: Notify EventsHomeViewController of the change in date and update UI accordingly
 }
 
 @end

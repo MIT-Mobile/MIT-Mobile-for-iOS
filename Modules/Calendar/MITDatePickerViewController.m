@@ -23,8 +23,10 @@
     // Do any additional setup after loading the view from its nib.
     self.title = @"Go to Date";
     
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)];
-    self.navigationItem.leftBarButtonItem = cancelButton;
+    if (!self.shouldHideCancelButton) {
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)];
+        self.navigationItem.leftBarButtonItem = cancelButton;
+    }
     
     UIBarButtonItem *goButton = [[UIBarButtonItem alloc] initWithTitle:@"Go" style:UIBarButtonItemStylePlain target:self action:@selector(goPressed)];
     self.navigationItem.rightBarButtonItem = goButton;
