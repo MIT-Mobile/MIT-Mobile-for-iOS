@@ -42,33 +42,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     [self adjustTableViewInsets];
     
     [self updateTableViewHeaderView];
-	
-//    [self reloadDataIfNeeded];
-    
+	    
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-}
-
-- (void) reloadDataIfNeeded
-{
-    // if lastUpdate is sufficiently long ago, issue a background search
-	// TODO: change this time interval to something more reasonable
-    // TODO: let Cache-Control headers from API response determine how long data is fresh
-	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300)
-    { // 5 mins for testing
-        [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
-            if ( !error && [objects lastObject] != nil )
-            {
-                self.personDetails = [objects lastObject];
-                
-                [self reload];
-            }
-        }];
-    }
 }
 
 - (void) reload
