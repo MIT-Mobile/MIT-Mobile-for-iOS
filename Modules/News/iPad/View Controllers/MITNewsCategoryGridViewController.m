@@ -28,16 +28,6 @@
     }
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
-    // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
-    }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
-}
-
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
