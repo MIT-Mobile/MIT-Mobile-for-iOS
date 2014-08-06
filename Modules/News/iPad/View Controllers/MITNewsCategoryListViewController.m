@@ -64,10 +64,10 @@
     }
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         _storyUpdateInProgressToken = TRUE;
+        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         [self getMoreStories];
-        [self.tableView reloadRowsAtIndexPaths:@[[self.tableView indexPathForSelectedRow]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark UITableViewDataSource
@@ -155,8 +155,15 @@ int one;
     if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
         [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
+                                                    if (error) {
+                                                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                                    } else {
+                                                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                                    }
                                                     _storyUpdateInProgressToken = FALSE;
-                                                    [self.tableView reloadData];
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        [self.tableView reloadData];
+                                                    }];
                                                 }];
     }
 }

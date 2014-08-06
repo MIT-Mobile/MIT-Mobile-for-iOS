@@ -16,7 +16,6 @@
 
 static NSUInteger loadingActivityViewTag = (int)"loadingActivityView";
 static NSUInteger noResultsViewTag = (int)"noResultsView";
-static NSString *loadingMoreIdentifier = @"LoadingMore";
 
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
@@ -28,11 +27,11 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
 
-- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
-
 @end
 
-@implementation MITNewsSearchController
+@implementation MITNewsSearchController {
+    BOOL _storyUpdateInProgressToken;
+}
 
 @synthesize recentSearchController = _recentSearchController;
 
@@ -70,7 +69,8 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    
+    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
+
     self.searchTableView.alpha = 0;
 }
 
@@ -225,21 +225,17 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 
 - (void)getMoreStories
 {
-    __block NSError *updateError = nil;
     if ([self.dataSource hasNextPage]) {
         [self.dataSource nextPage:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                
-                if (!updateError) {
-                    updateError = error;
-                }
             } else {
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.searchTableView reloadData];
-                }];
             }
+            _storyUpdateInProgressToken = FALSE;
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.searchTableView reloadData];
+            }];
         }];
     }
 }
@@ -297,32 +293,14 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 }
 
 #pragma mark - TableView
-
+#pragma mark UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    
-    if ([identifier isEqualToString:loadingMoreIdentifier]) {
-        static NSString *CellIdentifier = @"Cell";
-        
-        MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-        cell.textLabel.text = @"Loading...";
-        cell.accessoryView = view;
-        //[self getMoreStories];
-        return cell;
-    }
-    
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    
     return cell;
 }
 
@@ -341,7 +319,7 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
-    if ([reuseIdentifier isEqualToString:loadingMoreIdentifier]) {
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
@@ -375,7 +353,7 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
         
         return identifier;
     } else if ([self.dataSource.objects count]) {
-        return @"LoadingMore";
+        return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
     }
@@ -385,10 +363,16 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    if ([cell.reuseIdentifier isEqualToString:loadingMoreIdentifier]) {
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.accessoryView = view;
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgressToken) {
+            if (!cell.accessoryView) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            }
+        } else {
+            cell.accessoryView = nil;
+        }
     } else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         
@@ -404,21 +388,27 @@ static NSString *loadingMoreIdentifier = @"LoadingMore";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
-    MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
-    storyDetailViewController.delegate = self;
-    
-    MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-    if (story) {
-        NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        managedObjectContext.parentContext = self.managedObjectContext;
-        storyDetailViewController.managedObjectContext = managedObjectContext;
-        storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-        
-        self.unwindFromStoryDetail = YES;
-        [self.navigationController pushViewController:storyDetailViewController animated:YES];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        _storyUpdateInProgressToken = TRUE;
+        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self getMoreStories];
+    } else {
+        MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
+        if (story) {
+            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
+            MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
+            storyDetailViewController.delegate = self;
+            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            managedObjectContext.parentContext = self.managedObjectContext;
+            storyDetailViewController.managedObjectContext = managedObjectContext;
+            storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+            self.unwindFromStoryDetail = YES;
+            [self.navigationController pushViewController:storyDetailViewController animated:YES];
+            
+        }
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark MITNewsStoryDetailPagingDelegate
