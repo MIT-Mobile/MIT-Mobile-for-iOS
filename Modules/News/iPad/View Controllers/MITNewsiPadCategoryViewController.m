@@ -5,7 +5,7 @@
 #import "MITCoreData.h"
 #import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesDataSource.h"
-
+#import "MITNewsConstants.h"
 
 @interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -200,6 +200,20 @@
     [self.searchBar becomeFirstResponder];
 }
 
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == alertView.firstOtherButtonIndex) {
+        NSURL *url = [NSURL URLWithString:alertView.message];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }
+    if (_presentationStyle == MITNewsPresentationStyleList) {
+        [self.listViewController.tableView deselectRowAtIndexPath:[self.listViewController.tableView indexPathForSelectedRow] animated:YES];
+    }
+}
+
 #pragma mark Utility Methods
 - (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style
 {
@@ -305,8 +319,24 @@
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
 {
-    if ([self.dataSource.objects count] > index) {
-        [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    MITNewsStory *story = [self viewController:self storyAtIndex:index forCategoryInSection:section];
+    if (story) {
+        __block BOOL isExternalStory = NO;
+        __block NSURL *externalURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+                isExternalStory = YES;
+                externalURL = story.sourceURL;
+            }
+        }];
+        
+        if (isExternalStory) {
+            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+            [willOpenInExternalBrowserAlertView show];
+        } else {
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+        }
     }
     return nil;
 }
