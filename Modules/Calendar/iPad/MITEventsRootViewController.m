@@ -93,7 +93,6 @@
 {
     UINib *nib = [UINib nibWithNibName:@"MITDateNavigationBarView" bundle:nil];
     self.dateNavigationBarView = [[nib instantiateWithOwner:self options:nil] objectAtIndex:0];
-    [self.dateNavigationBarView.hamburgerButton addTarget:self.navigationItem.leftBarButtonItem.target action:self.navigationItem.leftBarButtonItem.action forControlEvents:UIControlEventTouchUpInside];
     self.dateNavigationBarView.bounds = CGRectMake(0, 0, 320, 44);
     self.dateNavigationBarView.currentDateLabel.text = @"Thursday, Feb 20, 2014";
     self.dateNavigationBarView.tintColor = [UIColor mit_tintColor];
