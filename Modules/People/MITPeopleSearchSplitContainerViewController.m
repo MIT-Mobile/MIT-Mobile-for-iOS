@@ -17,7 +17,6 @@
 @property (nonatomic, weak) IBOutlet UIView *masterViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *detailsViewContainer;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *masterViewContainerWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *detailsViewContainerWidthConstraint;
 
 @end
 
@@ -80,9 +79,6 @@ static CGFloat masterViewContainerWidthPortrait  = 320;
     BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
     
     self.masterViewContainerWidthConstraint.constant = isLandscape ? masterViewContainerWidthLandscape : masterViewContainerWidthPortrait;
-    
-    CGFloat screenWidth = isLandscape ? self.view.bounds.size.height : self.view.bounds.size.width;
-    self.detailsViewContainerWidthConstraint.constant = screenWidth - self.masterViewContainerWidthConstraint.constant - 1;
 }
 
 #pragma mark - Navigation

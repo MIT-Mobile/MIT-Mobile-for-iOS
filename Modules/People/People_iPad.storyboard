@@ -112,7 +112,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a1i-NR-2dN">
+                            <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a1i-NR-2dN">
                                 <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
@@ -121,6 +121,12 @@
                             </containerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="a1i-NR-2dN" secondAttribute="bottom" id="8Pf-lk-Mho"/>
+                            <constraint firstItem="a1i-NR-2dN" firstAttribute="leading" secondItem="Kk4-dC-CEs" secondAttribute="leading" id="AHu-VQ-vqw"/>
+                            <constraint firstAttribute="trailing" secondItem="a1i-NR-2dN" secondAttribute="trailing" id="boc-eO-3PP"/>
+                            <constraint firstItem="a1i-NR-2dN" firstAttribute="top" secondItem="Kk4-dC-CEs" secondAttribute="top" id="em4-EF-WiV"/>
+                        </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <toolbarItems/>
@@ -272,9 +278,6 @@
                             <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="exx-QV-HLE" userLabel="detailsViewContainer">
                                 <rect key="frame" x="322" y="0.0" width="446" height="1024"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="446" id="6HO-qy-89V"/>
-                                </constraints>
                                 <connections>
                                     <segue destination="cag-2w-FbR" kind="embed" id="bnM-oD-1SM"/>
                                 </connections>
@@ -293,6 +296,7 @@
                             <constraint firstItem="VxC-qc-ukJ" firstAttribute="leading" secondItem="upC-cg-mXL" secondAttribute="leading" id="KcE-hf-nEa"/>
                             <constraint firstItem="VxC-qc-ukJ" firstAttribute="bottom" secondItem="Vcm-HH-ETs" secondAttribute="bottom" id="U63-eq-7f2"/>
                             <constraint firstItem="Vcm-HH-ETs" firstAttribute="leading" secondItem="VxC-qc-ukJ" secondAttribute="trailing" constant="1" id="Ydd-5q-0Q0"/>
+                            <constraint firstAttribute="trailing" secondItem="exx-QV-HLE" secondAttribute="trailing" id="dDr-41-P1i"/>
                             <constraint firstItem="Vcm-HH-ETs" firstAttribute="top" secondItem="VxC-qc-ukJ" secondAttribute="top" id="mht-HC-4Hk"/>
                             <constraint firstItem="exx-QV-HLE" firstAttribute="top" secondItem="upC-cg-mXL" secondAttribute="top" id="qrv-4v-RPO"/>
                             <constraint firstItem="Vcm-HH-ETs" firstAttribute="bottom" secondItem="exx-QV-HLE" secondAttribute="bottom" id="tK4-Iq-uAs"/>
@@ -302,7 +306,6 @@
                     </view>
                     <connections>
                         <outlet property="detailsViewContainer" destination="exx-QV-HLE" id="vUG-FT-8Iv"/>
-                        <outlet property="detailsViewContainerWidthConstraint" destination="6HO-qy-89V" id="y1a-Y4-dvi"/>
                         <outlet property="lineSeparator" destination="Vcm-HH-ETs" id="ypl-pf-jL8"/>
                         <outlet property="masterViewContainer" destination="VxC-qc-ukJ" id="lls-Dd-jou"/>
                         <outlet property="masterViewContainerWidthConstraint" destination="Ajs-K5-Cud" id="jMF-NX-jxC"/>
