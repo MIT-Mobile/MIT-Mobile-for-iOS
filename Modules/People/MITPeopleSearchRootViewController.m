@@ -22,7 +22,6 @@
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
-@property (nonatomic, strong) MITLoadingActivityView *searchResultsLoadingView;
 @property (nonatomic, assign) BOOL searchBarShouldBeginEditing;
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
@@ -173,14 +172,15 @@
 
 - (void)performSearch
 {
-    [self showLoadingView];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
     __weak MITPeopleSearchRootViewController *weakSelf = self;
     
     [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {
          [weakSelf.searchResultsViewController setSearchHandler:self.searchHandler];
-         [weakSelf.searchResultsLoadingView removeFromSuperview];
+         
+         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
      }];
 }
 
@@ -307,17 +307,5 @@
 {
     return NO;  // show both view controllers in all orientations
 }
-
-#pragma mark - utils
-
-- (void)showLoadingView
-{
-    MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
-    self.searchResultsLoadingView = loadingView;
-    [self.view addSubview:loadingView];
-}
-
-
-
 
 @end
