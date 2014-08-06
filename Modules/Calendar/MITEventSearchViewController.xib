@@ -7,8 +7,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITEventSearchViewController">
             <connections>
+                <outlet property="searchingSpinner" destination="boV-gV-iuq" id="aLc-9W-0kr"/>
                 <outlet property="tableView" destination="rbK-d3-PXl" id="f1m-B6-eTy"/>
                 <outlet property="tableViewBottomLayoutConstraint" destination="1GO-Ss-LVo" id="e2r-ft-RWe"/>
+                <outlet property="tableViewTopLayoutConstraint" destination="AyX-lT-rIs" id="3gX-6v-w4Z"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -26,6 +28,10 @@
                         <outlet property="delegate" destination="-1" id="lUH-ac-cca"/>
                     </connections>
                 </tableView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="boV-gV-iuq">
+                    <rect key="frame" x="150" y="242" width="20" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>

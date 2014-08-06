@@ -85,10 +85,15 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
     }];
 }
 
-+ (void)getEventsWithinOneMonthInCalendar:(MITCalendarsCalendar *)calendar forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
++ (void)getEventsWithinOneMonthInCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
 {
     // Per webservice documentation, the default end date is 1 month from the current date
-    NSDictionary *params = @{@"q": query};
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:query forKey:@"q"];
+    
+    if (category) {
+        [params setObject:category.identifier forKey:@"category"];
+    }
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName object:@{@"calendar": calendar.identifier} parameters:params completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
         if (error) {
@@ -99,13 +104,19 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
     }];
 }
 
-+ (void)getEventsWithinOneYearInCalendar:(MITCalendarsCalendar *)calendar forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
++ (void)getEventsWithinOneYearInCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category forQuery:(NSString *)query completion:(MITEventsCompletionBlock)completion
 {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:query forKey:@"q"];
+    
+    if (category) {
+        [params setObject:category.identifier forKey:@"category"];
+    }
+    
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
     componentsToAdd.year = 1;
     NSDate *oneYearFromNow = [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:[NSDate date] options:0];
-    NSDictionary *params = @{@"q": query,
-                             @"end": [oneYearFromNow ISO8601String]};
+    [params setObject:[oneYearFromNow ISO8601String] forKey:@"end"];
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName object:@{@"calendar": calendar.identifier} parameters:params completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
         if (error) {

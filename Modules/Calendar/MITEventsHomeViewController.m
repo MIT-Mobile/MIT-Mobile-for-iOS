@@ -220,7 +220,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)searchButtonPressed
 {
-    MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithNibName:nil bundle:nil];
+    MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithCategory:self.currentlySelectedCategory];
     UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
     [self presentViewController:searchNavController animated:YES completion:nil];
 }

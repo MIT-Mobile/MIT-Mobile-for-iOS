@@ -5,6 +5,7 @@
 #import "MITCalendarEventCell.h"
 #import "MITEventDetailViewController.h"
 #import "MITCalendarEventDateGroupedDataSource.h"
+#import "UIKit+MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     MITEventSearchViewControllerStateTypeAhead,
@@ -19,6 +20,8 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 static NSString *const kMITCalendarEventRecentSearchesDefaultsKey = @"kMITCalendarEventRecentSearchesDefaultsKey";
 static NSInteger const kMITCalendarEventRecentSearchesLimit = 50;
 
+static NSString *const kMITCalendarEventCellNibName = @"MITCalendarEventCell";
+
 static NSString *const kMITCalendarFilterCellIdentifier = @"kMITCalendarFilterCellIdentifier";
 static NSString *const kMITCalendarTypeAheadSuggestionCellIdentifier = @"kMITCalendarTypeAheadSuggestionCellIdentifier";
 static NSString *const kMITCalendarEventCellIdentifier = @"kMITCalendarEventCellIdentifier";
@@ -30,10 +33,13 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
 
 @interface MITEventSearchViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
+@property (nonatomic, weak) IBOutlet UIActivityIndicatorView *searchingSpinner;
+
 @property (nonatomic) MITEventSearchViewControllerState state;
 @property (nonatomic) MITEventSearchViewControllerResultsTimeframe resultsTimeframe;
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewBottomLayoutConstraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewTopLayoutConstraint;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) MITCalendarEventDateGroupedDataSource *resultsDataSource;
 @property (nonatomic, strong) NSArray *typeAheadArray;
@@ -41,6 +47,11 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
 // Currently only a single MITCalendarsCalendar object. When additional filters are specified, perhaps a filter object will be useful to create
 @property (nonatomic, strong) NSArray *filtersArray;
 @property (nonatomic, strong) MITCalendarsCalendar *currentCalendar;
+@property (nonatomic, strong) UILabel *currentCalendarLabel;
+@property (nonatomic, strong) UIView *currentCalendarLabelContainerView;
+
+@property (weak, nonatomic) UIView *navBarSeparatorView;
+@property (strong, nonatomic) UIView *repositionedNavBarSeparatorView;
 
 @end
 
@@ -55,28 +66,28 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
     return self;
 }
 
+- (id)initWithCategory:(MITCalendarsCalendar *)category
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        self.currentCalendar = category;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
-    self.searchBar.showsCancelButton = YES;
-    self.searchBar.delegate = self;
-    [self.navigationController.navigationBar addSubview:self.searchBar];
-    
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarFilterCellIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarTypeAheadSuggestionCellIdentifier];
-    [self.tableView registerClass:[MITCalendarEventCell class] forCellReuseIdentifier:kMITCalendarEventCellIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarResultsCountCellIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarContinueSearchingCellIdentifier];
-    
-    self.currentCalendar = [[MITCalendarManager sharedManager] masterCalendar].eventsCalendar;
+    [self setupSearchBar];
+    [self setupTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.navBarSeparatorView.hidden = YES;
     [self registerForKeyboardNotifications];
     [self refreshTypeAheadSuggestionsForText:self.searchBar.text];
     [self.searchBar becomeFirstResponder];
@@ -87,7 +98,96 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    self.navBarSeparatorView.hidden = NO;
     [self unregisterForKeyboardNotifications];
+}
+
+- (void)setupSearchBar
+{
+    self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
+    self.searchBar.showsCancelButton = YES;
+    self.searchBar.delegate = self;
+    [self.navigationController.navigationBar addSubview:self.searchBar];
+}
+
+- (void)setupTableView
+{
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarFilterCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarTypeAheadSuggestionCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:kMITCalendarEventCellNibName bundle:nil] forCellReuseIdentifier:kMITCalendarEventCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarResultsCountCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarContinueSearchingCellIdentifier];
+}
+
+- (void)addExtendedNavBar
+{
+    if (!self.currentCalendar) {
+        return;
+    }
+    
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    
+    self.currentCalendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width, 20)];
+    self.currentCalendarLabel.text = [NSString stringWithFormat:@"In %@", self.currentCalendar.name];
+    self.currentCalendarLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
+    self.currentCalendarLabel.font = [UIFont systemFontOfSize:14];
+    self.currentCalendarLabel.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:self.currentCalendarLabel];
+    
+    self.currentCalendarLabelContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, navigationBar.frame.origin.y + navigationBar.frame.size.height, self.view.frame.size.width, 20)];
+    self.currentCalendarLabelContainerView.backgroundColor = navbarGrey;
+    [self.currentCalendarLabelContainerView addSubview:self.currentCalendarLabel];
+    [self.view addSubview:self.currentCalendarLabelContainerView];
+    
+    self.tableViewTopLayoutConstraint.constant = 20;
+    
+    self.navBarSeparatorView = [self findHairlineImageViewUnder:navigationBar];
+    self.navBarSeparatorView.hidden = YES;
+    
+    self.repositionedNavBarSeparatorView = [[UIImageView alloc] initWithFrame:self.navBarSeparatorView.frame];
+    self.repositionedNavBarSeparatorView.backgroundColor = [UIColor colorWithRed:150.0/255.0 green:152.0/255.0 blue:156.0/255.0 alpha:1.0];
+    CGRect repositionedFrame = self.repositionedNavBarSeparatorView.frame;
+    repositionedFrame.origin.y = self.currentCalendarLabelContainerView.frame.size.height - self.repositionedNavBarSeparatorView.frame.size.height;
+    self.repositionedNavBarSeparatorView.frame = repositionedFrame;
+    self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [self.currentCalendarLabelContainerView addSubview:self.repositionedNavBarSeparatorView];
+    
+    navigationBar.opaque = YES;
+    navigationBar.translucent = NO;
+    [navigationBar setBarTintColor:navbarGrey];
+}
+
+- (void)removeExtendedNavBar
+{
+    [self.currentCalendarLabelContainerView removeFromSuperview];
+    self.tableViewTopLayoutConstraint.constant = 0;
+    self.navBarSeparatorView.hidden = NO;
+}
+
+- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
+    if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
+        return (UIImageView *)view;
+    }
+    for (UIView *subview in view.subviews) {
+        UIImageView *imageView = [self findHairlineImageViewUnder:subview];
+        if (imageView) {
+            return imageView;
+        }
+    }
+    return nil;
+}
+
+- (void)showLoadingSpinner
+{
+    self.tableView.hidden = YES;
+    [self.searchingSpinner startAnimating];
+}
+
+- (void)hideLoadingSpinner
+{
+    self.tableView.hidden = NO;
+    [self.searchingSpinner stopAnimating];
 }
 
 #pragma mark - Keyboard Height Actions
@@ -129,6 +229,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
 
 #pragma mark - Filters
 
+// Only single calendar filters for now. This will need to change when more filters are added
 - (void)clearFilters
 {
     self.currentCalendar = nil;
@@ -153,7 +254,23 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
 - (void)saveRecentEventSearch:(NSString *)recentSearch
 {
     NSMutableOrderedSet *mutableRecents = [[self recentSearches] mutableCopy];
+    
+    NSUInteger indexOfMatchingRecent = [mutableRecents indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        NSString *recent = obj;
+        if ([[recent lowercaseString] isEqualToString:[recentSearch lowercaseString]]) {
+            *stop = YES;
+            return YES;
+        } else {
+            return NO;
+        }
+    }];
+    
+    if (indexOfMatchingRecent != NSNotFound) {
+        [mutableRecents removeObjectAtIndex:indexOfMatchingRecent];
+    }
+    
     [mutableRecents insertObject:recentSearch atIndex:0];
+    
     if (mutableRecents.count > kMITCalendarEventRecentSearchesLimit) {
         [mutableRecents removeObjectAtIndex:kMITCalendarEventRecentSearchesLimit];
     }
@@ -190,29 +307,62 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
     [self.tableView reloadData];
 }
 
-#pragma mark - UISearchBarDelegate Methods
+#pragma mark - Searching
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)searchInNextMonth:(NSString *)searchText
 {
-    [self refreshTypeAheadSuggestionsForText:searchText];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [self saveRecentEventSearch:searchBar.text];
+    self.resultsTimeframe = MITEventSearchViewControllerResultsTimeframeOneMonth;
+    [self showLoadingSpinner];
+    
+    [self saveRecentEventSearch:searchText];
     [self.searchBar resignFirstResponder];
     
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
-        [MITCalendarWebservices getEventsWithinOneMonthInCalendar:masterCalendar.eventsCalendar forQuery:self.searchBar.text completion:^(NSArray *events, NSError *error) {
+        [MITCalendarWebservices getEventsWithinOneMonthInCalendar:masterCalendar.eventsCalendar category:self.currentCalendar forQuery:searchText completion:^(NSArray *events, NSError *error) {
             self.state = MITEventSearchViewControllerStateResults;
+            [self addExtendedNavBar];
             if (error) {
                 self.resultsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:nil];
+            } else {
+                self.resultsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];
+            }
+            [self hideLoadingSpinner];
+            [self.tableView reloadData];
+        }];
+    }];
+}
+
+- (void)searchInNextYear:(NSString *)searchText
+{
+    self.resultsTimeframe = MITEventSearchViewControllerResultsTimeframeOneYear;
+    
+    [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
+        [MITCalendarWebservices getEventsWithinOneYearInCalendar:masterCalendar.eventsCalendar category:self.currentCalendar forQuery:searchText completion:^(NSArray *events, NSError *error) {
+            self.state = MITEventSearchViewControllerStateResults;
+            if (error) {
+                // Do nothing. The user already has results for the next month and so we will just keep displaying them and reload the "x results in next year" cell so it looks like 0 more results were found
             } else {
                 self.resultsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];
             }
             [self.tableView reloadData];
         }];
     }];
+}
+
+#pragma mark - UISearchBarDelegate Methods
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if (self.state != MITEventSearchViewControllerStateTypeAhead) {
+        self.state = MITEventSearchViewControllerStateTypeAhead;
+        [self removeExtendedNavBar];
+    }
+    [self refreshTypeAheadSuggestionsForText:searchText];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchInNextMonth:searchBar.text];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -247,12 +397,28 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
     
     switch (self.state) {
         case MITEventSearchViewControllerStateTypeAhead: {
+            if (indexPath.section == kMITCalendarEventSearchTypeAheadSectionSuggestions) {
+                NSString *searchText = self.typeAheadArray[indexPath.row];
+                self.searchBar.text = searchText;
+                [self searchInNextMonth:searchText];
+            }
             break;
         }
         case MITEventSearchViewControllerStateResults: {
-//            MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-//            detailVC.event = [self.resultsDataSource eventForIndexPath:indexPath];
-//            [self.navigationController pushViewController:detailVC animated:YES];
+            
+            if ([self.resultsDataSource allSections].count > indexPath.section) {
+//                MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+//                detailVC.event = [self.resultsDataSource eventForIndexPath:indexPath];
+//                [self.navigationController pushViewController:detailVC animated:YES];
+            } else {
+                if (indexPath.row == 1) {
+                    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+                    UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    cell.accessoryView = spinner;
+                    [spinner startAnimating];
+                    [self searchInNextYear:self.searchBar.text];
+                }
+            }
             break;
         }
     }
@@ -283,7 +449,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
             break;
         }
         case MITEventSearchViewControllerStateResults: {
-            if ([self.resultsDataSource allSections].count < section) {
+            if ([self.resultsDataSource allSections].count > section) {
                 return [self.resultsDataSource headerForSection:section];
             } else {
                 return nil;
@@ -327,7 +493,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
             break;
         }
         case MITEventSearchViewControllerStateResults: {
-            if ([self.resultsDataSource allSections].count < section) {
+            if ([self.resultsDataSource allSections].count > section) {
                 return [self.resultsDataSource eventsInSection:section].count;
             } else {
                 switch (self.resultsTimeframe) {
@@ -392,11 +558,24 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
             } else {
                 if (indexPath.row == 0) {
                     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarResultsCountCellIdentifier];
-                    // return "x results in next month" cell
+                    NSInteger numberOfResults = [self.resultsDataSource events].count;
+                    
+                    NSString *timeFrameString = @"";
+                    if (self.resultsTimeframe == MITEventSearchViewControllerResultsTimeframeOneMonth) {
+                        timeFrameString = @"month";
+                    } else if (self.resultsTimeframe == MITEventSearchViewControllerResultsTimeframeOneYear) {
+                        timeFrameString = @"year";
+                    }
+                    
+                    cell.textLabel.text = [NSString stringWithFormat:@"%i results in the next %@", numberOfResults, timeFrameString];
+                    cell.textLabel.textColor = [UIColor darkGrayColor];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     return cell;
                 } else if (indexPath.row == 1) {
                     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarContinueSearchingCellIdentifier];
-                    // return "continue searching" cell
+                    cell.textLabel.text = @"Continue Searching...";
+                    cell.textLabel.textColor = [UIColor mit_tintColor];
+                    cell.accessoryView = nil;
                     return cell;
                 }
             }
