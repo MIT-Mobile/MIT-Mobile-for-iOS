@@ -259,31 +259,53 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VxC-qc-ukJ" userLabel="masterViewContainer">
+                            <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VxC-qc-ukJ" userLabel="masterViewContainer">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="1024"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="320" id="Ajs-K5-Cud"/>
+                                </constraints>
                                 <connections>
                                     <segue destination="W7n-GO-dUE" kind="embed" identifier="MITMasterController" id="cgv-2s-R48"/>
                                 </connections>
                             </containerView>
-                            <containerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="exx-QV-HLE" userLabel="detailsViewContainer">
+                            <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="exx-QV-HLE" userLabel="detailsViewContainer">
                                 <rect key="frame" x="322" y="0.0" width="446" height="1024"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="446" id="6HO-qy-89V"/>
+                                </constraints>
                                 <connections>
                                     <segue destination="cag-2w-FbR" kind="embed" id="bnM-oD-1SM"/>
                                 </connections>
                             </containerView>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vcm-HH-ETs" userLabel="lineSeparatorView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vcm-HH-ETs" userLabel="lineSeparatorView">
                                 <rect key="frame" x="321" y="0.0" width="1" height="1024"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="1" id="n4b-o6-Zeh"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="exx-QV-HLE" firstAttribute="top" secondItem="Vcm-HH-ETs" secondAttribute="top" id="Hd4-WZ-Am8"/>
+                            <constraint firstItem="VxC-qc-ukJ" firstAttribute="leading" secondItem="upC-cg-mXL" secondAttribute="leading" id="KcE-hf-nEa"/>
+                            <constraint firstItem="VxC-qc-ukJ" firstAttribute="bottom" secondItem="Vcm-HH-ETs" secondAttribute="bottom" id="U63-eq-7f2"/>
+                            <constraint firstItem="Vcm-HH-ETs" firstAttribute="leading" secondItem="VxC-qc-ukJ" secondAttribute="trailing" constant="1" id="Ydd-5q-0Q0"/>
+                            <constraint firstItem="Vcm-HH-ETs" firstAttribute="top" secondItem="VxC-qc-ukJ" secondAttribute="top" id="mht-HC-4Hk"/>
+                            <constraint firstItem="exx-QV-HLE" firstAttribute="top" secondItem="upC-cg-mXL" secondAttribute="top" id="qrv-4v-RPO"/>
+                            <constraint firstItem="Vcm-HH-ETs" firstAttribute="bottom" secondItem="exx-QV-HLE" secondAttribute="bottom" id="tK4-Iq-uAs"/>
+                            <constraint firstAttribute="bottom" secondItem="Vcm-HH-ETs" secondAttribute="bottom" id="tSO-pV-tpI"/>
+                            <constraint firstItem="exx-QV-HLE" firstAttribute="leading" secondItem="Vcm-HH-ETs" secondAttribute="trailing" id="ytt-jb-x9E"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="detailsViewContainer" destination="exx-QV-HLE" id="vUG-FT-8Iv"/>
+                        <outlet property="detailsViewContainerWidthConstraint" destination="6HO-qy-89V" id="y1a-Y4-dvi"/>
                         <outlet property="lineSeparator" destination="Vcm-HH-ETs" id="ypl-pf-jL8"/>
                         <outlet property="masterViewContainer" destination="VxC-qc-ukJ" id="lls-Dd-jou"/>
+                        <outlet property="masterViewContainerWidthConstraint" destination="Ajs-K5-Cud" id="jMF-NX-jxC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mZp-4R-YZJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -16,6 +16,8 @@
 @property (nonatomic, weak) IBOutlet UIView *lineSeparator;
 @property (nonatomic, weak) IBOutlet UIView *masterViewContainer;
 @property (nonatomic, weak) IBOutlet UIView *detailsViewContainer;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *masterViewContainerWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *detailsViewContainerWidthConstraint;
 
 @end
 
@@ -44,7 +46,7 @@ static CGFloat masterViewContainerWidthPortrait  = 320;
     [super viewWillAppear:animated];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)viewWillLayoutSubviews
 {
     if( UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation) )
     {
@@ -77,22 +79,10 @@ static CGFloat masterViewContainerWidthPortrait  = 320;
 {
     BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
     
-    // adjust master view container
-    CGRect masterFrame = self.masterViewContainer.frame;
-    masterFrame.size.width = isLandscape ? masterViewContainerWidthLandscape : masterViewContainerWidthPortrait;
-    self.masterViewContainer.frame = masterFrame;
+    self.masterViewContainerWidthConstraint.constant = isLandscape ? masterViewContainerWidthLandscape : masterViewContainerWidthPortrait;
     
-    // adjust line separator
-    CGRect separatorFrame = self.lineSeparator.frame;
-    separatorFrame.origin.x = masterFrame.size.width + 1;
-    self.lineSeparator.frame = separatorFrame;
-    
-    // adjust details view container
     CGFloat screenWidth = isLandscape ? self.view.bounds.size.height : self.view.bounds.size.width;
-    CGRect detailsFrame = self.detailsViewContainer.frame;
-    detailsFrame.origin.x = separatorFrame.origin.x + 1;
-    detailsFrame.size.width = screenWidth - masterFrame.size.width - 1;
-    self.detailsViewContainer.frame = detailsFrame;    
+    self.detailsViewContainerWidthConstraint.constant = screenWidth - self.masterViewContainerWidthConstraint.constant - 1;
 }
 
 #pragma mark - Navigation
