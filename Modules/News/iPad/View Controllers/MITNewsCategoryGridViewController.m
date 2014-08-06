@@ -45,7 +45,6 @@
             collectionViewCell.contentView.backgroundColor = [UIColor blackColor];
         } else if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
             collectionViewCell.contentView.backgroundColor = [UIColor cyanColor];
-            //[self getMoreStories];
         }
     } else if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
@@ -60,7 +59,7 @@
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
     
-    if (!story) {
+    if (!story ) {
         return MITNewsCellIdentifierStoryLoadMore;
     }
     
