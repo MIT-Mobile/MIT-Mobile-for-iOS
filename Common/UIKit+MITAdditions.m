@@ -424,4 +424,26 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 }
+
+@end
+
+@implementation UISearchBar (MITUIAdditions)
+
+- (void)setSearchTextColor:(UIColor *)color
+{
+    for (UIView *subView in self.subviews)
+    {
+        for (UIView *secondLevelSubview in subView.subviews)
+        {
+            if ([secondLevelSubview isKindOfClass:[UITextField class]])
+            {
+                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
+                
+                //set font color here
+                searchBarTextField.textColor = color;
+            }
+        }
+    }
+}
+
 @end

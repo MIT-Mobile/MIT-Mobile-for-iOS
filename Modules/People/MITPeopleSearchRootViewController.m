@@ -16,6 +16,12 @@
 #import "MITPeopleRecentResultsViewController.h"
 #import "UIKit+MITAdditions.h"
 
+typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
+    MITPeopleSearchQueryTypeFreeText,
+    MITPeopleSearchQueryTypeFavorites,
+    MITPeopleSearchQueryTypeRecents
+};
+
 @interface MITPeopleSearchRootViewController () <UISearchBarDelegate, MITPeopleFavoritesViewControllerDelegate, MITPeopleSearchViewControllerDelegate, MITPeopleRecentsViewControllerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *barItem;
@@ -23,6 +29,7 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) MITPeopleSearchHandler *searchHandler;
 @property (nonatomic, assign) BOOL searchBarShouldBeginEditing;
+@property (nonatomic, assign) MITPeopleSearchQueryType searchQueryType;
 
 @property (nonatomic, strong) UIPopoverController *favoritesPopover;
 @property (nonatomic, strong) UIPopoverController *recentsPopover;
@@ -213,6 +220,13 @@
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    if( self.searchQueryType == MITPeopleSearchQueryTypeFavorites )
+    {
+        self.searchBar.text = @"";
+        
+        [self setSearchQueryType:MITPeopleSearchQueryTypeFreeText];
+    }
+    
     return [self shouldPerformSearchAction];
 }
 
@@ -233,6 +247,20 @@
 
 #pragma mark - search, recent and favorite delegates
 
+- (void)setSearchQueryType:(MITPeopleSearchQueryType)searchQueryType
+{
+    _searchQueryType = searchQueryType;
+    
+    if( searchQueryType == MITPeopleSearchQueryTypeFavorites )
+    {
+        [self.searchBar setSearchTextColor:[UIColor mit_tintColor]];
+    }
+    else
+    {
+        [self.searchBar setSearchTextColor:[UIColor blackColor]];
+    }
+}
+
 - (void)didSelectPerson:(PersonDetails *)person
 {    
     self.searchDetailsViewController.personDetails = person;
@@ -240,6 +268,8 @@
 
 - (void)didSelectFavoritePerson:(PersonDetails *)person
 {
+    [self setSearchQueryType:MITPeopleSearchQueryTypeFavorites];
+    
     self.searchHandler.searchResults = @[person];
     [self.searchHandler updateSearchTokensForSearchQuery:[person name]];
     
