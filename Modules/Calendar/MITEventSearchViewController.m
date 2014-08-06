@@ -128,7 +128,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
     
-    self.currentCalendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width, 20)];
+    self.currentCalendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, -2, self.view.frame.size.width, 16)];
     self.currentCalendarLabel.text = [NSString stringWithFormat:@"In %@", self.currentCalendar.name];
     self.currentCalendarLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
     self.currentCalendarLabel.font = [UIFont systemFontOfSize:14];
