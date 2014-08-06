@@ -30,7 +30,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 @end
 
 @implementation MITNewsSearchController {
-    BOOL _storyUpdateInProgressToken;
+    BOOL _storyUpdateInProgress;
 }
 
 @synthesize recentSearchController = _recentSearchController;
@@ -232,7 +232,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
             } else {
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
             }
-            _storyUpdateInProgressToken = FALSE;
+            _storyUpdateInProgress = FALSE;
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.searchTableView reloadData];
             }];
@@ -364,7 +364,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 {
     
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgressToken) {
+        if (_storyUpdateInProgress) {
             if (!cell.accessoryView) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
@@ -390,7 +390,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        _storyUpdateInProgressToken = TRUE;
+        _storyUpdateInProgress = TRUE;
         [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         [self getMoreStories];
     } else {

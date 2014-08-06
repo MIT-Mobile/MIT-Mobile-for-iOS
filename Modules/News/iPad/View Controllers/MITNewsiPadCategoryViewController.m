@@ -387,7 +387,7 @@
         
         if (currentIndex + 1 < [dataSource.objects count]) {
             if(block) {
-                block(dataSource.objects[currentIndex +1], nil);
+                block(dataSource.objects[currentIndex + 1], nil);
             }
         } else {
             __block NSError *updateError = nil;

@@ -10,7 +10,7 @@
 @end
 
 @implementation MITNewsCategoryListViewController {
-    BOOL _storyUpdateInProgressToken;
+    BOOL _storyUpdateInProgress;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -63,7 +63,7 @@
         [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
     }
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        _storyUpdateInProgressToken = TRUE;
+        _storyUpdateInProgress = TRUE;
         [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         [self getMoreStories];
     }
@@ -91,7 +91,7 @@ int one;
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
     } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgressToken) {
+        if (_storyUpdateInProgress) {
             if (!cell.accessoryView) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
@@ -160,7 +160,7 @@ int one;
                                                     } else {
                                                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
                                                     }
-                                                    _storyUpdateInProgressToken = FALSE;
+                                                    _storyUpdateInProgress = FALSE;
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         [self.tableView reloadData];
                                                     }];

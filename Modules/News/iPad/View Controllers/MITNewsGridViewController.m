@@ -58,6 +58,8 @@
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadingMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadingMore];
+    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryFailed bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryFailed];
     
     [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
 }
@@ -258,9 +260,7 @@
                                                                   attribute:NSLayoutAttributeNotAnAttribute
                                                                  multiplier:1
                                                                    constant:width];
-    
-
-    
+        
     [cell addConstraint:constraint];
     
     // Make sure the cell's frame matched the width we were given
