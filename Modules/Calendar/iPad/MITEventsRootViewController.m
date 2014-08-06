@@ -62,7 +62,13 @@
 {
     UIView *customView = [[self.navigationItem.leftBarButtonItems lastObject] customView];
     CGRect currentRect = [self.view convertRect:customView.bounds fromView:customView];
-    self.dateNavigationBarView.bounds = CGRectMake(0, 0, 320 - currentRect.origin.x, currentRect.size.height);
+    
+    CGFloat targetWidth = 320.0;
+    if (UIInterfaceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
+        targetWidth = 380.0;
+    }
+    
+    self.dateNavigationBarView.bounds = CGRectMake(0, 0, targetWidth - currentRect.origin.x, currentRect.size.height);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -74,6 +80,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self alignDateNavigationBar];
 }
 
 #pragma mark - BarButtonItems Setup
@@ -206,6 +217,7 @@
 - (void)setupSplitViewController {
     self.splitViewController = [[UISplitViewController alloc] init];
     self.splitViewController.viewControllers = @[self.masterNavigationController, self.mapsViewController];
+    self.splitViewController.delegate = self;
     
     [self addChildViewController:self.splitViewController];
     self.splitViewController.view.frame = self.view.bounds;
@@ -263,6 +275,13 @@
     if (new) {
         [self.mapsViewController updateMapWithEvents:new];
     }
+}
+
+#pragma mark - UISplitViewControllerDelegate
+
+- (BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation
+{
+    return NO;  // show both view controllers in all orientations
 }
 
 @end
