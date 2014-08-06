@@ -38,12 +38,18 @@
     
     UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editButtonTapped:)];
     self.navigationItem.rightBarButtonItem = editButton;
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self performSelector:@selector(flashScrollIndicators) withObject:nil afterDelay:0.2];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -57,6 +63,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) flashScrollIndicators
+{
+    [self.tableView flashScrollIndicators];
 }
 
 #pragma mark - Table view data source
