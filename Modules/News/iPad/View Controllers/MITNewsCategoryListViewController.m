@@ -9,7 +9,9 @@
 
 @end
 
-@implementation MITNewsCategoryListViewController
+@implementation MITNewsCategoryListViewController {
+    BOOL _storyUpdateInProgressToken;
+}
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
@@ -40,11 +42,7 @@
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryInSection:)]) {
-        return nil;//[self.dataSource viewController:self titleForCategoryInSection:section];
-    } else {
-        return nil;
-    }
+    return nil;
 }
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
@@ -58,7 +56,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+
+    MITNewsStory *story = [self storyAtIndexPath:indexPath];
+    if (story) {
+        [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
+    }
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        _storyUpdateInProgressToken = TRUE;
+        [self getMoreStories];
+        [self.tableView reloadRowsAtIndexPaths:@[[self.tableView indexPathForSelectedRow]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+    }
 }
 
 #pragma mark UITableViewDataSource
@@ -67,27 +76,12 @@
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    
-    if ([identifier isEqualToString:@"LoadingMore"]) {
-        static NSString *CellIdentifier = @"Cell";
-        
-        MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-        cell.textLabel.text = @"Loading...";
-        cell.accessoryView = view;
-        //[self getMoreStories];
-        return cell;
-    }
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
 }
+
+int one;
 
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -96,10 +90,16 @@
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
-    } else if ([cell.reuseIdentifier isEqualToString:@"LoadingMore"]) {
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.accessoryView = view;
+    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgressToken) {
+            if (!cell.accessoryView) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            }
+        } else {
+            cell.accessoryView = nil;
+        }
     }
 }
 
@@ -133,7 +133,7 @@
         
         return identifier;
     } else if ([self numberOfStoriesForCategoryInSection:0]) {
-        return @"LoadingMore";
+        return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
     }
@@ -143,7 +143,7 @@
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
-    if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
@@ -155,6 +155,7 @@
     if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
         [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
+                                                    _storyUpdateInProgressToken = FALSE;
                                                     [self.tableView reloadData];
                                                 }];
     }
