@@ -57,23 +57,22 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     if (self.category) {
         self.mode = kCalendarSelectionModeSubCategory;
         self.title = self.category.name;
-        [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
-            if (masterCalendar){
-                self.masterCalendar = masterCalendar;
-                self.selectedCalendar = masterCalendar.eventsCalendar;
-                [self.tableView reloadData];
-            }
-        }];
     } else {
         self.mode = kCalendarSelectionModeRoot;
-        [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
-            if (masterCalendar){
-                self.masterCalendar = masterCalendar;
-                self.selectedCalendar = masterCalendar.eventsCalendar;
-                [self.tableView reloadData];
-            }
-        }];
     }
+    [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
+        if (masterCalendar){
+            self.masterCalendar = masterCalendar;
+            self.selectedCalendar = masterCalendar.eventsCalendar;
+            for (MITCalendarsCalendar *category in self.category.categories) {
+                if ([self pathContainsCategory:category]) {
+                    self.selectedCategory = category;
+                }
+            }
+            [self.tableView reloadData];
+        }
+    }];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -111,7 +110,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     if (section == kEventsSectionRegistrar && self.mode == kCalendarSelectionModeRoot) {
         return 2;
     } else {
-        return (self.mode == kCalendarSelectionModeRoot) ? [self.selectedCalendar.categories count] + 1 : [self.category.categories count];
+        return (self.mode == kCalendarSelectionModeRoot) ? [self.selectedCalendar.categories count] + 1 : [self.category.categories count] + 1;
     }
 }
 
@@ -145,14 +144,20 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         } else {
             cell.textLabel.text = self.masterCalendar.academicCalendar.name;
         }
-    } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
+    }
+    else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
         cell.textLabel.text = @"All Events";
         
         // This will force All Events to be the default selected event until the user has selected something else:
         cell.accessoryType = (self.categoriesPath.count > 0) ?  UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark;
-    } else {
-        MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row];
-        cell.textLabel.text = (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) ? @"All Events" :category.name;
+    }
+    else if (self.mode == kCalendarSelectionModeSubCategory && indexPath.row == 0) {
+        cell.textLabel.text = [NSString stringWithFormat:@"All %@", self.category.name];
+        cell.accessoryType = ([self pathContainsCategory:self.category] && !self.selectedCategory) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    }
+    else {
+        MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row - 1];
+        cell.textLabel.text = (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) ? @"All Events" : category.name;
         [self setAccessoryForCell:cell forCategory:category];
     }
     
@@ -195,6 +200,11 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         [self.categoriesPath removeAllObjects];
         [self.tableView reloadData];
     }
+    else if (self.mode == kCalendarSelectionModeSubCategory && indexPath.row == 0) {
+        self.selectedCategory = nil;
+        [self addCategoriesToPathUpToCurrentCategory];
+        [self.tableView reloadData];
+    }
     else {
         [self selectCalendarAtIndexPath:indexPath];
     }
@@ -214,7 +224,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (void)selectCalendarAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITCalendarsCalendar *selectedCategory = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row];
+    MITCalendarsCalendar *selectedCategory = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row - 1];
     
     if (selectedCategory.hasSubCategories) {
         [self showSubCategory:selectedCategory];
@@ -228,13 +238,18 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 - (void)selectCategory:(MITCalendarsCalendar *)category
 {
     self.selectedCategory = category;
+    [self addCategoriesToPathUpToCurrentCategory];
+    [self.categoriesPath addObject:self.selectedCategory];
+}
+
+- (void)addCategoriesToPathUpToCurrentCategory
+{
     [self.categoriesPath removeAllObjects];
     for (MITCalendarSelectionViewController *vc in [self.navigationController viewControllers]) {
         if (vc.category) {
             [self.categoriesPath addObject:vc.category];
         }
     }
-    [self.categoriesPath addObject:self.selectedCategory];
 }
 
 - (void)showSubCategory:(MITCalendarsCalendar *)subCategory
