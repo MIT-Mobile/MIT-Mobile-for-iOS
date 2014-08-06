@@ -1,26 +1,17 @@
-//
-//  MITEventsRootViewController.m
-//  MIT Mobile
-//
-//  Created by Logan Wright on 8/5/14.
-//
-//
 
 #import "MITEventsRootViewController.h"
 
 #import "MITEventsHomeViewController.h"
 #import "MITDateNavigationBarView.h"
 #import "UIKit+MITAdditions.h"
-
+#import "MITEventsMapViewController.h"
 
 @interface MITEventsRootViewController ()
 
 @property (strong, nonatomic) UISplitViewController *splitViewController;
 @property (strong, nonatomic) UINavigationController *masterNavigationController;
-@property (strong, nonatomic) UINavigationController *detailNavigationController;
 
-// Placeholder
-@property (strong, nonatomic) UIViewController *mapsViewController;
+@property (strong, nonatomic) MITEventsMapViewController *mapsViewController;
 
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
@@ -28,6 +19,7 @@
 
 @property (strong, nonatomic) MITEventsHomeViewController *eventsHomeViewController;
 @property (strong, nonatomic) MITDateNavigationBarView *dateNavigationBarView;
+
 @end
 
 @implementation MITEventsRootViewController
@@ -49,12 +41,14 @@
     self.title = @"MIT Events";
     [self setupViewControllers];
     [self setupRightBarButtonItems];
+    [self setupToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [self.navigationController setToolbarHidden:NO animated:animated];
     [self setupLeftBarButtonItems];
 }
 
@@ -67,7 +61,7 @@
 - (void)alignDateNavigationBar
 {
     UIView *customView = [[self.navigationItem.leftBarButtonItems lastObject] customView];
-    CGRect currentRect = [self.view convertRect:customView.frame fromView:customView.superview];
+    CGRect currentRect = [self.view convertRect:customView.bounds fromView:customView];
     self.dateNavigationBarView.bounds = CGRectMake(0, 0, 320 - currentRect.origin.x, currentRect.size.height);
 }
 
@@ -114,18 +108,17 @@
     [self.dateNavigationBarView.showDateControlButton addTarget:self action:@selector(showDatePickerButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)setupRightBarButtonItems {
-    
+- (void)setupRightBarButtonItems
+{
     self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search"]
                                                                                style:UIBarButtonItemStylePlain
                                                                               target:self
                                                                               action:@selector(searchButtonPressed:)];
      self.navigationItem.rightBarButtonItem = self.searchMagnifyingGlassBarButtonItem;
-    
 }
 
-- (void)showSearchBar {
-    
+- (void)showSearchBar
+{
     if (!self.searchBar) {
         self.searchBar = [[UISearchBar alloc] init];
         self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
@@ -145,12 +138,11 @@
     UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
     self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
     
-    
     [self.searchBar becomeFirstResponder];
 }
 
-- (void)hideSearchBar {
-    
+- (void)hideSearchBar
+{
     if (!self.searchMagnifyingGlassBarButtonItem) {
         UIImage *searchImage = [UIImage imageNamed:@"global/search"];
         self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:searchImage
@@ -199,23 +191,79 @@
 - (void)setupEventsHomeViewController {
     self.eventsHomeViewController = [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
     self.masterNavigationController = [[UINavigationController alloc] initWithRootViewController:self.eventsHomeViewController];
+    
+#warning Temporary Implementation
+    /*
+     I'm using KVO because I wanted to test with real data without actually modifying any aspect of MITEventsHomeViewController.  EventsHome is currently being modified and I wanted to stay out of it.
+     */
+    [self.eventsHomeViewController addObserver:self forKeyPath:@"currentlySelectedEvents" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
 }
 
 - (void)setupMapViewController {
-    self.mapsViewController = [UIViewController new];
+    self.mapsViewController = [MITEventsMapViewController new];
     self.mapsViewController.view.backgroundColor = [UIColor magentaColor];
-    
-    self.detailNavigationController = [[UINavigationController alloc] initWithRootViewController:self.mapsViewController];
 }
 
 - (void)setupSplitViewController {
     self.splitViewController = [[UISplitViewController alloc] init];
-    self.splitViewController.viewControllers = @[self.eventsHomeViewController, self.mapsViewController];
+    self.splitViewController.viewControllers = @[self.masterNavigationController, self.mapsViewController];
     
     [self addChildViewController:self.splitViewController];
     self.splitViewController.view.frame = self.view.bounds;
     [self.view addSubview:self.splitViewController.view];
     [self.splitViewController didMoveToParentViewController:self];
+}
+
+#pragma mark - ToolBar Setup
+
+- (void)setupToolbar
+{
+    [self setToolbarItems:@[[self leftToolbarItem], [self flexibleSpaceBarButtonItem], [self middleToolbarItem], [self flexibleSpaceBarButtonItem], [self rightToolbarItem]]];
+}
+
+- (UIBarButtonItem *) leftToolbarItem {
+    return [[UIBarButtonItem alloc] initWithTitle:@"Today" style:UIBarButtonItemStylePlain target:self action:@selector(todayButtonPressed:)];
+}
+
+- (UIBarButtonItem *) middleToolbarItem {
+    return [[UIBarButtonItem alloc] initWithTitle:@"Calendars" style:UIBarButtonItemStylePlain target:self action:@selector(calendarsButtonPressed:)];
+}
+
+- (UIBarButtonItem *)rightToolbarItem
+{
+    UIImage *locationImage = [UIImage imageNamed:@"global/location"];
+    return [[UIBarButtonItem alloc] initWithImage:locationImage
+                                            style:UIBarButtonItemStylePlain
+                                           target:self
+                                           action:@selector(currentLocationButtonPressed:)];
+}
+
+- (UIBarButtonItem *)flexibleSpaceBarButtonItem
+{
+    return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+}
+
+#pragma mark Toolbar Button Presses
+
+- (void)todayButtonPressed:(id)sender
+{
+    
+}
+- (void)calendarsButtonPressed:(id)sender
+{
+    
+}
+- (void)currentLocationButtonPressed:(id)sender
+{
+    [self.mapsViewController showCurrentLocation];
+}
+#pragma mark KVO
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    NSArray *new = change[@"new"];
+    if (new) {
+        [self.mapsViewController updateMapWithEvents:new];
+    }
 }
 
 @end

@@ -1,10 +1,3 @@
-//
-//  DateNavigationBarView.m
-//  MIT Mobile
-//
-//  Created by Logan Wright on 8/5/14.
-//
-//
 
 #import "MITDateNavigationBarView.h"
 
