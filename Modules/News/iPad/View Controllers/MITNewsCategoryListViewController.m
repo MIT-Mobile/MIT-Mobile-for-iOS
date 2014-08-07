@@ -11,6 +11,7 @@
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
+    BOOL _storyUpdatedFailed;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -63,9 +64,10 @@
         [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
     }
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        _storyUpdateInProgress = TRUE;
-        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        [self getMoreStories];
+        if (!_storyUpdateInProgress) {
+            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self getMoreStories];
+        }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -75,9 +77,17 @@
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdatedFailed) {
+        cell.textLabel.text = @"Failed...";
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
+        cell.textLabel.text = @"Loading More...";
+    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
+        cell.textLabel.text = @"Load More...";
+    }
     return cell;
 }
 
@@ -152,20 +162,38 @@ int one;
 
 - (void)getMoreStories
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && _storyUpdateInProgress) {
+        _storyUpdateInProgress = YES;
         [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
+                                                    _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                                        _storyUpdatedFailed = TRUE;
+                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                            [NSTimer scheduledTimerWithTimeInterval:2
+                                                                                             target:self
+                                                                                           selector:@selector(clearFailAfterTwoSeconds)
+                                                                                           userInfo:nil
+                                                                                            repeats:NO];
+                                                        }];
                                                     } else {
                                                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                            [self.tableView reloadData];
+                                                        }];
                                                     }
-                                                    _storyUpdateInProgress = FALSE;
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        [self.tableView reloadData];
-                                                    }];
                                                 }];
     }
+}
+
+- (void)clearFailAfterTwoSeconds
+{
+    _storyUpdatedFailed = FALSE;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
