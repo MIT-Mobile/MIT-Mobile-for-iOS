@@ -382,7 +382,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
         case MITEventSearchViewControllerStateResults: {
             if ([self.resultsDataSource allSections].count > indexPath.section) {
                 MITCalendarsEvent *event = [self.resultsDataSource eventForIndexPath:indexPath];
-                return [MITCalendarEventCell heightForEvent:event tableViewWidth:self.tableView.frame.size.width];
+                return [MITCalendarEventCell heightForEvent:event withNumberPrefix:nil tableViewWidth:self.tableView.frame.size.width];
             } else {
                 return 44;
             }
@@ -553,7 +553,7 @@ static NSInteger const kMITCalendarEventSearchTypeAheadSectionSuggestions = 1;
             if ([self.resultsDataSource allSections].count > indexPath.section) {
                 MITCalendarEventCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarEventCellIdentifier forIndexPath:indexPath];
                 MITCalendarsEvent *event = [self.resultsDataSource eventForIndexPath:indexPath];
-                [cell setEvent:event];
+                [cell setEvent:event withNumberPrefix:nil];
                 return cell;
             } else {
                 if (indexPath.row == 0) {

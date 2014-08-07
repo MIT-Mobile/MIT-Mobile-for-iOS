@@ -18,6 +18,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [super viewDidLoad];
     [self setupTableView];
     [self showLoadingIndicator];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.shouldIncludeNumberedPrefixes = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -76,14 +80,16 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITCalendarsEvent *event = self.events[indexPath.row];
-    return [MITCalendarEventCell heightForEvent:event tableViewWidth:self.view.frame.size.width];
+    return [MITCalendarEventCell heightForEvent:event
+                               withNumberPrefix:[self numberPrefixForIndexPath:indexPath]
+                                 tableViewWidth:self.view.frame.size.width];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITCalendarEventCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
     
-    [cell setEvent:self.events[indexPath.row]];
+    [cell setEvent:self.events[indexPath.row] withNumberPrefix:[self numberPrefixForIndexPath:indexPath]];
     
     return cell;
 }
@@ -92,6 +98,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
     [self.delegate eventsTableView:self didSelectEvent:self.events[indexPath.row]];
+}
+
+- (NSString *)numberPrefixForIndexPath:(NSIndexPath *)indexPath {
+    if (!self.shouldIncludeNumberedPrefixes) {
+        return nil;
+    }
+    else {
+        return [NSString stringWithFormat:@"%i", indexPath.row + 1];
+    }
 }
 
 #pragma mark - Setters

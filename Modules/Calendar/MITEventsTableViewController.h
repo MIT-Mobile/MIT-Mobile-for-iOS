@@ -14,5 +14,6 @@
 @property (nonatomic, strong) NSArray *events;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id<MITEventsTableViewControllerDelegate> delegate;
+@property (nonatomic) BOOL shouldIncludeNumberedPrefixes;
 
 @end

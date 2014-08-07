@@ -3,8 +3,9 @@
 
 @interface MITCalendarEventCell : UITableViewCell
 
-- (void)setEvent:(MITCalendarsEvent *)event;
+- (void)setEvent:(MITCalendarsEvent *)event withNumberPrefix:(NSString *)numberPrefix;
 + (CGFloat)heightForEvent:(MITCalendarsEvent *)event
+         withNumberPrefix:(NSString *)numberPrefix
            tableViewWidth:(CGFloat)width;
 
 @end
