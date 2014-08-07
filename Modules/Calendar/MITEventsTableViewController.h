@@ -2,7 +2,7 @@
 
 @class MITEventsTableViewController, MITCalendarsEvent;
 
-@protocol  MITEventsTableViewControllerDeleage <NSObject>
+@protocol  MITEventsTableViewControllerDelegate <NSObject>
 
 - (void)eventsTableView:(MITEventsTableViewController *)tableView
          didSelectEvent:(MITCalendarsEvent *)event;
@@ -13,6 +13,6 @@
 
 @property (nonatomic, strong) NSArray *events;
 @property (nonatomic, strong) NSDate *date;
-@property (nonatomic, weak) id<MITEventsTableViewControllerDeleage> delegate;
+@property (nonatomic, weak) id<MITEventsTableViewControllerDelegate> delegate;
 
 @end

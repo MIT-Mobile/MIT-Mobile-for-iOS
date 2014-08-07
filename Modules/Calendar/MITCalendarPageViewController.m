@@ -1,9 +1,9 @@
 #import "MITCalendarPageViewController.h"
 #import "MITEventsTableViewController.h"
 #import "Foundation+MITAdditions.h"
-#import "MITCalendarManager.h"
+#import "MITCalendarWebservices.h"
 
-@interface MITCalendarPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITEventsTableViewControllerDeleage>
+@interface MITCalendarPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITEventsTableViewControllerDelegate>
 
 @end
 
@@ -43,14 +43,11 @@
     eventsTableViewController.delegate = self;
     
     if (self.calendar) {
-        [[MITCalendarManager sharedManager] getEventsForCalendar:self.calendar
-                                                        category:self.category
-                                                            date:eventsTableViewController.date
-                                                      completion:^(NSArray *events, NSError *error) {
-                                                          if (events) {
-                                                              [eventsTableViewController setEvents:events];
-                                                          }
-                                                      }];
+        [MITCalendarWebservices getEventsForCalendar:self.calendar category:self.category date:eventsTableViewController.date completion:^(NSArray *events, NSError *error)  {
+            if (events) {
+                [eventsTableViewController setEvents:events];
+            }
+        }];
     }
     return eventsTableViewController;
 }

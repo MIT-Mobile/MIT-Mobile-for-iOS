@@ -32,8 +32,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
 @property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
-
-
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
 @property (strong, nonatomic) NSDateFormatter *dayLabelDateFormatter;
@@ -54,8 +52,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
 @property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
-
-
 
 @property (nonatomic, strong) MITCalendarPageViewController *eventsController;
 @property (weak, nonatomic) IBOutlet UIView *eventsTableContainerView;
