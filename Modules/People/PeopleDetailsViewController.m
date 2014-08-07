@@ -447,6 +447,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         // since it doesn't have its own nav bar
         UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
         
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            navController.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
         MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate presentAppModalViewController:navController animated:YES];
         
@@ -456,6 +461,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     {
         ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
         [picker setPeoplePickerDelegate:self];
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            picker.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
         
         MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate presentAppModalViewController:picker animated:YES];

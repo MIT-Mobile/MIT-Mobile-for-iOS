@@ -125,7 +125,7 @@ NSString * const MITNoResultsHintLabelText = @"No Results";
     }
     
     UIEdgeInsets insets = UIEdgeInsetsMake([self topBarHeight], 0, 0, 0);
-        
+    
     self.tableView.contentInset = insets;
     self.tableView.scrollIndicatorInsets = insets;
 }
