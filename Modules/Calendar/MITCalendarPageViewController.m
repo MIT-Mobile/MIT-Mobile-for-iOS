@@ -69,6 +69,7 @@
     if ([self.date compare:date] == NSOrderedDescending) {
         navigationDirection = UIPageViewControllerNavigationDirectionReverse;
     }
+    self.date = date;
     [self setViewControllers:@[[self eventControllerForDate:self.date]] direction:navigationDirection animated:YES completion:NULL];
 }
 

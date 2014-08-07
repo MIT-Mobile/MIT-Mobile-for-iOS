@@ -45,7 +45,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCalendar;
 @property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCategory;
-@property (nonatomic, strong) NSArray *currentlySelectedEvents;
 
 @property (nonatomic, strong) NSArray *datesArray;
 
@@ -536,7 +535,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController didSwipeToDate:(NSDate *)date
 {
+    MITSlidingAnimationType slidingDirection = MITSlidingAnimationTypeForward;
+    if ([self.currentlyDisplayedDate compare:date] == NSOrderedDescending) {
+        slidingDirection = MITSlidingAnimationTypeBackward;
+    }
+    self.currentlyDisplayedDate = date;
     
+    [self updateDatesArray];
+    [self setDateLabelWithDate:date animationType:slidingDirection];
+    [self.dayPickerCollectionView reloadData];
 }
 
 @end
