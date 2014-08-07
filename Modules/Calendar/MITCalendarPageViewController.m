@@ -14,6 +14,7 @@
     [super viewDidLoad];
     self.delegate = self;
     self.dataSource = self;
+    [self setViewControllers:@[[[MITEventsTableViewController alloc] init]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,19 +59,21 @@
    previousViewControllers:(NSArray *)previousViewControllers
        transitionCompleted:(BOOL)completed
 {
-    if (completed) {
+    if (completed && [self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSwipeToDate:)]) {
         [self.calendarSelectionDelegate calendarPageViewController:self didSwipeToDate:[(MITEventsTableViewController *)self.viewControllers[0] date]];
     }
 }
 
-- (void)moveToDate:(NSDate *)date
+- (void)moveToCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category date:(NSDate *)date animated:(BOOL)animated
 {
     UIPageViewControllerNavigationDirection navigationDirection = UIPageViewControllerNavigationDirectionForward;
     if ([self.date compare:date] == NSOrderedDescending) {
         navigationDirection = UIPageViewControllerNavigationDirectionReverse;
     }
     self.date = date;
-    [self setViewControllers:@[[self eventControllerForDate:self.date]] direction:navigationDirection animated:YES completion:NULL];
+    self.calendar = calendar;
+    self.category = category;
+    [self setViewControllers:@[[self eventControllerForDate:self.date]] direction:navigationDirection animated:animated completion:NULL];
 }
 
 - (void)loadEvents
@@ -82,7 +85,9 @@
 
 - (void)eventsTableView:(MITEventsTableViewController *)tableView didSelectEvent:(MITCalendarsEvent *)event
 {
-    [self.calendarSelectionDelegate calendarPageViewController:self didSelectEvent:event];
+    if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSelectEvent:)]) {
+        [self.calendarSelectionDelegate calendarPageViewController:self didSelectEvent:event];
+    }
 }
 
 @end

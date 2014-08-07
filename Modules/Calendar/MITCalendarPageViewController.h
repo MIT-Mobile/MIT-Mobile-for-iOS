@@ -3,7 +3,7 @@
 @class MITCalendarPageViewController, MITCalendarsCalendar, MITCalendarsEvent;
 
 @protocol MITCalendarPageViewControllerDelegate <NSObject>
-
+@optional
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSwipeToDate:(NSDate *)date;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
@@ -19,7 +19,6 @@
 
 @property (nonatomic, weak) id<MITCalendarPageViewControllerDelegate>calendarSelectionDelegate;
 
-- (void)loadEvents;
-- (void)moveToDate:(NSDate *)date;
+- (void)moveToCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category date:(NSDate *)date animated:(BOOL)animated;
 
 @end
