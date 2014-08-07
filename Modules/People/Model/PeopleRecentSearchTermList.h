@@ -2,15 +2,15 @@
 //  PeopleRecentSearchTermList.h
 //  MIT Mobile
 //
-//  Created by Yev Motov on 7/18/14.
+//  Created by Yev Motov on 8/6/14.
 //
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-
 #import "MITManagedObject.h"
 
+@class PeopleRecentSearchTerm;
 
 @interface PeopleRecentSearchTermList : MITManagedObject
 
@@ -19,14 +19,14 @@
 
 @interface PeopleRecentSearchTermList (CoreDataGeneratedAccessors)
 
-- (void)insertObject:(NSManagedObject *)value inRecentSearchTermListAtIndex:(NSUInteger)idx;
+- (void)insertObject:(PeopleRecentSearchTerm *)value inRecentSearchTermListAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromRecentSearchTermListAtIndex:(NSUInteger)idx;
 - (void)insertRecentSearchTermList:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
 - (void)removeRecentSearchTermListAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInRecentSearchTermListAtIndex:(NSUInteger)idx withObject:(NSManagedObject *)value;
+- (void)replaceObjectInRecentSearchTermListAtIndex:(NSUInteger)idx withObject:(PeopleRecentSearchTerm *)value;
 - (void)replaceRecentSearchTermListAtIndexes:(NSIndexSet *)indexes withRecentSearchTermList:(NSArray *)values;
-- (void)addRecentSearchTermListObject:(NSManagedObject *)value;
-- (void)removeRecentSearchTermListObject:(NSManagedObject *)value;
+- (void)addRecentSearchTermListObject:(PeopleRecentSearchTerm *)value;
+- (void)removeRecentSearchTermListObject:(PeopleRecentSearchTerm *)value;
 - (void)addRecentSearchTermList:(NSOrderedSet *)values;
 - (void)removeRecentSearchTermList:(NSOrderedSet *)values;
 @end

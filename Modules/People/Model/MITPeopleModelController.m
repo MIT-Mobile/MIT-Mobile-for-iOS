@@ -54,18 +54,22 @@
         
         if( recentSearchItem == nil ) return;
         
-        recentSearchItem.recentSearchTerm = searchTermText;
-        
         NSArray *recentSearchItemsArray = [recentSearchList.recentSearchTermList array];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"recentSearchTerm = %@", recentSearchItem.recentSearchTerm ];
         NSArray *previouslyEnteredTermArray = [recentSearchItemsArray filteredArrayUsingPredicate:predicate];
         
         // removing the duplicate if any, so that the new one can appear at the top of the list.
-        if ([previouslyEnteredTermArray count]) {
-            [recentSearchList removeRecentSearchTermListObject:[previouslyEnteredTermArray firstObject]];
+        if ([previouslyEnteredTermArray count])
+        {
+            PeopleRecentSearchTerm *termObj = [previouslyEnteredTermArray firstObject];
+            [recentSearchList removeRecentSearchTermListObject:termObj];
+            termObj.listOfRecentSearchTerms = nil;
+            termObj = nil;
         }
         
-        [recentSearchList addRecentSearchTermListObject:recentSearchItem];
+        recentSearchItem.recentSearchTerm = searchTermText;
+        recentSearchItem.listOfRecentSearchTerms = recentSearchList;
+//        [recentSearchList addRecentSearchTermListObject:recentSearchItem];
         
     } error:&error];
 }

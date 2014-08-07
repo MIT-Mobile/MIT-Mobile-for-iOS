@@ -16,10 +16,10 @@
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
-		279CCA09197A19C00002209F /* PeopleRecentSearchTermList.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CCA08197A19C00002209F /* PeopleRecentSearchTermList.m */; };
-		279CCA0C197A19C00002209F /* PeopleRecentSearchTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CCA0B197A19C00002209F /* PeopleRecentSearchTerm.m */; };
 		279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CCA0E197A1ABB0002209F /* MITPeopleModelController.m */; };
 		27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */; };
+		27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD2199318CF00DF36B1 /* PeopleRecentSearchTermList.m */; };
+		27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */; };
 		27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */; };
 		27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -499,14 +499,15 @@
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
 		277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleRecentResultsViewController.m; sourceTree = "<group>"; };
 		279CCA03197A184F0002209F /* PeopleDataModel 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 7.xcdatamodel"; sourceTree = "<group>"; };
-		279CCA07197A19C00002209F /* PeopleRecentSearchTermList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTermList.h; sourceTree = "<group>"; };
-		279CCA08197A19C00002209F /* PeopleRecentSearchTermList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTermList.m; sourceTree = "<group>"; };
-		279CCA0A197A19C00002209F /* PeopleRecentSearchTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTerm.h; sourceTree = "<group>"; };
-		279CCA0B197A19C00002209F /* PeopleRecentSearchTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTerm.m; sourceTree = "<group>"; };
 		279CCA0D197A1ABB0002209F /* MITPeopleModelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleModelController.h; sourceTree = "<group>"; };
 		279CCA0E197A1ABB0002209F /* MITPeopleModelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleModelController.m; sourceTree = "<group>"; };
 		27AB921419737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchSplitContainerViewController.h; sourceTree = "<group>"; };
 		27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchSplitContainerViewController.m; sourceTree = "<group>"; };
+		27B4FDD1199318CF00DF36B1 /* PeopleRecentSearchTermList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTermList.h; sourceTree = "<group>"; };
+		27B4FDD2199318CF00DF36B1 /* PeopleRecentSearchTermList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTermList.m; sourceTree = "<group>"; };
+		27B4FDD4199318D000DF36B1 /* PeopleRecentSearchTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTerm.h; sourceTree = "<group>"; };
+		27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTerm.m; sourceTree = "<group>"; };
+		27B4FDD719931FBA00DF36B1 /* PeopleDataModel 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 8.xcdatamodel"; sourceTree = "<group>"; };
 		27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleFavoriteData.h; sourceTree = "<group>"; };
 		27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleFavoriteData.m; sourceTree = "<group>"; };
 		27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleFavoritesTableViewController.h; sourceTree = "<group>"; };
@@ -3022,13 +3023,13 @@
 		EB7F326910CD6C5B00188BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				27B4FDD1199318CF00DF36B1 /* PeopleRecentSearchTermList.h */,
+				27B4FDD4199318D000DF36B1 /* PeopleRecentSearchTerm.h */,
+				27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */,
+				27B4FDD2199318CF00DF36B1 /* PeopleRecentSearchTermList.m */,
 				EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */,
 				279CCA0D197A1ABB0002209F /* MITPeopleModelController.h */,
 				279CCA0E197A1ABB0002209F /* MITPeopleModelController.m */,
-				279CCA0A197A19C00002209F /* PeopleRecentSearchTerm.h */,
-				279CCA0B197A19C00002209F /* PeopleRecentSearchTerm.m */,
-				279CCA07197A19C00002209F /* PeopleRecentSearchTermList.h */,
-				279CCA08197A19C00002209F /* PeopleRecentSearchTermList.m */,
 				EB7F326E10CD6C5B00188BCD /* PersonDetails.h */,
 				EB7F326F10CD6C5B00188BCD /* PersonDetails.m */,
 				DEA4C65518BD8F4400A60657 /* PeopleRecentsData.h */,
@@ -3359,7 +3360,6 @@
 				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
-				279CCA0C197A19C00002209F /* PeopleRecentSearchTerm.m in Sources */,
 				EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */,
 				EB8392491163EF340067C0A3 /* EventCategory.m in Sources */,
 				EB976D18116CF6630036A18E /* EventListTableView.m in Sources */,
@@ -3618,6 +3618,7 @@
 				2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */,
 				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 				2C99DB081846867200277B25 /* MITMobile.m in Sources */,
+				27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */,
 				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
 				48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */,
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
@@ -3656,8 +3657,8 @@
 				2C9146F517ECFFAC007130D8 /* MITMapCategoriesViewController.m in Sources */,
 				48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */,
 				DE94998317450C800066F6CF /* RetailDay.m in Sources */,
-				279CCA09197A19C00002209F /* PeopleRecentSearchTermList.m in Sources */,
 				279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */,
+				27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */,
 				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
 				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
 				DEBF146117699977009B6089 /* DiningRoot.m in Sources */,
@@ -3973,10 +3974,11 @@
 		EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				27B4FDD719931FBA00DF36B1 /* PeopleDataModel 8.xcdatamodel */,
 				279CCA03197A184F0002209F /* PeopleDataModel 7.xcdatamodel */,
 				EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 6.xcdatamodel */,
 			);
-			currentVersion = 279CCA03197A184F0002209F /* PeopleDataModel 7.xcdatamodel */;
+			currentVersion = 27B4FDD719931FBA00DF36B1 /* PeopleDataModel 8.xcdatamodel */;
 			path = PeopleDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
