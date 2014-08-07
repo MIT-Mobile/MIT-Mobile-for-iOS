@@ -282,6 +282,8 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     self.searchHandler.searchTerms = searchTerm;
     [self.searchBar setText:searchTerm];
     
+    [self.searchBar resignFirstResponder];
+    
     [self performSearch];
 }
 
