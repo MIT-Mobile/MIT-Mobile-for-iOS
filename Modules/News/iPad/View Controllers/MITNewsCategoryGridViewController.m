@@ -72,9 +72,12 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource canLoadMoreItemsForCategoryInSection:0] && indexPath.row + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {        _storyUpdateInProgress = YES;
-        [collectionView reloadItemsAtIndexPaths:@[indexPath]];
-        [self getMoreStories];
+    if ([self.dataSource canLoadMoreItemsForCategoryInSection:0] &&
+        indexPath.row + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
+        if (!_storyUpdateInProgress) {
+            [collectionView reloadItemsAtIndexPaths:@[indexPath]];
+            [self getMoreStories];
+        }
 
     } else {
         [self didSelectStoryAtIndexPath:indexPath];
@@ -90,24 +93,28 @@
 
 - (void)getMoreStories
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && !_storyUpdateInProgress) {
+        _storyUpdateInProgress = YES;
         [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
+                                                    _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                                                         _storyUpdatedFailed = TRUE;
+                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+                                                            [NSTimer scheduledTimerWithTimeInterval:2
+                                                                                             target:self
+                                                                                           selector:@selector(clearFailAfterTwoSeconds)
+                                                                                           userInfo:nil
+                                                                                            repeats:NO];
+                                                        }];
                                                     } else {
                                                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                            [self.collectionView reloadData];
+                                                        }];
                                                     }
-                                                    _storyUpdateInProgress = FALSE;
-                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                        [self.collectionView reloadData];
-                                                        [NSTimer scheduledTimerWithTimeInterval:2
-                                                                                         target:self
-                                                                                       selector:@selector(clearFailAfterTwoSeconds)
-                                                                                       userInfo:nil
-                                                                                        repeats:NO];
-                                                    }];
                                                 }];
     }
 }
@@ -116,7 +123,7 @@
 {
     _storyUpdatedFailed = FALSE;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.collectionView reloadData];
+        [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
     }];
 }
 
