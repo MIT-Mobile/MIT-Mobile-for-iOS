@@ -234,7 +234,8 @@
     
     if (self.presentationStyle == MITNewsPresentationStyleList) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-            UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
+            UIImage *gridImage = [UIImage imageNamed:@"news/gridViewIcon"];
+            UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             if (self.searching) {
                 gridItem.enabled = NO;
             }
