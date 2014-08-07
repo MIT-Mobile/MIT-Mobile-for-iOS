@@ -175,6 +175,12 @@
             [self.categoriesByGestureRecognizer setObject:categoryIndexPath forKey:recognizer];
             
             newsHeaderView.headerLabel.text = [self titleForCategoryInSection:sectionIndex];
+            BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
+            if (featuredStory) {
+                newsHeaderView.accessoryView.hidden = YES;
+            } else {
+                newsHeaderView.accessoryView.hidden = NO;
+            }
         }
         
         return headerView;
