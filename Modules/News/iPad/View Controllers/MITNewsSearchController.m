@@ -189,15 +189,14 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
     [self addLoadingView];
     [self clearTable];
     self.searchBar.text = searchTerm;
-    __block NSError *updateError = nil;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
     [self.dataSource refresh:^(NSError *error) {
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            
-            if (!updateError) {
-                updateError = error;
-            }
+            [self removeLoadingView];
+            _storyUpdatedFailed = YES;
+            [self addNoResultsView];
+
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [self removeLoadingView];
@@ -456,16 +455,12 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
                 block(self.dataSource.objects[currentIndex +1], nil);
             }
         } else {
-            __block NSError *updateError = nil;
             if ([self.dataSource hasNextPage]) {
                 
                 [self.dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                         
-                        if (!updateError) {
-                            updateError = error;
-                        }
                     } else {
                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
                         NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
@@ -492,6 +487,10 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
     noResultsView.tag = noResultsViewTag;
+    if (_storyUpdatedFailed) {
+        noResultsView.overviewText.text = @"Failed...";
+        _storyUpdatedFailed = FALSE;
+    }
     [self.view addSubview:noResultsView];
 }
 

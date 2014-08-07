@@ -390,15 +390,10 @@
                 block(dataSource.objects[currentIndex + 1], nil);
             }
         } else {
-            __block NSError *updateError = nil;
             if ([dataSource hasNextPage]) {
                 [dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",dataSource);
-                        
-                        if (!updateError) {
-                            updateError = error;
-                        }
                     } else {
                         DDLogVerbose(@"refreshed data source %@",dataSource);
                         NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
