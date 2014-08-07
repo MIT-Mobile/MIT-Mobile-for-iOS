@@ -713,6 +713,13 @@ typedef struct {
                                     options:0];
 }
 
+- (NSDate *)dateByAddingYear
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.year = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
 /** Extra compact string representation of the date's time components.
  
  This returns only the time of day for the date. The format is similar to "h:mma", but with the minute component only included when non-zero, e.g. "9pm", "10:30am", "4:01pm".

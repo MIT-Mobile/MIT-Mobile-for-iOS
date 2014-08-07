@@ -3,6 +3,7 @@
 #import "MITCalendarWebservices.h"
 #import "MITAcademicCalendarCell.h"
 #import "MITCalendarEventDateGroupedDataSource.h"
+#import "Foundation+MITAdditions.h"
 
 static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
 
@@ -47,7 +48,11 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
 
 - (void)loadEvents
 {
-    [MITCalendarWebservices getEventsForCalendar:self.academicCalendar completion:^(NSArray *events, NSError *error) {
+    [MITCalendarWebservices getEventsForCalendar:self.academicCalendar
+                                     queryString:nil category:nil
+                                       startDate:[NSDate date]
+                                         endDate:[[NSDate date] dateByAddingYear]
+                                      completion:^(NSArray *events, NSError *error) {
         self.activityIndicator.hidden = YES;
         if (events) {
             self.eventsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];

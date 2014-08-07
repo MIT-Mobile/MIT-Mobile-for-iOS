@@ -1,6 +1,7 @@
 #import "MITAcademicHolidaysCalendarViewController.h"
 #import "MITCalendarManager.h"
 #import "MITCalendarWebservices.h"
+#import "Foundation+MITAdditions.h"
 
 static NSString *const kMITHolidayCellName = @"kHolidayCellName";
 
@@ -44,8 +45,13 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
 
 - (void)loadHolidays
 {
-    [MITCalendarWebservices getEventsForCalendar:self.holidaysCalendar completion:^(NSArray *events, NSError *error) {
-        self.activityIndicator.hidden = YES;
+    [MITCalendarWebservices getEventsForCalendar:self.holidaysCalendar
+                                     queryString:nil category:nil
+                                       startDate:[NSDate date]
+                                         endDate:[[NSDate date] dateByAddingYear]
+                                      completion:^(NSArray *events, NSError *error) {
+        
+      self.activityIndicator.hidden = YES;
         if (events) {
             self.events = events;
             [self.tableView reloadData];

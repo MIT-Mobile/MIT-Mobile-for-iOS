@@ -516,7 +516,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
                                                  animated:NO];
 }
 
-
 - (void)updateDatesArray
 {
     NSMutableArray *newDatesArray = [[NSMutableArray alloc] init];
@@ -530,6 +529,5 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     
     self.datesArray = newDatesArray;
 }
-
 
 @end

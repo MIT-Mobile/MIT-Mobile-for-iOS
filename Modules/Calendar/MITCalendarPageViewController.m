@@ -85,7 +85,8 @@
     self.date = date;
     self.calendar = calendar;
     self.category = category;
-    [self setViewControllers:@[[self eventControllerForDate:self.date]] direction:navigationDirection animated:animated completion:NULL];
+    
+    [self setViewControllers:@[[self eventControllerForDate:self.date]] direction:navigationDirection animated:NO completion:NULL];
 }
 
 - (void)loadEvents
