@@ -122,11 +122,8 @@ int one;
     }
     if (story) {
         __block NSString *identifier = nil;
-#warning check if needed
-        //[self.managedObjectContext performBlockAndWait:^{
-            //MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-        
-        MITNewsStory *newsStory = story;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
             
             if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
                 if (newsStory.coverImage) {
@@ -139,7 +136,7 @@ int one;
             } else {
                 identifier = MITNewsStoryNoDekCellIdentifier;
             }
-       // }];
+        }];
         
         return identifier;
     } else if ([self numberOfStoriesForCategoryInSection:0]) {
@@ -162,7 +159,7 @@ int one;
 
 - (void)getMoreStories
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && _storyUpdateInProgress) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [self.dataSource loadMoreItemsForCategoryInSection:0
                                                 completion:^(NSError *error) {
@@ -185,6 +182,9 @@ int one;
                                                         }];
                                                     }
                                                 }];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }];
     }
 }
 

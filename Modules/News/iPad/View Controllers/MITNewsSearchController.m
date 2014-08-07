@@ -31,6 +31,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 
 @implementation MITNewsSearchController {
     BOOL _storyUpdateInProgress;
+    BOOL _storyUpdatedFailed;
 }
 
 @synthesize recentSearchController = _recentSearchController;
@@ -225,19 +226,40 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 
 - (void)getMoreStories
 {
-    if ([self.dataSource hasNextPage]) {
+    if ([self.dataSource hasNextPage] && !_storyUpdateInProgress) {
+        _storyUpdateInProgress = TRUE;
         [self.dataSource nextPage:^(NSError *error) {
+            _storyUpdateInProgress = FALSE;
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                _storyUpdatedFailed = TRUE;
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                    [NSTimer scheduledTimerWithTimeInterval:2
+                                                     target:self
+                                                   selector:@selector(clearFailAfterTwoSeconds)
+                                                   userInfo:nil
+                                                    repeats:NO];
+                }];
             } else {
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.searchTableView reloadData];
+                }];
             }
-            _storyUpdateInProgress = FALSE;
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.searchTableView reloadData];
-            }];
+        }];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }];
     }
+}
+
+- (void)clearFailAfterTwoSeconds
+{
+    _storyUpdatedFailed = FALSE;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
 }
 
 #pragma mark - hide/show Recents
@@ -298,9 +320,17 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdatedFailed) {
+        cell.textLabel.text = @"Failed...";
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
+        cell.textLabel.text = @"Loading More...";
+    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
+        cell.textLabel.text = @"Load More...";
+    }
     return cell;
 }
 
@@ -390,10 +420,12 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        _storyUpdateInProgress = TRUE;
-        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        [self getMoreStories];
-    } else {
+        if (!_storyUpdateInProgress) {
+            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self getMoreStories];
+        }
+    }
+        else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         if (story) {
             UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];

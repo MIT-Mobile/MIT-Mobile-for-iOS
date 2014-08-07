@@ -116,6 +116,9 @@
                                                         }];
                                                     }
                                                 }];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+        }];
     }
 }
 
