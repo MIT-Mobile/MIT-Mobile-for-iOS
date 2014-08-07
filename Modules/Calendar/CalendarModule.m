@@ -7,7 +7,7 @@
 #import "MITEventList.h"
 
 #import "MITEventsHomeViewController.h"
-#import "MITEventsRootViewController.h"
+#import "MITEventsHomeViewControllerPad.h"
 
 @implementation CalendarModule
 @dynamic calendarVC;
@@ -37,7 +37,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITEventsRootViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end

@@ -20,9 +20,27 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self showLoadingIndicator];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self setupTableViewInsetsForIPad];
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)setupTableViewInsetsForIPad
+{
+    CGFloat statusBarWidth = CGRectGetWidth([UIApplication sharedApplication].statusBarFrame);
+    CGFloat statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+    CGFloat statusBarOffset = statusBarWidth < statusBarHeight ? statusBarWidth : statusBarHeight;
+    CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
+    CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+    self.tableView.contentInset = UIEdgeInsetsMake(statusBarOffset + navBarHeight, 0, toolbarHeight, 0);
 }
 
 - (void)setupTableView

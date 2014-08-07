@@ -42,11 +42,16 @@
     MITEventsTableViewController *eventsTableViewController = [[MITEventsTableViewController alloc] init];
     eventsTableViewController.date = date;
     eventsTableViewController.delegate = self;
-    
+
     if (self.calendar) {
         [MITCalendarWebservices getEventsForCalendar:self.calendar category:self.category date:eventsTableViewController.date completion:^(NSArray *events, NSError *error)  {
             if (events) {
                 [eventsTableViewController setEvents:events];
+                if (eventsTableViewController == [self.viewControllers firstObject]) {
+                    if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didUpdateCurrentlyDisplayedEvents:)]) {
+                        [self currentlyDisplayedEventsDidChange:events];
+                    }
+                }
             }
         }];
     }
@@ -59,8 +64,15 @@
    previousViewControllers:(NSArray *)previousViewControllers
        transitionCompleted:(BOOL)completed
 {
-    if (completed && [self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSwipeToDate:)]) {
-        [self.calendarSelectionDelegate calendarPageViewController:self didSwipeToDate:[(MITEventsTableViewController *)self.viewControllers[0] date]];
+
+    if (completed) {
+        MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.viewControllers[0];
+        if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSwipeToDate:)]) {
+            [self.calendarSelectionDelegate calendarPageViewController:self didSwipeToDate:[currentlyDisplayedController date]];
+        }
+        if (currentlyDisplayedController.events) {
+            [self currentlyDisplayedEventsDidChange:currentlyDisplayedController.events];
+        }
     }
 }
 
@@ -87,6 +99,15 @@
 {
     if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSelectEvent:)]) {
         [self.calendarSelectionDelegate calendarPageViewController:self didSelectEvent:event];
+    }
+}
+
+#pragma mark - Notify Updated Events
+
+- (void)currentlyDisplayedEventsDidChange:(NSArray *)currentlyDisplayedEvents
+{
+    if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didUpdateCurrentlyDisplayedEvents:)]) {
+        [self.calendarSelectionDelegate calendarPageViewController:self didUpdateCurrentlyDisplayedEvents:currentlyDisplayedEvents];
     }
 }
 

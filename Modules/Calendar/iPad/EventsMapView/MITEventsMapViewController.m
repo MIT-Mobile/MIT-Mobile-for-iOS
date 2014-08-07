@@ -97,7 +97,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)setPlaces:(NSArray *)places animated:(BOOL)animated
 {
     _places = places;
-    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
+    [self refreshPlaceAnnotations];
     [self setupMapBoundingBoxAnimated:animated];
 }
 
@@ -132,8 +132,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
-        NSInteger placeIndex = [self.places indexOfObject:annotation];
-        [annotationView setNumber:(placeIndex + 1)];
+        [annotationView setNumber:[(MITEventPlace *)annotation displayNumber]];
         return annotationView;
     }
     return nil;
@@ -204,10 +203,13 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)updateMapWithEvents:(NSArray *)eventsArray
 {
+    [self removeAllPlaceAnnotations];
     NSMutableArray *annotationsToAdd = [NSMutableArray array];
-    for (MITCalendarsEvent *event in eventsArray) {
+    for (int i = 0; i < eventsArray.count; i++) {
+        MITCalendarsEvent *event = eventsArray[i];
         MITEventPlace *eventPlace = [[MITEventPlace alloc] initWithCalendarsEvent:event];
         if (eventPlace) {
+            eventPlace.displayNumber = i + 1;
             [annotationsToAdd addObject:eventPlace];
         }
     }

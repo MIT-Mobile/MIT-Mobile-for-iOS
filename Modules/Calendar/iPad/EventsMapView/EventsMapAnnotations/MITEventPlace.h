@@ -11,4 +11,6 @@
 @property (strong, nonatomic, readonly) MITCalendarsEvent *calendarsEvent;
 - (instancetype)initWithCalendarsEvent:(MITCalendarsEvent *)calendarsEvent;
 
+@property (nonatomic) NSInteger displayNumber;
+
 @end

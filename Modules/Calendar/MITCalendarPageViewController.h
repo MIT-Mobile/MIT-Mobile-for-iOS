@@ -8,7 +8,9 @@
                     didSwipeToDate:(NSDate *)date;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                      didSelectEvent:(MITCalendarsEvent *)event;
-
+@optional
+- (void) calendarPageViewController:(MITCalendarPageViewController *)viewController
+  didUpdateCurrentlyDisplayedEvents:(NSArray *)currentlyDisplayedEvents;
 @end
 
 @interface MITCalendarPageViewController : UIPageViewController
