@@ -76,6 +76,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     // Do any additional setup after loading the view from its nib.
     
     [self setupSearchBar];
+    self.state = MITEventSearchViewControllerStateTypeAhead;
     [self setTypeAheadViewControllerActive];
 }
 
@@ -85,8 +86,12 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     self.navBarSeparatorView.hidden = YES;
     [self registerForKeyboardNotifications];
     [self.typeAheadViewController updateWithTypeAheadText:self.searchBar.text];
-    [self.searchBar becomeFirstResponder];
-    self.state = MITEventSearchViewControllerStateTypeAhead;
+    if (!self.searchBar.superview) {
+        [self addSearchBar];
+    }
+    if (self.state == MITEventSearchViewControllerStateTypeAhead) {
+        [self.searchBar becomeFirstResponder];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -101,6 +106,17 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
     self.searchBar.showsCancelButton = YES;
     self.searchBar.delegate = self;
+    [self.navigationController.navigationBar addSubview:self.searchBar];
+}
+
+- (void)removeSearchBar
+{
+    self.searchBar.frame = self.navigationController.navigationBar.bounds;
+    [self.searchBar removeFromSuperview];
+}
+
+- (void)addSearchBar
+{
     [self.navigationController.navigationBar addSubview:self.searchBar];
 }
 
@@ -329,6 +345,8 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event
 {
+    [self removeSearchBar];
+    
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.event = event;
     [self.navigationController pushViewController:detailVC animated:YES];
