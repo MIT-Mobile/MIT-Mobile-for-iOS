@@ -139,11 +139,18 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
-       if (indexPath.row == kEventsCellRowAcademicHolidays) {
+        if (indexPath.row == kEventsCellRowAcademicHolidays) {
             cell.textLabel.text = self.masterCalendar.academicHolidaysCalendar.name;
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                [self setAccessoryForCell:cell forCategory:self.masterCalendar.academicHolidaysCalendar];
+            }
         } else {
             cell.textLabel.text = self.masterCalendar.academicCalendar.name;
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                [self setAccessoryForCell:cell forCategory:self.masterCalendar.academicCalendar];
+            }
         }
+        
     }
     else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
         cell.textLabel.text = @"All Events";
@@ -190,11 +197,21 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
-        if (indexPath.row == kEventsCellRowAcademicHolidays) {
-            [self showAcademicHolidaysCalendar];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            if (indexPath.row == kEventsCellRowAcademicHolidays) {
+                [self showAcademicHolidaysCalendar];
+            } else {
+                [self showAcademicCalendar];
+            }
         } else {
-            [self showAcademicCalendar];
+            if (indexPath.row == kEventsCellRowAcademicHolidays) {
+                [self selectCategory:self.masterCalendar.academicHolidaysCalendar];
+            } else {
+                [self selectCategory:self.masterCalendar.academicCalendar];
+            }
+            [self.tableView reloadData];
         }
+        
     } else if (self.mode == kCalendarSelectionModeRoot && indexPath.row == 0) {
         self.selectedCategory = nil;
         [self.categoriesPath removeAllObjects];

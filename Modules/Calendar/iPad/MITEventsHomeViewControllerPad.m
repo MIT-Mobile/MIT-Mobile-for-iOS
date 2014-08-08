@@ -1,6 +1,5 @@
-
 #import "MITEventsHomeViewControllerPad.h"
-
+#import "MITCalendarSelectionViewController.h"
 #import "MITCalendarPageViewController.h"
 #import "MITDateNavigationBarView.h"
 #import "MITEventsMapViewController.h"
@@ -12,6 +11,8 @@
 #import "NSDate+MITAdditions.h"
 #import "MITEventSearchTypeAheadViewController.h"
 #import "MITEventSearchResultsViewController.h"
+#import "MITAcademicHolidaysCalendarViewController.h"
+#import "MITAcademicCalendarViewController.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -22,7 +23,7 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
 static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventsMapViewController *mapsViewController;
@@ -43,6 +44,10 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 @property (nonatomic, strong) MITMasterCalendar *masterCalendar;
 @property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCalendar;
 @property (nonatomic, strong) MITCalendarsCalendar *currentlySelectedCategory;
+
+@property (nonatomic, strong) UIPopoverController *calendarSelectorPopoverController;
+@property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
+@property (nonatomic, strong) UIBarButtonItem *calendarSelectionBarButtonItem;
 
 @property (strong, nonatomic) NSDate *currentlyDisplayedDate;
 
@@ -321,14 +326,14 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 {
     self.typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
     self.typeAheadViewController.delegate = self;
-    self.typeAheadViewController.currentCalendar = self.eventsPageViewController.category;
+    self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
 }
 
 - (void)setupResultsViewController
 {
     self.resultsViewController = [[MITEventSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
     self.resultsViewController.delegate = self;
-    self.resultsViewController.currentCalendar = self.eventsPageViewController.category;
+    self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
 }
 
 #pragma mark - ToolBar Setup
@@ -345,13 +350,19 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                            target:self
                                            action:@selector(todayButtonPressed:)];
 }
+
 - (UIBarButtonItem *)middleToolbarItem
 {
-    return [[UIBarButtonItem alloc] initWithTitle:@"Calendars"
-                                            style:UIBarButtonItemStylePlain
-                                           target:self
-                                           action:@selector(calendarsButtonPressed:)];
+    if (!self.calendarSelectionBarButtonItem) {
+        self.calendarSelectionBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Calendars"
+                                                                               style:UIBarButtonItemStylePlain
+                                                                              target:self
+                                                                              action:@selector(calendarsButtonPressed:)];
+    }
+    
+    return self.calendarSelectionBarButtonItem;
 }
+
 - (UIBarButtonItem *)rightToolbarItem
 {
     UIImage *locationImage = [UIImage imageNamed:@"global/location"];
@@ -360,6 +371,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                            target:self
                                            action:@selector(currentLocationButtonPressed:)];
 }
+
 - (UIBarButtonItem *)flexibleSpaceBarButtonItem
 {
     return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -367,17 +379,61 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                          action:nil];
 }
 
-#pragma mark Toolbar Button Presses
+#pragma mark - Calendar Selection
+
+- (MITCalendarSelectionViewController *)calendarSelectionViewController
+{
+    if (!_calendarSelectionViewController)
+    {
+        _calendarSelectionViewController = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        _calendarSelectionViewController.delegate = self;
+    }
+    return _calendarSelectionViewController;
+}
+
+- (void)calendarSelectionViewController:(MITCalendarSelectionViewController *)viewController
+                      didSelectCalendar:(MITCalendarsCalendar *)calendar
+                               category:(MITCalendarsCalendar *)category
+{
+    if (calendar) {
+        self.currentlySelectedCalendar = calendar;
+        self.currentlySelectedCategory = category;
+        self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
+        self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
+        
+        if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
+            MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
+            self.splitViewController.viewControllers = @[holidaysVC, self.mapsViewController];
+        } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
+            MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
+            self.splitViewController.viewControllers = @[academicVC, self.mapsViewController];
+        } else {
+            self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
+            [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
+                                                 category:self.currentlySelectedCategory
+                                                     date:self.currentlyDisplayedDate
+                                                 animated:YES];
+        }
+    }
+    
+    [self.calendarSelectorPopoverController dismissPopoverAnimated:YES];
+}
+
+#pragma mark - Toolbar Button Presses
 
 - (void)todayButtonPressed:(id)sender
 {
     NSDate *today = [[NSDate date] beginningOfDay];
     self.currentlyDisplayedDate = today;
 }
+
 - (void)calendarsButtonPressed:(id)sender
 {
-    
+    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:self.calendarSelectionViewController];
+    self.calendarSelectorPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainerController];
+    [self.calendarSelectorPopoverController presentPopoverFromBarButtonItem:self.calendarSelectionBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
+
 - (void)currentLocationButtonPressed:(id)sender
 {
     [self.mapsViewController showCurrentLocation];
