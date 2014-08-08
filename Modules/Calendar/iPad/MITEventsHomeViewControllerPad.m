@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
 static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventsMapViewController *mapsViewController;

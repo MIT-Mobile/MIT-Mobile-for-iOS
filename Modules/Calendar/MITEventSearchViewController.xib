@@ -2,15 +2,14 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="5056"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITEventSearchViewController">
             <connections>
-                <outlet property="searchingSpinner" destination="boV-gV-iuq" id="aLc-9W-0kr"/>
-                <outlet property="tableView" destination="rbK-d3-PXl" id="f1m-B6-eTy"/>
-                <outlet property="tableViewBottomLayoutConstraint" destination="1GO-Ss-LVo" id="e2r-ft-RWe"/>
-                <outlet property="tableViewTopLayoutConstraint" destination="AyX-lT-rIs" id="3gX-6v-w4Z"/>
+                <outlet property="tableViewContainerView" destination="2fR-7C-iTr" id="cLw-Yv-XLT"/>
+                <outlet property="tableViewContainerViewBottomLayoutConstraint" destination="UMk-Fl-xqF" id="dam-lg-sOY"/>
+                <outlet property="tableViewContainerViewTopLayoutConstraint" destination="2Bf-om-vge" id="Id5-d2-VYS"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,26 +18,18 @@
             <rect key="frame" x="0.0" y="64" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="rbK-d3-PXl">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2fR-7C-iTr">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <connections>
-                        <outlet property="dataSource" destination="-1" id="yCc-nl-M0o"/>
-                        <outlet property="delegate" destination="-1" id="lUH-ac-cca"/>
-                    </connections>
-                </tableView>
-                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="boV-gV-iuq">
-                    <rect key="frame" x="150" y="242" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                </activityIndicatorView>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="rbK-d3-PXl" secondAttribute="bottom" id="1GO-Ss-LVo"/>
-                <constraint firstAttribute="trailing" secondItem="rbK-d3-PXl" secondAttribute="trailing" id="3Gh-l8-LC3"/>
-                <constraint firstItem="rbK-d3-PXl" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="AyX-lT-rIs"/>
-                <constraint firstItem="rbK-d3-PXl" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lmI-ZV-bst"/>
+                <constraint firstItem="2fR-7C-iTr" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="2Bf-om-vge"/>
+                <constraint firstAttribute="bottom" secondItem="2fR-7C-iTr" secondAttribute="bottom" id="UMk-Fl-xqF"/>
+                <constraint firstAttribute="trailing" secondItem="2fR-7C-iTr" secondAttribute="trailing" id="pg5-B3-ec4"/>
+                <constraint firstItem="2fR-7C-iTr" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="ssI-CO-rSE"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
