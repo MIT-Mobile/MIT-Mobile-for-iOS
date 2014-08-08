@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDateBottomVerticalConstraint;
 @property (nonatomic) CGFloat originalNextStoryDateBottomVerticalConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDekTitleVerticalContraint;
 
 @end
 
@@ -135,6 +136,9 @@
             self.nextStoryImageWidthConstraint.constant = 0;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 0;
         }
+    }
+    if (!self.nextStoryDekLabel.text) {
+        self.nextStoryDekTitleVerticalContraint.constant = 0;
     }
 }
 
@@ -452,6 +456,8 @@
                 MITNewsStory *currentStory = nextStory;
                 __weak MITNewsStoryViewController *weakSelf = self;
                 [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                    [self.view setNeedsUpdateConstraints];
+
                     MITNewsStoryViewController *blockSelf = weakSelf;
                     if (blockSelf && (blockSelf->_story == currentStory)) {
                         if (error) {

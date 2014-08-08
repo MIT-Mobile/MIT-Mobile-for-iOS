@@ -173,6 +173,7 @@
                         <outlet property="nextStoryDateBottomVerticalConstraint" destination="vCr-Ar-v6y" id="yRf-2T-gnC"/>
                         <outlet property="nextStoryDateLabel" destination="aRd-O6-eP4" id="h8d-Ab-Mc6"/>
                         <outlet property="nextStoryDekLabel" destination="DJg-5Q-Y2i" id="OsE-K5-l4J"/>
+                        <outlet property="nextStoryDekTitleVerticalContraint" destination="qs3-wr-fa9" id="H8o-bb-w1Y"/>
                         <outlet property="nextStoryImageHeightConstraint" destination="nX8-sr-rAA" id="DcF-5N-RyF"/>
                         <outlet property="nextStoryImageView" destination="MsR-he-jtK" id="CNJ-yl-cna"/>
                         <outlet property="nextStoryImageWidthConstraint" destination="3nw-pn-3yB" id="5Nh-WO-Wrv"/>

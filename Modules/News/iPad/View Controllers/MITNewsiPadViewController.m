@@ -101,7 +101,7 @@
     }
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    if ([self class] == [MITNewsiPadViewController class]) {
+    if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
         
         [self reloadItems:^(NSError *error) {
             if (error) {
