@@ -126,6 +126,11 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
 
 - (void)handleFavorites
 {
+    if( self.favoritesPopover )
+    {
+        return;
+    }
+    
     [self performSegueWithIdentifier:@"MITFavoritesSegue" sender:self];
 }
 
