@@ -31,7 +31,7 @@
         _dividerDecorationWidth = 5.0;
         _minimumInterItemPadding = 60.0;
         _lineSpacing = 15.0;
-        _sectionInsets = UIEdgeInsetsMake(0, 60, 10, 60);
+        _sectionInsets = UIEdgeInsetsMake(20, 60, 10, 60);
 
         [self registerNib:[UINib nibWithNibName:@"GridDividerView" bundle:nil] forDecorationViewOfKind:MITNewsReusableViewIdentifierDivider];
     }
@@ -120,6 +120,7 @@
         }
     }
 
+    contentFrame.size.height += _sectionInsets.top + _sectionInsets.bottom;
     return contentFrame.size;
 }
 

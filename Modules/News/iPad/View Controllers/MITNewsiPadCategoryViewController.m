@@ -73,7 +73,6 @@
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
         _gridViewController = gridViewController;
-        gridViewController.collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     }
     
     return gridViewController;
