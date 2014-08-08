@@ -7,10 +7,11 @@
 #import "MITDatePickerViewController.h"
 #import "MITCalendarManager.h"
 #import "MITEventsSplitViewController.h"
-
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "NSDate+MITAdditions.h"
+#import "MITEventSearchTypeAheadViewController.h"
+#import "MITEventSearchResultsViewController.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -21,10 +22,14 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
 static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventsMapViewController *mapsViewController;
+
+@property (nonatomic, strong) MITEventSearchTypeAheadViewController *typeAheadViewController;
+@property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
+@property (nonatomic, strong) MITEventSearchResultsViewController *resultsViewController;
 
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
@@ -177,6 +182,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
         self.searchBar.showsCancelButton = YES;
         [self.searchBar setShowsCancelButton:YES animated:YES];
         self.searchBar.placeholder = @"Search";
+        self.searchBar.delegate = self;
     }
     
     if (!self.searchCancelBarButtonItem) {
@@ -190,10 +196,17 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
     
     [self.searchBar becomeFirstResponder];
+    
+    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+    CGRect presentationRect = self.searchBar.frame;// [self.view convertRect:self.searchBar.frame fromView:self.searchBar];
+    presentationRect.origin.y += presentationRect.size.height / 2;
+    [self.typeAheadPopoverController presentPopoverFromRect:presentationRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 - (void)hideSearchBar
 {
+    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
+    
     if (!self.searchMagnifyingGlassBarButtonItem) {
         UIImage *searchImage = [UIImage imageNamed:@"global/search"];
         self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:searchImage
@@ -232,7 +245,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.currentPopoverController = popOverController;
 }
 
-#pragma mark Search Button Presses
+#pragma mark - Search
 
 - (void)searchButtonPressed:(UIBarButtonItem *)barButtonItem
 {
@@ -244,6 +257,22 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     }
 }
 
+- (void)beginSearch:(NSString *)searchString
+{
+    self.searchBar.text = searchString;
+    [self.searchBar resignFirstResponder];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
+    self.splitViewController.viewControllers = @[self.resultsViewController, self.mapsViewController];
+    [self.resultsViewController beginSearch:searchString];
+}
+
+#pragma mark - UISearchBarDelegate Methods
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self beginSearch:searchBar.text];
+}
+
 #pragma mark - ViewControllers Setup
 
 - (void)setupViewControllers
@@ -251,8 +280,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     [self setupEventsPageViewController];
     [self setupMapViewController];
     [self setupSplitViewController];
+    [self setupTypeAheadViewController];
+    [self setupResultsViewController];
 }
-
 
 - (void)setupEventsPageViewController
 {
@@ -285,6 +315,20 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.splitViewController.view.frame = self.view.bounds;
     [self.view addSubview:self.splitViewController.view];
     [self.splitViewController didMoveToParentViewController:self];
+}
+
+- (void)setupTypeAheadViewController
+{
+    self.typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
+    self.typeAheadViewController.delegate = self;
+    self.typeAheadViewController.currentCalendar = self.eventsPageViewController.category;
+}
+
+- (void)setupResultsViewController
+{
+    self.resultsViewController = [[MITEventSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    self.resultsViewController.delegate = self;
+    self.resultsViewController.currentCalendar = self.eventsPageViewController.category;
 }
 
 #pragma mark - ToolBar Setup
@@ -416,6 +460,22 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation
 {
     return NO;  // show both view controllers in all orientations
+}
+
+#pragma mark - MITEventSearchTypeAheadViewControllerDelegate Methods
+
+- (void)eventSearchTypeAheadController:(MITEventSearchTypeAheadViewController *)typeAheadController didSelectSuggestion:(NSString *)suggestion
+{
+    [self beginSearch:suggestion];
+}
+
+#pragma mark - MITEventSearchResultsViewControllerDelegate Methods
+
+- (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event
+{
+//    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+//    detailVC.event = event;
+//    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 #pragma mark - Getters | Setters
