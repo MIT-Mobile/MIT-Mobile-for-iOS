@@ -407,9 +407,9 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         case MITEventDetailRowTypeWebsite: {
             NSString *websiteURLString = self.event.contact.websiteURL;
-            NSString *urlPrefix = @"http://";
+            NSString *urlPrefix = @"http";
             if (![websiteURLString hasPrefix:urlPrefix]) {
-                websiteURLString = [NSString stringWithFormat:@"%@%@", urlPrefix, websiteURLString];
+                websiteURLString = [NSString stringWithFormat:@"%@://%@", urlPrefix, websiteURLString];
             }
             NSURL *websiteURL = [NSURL URLWithString:websiteURLString];
             [[UIApplication sharedApplication] openURL:websiteURL];
