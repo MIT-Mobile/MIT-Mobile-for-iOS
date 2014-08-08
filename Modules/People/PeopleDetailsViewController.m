@@ -560,9 +560,17 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 		}
 	}
 
-	if ((ldapValue = [self.personDetails valueForKey:@"fax"]) && ![existingPhones containsObject:ldapValue]) {
-		ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)ldapValue, kABPersonPhoneWorkFAXLabel, NULL);
-	}
+    ldapValues = [self.personDetails valueForKey:@"fax"];
+    if( ldapValues )
+    {
+        for( NSString *value in ldapValues )
+        {
+            if( ![existingPhones containsObject:value] )
+            {
+                ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)value, kABPersonPhoneWorkFAXLabel, NULL);
+            }
+        }
+    }
 
     ABRecordSetValue(newPerson, kABPersonPhoneProperty, phone, &error);
 	CFRelease(phone);
