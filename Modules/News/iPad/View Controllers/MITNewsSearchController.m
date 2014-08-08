@@ -210,7 +210,8 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
         }
     }];
     [self.searchBar resignFirstResponder];
-    
+    [self enableControlsInView:self.searchBar];
+
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
     [UIView animateWithDuration:0.33
                           delay:0.
@@ -221,6 +222,16 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
                      } completion:^(BOOL finished) {
                          
                      }];
+}
+
+- (void)enableControlsInView:(UIView *)view
+{
+    for (id subview in view.subviews) {
+        if ([subview isKindOfClass:[UIControl class]]) {
+            [subview setEnabled:YES];
+        }
+        [self enableControlsInView:subview];
+    }
 }
 
 - (void)getMoreStories
@@ -302,6 +313,8 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
+    [self enableControlsInView:self.searchBar];
+
     if (self.searchTableView.alpha == 0) {
         [self hideSearchField];
     }

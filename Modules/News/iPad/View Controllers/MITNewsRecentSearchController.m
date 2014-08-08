@@ -80,7 +80,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
     
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     cell.textLabel.text = query.text;

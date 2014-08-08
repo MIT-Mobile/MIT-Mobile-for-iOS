@@ -238,6 +238,9 @@
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             if (self.searching) {
                 gridItem.enabled = NO;
+                self.navigationItem.hidesBackButton = YES;
+            } else {
+                self.navigationItem.hidesBackButton = NO;
             }
             [rightBarItems addObject:gridItem];
         }
@@ -247,6 +250,9 @@
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             if (self.searching) {
                 listItem.enabled = NO;
+                self.navigationItem.hidesBackButton = YES;
+            } else {
+                self.navigationItem.hidesBackButton = NO;
             }
             [rightBarItems addObject:listItem];
         }
