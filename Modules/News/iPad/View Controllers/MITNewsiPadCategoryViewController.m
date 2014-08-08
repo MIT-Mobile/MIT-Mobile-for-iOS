@@ -59,6 +59,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    if (!self.activeViewController) {
+        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.previousPresentationStyle == MITNewsPresentationStyleGrid) {
+            [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
+        } else {
+            [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
+        }
+    }
     [self updateNavigationItem:YES];
 }
 

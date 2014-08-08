@@ -92,8 +92,7 @@
 {
     [super viewWillAppear:animated];
     
-    
-    if (!self.activeViewController) {
+    if (!self.activeViewController && [self class] == [MITNewsiPadViewController class]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
@@ -601,6 +600,7 @@
         NSIndexPath *indexPath = sender;
 
         MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
+        iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
         
