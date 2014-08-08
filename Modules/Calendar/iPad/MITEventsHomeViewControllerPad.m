@@ -396,6 +396,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                category:(MITCalendarsCalendar *)category
 {
     if (calendar) {
+        self.title = category.name ? : calendar.name;
         self.currentlySelectedCalendar = calendar;
         self.currentlySelectedCategory = category;
         self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
