@@ -1,4 +1,3 @@
-
 #import "MITEventsMapViewController.h"
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
@@ -6,6 +5,7 @@
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITEventPlace.h"
 #import "MITEventDetailViewController.h"
+#import "MITCalendarsEvent.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -51,6 +51,26 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)showCurrentLocation
 {
     [self.tiledMapView centerMapOnUserLocation];
+}
+
+- (BOOL)canSelectEvent:(MITCalendarsEvent *)event
+{
+    for (MITEventPlace *place in self.places) {
+        if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+- (void)selectEvent:(MITCalendarsEvent *)event
+{
+    for (MITEventPlace *place in self.places) {
+        if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
+            [self.mapView selectAnnotation:place animated:YES];
+        }
+    }
 }
 
 #pragma mark Setup
@@ -155,6 +175,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         self.currentEventPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
         UIView *annotationView = [self.mapView viewForAnnotation:place];
         
+        CGFloat minTableHeight = 360;
         CGFloat tableHeight = 0;
         for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
             for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
@@ -170,6 +191,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         
         if (tableHeight > maxPopoverHeight) {
             tableHeight = maxPopoverHeight;
+        } if (tableHeight < minTableHeight) {
+            tableHeight = minTableHeight;
         }
         
         self.currentEventPopoverController.passthroughViews = @[self.navigationController.toolbar];

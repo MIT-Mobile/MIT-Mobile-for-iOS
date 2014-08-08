@@ -464,7 +464,11 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSelectEvent:(MITCalendarsEvent *)event
 {
-    
+    if ([self.mapsViewController canSelectEvent:event]) {
+        [self.mapsViewController selectEvent:event];
+    } else {
+        // Show popover from tableview cell frame?
+    }
 }
 
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController

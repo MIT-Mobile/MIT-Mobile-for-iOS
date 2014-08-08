@@ -119,7 +119,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     }
     
     self.rowTypes = rowTypes;
-    
+        
     [self.tableView reloadData];
 }
 

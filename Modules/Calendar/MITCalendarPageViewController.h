@@ -3,14 +3,16 @@
 @class MITCalendarPageViewController, MITCalendarsCalendar, MITCalendarsEvent;
 
 @protocol MITCalendarPageViewControllerDelegate <NSObject>
+
 @optional
+
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSwipeToDate:(NSDate *)date;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                      didSelectEvent:(MITCalendarsEvent *)event;
-@optional
-- (void) calendarPageViewController:(MITCalendarPageViewController *)viewController
+- (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
   didUpdateCurrentlyDisplayedEvents:(NSArray *)currentlyDisplayedEvents;
+
 @end
 
 @interface MITCalendarPageViewController : UIPageViewController
