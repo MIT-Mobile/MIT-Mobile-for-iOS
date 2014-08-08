@@ -548,9 +548,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	ABMultiValueRef multi = ABRecordCopyValue(person, kABPersonPhoneProperty);
 	ABMutableMultiValueRef phone = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingPhones = CFBridgingRelease(ABMultiValueCopyArrayOfAllValues(phone));
-	if ((ldapValue = [self.personDetails valueForKey:@"phone"])) {
-		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
-			if (![existingPhones containsObject:value]) {
+    NSArray *ldapValues = [self.personDetails valueForKey:@"phone"];
+	if ( ldapValues )
+    {
+		for (NSString *value in ldapValues)
+        {
+			if (![existingPhones containsObject:value])
+            {
 				ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)value, kABWorkLabel, NULL);
 			}
 		}
@@ -568,8 +572,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	multi = ABRecordCopyValue(person, kABPersonEmailProperty);
 	ABMutableMultiValueRef email = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingEmails = CFBridgingRelease(ABMultiValueCopyArrayOfAllValues(email));
-	if ((ldapValue = [self.personDetails valueForKey:@"email"])) {
-		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
+    ldapValues = [self.personDetails valueForKey:@"email"];
+	if ( ldapValues )
+    {
+		for (NSString *value in ldapValues)
+        {
 			if (![existingEmails containsObject:value]) {
 				ABMultiValueAddValueAndLabel(email, (__bridge CFTypeRef)value, kABWorkLabel, NULL);
 			}
