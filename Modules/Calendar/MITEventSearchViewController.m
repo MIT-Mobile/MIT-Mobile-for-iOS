@@ -74,6 +74,11 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+    navigationBar.opaque = YES;
+    navigationBar.translucent = NO;
+    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    [navigationBar setBarTintColor:navbarGrey];
     
     [self setupSearchBar];
     self.state = MITEventSearchViewControllerStateTypeAhead;
@@ -99,6 +104,11 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     [super viewWillDisappear:animated];
     self.navBarSeparatorView.hidden = NO;
     [self unregisterForKeyboardNotifications];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    self.searchBar.frame = self.navigationController.navigationBar.bounds;
 }
 
 - (void)setupSearchBar
@@ -153,10 +163,6 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     self.repositionedNavBarSeparatorView.frame = repositionedFrame;
     self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.currentCalendarLabelContainerView addSubview:self.repositionedNavBarSeparatorView];
-    
-    navigationBar.opaque = YES;
-    navigationBar.translucent = NO;
-    [navigationBar setBarTintColor:navbarGrey];
 }
 
 - (void)removeExtendedNavBar

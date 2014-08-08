@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)beginSearch:(NSString *)searchString
 {
+    self.currentQuery = searchString;
     [self searchInNextMonth:searchString];
 }
 
