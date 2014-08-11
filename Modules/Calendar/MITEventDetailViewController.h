@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) MITCalendarsEvent *event;
 
-@property (weak, nonatomic) id<MITEventDetailViewControllerDelegate>delegate;
+@property (weak, nonatomic) id<MITEventDetailViewControllerDelegate> delegate;
 
 /*!
  The height that the tableView will be when fully loaded.  Used to predict height before loading into view.

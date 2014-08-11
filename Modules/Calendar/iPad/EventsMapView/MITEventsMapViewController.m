@@ -55,24 +55,24 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (BOOL)canSelectEvent:(MITCalendarsEvent *)event
 {
-    for (MITEventPlace *place in self.places) {
-        if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
-            return YES;
-        }
-    }
-    
-    return NO;
+    return !event.isHoliday;
 }
 
 - (void)selectEvent:(MITCalendarsEvent *)event
 {
-    for (MITEventPlace *place in self.places) {
+    __block BOOL eventHasMapAnnotation = NO;
+    [self.places enumerateObjectsUsingBlock:^(MITEventPlace *place, NSUInteger idx, BOOL *stop) {
         if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
             if ([[self.mapView selectedAnnotations] containsObject:place]) {
                 [self.mapView deselectAnnotation:place animated:NO];
             }
             [self.mapView selectAnnotation:place animated:YES];
+            eventHasMapAnnotation = YES;
+            (*stop) = YES;
         }
+    }];
+    if (!eventHasMapAnnotation) {
+        [self showPopoverForEvent:event fromAnnotationView:nil];
     }
 }
 
@@ -173,25 +173,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITEventPlace *place = view.annotation;
-        MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-        detailVC.event = place.calendarsEvent;
-        detailVC.delegate = self;
-        self.currentEventPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
         UIView *annotationView = [self.mapView viewForAnnotation:place];
-        
-        CGFloat tableHeight = [detailVC targetTableViewHeight];
-        CGFloat minPopoverHeight = [self minPopoverHeight];
-        CGFloat maxPopoverHeight = [self maxPopoverHeight];
-        
-        if (tableHeight > maxPopoverHeight) {
-            tableHeight = maxPopoverHeight;
-        } else if (tableHeight < minPopoverHeight) {
-            tableHeight = minPopoverHeight;
-        }
-        
-        self.currentEventPopoverController.passthroughViews = @[self.navigationController.toolbar];
-        [self.currentEventPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-        [self.currentEventPopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self showPopoverForEvent:place.calendarsEvent fromAnnotationView:annotationView];
     }
 }
 
@@ -207,6 +190,41 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
     }
     
+}
+
+#pragma mark - UIPopover Display
+
+- (void) showPopoverForEvent:(MITCalendarsEvent *)event fromAnnotationView:(UIView *)annotationView
+{
+    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.event = event;
+    detailVC.delegate = self;
+    self.currentEventPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+    
+    
+    CGFloat tableHeight = [detailVC targetTableViewHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
+    
+    self.currentEventPopoverController.passthroughViews = @[self.navigationController.toolbar];
+    [self.currentEventPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+    
+    if (annotationView) {
+        [self.currentEventPopoverController presentPopoverFromRect:annotationView.bounds
+                                                            inView:annotationView
+                                          permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                          animated:YES];
+    } else {
+        CGRect presentationRect = CGRectMake(self.mapView.center.x, self.mapView.center.y, 0, 0);
+        [self.currentEventPopoverController presentPopoverFromRect:presentationRect inView:self.mapView permittedArrowDirections:0 animated:YES];
+    }
+
 }
 
 #pragma mark - UIPopover Calculations
