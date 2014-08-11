@@ -21,23 +21,6 @@
             <rect key="frame" x="0.0" y="64" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O7E-nT-nqr">
-                    <rect key="frame" x="0.0" y="460" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <items>
-                        <barButtonItem title="Today" id="SWR-Z3-pej">
-                            <connections>
-                                <action selector="todayButtonPressed:" destination="-1" id="Fb6-Oa-P0P"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem style="plain" systemItem="flexibleSpace" id="r4q-ft-6NX"/>
-                        <barButtonItem title="Calendars" id="bkY-Ch-TQo">
-                            <connections>
-                                <action selector="presentCalendarSelectionPressed:" destination="-1" id="psS-gP-fXa"/>
-                            </connections>
-                        </barButtonItem>
-                    </items>
-                </toolbar>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tgr-Jh-tU3">
                     <rect key="frame" x="0.0" y="-11" width="320" height="64"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -96,6 +79,23 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O7E-nT-nqr">
+                    <rect key="frame" x="0.0" y="460" width="320" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <items>
+                        <barButtonItem title="Today" id="SWR-Z3-pej">
+                            <connections>
+                                <action selector="todayButtonPressed:" destination="-1" id="Fb6-Oa-P0P"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="r4q-ft-6NX"/>
+                        <barButtonItem title="Calendars" id="bkY-Ch-TQo">
+                            <connections>
+                                <action selector="presentCalendarSelectionPressed:" destination="-1" id="psS-gP-fXa"/>
+                            </connections>
+                        </barButtonItem>
+                    </items>
+                </toolbar>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
