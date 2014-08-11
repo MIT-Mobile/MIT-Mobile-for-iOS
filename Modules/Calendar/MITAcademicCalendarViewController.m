@@ -38,12 +38,18 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.academicCalendar = masterCalendar.academicCalendar;
+            self.title = self.academicCalendar.name;
             [self loadEvents];
         }
         else {
             NSLog(@"Error fetching calendar: %@", error);
         }
     }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self scrollToToday];
 }
 
 - (void)loadEvents
@@ -57,6 +63,7 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
         if (events) {
             self.eventsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];
             [self.tableView reloadData];
+            [self scrollToToday];
         }
         else {
             NSLog(@"Error fetching events: %@", error);
@@ -100,7 +107,6 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
     return [MITAcademicCalendarCell heightForEvent:[self.eventsDataSource eventForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITAcademicCalendarCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITAcademicCalendarCell forIndexPath:indexPath];
@@ -111,6 +117,15 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
     
     return cell;
 }
+
+- (void)scrollToToday
+{
+    if (self.eventsDataSource.events.count > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:[self.eventsDataSource sectionBeginningAtDate:[NSDate date]]];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    }
+}
+
 
 
 

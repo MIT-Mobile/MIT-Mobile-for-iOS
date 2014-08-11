@@ -15,6 +15,7 @@
 - (NSDate *)dateForSection:(NSInteger)section;
 - (NSInteger)weekdayForSection:(NSInteger)section;
 - (NSArray *)eventsForDate:(NSDate *)date;
+- (NSInteger)sectionBeginningAtDate:(NSDate *)date;
 
 - (NSArray *)allSections;
 - (NSArray *)eventsInSection:(NSUInteger)section;

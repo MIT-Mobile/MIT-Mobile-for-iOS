@@ -60,6 +60,20 @@
     return events;
 }
 
+- (NSInteger)sectionBeginningAtDate:(NSDate *)date
+{
+    NSInteger sectionIndex = 0;
+    for (int i = 0; i < self.eventDates.count; i++) {
+        if ([date compare:self.eventDates[i]] == NSOrderedAscending) {
+            sectionIndex = i;
+            break;
+        }
+    }
+    
+    return sectionIndex;
+}
+
+
 - (NSArray *)allSections
 {
     return self.eventDates;
