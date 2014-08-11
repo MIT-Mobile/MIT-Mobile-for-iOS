@@ -125,9 +125,7 @@
 - (void)clearFailAfterTwoSeconds
 {
     _storyUpdatedFailed = FALSE;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
-    }];
 }
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;

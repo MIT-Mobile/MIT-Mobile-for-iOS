@@ -267,9 +267,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 - (void)clearFailAfterTwoSeconds
 {
     _storyUpdatedFailed = FALSE;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }];
 }
 
 #pragma mark - hide/show Recents

@@ -190,9 +190,7 @@
 - (void)clearFailAfterTwoSeconds
 {
     _storyUpdatedFailed = FALSE;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
