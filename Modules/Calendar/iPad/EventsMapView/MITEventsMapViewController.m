@@ -194,7 +194,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 #pragma mark - UIPopover Display
 
-- (void) showPopoverForEvent:(MITCalendarsEvent *)event fromAnnotationView:(UIView *)annotationView
+- (void)showPopoverForEvent:(MITCalendarsEvent *)event fromAnnotationView:(UIView *)annotationView
 {
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.event = event;
@@ -277,7 +277,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 #pragma mark - MITEventsDetailViewControllerDelegate
 
-- (void)eventDetailViewControllerDidUpdate:(MITEventDetailViewController *)eventDetailViewController
+- (void)eventDetailViewControllerDidUpdateSize:(MITEventDetailViewController *)eventDetailViewController
 {
     
     CGFloat tableHeight = [eventDetailViewController targetTableViewHeight];

@@ -246,8 +246,8 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 
 - (void)notifyDelegateOfSizeUpdate
 {
-    if ([self.delegate respondsToSelector:@selector(eventDetailViewControllerDidUpdate:)]) {
-        [self.delegate eventDetailViewControllerDidUpdate:self];
+    if ([self.delegate respondsToSelector:@selector(eventDetailViewControllerDidUpdateSize:)]) {
+        [self.delegate eventDetailViewControllerDidUpdateSize:self];
     }
 }
 

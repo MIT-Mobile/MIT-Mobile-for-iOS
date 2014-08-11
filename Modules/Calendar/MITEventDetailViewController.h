@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
 @protocol MITEventDetailViewControllerDelegate <NSObject>
 
 @optional
-- (void)eventDetailViewControllerDidUpdate:(MITEventDetailViewController *)eventDetailViewController;
+- (void)eventDetailViewControllerDidUpdateSize:(MITEventDetailViewController *)eventDetailViewController;
 
 @end
 
@@ -32,6 +32,6 @@ typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
 /*!
  The height that the tableView will be when fully loaded.  Used to predict height before loading into view.
  */
-- (CGFloat) targetTableViewHeight;
+- (CGFloat)targetTableViewHeight;
 
 @end
