@@ -130,7 +130,8 @@
     [super viewWillAppear:animated];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];
-    }];}
+    }];
+}
 
 - (void)didReceiveMemoryWarning
 {

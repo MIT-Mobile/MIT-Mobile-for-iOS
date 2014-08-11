@@ -49,7 +49,7 @@
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
     
-    if (!story ) {
+    if (!story) {
         if (_storyUpdateInProgress) {
             return MITNewsCellIdentifierStoryLoadingMore;
         }
