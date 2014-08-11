@@ -30,6 +30,8 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 @property (nonatomic) kCalendarSelectionMode mode;
 
+@property (nonatomic) BOOL interfaceIsPad;
+
 @end
 
 @interface MITColoredChevron : UIView
@@ -50,6 +52,12 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        self.interfaceIsPad = YES;
+    }
+    
+    
     [self setupNavBar];
 
     self.title = @"Calendars";
@@ -82,10 +90,12 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (void)setupNavBar
 {
-    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                target:self
-                                                                                action:@selector(doneButtonPressed:)];
-    self.navigationItem.rightBarButtonItem = doneButton;
+    if (!self.interfaceIsPad) {
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                    target:self
+                                                                                    action:@selector(doneButtonPressed:)];
+        self.navigationItem.rightBarButtonItem = doneButton;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -141,12 +151,12 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
         if (indexPath.row == kEventsCellRowAcademicHolidays) {
             cell.textLabel.text = self.masterCalendar.academicHolidaysCalendar.name;
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            if (self.interfaceIsPad) {
                 [self setAccessoryForCell:cell forCategory:self.masterCalendar.academicHolidaysCalendar];
             }
         } else {
             cell.textLabel.text = self.masterCalendar.academicCalendar.name;
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            if (self.interfaceIsPad) {
                 [self setAccessoryForCell:cell forCategory:self.masterCalendar.academicCalendar];
             }
         }
@@ -197,7 +207,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        if (!self.interfaceIsPad) {
             if (indexPath.row == kEventsCellRowAcademicHolidays) {
                 [self showAcademicHolidaysCalendar];
             } else {
@@ -216,6 +226,9 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         self.selectedCategory = nil;
         [self.categoriesPath removeAllObjects];
         [self.tableView reloadData];
+        if (self.interfaceIsPad) {
+            [self didFinishSelecting];
+        }
     }
     else if (self.mode == kCalendarSelectionModeSubCategory && indexPath.row == 0) {
         self.selectedCategory = nil;
@@ -257,6 +270,9 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     self.selectedCategory = category;
     [self addCategoriesToPathUpToCurrentCategory];
     [self.categoriesPath addObject:self.selectedCategory];
+    if (self.interfaceIsPad) {
+        [self didFinishSelecting];
+    }
 }
 
 - (void)addCategoriesToPathUpToCurrentCategory
@@ -279,6 +295,11 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 }
 
 - (void)doneButtonPressed:(id)sender
+{
+    [self didFinishSelecting];
+}
+
+- (void)didFinishSelecting
 {
     [self.delegate calendarSelectionViewController:self didSelectCalendar:self.selectedCalendar category:self.selectedCategory];
 }
