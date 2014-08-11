@@ -170,7 +170,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     }
     else if (self.mode == kCalendarSelectionModeSubCategory && indexPath.row == 0) {
         cell.textLabel.text = [NSString stringWithFormat:@"All %@", self.category.name];
-        cell.accessoryType = ([self pathContainsCategory:self.category] && !self.selectedCategory) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+        cell.accessoryType = ([(MITCalendarsCalendar *)[self.categoriesPath lastObject] isEqualToCalendar:self.category]) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     }
     else {
         MITCalendarsCalendar *category = (self.mode == kCalendarSelectionModeRoot) ? self.selectedCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row - 1];
@@ -231,7 +231,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         }
     }
     else if (self.mode == kCalendarSelectionModeSubCategory && indexPath.row == 0) {
-        self.selectedCategory = nil;
+        self.selectedCategory = self.category;
         [self addCategoriesToPathUpToCurrentCategory];
         [self.tableView reloadData];
     }

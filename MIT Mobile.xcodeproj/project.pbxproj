@@ -1692,6 +1692,21 @@
 			name = "Swiping Calendars";
 			sourceTree = "<group>";
 		};
+		22127AF6199951060020C9A7 /* Calendar Selection */ = {
+			isa = PBXGroup;
+			children = (
+				229FFAB6198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.h */,
+				229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */,
+				229FFAB8198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib */,
+				229FFABE198FFBEF00ABF029 /* MITAcademicCalendarViewController.h */,
+				229FFABF198FFBEF00ABF029 /* MITAcademicCalendarViewController.m */,
+				229FFAC0198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib */,
+				22DDADB8198C0A9B003AEF43 /* MITCalendarSelectionViewController.h */,
+				22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */,
+			);
+			name = "Calendar Selection";
+			sourceTree = "<group>";
+		};
 		223EDB6E19881D5500832ACD /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -1759,6 +1774,7 @@
 		225F218C197D5A8800F34DE9 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				22127AF6199951060020C9A7 /* Calendar Selection */,
 				2209CC2619927F7100E17100 /* Swiping Calendars */,
 				80885CAD19913F4E00D6661C /* iPad */,
 				225F218D197D5AD500F34DE9 /* MITEventsHomeViewController.h */,
@@ -1773,14 +1789,6 @@
 				A5A30403198AD0FB00C9C273 /* MITEventSearchViewController.h */,
 				A5A30404198AD0FB00C9C273 /* MITEventSearchViewController.m */,
 				A5A30405198AD0FB00C9C273 /* MITEventSearchViewController.xib */,
-				22DDADB8198C0A9B003AEF43 /* MITCalendarSelectionViewController.h */,
-				22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */,
-				229FFAB6198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.h */,
-				229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */,
-				229FFAB8198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib */,
-				229FFABE198FFBEF00ABF029 /* MITAcademicCalendarViewController.h */,
-				229FFABF198FFBEF00ABF029 /* MITAcademicCalendarViewController.m */,
-				229FFAC0198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib */,
 				A5A24B651994307A00AA1CFC /* MITEventSearchTypeAheadViewController.h */,
 				A5A24B661994307A00AA1CFC /* MITEventSearchTypeAheadViewController.m */,
 				A5A24B671994307A00AA1CFC /* MITEventSearchTypeAheadViewController.xib */,

@@ -469,11 +469,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     if (calendar) {
         self.eventsController.calendar =
         self.currentlySelectedCalendar = calendar;
+        self.title = calendar.name;
     }
     
     if (category) {
         self.eventsController.category =
         self.currentlySelectedCategory = category;
+        self.title = category.name;
     }
     
     if ([date isEqualToDate:self.currentlyDisplayedDate]) {
