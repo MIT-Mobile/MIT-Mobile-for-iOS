@@ -485,9 +485,7 @@
 
 - (NSString*)viewController:(UIViewController*)viewController titleForCategoryInSection:(NSUInteger)section
 {
-    if (self.isSearching) {
-        return nil;
-    } else if (self.showsFeaturedStories && (section == 0)) {
+    if (self.showsFeaturedStories && (section == 0)) {
         return @"Featured";
     } else {
         __block NSString *title = nil;
