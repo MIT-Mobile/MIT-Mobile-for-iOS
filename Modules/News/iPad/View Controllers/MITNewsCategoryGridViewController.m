@@ -33,7 +33,7 @@
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    NSString *cellIdentifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
@@ -44,12 +44,9 @@
     return collectionViewCell;
 }
 
-- (NSString*)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+- (NSString*)_collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
-    MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
-    
-    if (!story) {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
         if (_storyUpdateInProgress) {
             return MITNewsCellIdentifierStoryLoadingMore;
         }
@@ -59,6 +56,9 @@
         return MITNewsCellIdentifierStoryLoadMore;
     }
     
+    MITNewsStory *story = [self storyAtIndexPath:indexPath];
+    BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
+
     if (featuredStory && indexPath.item == 0) {
         return MITNewsCellIdentifierStoryJumbo;
     } else if ([story.type isEqualToString:MITNewsStoryExternalType]) {

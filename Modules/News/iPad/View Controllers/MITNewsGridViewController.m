@@ -204,10 +204,6 @@
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
     
-    if (!story ) {
-        return MITNewsCellIdentifierStoryLoadMore;
-    }
-    
     if (featuredStory && indexPath.item == 0) {
         return MITNewsCellIdentifierStoryJumbo;
     } else if ([story.type isEqualToString:MITNewsStoryExternalType]) {
