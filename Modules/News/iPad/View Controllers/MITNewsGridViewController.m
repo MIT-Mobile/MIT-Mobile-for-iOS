@@ -344,7 +344,6 @@
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
-        NSLog(@"ABC %d", [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section]);
         return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     } else {
         return 0;
