@@ -166,7 +166,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     self.isLoadingEventDetails = YES;
     
     [MITCalendarWebservices getEventDetailsForEventURL:[NSURL URLWithString:self.event.url] withCompletion:^(MITCalendarsEvent *event, NSError *error) {
-        //
         if (event) {
             self.event = event;
             [self refreshEventRows];

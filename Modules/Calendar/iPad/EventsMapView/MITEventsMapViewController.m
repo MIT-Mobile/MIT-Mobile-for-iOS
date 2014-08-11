@@ -68,6 +68,9 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 {
     for (MITEventPlace *place in self.places) {
         if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
+            if ([[self.mapView selectedAnnotations] containsObject:place]) {
+                [self.mapView deselectAnnotation:place animated:NO];
+            }
             [self.mapView selectAnnotation:place animated:YES];
         }
     }
