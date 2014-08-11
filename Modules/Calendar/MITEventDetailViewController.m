@@ -474,7 +474,10 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             if (rowType == MITEventDetailRowTypeDescription) {
                 // return webview cell height
                 MITWebviewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventWebviewCellIdentifier];
-                [cell setHTMLString:self.event.htmlDescription];
+      
+                NSString *htmlString = [NSString stringWithFormat:@"<span style=\"font-family:Helvetica; font-size: %i\">%@</span>", 17, self.event.htmlDescription];
+                
+                [cell setHTMLString:htmlString];
                 cell.delegate = self;
                 return cell;
             } else {

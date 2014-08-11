@@ -219,6 +219,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                                                   target:self
                                                                                   action:@selector(searchButtonPressed:)];
     }
+    
+    self.searchBar.text = @"";
+    
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem];
 }
 
