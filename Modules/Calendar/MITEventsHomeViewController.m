@@ -3,7 +3,7 @@
 #import "MITCalendarEventCell.h"
 #import "MITCalendarDataManager.h"
 #import "UIKit+MITAdditions.h"
-#import "NSDate+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 #import "MITDatePickerViewController.h"
 #import "MITEventDetailViewController.h"
 #import "MITCalendarSelectionViewController.h"
@@ -74,7 +74,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.title = @"Events";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search_magnifier.png"] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
     
-    self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
+    self.currentlyDisplayedDate = [[NSDate date] startOfDay];
     [self updateDatesArray];
     [self setDateLabelWithDate:self.currentlyDisplayedDate animationType:MITSlidingAnimationTypeNone];
 
@@ -252,13 +252,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     cell.dayOfTheWeek = indexPath.row % 7;
     
     NSDate *cellDate = [self dateForIndexPath:indexPath];
-    if ([cellDate isSameDayAsDate:self.currentlyDisplayedDate]) {
+    if ([cellDate isEqualToDateIgnoringTime:self.currentlyDisplayedDate]) {
         cell.state = MITDayOfTheWeekStateSelected;
     }
     else {
         cell.state = MITDayOfTheWeekStateUnselected;
     }
-    if ([cellDate isSameDayAsDate:[NSDate date]]){
+    if ([cellDate isEqualToDateIgnoringTime:[NSDate date]]){
         cell.state |= MITDayOfTheWeekStateToday;
     }
 }
@@ -333,7 +333,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (IBAction)todayButtonPressed:(id)sender
 {
-    [self updateDisplayedCalendar:nil category:nil date:[[NSDate date] beginningOfDay] animated:YES];
+    [self updateDisplayedCalendar:nil category:nil date:[[NSDate date] startOfDay] animated:YES];
 }
 
 #pragma mark - Animating Date Label

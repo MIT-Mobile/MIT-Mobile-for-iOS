@@ -3,7 +3,7 @@
 #import "MITCoreData.h"
 #import "MITMobileResources.h"
 #import "MITAdditions.h"
-#import "NSDate+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 #import "MITCalendarsCalendar.h"
 

@@ -648,6 +648,12 @@ typedef struct {
                                                          options:0]];
 }
 
+- (NSDate *)dateWithoutTime
+{
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    return [[NSCalendar currentCalendar] dateFromComponents:comps];
+}
+
 - (NSDate *) startOfDay
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
@@ -674,6 +680,17 @@ typedef struct {
     --dayInterval;
     
     return [dayStart dateByAddingTimeInterval:dayInterval];
+}
+
+- (NSDate *)startOfWeek
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *currentDateWeekdayComponents = [calendar components:NSWeekdayCalendarUnit fromDate:self];
+    NSDateComponents *dateComponentsToSubtract = [[NSDateComponents alloc] init];
+    dateComponentsToSubtract.day = calendar.firstWeekday - currentDateWeekdayComponents.weekday;
+    NSDate *startDate = [calendar dateByAddingComponents:dateComponentsToSubtract toDate:self options:0];
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:startDate];
+    return [calendar dateFromComponents:components];
 }
 
 - (NSDate *) dayBefore
@@ -713,11 +730,43 @@ typedef struct {
                                     options:0];
 }
 
+- (NSDate *)dateByAddingDay
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.day = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateByAddingWeek
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.week = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateBySubtractingWeek
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.week = -1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
 - (NSDate *)dateByAddingYear
 {
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
     componentsToAdd.year = 1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSArray *)datesInWeek
+{
+    NSDate *day = [self startOfWeek];
+    NSMutableArray *datesInWeek = [[NSMutableArray alloc] initWithArray:@[day]];
+    for (int i = 0; i < 6; i++) {
+        day = [day dateByAddingDay];
+        [datesInWeek addObject:day];
+    }
+    return [datesInWeek copy];
 }
 
 /** Extra compact string representation of the date's time components.
@@ -781,6 +830,27 @@ typedef struct {
    return [calendar dateByAddingComponents:timeComponents
                                     toDate:[calendar dateFromComponents:components]
                                    options:0];
+}
+
+
+
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate
+{
+    return NO;
+}
+
+
+- (NSString *)ISO8601String
+{
+	struct tm *timeinfo;
+	char buffer[80];
+    
+	time_t rawtime = (time_t)[self timeIntervalSince1970];
+	timeinfo = gmtime(&rawtime);
+    
+	strftime(buffer, 80, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
+    
+	return [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
 }
 
 @end

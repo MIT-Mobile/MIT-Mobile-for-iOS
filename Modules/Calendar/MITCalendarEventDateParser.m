@@ -1,6 +1,6 @@
 #import "MITCalendarEventDateParser.h"
 #import "MITCalendarsEvent.h"
-#import "NSDate+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITCalendarEventDateParser
 

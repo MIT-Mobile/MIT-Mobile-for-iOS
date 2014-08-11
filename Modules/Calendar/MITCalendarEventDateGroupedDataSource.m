@@ -1,7 +1,7 @@
 #import "MITCalendarEventDateGroupedDataSource.h"
 #import "MITCalendarEventDateParser.h"
 #import "MITCalendarsEvent.h"
-#import "NSDate+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @interface MITCalendarEventDateGroupedDataSource ()
 

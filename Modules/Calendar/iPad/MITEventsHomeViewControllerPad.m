@@ -8,7 +8,7 @@
 #import "MITEventsSplitViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "NSDate+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 #import "MITEventSearchTypeAheadViewController.h"
 #import "MITEventSearchResultsViewController.h"
 #import "MITAcademicHolidaysCalendarViewController.h"
@@ -304,7 +304,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 {
     self.eventsPageViewController.calendar = self.currentlySelectedCalendar;
     self.eventsPageViewController.category = self.currentlySelectedCategory;
-    self.currentlyDisplayedDate = [[NSDate date] beginningOfDay];
+    self.currentlyDisplayedDate = [[NSDate date] startOfDay];
 }
 
 - (void)setupMapViewController
@@ -427,7 +427,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 - (void)todayButtonPressed:(id)sender
 {
-    NSDate *today = [[NSDate date] beginningOfDay];
+    NSDate *today = [[NSDate date] startOfDay];
     self.currentlyDisplayedDate = today;
 }
 
