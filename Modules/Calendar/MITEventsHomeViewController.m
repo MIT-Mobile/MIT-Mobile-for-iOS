@@ -54,6 +54,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (nonatomic, strong) MITCalendarPageViewController *eventsController;
 @property (weak, nonatomic) IBOutlet UIView *eventsTableContainerView;
 
+@property (nonatomic) BOOL dayPickerShouldUpdateAfterCallback;
+
 @end
 
 @implementation MITEventsHomeViewController
@@ -224,14 +226,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    if (scrollView == self.dayPickerCollectionView) {
+    if (scrollView == self.dayPickerCollectionView && self.dayPickerShouldUpdateAfterCallback) {
         [self updateDayPickerOffsetForInfiniteScrolling];
     }
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-    if (scrollView == self.dayPickerCollectionView) {
+    if (scrollView == self.dayPickerCollectionView && self.dayPickerShouldUpdateAfterCallback) {
         [self updateDayPickerOffsetForInfiniteScrolling];
     }
 }
@@ -317,16 +319,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         dayPickerOffset.x = dayPickerCollectionViewStartXOffset - xTranslation;
         self.dayPickerCollectionView.contentOffset = dayPickerOffset;
     }
-}
-
-- (void)calendarListLoaded:(NSNotification *)ntfn
-{
-    
-}
-
-- (void)calendarListLoadedFailed:(NSNotification *)ntfn
-{
-    
 }
 
 #pragma mark - Toolbar Buttons
@@ -499,16 +491,41 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)updateDisplayedDate:(NSDate *)date
 {
-    MITSlidingAnimationType slidingDirection = MITSlidingAnimationTypeForward;
+    MITSlidingAnimationType labelSlidingAnimationType = MITSlidingAnimationTypeForward;
     if ([self.currentlyDisplayedDate compare:date] == NSOrderedDescending) {
-        slidingDirection = MITSlidingAnimationTypeBackward;
+        labelSlidingAnimationType = MITSlidingAnimationTypeBackward;
     }
+    
+    [self setDateLabelWithDate:date animationType:labelSlidingAnimationType];
+    
+    MITSlidingAnimationType datePickerSlidingAnimationType = MITSlidingAnimationTypeNone;
+    if ([date dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
+        datePickerSlidingAnimationType = MITSlidingAnimationTypeBackward;
+    }
+    else if ([date dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
+        datePickerSlidingAnimationType = MITSlidingAnimationTypeForward;
+    }
+    
     self.currentlyDisplayedDate = date;
     
-    [self updateDatesArray];
-    [self setDateLabelWithDate:date animationType:slidingDirection];
-    [self.dayPickerCollectionView reloadData];
-    [self centerDayPickerCollectionView];
+    switch (datePickerSlidingAnimationType) {
+        case MITSlidingAnimationTypeNone:
+            [self updateDatesArray];
+            [self.dayPickerCollectionView reloadData];
+            [self centerDayPickerCollectionView];
+            break;
+            
+        case MITSlidingAnimationTypeForward:
+            [self animateDayPickerCollectionViewForward];
+            break;
+            
+        case MITSlidingAnimationTypeBackward:
+            [self animateDayPickerCollectionViewBackwards];
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)centerDayPickerCollectionView
@@ -517,6 +534,29 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
                                          atScrollPosition:UICollectionViewScrollPositionLeft
                                                  animated:NO];
 }
+
+- (void)delayedCenterDayPickerCollectionView
+{
+    [self updateDatesArray];
+    [self.dayPickerCollectionView reloadData];
+    [self centerDayPickerCollectionView];
+    self.dayPickerShouldUpdateAfterCallback = YES;
+}
+
+- (void)animateDayPickerCollectionViewBackwards
+{
+    self.dayPickerShouldUpdateAfterCallback = NO;
+    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+    [self performSelector:@selector(delayedCenterDayPickerCollectionView) withObject:nil afterDelay:kSlidingAnimationDuration];
+}
+
+- (void)animateDayPickerCollectionViewForward
+{
+    self.dayPickerShouldUpdateAfterCallback = NO;
+    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
+    [self performSelector:@selector(delayedCenterDayPickerCollectionView) withObject:nil afterDelay:kSlidingAnimationDuration];
+}
+
 
 - (void)updateDatesArray
 {

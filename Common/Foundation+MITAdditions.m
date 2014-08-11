@@ -836,9 +836,9 @@ typedef struct {
 
 - (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate
 {
-    return NO;
+    return ([self timeIntervalSince1970] >= [startDate timeIntervalSince1970] &&
+            [self timeIntervalSince1970] <= [endDate timeIntervalSince1970]);
 }
-
 
 - (NSString *)ISO8601String
 {
