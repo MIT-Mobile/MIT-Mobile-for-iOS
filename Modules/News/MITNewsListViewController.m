@@ -176,19 +176,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
 
-        CGRect headerRect = [self.tableView convertRect:[self.tableView rectForHeaderInSection:sectionNumber]
-                                                 toView:[self.tableView superview]];
-
-        if( headerRect.origin.y <= MITNewsViewControllerHeightOffset )
-        {
-            // grey color
-#warning gray color needed?
-            //headerView.containerView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1];
-        }
-        else
-        {
-            headerView.containerView.backgroundColor = [UIColor whiteColor];
-        }
+        headerView.containerView.backgroundColor = [UIColor whiteColor];
 
         sectionNumber++;
     }

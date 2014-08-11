@@ -35,10 +35,10 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
     }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
+    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
@@ -66,7 +66,7 @@
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (!_storyUpdateInProgress) {
             [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self getMoreStories];
+            [self getMoreStoriesForSection:indexPath.section];
         }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -115,7 +115,7 @@
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
-    if ([self numberOfStoriesForCategoryInSection:0] > indexPath.row) {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] > indexPath.row) {
         story = [self storyAtIndexPath:indexPath];
     }
     if (story) {
@@ -137,7 +137,7 @@
         }];
         
         return identifier;
-    } else if ([self numberOfStoriesForCategoryInSection:0]) {
+    } else if ([self numberOfStoriesForCategoryInSection:indexPath.section]) {
         return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
@@ -155,18 +155,18 @@
     }
 }
 
-- (void)getMoreStories
+- (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && !_storyUpdateInProgress) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
-        [self.dataSource loadMoreItemsForCategoryInSection:0
+        [self.dataSource loadMoreItemsForCategoryInSection:section
                                                 completion:^(NSError *error) {
                                                     _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                                                         _storyUpdatedFailed = TRUE;
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                             [NSTimer scheduledTimerWithTimeInterval:2
                                                                                              target:self
                                                                                            selector:@selector(clearFailAfterTwoSeconds)
@@ -181,7 +181,7 @@
                                                     }
                                                 }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }];
     }
 }

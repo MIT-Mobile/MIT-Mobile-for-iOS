@@ -18,13 +18,13 @@
 
 @implementation MITNewsCategoryGridViewController
 
-- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)index
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
-        if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:index] + 1;
+        if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
         } else {
-            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:index];
+            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
         }
         } else {
             return 0;
@@ -72,11 +72,11 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource canLoadMoreItemsForCategoryInSection:0] &&
+    if ([self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
         indexPath.row + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
         if (!_storyUpdateInProgress) {
             [collectionView reloadItemsAtIndexPaths:@[indexPath]];
-            [self getMoreStories];
+            [self getMoreStoriesForSection:indexPath.section];
         }
 
     } else {
@@ -91,18 +91,18 @@
     }
 }
 
-- (void)getMoreStories
+- (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && !_storyUpdateInProgress) {
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
-        [self.dataSource loadMoreItemsForCategoryInSection:0
+        [self.dataSource loadMoreItemsForCategoryInSection:section
                                                 completion:^(NSError *error) {
                                                     _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                                                         _storyUpdatedFailed = TRUE;
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+                                                            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]]];
                                                             [NSTimer scheduledTimerWithTimeInterval:2
                                                                                              target:self
                                                                                            selector:@selector(clearFailAfterTwoSeconds)
@@ -117,7 +117,7 @@
                                                     }
                                                 }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]]];
         }];
     }
 }

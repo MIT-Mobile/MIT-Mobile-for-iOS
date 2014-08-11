@@ -67,7 +67,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    [self.collectionView reloadData];
+
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     }
@@ -340,10 +341,11 @@
     }
 }
 
-- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)index
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:index];
+        NSLog(@"ABC %d", [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section]);
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     } else {
         return 0;
     }
