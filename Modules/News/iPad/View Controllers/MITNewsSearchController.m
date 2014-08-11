@@ -14,18 +14,18 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
-static NSUInteger loadingActivityViewTag = (int)"loadingActivityView";
-static NSUInteger noResultsViewTag = (int)"noResultsView";
-
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
 
 @interface MITNewsSearchController()
-@property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
+@property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
+
+@property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
+@property (nonatomic, weak) MITViewWithCenterText *messageView;
 
 @end
 
@@ -120,10 +120,8 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
         self.searchTableView.alpha = 1;
         self.view.alpha = 1;
     }
-    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
-    if (view) {
-        view.alpha = 1;
-    }
+    self.messageActivityView.alpha = 1;
+
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -143,10 +141,7 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
-    if (view) {
-        view.alpha = .5;
-    }
+    self.messageActivityView.alpha = .5;
     searchBar.showsCancelButton = YES;
     if ([searchBar.text isEqualToString:@""]) {
         self.searchTableView.alpha = 0;
@@ -497,35 +492,31 @@ static NSUInteger noResultsViewTag = (int)"noResultsView";
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
-    noResultsView.tag = noResultsViewTag;
     if (_storyUpdatedFailed) {
         noResultsView.overviewText.text = @"Failed...";
         _storyUpdatedFailed = FALSE;
     }
     [self.view addSubview:noResultsView];
+    self.messageView = noResultsView;
 }
 
 - (void)removeNoResultsView
 {
-    UIView *view = [self.view viewWithTag:noResultsViewTag];
-    if (view) {
-        [view removeFromSuperview];
-    }
+    [self.messageView removeFromSuperview];
+    self.messageView = nil;
 }
 
 - (void)addLoadingView
 {
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
     loadingActivityView.frame = self.searchTableView.frame;
-    loadingActivityView.tag = loadingActivityViewTag;
     [self.view addSubview:loadingActivityView];
+    self.messageActivityView = loadingActivityView;
 }
 
 - (void)removeLoadingView
 {
-    UIView *view = [self.view viewWithTag:loadingActivityViewTag];
-    if (view) {
-        [view removeFromSuperview];
-    }
+    [self.messageActivityView removeFromSuperview];
+    self.messageActivityView = nil;
 }
 @end
