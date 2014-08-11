@@ -9,7 +9,7 @@
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
-@interface MITEventsMapViewController () <MKMapViewDelegate>
+@interface MITEventsMapViewController () <MKMapViewDelegate, MITEventDetailViewControllerDelegate>
 
 
 @property (nonatomic, strong) UIPopoverController *currentEventPopoverController;
@@ -55,21 +55,24 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (BOOL)canSelectEvent:(MITCalendarsEvent *)event
 {
-    for (MITEventPlace *place in self.places) {
-        if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
-            return YES;
-        }
-    }
-    
-    return NO;
+    return !event.isHoliday;
 }
 
 - (void)selectEvent:(MITCalendarsEvent *)event
 {
-    for (MITEventPlace *place in self.places) {
+    __block BOOL eventHasMapAnnotation = NO;
+    [self.places enumerateObjectsUsingBlock:^(MITEventPlace *place, NSUInteger idx, BOOL *stop) {
         if ([place.calendarsEvent.identifier isEqualToString:event.identifier]) {
+            if ([[self.mapView selectedAnnotations] containsObject:place]) {
+                [self.mapView deselectAnnotation:place animated:NO];
+            }
             [self.mapView selectAnnotation:place animated:YES];
+            eventHasMapAnnotation = YES;
+            (*stop) = YES;
         }
+    }];
+    if (!eventHasMapAnnotation) {
+        [self showPopoverForEvent:event fromAnnotationView:nil];
     }
 }
 
@@ -170,34 +173,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITEventPlace *place = view.annotation;
-        MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-        detailVC.event = place.calendarsEvent;
-        self.currentEventPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
         UIView *annotationView = [self.mapView viewForAnnotation:place];
-        
-        CGFloat minTableHeight = 360;
-        CGFloat tableHeight = 0;
-        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
-            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
-                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-            }
-        }
-        
-        CGFloat navbarHeight = 44;
-        CGFloat statusBarHeight = 20;
-        CGFloat toolbarHeight = 44;
-        CGFloat padding = 30;
-        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
-        
-        if (tableHeight > maxPopoverHeight) {
-            tableHeight = maxPopoverHeight;
-        } if (tableHeight < minTableHeight) {
-            tableHeight = minTableHeight;
-        }
-        
-        self.currentEventPopoverController.passthroughViews = @[self.navigationController.toolbar];
-        [self.currentEventPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-        [self.currentEventPopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self showPopoverForEvent:place.calendarsEvent fromAnnotationView:annotationView];
     }
 }
 
@@ -213,6 +190,58 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
         self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
     }
     
+}
+
+#pragma mark - UIPopover Display
+
+- (void)showPopoverForEvent:(MITCalendarsEvent *)event fromAnnotationView:(UIView *)annotationView
+{
+    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.event = event;
+    detailVC.delegate = self;
+    self.currentEventPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+    
+    
+    CGFloat tableHeight = [detailVC targetTableViewHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
+    
+    self.currentEventPopoverController.passthroughViews = @[self.navigationController.toolbar];
+    [self.currentEventPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+    
+    if (annotationView) {
+        [self.currentEventPopoverController presentPopoverFromRect:annotationView.bounds
+                                                            inView:annotationView
+                                          permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                          animated:YES];
+    } else {
+        CGRect presentationRect = CGRectMake(self.mapView.center.x, self.mapView.center.y, 0, 0);
+        [self.currentEventPopoverController presentPopoverFromRect:presentationRect inView:self.mapView permittedArrowDirections:0 animated:YES];
+    }
+
+}
+
+#pragma mark - UIPopover Calculations
+
+- (CGFloat)maxPopoverHeight
+{
+    CGFloat navbarHeight = 44;
+    CGFloat statusBarHeight = 20;
+    CGFloat toolbarHeight = 44;
+    CGFloat padding = 30;
+    CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
+    return maxPopoverHeight;
+}
+
+- (CGFloat)minPopoverHeight
+{
+    return 360.0;
 }
 
 #pragma mark - Map View
@@ -244,6 +273,24 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     }
     
     self.places = annotationsToAdd;
+}
+
+#pragma mark - MITEventsDetailViewControllerDelegate
+
+- (void)eventDetailViewControllerDidUpdateSize:(MITEventDetailViewController *)eventDetailViewController
+{
+    
+    CGFloat tableHeight = [eventDetailViewController targetTableViewHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
+    
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
+    
+    [self.currentEventPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:YES];
 }
 
 @end
