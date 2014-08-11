@@ -1,7 +1,6 @@
 #import "MITEventsHomeViewController.h"
 #import "MITDayOfTheWeekCell.h"
 #import "MITCalendarEventCell.h"
-#import "MITCalendarDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITDatePickerViewController.h"
@@ -99,7 +98,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.navBarSeparatorView.hidden = YES;
     
-    [self registerForNotifications];
     [self centerDayPickerCollectionView];
 }
 
@@ -149,12 +147,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.eventsController.view.frame = self.eventsTableContainerView.bounds;
     [self.eventsTableContainerView addSubview:self.eventsController.view];
     [self.eventsController didMoveToParentViewController:self];
-}
-
-- (void)registerForNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoaded:) name:kCalendarListsLoaded object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(calendarListLoadedFailed:) name:kCalendarListsFailedToLoad object:nil];
 }
 
 - (UIImageView *)findHairlineImageViewUnder:(UIView *)view {

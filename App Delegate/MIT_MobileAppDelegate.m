@@ -506,8 +506,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)loadManagedObjectModel
 {
-    NSArray *modelNames = @[@"Calendar",
-                            @"MITCalendarDataModel",
+    NSArray *modelNames = @[@"MITCalendarDataModel",
                             @"CampusMap",
                             @"Dining",
                             @"Emergency",
