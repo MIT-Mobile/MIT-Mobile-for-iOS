@@ -58,17 +58,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-
-    MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    if (story) {
-        [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
-    }
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (!_storyUpdateInProgress) {
             [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
             [self getMoreStoriesForSection:indexPath.section];
         }
+    } else {
+        MITNewsStory *story = [self storyAtIndexPath:indexPath];
+        if (story) {
+            [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
+        }
     }
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
