@@ -9,6 +9,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
+@property (strong, nonatomic) NSMutableArray *indexesOfHolidayEvents;
 @end
 
 @implementation MITEventsTableViewController
@@ -89,7 +90,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     MITCalendarEventCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarEventCell forIndexPath:indexPath];
     
-    [cell setEvent:self.events[indexPath.row] withNumberPrefix:[self numberPrefixForIndexPath:indexPath]];
+    MITCalendarsEvent *event = self.events[indexPath.row];
+    NSString *numberPrefix = event.isHoliday ? nil : [self numberPrefixForIndexPath:indexPath];
+    [cell setEvent:event withNumberPrefix:numberPrefix];
     
     return cell;
 }
@@ -105,7 +108,24 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         return nil;
     }
     else {
-        return [NSString stringWithFormat:@"%i", indexPath.row + 1];
+        NSUInteger row = indexPath.row;
+        
+        __block int holidayEventsOffset = 0;
+        if (self.indexesOfHolidayEvents.count > 0) {
+            [self.indexesOfHolidayEvents enumerateObjectsUsingBlock:^(NSNumber *indexObject, NSUInteger idx, BOOL *stop) {
+                NSUInteger indexValue = indexObject.unsignedIntegerValue;
+                if (indexValue < row) {
+                    holidayEventsOffset++;
+                } else {
+                    (*stop) = YES;
+                }
+            }];
+        }
+        
+        int defaultOffset = row + 1; // Index 0 == number 1, etc.
+        int actualOffset = defaultOffset - holidayEventsOffset;
+        
+        return [NSString stringWithFormat:@"%i", actualOffset];
     }
 }
 
@@ -114,6 +134,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (void)setEvents:(NSArray *)events
 {
     _events = events;
+    
+    self.indexesOfHolidayEvents = [NSMutableArray array];
+    [events enumerateObjectsUsingBlock:^(MITCalendarsEvent *event, NSUInteger idx, BOOL *stop) {
+        if (event.isHoliday) {
+            [self.indexesOfHolidayEvents addObject:@(idx)];
+        }
+    }];
+    
     [self.tableView reloadData];
     if (events) {
         [self hideLoadingIndicator];

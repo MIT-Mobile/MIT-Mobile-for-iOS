@@ -228,12 +228,18 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 {
     [self removeAllPlaceAnnotations];
     NSMutableArray *annotationsToAdd = [NSMutableArray array];
+    int totalNumberOfVisibleHolidays = 0;
     for (int i = 0; i < eventsArray.count; i++) {
         MITCalendarsEvent *event = eventsArray[i];
-        MITEventPlace *eventPlace = [[MITEventPlace alloc] initWithCalendarsEvent:event];
-        if (eventPlace) {
-            eventPlace.displayNumber = i + 1;
-            [annotationsToAdd addObject:eventPlace];
+        if (!event.isHoliday) {
+            MITEventPlace *eventPlace = [[MITEventPlace alloc] initWithCalendarsEvent:event];
+            if (eventPlace) {
+                eventPlace.displayNumber = (i + 1) - totalNumberOfVisibleHolidays;
+                [annotationsToAdd addObject:eventPlace];
+            }
+        }
+        else {
+            totalNumberOfVisibleHolidays++;
         }
     }
     

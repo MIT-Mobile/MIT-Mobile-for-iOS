@@ -120,4 +120,9 @@
     ekEvent.notes = self.htmlDescription;
 }
 
+- (BOOL)isHoliday
+{
+    return [self.statusCode isEqualToString:@"H"];
+}
+
 @end

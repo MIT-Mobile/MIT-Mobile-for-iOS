@@ -35,6 +35,7 @@
 
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator;
 - (void)setUpEKEvent:(EKEvent *)ekEvent;
+- (BOOL)isHoliday;
 
 @end
 
