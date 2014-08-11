@@ -8,6 +8,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (weak, nonatomic) IBOutlet UILabel *noResultsFoundLabel;
 
 @property (strong, nonatomic) NSMutableArray *indexesOfHolidayEvents;
 @end
@@ -19,6 +20,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [super viewDidLoad];
     [self setupTableView];
     [self showLoadingIndicator];
+    self.noResultsFoundLabel.hidden = YES;
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         self.shouldIncludeNumberedPrefixes = YES;
@@ -65,6 +67,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.tableView.hidden = NO;
     self.activityIndicator.hidden = YES;
+}
+
+- (void)showNoResultsLabel
+{
+    self.tableView.hidden = YES;
+    self.noResultsFoundLabel.hidden = NO;
 }
 
 #pragma mark - TableView Delegate/Datsource
@@ -146,6 +154,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.tableView reloadData];
     if (events) {
         [self hideLoadingIndicator];
+        if (events.count == 0) {
+            [self showNoResultsLabel];
+        }
     }
     else {
         [self showLoadingIndicator];
