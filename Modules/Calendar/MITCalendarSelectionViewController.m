@@ -234,6 +234,9 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         self.selectedCategory = self.category;
         [self addCategoriesToPathUpToCurrentCategory];
         [self.tableView reloadData];
+        if (self.interfaceIsPad) {
+            [self didFinishSelecting];
+        }
     }
     else {
         [self selectCalendarAtIndexPath:indexPath];
