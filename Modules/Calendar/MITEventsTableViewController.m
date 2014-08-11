@@ -52,6 +52,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
+    self.tableView.scrollsToTop = YES;
 }
 
 - (void)showLoadingIndicator

@@ -176,6 +176,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.dayPickerCollectionView registerNib:cellNib forCellWithReuseIdentifier:kMITDayOfTheWeekCell];
     
     self.pageWidth = self.dayPickerCollectionView.frame.size.width;
+    
+    self.dayPickerCollectionView.scrollsToTop = NO;
 }
 
 - (void)setupDatePickerButton
