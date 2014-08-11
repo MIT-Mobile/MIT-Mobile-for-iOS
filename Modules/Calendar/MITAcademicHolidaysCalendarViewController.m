@@ -46,9 +46,6 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
 - (void)loadHolidays
 {
     [MITCalendarWebservices getEventsForCalendar:self.holidaysCalendar
-                                     queryString:nil category:nil
-                                       startDate:[NSDate date]
-                                         endDate:[[NSDate date] dateByAddingYear]
                                       completion:^(NSArray *events, NSError *error) {
         
       self.activityIndicator.hidden = YES;
