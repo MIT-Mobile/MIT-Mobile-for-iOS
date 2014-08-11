@@ -79,6 +79,20 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     }
 }
 
+- (CGFloat)targetTableViewHeight
+{
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    tableHeight += CGRectGetHeight(self.tableView.tableHeaderView.bounds);
+    
+    return tableHeight;
+}
+
 #pragma mark - Private Methods
 
 - (void)refreshEventRows
@@ -119,11 +133,12 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     }
     
     self.rowTypes = rowTypes;
-        
     [self.tableView reloadData];
+    [self notifyDelegateOfSizeUpdate];
 }
 
-- (void)setupHeader {
+- (void)setupHeader
+{
 	CGRect tableFrame = self.tableView.frame;
     
 	CGFloat titlePadding = 15;
@@ -156,7 +171,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     self.tableView.tableHeaderView = headerView;
 }
 
-
 - (void)requestEventDetails
 {
     if (self.isLoadingEventDetails) {
@@ -175,8 +189,8 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     
 }
 
-
-- (NSString *)htmlStringFromString:(NSString *)source {
+- (NSString *)htmlStringFromString:(NSString *)source
+{
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
 	NSURL *fileURL = [NSURL URLWithString:@"calendar/events_template.html" relativeToURL:baseURL];
 	NSError *error;
@@ -227,6 +241,13 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
         }];
     } else {
         presentEventEditViewController(self.event, eventStore);
+    }
+}
+
+- (void)notifyDelegateOfSizeUpdate
+{
+    if ([self.delegate respondsToSelector:@selector(eventDetailViewControllerDidUpdate:)]) {
+        [self.delegate eventDetailViewControllerDidUpdate:self];
     }
 }
 
@@ -336,6 +357,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 {
     self.descriptionWebviewCellHeight = newHeight;
     [self.tableView reloadData];
+    [self notifyDelegateOfSizeUpdate];
 }
 
 #pragma mark - EKEventEditViewDelegate Methods
