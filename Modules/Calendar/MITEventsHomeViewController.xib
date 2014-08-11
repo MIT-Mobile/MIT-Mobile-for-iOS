@@ -39,7 +39,7 @@
                     </items>
                 </toolbar>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tgr-Jh-tU3">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
+                    <rect key="frame" x="0.0" y="-11" width="320" height="64"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="jXL-Oq-1hD">
@@ -62,7 +62,7 @@
                             </connections>
                         </collectionView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
-                            <rect key="frame" x="114" y="42" width="90" height="18"/>
+                            <rect key="frame" x="114" y="40" width="90" height="18"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -88,11 +88,11 @@
                         <constraint firstAttribute="height" constant="64" id="UBW-f3-u73"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="leading" secondItem="Tgr-Jh-tU3" secondAttribute="leading" id="gsu-LY-Vmc"/>
                         <constraint firstItem="7cg-I2-Fa8" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="ooZ-BF-eXz"/>
-                        <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="4" id="uPg-oe-Bw9"/>
+                        <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="6" id="uPg-oe-Bw9"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pgi-DN-w8P">
-                    <rect key="frame" x="0.0" y="64" width="320" height="396"/>
+                    <rect key="frame" x="0.0" y="52" width="320" height="408"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
@@ -102,14 +102,14 @@
                 <constraint firstAttribute="centerX" secondItem="O7E-nT-nqr" secondAttribute="centerX" id="1v3-d7-suD"/>
                 <constraint firstItem="O7E-nT-nqr" firstAttribute="top" secondItem="Pgi-DN-w8P" secondAttribute="bottom" id="B84-Rq-fnc"/>
                 <constraint firstAttribute="trailing" secondItem="Pgi-DN-w8P" secondAttribute="trailing" id="Ejc-C1-IOg"/>
-                <constraint firstItem="Pgi-DN-w8P" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="bottom" id="IeU-MZ-9QG"/>
+                <constraint firstItem="Pgi-DN-w8P" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="bottom" constant="-1" id="IeU-MZ-9QG"/>
                 <constraint firstAttribute="trailing" secondItem="Tgr-Jh-tU3" secondAttribute="trailing" id="Owp-4l-Iwm"/>
                 <constraint firstAttribute="centerX" secondItem="Tgr-Jh-tU3" secondAttribute="centerX" id="PaL-x3-kjU"/>
                 <constraint firstAttribute="trailing" secondItem="O7E-nT-nqr" secondAttribute="trailing" id="SRa-og-T9i"/>
                 <constraint firstItem="Pgi-DN-w8P" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="UlW-Gn-TjJ"/>
                 <constraint firstAttribute="bottom" secondItem="O7E-nT-nqr" secondAttribute="bottom" id="Vul-sb-sg2"/>
                 <constraint firstItem="O7E-nT-nqr" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="XTj-cu-HON"/>
-                <constraint firstItem="Tgr-Jh-tU3" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="iGI-pm-WSf"/>
+                <constraint firstItem="Tgr-Jh-tU3" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-11" id="iGI-pm-WSf"/>
                 <constraint firstItem="Tgr-Jh-tU3" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="tsh-TB-M2K"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>

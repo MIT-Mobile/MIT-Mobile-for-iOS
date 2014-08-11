@@ -125,7 +125,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.repositionedNavBarSeparatorView = [[UIImageView alloc] initWithFrame:self.navBarSeparatorView.frame];
     self.repositionedNavBarSeparatorView.backgroundColor = [UIColor colorWithRed:150.0/255.0 green:152.0/255.0 blue:156.0/255.0 alpha:1.0];
     CGRect repositionedFrame = self.repositionedNavBarSeparatorView.frame;
-    repositionedFrame.origin.y = 63.5;
+    repositionedFrame.origin.y = 62.5;
     self.repositionedNavBarSeparatorView.frame = repositionedFrame;
     self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.dayPickerContainerView addSubview:self.repositionedNavBarSeparatorView];
