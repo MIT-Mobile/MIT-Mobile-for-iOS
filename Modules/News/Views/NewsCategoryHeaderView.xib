@@ -40,12 +40,24 @@
                     </constraints>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="09T-ah-XvT" userLabel="Separator">
+                    <rect key="frame" x="15" y="42" width="305" height="2"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="2" id="OEj-rn-Bef"/>
+                    </constraints>
+                </view>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="rq1-KP-oP6" secondAttribute="trailing" id="8wA-FS-xVM"/>
                 <constraint firstItem="rq1-KP-oP6" firstAttribute="leading" secondItem="w51-xu-vRG" secondAttribute="leading" id="ASR-Rx-nCR"/>
                 <constraint firstAttribute="bottom" secondItem="rq1-KP-oP6" secondAttribute="bottom" id="Kxo-Ii-qgt"/>
+                <constraint firstItem="09T-ah-XvT" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="9" id="UR1-yO-wJl"/>
                 <constraint firstItem="rq1-KP-oP6" firstAttribute="top" secondItem="w51-xu-vRG" secondAttribute="top" id="d7i-qC-ytQ"/>
+                <constraint firstAttribute="trailing" secondItem="09T-ah-XvT" secondAttribute="trailing" id="jpI-An-COA"/>
+                <constraint firstAttribute="bottom" secondItem="09T-ah-XvT" secondAttribute="bottom" id="pbR-cQ-iFl"/>
+                <constraint firstItem="09T-ah-XvT" firstAttribute="leading" secondItem="w51-xu-vRG" secondAttribute="leading" constant="15" id="tqe-lz-ZhG"/>
             </constraints>
             <connections>
                 <outlet property="accessoryView" destination="9Sr-oA-zdz" id="RUf-05-OxL"/>
