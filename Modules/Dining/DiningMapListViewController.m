@@ -519,7 +519,7 @@
 {
     if (self.isShowingHouseDining && indexPath.section == _announcementSectionIndex) {
         // set announcement background color to yellow color
-        cell.backgroundColor = [UIColor colorWithHexString:@"#FFEF8A"];
+        cell.backgroundColor = [UIColor colorWithRed:255/255.0 green:253/255.0 blue:205/255.0 alpha:1];
     } else {
         cell.backgroundColor = [UIColor whiteColor];
     }
@@ -612,7 +612,7 @@
         }
 //        }
     } else if (indexPath.section == _announcementSectionIndex) {
-        MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] init];
         vc.title = @"Announcements";
         vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         vc.htmlContent = [[DiningData sharedData] announcementsHTML];

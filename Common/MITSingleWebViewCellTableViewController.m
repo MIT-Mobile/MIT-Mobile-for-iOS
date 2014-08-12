@@ -20,7 +20,7 @@
         self.htmlFormatString = @"<html>"
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
-        "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 15px; }"
+        "body { margin-left: auto;, margin-right:auto, padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 15px; }"
         "a { color: #990000; }"
         "</style>"
         "</head>"
@@ -41,6 +41,10 @@
 //    self.tableView.opaque = YES;
     self.tableView.backgroundView = nil;
 //    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    
+    // Prevent excess cells from appearing.
+    self.tableView.tableFooterView = [UIView new];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 // Override to allow orientations other than the default portrait orientation.
