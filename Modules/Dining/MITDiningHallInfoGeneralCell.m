@@ -1,10 +1,3 @@
-//
-//  DiningHallInfoGeneralCell.m
-//  MIT Mobile
-//
-//  Created by Logan Wright on 8/12/14.
-//
-//
 
 #import "MITDiningHallInfoGeneralCell.h"
 
