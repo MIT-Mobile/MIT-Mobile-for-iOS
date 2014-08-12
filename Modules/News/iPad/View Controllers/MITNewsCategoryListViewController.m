@@ -5,13 +5,15 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 
+static NSString *errorMessage = @"Failed";
+
 @interface MITNewsCategoryListViewController ()
 
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdatedFailed;
+    BOOL _storyUpdateFailed;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -60,7 +62,6 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (!_storyUpdateInProgress) {
-            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
             [self getMoreStoriesForSection:indexPath.section];
         }
     } else {
@@ -82,8 +83,8 @@
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdatedFailed) {
-        cell.textLabel.text = @"Failed...";
+    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
+        cell.textLabel.text = errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
@@ -165,7 +166,8 @@
                                                     _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                                                        _storyUpdatedFailed = TRUE;
+                                                        errorMessage = error.localizedDescription;
+                                                        _storyUpdateFailed = TRUE;
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                             [NSTimer scheduledTimerWithTimeInterval:2
@@ -189,7 +191,7 @@
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdatedFailed = FALSE;
+    _storyUpdateFailed = FALSE;
         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 

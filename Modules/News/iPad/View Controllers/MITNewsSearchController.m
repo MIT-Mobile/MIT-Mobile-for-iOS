@@ -14,6 +14,8 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
+static NSString *errorMessage = @"Failed";
+
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
@@ -31,7 +33,7 @@
 
 @implementation MITNewsSearchController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdatedFailed;
+    BOOL _storyUpdateFailed;
 }
 
 @synthesize recentSearchController = _recentSearchController;
@@ -189,7 +191,7 @@
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
             [self removeLoadingView];
-            _storyUpdatedFailed = YES;
+            _storyUpdateFailed = YES;
             [self addNoResultsView];
 
         } else {
@@ -237,7 +239,8 @@
             _storyUpdateInProgress = FALSE;
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                _storyUpdatedFailed = TRUE;
+                errorMessage =error.localizedDescription;
+                _storyUpdateFailed = TRUE;
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                     [NSTimer scheduledTimerWithTimeInterval:2
@@ -261,7 +264,7 @@
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdatedFailed = FALSE;
+    _storyUpdateFailed = FALSE;
         [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -329,8 +332,8 @@
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdatedFailed) {
-        cell.textLabel.text = @"Failed...";
+    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
+        cell.textLabel.text = errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
@@ -426,7 +429,6 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (!_storyUpdateInProgress) {
-            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
             [self getMoreStories];
         }
     }
@@ -492,9 +494,9 @@
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
-    if (_storyUpdatedFailed) {
+    if (_storyUpdateFailed) {
         noResultsView.overviewText.text = @"Failed...";
-        _storyUpdatedFailed = FALSE;
+        _storyUpdateFailed = FALSE;
     }
     [self.view addSubview:noResultsView];
     self.messageView = noResultsView;

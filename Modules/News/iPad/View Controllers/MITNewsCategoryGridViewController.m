@@ -8,10 +8,13 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITNewsSearchController.h"
 #import "MITNewsStoryCollectionViewCell.h"
+#import "MITNewsLoadMoreCollectionViewCell.h"
+
+static NSString *errorMessage = @"Failed";
 
 @interface MITNewsCategoryGridViewController () {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdatedFailed;
+    BOOL _storyUpdateFailed;
 }
 
 @end
@@ -35,24 +38,31 @@
 {
     NSString *cellIdentifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
-
     if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
         storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
-    }
-    
+        
+    } else
+        if (cellIdentifier == MITNewsCellIdentifierStoryLoadMore) {
+            MITNewsLoadMoreCollectionViewCell *cell = (MITNewsLoadMoreCollectionViewCell *)collectionViewCell;
+            if(_storyUpdateFailed) {
+                cell.textLabel.text = errorMessage;
+                cell.loadingIndicator.hidden = YES;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+                cell.loadingIndicator.hidden = NO;
+            } else {
+                cell.textLabel.text = @"Load More...";
+                cell.loadingIndicator.hidden = YES;
+            }
+            return cell;
+        }
     return collectionViewCell;
 }
 
 - (NSString*)_collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
-        if (_storyUpdateInProgress) {
-            return MITNewsCellIdentifierStoryLoadingMore;
-        }
-        if (_storyUpdatedFailed) {
-            return MITNewsCellIdentifierStoryFailed;
-        }
         return MITNewsCellIdentifierStoryLoadMore;
     }
     
@@ -75,7 +85,6 @@
     if ([self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
         indexPath.row + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
         if (!_storyUpdateInProgress) {
-            [collectionView reloadItemsAtIndexPaths:@[indexPath]];
             [self getMoreStoriesForSection:indexPath.section];
         }
 
@@ -100,7 +109,8 @@
                                                     _storyUpdateInProgress = FALSE;
                                                     if (error) {
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                                                        _storyUpdatedFailed = TRUE;
+                                                        errorMessage =error.localizedDescription;
+                                                        _storyUpdateFailed = TRUE;
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                             [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]]];
                                                             [NSTimer scheduledTimerWithTimeInterval:2
@@ -111,21 +121,21 @@
                                                         }];
                                                     } else {
                                                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        dispatch_async(dispatch_get_main_queue(), ^{
                                                             [self.collectionView reloadData];
-                                                        }];
+                                                        });
                                                     }
                                                 }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]]];
-        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
+        });
     }
 }
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdatedFailed = FALSE;
-        [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+    _storyUpdateFailed = FALSE;
+    [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
 }
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;

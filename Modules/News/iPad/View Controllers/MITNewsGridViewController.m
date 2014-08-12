@@ -12,6 +12,7 @@
 #import "MITNewsGridHeaderView.h"
 #import "MITAdditions.h"
 #import "MITNewsStoryCollectionViewCell.h"
+#import "MITNewsLoadMoreCollectionViewCell.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
@@ -58,9 +59,6 @@
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
     [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
-    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadingMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadingMore];
-    [self _collectionView:collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryFailed bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryFailed];
-    
     [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
 }
 
@@ -249,8 +247,7 @@
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
     UICollectionViewCell *cell = [self _collectionView:collectionView dequeueLayoutCellForItemAtIndexPath:indexPath];
-        
-    if ([cell class] == [UICollectionViewCell class]) {
+    if ([cell class] == [MITNewsLoadMoreCollectionViewCell class]) {
         return 175;
     }
     
