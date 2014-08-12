@@ -626,14 +626,13 @@
                 block(dataSource.objects[currentIndex +1], nil);
             }
         } else {
-            __block NSError *updateError = nil;
             if ([dataSource hasNextPage]) {
                 [dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",dataSource);
                         
-                        if (!updateError) {
-                            updateError = error;
+                        if (block) {
+                            block(nil, nil);
                         }
                     } else {
                         DDLogVerbose(@"refreshed data source %@",dataSource);
@@ -646,7 +645,17 @@
                         }
                     }
                 }];
+                
+            } else {
+                if (block) {
+                    block(nil, nil);
+                }
             }
+        }
+
+    } else {
+        if (block) {
+            block(nil, nil);
         }
     }
 }
