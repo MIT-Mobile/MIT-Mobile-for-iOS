@@ -86,6 +86,7 @@ static CGFloat const kTitleDetailPadding = 6;
     mealTimesFrame.size.height = targetScheduleLabelHeight;
     mealTimesFrame.origin.y = targetOriginY;
     mealTimesFrame.origin.x = CGRectGetMaxX(mealNamesFrame) + kLeftOffset;
+    mealTimesFrame.size.width = CGRectGetWidth(self.bounds) - mealTimesFrame.origin.x;
     self.scheduleLabelMealTimes.frame = mealTimesFrame;
 }
 

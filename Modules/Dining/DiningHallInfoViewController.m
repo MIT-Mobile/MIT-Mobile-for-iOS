@@ -48,7 +48,7 @@ static NSInteger const kLocationSectionIndex = 2;
     self.tableView.backgroundColor = [UIColor whiteColor];
     [self fetchScheduleInfo];
     
-    self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
+    self.title = self.venue.shortName;
     
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     headerView.titleLabel.text = self.venue.name;
