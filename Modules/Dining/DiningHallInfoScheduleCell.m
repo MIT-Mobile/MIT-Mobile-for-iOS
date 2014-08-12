@@ -1,17 +1,30 @@
 
 #import "DiningHallInfoScheduleCell.h"
+#import "UIKit+MITAdditions.h"
 
+static CGFloat const kTopBottomOffset = 10.0;
+static CGFloat const kLeftOffset = 15.0;
+
+static CGFloat const kDaySpanLabelWidth = 66.0;
+static CGFloat const kDaySpanLabelHeight = 20.0;
+static CGRect const kDaySpanLabelBaseRect = {{kLeftOffset, 0}, {kDaySpanLabelWidth, kDaySpanLabelHeight}};
+
+static CGFloat const kScheduleLabelsWidth = 100.0;
+
+static CGFloat const kTitleDetailPadding = 6;
 
 @interface DiningHallInfoScheduleCell ()
 
 @property (nonatomic, strong) NSDate * startDate;
 @property (nonatomic, strong) NSDate * endDate;
-@property (nonatomic, strong) UILabel * spanLabel;
-@property (nonatomic, strong) UILabel * scheduleLabelMeals;
-@property (nonatomic, strong) UILabel * scheduleLabelTimes;
+@property (nonatomic, strong) UILabel *daySpanLabel;
+@property (nonatomic, strong) UILabel *scheduleLabelMealNames;
+@property (nonatomic, strong) UILabel *scheduleLabelMealTimes;
 
-@property (nonatomic, strong) NSString * mealsColumn;
-@property (nonatomic, strong) NSString * timesColumn;
+@property (nonatomic, strong) NSString *mealsColumn;
+@property (nonatomic, strong) NSString *timesColumn;
+
+@property (strong, nonatomic) CALayer *cellSeparator;
 
 @end
 
@@ -21,78 +34,68 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
-        self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 66, 0)];
-        self.spanLabel.backgroundColor  = [UIColor clearColor];
-        self.spanLabel.numberOfLines    = 1;
-        self.spanLabel.font             = [[self class] labelFont];
-        self.spanLabel.textAlignment    = NSTextAlignmentRight;
-        [self.contentView addSubview:self.spanLabel];
         
-        CGRect frame = CGRectMake(83, 0, 205, 0);
-        self.scheduleLabelMeals = [[UILabel alloc] initWithFrame:frame];
-        self.scheduleLabelMeals.backgroundColor     = [UIColor clearColor];
-        self.scheduleLabelMeals.numberOfLines       = 0;
-        self.scheduleLabelMeals.font                = [[self class] detailFont];
-        self.scheduleLabelMeals.textAlignment       = NSTextAlignmentLeft;
-        [self.contentView addSubview:self.scheduleLabelMeals];
+        self.daySpanLabel = [[UILabel alloc] initWithFrame:kDaySpanLabelBaseRect];
+        self.daySpanLabel.backgroundColor  = [UIColor clearColor];
+        self.daySpanLabel.numberOfLines    = 1;
+        self.daySpanLabel.font             = [self.class titleFont];
+        self.daySpanLabel.textAlignment    = NSTextAlignmentLeft;
+        self.daySpanLabel.textColor = [UIColor mit_tintColor];
+        self.daySpanLabel.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+        [self.contentView addSubview:self.daySpanLabel];
         
-        self.scheduleLabelTimes = [[UILabel alloc] initWithFrame:frame];
-        self.scheduleLabelTimes.backgroundColor     = [UIColor clearColor];
-        self.scheduleLabelTimes.numberOfLines       = 0;
-        self.scheduleLabelTimes.font                = [[self class] detailFont];
-        self.scheduleLabelTimes.textAlignment       = NSTextAlignmentRight;
-        [self.contentView addSubview:self.scheduleLabelTimes];
+        CGRect scheduleLabelsFrame = CGRectMake(kLeftOffset, 0, kScheduleLabelsWidth, 0);
+        self.scheduleLabelMealNames = [[UILabel alloc] initWithFrame:scheduleLabelsFrame];
+        self.scheduleLabelMealNames.backgroundColor     = [UIColor clearColor];
+        self.scheduleLabelMealNames.numberOfLines       = 0;
+        self.scheduleLabelMealNames.font                = [[self class] detailFont];
+        self.scheduleLabelMealNames.textAlignment       = NSTextAlignmentRight;
+        [self.contentView addSubview:self.scheduleLabelMealNames];
+        
+        self.scheduleLabelMealTimes = [[UILabel alloc] initWithFrame:scheduleLabelsFrame];
+        self.scheduleLabelMealTimes.backgroundColor     = [UIColor clearColor];
+        self.scheduleLabelMealTimes.numberOfLines       = 0;
+        self.scheduleLabelMealTimes.font                = [[self class] detailFont];
+        self.scheduleLabelMealTimes.textAlignment       = NSTextAlignmentLeft;
+        [self.contentView addSubview:self.scheduleLabelMealTimes];
     }
     return self;
 }
 
-+ (UIFont *)labelFont {
-    return [UIFont boldSystemFontOfSize:12];
-}
-
-+ (UIFont *)detailFont {
-    return [UIFont systemFontOfSize:13];
-}
-
-- (void) layoutSubviews
+- (void)layoutSubviews
 {
     [super layoutSubviews];
     
-    UIFont *labelFont = [[self class] labelFont];
+    CGRect daySpanFrame = kDaySpanLabelBaseRect;
+    if (self.shouldIncludeTopPadding) {
+        daySpanFrame.origin.y += kTopBottomOffset;
+    }
+    self.daySpanLabel.frame = daySpanFrame;
+    
     UIFont *detailFont = [[self class] detailFont];
     
-    CGRect frame = self.scheduleLabelTimes.frame;
-    frame.size.height = [self.scheduleInfo count] * [[self class] detailFont].lineHeight;
-    CGFloat topPadding = round((CGRectGetHeight(self.bounds) - CGRectGetHeight(frame)) * 0.5) - 1;
-    frame.origin.y = topPadding;
-
-    self.scheduleLabelTimes.frame = frame;
-    self.scheduleLabelMeals.frame = frame;
+    CGFloat targetScheduleLabelHeight = self.scheduleInfo.count * detailFont.lineHeight;
+    CGFloat targetOriginY = CGRectGetMaxY(self.daySpanLabel.frame) + kTitleDetailPadding;
     
-    // Match the baselines between the UILabels despite their differing font sizes. Account for rounding differences on Retina displays.
-    CGRect spanFrame = self.spanLabel.frame;
-    const CGFloat scale = [UIScreen mainScreen].scale;
-    spanFrame.origin.y = topPadding + ceil(((detailFont.lineHeight + detailFont.descender) - (labelFont.lineHeight + labelFont.descender)) * scale) / scale;
-    spanFrame.size.height = labelFont.lineHeight;
-    self.spanLabel.frame = spanFrame;
+    CGRect mealNamesFrame = self.scheduleLabelMealNames.frame;
+    mealNamesFrame.size.height = targetScheduleLabelHeight;
+    mealNamesFrame.origin.y = targetOriginY;
+    self.scheduleLabelMealNames.frame = mealNamesFrame;
+    
+    CGRect mealTimesFrame = self.scheduleLabelMealTimes.frame;
+    mealTimesFrame.size.height = targetScheduleLabelHeight;
+    mealTimesFrame.origin.y = targetOriginY;
+    mealTimesFrame.origin.x = CGRectGetMaxX(mealNamesFrame) + kLeftOffset;
+    self.scheduleLabelMealTimes.frame = mealTimesFrame;
 }
 
-- (void) setStartDate:(NSDate *)startDate andEndDate:(NSDate *)endDate
-{
-    self.startDate = startDate;
-    self.endDate = endDate;
-    
-    self.spanLabel.text = [self formatStringforDaySpan];
-}
-
-- (void) setScheduleInfo:(NSArray *)scheduleInfo
+- (void)setScheduleInfo:(NSArray *)scheduleInfo
 {
     _scheduleInfo = scheduleInfo;
     [self updateScheduleStrings];
 }
 
-- (void) updateScheduleStrings
+- (void)updateScheduleStrings
 {
     NSArray *meals = [self.scheduleInfo valueForKey:@"mealName"];
     self.mealsColumn = [meals componentsJoinedByString:@"\n"];
@@ -100,11 +103,21 @@
     NSArray *times = [self.scheduleInfo valueForKey:@"mealSpan"];
     self.timesColumn = [times componentsJoinedByString:@"\n"];
 
-    self.scheduleLabelMeals.text = self.mealsColumn;
-    self.scheduleLabelTimes.text = self.timesColumn;
+    self.scheduleLabelMealNames.text = self.mealsColumn;
+    self.scheduleLabelMealTimes.text = self.timesColumn;
 }
 
-- (NSString *) formatStringforDaySpan 
+#pragma mark - Format Date Spans
+
+- (void)setStartDate:(NSDate *)startDate andEndDate:(NSDate *)endDate
+{
+    self.startDate = startDate;
+    self.endDate = endDate;
+    
+    self.daySpanLabel.text = [self formatStringforDaySpan];
+}
+
+- (NSString *)formatStringforDaySpan
 {
     if (!self.startDate) {
         return @"";
@@ -121,12 +134,24 @@
     return daySpan;
 }
 
-+ (CGFloat) heightForCellWithScheduleInfo:(NSArray *)scheduleInfo
+#pragma mark - Class Methods
+
++ (CGFloat)heightForCellWithScheduleInfo:(NSArray *)scheduleInfo withTopPadding:(BOOL)includeTopBuffer
 {
+    CGFloat height = 0;
     if ([scheduleInfo count]) {
-        return 20 + ([self detailFont].lineHeight * [scheduleInfo count]);        // vertical padding plus size of schedule text
+        CGFloat topOffset = includeTopBuffer ? kTopBottomOffset : 0;
+        height = topOffset + CGRectGetHeight(kDaySpanLabelBaseRect) + kTitleDetailPadding + ([self detailFont].lineHeight * [scheduleInfo count]) + kTopBottomOffset;
     }
-    return 44;
+    return height > 44 ? height : 44;
+}
+
++ (UIFont *)titleFont {
+    return [UIFont systemFontOfSize:15.0];
+}
+
++ (UIFont *)detailFont {
+    return [UIFont systemFontOfSize:17.0];
 }
 
 @end
