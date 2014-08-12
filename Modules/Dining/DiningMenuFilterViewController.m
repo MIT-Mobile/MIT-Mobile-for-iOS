@@ -29,11 +29,6 @@
     self.selectedFilters = [filters mutableCopy];
 }
 
--(void) cancelPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:NULL];
-}
-
 - (void) commitChanges:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(applyFilters:)]) {
@@ -54,7 +49,6 @@
     self.title = @"Filters";
     self.tableView.rowHeight = 44;
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commitChanges:)];
     
     NSSortDescriptor *alphabetical = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:NO];
@@ -64,6 +58,19 @@
         self.selectedFilters = [[NSMutableSet alloc] init];
     }
     
+    [self addHeaderToTableView];
+}
+
+- (void)addHeaderToTableView
+{
+    UILabel *headerLabel = [UILabel new];
+    headerLabel.text = @"Select options to be viewed.";
+    headerLabel.bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40);
+    headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.textColor = [UIColor darkTextColor];
+    headerLabel.backgroundColor = [UIColor clearColor];
+    headerLabel.font = [UIFont systemFontOfSize:15.0];
+    self.tableView.tableHeaderView = headerLabel;
 }
 
 - (void)didReceiveMemoryWarning
