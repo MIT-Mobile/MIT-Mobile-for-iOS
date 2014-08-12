@@ -140,6 +140,10 @@ static UIColor *popoverTintColor = nil;
                 _popoverArrowBubbleView.transform = transform;
                 _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), 0, _width, _height);
                 
+                CGFloat inset = sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
+                LEFT_CONTENT_INSET = inset;
+                RIGHT_CONTENT_INSET = -inset;
+                
             } else {
                 
                 _coordinate = ((self.frame.size.width / 2) + self.arrowOffset - floor(ARROW_BASE / 2));
@@ -171,6 +175,10 @@ static UIColor *popoverTintColor = nil;
                 _popoverArrowBubbleView.transform = transform;
                 sign = -sign;
                 _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), 0, _width, _height);
+                
+                CGFloat inset = sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
+                LEFT_CONTENT_INSET = inset;
+                RIGHT_CONTENT_INSET = -inset;
                 
             } else {
                 
@@ -206,6 +214,10 @@ static UIColor *popoverTintColor = nil;
                 sign = -sign;
                 _popoverArrowBubbleView.frame =  CGRectMake(0, sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), _width, _height);
                 
+                CGFloat inset = sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
+                TOP_CONTENT_INSET = inset;
+                BOTTOM_CONTENT_INSET = -inset;
+                
             } else {
                 
                 _coordinate = ((self.frame.size.height / 2) + self.arrowOffset + floor(ARROW_BASE / 2));
@@ -237,6 +249,10 @@ static UIColor *popoverTintColor = nil;
                 _popoverArrowBubbleView.transform = transform;
                 
                 _popoverArrowBubbleView.frame =  CGRectMake(0, sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), _width, _height);
+                
+                CGFloat inset = sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
+                TOP_CONTENT_INSET = inset;
+                BOTTOM_CONTENT_INSET = -inset;
                 
             } else {
                 
