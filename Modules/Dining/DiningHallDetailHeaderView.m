@@ -9,6 +9,8 @@
 @property (nonatomic, retain) UIButton      * infoButton;
 @property (nonatomic, retain) UIButton      * starButton;
 
+@property (strong, nonatomic) CALayer *separatorLayer;
+
 @end
 
 
@@ -18,15 +20,13 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-//        self.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
         
-        // dimensions derived from https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
-        self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
+        self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 44, 44)];
         self.iconView.contentMode = UIViewContentModeScaleAspectFit;
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 124, 44)];
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 50, 16)];
+        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 64, frame.size.width - 50, 16)];
         
         self.infoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
         CGSize size = self.infoButton.frame.size;
@@ -53,6 +53,10 @@
         [self addSubview:self.timeLabel]; 
         [self addSubview:self.infoButton];
         [self addSubview:self.starButton];
+        
+        self.separatorLayer = [CALayer layer];
+        self.separatorLayer.backgroundColor = [UIColor lightGrayColor].CGColor;
+        [self.layer addSublayer:self.separatorLayer];
     }
     return self;
 }
@@ -76,6 +80,12 @@
 - (void) layoutSubviews
 {
     [super layoutSubviews];
+    [self positionSeparatorLayer];
+}
+
+- (void)positionSeparatorLayer
+{
+    self.separatorLayer.frame = CGRectMake(15, CGRectGetMaxY(self.bounds), CGRectGetWidth(self.bounds) - 15, -0.5);
 }
 
 @end

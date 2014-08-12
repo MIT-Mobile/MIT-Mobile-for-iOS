@@ -144,7 +144,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) infoButtonPressed:(id) sender
 {
-    DiningHallInfoViewController *infoVC = [[DiningHallInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    DiningHallInfoViewController *infoVC = [[DiningHallInfoViewController alloc] init];
     infoVC.venue = self.venue;
     
     [self.navigationController pushViewController:infoVC animated:YES];

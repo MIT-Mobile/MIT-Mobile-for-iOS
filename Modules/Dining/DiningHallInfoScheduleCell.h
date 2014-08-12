@@ -1,7 +1,8 @@
 
 #import <UIKit/UIKit.h>
+#import "MITDiningHallInfoGeneralCell.h"
 
-@interface DiningHallInfoScheduleCell : UITableViewCell
+@interface DiningHallInfoScheduleCell : MITDiningHallInfoGeneralCell
 
 @property (nonatomic, strong) NSArray * scheduleInfo;
 //
@@ -12,7 +13,8 @@
 
 
 - (void) setStartDate:(NSDate *)startDate andEndDate:(NSDate *)endDate;
+@property (nonatomic) BOOL shouldIncludeTopPadding;
 
-+ (CGFloat) heightForCellWithScheduleInfo:(NSArray *)scheduleInfo;
++ (CGFloat)heightForCellWithScheduleInfo:(NSArray *)scheduleInfo withTopPadding:(BOOL)includeTopPadding;
 
 @end

@@ -10,13 +10,13 @@
 #import "DiningMeal.h"
 #import "DiningHallInfoScheduleCell.h"
 
+static NSInteger const kPaymentSectionIndex = 0;
+static NSInteger const kScheduleSectionIndex = 1;
+static NSInteger const kLocationSectionIndex = 2;
+
 @interface DiningHallInfoViewController ()
 
 @property (nonatomic, strong) NSArray * scheduleInfo;
-
-@property (nonatomic, assign) NSInteger locationSectionIndex;
-@property (nonatomic, assign) NSInteger paymentSectionIndex;
-@property (nonatomic, assign) NSInteger scheduleSectionIndex;
 
 @end
 
@@ -45,10 +45,10 @@
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
+    self.tableView.backgroundColor = [UIColor whiteColor];
     [self fetchScheduleInfo];
     
-    self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
+    self.title = self.venue.shortName;
     
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     headerView.titleLabel.text = self.venue.name;
@@ -67,11 +67,8 @@
     DiningDay *currentDay = [self.venue dayForDate:[NSDate date]];
     headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate date]];
     self.tableView.tableHeaderView = headerView;
-    
-    _locationSectionIndex   = 0;
-    _paymentSectionIndex    = 1;
-    _scheduleSectionIndex   = 2;
-    
+
+    self.tableView.separatorColor = [UIColor clearColor];
 }
 
 - (void)didReceiveMemoryWarning
@@ -191,7 +188,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == _scheduleSectionIndex) {
+    if (section == kScheduleSectionIndex) {
         return [self.scheduleInfo count];
     }
     return 1;
@@ -199,27 +196,29 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell;
-    if (indexPath.section != _scheduleSectionIndex) {
+    if (indexPath.section != kScheduleSectionIndex) {
         static NSString *CellIdentifier = @"Cell";
-        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        MITDiningHallInfoGeneralCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
+            cell = [[MITDiningHallInfoGeneralCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+            cell.textLabel.font = [UIFont systemFontOfSize:15];
+            cell.textLabel.textColor = [UIColor mit_tintColor];
+            cell.detailTextLabel.font = [UIFont systemFontOfSize:17];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
-        cell.textLabel.font = [UIFont boldSystemFontOfSize:12];
-        cell.textLabel.textColor = [UIColor darkTextColor];
-        cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        if (indexPath.section == _locationSectionIndex) {
+        if (indexPath.section == kLocationSectionIndex) {
             cell.textLabel.text = @"location";
             cell.detailTextLabel.text = self.venue.location.displayDescription;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        } else if (indexPath.section == _paymentSectionIndex) {
+            cell.shouldIncludeSeparator = NO;
+        } else if (indexPath.section == kPaymentSectionIndex) {
             cell.textLabel.text = @"payment";
             cell.detailTextLabel.text = [[self.venue.paymentMethods allObjects] componentsJoinedByString:@", "];
+            cell.shouldIncludeSeparator = YES;
         }
+        
         return cell;
     } else {
         // schedule
@@ -227,12 +226,20 @@
 
         DiningHallInfoScheduleCell *scheduleCell = [tableView dequeueReusableCellWithIdentifier:@"ScheduleCell"];
         if (!scheduleCell) {
-            scheduleCell = [[DiningHallInfoScheduleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ScheduleCell"];
+            scheduleCell = [[DiningHallInfoScheduleCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ScheduleCell"];
         }
         [scheduleCell setStartDate:rowSchedule[@"dayStart"] andEndDate:rowSchedule[@"dayEnd"]];
         scheduleCell.scheduleInfo = rowSchedule[@"meals"];
         scheduleCell.selectionStyle = UITableViewCellSelectionStyleNone;
         
+        if (indexPath.row == self.scheduleInfo.count - 1) {
+            scheduleCell.shouldIncludeSeparator = YES;
+            scheduleCell.shouldIncludeTopPadding = NO;
+        } else {
+            scheduleCell.shouldIncludeSeparator = NO;
+            scheduleCell.shouldIncludeTopPadding = YES;
+        }
+
         return scheduleCell;
     }
 }
@@ -242,7 +249,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == _locationSectionIndex && self.venue.location.displayDescription) {
+    if (indexPath.section == kLocationSectionIndex && self.venue.location.displayDescription) {
         NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:self.venue.location.displayDescription];
         [[UIApplication sharedApplication] openURL:url];
     }
@@ -250,11 +257,16 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == _scheduleSectionIndex) {
+    if (indexPath.section == kScheduleSectionIndex) {
         NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
-        return MAX([DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"]], 44);
+        BOOL shouldHaveTopPadding = NO;
+        if (indexPath.row == 0) {
+            shouldHaveTopPadding = YES;
+        }
+        
+        return [DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"] withTopPadding:shouldHaveTopPadding];
     }
-    return 44;
+    return 60;
 }
 
 @end
