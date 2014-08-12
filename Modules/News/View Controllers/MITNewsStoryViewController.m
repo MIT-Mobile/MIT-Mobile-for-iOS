@@ -379,7 +379,7 @@
 
 - (IBAction)touchNextStoryView:(id)sender
 {
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
     
     [self setStory:nextStory];
@@ -393,9 +393,9 @@
         }];
 }
 
-- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block
+- (void)storyAfterStory:(MITNewsStory*)story completion:(void(^)(MITNewsStory *nextStory, NSError *error))block
 {
-    [self.delegate storyAfterStory:story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self.delegate storyAfterStory:story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (block) {
             block(nextStory, error);
         }
@@ -409,7 +409,7 @@
     self.nextStoryDekLabel.text = nil;
     self.nextStoryDateLabel.text = nil;
     self.nextStoryNextStoryLabel.text = nil;
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
             __block NSString *title = nil;
             __block NSString *dek = nil;
