@@ -186,7 +186,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithCategory:self.currentlySelectedCategory];
     UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
-    [self presentViewController:searchNavController animated:YES completion:nil];
+    [self presentViewController:searchNavController animated:NO completion:nil];
 }
 
 #pragma mark - Day of the week Collection View Datasource/Delegate

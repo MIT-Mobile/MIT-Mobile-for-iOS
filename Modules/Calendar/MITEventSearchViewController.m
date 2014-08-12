@@ -332,7 +332,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma mark - MITEventSearchTypeAheadViewControllerDelegate Methods
