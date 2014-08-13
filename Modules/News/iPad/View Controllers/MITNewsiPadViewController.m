@@ -102,7 +102,7 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
-        [self reloadViewItems];
+        [self reloadViewItems:nil];
         [self updateNavigationItem:YES];
     }
 }
@@ -158,7 +158,7 @@
 
         if (self.navigationController.toolbarHidden == NO) {
             UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-            [refreshControl addTarget:self action:@selector(reloadViewItems)
+            [refreshControl addTarget:self action:@selector(reloadViewItems:)
                      forControlEvents:UIControlEventValueChanged];
             [listViewController.tableView addSubview:refreshControl];
             self.listViewController.refreshControl = refreshControl;
@@ -197,7 +197,7 @@
 {
     [self setPresentationStyle:style animated:NO];
 }
-- (void)reloadViewItems
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
     if (self.navigationController.toolbarHidden == NO) {
         [self setToolbarString:@"Updating..." animated:YES];
@@ -206,6 +206,10 @@
         [self.listViewController.refreshControl endRefreshing];
         if (error) {
             DDLogWarn(@"update failed; %@",error);
+            if (!self.navigationController.toolbarHidden && refreshControl) {
+                UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                [failedRefreshAlertView show];
+            }
         } else {
             self.lastUpdated = [NSDate date];
         }

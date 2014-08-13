@@ -168,6 +168,13 @@ static NSString *errorMessage = @"Failed";
                                                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                                                         errorMessage = error.localizedDescription;
                                                         _storyUpdateFailed = TRUE;
+                                                        if (!self.navigationController.toolbarHidden) {
+                                                            UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:errorMessage delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                                                            [failedRefreshAlertView show];
+
+                                                            _storyUpdateFailed = FALSE;
+                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                        } else {
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                             [NSTimer scheduledTimerWithTimeInterval:2
@@ -176,6 +183,7 @@ static NSString *errorMessage = @"Failed";
                                                                                            userInfo:nil
                                                                                             repeats:NO];
                                                         }];
+                                                        }
                                                     } else {
                                                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
