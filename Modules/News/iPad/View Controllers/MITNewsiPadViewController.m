@@ -78,12 +78,9 @@
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
-    if ([self class] == [MITNewsiPadViewController class]) {
-        self.showsFeaturedStories = NO;
-        self.containerView.backgroundColor = [UIColor whiteColor];
-        self.containerView.autoresizesSubviews = YES;
-    }
+    self.showsFeaturedStories = NO;
+    self.containerView.backgroundColor = [UIColor whiteColor];
+    self.containerView.autoresizesSubviews = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
