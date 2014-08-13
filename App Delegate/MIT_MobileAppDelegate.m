@@ -509,6 +509,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     NSArray *modelNames = @[@"MITCalendarDataModel",
                             @"CampusMap",
                             @"Dining",
+                            @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
                             @"LibrariesLocationsHours",
@@ -630,6 +631,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:calendarsEventResource];
+    
+    MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:diningResource];
     
     _remoteObjectManager = remoteObjectManager;
 }

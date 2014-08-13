@@ -16,3 +16,5 @@
 #import "MITShuttlesResource.h"
 
 #import "MITCalendarsResource.h"
+
+#import "MITDiningResource.h"
