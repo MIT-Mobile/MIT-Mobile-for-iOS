@@ -2,7 +2,6 @@
 //  PeopleSearchResultsViewController.m
 //  MIT Mobile
 //
-//  Created by YevDev on 5/26/14.
 //
 //
 

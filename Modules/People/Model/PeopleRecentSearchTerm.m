@@ -2,7 +2,6 @@
 //  PeopleRecentSearchTerm.m
 //  MIT Mobile
 //
-//  Created by Yev Motov on 8/6/14.
 //
 //
 

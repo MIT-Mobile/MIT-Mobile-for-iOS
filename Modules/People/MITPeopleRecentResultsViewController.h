@@ -2,7 +2,6 @@
 //  MITPeopleRecentResultsViewController.h
 //  MIT Mobile
 //
-//  Created by YevDev on 6/15/14.
 //
 //
 

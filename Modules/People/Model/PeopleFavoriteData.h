@@ -2,7 +2,6 @@
 //  PeopleFavoriteData.h
 //  MIT Mobile
 //
-//  Created by Yev Motov on 6/19/14.
 //
 //
 
