@@ -138,11 +138,7 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, -M_PI);
                 _popoverArrowBubbleView.transform = transform;
-                _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), 0, _width, _height);
                 
-                CGFloat inset = sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
-                LEFT_CONTENT_INSET = inset;
-                RIGHT_CONTENT_INSET = -inset;
                 
             } else {
                 
@@ -173,12 +169,6 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, 0);
                 _popoverArrowBubbleView.transform = transform;
-                sign = -sign;
-                _popoverArrowBubbleView.frame =  CGRectMake(sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), 0, _width, _height);
-                
-                CGFloat inset = sign * (self.frame.size.width/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
-                LEFT_CONTENT_INSET = inset;
-                RIGHT_CONTENT_INSET = -inset;
                 
             } else {
                 
@@ -211,12 +201,6 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, sign*M_PI_2);
                 _popoverArrowBubbleView.transform = transform;
-                sign = -sign;
-                _popoverArrowBubbleView.frame =  CGRectMake(0, sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), _width, _height);
-                
-                CGFloat inset = sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
-                TOP_CONTENT_INSET = inset;
-                BOTTOM_CONTENT_INSET = -inset;
                 
             } else {
                 
@@ -247,12 +231,6 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, -sign*M_PI_2);
                 _popoverArrowBubbleView.transform = transform;
-                
-                _popoverArrowBubbleView.frame =  CGRectMake(0, sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign))), _width, _height);
-                
-                CGFloat inset = sign * (self.frame.size.height/2 + sign * (self.arrowOffset - (CORNER_ARROW_OFFSET * sign)));
-                TOP_CONTENT_INSET = inset;
-                BOTTOM_CONTENT_INSET = -inset;
                 
             } else {
                 
