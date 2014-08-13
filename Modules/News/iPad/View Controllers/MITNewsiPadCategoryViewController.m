@@ -285,6 +285,11 @@
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    
+    UIViewController *parentViewController = self.navigationController.viewControllers[1];
+    UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
+    [parentViewController.navigationItem setBackBarButtonItem:nil];
+    [parentViewController.navigationItem setBackBarButtonItem:item];
 }
 
 @end
