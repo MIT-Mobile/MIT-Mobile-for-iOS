@@ -168,6 +168,7 @@
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
+		2CDA1F8C199BDCCF001EEDD2 /* MITRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA1F8B199BDCCF001EEDD2 /* MITRootViewController.m */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CDA8CFE18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib */; };
@@ -840,6 +841,8 @@
 		2CD4F69B188ED4EB003F2C46 /* MITManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITManagedObject.h; sourceTree = "<group>"; };
 		2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITManagedObject.m; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
+		2CDA1F8A199BDCCF001EEDD2 /* MITRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITRootViewController.h; path = "App Delegate/MITRootViewController.h"; sourceTree = "<group>"; };
+		2CDA1F8B199BDCCF001EEDD2 /* MITRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITRootViewController.m; path = "App Delegate/MITRootViewController.m"; sourceTree = "<group>"; };
 		2CDA8AB71762445F001F011F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		2CDA8AB91762445F001F011F /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -3029,6 +3032,8 @@
 				2978864410F03656002670CC /* MITUnreadNotifications.m */,
 				1D3623240D0F684500981E51 /* MIT_MobileAppDelegate.h */,
 				1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */,
+				2CDA1F8A199BDCCF001EEDD2 /* MITRootViewController.h */,
+				2CDA1F8B199BDCCF001EEDD2 /* MITRootViewController.m */,
 				2C2CB49319229C1D00FCC056 /* MITLauncher.h */,
 				2C5D7873191817F500ECB388 /* MITLauncherGridViewController.h */,
 				2C5D7874191817F500ECB388 /* MITLauncherGridViewController.m */,
@@ -3584,6 +3589,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
+				2CDA1F8C199BDCCF001EEDD2 /* MITRootViewController.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
