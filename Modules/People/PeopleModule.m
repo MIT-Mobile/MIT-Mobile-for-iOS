@@ -12,9 +12,15 @@ static NSString * const PeopleStateSearchComplete = @"search-complete";
 static NSString * const PeopleStateSearchExternal = @"search";
 static NSString * const PeopleStateDetail = @"detail";
 
+@interface PeopleModule()
+
+@property (nonatomic,readonly) PeopleSearchViewController *peopleController;
+
+@end
 
 @implementation PeopleModule
-@dynamic peopleController;
+
+@synthesize peopleController = _peopleController;
 
 - (id)init
 {
@@ -28,16 +34,29 @@ static NSString * const PeopleStateDetail = @"detail";
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
-    PeopleSearchViewController *vc = [storyboard instantiateInitialViewController];
-    self.moduleHomeController = vc;
+    return YES;
 }
 
-- (PeopleSearchViewController*)peopleController
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
-    return ((PeopleSearchViewController*)self.moduleHomeController);
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    
+    _peopleController = [storyboard instantiateInitialViewController];
+    
+    return _peopleController;
+}
+
+- (UIViewController*)createHomeViewControllerForPadIdiom
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People_iPad" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    
+    _peopleController = [storyboard instantiateInitialViewController];
+    
+    return _peopleController;
 }
 
 - (void)applicationWillTerminate
@@ -49,7 +68,7 @@ static NSString * const PeopleStateDetail = @"detail";
 		PeopleSearchViewController *searchVC = (PeopleSearchViewController *)visibleVC;
 		if (searchVC.searchDisplayController.active) {
             [url setPath:PeopleStateSearchBegin query:searchVC.searchBar.text];
-        } else if (searchVC.searchResults != nil) {
+        } else if ([searchVC searchResults] != nil) {
             [url setPath:PeopleStateSearchComplete query:searchVC.searchBar.text];
 		} else {
 			[url setPath:nil query:nil];
