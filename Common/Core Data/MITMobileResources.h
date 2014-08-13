@@ -12,3 +12,5 @@
 
 #import "MITPersonResource.h"
 #import "MITPeopleResource.h"
+
+#import "MITShuttlesResource.h"

@@ -38,6 +38,8 @@
 #import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
 
+#import "MITShuttleStopNotificationManager.h"
+
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
@@ -91,6 +93,11 @@
 + (MITModule*)moduleForTag:(NSString *)aTag
 {
     return [[self applicationDelegate] moduleForTag:aTag];
+}
+
+#warning Ross: I added this because the header declares it, but it wasn't implemented, and was causing crashes.
+- (UINavigationController*)rootNavigationController {
+    return nil;
 }
 
 #pragma mark -
@@ -342,6 +349,35 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
+#pragma mark - Local Notifications
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [[[UIAlertView alloc] initWithTitle:@"Alert" message:notification.alertBody delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+
+    if ([application.scheduledLocalNotifications count] == 0) {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+    }
+}
+
+#pragma mark - Background Fetch
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    if ([application.scheduledLocalNotifications count] > 0) {
+        [[MITShuttleStopNotificationManager sharedManager] performBackgroundNotificationUpdatesWithCompletion:^(NSError *error) {
+            if (error) {
+                completionHandler(UIBackgroundFetchResultFailed);
+            } else {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }];
+    } else {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+}
+
 #pragma mark - Lazy property getters
 - (NSRecursiveLock*)lock
 {
@@ -473,6 +509,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"News",
                             @"QRReaderResult",
                             @"ShuttleTrack",
+                            @"MITShuttleDataModel",
                             @"Tours",
                             @"PeopleDataModel"];
     
@@ -561,6 +598,21 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:peopleResource];
     
+    MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRoutesResource];
+    
+    MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRouteDetailResource];
+
+    MITMobileResource *shuttleStopDetailResource = [[MITShuttleStopDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleStopDetailResource];
+
+    MITMobileResource *shuttlePredictionsResource = [[MITShuttlePredictionsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttlePredictionsResource];
+
+    MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleVehiclesResource];
+
     _remoteObjectManager = remoteObjectManager;
 }
 
