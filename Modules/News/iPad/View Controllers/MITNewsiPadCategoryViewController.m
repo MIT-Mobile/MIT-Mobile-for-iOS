@@ -120,7 +120,6 @@
         searchBar.delegate = self.searchController;
         self.searchController.searchBar = searchBar;
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        searchBar.showsCancelButton = YES;
         _searchBar = searchBar;
     }
     return _searchBar;
@@ -244,9 +243,6 @@
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             if (self.searching) {
                 gridItem.enabled = NO;
-                self.navigationItem.hidesBackButton = YES;
-            } else {
-                self.navigationItem.hidesBackButton = NO;
             }
             [rightBarItems addObject:gridItem];
         }
@@ -256,19 +252,20 @@
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             if (self.searching) {
                 listItem.enabled = NO;
-                self.navigationItem.hidesBackButton = YES;
-            } else {
-                self.navigationItem.hidesBackButton = NO;
             }
             [rightBarItems addObject:listItem];
         }
     }
     if (self.searching) {
+        
+        UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
+        [rightBarItems addObject:cancelSearchItem];
+        
         UISearchBar *searchBar = self.searchBar;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+            self.searchBar.frame = CGRectMake(0, 0, 280, 44);
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
         }
         
         self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
@@ -277,12 +274,16 @@
         [rightBarItems addObject:searchBarItem];
         [self.navigationItem setTitle:@""];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+        self.navigationItem.hidesBackButton = YES;
+
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         [self.navigationItem setTitle:self.categoryTitle];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        self.navigationItem.hidesBackButton = NO;
     }
+    
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 

@@ -107,7 +107,7 @@ static NSString *errorMessage = @"Failed";
 
 #pragma mark - SearchBar
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+- (void)searchBarCancelButtonClicked
 {
     [self hideSearchField];
 }
@@ -144,7 +144,6 @@ static NSString *errorMessage = @"Failed";
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.messageActivityView.alpha = .5;
-    searchBar.showsCancelButton = YES;
     if ([searchBar.text isEqualToString:@""]) {
         self.searchTableView.alpha = 0;
     } else {
@@ -207,8 +206,6 @@ static NSString *errorMessage = @"Failed";
         }
     }];
     [self.searchBar resignFirstResponder];
-    [self enableControlsInView:self.searchBar];
-
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
     [UIView animateWithDuration:0.33
                           delay:0.
@@ -219,16 +216,6 @@ static NSString *errorMessage = @"Failed";
                      } completion:^(BOOL finished) {
                          
                      }];
-}
-
-- (void)enableControlsInView:(UIView *)view
-{
-    for (id subview in view.subviews) {
-        if ([subview isKindOfClass:[UIControl class]]) {
-            [subview setEnabled:YES];
-        }
-        [self enableControlsInView:subview];
-    }
 }
 
 - (void)getMoreStories
@@ -309,7 +296,6 @@ static NSString *errorMessage = @"Failed";
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
-    [self enableControlsInView:self.searchBar];
 
     if (self.searchTableView.alpha == 0) {
         [self hideSearchField];

@@ -70,7 +70,7 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
         self.searchBarWrapper.frame = self.searchBar.bounds;
     }
 }
@@ -184,7 +184,6 @@
         searchBar.delegate = self.searchController;
         self.searchController.searchBar = searchBar;
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        searchBar.showsCancelButton = YES;
         _searchBar = searchBar;
     }
     return _searchBar;
@@ -321,9 +320,6 @@
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             if (self.searching) {
                 gridItem.enabled = NO;
-                self.navigationItem.leftBarButtonItem.enabled = NO;
-            } else {
-                self.navigationItem.leftBarButtonItem.enabled = YES;
             }
             [rightBarItems addObject:gridItem];
         }
@@ -333,21 +329,24 @@
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             if (self.searching) {
                 listItem.enabled = NO;
-                self.navigationItem.leftBarButtonItem.enabled = NO;
-            } else {
-                self.navigationItem.leftBarButtonItem.enabled = YES;
             }
             [rightBarItems addObject:listItem];
         }
     }
     if (self.searching) {
+        
+        UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
+        [rightBarItems addObject:cancelSearchItem];
+        
         UISearchBar *searchBar = self.searchBar;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+            self.searchBar.frame = CGRectMake(0, 0, 280, 44);
+            self.navigationItem.leftBarButtonItem.enabled = NO;
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
+            self.navigationItem.hidesBackButton = YES;
         }
-        
+
         self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
         [self.searchBarWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
@@ -360,7 +359,10 @@
         [rightBarItems addObject:searchItem];
         [self.navigationItem setTitle:@"MIT News"];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        self.navigationItem.leftBarButtonItem.enabled = YES;
+        self.navigationItem.hidesBackButton = NO;
     }
+    
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 
