@@ -524,6 +524,13 @@
     return YES;
 }
 
+- (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
+{
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    [dataSource refresh:block];
+    return YES;
+}
+
 - (void)reloadItems:(void(^)(NSError *error))block
 {
     if (_dataSources) {

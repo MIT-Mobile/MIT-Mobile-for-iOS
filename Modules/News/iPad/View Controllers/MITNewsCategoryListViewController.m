@@ -4,6 +4,8 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
+#import "MITAdditions.h"
+#import "MITNewsiPadCategoryViewController.h"
 
 static NSString *errorMessage = @"Failed";
 
@@ -160,6 +162,9 @@ static NSString *errorMessage = @"Failed";
 - (void)getMoreStoriesForSection:(NSInteger *)section
 {
     if([self.dataSource canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
+        if (self.navigationController.toolbarHidden == NO) {
+            [self setToolbarStatusUpdating];
+        }
         _storyUpdateInProgress = YES;
         [self.dataSource loadMoreItemsForCategoryInSection:section
                                                 completion:^(NSError *error) {
@@ -190,6 +195,9 @@ static NSString *errorMessage = @"Failed";
                                                             [self.tableView reloadData];
                                                         }];
                                                     }
+                                                    if (self.navigationController.toolbarHidden == NO) {
+                                                        [self setToolbarStatusUpdated];
+                                                    }
                                                 }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -201,6 +209,22 @@ static NSString *errorMessage = @"Failed";
 {
     _storyUpdateFailed = FALSE;
         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+
+- (void)setToolbarStatusUpdating
+{
+    [self.delegate setToolbarStatusUpdating];
+}
+
+- (void)setToolbarStatusUpdated
+{
+    [self.delegate setToolbarStatusUpdated];
+}
+
+- (void)refreshToolbarStatus
+{
+    [self.delegate refreshToolbarStatus];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -216,13 +240,35 @@ static NSString *errorMessage = @"Failed";
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    // Do any additional setup after loading the view.
+    if (self.navigationController.toolbarHidden == NO) {
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        [self.tableView addSubview:refreshControl];
+        self.refreshControl = refreshControl;
+        if (self.navigationController.toolbarHidden == NO) {
+            [self setToolbarStatusUpdated];
+        }
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 }
+
+- (void)reloadViewItems:(UIRefreshControl *)control;
+{
+#warning in section ....
+    [self.dataSource refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl endRefreshing];
+            [self.tableView reloadData];
+#warning add errors
+        }];
+    }];
+}
+
 
 - (void)didReceiveMemoryWarning
 {

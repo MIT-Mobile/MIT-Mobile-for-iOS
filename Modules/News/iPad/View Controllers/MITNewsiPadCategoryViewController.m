@@ -6,6 +6,7 @@
 #import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesDataSource.h"
 #import "MITNewsConstants.h"
+#import "MITAdditions.h"
 
 @interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -15,7 +16,7 @@
 
 @end
 
-@interface MITNewsiPadCategoryViewController ()
+@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate>
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryListViewController *listViewController;
@@ -25,6 +26,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIView *searchBarWrapper;
+@property (nonatomic,strong) NSDate *lastUpdated;
 
 @end
 
@@ -68,6 +70,15 @@
         }
     }
     [self updateNavigationItem:YES];
+#warning get last updated from previous screen
+#warning or just run a update call
+    if (self.lastUpdated) {
+
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self setToolbarString:updateText animated:NO];
+    }
 }
 
 - (MITNewsCategoryGridViewController*)gridViewController
@@ -204,6 +215,50 @@
                      } completion:^(BOOL finished) {
                      }];
     [self.searchBar becomeFirstResponder];
+}
+
+#pragma mark UI Helper
+- (void)setToolbarString:(NSString*)string animated:(BOOL)animated
+{
+    UILabel *updatingLabel = [[UILabel alloc] init];
+    updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+    updatingLabel.text = string;
+    
+    if (self.navigationController.toolbar.barStyle == UIBarStyleBlack) {
+        updatingLabel.textColor = [UIColor whiteColor];
+    } else {
+        updatingLabel.textColor = [UIColor blackColor];
+    }
+    
+    updatingLabel.backgroundColor = [UIColor clearColor];
+    [updatingLabel sizeToFit];
+    
+    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
+}
+
+- (void)setToolbarStatusUpdating
+{
+    if (self.navigationController.toolbarHidden == NO) {
+        [self setToolbarString:@"Updating..." animated:YES];
+    }
+}
+
+- (void)setToolbarStatusUpdated
+{
+    self.lastUpdated = [NSDate date];
+    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                      toDate:[NSDate date]];
+    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    [self setToolbarString:updateText animated:YES];
+}
+
+- (void)refreshToolbarStatus
+{
+    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                        toDate:[NSDate date]];
+    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    [self setToolbarString:updateText animated:YES];
 }
 
 #pragma mark UIAlertViewDelegate
