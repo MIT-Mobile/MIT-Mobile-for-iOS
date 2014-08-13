@@ -67,12 +67,10 @@
 {
     [self.gridViewController.collectionView reloadData];
 }
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
-        self.searchBarWrapper.frame = self.searchBar.bounds;
-    }
+
 }
 
 - (void)viewDidLoad
@@ -343,10 +341,10 @@
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
             self.navigationItem.leftBarButtonItem.enabled = NO;
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
+            self.searchBar.frame = CGRectMake(0, 0, 240, 44);
             self.navigationItem.hidesBackButton = YES;
         }
-
+        
         self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
         [self.searchBarWrapper addSubview:searchBar];
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
@@ -364,6 +362,11 @@
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    
+    UIViewController *parentViewController = self.navigationController.viewControllers[0];
+    UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
+    [parentViewController.navigationItem setBackBarButtonItem:nil];
+    [parentViewController.navigationItem setBackBarButtonItem:item];
 }
 
 @end
