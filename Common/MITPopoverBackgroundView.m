@@ -138,6 +138,7 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, -M_PI);
                 _popoverArrowBubbleView.transform = transform;
+                _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
                 
                 
             } else {
@@ -169,6 +170,7 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, 0);
                 _popoverArrowBubbleView.transform = transform;
+                _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
                 
             } else {
                 
@@ -201,6 +203,7 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, sign*M_PI_2);
                 _popoverArrowBubbleView.transform = transform;
+                _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
                 
             } else {
                 
@@ -231,6 +234,7 @@ static UIColor *popoverTintColor = nil;
                 CGAffineTransform scale = CGAffineTransformMakeScale(sign * .5, .5);
                 CGAffineTransform transform = CGAffineTransformRotate(scale, -sign*M_PI_2);
                 _popoverArrowBubbleView.transform = transform;
+                _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
                 
             } else {
                 
