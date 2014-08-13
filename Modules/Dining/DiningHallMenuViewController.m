@@ -128,7 +128,6 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     
     [headerView.infoButton addTarget:self action:@selector(infoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     headerView.infoButton.hidden = NO;
-    headerView.starButton.hidden = YES;
     
     self.tableView.tableHeaderView = headerView;
     

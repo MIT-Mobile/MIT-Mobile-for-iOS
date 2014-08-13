@@ -198,9 +198,9 @@ static NSInteger const kLocationSectionIndex = 2;
 {
     if (indexPath.section != kScheduleSectionIndex) {
         static NSString *CellIdentifier = @"Cell";
-        MITDiningHallInfoGeneralCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        MITDiningCustomSeparatorCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (!cell) {
-            cell = [[MITDiningHallInfoGeneralCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+            cell = [[MITDiningCustomSeparatorCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
             cell.textLabel.font = [UIFont systemFontOfSize:15];
             cell.textLabel.textColor = [UIColor mit_tintColor];
             cell.detailTextLabel.font = [UIFont systemFontOfSize:17];

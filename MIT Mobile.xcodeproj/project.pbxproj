@@ -354,6 +354,8 @@
 		5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */; };
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
+		8012D47E199BFE450037ED99 /* MITDiningInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */; };
+		8012D481199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D480199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */; };
 		80F0219E199159D90056CA06 /* MITDateNavigationBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */; };
@@ -361,7 +363,7 @@
 		80F021B0199272C50056CA06 /* MITEventsMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F021AE199272C50056CA06 /* MITEventsMapViewController.m */; };
 		80F021B1199272C50056CA06 /* MITEventsMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F021AF199272C50056CA06 /* MITEventsMapViewController.xib */; };
 		80F021B519927E470056CA06 /* MITEventPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F021B419927E470056CA06 /* MITEventPlace.m */; };
-		80F6E2B9199A932A0060C971 /* MITDiningHallInfoGeneralCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningHallInfoGeneralCell.m */; };
+		80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */; };
 		A51E20A0196C68D9005608C3 /* MITMapTypeAheadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */; };
 		A51E20B2196F1B36005608C3 /* MITMapRecentsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51E20B1196F1B36005608C3 /* MITMapRecentsTableViewController.m */; };
 		A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */; };
@@ -1236,6 +1238,10 @@
 		5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapBrowseContainerViewController.xib; sourceTree = "<group>"; };
 		5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
+		8012D47C199BFE450037ED99 /* MITDiningInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningInfoScheduleCell.h; path = Dining/MITDiningInfoScheduleCell.h; sourceTree = "<group>"; };
+		8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningInfoScheduleCell.m; path = Dining/MITDiningInfoScheduleCell.m; sourceTree = "<group>"; };
+		8012D47F199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailInfoScheduleCell.h; path = Dining/MITDiningRetailInfoScheduleCell.h; sourceTree = "<group>"; };
+		8012D480199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailInfoScheduleCell.m; path = Dining/MITDiningRetailInfoScheduleCell.m; sourceTree = "<group>"; };
 		80885CB41991410700D6661C /* MITEventsHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsHomeViewControllerPad.h; path = iPad/MITEventsHomeViewControllerPad.h; sourceTree = "<group>"; };
 		80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsHomeViewControllerPad.m; path = iPad/MITEventsHomeViewControllerPad.m; sourceTree = "<group>"; };
 		80D1C6A31993E7370073F1FD /* MITEventsSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsSplitViewController.h; path = iPad/EventsSplitViewController/MITEventsSplitViewController.h; sourceTree = "<group>"; };
@@ -1248,8 +1254,8 @@
 		80F021AF199272C50056CA06 /* MITEventsMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITEventsMapViewController.xib; path = iPad/EventsMapView/MITEventsMapViewController.xib; sourceTree = "<group>"; };
 		80F021B319927E470056CA06 /* MITEventPlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventPlace.h; path = iPad/EventsMapView/EventsMapAnnotations/MITEventPlace.h; sourceTree = "<group>"; };
 		80F021B419927E470056CA06 /* MITEventPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventPlace.m; path = iPad/EventsMapView/EventsMapAnnotations/MITEventPlace.m; sourceTree = "<group>"; };
-		80F6E2B7199A932A0060C971 /* MITDiningHallInfoGeneralCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHallInfoGeneralCell.h; path = Dining/MITDiningHallInfoGeneralCell.h; sourceTree = "<group>"; };
-		80F6E2B8199A932A0060C971 /* MITDiningHallInfoGeneralCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHallInfoGeneralCell.m; path = Dining/MITDiningHallInfoGeneralCell.m; sourceTree = "<group>"; };
+		80F6E2B7199A932A0060C971 /* MITDiningCustomSeparatorCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningCustomSeparatorCell.h; path = Dining/MITDiningCustomSeparatorCell.h; sourceTree = "<group>"; };
+		80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningCustomSeparatorCell.m; path = Dining/MITDiningCustomSeparatorCell.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A51E209E196C68D9005608C3 /* MITMapTypeAheadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapTypeAheadTableViewController.h; sourceTree = "<group>"; };
 		A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapTypeAheadTableViewController.m; sourceTree = "<group>"; };
@@ -2727,8 +2733,12 @@
 				48A4F408174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m */,
 				48C572CD174BC68100CF6C16 /* DiningHallInfoScheduleCell.h */,
 				48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */,
-				80F6E2B7199A932A0060C971 /* MITDiningHallInfoGeneralCell.h */,
-				80F6E2B8199A932A0060C971 /* MITDiningHallInfoGeneralCell.m */,
+				80F6E2B7199A932A0060C971 /* MITDiningCustomSeparatorCell.h */,
+				80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */,
+				8012D47C199BFE450037ED99 /* MITDiningInfoScheduleCell.h */,
+				8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */,
+				8012D47F199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.h */,
+				8012D480199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -4054,7 +4064,7 @@
 				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
 				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
 				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
-				80F6E2B9199A932A0060C971 /* MITDiningHallInfoGeneralCell.m in Sources */,
+				80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
 				DEA8767F18AAE9AD00327823 /* DDContextFilterLogFormatter.m in Sources */,
@@ -4064,6 +4074,7 @@
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,
+				8012D481199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m in Sources */,
 				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,
 				EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */,
 				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
@@ -4090,6 +4101,7 @@
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
 				2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
+				8012D47E199BFE450037ED99 /* MITDiningInfoScheduleCell.m in Sources */,
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				2CF61DD11889C9DE00D43381 /* MITNewsCategory.m in Sources */,
 				DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */,

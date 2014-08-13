@@ -7,82 +7,49 @@
 #import "RetailDay.h"
 #import "CoreDataManager.h"
 #import "UIImageView+WebCache.h"
+#import "MITDiningRetailInfoScheduleCell.h"
+#import "MITDiningCustomSeparatorCell.h"
+
+static NSString * const kDescriptionHTMLKey = @"descriptionHTML";
+static NSString * const kMenuURLKey = @"menuURL";
+static NSString * const kDaysKey = @"days";
+static NSString * const kCuisinesKey = @"cuisines";
+static NSString * const kPaymentMethodsKey = @"paymentMethods";
+static NSString * const kLocationKey = @"location";
+static NSString * const kHomePageURLKey = @"homepageURL";
+static NSString * const kAddToFavoritesKey = @"addToFavorites";
+
+static CGFloat const kLeftPadding = 15.0;
+
+static int const kWebViewTag = 4231;
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
 @property (nonatomic, strong) DiningHallDetailHeaderView * headerView;
-@property (nonatomic, strong) NSString * descriptionHtmlFormatString;
 @property (nonatomic, assign) CGFloat descriptionHeight;
 
-@property (nonatomic, strong) NSArray * sectionData;
 @property (nonatomic, strong) NSArray * availableInfoKeys;
 
 @property (nonatomic, strong) NSArray * formattedHoursData;
-@property (nonatomic, strong) NSDateFormatter * daySpanFormatter;
 
 @end
 
-static NSString * sDescriptionHTMLKey   = @"descriptionHTML";
-static NSString * sMenuURLKey           = @"menuURL";
-static NSString * sDaysKey              = @"days";
-static NSString * sCuisinesKey          = @"cuisines";
-static NSString * sPaymentMethodsKey    = @"paymentMethods";
-static NSString * sLocationKey          = @"location";
-static NSString * sHomePageURLKey       = @"homepageURL";
-
 @implementation DiningRetailInfoViewController
-
-- (id)init
-{
-    self = [super initWithStyle:UITableViewStyleGrouped];
-    if (self) {
-        self.descriptionHtmlFormatString = @"<html>"
-        "<head>"
-        "<style type=\"text/css\" media=\"screen\">"
-        "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; } "
-        "a { color: #990000; }"
-        ".emptyParagraph { display: none; }"
-        "</style>"
-        "</head>"
-        "<body id=\"content\">"
-        "%@"
-        "</body>"
-        "</html>"
-        "<script type=\"text/javascript\" charset=\"utf-8\">"
-        "/* hide all of the empty paragraph tags, because emergency info announcements tend to have a lot of unnecessary whitespace*/"
-        "var allParagraphs = document.getElementsByTagName(\"p\");"
-        "for (var i = allParagraphs.length - 1; i >= 0; i--){"
-            "if (/\\S+/.test(allParagraphs[i].innerText) == false) {"
-                "allParagraphs[i].className = \"emptyParagraph\";"
-            "}"
-        "}"
-        "</script>";
-        self.descriptionHeight = 24;
-    }
-    return self;
-}
-
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return NO;
-}
-
-- (BOOL) shouldAutorotate
-{
-    return NO;
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
-    
-    self.daySpanFormatter = [[NSDateFormatter alloc] init];
-    [self.daySpanFormatter setDateFormat:@"EEE"];
     
     self.title = self.venue.shortName;
-    
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+    [self setupHeaderView];
+    [self setupAvailableInfoKeys];
+}
+
+- (void)setupHeaderView
+{
     self.headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     __weak DiningHallDetailHeaderView *weakHeaderView = self.headerView;
     [self.headerView.iconView setImageWithURL:[NSURL URLWithString:self.venue.iconURL]
@@ -90,14 +57,9 @@ static NSString * sHomePageURLKey       = @"homepageURL";
                                         [weakHeaderView layoutIfNeeded];
                                     }];
     self.headerView.titleLabel.text = self.venue.name;
-    CGRect frame = self.headerView.starButton.frame;
-    self.headerView.starButton.frame = frame;
-    [self.headerView.starButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.headerView.starButton.selected = [self.venue.favorite boolValue];
-    self.headerView.starButton.hidden = NO;
     self.headerView.infoButton.hidden = YES;
     
-    if ([self.venue isOpenNow]) {
+    if (self.venue.isOpenNow) {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
@@ -112,21 +74,24 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     } else {
         self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:date];
     }
-    
+    self.headerView.shouldIncludeSeparator = NO;
     self.tableView.tableHeaderView = self.headerView;
-    
+}
+
+- (void)setupAvailableInfoKeys
+{
     self.availableInfoKeys = [self findAvailableInfo];
-    if ([self.availableInfoKeys containsObject:sDaysKey]) {
+    if ([self.availableInfoKeys containsObject:kDaysKey]) {
         [self formatScheduleInfo];
     }
 }
 
-- (NSArray *) findAvailableInfo
+- (NSArray *)findAvailableInfo
 {
     // find all viewable info that the retail venue has available
     // also add hours and location if available
     NSArray *nonInfoKeys = @[@"building", @"favorite", @"iconURL", @"name", @"shortName", @"sortableBuilding", @"url"];      // blacklist of keys we don't want to show in tableview
-    NSArray * desiredSectionOrder = @[sDescriptionHTMLKey, sMenuURLKey, sDaysKey, sCuisinesKey, sPaymentMethodsKey, sLocationKey, sHomePageURLKey];
+    NSArray * desiredRowOrder = @[kCuisinesKey, kDescriptionHTMLKey, kMenuURLKey, kPaymentMethodsKey, kDaysKey, kLocationKey, kHomePageURLKey, kAddToFavoritesKey];
     NSMutableArray * usableInfoKeys = [NSMutableArray array];
     NSArray *retailVenueKeys = [[[self.venue entity] attributesByName] allKeys];
     for (NSString *key in retailVenueKeys) {
@@ -144,16 +109,18 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         }
     }
     if (self.venue.days) {
-        [usableInfoKeys addObject:sDaysKey];
+        [usableInfoKeys addObject:kDaysKey];
     }
     
     if (self.venue.location) {
-        [usableInfoKeys addObject:sLocationKey];
+        [usableInfoKeys addObject:kLocationKey];
     }
     
+    [usableInfoKeys addObject:kAddToFavoritesKey];
+    
     NSArray *sortedInfo = [usableInfoKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSUInteger index1 = [desiredSectionOrder indexOfObject: obj1];
-        NSUInteger index2 = [desiredSectionOrder indexOfObject: obj2];
+        NSUInteger index1 = [desiredRowOrder indexOfObject: obj1];
+        NSUInteger index2 = [desiredRowOrder indexOfObject: obj2];
         NSComparisonResult ret = NSOrderedSame;
         if (index1 < index2)
         {
@@ -167,11 +134,6 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     }];
     
     return sortedInfo;
-}
-
-- (NSArray *) desiredSectionOrder
-{
-    return @[sDescriptionHTMLKey, sMenuURLKey, sDaysKey, sCuisinesKey, sPaymentMethodsKey, sLocationKey, sHomePageURLKey];
 }
 
 - (void) formatScheduleInfo
@@ -207,182 +169,302 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     // Dispose of any resources that can be recreated.
 }
 
-- (void)favoriteButtonPressed:(UIButton *)button
-{
-    BOOL isFavorite = ![self.venue.favorite boolValue];
-    self.venue.favorite = @(isFavorite);
-    button.selected = isFavorite;
-    [CoreDataManager saveData];
-}
-
-#pragma mark - Table view data source
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)row
 {
     return [self.availableInfoKeys count];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSString *sectionKey = self.availableInfoKeys[section];
-    if ([sectionKey isEqualToString:sDaysKey]) {
-        return [self.formattedHoursData count];
-    }
-    return 1;
-}
-
-- (UIFont *) detailTextLabelFont
-{
-    return [UIFont systemFontOfSize:13];
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
+    NSString *currentRow = self.availableInfoKeys[indexPath.row];
+    MITDiningCustomSeparatorCell *cell = nil;
+    
+    if ([currentRow isEqualToString:kDescriptionHTMLKey]) {
+        cell = [self getWebViewCell];
+        [self hydrateWebViewCell:cell];
+    } else if ([currentRow isEqualToString:kDaysKey]) {
+        cell = [self getScheduleCell];
+        [(MITDiningRetailInfoScheduleCell *)cell setScheduleInfo:self.formattedHoursData];
+        cell.shouldIncludeSeparator = YES;
+    } else {
+        cell = [self getSterilizedGeneralCell];
+        
+        if ([currentRow isEqualToString:kMenuURLKey]){
+            cell.textLabel.text = @"menu";
+            cell.detailTextLabel.text = self.venue.menuURL;
+            cell.detailTextLabel.numberOfLines = 1;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            cell.shouldIncludeSeparator = YES;
+        } else if ([currentRow isEqualToString:kCuisinesKey]) {
+            cell.detailTextLabel.font = [UIFont systemFontOfSize:13.0];
+            cell.detailTextLabel.textColor = [UIColor colorWithHexString:@"#727272"];
+            
+            NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
+            cuisineString = [NSString stringWithFormat:@"%@\n ", cuisineString];
+            cell.detailTextLabel.text = cuisineString;
+            cell.shouldIncludeSeparator = NO;
+        } else if ([currentRow isEqualToString:kPaymentMethodsKey]) {
+            cell.textLabel.text = @"payment";
+            cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
+            cell.shouldIncludeSeparator = YES;
+        } else if ([currentRow isEqualToString:kLocationKey]) {
+            cell.textLabel.text = @"location";
+            cell.detailTextLabel.text = [self.venue.location locationDisplayString];
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+            cell.shouldIncludeSeparator = YES;
+        } else if ([currentRow isEqualToString:kHomePageURLKey]) {
+            cell.textLabel.text = @"home page";
+            cell.detailTextLabel.text = self.venue.homepageURL;
+            cell.detailTextLabel.numberOfLines = 1;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            cell.shouldIncludeSeparator = YES;
+        } else if ([currentRow isEqualToString:kAddToFavoritesKey]) {
+            cell.textLabel.text = self.venue.favorite.boolValue ? @"Remove from Favorites" : @"Add to Favorites";
+            cell.textLabel.font = [UIFont systemFontOfSize:17.0];
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.detailTextLabel.text = @"    ";
+        }
     }
-    // reuse prevention
+    
+    return cell;
+}
+
+#pragma mark - Cell Styling
+
+// General Cells
+
+- (MITDiningCustomSeparatorCell *)getSterilizedGeneralCell
+{
+    MITDiningCustomSeparatorCell *cell = [self getGeneralCell];
+    [self sterilizeCellForReuse:cell];
+    cell.shouldIncludeSeparator = NO;
+    return cell;
+}
+
+- (MITDiningCustomSeparatorCell *)getGeneralCell
+{
+    static NSString *generalCellIdentifier = @"generalCellIdentifier";
+    MITDiningCustomSeparatorCell *cell = [self.tableView dequeueReusableCellWithIdentifier:generalCellIdentifier];
+    if (!cell) {
+        cell = [[MITDiningCustomSeparatorCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:generalCellIdentifier];
+    }
+    return cell;
+}
+
+- (void)sterilizeCellForReuse:(UITableViewCell *)cell
+{
     cell.accessoryType = UITableViewCellAccessoryNone;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.accessoryView = nil;
     cell.textLabel.text = nil;
     cell.detailTextLabel.text = nil;
     
-    // configure cells style for everything but description cell (which is handled in css)
-    cell.textLabel.textColor = [UIColor darkTextColor];
-    cell.textLabel.font   = [UIFont boldSystemFontOfSize:12];
+    cell.textLabel.font = [self titleTextLabelFont];
+    cell.textLabel.textColor = [UIColor mit_tintColor];
     
     cell.detailTextLabel.font = [self detailTextLabelFont];
+    cell.detailTextLabel.textColor = [UIColor darkTextColor];
     cell.detailTextLabel.numberOfLines = 0;
-    
-    NSString *currentSection = self.availableInfoKeys[indexPath.section];
-    
-    if ([currentSection isEqualToString:sDescriptionHTMLKey]) {
-        // cell contents are rendered in a webview
-        static NSString *DescriptionCellIdentifier = @"DescriptionCell";
-        cell = [tableView dequeueReusableCellWithIdentifier:DescriptionCellIdentifier];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:DescriptionCellIdentifier];
-        }
-        
-        UIWebView *existingWebView = (UIWebView *)[cell.contentView viewWithTag:42];
-        if (!existingWebView) {
-            existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight)];
-            existingWebView.delegate = self;
-            existingWebView.tag = 42;
-            existingWebView.dataDetectorTypes = UIDataDetectorTypeLink | UIDataDetectorTypePhoneNumber | UIDataDetectorTypeAddress;
-            [cell.contentView addSubview:existingWebView];
-            existingWebView.scrollView.scrollsToTop = NO;
-            existingWebView.scrollView.scrollEnabled = NO;
-        }
-        existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight);
-        [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, self.venue.descriptionHTML] baseURL:nil];
-        existingWebView.backgroundColor = [UIColor clearColor];
-        existingWebView.opaque = NO;
-        
-    } else if ([currentSection isEqualToString:sMenuURLKey]){
-        cell.textLabel.text = @"menu";
-        cell.detailTextLabel.text = self.venue.menuURL;
-        cell.detailTextLabel.numberOfLines = 1;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-    } else if ([currentSection isEqualToString:sDaysKey]) {
-        NSDictionary *hoursRow = self.formattedHoursData[indexPath.row];
-        NSString *startDay  = [[self.daySpanFormatter stringFromDate:hoursRow[@"dayStart"]] lowercaseString];
-        NSString *daySpan;
-        if (![hoursRow[@"dayEnd"] isEqual: hoursRow[@"dayStart"]]) {
-            NSString *endDay = [[self.daySpanFormatter stringFromDate:hoursRow[@"dayEnd"]] lowercaseString];
-            daySpan = [NSString stringWithFormat:@"%@ - %@", startDay, endDay];
-        } else {
-            daySpan = startDay;
-        }
-        
-        cell.textLabel.text = daySpan;
-        cell.detailTextLabel.text = hoursRow[@"hours"];
-    } else if ([currentSection isEqualToString:sCuisinesKey]) {
-        cell.textLabel.text = @"cuisine";
-        cell.detailTextLabel.text = [self.venue.cuisines componentsJoinedByString:@", "];
-    } else if ([currentSection isEqualToString:sPaymentMethodsKey]) {
-        cell.textLabel.text = @"payment";
-        cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
-    } else if ([currentSection isEqualToString:sLocationKey]) {
-        cell.textLabel.text = @"location";
-        cell.detailTextLabel.text = [self.venue.location locationDisplayString];
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-    } else if ([currentSection isEqualToString:sHomePageURLKey]) {
-        cell.textLabel.text = @"home page";
-        cell.detailTextLabel.text = self.venue.homepageURL;
-        cell.detailTextLabel.numberOfLines = 1;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+}
+
+// Web View Cell
+
+- (MITDiningCustomSeparatorCell *)getWebViewCell
+{
+    static NSString *webViewDescriptionCellIdentifier = @"webViewDescriptionCellIdentifier";
+    MITDiningCustomSeparatorCell *cell = [self.tableView dequeueReusableCellWithIdentifier:webViewDescriptionCellIdentifier];
+    if (!cell) {
+        cell = [[MITDiningCustomSeparatorCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:webViewDescriptionCellIdentifier];
     }
-    
     
     return cell;
 }
 
+- (void)hydrateWebViewCell:(MITDiningCustomSeparatorCell *)cell
+{
+    UIWebView *descriptionWebView = [self getWebViewFromCell:cell];
+    NSString *htmlString = [self htmlDescriptionFromVenueHTMLString:self.venue.descriptionHTML];
+    [descriptionWebView loadHTMLString:htmlString baseURL:nil];
+}
+
+- (UIWebView *)getWebViewFromCell:(UITableViewCell *)cell
+{
+    UIWebView *webView = (UIWebView *)[cell.contentView viewWithTag:kWebViewTag];
+    if (!webView) {
+        webView = [self createWebViewForCell:cell];
+    }
+    webView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), self.descriptionHeight);
+    return webView;
+}
+
+- (UIWebView *)createWebViewForCell:(UITableViewCell *)cell
+{
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight)];
+    webView.delegate = self;
+    webView.tag = kWebViewTag;
+    webView.dataDetectorTypes = UIDataDetectorTypeLink | UIDataDetectorTypePhoneNumber | UIDataDetectorTypeAddress;
+    webView.scrollView.scrollsToTop = NO;
+    webView.scrollView.scrollEnabled = NO;
+    webView.backgroundColor = [UIColor clearColor];
+    webView.opaque = NO;
+    [cell.contentView addSubview:webView];
+    return webView;
+}
+
+// Schedule Cell
+
+- (MITDiningRetailInfoScheduleCell *)getScheduleCell
+{
+    static NSString *scheduleCellIdentifier = @"scheduleCellIdentifier";
+    MITDiningRetailInfoScheduleCell *cell = [self.tableView dequeueReusableCellWithIdentifier:scheduleCellIdentifier];
+    if (!cell) {
+        cell = [[MITDiningRetailInfoScheduleCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:scheduleCellIdentifier];
+    }
+    return cell;
+    
+}
+
+// General Font
+
+- (UIFont *)detailTextLabelFont
+{
+    return [UIFont systemFontOfSize:17];
+}
+
+- (UIFont *)titleTextLabelFont
+{
+    return [UIFont systemFontOfSize:15.0];
+}
+
 #pragma mark - UITableViewDelegate
 
-- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *sectionKey = self.availableInfoKeys[indexPath.section];
-    if ([sectionKey isEqualToString:sDescriptionHTMLKey]) {
-        return self.descriptionHeight + 20; // add some vertical padding
-    } else if ([sectionKey isEqualToString:sCuisinesKey]) {
-
-        // Width sized out on 2014.02.28 by measuring text width in
-        // retina simulator
-        CGSize constraint = CGSizeMake(160, CGFLOAT_MAX);
+    NSString *rowKey = self.availableInfoKeys[indexPath.row];
+    CGFloat heightToReturn = 60.0;
+    
+    if ([rowKey isEqualToString:kDescriptionHTMLKey]) {
+        heightToReturn = self.descriptionHeight + 20; // add some vertical padding
+    } else if ([rowKey isEqualToString:kCuisinesKey]) {
         NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
-
-
-        NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:cuisineString attributes:@{NSFontAttributeName : [self detailTextLabelFont]}];
-
-        CGFloat stringHeight = CGRectGetHeight([attributedString boundingRectWithSize:constraint
-                                                                              options:NSStringDrawingUsesLineFragmentOrigin
-                                                                              context:nil]);
-        return MAX(44, ceil(stringHeight) + 16.);
+        heightToReturn = [self heightForString:cuisineString];
+    } else if ([rowKey isEqualToString:kLocationKey]) {
+        heightToReturn = [self heightForString:[self.venue.location locationDisplayString]] + [self titleTextLabelFont].lineHeight + 10;
+    } else if ([rowKey isEqualToString:kDaysKey]) {
+        heightToReturn = [MITDiningRetailInfoScheduleCell heightForCellWithScheduleInfo:self.formattedHoursData];
     }
     
-    return 44;
+    return heightToReturn;
+}
+
+- (CGFloat)heightForString:(NSString *)string
+{
+    CGFloat maxWidth = CGRectGetWidth(self.view.bounds) - (kLeftPadding * 2.0);
+    CGSize constraint = CGSizeMake(maxWidth, CGFLOAT_MAX);
+    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:string attributes:@{NSFontAttributeName : [self detailTextLabelFont]}];
+    
+    CGFloat stringHeight = CGRectGetHeight([attributedString boundingRectWithSize:constraint
+                                                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                                                          context:nil]);
+    return stringHeight;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSString *sectionKey = self.availableInfoKeys[indexPath.section];
-    if ([sectionKey isEqualToString:sMenuURLKey]) {
+    NSString *rowKey = self.availableInfoKeys[indexPath.row];
+    if ([rowKey isEqualToString:kMenuURLKey]) {
         // external url
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.menuURL]];
-    } else if ([sectionKey isEqualToString:sLocationKey]) {
+    } else if ([rowKey isEqualToString:kLocationKey]) {
         // link to map view
         NSString * query = ([self.venue.location.displayDescription length]) ? self.venue.location.displayDescription : self.venue.location.roomNumber;
         NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:query];
         [[UIApplication sharedApplication] openURL:url];
-    } else if ([sectionKey isEqualToString:sHomePageURLKey]) {
+    } else if ([rowKey isEqualToString:kHomePageURLKey]) {
         // external url
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.homepageURL]];
+    } else if ([rowKey isEqualToString:kAddToFavoritesKey]) {
+        [self updateFavoriteWithFavoriteCell:[tableView cellForRowAtIndexPath:indexPath]];
     }
 }
 
-#pragma mark - WebViewDelegate
+- (void)updateFavoriteWithFavoriteCell:(UITableViewCell *)cell
+{
+    BOOL isFavorite = ![self.venue.favorite boolValue];
+    self.venue.favorite = @(isFavorite);
+    cell.textLabel.text = isFavorite ? @"Remove from Favorites" : @"Add to Favorites";
+    [CoreDataManager saveData];
+}
+
+#pragma mark - UIWebViewDelegate
+
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-	// calculate webView height, if it change we need to reload table
-	CGFloat newDescriptionHeight = [[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"content\").scrollHeight;"] floatValue];
-    CGRect frame = webView.frame;
-    frame.size.height = newDescriptionHeight;
-    webView.frame = frame;
+    NSString *heightAsString = [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"centered-content\").scrollHeight;"];
+	CGFloat webViewHeight = [heightAsString floatValue];
     
-	if(newDescriptionHeight != self.descriptionHeight) {
-		self.descriptionHeight = newDescriptionHeight;
+	if(webViewHeight != self.descriptionHeight) {
+		self.descriptionHeight = webViewHeight;
 		[self.tableView reloadData];
     }
 }
 
+#pragma mark - HTML String Formatting
+
+// Takes an int and an HTML String as args
+- (NSString *)htmlFormatString
+{
+    return  @"<html>"
+    "<head>"
+    "<style type=\"text/css\" media=\"screen\">"
+    "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; color: #727272;} "
+    ".emptyParagraph { display: none; }"
+    ".center { margin-left: auto; margin-right: auto;  width: %i;}"// Size to center in points (% doesn't work)
+    "</style>"
+    "</head>"
+    "<body class=\"center\" id=\"centered-content\">"
+    "%@" // actual description HTML string
+    "</body>"
+    "</html>"
+    "<script type=\"text/javascript\" charset=\"utf-8\">"
+    "/* hide all of the empty paragraph tags, because emergency info announcements tend to have a lot of unnecessary whitespace*/"
+    "var allParagraphs = document.getElementsByTagName(\"p\");"
+    "for (var i = allParagraphs.length - 1; i >= 0; i--){"
+    "if (/\\S+/.test(allParagraphs[i].innerText) == false) {"
+    "allParagraphs[i].className = \"emptyParagraph\";"
+    "}"
+    "}"
+    "</script>";
+}
+
+- (NSString *)htmlDescriptionFromVenueHTMLString:(NSString *)venueHTMLString
+{
+    int widthOfHTMLBox = CGRectGetWidth(self.view.bounds) - (kLeftPadding * 2.0);
+    return [NSString stringWithFormat:[self htmlFormatString], widthOfHTMLBox, venueHTMLString];
+}
+
+#pragma mark - Interface Orientation
+
+- (BOOL) shouldAutorotate
+{
+    return NO;
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return NO;
+}
 
 @end
