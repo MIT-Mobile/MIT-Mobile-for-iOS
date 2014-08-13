@@ -42,6 +42,7 @@
 @property (nonatomic, strong) UIView *searchBarWrapper;
 
 @property (nonatomic) NSUInteger currentDataSourceIndex;
+@property (nonatomic,strong) NSDate *lastUpdated;
 
 #pragma mark Data Source
 @property (nonatomic,copy) NSArray *categories;
@@ -87,6 +88,10 @@
 {
     [super viewWillAppear:animated];
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.navigationController.toolbarHidden = NO;
+    }
+    
     if (!self.activeViewController && [self class] == [MITNewsiPadViewController class]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
@@ -97,12 +102,7 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
-        
-        [self reloadItems:^(NSError *error) {
-            if (error) {
-                DDLogWarn(@"update failed; %@",error);
-            }
-        }];
+        [self reloadViewItems];
         [self updateNavigationItem:YES];
     }
 }
@@ -155,6 +155,14 @@
         listViewController.automaticallyAdjustsScrollViewInsets = NO;
         listViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _listViewController = listViewController;
+
+        if (self.navigationController.toolbarHidden == NO) {
+            UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+            [refreshControl addTarget:self action:@selector(reloadViewItems)
+                     forControlEvents:UIControlEventValueChanged];
+            [listViewController.tableView addSubview:refreshControl];
+            self.listViewController.refreshControl = refreshControl;
+        }
     }
     
     return listViewController;
@@ -188,6 +196,27 @@
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style
 {
     [self setPresentationStyle:style animated:NO];
+}
+- (void)reloadViewItems
+{
+    if (self.navigationController.toolbarHidden == NO) {
+        [self setToolbarString:@"Updating..." animated:YES];
+    }
+    [self reloadItems:^(NSError *error) {
+        [self.listViewController.refreshControl endRefreshing];
+        if (error) {
+            DDLogWarn(@"update failed; %@",error);
+        } else {
+            self.lastUpdated = [NSDate date];
+        }
+        if (self.navigationController.toolbarHidden == NO) {
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self setToolbarString:updateText animated:YES];
+        }
+    }];
+
 }
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
@@ -275,6 +304,26 @@
 {
     self.presentationStyle = MITNewsPresentationStyleList;
     [self updateNavigationItem:YES];
+}
+
+#pragma mark UI Helper
+- (void)setToolbarString:(NSString*)string animated:(BOOL)animated
+{
+    UILabel *updatingLabel = [[UILabel alloc] init];
+    updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+    updatingLabel.text = string;
+    
+    if (self.navigationController.toolbar.barStyle == UIBarStyleBlack) {
+        updatingLabel.textColor = [UIColor whiteColor];
+    } else {
+        updatingLabel.textColor = [UIColor blackColor];
+    }
+    
+    updatingLabel.backgroundColor = [UIColor clearColor];
+    [updatingLabel sizeToFit];
+    
+    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
 }
 
 #pragma mark UIAlertViewDelegate
