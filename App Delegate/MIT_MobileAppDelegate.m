@@ -37,6 +37,7 @@
 #import "MITLauncher.h"
 #import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
+#import "MITRootViewController.h"
 
 #import "MITShuttleStopNotificationManager.h"
 
@@ -707,11 +708,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (UIViewController*)rootViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
 {
     if (!_rootViewController) {
-        if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            _rootViewController = [self createRootViewControllerForPadIdiom];
-        } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-            _rootViewController = [self createRootViewControllerForPhoneIdiom];
-        }
+        MITRootViewController *rootViewController = [[MITRootViewController alloc] init];
+        rootViewController.modules = self.modules;
+        _rootViewController = rootViewController;
     }
     
     return _rootViewController;
@@ -775,19 +774,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
 {
-    MITModule *module = [self moduleForTag:tag];
-    
-    if (module) {
-        UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-        if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            [self showModuleForTagUsingPadIdiom:tag animated:animated];
-        } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-            [self showModuleForTagUsingPhoneIdiom:tag animated:animated];
-        } else {
-            NSString *reason = [NSString stringWithFormat:@"unknown user interface idiom %d",userInterfaceIdiom];
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
-        }
-    }
+    [self.rootViewController showModuleWithTag:tag animated:animated];
 }
 
 - (void)showModuleForTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated
@@ -830,29 +817,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
-- (void)showModuleForTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated
-{
-    MITModule *module = [self moduleForTag:tag];
-    
-    if (!module) {
-        DDLogWarn(@"failed to show module: no registered module for tag %@",tag);
-        return;
-    }
-    
-    if (self.topNavigationController) {
-        UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
-        
-        if ([self.topNavigationController.viewControllers containsObject:homeViewController]) {
-            [self.topNavigationController popToViewController:homeViewController animated:animated];
-        } else {
-            [self.topNavigationController popToRootViewControllerAnimated:NO];
-            [self.topNavigationController pushViewController:homeViewController animated:animated];
-        }
-        
-        self.activeModule = module;
-    }
-}
-
 #pragma mark Preferences
 - (void)saveModulesState {
     NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
@@ -877,6 +841,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         [slidingViewController anchorTopViewToRightAnimated:YES];
     }
 }
+
 #pragma mark - Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController

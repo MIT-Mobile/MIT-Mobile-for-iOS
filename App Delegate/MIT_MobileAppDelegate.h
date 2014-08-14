@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 
+@class MITRootViewController;
 @class MITModule;
 @class MIT_MobileAppDelegate;
 @class MITCoreDataController;
@@ -13,7 +14,7 @@
 @property (nonatomic,strong) NSData *deviceToken;
 
 @property (nonatomic,readonly,copy) NSArray *modules;
-@property (nonatomic,readonly,strong) UIViewController *rootViewController;
+@property (nonatomic,readonly,strong) MITRootViewController *rootViewController;
 
 @property (nonatomic,readonly,strong) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic,readonly,strong) MITCoreDataController *coreDataController;
