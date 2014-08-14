@@ -356,6 +356,7 @@
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
 		8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */; };
 		8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */; };
+		8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */; };
 		8012D47E199BFE450037ED99 /* MITDiningInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */; };
 		8012D481199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D480199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
@@ -1244,6 +1245,7 @@
 		8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningPlace.m; path = Dining/MITDiningPlace.m; sourceTree = "<group>"; };
 		8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueDetailViewController.h; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.h; sourceTree = "<group>"; };
 		8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailVenueDetailViewController.m; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.m; sourceTree = "<group>"; };
+		8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningRetailVenueDetailViewController.xib; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.xib; sourceTree = "<group>"; };
 		8012D47C199BFE450037ED99 /* MITDiningInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningInfoScheduleCell.h; path = Dining/MITDiningInfoScheduleCell.h; sourceTree = "<group>"; };
 		8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningInfoScheduleCell.m; path = Dining/MITDiningInfoScheduleCell.m; sourceTree = "<group>"; };
 		8012D47F199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailInfoScheduleCell.h; path = Dining/MITDiningRetailInfoScheduleCell.h; sourceTree = "<group>"; };
@@ -1871,6 +1873,7 @@
 				22D90330199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m */,
 				8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */,
 				8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */,
+				8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3817,6 +3820,7 @@
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */,
+				8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */,
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
 				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
 				5E70E38D192E81CF00165B41 /* MITShuttleRouteContainerViewController.xib in Resources */,
