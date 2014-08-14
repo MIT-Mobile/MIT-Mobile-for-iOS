@@ -163,13 +163,11 @@
         listViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _listViewController = listViewController;
 
-        if (self.navigationController.toolbarHidden == NO) {
-            UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-            [refreshControl addTarget:self action:@selector(reloadViewItems:)
-                     forControlEvents:UIControlEventValueChanged];
-            [listViewController.tableView addSubview:refreshControl];
-            self.listViewController.refreshControl = refreshControl;
-        }
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        [listViewController.tableView addSubview:refreshControl];
+        self.listViewController.refreshControl = refreshControl;
     }
     
     return listViewController;
@@ -206,26 +204,22 @@
 }
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
-    if (self.navigationController.toolbarHidden == NO) {
-        [self setToolbarString:@"Updating..." animated:YES];
-    }
+    [self setToolbarString:@"Updating..." animated:YES];
     [self reloadItems:^(NSError *error) {
         [self.listViewController.refreshControl endRefreshing];
         if (error) {
             DDLogWarn(@"update failed; %@",error);
-            if (!self.navigationController.toolbarHidden && refreshControl) {
+            if (refreshControl) {
                 UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
                 [failedRefreshAlertView show];
             }
         } else {
             self.lastUpdated = [NSDate date];
         }
-        if (self.navigationController.toolbarHidden == NO) {
-            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                toDate:[NSDate date]];
-            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self setToolbarString:updateText animated:YES];
-        }
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self setToolbarString:updateText animated:YES];
     }];
 }
 

@@ -238,9 +238,7 @@
 
 - (void)setToolbarStatusUpdating
 {
-    if (self.navigationController.toolbarHidden == NO) {
-        [self setToolbarString:@"Updating..." animated:YES];
-    }
+    [self setToolbarString:@"Updating..." animated:YES];
 }
 
 - (void)setToolbarStatusUpdated
