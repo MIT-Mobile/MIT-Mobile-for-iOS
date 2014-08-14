@@ -546,6 +546,11 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     [self beginSearch:suggestion];
 }
 
+- (void)eventSearchTypeAheadControllerDidClearFilters:(MITEventSearchTypeAheadViewController *)typeAheadController
+{
+    self.resultsViewController.currentCalendar = nil;
+}
+
 #pragma mark - MITEventSearchResultsViewControllerDelegate Methods
 
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event
