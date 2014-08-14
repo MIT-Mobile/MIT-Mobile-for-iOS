@@ -15,6 +15,7 @@
 @dynamic name;
 @dynamic payment;
 @dynamic shortName;
+@dynamic favorite;
 @dynamic hours;
 @dynamic location;
 

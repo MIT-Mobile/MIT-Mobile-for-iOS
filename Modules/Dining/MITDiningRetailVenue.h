@@ -17,6 +17,7 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) id payment;
 @property (nonatomic, retain) NSString * shortName;
+@property (nonatomic, retain) NSNumber * favorite;
 @property (nonatomic, retain) NSOrderedSet *hours;
 @property (nonatomic, retain) MITDiningLocation *location;
 @end

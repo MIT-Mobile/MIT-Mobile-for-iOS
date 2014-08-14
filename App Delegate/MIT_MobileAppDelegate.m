@@ -515,7 +515,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
-                            @"ShuttleTrack",
+                            //@"ShuttleTrack",
                             @"MITShuttleDataModel",
                             @"Tours",
                             @"PeopleDataModel"];

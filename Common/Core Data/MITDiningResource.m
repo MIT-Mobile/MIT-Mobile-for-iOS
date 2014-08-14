@@ -8,7 +8,7 @@
 
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
-    self = [super initWithName:MITCalendarEventsResourceName pathPattern:MITCalendarEventsPathPattern managedObjectModel:managedObjectModel];
+    self = [super initWithName:MITDiningResourceName pathPattern:MITDiningPathPattern managedObjectModel:managedObjectModel];
     if (self) {
         [self addMapping:[MITDiningDining objectMapping]
                atKeyPath:nil

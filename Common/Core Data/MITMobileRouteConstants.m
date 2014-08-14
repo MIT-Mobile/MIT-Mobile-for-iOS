@@ -19,7 +19,7 @@ NSString* const MITCalendarEventPathPattern = @"apis/calendars/:calendar/events/
 
 #pragma mark dining
 NSString* const MITDiningResourceName = @"MITDiningResourceName";
-NSString* const MITDiningPathPattern = @"apis/dining";
+NSString* const MITDiningPathPattern = @"apis/dining/";
 
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";

@@ -42,7 +42,7 @@
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningMenuItem" syncable="YES"/>
     </entity>
     <entity name="MITDiningMenuItem" representedClassName="MITDiningMenuItem" syncable="YES">
-        <attribute name="dietaryFlags" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dietaryFlags" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="itemDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="station" optional="YES" attributeType="String" syncable="YES"/>
@@ -56,6 +56,7 @@
     <entity name="MITDiningRetailVenue" representedClassName="MITDiningRetailVenue" syncable="YES">
         <attribute name="cuisine" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="descriptionHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="homepageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="iconURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
@@ -74,13 +75,13 @@
     <elements>
         <element name="MITDiningDining" positionX="-63" positionY="-18" width="128" height="103"/>
         <element name="MITDiningHouseDay" positionX="18" positionY="54" width="128" height="90"/>
+        <element name="MITDiningHouseVenue" positionX="-9" positionY="63" width="128" height="150"/>
         <element name="MITDiningLinks" positionX="9" positionY="45" width="128" height="73"/>
         <element name="MITDiningLocation" positionX="0" positionY="36" width="128" height="163"/>
         <element name="MITDiningMeal" positionX="-9" positionY="27" width="128" height="118"/>
-        <element name="MITDiningMenuItem" positionX="0" positionY="36" width="128" height="103"/>
+        <element name="MITDiningMenuItem" positionX="0" positionY="36" width="128" height="105"/>
         <element name="MITDiningRetailDay" positionX="36" positionY="72" width="128" height="103"/>
-        <element name="MITDiningRetailVenue" positionX="-18" positionY="18" width="128" height="223"/>
+        <element name="MITDiningRetailVenue" positionX="-18" positionY="18" width="128" height="240"/>
         <element name="MITDiningVenues" positionX="-54" positionY="-9" width="128" height="73"/>
-        <element name="MITDiningHouseVenue" positionX="-9" positionY="63" width="128" height="150"/>
     </elements>
 </model>
