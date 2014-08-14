@@ -131,6 +131,17 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
         NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
         if (![model isConfiguration:nil compatibleWithStoreMetadata:storeMeta]) {
             NSManagedObjectModel *oldModel = [NSManagedObjectModel mergedModelFromBundles:nil forStoreMetadata:storeMeta];
+            
+            if (!oldModel) {
+                if (error) {
+                    (*error) = [NSError errorWithDomain:NSCocoaErrorDomain
+                                                   code:NSCoreDataError
+                                               userInfo:@{NSLocalizedDescriptionKey:@"Cannot create an inferred NSMappingModel with a nil source model"}];
+                }
+                
+                return NO;
+            }
+            
             NSMappingModel *mapping = [NSMappingModel inferredMappingModelForSourceModel:oldModel destinationModel:model error:error];
             if (mapping) {
                 NSURL *storeBackupURL = [storeURL URLByAppendingPathExtension:@"backup"];
