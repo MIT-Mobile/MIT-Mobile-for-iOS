@@ -102,7 +102,14 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
-        [self reloadViewItems:nil];
+        if (!self.lastUpdated) {
+            [self reloadViewItems:nil];
+        } else {
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self setToolbarString:updateText animated:animated];
+        }
         [self updateNavigationItem:YES];
     }
 }

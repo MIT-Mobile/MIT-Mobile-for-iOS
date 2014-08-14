@@ -246,9 +246,7 @@ static NSString *errorMessage = @"Failed";
                  forControlEvents:UIControlEventValueChanged];
         [self.tableView addSubview:refreshControl];
         self.refreshControl = refreshControl;
-        if (self.navigationController.toolbarHidden == NO) {
-            [self setToolbarStatusUpdated];
-        }
+        [self setToolbarStatusUpdated];
     }
 }
 
@@ -260,13 +258,23 @@ static NSString *errorMessage = @"Failed";
 
 - (void)reloadViewItems:(UIRefreshControl *)control;
 {
-#warning in section ....
     [self.dataSource refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl endRefreshing];
-            [self.tableView reloadData];
-#warning add errors
-        }];
+        if (error) {
+            if (control) {
+                [self.refreshControl endRefreshing];
+            UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+            [failedRefreshAlertView show];
+            }
+        } else {
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl endRefreshing];
+                [self.tableView reloadData];
+            }];
+            if (self.navigationController.toolbarHidden == NO) {
+                [self setToolbarStatusUpdated];
+            }
+        }
     }];
 }
 
