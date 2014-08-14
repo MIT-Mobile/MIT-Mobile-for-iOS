@@ -17,13 +17,15 @@
 #import "VenueLocation.h"
 #import "UIImage+PDF.h"
 #import "UIImageView+WebCache.h"
-#import "MGSMapView.h"
-#import "MGSLayer.h"
-#import "MGSAnnotation.h"
-#import "MGSSimpleAnnotation.h"
 #import "UIScrollView+SVPullToRefresh.h"
 
-@interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, MGSMapViewDelegate, MGSLayerDelegate>
+#import "MITTiledMapView.h"
+#import "MITDiningPlace.h"
+#import "MITMapPlaceAnnotationView.h"
+
+static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
+
+@interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, MKMapViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
 @property (nonatomic, strong) IBOutlet UIView * listTabContainerView;
@@ -33,7 +35,8 @@
 @property (nonatomic, strong) IBOutlet UIButton * mapHouseButton;
 @property (nonatomic, strong) IBOutlet UIButton * mapRetailButton;
 @property (nonatomic, strong) IBOutlet UIView *mapContainer;
-@property (nonatomic, strong) MGSMapView *mapView;
+@property (nonatomic, strong) MITTiledMapView *tiledMapView;
+@property (nonatomic, readonly) MKMapView *mapView;
 @property (nonatomic, getter = isAnimating) BOOL animating;
 @property (nonatomic, getter = isShowingMap) BOOL showingMap;
 @property (nonatomic, getter = isShowingHouseDining) BOOL showingHouseDining;
@@ -48,6 +51,8 @@
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) NSArray *favoritedRetailVenues;
 
+@property (strong, nonatomic) NSArray *places;
+@property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 @end
 
 @implementation DiningMapListViewController
@@ -207,9 +212,9 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-    if (!self.isShowingMap && self.mapView) {
-        [self.mapView removeFromSuperview];
-        self.mapView = nil;
+    if (!self.isShowingMap && self.tiledMapView) {
+        [self.tiledMapView removeFromSuperview];
+        self.tiledMapView = nil;
     }
 }
 
@@ -229,13 +234,10 @@
             }];
             
         } else {
-            if (!self.mapView) {
-                self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
-                self.mapView.delegate = self;
-                self.mapView.showUserLocation = YES;
-                [self.mapContainer addSubview:self.mapView];
+            if (!self.tiledMapView) {
+                [self setupTiledMapView];
             }
-            [self annotateVenues];
+            [self updateMapView];
             // animate to the map
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutMapState];
@@ -247,6 +249,16 @@
         // toggle boolean flag 
         self.showingMap = !self.isShowingMap;
     }
+}
+
+- (void)setupTiledMapView
+{self.tiledMapView = [[MITTiledMapView alloc] initWithFrame:self.mapContainer.bounds];
+    [self.tiledMapView setLeftButtonHidden:NO animated:YES];
+    self.mapView.delegate = self;
+    self.mapView.showsUserLocation = YES;
+    self.mapView.tintColor =self.mapView.tintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
+    [self setupMapBoundingBoxAnimated:NO];
+    [self.mapContainer addSubview:self.tiledMapView];
 }
 
 #pragma mark - Dynamic Properties
@@ -361,7 +373,7 @@
         [self fetchRetailVenues];
     }
     if (self.isShowingMap) {
-        [self annotateVenues];
+        [self updateMapView];
     } else {
         [self.listView reloadData];
     }
@@ -702,33 +714,171 @@
 
 #pragma mark - MapView Methods
 
-- (void) annotateVenues
-{
+- (void)updateMapView {
     NSArray *venues = [self.fetchedResultsController fetchedObjects];
-    
-    [self.mapView removeLayer:[[self.mapView mapLayers] lastObject]]; // need to remove previously added layer before adding anything new or else will cause crash
-    MGSLayer * houseLayer = [[MGSLayer alloc] initWithName:@"house.layer"];
-    houseLayer.delegate = self;
-    [houseLayer addAnnotationsFromArray:venues];
-    MKCoordinateRegion region = MKCoordinateRegionForMGSAnnotations([NSSet setWithArray:venues]);
-    [self.mapView setMapRegion:region animated:YES];
-    
-    [self.mapView addLayer:houseLayer];
-    [self.mapView setNeedsDisplay];
+    [self updateMapWithDiningPlaces:venues];
 }
 
-#pragma mark -MGSMapView Delegate
-- (void)mapView:(MGSMapView*)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
+- (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
-    if ([annotation isKindOfClass:[HouseVenue class]]) {
-        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
-        detailVC.venue = (HouseVenue *)annotation;
-        [self.navigationController pushViewController:detailVC animated:YES];
-    } else if ([annotation isKindOfClass:[RetailVenue class]]) {
-        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
-        detailVC.venue = (RetailVenue *)annotation;
-        [self.navigationController pushViewController:detailVC animated:YES];
+    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+    
+    if ([self.places count] > 0) {
+        MKMapRect zoomRect = MKMapRectNull;
+        for (id <MKAnnotation> annotation in self.places)
+        {
+            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
+            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+            zoomRect = MKMapRectUnion(zoomRect, pointRect);
+        }
+        double inset = -zoomRect.size.width * 0.1;
+        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
+    } else {
+        [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
+}
+
+#pragma mark - Places
+
+- (void)setPlaces:(NSArray *)places
+{
+    [self setPlaces:places animated:NO];
+}
+
+- (void)setPlaces:(NSArray *)places animated:(BOOL)animated
+{
+    _places = places;
+    [self refreshPlaceAnnotations];
+    [self setupMapBoundingBoxAnimated:animated];
+}
+
+- (void)clearPlacesAnimated:(BOOL)animated
+{
+    [self setPlaces:nil animated:animated];
+}
+
+- (void)refreshPlaceAnnotations
+{
+    [self removeAllPlaceAnnotations];
+    [self.mapView addAnnotations:self.places];
+}
+
+- (void)removeAllPlaceAnnotations
+{
+    NSMutableArray *annotationsToRemove = [NSMutableArray array];
+    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+        if ([annotation isKindOfClass:[MITDiningPlace class]]) {
+            [annotationsToRemove addObject:annotation];
+        }
+    }
+    [self.mapView removeAnnotations:annotationsToRemove];
+}
+
+
+#pragma mark - MKMapViewDelegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITDiningPlace class]]) {
+        MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
+        if (!annotationView) {
+            annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
+        }
+        [annotationView setNumber:[(MITDiningPlace *)annotation displayNumber]];
+        
+        return annotationView;
+    }
+    return nil;
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+    if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    }
+    return nil;
+}
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+    [tap addTarget:self action:@selector(calloutTapped:)];
+    [view addGestureRecognizer:tap];
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    for (UIGestureRecognizer *gestureRecognizer in view.gestureRecognizers) {
+        [view removeGestureRecognizer:gestureRecognizer];
+    }
+}
+
+- (void)calloutTapped:(UITapGestureRecognizer *)tap
+{
+    [self showDetailForAnnotationView:(MKAnnotationView *)tap.view];
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control {
+    [self showDetailForAnnotationView:view];
+}
+
+- (void)showDetailForAnnotationView:(MKAnnotationView *)view
+{
+    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        MITDiningPlace *place = view.annotation;
+        if (place.houseVenue) {
+            DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
+            detailVC.venue = place.houseVenue;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        } else if (place.retailVenue) {
+            DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
+            detailVC.venue = place.retailVenue;
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }
+        
+    }
+}
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
+        [self refreshPlaceAnnotations];
+        self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
+    }
+    
+}
+
+#pragma mark - Loading Events Into Map
+
+- (void)updateMapWithDiningPlaces:(NSArray *)diningPlaceArray
+{
+    [self removeAllPlaceAnnotations];
+    NSMutableArray *annotationsToAdd = [NSMutableArray array];
+    int totalNumberOfPlacesWithoutLocation = 0;
+    for (int i = 0; i < diningPlaceArray.count; i++) {
+    
+        id venue = diningPlaceArray[i];
+        MITDiningPlace *diningPlace = nil;
+        if ([venue isKindOfClass:[RetailVenue class]]) {
+            diningPlace = [[MITDiningPlace alloc] initWithRetailVenue:venue];
+        } else if ([venue isKindOfClass:[HouseVenue class]]) {
+            diningPlace = [[MITDiningPlace alloc] initWithHouseVenue:venue];
+        }
+        if (diningPlace) {
+            diningPlace.displayNumber = (i + 1) - totalNumberOfPlacesWithoutLocation;
+            [annotationsToAdd addObject:diningPlace];
+        } else {
+            totalNumberOfPlacesWithoutLocation++;
+        }
+    }
+    
+    self.places = annotationsToAdd;
+}
+
+#pragma mark - MapView Getter
+
+- (MKMapView *)mapView
+{
+    return self.tiledMapView.mapView;
 }
 
 @end
