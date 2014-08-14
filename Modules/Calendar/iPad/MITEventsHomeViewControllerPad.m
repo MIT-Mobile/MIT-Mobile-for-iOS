@@ -23,7 +23,7 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
 static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventsMapViewController *mapsViewController;
@@ -200,12 +200,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
     self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
     
-    [self.searchBar becomeFirstResponder];
-    
-    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
-    CGRect presentationRect = self.searchBar.frame;// [self.view convertRect:self.searchBar.frame fromView:self.searchBar];
-    presentationRect.origin.y += presentationRect.size.height / 2;
-    [self.typeAheadPopoverController presentPopoverFromRect:presentationRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    [self showSearchPopover];
 }
 
 - (void)hideSearchBar
@@ -223,6 +218,17 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.searchBar.text = @"";
     
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem];
+}
+
+- (void)showSearchPopover
+{
+    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+    self.typeAheadPopoverController.delegate = self;
+    CGRect presentationRect = self.searchBar.frame;
+    presentationRect.origin.y += presentationRect.size.height / 2;
+    [self.typeAheadPopoverController presentPopoverFromRect:presentationRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    
+    [self.searchBar becomeFirstResponder];
 }
 
 #pragma mark - Date Navigation Bar Button Presses
@@ -279,6 +285,13 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [self beginSearch:searchBar.text];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    if (!self.typeAheadPopoverController.isPopoverVisible) {
+        [self showSearchPopover];
+    }
 }
 
 #pragma mark - ViewControllers Setup
@@ -540,6 +553,21 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 //    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
 //    detailVC.event = event;
 //    [self.navigationController pushViewController:detailVC animated:YES];
+}
+
+#pragma mark - UIPopoverControllerDelegate Methods
+
+- (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
+{
+    if ([popoverController isEqual:self.typeAheadPopoverController]) {
+        if ([self.searchBar.text isEqualToString:@""]) {
+            [self hideSearchBar];
+        } else {
+            [self.searchBar resignFirstResponder];
+        }
+    }
+    
+    return YES;
 }
 
 #pragma mark - Getters | Setters
