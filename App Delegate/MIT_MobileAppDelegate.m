@@ -643,19 +643,12 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITLauncherListViewController *launcherViewController = [[MITLauncherListViewController alloc] init];
     launcherViewController.dataSource = self;
     launcherViewController.delegate = self;
+
+    launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
     
-    NSString *logoName;
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        logoName = @"global/navbar_mit_logo_light";
-    } else {
-        logoName = @"global/navbar_mit_logo_dark";
-        launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
-    }
-    
-    UIImage *logoView = [UIImage imageNamed:logoName];
+    UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo_dark"];
     launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
-    
     
     UIViewController *topViewController = [[UIViewController alloc] init];
     topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
@@ -664,13 +657,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     navigationController.navigationBarHidden = NO;
     navigationController.toolbarHidden = YES;
     
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        navigationController.navigationBar.barStyle = UIBarStyleDefault;
-        navigationController.navigationBar.translucent = YES;
-    } else {
-        navigationController.navigationBar.barStyle = UIBarStyleBlack;
-        navigationController.navigationBar.translucent = NO;
-    }
+    navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    navigationController.navigationBar.translucent = YES;
     
     navigationController.delegate = self;
     
@@ -698,14 +686,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     launcherViewController.dataSource = self;
     launcherViewController.delegate = self;
     
-    NSString *logoName;
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        logoName = @"global/navbar_mit_logo_light";
-    } else {
-        logoName = @"global/navbar_mit_logo_dark";
-    }
-    
-    UIImage *logoView = [UIImage imageNamed:logoName];
+    UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo_dark"];
     launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
     
@@ -713,13 +694,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     navigationController.navigationBarHidden = NO;
     navigationController.toolbarHidden = YES;
     
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        navigationController.navigationBar.barStyle = UIBarStyleDefault;
-        navigationController.navigationBar.translucent = YES;
-    } else {
-        navigationController.navigationBar.barStyle = UIBarStyleBlack;
-        navigationController.navigationBar.translucent = NO;
-    }
+    navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    navigationController.navigationBar.translucent = YES;
     
     navigationController.delegate = self;
     
@@ -911,25 +887,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
 {
     [[self.window rootViewController] dismissViewControllerAnimated:YES completion:completion];
-}
-
-
-#pragma mark MITLauncherDataSource
-- (NSUInteger)numberOfItemsInLauncher:(MITLauncherGridViewController *)launcher
-{
-    return [self.modules count];
-}
-
-- (MITModule*)launcher:(MITLauncherGridViewController *)launcher moduleAtIndexPath:(NSIndexPath *)index
-{
-    return self.modules[index.row];
-}
-
-#pragma mark MITLauncherDelegate
-- (void)launcher:(MITLauncherGridViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITModule *module = self.modules[indexPath.row];
-    [self showModuleForTag:module.tag];
 }
 
 @end
