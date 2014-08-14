@@ -10,6 +10,7 @@
 
 @interface MITRootViewController () <MITLauncherDataSource,MITLauncherDelegate>
 @property (nonatomic,strong) NSArray *availableModules;
+@property (nonatomic,weak) MITModule *lastSelectedModule;
 
 // Used by the MITInterfaceStyleDrawer interface style.
 // The ECSlidingViewController is the root view controller and the launcher list view controller
@@ -49,6 +50,18 @@
 {
     [super viewWillAppear:animated];
     [self transitionToInterfaceStyle:self.interfaceStyle animated:NO];
+
+    if (!self.lastSelectedModule && (self.interfaceStyle == MITInterfaceStyleDrawer)) {
+
+    }
+}
+
+#pragma mark Drawer interface specific method
+- (void)setLeftDrawerVisible:(BOOL)visible animated:(BOOL)animated
+{
+    if (self.rootDrawerViewController) {
+        [self.rootDrawerViewController anchorTopViewToRightAnimated:animated onComplete:nil];
+    }
 }
 
 #pragma mark Managing the available modules
@@ -64,26 +77,54 @@
 
 - (void)didChangeAvailableModules
 {
-    // Find a better way to do this, we should not care how these are displayed
-    [self.moduleListViewController.tableView reloadData];
-    [self.moduleSpringboardViewController.collectionView reloadData];
-
-    if (!(self.activeModule && [_modules containsObject:self.activeModule])) {
-        self.activeModule = [_modules firstObject];
+    if (self.rootNavigationViewController) {
+        [self.moduleSpringboardViewController.collectionView reloadData];
+    } else if (self.rootDrawerViewController) {
+        [self.moduleListViewController.tableView reloadData];
     }
 }
 
-- (void)setActiveModule:(MITModule *)activeModule
+- (void)_presentModule:(MITModule*)module forInterfaceStyle:(MITInterfaceStyle)style animated:(BOOL)animated
 {
-    if (![_activeModule isEqual:activeModule]) {
-        MITModule *oldActiveModule = _activeModule;
-        [self willShowModule:activeModule];
+    if (style == MITInterfaceStyleDrawer) {
+        UIViewController *moduleViewController = [module homeViewController];
 
-        [self didHideModule:oldActiveModule];
+        NSSet *navigationViewControllerClasses = [NSSet setWithArray:@[[UINavigationController class],[UISplitViewController class],[UITabBarController class]]];
+        __block BOOL usesModuleHomeViewControllerDirectly = NO;
+        [navigationViewControllerClasses enumerateObjectsUsingBlock:^(Class klass, BOOL *stop) {
+            if ([moduleViewController isKindOfClass:klass]) {
+                usesModuleHomeViewControllerDirectly = YES;
+                (*stop) = YES;
+            }
+        }];
+
+        if (usesModuleHomeViewControllerDirectly) {
+
+        } else {
+
+        }
+    } else if (style == MITInterfaceStyleSpringboard) {
+        UIViewController *moduleHomeController = module.homeViewController;
+        if ([self.rootNavigationViewController.viewControllers containsObject:moduleHomeController]) {
+            [self.rootNavigationViewController popToViewController:moduleHomeController animated:animated];
+        } else {
+            [self.rootNavigationViewController popToViewController:self.moduleSpringboardViewController animated:NO];
+            [self.rootNavigationViewController pushViewController:moduleHomeController animated:animated];
+        }
+    } else {
+        NSString *message = [NSString stringWithFormat:@"unsupported interface style %d",style];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
     }
+
+    self.lastSelectedModule = module;
 }
 
 - (BOOL)showModuleWithTag:(NSString*)moduleTag
+{
+    return [self showModuleWithTag:moduleTag animated:NO];
+}
+
+- (BOOL)showModuleWithTag:(NSString*)moduleTag animated:(BOOL)animated
 {
     NSParameterAssert(moduleTag);
 
@@ -96,39 +137,11 @@
     }];
 
     if (newActiveModule) {
-        self.activeModule = newActiveModule;
+        [self _presentModule:newActiveModule forInterfaceStyle:self.interfaceStyle animated:animated];
         return YES;
     } else {
         return NO;
     }
-}
-
-#pragma mark Dynamic Setters
-- (ECSlidingViewController*)rootDrawerViewController
-{
-    ECSlidingViewController *rootDrawerViewController = _rootDrawerViewController;
-    if (!rootDrawerViewController) {
-        // Using a dummy view controller to keep the sliding view controller happy
-        UIViewController *dummyViewController = [[UIViewController alloc] init];
-        dummyViewController.view.backgroundColor = [UIColor mit_backgroundColor];
-    
-        
-        rootDrawerViewController = [[ECSlidingViewController alloc] initWithTopViewController:dummyViewController];
-        
-        MITLauncherListViewController *launcherViewController = [[MITLauncherListViewController alloc] init];
-        launcherViewController.dataSource = self;
-        launcherViewController.delegate = self;
-        launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
-        self.moduleListViewController = launcherViewController;
-        self.moduleSpringboardViewController = nil;
-        
-        rootDrawerViewController.underLeftViewController = launcherViewController;
-        rootDrawerViewController.anchorRightRevealAmount = 280.;
-        
-        _rootDrawerViewController = rootDrawerViewController;
-    }
-    
-    return rootDrawerViewController;
 }
 
 #pragma mark Changing the interface style
@@ -286,7 +299,7 @@
 #pragma mark MITLauncherDelegate
 - (void)launcher:(MITLauncherGridViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.activeModule = self.modules[indexPath.row];
+    [self _presentModule:self.modules[indexPath.row] forInterfaceStyle:self.interfaceStyle animated:YES];
 }
 
 @end
