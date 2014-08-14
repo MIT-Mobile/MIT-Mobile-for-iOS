@@ -7,5 +7,8 @@ typedef NS_ENUM(NSUInteger, MITInterfaceStyle) {
 
 @interface MITRootViewController : UIViewController
 @property (nonatomic) MITInterfaceStyle interfaceStyle;
+@property (nonatomic,weak) MITModule *activeModule;
+@property (nonatomic,copy) NSArray *modules;
 
+- (BOOL)showModuleWithTag:(MITModule*)module;
 @end
