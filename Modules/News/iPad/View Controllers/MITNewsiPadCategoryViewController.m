@@ -70,8 +70,7 @@
         }
     }
     [self updateNavigationItem:YES];
-#warning get last updated from previous screen
-#warning or just run a update call
+    self.lastUpdated = self.previousLastUpdated;
     if (self.lastUpdated) {
 
         NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated

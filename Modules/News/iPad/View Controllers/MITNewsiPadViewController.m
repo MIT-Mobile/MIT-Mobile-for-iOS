@@ -42,11 +42,11 @@
 @property (nonatomic, strong) UIView *searchBarWrapper;
 
 @property (nonatomic) NSUInteger currentDataSourceIndex;
-@property (nonatomic,strong) NSDate *lastUpdated;
+@property (nonatomic, strong) NSDate *lastUpdated;
 
 #pragma mark Data Source
-@property (nonatomic,copy) NSArray *categories;
-@property (nonatomic,copy) NSArray *dataSources;
+@property (nonatomic, copy) NSArray *categories;
+@property (nonatomic, copy) NSArray *dataSources;
 @end
 
 @implementation MITNewsiPadViewController {
@@ -220,7 +220,6 @@
             [self setToolbarString:updateText animated:YES];
         }
     }];
-
 }
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
@@ -661,6 +660,7 @@
 
         MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
         iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
+        iPadCategoryViewController.previousLastUpdated = self.lastUpdated;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
         

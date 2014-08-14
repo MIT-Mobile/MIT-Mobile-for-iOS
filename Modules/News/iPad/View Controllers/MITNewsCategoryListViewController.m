@@ -255,6 +255,7 @@ static NSString *errorMessage = @"Failed";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self reloadViewItems:nil];
 }
 
 - (void)reloadViewItems:(UIRefreshControl *)control;
