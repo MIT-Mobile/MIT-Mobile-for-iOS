@@ -91,9 +91,6 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     self.navBarSeparatorView.hidden = YES;
     [self registerForKeyboardNotifications];
     [self.typeAheadViewController updateWithTypeAheadText:self.searchBar.text];
-    if (!self.searchBar.superview) {
-        [self addSearchBar];
-    }
     if (self.state == MITEventSearchViewControllerStateTypeAhead) {
         [self.searchBar becomeFirstResponder];
     }
@@ -113,20 +110,12 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 
 - (void)setupSearchBar
 {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonPressed)];
+    
     self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
-    self.searchBar.showsCancelButton = YES;
+    self.searchBar.showsCancelButton = NO;
     self.searchBar.delegate = self;
-    [self.navigationController.navigationBar addSubview:self.searchBar];
-}
-
-- (void)removeSearchBar
-{
-    self.searchBar.frame = self.navigationController.navigationBar.bounds;
-    [self.searchBar removeFromSuperview];
-}
-
-- (void)addSearchBar
-{
+    self.navigationItem.titleView = self.searchBar;
     [self.navigationController.navigationBar addSubview:self.searchBar];
 }
 
@@ -270,6 +259,11 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     [self.resultsViewController beginSearch:searchString];
 }
 
+- (void)cancelButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+}
+
 #pragma mark - Keyboard Height Actions
 
 - (void)registerForKeyboardNotifications
@@ -330,11 +324,6 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     [self beginSearch:searchBar.text];
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-}
-
 #pragma mark - MITEventSearchTypeAheadViewControllerDelegate Methods
 
 - (void)eventSearchTypeAheadController:(MITEventSearchTypeAheadViewController *)typeAheadController didSelectSuggestion:(NSString *)suggestion
@@ -351,8 +340,6 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event
 {
-    [self removeSearchBar];
-    
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.event = event;
     [self.navigationController pushViewController:detailVC animated:YES];
