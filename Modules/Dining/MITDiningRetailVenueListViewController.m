@@ -2,6 +2,8 @@
 #import "MITCoreData.h"
 #import "MITAdditions.h"
 
+#import "MITDiningRetailVenue.h"
+
 @interface MITDiningRetailVenueListViewController () <NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
@@ -112,6 +114,13 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+#pragma mark - Detail View Controller
+
+- (void)pushDetailViewControllerForRetailVenue:(MITDiningRetailVenue *)retailVenue
+{
+    
+}
 
 #pragma mark - Fetched Results Controller
 

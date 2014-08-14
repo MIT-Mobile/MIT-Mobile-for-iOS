@@ -12,10 +12,9 @@
 @property (strong, nonatomic, readonly) RetailVenue *retailVenue;
 
 @property (nonatomic) NSInteger displayNumber;
+@property (nonatomic, readonly, copy) NSString *title;
 
 - (instancetype)initWithRetailVenue:(RetailVenue *)retailVenue;
 - (instancetype)initWithHouseVenue:(HouseVenue *)hosueVenue;
-
-@property (nonatomic, readonly) NSString *title;
 
 @end

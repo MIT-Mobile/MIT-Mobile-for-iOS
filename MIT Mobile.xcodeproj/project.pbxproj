@@ -355,6 +355,7 @@
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
 		8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */; };
+		8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */; };
 		8012D47E199BFE450037ED99 /* MITDiningInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */; };
 		8012D481199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8012D480199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
@@ -1241,6 +1242,8 @@
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
 		8011C4ED199D48CA00ED8F56 /* MITDiningPlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningPlace.h; path = Dining/MITDiningPlace.h; sourceTree = "<group>"; };
 		8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningPlace.m; path = Dining/MITDiningPlace.m; sourceTree = "<group>"; };
+		8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueDetailViewController.h; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.h; sourceTree = "<group>"; };
+		8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailVenueDetailViewController.m; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.m; sourceTree = "<group>"; };
 		8012D47C199BFE450037ED99 /* MITDiningInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningInfoScheduleCell.h; path = Dining/MITDiningInfoScheduleCell.h; sourceTree = "<group>"; };
 		8012D47D199BFE450037ED99 /* MITDiningInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningInfoScheduleCell.m; path = Dining/MITDiningInfoScheduleCell.m; sourceTree = "<group>"; };
 		8012D47F199CECD20037ED99 /* MITDiningRetailInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailInfoScheduleCell.h; path = Dining/MITDiningRetailInfoScheduleCell.h; sourceTree = "<group>"; };
@@ -1866,6 +1869,8 @@
 				22D9032D199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m */,
 				22D9032F199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.h */,
 				22D90330199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m */,
+				8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */,
+				8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -4312,6 +4317,7 @@
 				DE94998317450C800066F6CF /* RetailDay.m in Sources */,
 				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
 				A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */,
+				8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */,
 				5ED473221959C0D8001D6B78 /* (null) in Sources */,
 				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
 				DEBF146117699977009B6089 /* DiningRoot.m in Sources */,
