@@ -4,14 +4,8 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
-#import "MITAdditions.h"
-#import "MITNewsiPadCategoryViewController.h"
 
 static NSString *errorMessage = @"Failed";
-
-@interface MITNewsCategoryListViewController ()
-
-@end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
@@ -161,42 +155,30 @@ static NSString *errorMessage = @"Failed";
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
-        [self setToolbarStatusUpdating];
+    if(!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
-        [self.dataSource loadMoreItemsForCategoryInSection:section
-                                                completion:^(NSError *error) {
-                                                    _storyUpdateInProgress = FALSE;
-                                                    if (error) {
-                                                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                                                        errorMessage = error.localizedDescription;
-                                                        _storyUpdateFailed = TRUE;
-                                                        if (!self.navigationController.toolbarHidden) {
-                                                            UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:errorMessage delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                                                            [failedRefreshAlertView show];
+        [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
 
-                                                            _storyUpdateFailed = FALSE;
-                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                                        } else {
-                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                                            [NSTimer scheduledTimerWithTimeInterval:2
-                                                                                             target:self
-                                                                                           selector:@selector(clearFailAfterTwoSeconds)
-                                                                                           userInfo:nil
-                                                                                            repeats:NO];
-                                                        }];
-                                                        }
-                                                    } else {
-                                                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.tableView reloadData];
-                                                        }];
-                                                    }
-                                                    [self setToolbarStatusUpdated];
-                                                }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+            
+            _storyUpdateInProgress = FALSE;
+            if (error) {
+                errorMessage = error.localizedDescription;
+                _storyUpdateFailed = TRUE;
+                if (self.navigationController.toolbarHidden) {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSTimer scheduledTimerWithTimeInterval:2
+                                                         target:self
+                                                       selector:@selector(clearFailAfterTwoSeconds)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    });
+                } else {
+                    _storyUpdateFailed = FALSE;
+                }
+                [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+            }
         }];
     }
 }
@@ -204,23 +186,14 @@ static NSString *errorMessage = @"Failed";
 - (void)clearFailAfterTwoSeconds
 {
     _storyUpdateFailed = FALSE;
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
 }
 
-
-- (void)setToolbarStatusUpdating
+- (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.delegate setToolbarStatusUpdating];
-}
-
-- (void)setToolbarStatusUpdated
-{
-    [self.delegate setToolbarStatusUpdated];
-}
-
-- (void)refreshToolbarStatus
-{
-    [self.delegate refreshToolbarStatus];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    });
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -236,40 +209,12 @@ static NSString *errorMessage = @"Failed";
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self action:@selector(reloadViewItems:)
-             forControlEvents:UIControlEventValueChanged];
-    [self.tableView addSubview:refreshControl];
-    self.refreshControl = refreshControl;
-    [self setToolbarStatusUpdated];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self reloadViewItems:nil];
 }
-
-- (void)reloadViewItems:(UIRefreshControl *)control;
-{
-    [self.dataSource refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
-        if (error) {
-            if (control) {
-                [self.refreshControl endRefreshing];
-            UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-            [failedRefreshAlertView show];
-            }
-        } else {
-            
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl endRefreshing];
-                [self.tableView reloadData];
-            }];
-            [self setToolbarStatusUpdated];
-        }
-    }];
-}
-
 
 - (void)didReceiveMemoryWarning
 {

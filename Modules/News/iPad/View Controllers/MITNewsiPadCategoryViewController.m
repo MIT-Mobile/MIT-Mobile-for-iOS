@@ -16,7 +16,7 @@
 
 @end
 
-@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate>
+@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsCategoryListViewController *listViewController;
@@ -32,6 +32,7 @@
 
 @implementation MITNewsiPadCategoryViewController {
     BOOL _isTransitioningToPresentationStyle;
+    BOOL _storyUpdateInProgress;
 }
 
 @synthesize presentationStyle = _presentationStyle;
@@ -69,7 +70,11 @@
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
         }
     }
-    [self updateNavigationItem:YES];
+    
+    if (!self.lastUpdated) {
+        [self reloadViewItems:nil];
+    }
+    
     self.lastUpdated = self.previousLastUpdated;
     if (self.lastUpdated) {
 
@@ -77,6 +82,77 @@
                                                                             toDate:[NSDate date]];
         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
         [self setToolbarString:updateText animated:NO];
+    }
+    [self updateNavigationItem:YES];
+}
+
+- (void)reloadViewItems:(UIRefreshControl *)control;
+{
+    if (!_storyUpdateInProgress) {
+
+        _storyUpdateInProgress = YES;
+        [self setToolbarStatusUpdating];
+        [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
+
+            _storyUpdateInProgress = NO;
+            if (error) {
+                if (control) {
+                    [control endRefreshing];
+                    UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                    [failedRefreshAlertView show];
+                }
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [control endRefreshing];
+                    if (self.activeViewController == self.gridViewController) {
+                        [self.gridViewController.collectionView reloadData];
+#warning crashes if added more stories
+                        
+                    } else if (self.activeViewController == self.listViewController) {
+                        [self.listViewController.tableView reloadData];
+                    }
+                });
+            }
+            [self setToolbarStatusUpdated];
+        }];
+    }
+}
+
+- (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
+{
+    if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
+        [self setToolbarStatusUpdating];
+        _storyUpdateInProgress = YES;
+        [self loadMoreItemsForCategoryInSection:section
+                                     completion:^(NSError *error) {
+                                         _storyUpdateInProgress = FALSE;
+                                         
+                                         if (error) {
+                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                             if (!self.navigationController.toolbarHidden) {
+                                                 UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                                                 [failedRefreshAlertView show];
+                                             }
+                                         } else {
+                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                             dispatch_async(dispatch_get_main_queue(), ^{
+                                                 if (self.activeViewController == self.gridViewController) {
+                                                     [self.gridViewController.collectionView reloadData];
+                                                 } else if (self.activeViewController == self.listViewController) {
+                                                     [self.listViewController.tableView reloadData];
+                                                 }
+                                             });
+                                         }
+                                         [self setToolbarStatusUpdated];
+                                         if (block) {
+                                             block(error);
+                                         }
+                                         return;
+                                     }];
+    } else {
+        if (block) {
+            block(nil);
+        }
     }
 }
 
@@ -90,6 +166,12 @@
         gridViewController = [[MITNewsCategoryGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
+
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        [gridViewController.collectionView addSubview:refreshControl];
+        
         _gridViewController = gridViewController;
     }
     
@@ -106,6 +188,12 @@
         listViewController = [[MITNewsCategoryListViewController alloc] init];
         listViewController.delegate = self;
         listViewController.dataSource = self;
+  
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        [listViewController.tableView addSubview:refreshControl];
+
         _listViewController = listViewController;
     }
     

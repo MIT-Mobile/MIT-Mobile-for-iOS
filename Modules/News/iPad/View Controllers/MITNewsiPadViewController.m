@@ -143,6 +143,11 @@
         gridViewController.automaticallyAdjustsScrollViewInsets = NO;
         gridViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _gridViewController = gridViewController;
+        
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        [gridViewController.collectionView addSubview:refreshControl];
     }
 
     return gridViewController;
@@ -167,7 +172,6 @@
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         [listViewController.tableView addSubview:refreshControl];
-        self.listViewController.refreshControl = refreshControl;
     }
     
     return listViewController;
@@ -206,7 +210,7 @@
 {
     [self setToolbarString:@"Updating..." animated:YES];
     [self reloadItems:^(NSError *error) {
-        [self.listViewController.refreshControl endRefreshing];
+        [refreshControl endRefreshing];
         if (error) {
             DDLogWarn(@"update failed; %@",error);
             if (refreshControl) {
@@ -533,10 +537,10 @@
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    if (_dataSources) {
+    if ([_dataSources count]) {
         [self refreshDataSources:block];
     } else {
-        [self loadDataSources:block];
+        [self loadDataSources:block];
     }
 }
 

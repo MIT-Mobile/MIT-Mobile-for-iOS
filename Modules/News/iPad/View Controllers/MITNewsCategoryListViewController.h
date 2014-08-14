@@ -10,7 +10,6 @@
 
 @protocol MITNewsListDelegate <NSObject>
 
-- (void)setToolbarStatusUpdating;
-- (void)setToolbarStatusUpdated;
-- (void)refreshToolbarStatus;
+- (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError * error))block;
+
 @end

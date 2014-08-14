@@ -172,9 +172,9 @@ static NSString *errorMessage = @"Failed";
 - (void)clearTable
 {
     self.dataSource = nil;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.searchTableView reloadData];
-    }];
+    });
 }
 
 #pragma mark - search
@@ -200,9 +200,9 @@ static NSString *errorMessage = @"Failed";
             if ([self.dataSource.objects count] == 0) {
                 [self addNoResultsView];
             }
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [self.searchTableView reloadData];
-            }];
+            });
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -228,24 +228,30 @@ static NSString *errorMessage = @"Failed";
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                 errorMessage =error.localizedDescription;
                 _storyUpdateFailed = TRUE;
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                    [NSTimer scheduledTimerWithTimeInterval:2
-                                                     target:self
-                                                   selector:@selector(clearFailAfterTwoSeconds)
-                                                   userInfo:nil
-                                                    repeats:NO];
-                }];
+                if (self.navigationController.toolbarHidden) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        [NSTimer scheduledTimerWithTimeInterval:2
+                                                         target:self
+                                                       selector:@selector(clearFailAfterTwoSeconds)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    });
+                } else {
+                    UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                    [failedRefreshAlertView show];
+                }
             } else {
+                _storyUpdateFailed = FALSE;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
                     [self.searchTableView reloadData];
-                }];
+                });
             }
         }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }];
+        });
     }
 }
 
@@ -464,9 +470,9 @@ static NSString *errorMessage = @"Failed";
                                 block(self.dataSource.objects[currentIndex + 1], nil);
                             }
                         }
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
                             [self.searchTableView reloadData];
-                        }];
+                        });
                     }
                 }];
             }

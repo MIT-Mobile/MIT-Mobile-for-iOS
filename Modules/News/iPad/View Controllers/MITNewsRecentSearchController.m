@@ -51,9 +51,9 @@
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
     self.filterString = filterString;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];
-    }];
+    });
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -62,9 +62,9 @@
         NSError *error = nil;
         [self.modelController clearRecentSearchesWithError:error];
         self.recentResults = nil;
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView reloadData];
-        }];
+        });
         self.clearButtonItem.enabled = NO;
     }
     self.confirmSheet = nil;
