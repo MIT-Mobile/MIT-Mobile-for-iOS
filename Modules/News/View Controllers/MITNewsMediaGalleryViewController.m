@@ -202,31 +202,25 @@
         [self.managedObjectContext performBlockAndWait:^{
             NSArray *galleryImages = self.galleryImages;
             MITNewsImage *image = galleryImages[self.selectedIndex];
-            
-            if ([items count] == 0) {
-               MITNewsImageRepresentation *imageRepresentation = [image bestRepresentationForSize:MITNewsImageLargestImageSize];
-                [items addObject:@"Image Link: "];
-                [items addObject:imageRepresentation.url];
-            }
-            
+
             if (image.caption) {
-                [items addObject:@"\nCaption: "];
+                [items addObject:@"\n"];
                 [items addObject:image.caption];
-            } else if (image.descriptionText) {
-                [items addObject:@"\nDescription: "];
-                [items addObject:image.descriptionText];
             }
-            if (self.newsLink) {
-                [items addObject:@"\nNews Link: "];
-                [items addObject:self.newsLink];
+            if (self.storyLink) {
+                [items addObject:@"\n"];
+                [items addObject:self.storyLink];
             }
         }];
         
         UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                                             applicationActivities:nil];
+        
         sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
                                                         UIActivityTypeAssignToContact,
                                                         UIActivityTypeSaveToCameraRoll];
+        
+        [sharingViewController setValue:[NSString stringWithFormat:@"MIT News: %@",self.storyTitle] forKeyPath:@"subject"];
         
         [self presentViewController:sharingViewController animated:YES completion:nil];
     } else {
