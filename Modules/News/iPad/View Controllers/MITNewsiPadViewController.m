@@ -88,6 +88,8 @@
 {
     [super viewWillAppear:animated];
     
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.navigationController.toolbarHidden = NO;
     }
@@ -100,7 +102,6 @@
         }
     }
     
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
         if (!self.lastUpdated) {
             [self reloadViewItems:nil];
@@ -217,13 +218,22 @@
                 UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
                 [failedRefreshAlertView show];
             }
+            if(!self.lastUpdated) {
+                [self setToolbarString:error.localizedDescription animated:YES];
+            } else {
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [self setToolbarString:updateText animated:YES];
+            }
         } else {
             self.lastUpdated = [NSDate date];
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self setToolbarString:updateText animated:YES];
         }
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                            toDate:[NSDate date]];
-        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-        [self setToolbarString:updateText animated:YES];
+
     }];
 }
 
@@ -439,6 +449,12 @@
 
     __weak MITNewsiPadViewController *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+        if(error) {
+            if (completion) {
+                completion(error);
+                return;
+            }
+        };
         MITNewsiPadViewController *blockSelf = weakSelf;
 
         if (!blockSelf) {

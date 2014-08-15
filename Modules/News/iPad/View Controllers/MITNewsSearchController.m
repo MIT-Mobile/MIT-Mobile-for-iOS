@@ -231,7 +231,6 @@ static NSString *errorMessage = @"Failed";
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                         [NSTimer scheduledTimerWithTimeInterval:2
                                                          target:self
                                                        selector:@selector(clearFailAfterTwoSeconds)
@@ -241,7 +240,10 @@ static NSString *errorMessage = @"Failed";
                 } else {
                     UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
                     [failedRefreshAlertView show];
+                    _storyUpdateFailed = FALSE;
                 }
+                [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+
             } else {
                 _storyUpdateFailed = FALSE;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
