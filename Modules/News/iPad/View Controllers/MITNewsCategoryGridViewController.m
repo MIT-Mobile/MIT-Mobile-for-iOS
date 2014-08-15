@@ -17,19 +17,6 @@
     BOOL _storyUpdateFailed;
 }
 
-- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
-{
-    if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
-        if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
-            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
-        } else {
-            return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
-        }
-    } else {
-        return 0;
-    }
-}
-
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
@@ -137,6 +124,17 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
     });
+}
+
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
+{
+    NSUInteger numberOfStories = [super numberOfStoriesForCategoryInSection:section];
+
+    if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return numberOfStories + 1;
+    } else {
+        return numberOfStories;
+    }
 }
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
