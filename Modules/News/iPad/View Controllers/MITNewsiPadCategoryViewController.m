@@ -203,7 +203,7 @@
 - (MITNewsSearchController *)searchController
 {
     if(!_searchController) {
-        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        MITNewsSearchController *searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
         searchController.view.frame = self.containerView.bounds;
         searchController.delegate = self;
         _searchController = searchController;

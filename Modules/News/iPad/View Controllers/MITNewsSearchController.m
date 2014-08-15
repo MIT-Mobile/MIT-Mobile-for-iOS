@@ -429,19 +429,41 @@
         else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         if (story) {
-            UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
-            MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
-            storyDetailViewController.delegate = self;
-            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-            managedObjectContext.parentContext = self.managedObjectContext;
-            storyDetailViewController.managedObjectContext = managedObjectContext;
-            storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-            self.unwindFromStoryDetail = YES;
-            [self.navigationController pushViewController:storyDetailViewController animated:YES];
-            
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
         }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    UIViewController *destinationViewController = [segue destinationViewController];
+    
+    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
+    
+    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            
+            NSIndexPath *indexPath = sender;
+            
+            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+            storyDetailViewController.delegate = self;
+            MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
+            if (story) {
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                managedObjectContext.parentContext = self.managedObjectContext;
+                storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                self.unwindFromStoryDetail = YES;
+            }
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    } else {
+        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
+    }
 }
 
 #pragma mark MITNewsStoryDetailPagingDelegate

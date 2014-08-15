@@ -60,6 +60,18 @@
             </objects>
             <point key="canvasLocation" x="-637" y="216"/>
         </scene>
+        <!--News Search Controller-->
+        <scene sceneID="2b9-z6-DXE">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="T43-4n-heD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="searchView" id="aGn-G5-lyg" customClass="MITNewsSearchController" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="YHT-PB-8h7"/>
+                    </connections>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="-577" y="1681"/>
+        </scene>
         <!--News iPad Story View Controller-->
         <scene sceneID="Gpk-Vd-bz5">
             <objects>
@@ -386,6 +398,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="IoT-Lw-NVS"/>
+        <segue reference="YHT-PB-8h7"/>
     </inferredMetricsTieBreakers>
 </document>
