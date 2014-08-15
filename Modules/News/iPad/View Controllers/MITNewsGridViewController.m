@@ -141,7 +141,7 @@
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     
     [self _collectionView:collectionView configureCell:collectionViewCell atIndexPath:indexPath];
@@ -197,7 +197,7 @@
     
 }
 
-- (NSString*)_collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+- (NSString* )collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
@@ -237,7 +237,7 @@
         return nil;
     }
     
-    NSString *identifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    NSString *identifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *cell = _layoutCellsByIdentifier[identifier];
     
     return cell;

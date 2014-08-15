@@ -30,7 +30,7 @@ static NSString *errorMessage = @"Failed";
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = [self _collectionView:collectionView identifierForCellAtIndexPath:indexPath];
+    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
@@ -54,7 +54,7 @@ static NSString *errorMessage = @"Failed";
     return collectionViewCell;
 }
 
-- (NSString*)_collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+- (NSString *)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
     if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
         return MITNewsCellIdentifierStoryLoadMore;
