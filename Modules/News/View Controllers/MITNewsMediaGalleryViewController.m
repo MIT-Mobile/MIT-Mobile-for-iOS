@@ -204,12 +204,12 @@
             MITNewsImage *image = galleryImages[self.selectedIndex];
 
             if (image.caption) {
-                [items addObject:@"\n"];
                 [items addObject:image.caption];
+            } else if (image.descriptionText) {
+                [items addObject:image.descriptionText];
             }
             if (self.storyLink) {
-                [items addObject:@"\n"];
-                [items addObject:self.storyLink];
+                [items addObject:[NSString stringWithFormat:@"\n%@",self.storyLink.relativeString]];
             }
         }];
         
