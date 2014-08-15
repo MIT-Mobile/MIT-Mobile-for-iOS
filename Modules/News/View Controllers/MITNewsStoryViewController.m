@@ -189,6 +189,7 @@
 
         [self.managedObjectContext performBlockAndWait:^{
             viewController.galleryImages = [self.story.galleryImages array];
+            viewController.newsLink = self.story.sourceURL;
         }];
     }
 }

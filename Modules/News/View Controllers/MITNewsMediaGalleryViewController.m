@@ -205,13 +205,20 @@
             
             if ([items count] == 0) {
                MITNewsImageRepresentation *imageRepresentation = [image bestRepresentationForSize:MITNewsImageLargestImageSize];
+                [items addObject:@"Image Link: "];
                 [items addObject:imageRepresentation.url];
             }
             
             if (image.caption) {
+                [items addObject:@"\nCaption: "];
                 [items addObject:image.caption];
             } else if (image.descriptionText) {
+                [items addObject:@"\nDescription: "];
                 [items addObject:image.descriptionText];
+            }
+            if (self.newsLink) {
+                [items addObject:@"\nNews Link: "];
+                [items addObject:self.newsLink];
             }
         }];
         
