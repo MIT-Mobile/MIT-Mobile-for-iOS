@@ -62,7 +62,7 @@
     if (date) {
         NSDate *startOfDate = [date startOfDay];
         for (MITDiningRetailDay *retailDay in self.hours) {
-            if ([retailDay.date isEqualToDate:startOfDate]) {
+            if ([retailDay.date isEqualToDateIgnoringTime:startOfDate]) {
                 returnDay = retailDay;
                 break;
             }

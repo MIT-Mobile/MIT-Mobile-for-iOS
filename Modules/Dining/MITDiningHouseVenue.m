@@ -45,7 +45,7 @@
     if (date) {
         NSDate *startOfDate = [date startOfDay];
         for (MITDiningHouseDay *day in self.mealsByDay) {
-            if ([day.date isEqualToDate:startOfDate]) {
+            if ([day.date isEqualToDateIgnoringTime:startOfDate]) {
                 returnDay = day;
                 break;
             }

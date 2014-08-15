@@ -116,19 +116,6 @@
 }
 */
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    static int doOnce = 0;
-    if (doOnce == 0) {
-        [self pushDetailViewControllerForRetailVenue:self.fetchedResultsController.fetchedObjects.firstObject];
-        doOnce++;
-    }
-}
 #pragma mark - Detail View Controller
 
 - (void)pushDetailViewControllerForRetailVenue:(MITDiningRetailVenue *)retailVenue
