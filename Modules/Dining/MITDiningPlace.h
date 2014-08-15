@@ -2,19 +2,19 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
-@class HouseVenue, RetailVenue;
+@class MITDiningHouseVenue, MITDiningRetailVenue;
 
 @interface MITDiningPlace : NSObject <MKAnnotation>
 
 @property (nonatomic) CLLocationCoordinate2D coordinate;
 
-@property (strong, nonatomic, readonly) HouseVenue *houseVenue;
-@property (strong, nonatomic, readonly) RetailVenue *retailVenue;
+@property (strong, nonatomic, readonly) MITDiningHouseVenue *houseVenue;
+@property (strong, nonatomic, readonly) MITDiningRetailVenue *retailVenue;
 
 @property (nonatomic) NSInteger displayNumber;
 @property (nonatomic, readonly, copy) NSString *title;
 
-- (instancetype)initWithRetailVenue:(RetailVenue *)retailVenue;
-- (instancetype)initWithHouseVenue:(HouseVenue *)hosueVenue;
+- (instancetype)initWithRetailVenue:(MITDiningRetailVenue *)retailVenue;
+- (instancetype)initWithHouseVenue:(MITDiningHouseVenue *)hosueVenue;
 
 @end

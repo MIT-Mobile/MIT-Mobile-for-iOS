@@ -1,13 +1,13 @@
 
 #import "MITDiningPlace.h"
 
-#import "RetailVenue.h"
-#import "HouseVenue.h"
-#import "VenueLocation.h"
+#import "MITDiningRetailVenue.h"
+#import "MITDiningHouseVenue.h"
+#import "MITDiningLocation.h"
 
 @implementation MITDiningPlace
 
-- (instancetype)initWithRetailVenue:(RetailVenue *)retailVenue
+- (instancetype)initWithRetailVenue:(MITDiningRetailVenue *)retailVenue
 {
     self = [super init];
     if(self)
@@ -20,7 +20,7 @@
     }
     return self;
 }
-- (instancetype)initWithHouseVenue:(HouseVenue *)houseVenue
+- (instancetype)initWithHouseVenue:(MITDiningHouseVenue *)houseVenue
 {
     self = [super init];
     if(self)
@@ -34,7 +34,7 @@
     return self;
 }
 
-- (BOOL)setCoordinateWithVenueLocation:(VenueLocation *)venueLocation
+- (BOOL)setCoordinateWithVenueLocation:(MITDiningLocation *)venueLocation
 {
     BOOL succeeded = NO;
     if (venueLocation.latitude && venueLocation.longitude) {
@@ -49,9 +49,9 @@
 {
     NSString *titleToReturn = nil;
     if (self.houseVenue) {
-        titleToReturn = self.houseVenue.title;
+        titleToReturn = self.houseVenue.name;
     } else if (self.retailVenue) {
-        titleToReturn = self.retailVenue.title;
+        titleToReturn = self.retailVenue.name;
     }
     return titleToReturn;
 }
