@@ -1,6 +1,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningLocation.h"
+#import "MITAdditions.h"
 
 @implementation MITDiningHouseVenue
 
@@ -26,6 +27,37 @@
     [mapping setIdentificationAttributes:@[@"identifier"]];
     
     return mapping;
+}
+
+#pragma mark - Convenience Methods
+
+- (BOOL)isOpenNow
+{
+    NSDate *date = [NSDate date];
+    MITDiningHouseDay *day = [self houseDayForDate:date];
+    MITDiningMeal *meal = [day mealForDate:date];
+    return (meal != nil);
+}
+
+- (MITDiningHouseDay *)houseDayForDate:(NSDate *)date
+{
+    MITDiningHouseDay *returnDay = nil;
+    if (date) {
+        NSDate *startOfDate = [date startOfDay];
+        for (MITDiningHouseDay *day in self.mealsByDay) {
+            if ([day.date isEqualToDate:startOfDate]) {
+                returnDay = day;
+                break;
+            }
+        }
+    }
+    return returnDay;
+}
+
+- (NSString *)hoursToday
+{
+    MITDiningHouseDay *today = [self houseDayForDate:[NSDate date]];
+    return [today dayHoursDescription];
 }
 
 @end

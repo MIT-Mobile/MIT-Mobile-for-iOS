@@ -10,4 +10,7 @@
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic, retain) NSDate * startTime;
 
+- (NSString *)hoursSummary;
+- (NSString *)openClosedStatusRelativeToDate:(NSDate *)date;
+
 @end

@@ -1,7 +1,7 @@
 #import "MITDiningRetailVenue.h"
 #import "MITDiningLocation.h"
 #import "MITDiningRetailDay.h"
-
+#import "MITAdditions.h"
 
 @implementation MITDiningRetailVenue
 
@@ -37,6 +37,57 @@
     [mapping setIdentificationAttributes:@[@"identifier"]];
     
     return mapping;
+}
+
+#pragma mark - Convenience Methods
+
+- (BOOL)isOpenNow
+{
+    NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
+    BOOL isOpenNow = NO;
+    for (MITDiningRetailDay *retailDay in self.hours) {
+        NSTimeInterval retailDayStartTime = [retailDay.startTime timeIntervalSince1970];
+        NSTimeInterval retailDayEndTime = [retailDay.endTime timeIntervalSince1970];
+        if (retailDayStartTime <= currentTime && currentTime <= retailDayEndTime) {
+            isOpenNow = YES;
+            break;
+        }
+    }
+    return isOpenNow;
+}
+
+- (MITDiningRetailDay *)retailDayForDate:(NSDate *)date
+{
+    MITDiningRetailDay *returnDay = nil;
+    if (date) {
+        NSDate *startOfDate = [date startOfDay];
+        for (MITDiningRetailDay *retailDay in self.hours) {
+            if ([retailDay.date isEqualToDate:startOfDate]) {
+                returnDay = retailDay;
+                break;
+            }
+        }
+    }
+    return returnDay;
+}
+
+- (NSString *)hoursToday
+{
+    NSString *hoursSummary = nil;
+    
+    NSDate *nowDate = [NSDate date];
+    NSTimeInterval nowInterval = [nowDate timeIntervalSince1970];
+    
+    MITDiningRetailDay *yesterdayRetailDay = [self retailDayForDate:nowDate];
+    NSTimeInterval yesterdayEndTime = [yesterdayRetailDay.endTime timeIntervalSince1970];
+    if (nowInterval < yesterdayEndTime) {
+        hoursSummary = [yesterdayRetailDay hoursSummary];
+    } else {
+        MITDiningRetailDay *todayRetailDay = [self retailDayForDate:nowDate];
+        hoursSummary = [todayRetailDay hoursSummary];
+    }
+    
+    return hoursSummary;
 }
 
 @end
