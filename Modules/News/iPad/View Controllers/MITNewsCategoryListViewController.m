@@ -5,7 +5,9 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 
-static NSString *errorMessage = @"Failed";
+@interface MITNewsCategoryListViewController()
+@property (nonatomic, strong) NSString *errorMessage;
+@end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
@@ -80,7 +82,7 @@ static NSString *errorMessage = @"Failed";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
-        cell.textLabel.text = errorMessage;
+        cell.textLabel.text = self.errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
@@ -163,7 +165,7 @@ static NSString *errorMessage = @"Failed";
             
             _storyUpdateInProgress = FALSE;
             if (error) {
-                errorMessage = error.localizedDescription;
+                self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     

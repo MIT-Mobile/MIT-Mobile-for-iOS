@@ -8,7 +8,9 @@
 #import "MITNewsLoadMoreCollectionViewCell.h"
 #import "MITCollectionViewGridLayout.h"
 
-static NSString *errorMessage = @"Failed";
+@interface MITNewsCategoryGridViewController()
+@property (nonatomic, strong) NSString *errorMessage;
+@end
 
 @implementation MITNewsCategoryGridViewController {
     BOOL _storyUpdateInProgress;
@@ -40,7 +42,7 @@ static NSString *errorMessage = @"Failed";
         if (cellIdentifier == MITNewsCellIdentifierStoryLoadMore) {
             MITNewsLoadMoreCollectionViewCell *cell = (MITNewsLoadMoreCollectionViewCell *)collectionViewCell;
             if(_storyUpdateFailed) {
-                cell.textLabel.text = errorMessage;
+                cell.textLabel.text = self.errorMessage;
                 cell.loadingIndicator.hidden = YES;
             } else if (_storyUpdateInProgress) {
                 cell.textLabel.text = @"Loading More...";
@@ -106,7 +108,7 @@ static NSString *errorMessage = @"Failed";
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
-                errorMessage =error.localizedDescription;
+                self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     

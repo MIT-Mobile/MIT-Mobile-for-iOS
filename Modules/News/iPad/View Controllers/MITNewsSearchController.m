@@ -14,8 +14,6 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
-static NSString *errorMessage = @"Failed";
-
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
@@ -28,6 +26,7 @@ static NSString *errorMessage = @"Failed";
 
 @property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
+@property (nonatomic, strong) NSString *errorMessage;
 
 @end
 
@@ -189,7 +188,7 @@ static NSString *errorMessage = @"Failed";
     [self.dataSource refresh:^(NSError *error) {
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            errorMessage = error.localizedDescription;
+            self.errorMessage = error.localizedDescription;
             [self removeLoadingView];
             _storyUpdateFailed = YES;
             [self addNoResultsView];
@@ -227,7 +226,7 @@ static NSString *errorMessage = @"Failed";
             _storyUpdateInProgress = FALSE;
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                errorMessage =error.localizedDescription;
+                self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -328,7 +327,7 @@ static NSString *errorMessage = @"Failed";
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
-        cell.textLabel.text = errorMessage;
+        cell.textLabel.text = self.errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
@@ -490,7 +489,7 @@ static NSString *errorMessage = @"Failed";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
     if (_storyUpdateFailed) {
-        noResultsView.overviewText.text = errorMessage;
+        noResultsView.overviewText.text = self.errorMessage;
         _storyUpdateFailed = FALSE;
     }
     [self.view addSubview:noResultsView];
