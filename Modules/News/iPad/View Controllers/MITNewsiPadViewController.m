@@ -540,7 +540,7 @@
     if ([_dataSources count]) {
         [self refreshDataSources:block];
     } else {
-        [self loadDataSources:block];
+        [self loadDataSources:block];
     }
 }
 
