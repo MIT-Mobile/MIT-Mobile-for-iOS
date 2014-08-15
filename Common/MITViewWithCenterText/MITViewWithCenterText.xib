@@ -12,11 +12,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSD-Wl-z7Y">
-                    <rect key="frame" x="342" y="487" width="84" height="50"/>
+                    <rect key="frame" x="10" y="487" width="748" height="50"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Results" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zQd-RX-6S5">
-                            <rect key="frame" x="0.0" y="15" width="84" height="21"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Results" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="748" translatesAutoresizingMaskIntoConstraints="NO" id="zQd-RX-6S5" customClass="MultiLineLabel">
+                            <rect key="frame" x="0.0" y="15" width="748" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="highlightedColor"/>
@@ -33,8 +33,10 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <color key="tintColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="OSD-Wl-z7Y" secondAttribute="trailing" constant="10" id="VLW-Fc-KGt"/>
                 <constraint firstAttribute="centerX" secondItem="OSD-Wl-z7Y" secondAttribute="centerX" id="mMv-3t-5pf"/>
                 <constraint firstAttribute="centerY" secondItem="OSD-Wl-z7Y" secondAttribute="centerY" id="mbZ-Hr-w53"/>
+                <constraint firstItem="OSD-Wl-z7Y" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="ozn-Lv-KNR"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <connections>

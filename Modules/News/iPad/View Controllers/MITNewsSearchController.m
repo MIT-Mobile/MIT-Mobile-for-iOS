@@ -189,6 +189,7 @@ static NSString *errorMessage = @"Failed";
     [self.dataSource refresh:^(NSError *error) {
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+            errorMessage = error.localizedDescription;
             [self removeLoadingView];
             _storyUpdateFailed = YES;
             [self addNoResultsView];
@@ -487,7 +488,7 @@ static NSString *errorMessage = @"Failed";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
     if (_storyUpdateFailed) {
-        noResultsView.overviewText.text = @"Failed...";
+        noResultsView.overviewText.text = errorMessage;
         _storyUpdateFailed = FALSE;
     }
     [self.view addSubview:noResultsView];
