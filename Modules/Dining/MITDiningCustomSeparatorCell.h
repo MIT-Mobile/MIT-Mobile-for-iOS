@@ -1,7 +1,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MITDiningHallInfoGeneralCell : UITableViewCell
+@interface MITDiningCustomSeparatorCell : UITableViewCell
 
 @property (nonatomic) BOOL shouldIncludeSeparator;
 

@@ -12,6 +12,9 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSDate * startTime;
 @property (nonatomic, retain) NSOrderedSet *items;
+
+- (NSString *)mealHoursDescription;
+
 @end
 
 @interface MITDiningMeal (CoreDataGeneratedAccessors)

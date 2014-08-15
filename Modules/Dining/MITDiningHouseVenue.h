@@ -14,6 +14,11 @@
 @property (nonatomic, retain) NSString * shortName;
 @property (nonatomic, retain) MITDiningLocation *location;
 @property (nonatomic, retain) NSOrderedSet *mealsByDay;
+
+- (BOOL)isOpenNow;
+- (MITDiningHouseDay *)houseDayForDate:(NSDate *)date;
+- (NSString *)hoursToday;
+
 @end
 
 @interface MITDiningHouseVenue (CoreDataGeneratedAccessors)

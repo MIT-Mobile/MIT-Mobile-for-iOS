@@ -1,15 +1,15 @@
 
-#import "MITDiningHallInfoGeneralCell.h"
+#import "MITDiningCustomSeparatorCell.h"
 
 static CGFloat const kLeftOffset = 15.0;
 
-@interface MITDiningHallInfoGeneralCell ()
+@interface MITDiningCustomSeparatorCell ()
 
 @property (strong, nonatomic) CALayer *cellSeparator;
 
 @end
 
-@implementation MITDiningHallInfoGeneralCell
+@implementation MITDiningCustomSeparatorCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

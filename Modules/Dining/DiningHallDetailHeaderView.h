@@ -6,6 +6,7 @@
 @property (nonatomic, readonly, retain) UILabel       * titleLabel;
 @property (nonatomic, readonly, retain) UILabel       * timeLabel;
 @property (nonatomic, readonly, retain) UIButton      * infoButton;
-@property (nonatomic, readonly, retain) UIButton      * starButton;
+
+@property (nonatomic) BOOL shouldIncludeSeparator;
 
 @end

@@ -10,6 +10,13 @@
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic, retain) NSOrderedSet *meals;
+
+- (NSString *)dayHoursDescription;
+- (MITDiningMeal *)mealWithName:(NSString *)name;
+- (MITDiningMeal *)mealForDate:(NSDate *)date;
+- (MITDiningMeal *)bestMealForDate:(NSDate *)date;
+- (NSString *)openClosedStatusRelativeToDate:(NSDate *)date;
+
 @end
 
 @interface MITDiningHouseDay (CoreDataGeneratedAccessors)

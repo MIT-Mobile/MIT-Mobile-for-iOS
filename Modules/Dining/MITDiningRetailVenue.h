@@ -20,6 +20,11 @@
 @property (nonatomic, retain) NSNumber * favorite;
 @property (nonatomic, retain) NSOrderedSet *hours;
 @property (nonatomic, retain) MITDiningLocation *location;
+
+- (BOOL)isOpenNow;
+- (NSString *)hoursToday;
+- (MITDiningRetailDay *)retailDayForDate:(NSDate *)date;
+
 @end
 
 @interface MITDiningRetailVenue (CoreDataGeneratedAccessors)

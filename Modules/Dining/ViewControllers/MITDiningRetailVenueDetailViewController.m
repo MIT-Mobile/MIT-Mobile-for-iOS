@@ -1,18 +1,20 @@
-#import "DiningRetailInfoViewController.h"
+
+#import "MITDiningRetailVenueDetailViewController.h"
+
+#import "MITDiningRetailVenue.h"
+#import "MITDiningRetailDay.h"
+#import "MITDiningLocation.h"
+
 #import "DiningHallDetailHeaderView.h"
-#import "UIKit+MITAdditions.h"
-#import "Foundation+MITAdditions.h"
-#import "RetailVenue.h"
-#import "VenueLocation.h"
-#import "RetailDay.h"
-#import "CoreDataManager.h"
-#import "UIImageView+WebCache.h"
-#import "MITDiningRetailInfoScheduleCell.h"
 #import "MITDiningCustomSeparatorCell.h"
+#import "MITDiningRetailInfoScheduleCell.h"
+
+#import "CoreDataManager.h"
+#import "MITAdditions.h"
 
 static NSString * const kDescriptionHTMLKey = @"descriptionHTML";
 static NSString * const kMenuURLKey = @"menuURL";
-static NSString * const kDaysKey = @"days";
+static NSString * const kHoursKey = @"days";
 static NSString * const kCuisinesKey = @"cuisines";
 static NSString * const kPaymentMethodsKey = @"paymentMethods";
 static NSString * const kLocationKey = @"location";
@@ -23,150 +25,152 @@ static CGFloat const kLeftPadding = 15.0;
 
 static int const kWebViewTag = 4231;
 
-@interface DiningRetailInfoViewController () <UIWebViewDelegate>
+@interface MITDiningRetailVenueDetailViewController () <UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate>
 
-@property (nonatomic, strong) DiningHallDetailHeaderView * headerView;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
 @property (nonatomic, assign) CGFloat descriptionHeight;
-
 @property (nonatomic, strong) NSArray * availableInfoKeys;
-
 @property (nonatomic, strong) NSArray * formattedHoursData;
 
 @end
 
-@implementation DiningRetailInfoViewController
+@implementation MITDiningRetailVenueDetailViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    self.title = self.retailVenue.shortName;
     
-    self.title = self.venue.shortName;
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-
+    [self setupTableView];
     [self setupHeaderView];
     [self setupAvailableInfoKeys];
-}
-
-- (void)setupHeaderView
-{
-    self.headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
-    __weak DiningHallDetailHeaderView *weakHeaderView = self.headerView;
-    [self.headerView.iconView setImageWithURL:[NSURL URLWithString:self.venue.iconURL]
-                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                        [weakHeaderView layoutIfNeeded];
-                                    }];
-    self.headerView.titleLabel.text = self.venue.name;
-    self.headerView.infoButton.hidden = YES;
-    
-    if (self.venue.isOpenNow) {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
-    } else {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
-    }
-    
-    NSDate *date = [NSDate date];
-    RetailDay *yesterday = [self.venue dayForDate:[date dayBefore]];
-    RetailDay *currentDay = [self.venue dayForDate:date];
-    if ([yesterday.endTime compare:date] == NSOrderedDescending) {
-        // yesterday's hours end today and are still valid
-        self.headerView.timeLabel.text = [yesterday statusStringRelativeToDate:date];
-    } else {
-        self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:date];
-    }
-    self.headerView.shouldIncludeSeparator = NO;
-    self.tableView.tableHeaderView = self.headerView;
-}
-
-- (void)setupAvailableInfoKeys
-{
-    self.availableInfoKeys = [self findAvailableInfo];
-    if ([self.availableInfoKeys containsObject:kDaysKey]) {
-        [self formatScheduleInfo];
-    }
-}
-
-- (NSArray *)findAvailableInfo
-{
-    // find all viewable info that the retail venue has available
-    // also add hours and location if available
-    NSArray *nonInfoKeys = @[@"building", @"favorite", @"iconURL", @"name", @"shortName", @"sortableBuilding", @"url"];      // blacklist of keys we don't want to show in tableview
-    NSArray * desiredRowOrder = @[kCuisinesKey, kDescriptionHTMLKey, kMenuURLKey, kPaymentMethodsKey, kDaysKey, kLocationKey, kHomePageURLKey, kAddToFavoritesKey];
-    NSMutableArray * usableInfoKeys = [NSMutableArray array];
-    NSArray *retailVenueKeys = [[[self.venue entity] attributesByName] allKeys];
-    for (NSString *key in retailVenueKeys) {
-        id value = [self.venue valueForKey:key];
-        if (![nonInfoKeys containsObject:key] && value) {
-            if ([value respondsToSelector:@selector(count)]) {
-                if ([value count] > 0) {
-                    [usableInfoKeys addObject:key];
-                }
-            } if ([value respondsToSelector:@selector(length)]) {
-                if ([value length] > 0) {
-                    [usableInfoKeys addObject:key];
-                }
-            }
-        }
-    }
-    if (self.venue.days) {
-        [usableInfoKeys addObject:kDaysKey];
-    }
-    
-    if (self.venue.location) {
-        [usableInfoKeys addObject:kLocationKey];
-    }
-    
-    [usableInfoKeys addObject:kAddToFavoritesKey];
-    
-    NSArray *sortedInfo = [usableInfoKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSUInteger index1 = [desiredRowOrder indexOfObject: obj1];
-        NSUInteger index2 = [desiredRowOrder indexOfObject: obj2];
-        NSComparisonResult ret = NSOrderedSame;
-        if (index1 < index2)
-        {
-            ret = NSOrderedAscending;
-        }
-        else if (index1 > index2)
-        {
-            ret = NSOrderedDescending;
-        }
-        return ret;
-    }];
-    
-    return sortedInfo;
-}
-
-- (void) formatScheduleInfo
-{
-    NSMutableArray *scheduleArray = [NSMutableArray array];
-    NSArray * days = [[self.venue.days allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
-    RetailDay * previousDay = nil;
-    for (RetailDay * day in days) {
-        if (previousDay == nil) {
-            // first time through, add object to list
-            NSDictionary *schedule = @{@"dayStart" : day.date, @"dayEnd" : day.date, @"hours" : [day hoursSummary]};
-            [scheduleArray addObject:schedule];
-        } else {
-            if ([[previousDay hoursSummary] isEqualToString:[day hoursSummary]]) {
-                // previousDay matches current day, need to update last item in scheduleArray
-                NSMutableDictionary *lastSchedule = [[scheduleArray lastObject] mutableCopy];
-                lastSchedule[@"dayEnd"] = day.date;
-                scheduleArray[[scheduleArray count] - 1] = lastSchedule;
-            } else {
-                // previous day does not match current day, add new item
-                NSDictionary *schedule = @{@"dayStart" : day.date, @"dayEnd" : day.date, @"hours" : [day hoursSummary]};
-                [scheduleArray addObject:schedule];
-            }
-        }
-        previousDay = day;
-    }
-    self.formattedHoursData = scheduleArray;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - TableView Setup
+
+- (void)setupTableView
+{
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
+
+#pragma mark - Header Setup
+
+- (void)setupHeaderView
+{
+    CGRect headerRect = CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87);
+    DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:headerRect];
+    headerView.titleLabel.text = self.retailVenue.name;
+    headerView.infoButton.hidden = YES;
+    headerView.shouldIncludeSeparator = NO;
+    
+    [headerView.iconView setImageWithURL:[NSURL URLWithString:self.retailVenue.iconURL]];
+    
+    headerView.timeLabel.textColor = self.retailVenue.isOpenNow ? [UIColor colorWithHexString:@"#009900"] : [UIColor colorWithHexString:@"#d20000"];
+    headerView.timeLabel.text = [self openClosedStatus];
+    self.tableView.tableHeaderView = headerView;
+}
+
+- (NSString *)openClosedStatus
+{
+    NSDate *date = [NSDate date];
+    MITDiningRetailDay *yesterday = [self.retailVenue retailDayForDate:[date dayBefore]];
+    MITDiningRetailDay *currentDay = [self.retailVenue retailDayForDate:date];
+    
+    NSTimeInterval nowInterval = [date timeIntervalSince1970];
+    NSTimeInterval yesterdayEnd = [yesterday.endTime timeIntervalSince1970];
+    
+    // It's possible that yesterday's hours actually extend into today.  (ie: if a venue is open til 2 am)
+    return nowInterval < yesterdayEnd ? [yesterday openClosedStatusRelativeToDate:date] : [currentDay openClosedStatusRelativeToDate:date];
+}
+
+#pragma mark - Available Info Keys Setup
+
+- (void)setupAvailableInfoKeys
+{
+    NSMutableArray *validInfoKeys = [NSMutableArray array];
+    if (self.retailVenue.cuisine) {
+        [validInfoKeys addObject:kCuisinesKey];
+    }
+    if (self.retailVenue.descriptionHTML) {
+        [validInfoKeys addObject:kDescriptionHTMLKey];
+    }
+    if (self.retailVenue.menuURL) {
+        [validInfoKeys addObject:kMenuURLKey];
+    }
+    if (self.retailVenue.payment) {
+        [validInfoKeys addObject:kPaymentMethodsKey];
+    }
+    if (self.retailVenue.hours) {
+        [validInfoKeys addObject:kHoursKey];
+    }
+    if (self.retailVenue.location) {
+        [validInfoKeys addObject:kLocationKey];
+    }
+    if (self.retailVenue.homepageURL) {
+        [validInfoKeys addObject:kHomePageURLKey];
+    }
+    
+    [validInfoKeys addObject:kAddToFavoritesKey];
+    self.availableInfoKeys = validInfoKeys;
+    
+    if ([self.availableInfoKeys containsObject:kHoursKey]) {
+        [self formatScheduleInfo];
+    }
+}
+
+#pragma mark - Schedule Formatting
+
+- (void) formatScheduleInfo
+{
+    NSArray *orderedDays = [self.retailVenue.hours sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
+    NSMutableArray *scheduleArray = [NSMutableArray array];
+    
+    MITDiningRetailDay *previousDay = nil;
+    for (MITDiningRetailDay *retailDay in orderedDays) {
+        if (previousDay == nil) {
+            NSDictionary *schedule = [self scheduleDictionaryFromRetailDay:retailDay];
+            [scheduleArray addObject:schedule];
+        } else {
+            if ([[previousDay hoursSummary] isEqualToString:[retailDay hoursSummary]]) {
+                NSMutableDictionary *lastSchedule = [[scheduleArray lastObject] mutableCopy];
+                lastSchedule[@"dayEnd"] = retailDay.date;
+                [scheduleArray removeLastObject];
+                [scheduleArray addObject:lastSchedule];
+            } else {
+                [scheduleArray addObject:[self scheduleDictionaryFromRetailDay:retailDay]];
+            }
+        }
+        
+        previousDay = retailDay;
+    }
+    
+    
+    
+    self.formattedHoursData = scheduleArray;
+}
+
+- (NSDictionary *)scheduleDictionaryFromRetailDay:(MITDiningRetailDay *)retailDay
+{
+    return @{@"dayStart" : retailDay.date, @"dayEnd" : retailDay.date, @"hours" : [retailDay hoursSummary]};
 }
 
 #pragma mark - UITableViewDataSource
@@ -187,9 +191,8 @@ static int const kWebViewTag = 4231;
     MITDiningCustomSeparatorCell *cell = nil;
     
     if ([currentRow isEqualToString:kDescriptionHTMLKey]) {
-        cell = [self getWebViewCell];
-        [self hydrateWebViewCell:cell];
-    } else if ([currentRow isEqualToString:kDaysKey]) {
+        cell = [self getHydratedWebViewCell];
+    } else if ([currentRow isEqualToString:kHoursKey]) {
         cell = [self getScheduleCell];
         [(MITDiningRetailInfoScheduleCell *)cell setScheduleInfo:self.formattedHoursData];
         cell.shouldIncludeSeparator = YES;
@@ -198,7 +201,7 @@ static int const kWebViewTag = 4231;
         
         if ([currentRow isEqualToString:kMenuURLKey]){
             cell.textLabel.text = @"menu";
-            cell.detailTextLabel.text = self.venue.menuURL;
+            cell.detailTextLabel.text = self.retailVenue.menuURL;
             cell.detailTextLabel.numberOfLines = 1;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
@@ -207,29 +210,28 @@ static int const kWebViewTag = 4231;
             cell.detailTextLabel.font = [UIFont systemFontOfSize:13.0];
             cell.detailTextLabel.textColor = [UIColor colorWithHexString:@"#727272"];
             
-            NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
+            NSString *cuisineString = [self.retailVenue.cuisine componentsJoinedByString:@", "];
             cuisineString = [NSString stringWithFormat:@"%@\n ", cuisineString];
             cell.detailTextLabel.text = cuisineString;
-            cell.shouldIncludeSeparator = NO;
         } else if ([currentRow isEqualToString:kPaymentMethodsKey]) {
             cell.textLabel.text = @"payment";
-            cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
+            cell.detailTextLabel.text = [self.retailVenue.payment componentsJoinedByString:@", "];
             cell.shouldIncludeSeparator = YES;
         } else if ([currentRow isEqualToString:kLocationKey]) {
             cell.textLabel.text = @"location";
-            cell.detailTextLabel.text = [self.venue.location locationDisplayString];
+            cell.detailTextLabel.text = [self.retailVenue.location locationDisplayString];
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
             cell.shouldIncludeSeparator = YES;
         } else if ([currentRow isEqualToString:kHomePageURLKey]) {
             cell.textLabel.text = @"home page";
-            cell.detailTextLabel.text = self.venue.homepageURL;
+            cell.detailTextLabel.text = self.retailVenue.homepageURL;
             cell.detailTextLabel.numberOfLines = 1;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             cell.shouldIncludeSeparator = YES;
         } else if ([currentRow isEqualToString:kAddToFavoritesKey]) {
-            cell.textLabel.text = self.venue.favorite.boolValue ? @"Remove from Favorites" : @"Add to Favorites";
+            cell.textLabel.text = self.retailVenue.favorite.boolValue ? @"Remove from Favorites" : @"Add to Favorites";
             cell.textLabel.font = [UIFont systemFontOfSize:17.0];
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.detailTextLabel.text = @"    ";
@@ -279,6 +281,13 @@ static int const kWebViewTag = 4231;
 
 // Web View Cell
 
+- (MITDiningCustomSeparatorCell *)getHydratedWebViewCell
+{
+    MITDiningCustomSeparatorCell *cell = [self getWebViewCell];
+    [self hydrateWebViewCell:cell];
+    return cell;
+}
+
 - (MITDiningCustomSeparatorCell *)getWebViewCell
 {
     static NSString *webViewDescriptionCellIdentifier = @"webViewDescriptionCellIdentifier";
@@ -293,7 +302,7 @@ static int const kWebViewTag = 4231;
 - (void)hydrateWebViewCell:(MITDiningCustomSeparatorCell *)cell
 {
     UIWebView *descriptionWebView = [self getWebViewFromCell:cell];
-    NSString *htmlString = [self htmlDescriptionFromVenueHTMLString:self.venue.descriptionHTML];
+    NSString *htmlString = [self htmlDescriptionFromVenueHTMLString:self.retailVenue.descriptionHTML];
     [descriptionWebView loadHTMLString:htmlString baseURL:nil];
 }
 
@@ -356,11 +365,11 @@ static int const kWebViewTag = 4231;
     if ([rowKey isEqualToString:kDescriptionHTMLKey]) {
         heightToReturn = self.descriptionHeight + 20; // add some vertical padding
     } else if ([rowKey isEqualToString:kCuisinesKey]) {
-        NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
+        NSString *cuisineString = [self.retailVenue.cuisine componentsJoinedByString:@", "];
         heightToReturn = [self heightForString:cuisineString];
     } else if ([rowKey isEqualToString:kLocationKey]) {
-        heightToReturn = [self heightForString:[self.venue.location locationDisplayString]] + [self titleTextLabelFont].lineHeight + 10;
-    } else if ([rowKey isEqualToString:kDaysKey]) {
+        heightToReturn = [self heightForString:[self.retailVenue.location locationDisplayString]] + [self titleTextLabelFont].lineHeight + 10;
+    } else if ([rowKey isEqualToString:kHoursKey]) {
         heightToReturn = [MITDiningRetailInfoScheduleCell heightForCellWithScheduleInfo:self.formattedHoursData];
     }
     
@@ -371,12 +380,13 @@ static int const kWebViewTag = 4231;
 {
     CGFloat maxWidth = CGRectGetWidth(self.view.bounds) - (kLeftPadding * 2.0);
     CGSize constraint = CGSizeMake(maxWidth, CGFLOAT_MAX);
-    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:string attributes:@{NSFontAttributeName : [self detailTextLabelFont]}];
-    
-    CGFloat stringHeight = CGRectGetHeight([attributedString boundingRectWithSize:constraint
-                                                                          options:NSStringDrawingUsesLineFragmentOrigin
-                                                                          context:nil]);
-    return stringHeight;
+    NSDictionary *attributes = @{NSFontAttributeName : [self detailTextLabelFont]};
+    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:string
+                                                                           attributes:attributes];
+    CGRect boundingRect = [attributedString boundingRectWithSize:constraint
+                                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                                         context:nil];
+    return CGRectGetHeight(boundingRect);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -385,16 +395,13 @@ static int const kWebViewTag = 4231;
     
     NSString *rowKey = self.availableInfoKeys[indexPath.row];
     if ([rowKey isEqualToString:kMenuURLKey]) {
-        // external url
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.menuURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.retailVenue.menuURL]];
     } else if ([rowKey isEqualToString:kLocationKey]) {
-        // link to map view
-        NSString * query = ([self.venue.location.displayDescription length]) ? self.venue.location.displayDescription : self.venue.location.roomNumber;
+        NSString * query = ([self.retailVenue.location.locationDisplayString length]) ? self.retailVenue.location.locationDisplayString : self.retailVenue.location.mitRoomNumber;
         NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:query];
         [[UIApplication sharedApplication] openURL:url];
     } else if ([rowKey isEqualToString:kHomePageURLKey]) {
-        // external url
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.homepageURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.retailVenue.homepageURL]];
     } else if ([rowKey isEqualToString:kAddToFavoritesKey]) {
         [self updateFavoriteWithFavoriteCell:[tableView cellForRowAtIndexPath:indexPath]];
     }
@@ -402,8 +409,8 @@ static int const kWebViewTag = 4231;
 
 - (void)updateFavoriteWithFavoriteCell:(UITableViewCell *)cell
 {
-    BOOL isFavorite = ![self.venue.favorite boolValue];
-    self.venue.favorite = @(isFavorite);
+    BOOL isFavorite = ![self.retailVenue.favorite boolValue];
+    self.retailVenue.favorite = @(isFavorite);
     cell.textLabel.text = isFavorite ? @"Remove from Favorites" : @"Add to Favorites";
     [CoreDataManager saveData];
 }
@@ -423,7 +430,7 @@ static int const kWebViewTag = 4231;
 
 #pragma mark - HTML String Formatting
 
-// Takes an int and an HTML String as args
+// Takes an int(width size in points) and an HTML String as args
 - (NSString *)htmlFormatString
 {
     return  @"<html>"
@@ -431,7 +438,7 @@ static int const kWebViewTag = 4231;
     "<style type=\"text/css\" media=\"screen\">"
     "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; color: #727272;} "
     ".emptyParagraph { display: none; }"
-    ".center { margin-left: auto; margin-right: auto;  width: %i;}"// Size to center in points (% doesn't work)
+    ".center { margin-left: auto; margin-right: auto;  width: %i;}" // Size to center in points (% doesn't work)
     "</style>"
     "</head>"
     "<body class=\"center\" id=\"centered-content\">"
@@ -439,7 +446,7 @@ static int const kWebViewTag = 4231;
     "</body>"
     "</html>"
     "<script type=\"text/javascript\" charset=\"utf-8\">"
-    "/* hide all of the empty paragraph tags, because emergency info announcements tend to have a lot of unnecessary whitespace*/"
+    // hide all of the empty paragraph tags, because emergency info announcements tend to have a lot of unnecessary whitespace
     "var allParagraphs = document.getElementsByTagName(\"p\");"
     "for (var i = allParagraphs.length - 1; i >= 0; i--){"
     "if (/\\S+/.test(allParagraphs[i].innerText) == false) {"

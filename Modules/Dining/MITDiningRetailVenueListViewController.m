@@ -2,6 +2,9 @@
 #import "MITCoreData.h"
 #import "MITAdditions.h"
 
+#import "MITDiningRetailVenue.h"
+#import "MITDiningRetailVenueDetailViewController.h"
+
 @interface MITDiningRetailVenueListViewController () <NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
@@ -113,6 +116,15 @@
 }
 */
 
+#pragma mark - Detail View Controller
+
+- (void)pushDetailViewControllerForRetailVenue:(MITDiningRetailVenue *)retailVenue
+{
+    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.retailVenue = retailVenue;
+    [self.navigationController pushViewController:detailVC animated:YES];
+}
+
 #pragma mark - Fetched Results Controller
 
 - (void)setupFetchedResultsController
@@ -135,7 +147,6 @@
     _fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
-    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller

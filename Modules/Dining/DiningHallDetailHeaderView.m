@@ -21,9 +21,12 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 44, 44)];
+        self.shouldIncludeSeparator = YES;
+        
+        self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 15, 34, 34)];
+        self.iconView.contentMode = UIViewContentModeScaleAspectFill;
         self.iconView.contentMode = UIViewContentModeScaleAspectFit;
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 124, 44)];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 15, frame.size.width - 124, 34)];
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 64, frame.size.width - 50, 16)];
@@ -35,16 +38,6 @@
                                                           size.width,
                                                           size.height));
         self.infoButton.hidden = YES;
-
-        self.starButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        
-        [self.starButton setImage:[UIImage imageNamed:@"dining/bookmark"] forState:UIControlStateNormal];
-        [self.starButton setImage:[UIImage imageNamed:@"dining/bookmark_selected"] forState:UIControlStateSelected];
-
-        size = self.starButton.frame.size;
-        self.starButton.frame = CGRectMake(frame.size.width - 50, 0, 50, 67);
-
-        self.starButton.hidden = YES;
         
         [self styleSubviews];
         
@@ -52,11 +45,7 @@
         [self addSubview:self.titleLabel];
         [self addSubview:self.timeLabel]; 
         [self addSubview:self.infoButton];
-        [self addSubview:self.starButton];
         
-        self.separatorLayer = [CALayer layer];
-        self.separatorLayer.backgroundColor = [UIColor lightGrayColor].CGColor;
-        [self.layer addSublayer:self.separatorLayer];
     }
     return self;
 }
@@ -86,6 +75,22 @@
 - (void)positionSeparatorLayer
 {
     self.separatorLayer.frame = CGRectMake(15, CGRectGetMaxY(self.bounds), CGRectGetWidth(self.bounds) - 15, -0.5);
+}
+
+#pragma mark - Separator
+
+- (void)setShouldIncludeSeparator:(BOOL)shouldIncludeSeparator
+{
+    if (shouldIncludeSeparator) {
+        self.separatorLayer = [CALayer layer];
+        self.separatorLayer.backgroundColor = [UIColor lightGrayColor].CGColor;
+        [self.layer addSublayer:self.separatorLayer];
+        [self positionSeparatorLayer];
+    } else {
+        [self.separatorLayer removeFromSuperlayer];
+        self.separatorLayer = nil;
+    }
+    _shouldIncludeSeparator = shouldIncludeSeparator;
 }
 
 @end

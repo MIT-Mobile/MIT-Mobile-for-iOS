@@ -14,4 +14,6 @@
 @property (nonatomic, retain) NSString * street;
 @property (nonatomic, retain) NSString * zipCode;
 
+- (NSString *)locationDisplayString;
+
 @end
