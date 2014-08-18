@@ -11,7 +11,6 @@
 #import "MITNewsGridHeaderView.h"
 #import "MITAdditions.h"
 #import "MITNewsStoryCollectionViewCell.h"
-#import "MITNewsLoadMoreCollectionViewCell.h"
 
 @interface MITNewsGridViewController ()
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
@@ -245,12 +244,6 @@
 #pragma mark MITCollectionViewDelegateNewsGrid
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
-    UICollectionViewCell *cell = [self _collectionView:collectionView dequeueLayoutCellForItemAtIndexPath:indexPath];
-    if ([cell class] == [MITNewsLoadMoreCollectionViewCell class]) {
-        return 175;
-    }
-    
-    [self _collectionView:collectionView configureCell:cell atIndexPath:indexPath];
 
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell
                                                                   attribute:NSLayoutAttributeWidth
