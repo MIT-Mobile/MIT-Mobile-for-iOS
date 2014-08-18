@@ -124,21 +124,27 @@
     return contentFrame.size;
 }
 
+- (void)invalidateLayout
+{
+    [super invalidateLayout];
+
+    // Not optimal since this is still relatively expensive
+    // but not as bad since we aren't nuking all the heights
+    [self.sectionLayouts removeAllObjects];
+}
+
 - (void)invalidateLayoutWithContext:(UICollectionViewLayoutInvalidationContext *)context
 {
     [super invalidateLayoutWithContext:context];
-    
-    if (context.invalidateEverything) {
-        [self.sectionLayouts removeAllObjects];
-        [self.cachedItemHeights removeAllObjects];
-    } else if (context.invalidateDataSourceCounts) {
+
+    if (context.invalidateEverything || context.invalidateDataSourceCounts) {
         [self.cachedItemHeights removeAllObjects];
         [self.sectionLayouts removeAllObjects];
+    } else {
+        [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, MITCollectionViewGridLayoutSection *layout, BOOL *stop) {
+            layout.frame = [self _layoutFrameForSection:[key unsignedIntegerValue]];
+        }];
     }
-    
-    [self.sectionLayouts enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, MITCollectionViewGridLayoutSection *layout, BOOL *stop) {
-        layout.frame = [self _layoutFrameForSection:[key unsignedIntegerValue]];
-    }];
 }
 
 - (CGRect)_layoutFrameForSection:(NSUInteger)section
