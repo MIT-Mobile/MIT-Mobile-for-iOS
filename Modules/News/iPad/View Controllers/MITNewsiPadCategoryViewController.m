@@ -106,8 +106,6 @@
                     [control endRefreshing];
                     if (self.activeViewController == self.gridViewController) {
                         [self.gridViewController.collectionView reloadData];
-#warning crashes if added more stories
-                        
                     } else if (self.activeViewController == self.listViewController) {
                         [self.listViewController.tableView reloadData];
                     }

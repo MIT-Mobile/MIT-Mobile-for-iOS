@@ -177,10 +177,18 @@
         if (!blockSelf) {
             return;
         } else if (error) {
-            [blockSelf _responseFailedWithError:error completion:block];
+            [blockSelf _responseFailedWithError:error completion:^{
+                if (block) {
+                    block(error);
+                }
+            }];
         } else {
             NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
-            [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:block];
+            [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:^{
+                if (block) {
+                    block(error);
+                }
+            }];
         }
     }];
 
@@ -198,11 +206,11 @@
         if (!blockSelf) {
             return;
         } else if (error) {
-            // If the request failed, don't touch our existing data
-            //  set. The objects should still be valid in the cache and
-            //  we don't want to start suddenly telling everything we don't
-            //  have any objects if the network is flaky.
-            [self _responseFailedWithError:error completion:block];
+            [self _responseFailedWithError:error completion:^{
+                if (block) {
+                    block(error);
+                }
+            }];
         } else {
             // This is the main difference between a refresh and
             // a next page load. A refresh will nil out the
@@ -211,7 +219,11 @@
             // to the existing list of identifiers
             blockSelf.objectIdentifiers = nil;
 
-            [self _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:block];
+            [self _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
+                if (block) {
+                    block(nil);
+                }
+            }];
         }
     };
 
@@ -228,14 +240,18 @@
     }
 }
 
-- (void)_responseFailedWithError:(NSError*)error completion:(void(^)(NSError*))block
+- (void)_responseFailedWithError:(NSError*)error completion:(void(^)())block
 {
+    // If the request failed, don't touch our existing data
+    //  set. The objects should still be valid in the cache and
+    //  we don't want to start suddenly telling everything we don't
+    //  have any objects if the network is flaky.
     if (block) {
-        block(error);
+        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
     }
 }
 
-- (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)(NSError*))block
+- (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)())block
 {
     self.nextPageURL = pagingMetadata[@"next"];
 
@@ -255,7 +271,7 @@
     self.objectIdentifiers = objectIdentifiers;
 
     if (block) {
-        block(nil);
+        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
     }
 }
 
