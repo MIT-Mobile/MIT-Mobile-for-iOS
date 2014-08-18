@@ -21,4 +21,9 @@
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
+
+#pragma mark Subclass methods
+- (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
+- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
+- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 @end
