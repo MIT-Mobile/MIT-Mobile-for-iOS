@@ -45,15 +45,6 @@
     return nil;
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:0];
-    } else {
-        return nil;
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
@@ -118,24 +109,7 @@
         story = [self storyAtIndexPath:indexPath];
     }
     if (story) {
-        __block NSString *identifier = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            
-            if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-                if (newsStory.coverImage) {
-                    identifier = MITNewsStoryExternalCellIdentifier;
-                } else {
-                    identifier = MITNewsStoryExternalNoImageCellIdentifier;
-                }
-            } else if ([newsStory.dek length])  {
-                identifier = MITNewsStoryCellIdentifier;
-            } else {
-                identifier = MITNewsStoryNoDekCellIdentifier;
-            }
-        }];
-        
-        return identifier;
+        return [super reuseIdentifierForRowAtIndexPath:indexPath];
     } else if ([self numberOfStoriesForCategoryInSection:indexPath.section]) {
         return MITNewsLoadMoreCellIdentifier;
     } else {

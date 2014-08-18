@@ -17,6 +17,7 @@
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 - (void)reloadData;
 
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 - (NSUInteger)numberOfCategories;
 - (BOOL)isFeaturedCategoryInSection:(NSUInteger)section;
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
