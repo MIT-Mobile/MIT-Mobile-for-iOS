@@ -488,7 +488,7 @@
 
 - (void)refreshDataSources:(void (^)(NSError*))completion
 {
-    __block dispatch_group_t refreshGroup = dispatch_group_create();
+    dispatch_group_t refreshGroup = dispatch_group_create();
     __block NSError *updateError = nil;
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
@@ -511,15 +511,15 @@
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(updateError);
-        });
-
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (self.activeViewController == self.gridViewController) {
                 [self.gridViewController.collectionView reloadData];
             } else if (self.activeViewController == self.listViewController) {
                 [self.listViewController.tableView reloadData];
+            }
+
+            if (completion) {
+                completion(updateError);
             }
         }];
     });
