@@ -41,9 +41,9 @@
 {
     NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
 
-    UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-
     if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+
         if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
             MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
 
