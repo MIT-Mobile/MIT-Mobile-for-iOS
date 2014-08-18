@@ -17,69 +17,69 @@
     BOOL _storyUpdateFailed;
 }
 
-- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+- (NSString*)identifierForCellAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = [self collectionView:collectionView identifierForCellAtIndexPath:indexPath];
-    UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
-    if ([collectionViewCell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
-        MITNewsStoryCollectionViewCell *storyCollectionViewCell = (MITNewsStoryCollectionViewCell*)collectionViewCell;
-        storyCollectionViewCell.story = [self storyAtIndexPath:indexPath];
-        
-    } else
-        if (cellIdentifier == MITNewsCellIdentifierStoryLoadMore) {
-            MITNewsLoadMoreCollectionViewCell *cell = (MITNewsLoadMoreCollectionViewCell *)collectionViewCell;
-            if(_storyUpdateFailed) {
-                cell.textLabel.text = self.errorMessage;
-                cell.loadingIndicator.hidden = YES;
-            } else if (_storyUpdateInProgress) {
-                cell.textLabel.text = @"Loading More...";
-                cell.loadingIndicator.hidden = NO;
-            } else {
-                cell.textLabel.text = @"Load More...";
-                cell.loadingIndicator.hidden = YES;
-            }
-            return cell;
-        }
-    return collectionViewCell;
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
+        return MITNewsCellIdentifierStoryLoadMore;
+    } else {
+        return [super identifierForCellAtIndexPath:indexPath];
+    }
 }
 
-- (NSString *)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(MITCollectionViewGridLayout *)layout heightForItemAtIndexPath:(NSIndexPath *)indexPath withWidth:(CGFloat)width
 {
-    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.item && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
-        return MITNewsCellIdentifierStoryLoadMore;
-    }
-    
-    MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
 
-    if (featuredStory && indexPath.item == 0) {
-        return MITNewsCellIdentifierStoryJumbo;
-    } else if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-        return MITNewsCellIdentifierStoryClip;
-    } else if (story.coverImage)  {
-        return MITNewsCellIdentifierStoryWithImage;
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        return 175.;
     } else {
-        return MITNewsCellIdentifierStoryDek;
+        return [super collectionView:collectionView layout:layout heightForItemAtIndexPath:indexPath withWidth:width];
+    }
+}
+
+- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
+
+    UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
+            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
+
+            if(_storyUpdateFailed) {
+                loadMoreCell.textLabel.text = self.errorMessage;
+                loadMoreCell.loadingIndicator.hidden = YES;
+            } else if (_storyUpdateInProgress) {
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
+            } else {
+                loadMoreCell.textLabel.text = @"Load More...";
+                loadMoreCell.loadingIndicator.hidden = YES;
+            }
+
+            return loadMoreCell;
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,identifier,NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]),NSStringFromClass([collectionViewCell class]));
+
+            return collectionViewCell;
+        }
+    } else {
+        return [super collectionView:collectionView cellForItemAtIndexPath:indexPath];
     }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
-        indexPath.item + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
-        if (!_storyUpdateInProgress) {
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
+
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        BOOL canLoadMoreItems = [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section];
+        if (canLoadMoreItems && !_storyUpdateInProgress) {
             [self getMoreStoriesForSection:indexPath.section];
         }
-
     } else {
-        [self didSelectStoryAtIndexPath:indexPath];
-    }
-}
-
-- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.item forCategoryInSection:indexPath.section];
+        [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
 }
 
@@ -94,7 +94,6 @@
                 self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
-                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [NSTimer scheduledTimerWithTimeInterval:2
                                                          target:self
@@ -111,8 +110,11 @@
 
 - (void)clearFailAfterTwoSeconds
 {
+    NSUInteger item = [self numberOfStoriesForCategoryInSection:0] - 1;
+    NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:0];
+
     _storyUpdateFailed = FALSE;
-    [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]];
+    [self reloadItemAtIndexPath:loadMoreIndexPath];
 }
 
 - (void)reloadItemAtIndexPath:(NSIndexPath *)indexPath
