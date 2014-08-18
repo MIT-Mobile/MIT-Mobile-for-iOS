@@ -169,13 +169,13 @@
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         [NSTimer scheduledTimerWithTimeInterval:2
                                                          target:self
                                                        selector:@selector(clearFailAfterTwoSeconds)
                                                        userInfo:nil
                                                         repeats:NO];
-                    });
+                    }];
                 } else {
                     _storyUpdateFailed = FALSE;
                 }
@@ -193,9 +193,9 @@
 
 - (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    });
+    }];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil

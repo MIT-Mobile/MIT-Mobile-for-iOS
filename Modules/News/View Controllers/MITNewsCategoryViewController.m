@@ -380,11 +380,11 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
             self.newsStories = results;
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (completion) {
                 completion();
             }
-        });
+        }];
 
         BOOL shouldReloadStories = ((objectCount == NSNotFound) ||
                                     (objectCount < self.numberOfStoriesPerPage) ||

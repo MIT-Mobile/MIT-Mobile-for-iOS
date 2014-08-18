@@ -92,13 +92,14 @@
                 self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         [NSTimer scheduledTimerWithTimeInterval:2
                                                          target:self
                                                        selector:@selector(clearFailAfterTwoSeconds)
                                                        userInfo:nil
                                                         repeats:NO];
-                    });
+                    }];
                 }
                 [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:0]];
             }
@@ -117,9 +118,9 @@
 
 - (void)reloadItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
-    });
+    }];
 }
 
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section

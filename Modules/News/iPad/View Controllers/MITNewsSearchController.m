@@ -171,9 +171,9 @@
 - (void)clearTable
 {
     self.dataSource = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.searchTableView reloadData];
-    });
+    }];
 }
 
 #pragma mark - search
@@ -200,9 +200,9 @@
             if ([self.dataSource.objects count] == 0) {
                 [self addNoResultsView];
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.searchTableView reloadData];
-            });
+            }];
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -229,13 +229,13 @@
                 self.errorMessage = error.localizedDescription;
                 _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         [NSTimer scheduledTimerWithTimeInterval:2
                                                          target:self
                                                        selector:@selector(clearFailAfterTwoSeconds)
                                                        userInfo:nil
                                                         repeats:NO];
-                    });
+                    }];
                 } else {
                     UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
                     [failedRefreshAlertView show];
@@ -246,14 +246,14 @@
             } else {
                 _storyUpdateFailed = FALSE;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.searchTableView reloadData];
-                });
+                }];
             }
         }];
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        });
+        }];
     }
 }
 
@@ -494,9 +494,9 @@
                                 block(self.dataSource.objects[currentIndex + 1], nil);
                             }
                         }
-                        dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                             [self.searchTableView reloadData];
-                        });
+                        }];
                     }
                 }];
             }

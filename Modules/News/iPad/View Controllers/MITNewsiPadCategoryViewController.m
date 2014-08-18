@@ -102,14 +102,14 @@
                     [failedRefreshAlertView show];
                 }
             } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [control endRefreshing];
                     if (self.activeViewController == self.gridViewController) {
                         [self.gridViewController.collectionView reloadData];
                     } else if (self.activeViewController == self.listViewController) {
                         [self.listViewController.tableView reloadData];
                     }
-                });
+                }];
             }
             [self setToolbarStatusUpdated];
         }];
@@ -133,13 +133,13 @@
                                              }
                                          } else {
                                              DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                             dispatch_async(dispatch_get_main_queue(), ^{
+                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                  if (self.activeViewController == self.gridViewController) {
                                                      [self.gridViewController.collectionView reloadData];
                                                  } else if (self.activeViewController == self.listViewController) {
                                                      [self.listViewController.tableView reloadData];
                                                  }
-                                             });
+                                             }];
                                          }
                                          [self setToolbarStatusUpdated];
                                          if (block) {
