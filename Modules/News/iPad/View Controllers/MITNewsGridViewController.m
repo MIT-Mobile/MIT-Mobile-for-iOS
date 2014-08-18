@@ -5,7 +5,6 @@
 #import "MITNewsModelController.h"
 #import "MITNewsCategory.h"
 #import "MITNewsStory.h"
-#import "MITCollectionViewGridLayout.h"
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsiPadViewController.h"
@@ -14,7 +13,7 @@
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsLoadMoreCollectionViewCell.h"
 
-@interface MITNewsGridViewController () <MITCollectionViewDelegateNewsGrid>
+@interface MITNewsGridViewController ()
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @end

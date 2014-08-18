@@ -1,10 +1,11 @@
 #import <UIKit/UIKit.h>
+#import "MITCollectionViewGridLayout.h"
 
 @class MITNewsStory;
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
 
-@interface MITNewsGridViewController : UICollectionViewController
+@interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
 @property (nonatomic) NSUInteger numberOfStoriesPerCategory;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
