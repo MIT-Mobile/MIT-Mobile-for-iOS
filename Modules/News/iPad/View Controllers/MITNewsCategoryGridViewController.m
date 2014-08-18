@@ -88,10 +88,6 @@
     if(!_storyUpdateInProgress && !_storyUpdateFailed) {
         _storyUpdateInProgress = YES;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView reloadData];
-        });
-        
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
