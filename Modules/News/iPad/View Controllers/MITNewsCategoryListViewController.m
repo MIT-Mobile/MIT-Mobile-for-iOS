@@ -122,7 +122,7 @@
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
-        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
 }
 
@@ -133,7 +133,6 @@
         [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
 
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-            
             _storyUpdateInProgress = FALSE;
             if (error) {
                 self.errorMessage = error.localizedDescription;
