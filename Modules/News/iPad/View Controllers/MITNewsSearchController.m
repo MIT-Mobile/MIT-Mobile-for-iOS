@@ -32,7 +32,6 @@
 
 @implementation MITNewsSearchController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdateFailed;
 }
 
 @synthesize recentSearchController = _recentSearchController;
@@ -190,7 +189,6 @@
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
             self.errorMessage = error.localizedDescription;
             [self removeLoadingView];
-            _storyUpdateFailed = YES;
             [self addNoResultsView];
 
         } else {
@@ -227,7 +225,6 @@
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                 self.errorMessage = error.localizedDescription;
-                _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         [NSTimer scheduledTimerWithTimeInterval:2
@@ -239,12 +236,12 @@
                 } else {
                     UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
                     [failedRefreshAlertView show];
-                    _storyUpdateFailed = FALSE;
+                    self.errorMessage = nil;
                 }
                 [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 
             } else {
-                _storyUpdateFailed = FALSE;
+                self.errorMessage = nil;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.searchTableView reloadData];
@@ -259,7 +256,7 @@
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdateFailed = FALSE;
+    self.errorMessage = nil;
         [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -326,7 +323,7 @@
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
+    if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
@@ -510,9 +507,9 @@
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
-    if (_storyUpdateFailed) {
+    if (self.errorMessage) {
         noResultsView.overviewText.text = self.errorMessage;
-        _storyUpdateFailed = FALSE;
+        self.errorMessage = nil;
     }
     [self.view addSubview:noResultsView];
     self.messageView = noResultsView;

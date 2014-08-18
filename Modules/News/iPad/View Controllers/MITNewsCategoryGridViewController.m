@@ -14,7 +14,6 @@
 
 @implementation MITNewsCategoryGridViewController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdateFailed;
 }
 
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath *)indexPath
@@ -83,14 +82,13 @@
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if(!_storyUpdateInProgress && !_storyUpdateFailed) {
+    if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
         
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
                 self.errorMessage = error.localizedDescription;
-                _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{

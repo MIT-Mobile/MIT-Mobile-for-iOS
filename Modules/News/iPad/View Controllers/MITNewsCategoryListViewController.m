@@ -11,7 +11,6 @@
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdateFailed;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -81,7 +80,7 @@
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateFailed) {
+    if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
     } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
@@ -157,7 +156,7 @@
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if(!_storyUpdateInProgress) {
+    if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
         [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
 
@@ -166,7 +165,6 @@
             _storyUpdateInProgress = FALSE;
             if (error) {
                 self.errorMessage = error.localizedDescription;
-                _storyUpdateFailed = TRUE;
                 if (self.navigationController.toolbarHidden) {
                     
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -177,7 +175,7 @@
                                                         repeats:NO];
                     }];
                 } else {
-                    _storyUpdateFailed = FALSE;
+                    self.errorMessage = nil;
                 }
                 [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
             }
@@ -187,7 +185,7 @@
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdateFailed = FALSE;
+    self.errorMessage = nil;
     [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
 }
 
