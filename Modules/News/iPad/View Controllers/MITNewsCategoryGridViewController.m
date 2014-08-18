@@ -58,7 +58,7 @@
 
 - (NSString *)collectionView:(UICollectionView*)collectionView identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.item && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
         return MITNewsCellIdentifierStoryLoadMore;
     }
     
@@ -79,7 +79,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
-        indexPath.row + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
+        indexPath.item + 1 == [self numberOfStoriesForCategoryInSection:indexPath.section]) {
         if (!_storyUpdateInProgress) {
             [self getMoreStoriesForSection:indexPath.section];
         }
