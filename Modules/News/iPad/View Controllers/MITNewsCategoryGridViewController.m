@@ -44,7 +44,7 @@
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
             MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;
 
-            if(_storyUpdateFailed) {
+            if(self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
                 loadMoreCell.loadingIndicator.hidden = YES;
             } else if (_storyUpdateInProgress) {
@@ -110,7 +110,7 @@
     NSUInteger item = [self numberOfStoriesForCategoryInSection:0] - 1;
     NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:0];
 
-    _storyUpdateFailed = FALSE;
+    self.errorMessage = nil;
     [self reloadItemAtIndexPath:loadMoreIndexPath];
 }
 
