@@ -23,4 +23,6 @@
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
+- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
+
 @end

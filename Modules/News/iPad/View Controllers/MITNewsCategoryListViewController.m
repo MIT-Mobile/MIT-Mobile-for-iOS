@@ -4,6 +4,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
@@ -20,13 +21,6 @@
         return 1;
     } else {
         return 0;
-    }
-}
-
-- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
     }
 }
 
@@ -53,10 +47,7 @@
             [self getMoreStoriesForSection:indexPath.section];
         }
     } else {
-        MITNewsStory *story = [self storyAtIndexPath:indexPath];
-        if (story) {
-            [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
-        }
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -66,17 +57,24 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
 
-    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
-        cell.textLabel.text = self.errorMessage;
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
-        cell.textLabel.text = @"Loading More...";
-    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
-        cell.textLabel.text = @"Load More...";
+    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+        
+            if (self.errorMessage) {
+                cell.textLabel.text = self.errorMessage;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+            } else {
+                cell.textLabel.text = @"Load More...";
+            }
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+            
+            return cell;
+        }
     }
     return cell;
 }
