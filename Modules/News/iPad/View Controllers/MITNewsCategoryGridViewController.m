@@ -85,6 +85,10 @@
     if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
         
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self.collectionView reloadData];
+                    }];
+        
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
