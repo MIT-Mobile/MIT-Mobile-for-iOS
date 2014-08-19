@@ -20,7 +20,6 @@
 #import "MITNewsiPadViewController.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
-static NSUInteger MITNewsViewControllerHeightOffset = 64;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
@@ -53,7 +52,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
     self.maximumNumberOfStoriesPerCategory = MITNewsDefaultNumberOfFeaturedStories;
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
