@@ -77,6 +77,7 @@
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
+    [self.navigationItem setTitle:@"MIT News"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -383,13 +384,11 @@
         
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
         [rightBarItems addObject:searchBarItem];
-        [self.navigationItem setTitle:@""];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
 
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
-        [self.navigationItem setTitle:@"MIT News"];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
         self.navigationItem.leftBarButtonItem.enabled = YES;
         self.navigationItem.hidesBackButton = NO;
@@ -397,7 +396,7 @@
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
     
-    UIViewController *parentViewController = self.navigationController.viewControllers[0];
+    UIViewController *parentViewController = self.parentViewController.childViewControllers[0];
     UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
     [parentViewController.navigationItem setBackBarButtonItem:nil];
     [parentViewController.navigationItem setBackBarButtonItem:item];
