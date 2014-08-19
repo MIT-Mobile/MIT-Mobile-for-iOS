@@ -42,6 +42,7 @@
 
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 @property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, weak) UIRefreshControl *refreshControl;
 
 #pragma mark Data Source
 @property (nonatomic, copy) NSArray *categories;
@@ -148,6 +149,7 @@
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         [gridViewController.collectionView addSubview:refreshControl];
+        self.refreshControl = refreshControl;
     }
 
     return gridViewController;
@@ -172,6 +174,7 @@
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         [listViewController.tableView addSubview:refreshControl];
+        self.refreshControl = refreshControl;
     }
     
     return listViewController;
@@ -341,6 +344,7 @@
     
     UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:string]];
 }
 
 #pragma mark UIAlertViewDelegate

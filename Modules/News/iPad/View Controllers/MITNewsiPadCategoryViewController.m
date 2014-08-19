@@ -26,6 +26,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic,strong) NSDate *lastUpdated;
+@property (nonatomic, weak) UIRefreshControl *refreshControl;
 
 @end
 
@@ -163,13 +164,13 @@
         gridViewController = [[MITNewsCategoryGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
+        _gridViewController = gridViewController;
 
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         [gridViewController.collectionView addSubview:refreshControl];
-        
-        _gridViewController = gridViewController;
+        self.refreshControl = refreshControl;
     }
     
     return gridViewController;
@@ -185,13 +186,13 @@
         listViewController = [[MITNewsCategoryListViewController alloc] init];
         listViewController.delegate = self;
         listViewController.dataSource = self;
-  
+        _listViewController = listViewController;
+
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         [listViewController.tableView addSubview:refreshControl];
-
-        _listViewController = listViewController;
+        self.refreshControl = refreshControl;
     }
     
     return listViewController;
@@ -319,6 +320,7 @@
     
     UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:string]];
 }
 
 - (void)setToolbarStatusUpdating
