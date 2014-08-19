@@ -77,7 +77,6 @@
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
-    [self.navigationItem setTitle:@"MIT News"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -393,6 +392,7 @@
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
         [rightBarItems addObject:searchBarItem];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+        [self.navigationItem setTitle:@""];
 
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
@@ -400,6 +400,7 @@
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
         self.navigationItem.leftBarButtonItem.enabled = YES;
         self.navigationItem.hidesBackButton = NO;
+        [self.navigationItem setTitle:@"MIT News"];
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
