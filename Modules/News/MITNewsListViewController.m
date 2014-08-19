@@ -31,12 +31,12 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @end
 
 @implementation MITNewsListViewController
+
 #pragma mark UI Element text attributes
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil managedObjectContext:nil];
 }
-
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil managedObjectContext:(NSManagedObjectContext*)context
 {

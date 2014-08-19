@@ -69,11 +69,6 @@
     [self.gridViewController.collectionView reloadData];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];

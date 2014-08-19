@@ -21,6 +21,7 @@
     NSMutableDictionary *_layoutCellsByIdentifier;
 }
 
+#pragma mark UI Element text attributes
 - (instancetype)init
 {
     MITCollectionViewGridLayout *layout = [[MITCollectionViewGridLayout alloc] init];
@@ -36,7 +37,7 @@
     return self;
 }
 
-
+#pragma mark Lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -82,6 +83,7 @@
     [super viewDidAppear:animated];
 }
 
+#pragma mark Rotation
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];

@@ -36,8 +36,15 @@
 
 @synthesize recentSearchController = _recentSearchController;
 
-#pragma mark - Dynamic Properties
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+    }
+    
+    return self;
+}
 
+#pragma mark - Dynamic Properties
 - (MITNewsRecentSearchController *)recentSearchController
 {
     if(!_recentSearchController) {
@@ -60,7 +67,6 @@
 }
 
 #pragma mark - View lifecyle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -80,31 +86,13 @@
     [super viewDidAppear:animated];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    
-}
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    
-    return self;
-}
-
 #pragma mark - SearchBar
-
 - (void)searchBarCancelButtonClicked
 {
     [self hideSearchField];
@@ -176,7 +164,6 @@
 }
 
 #pragma mark - search
-
 - (void)getResultsForString:(NSString *)searchTerm
 {
     [self removeNoResultsView];
@@ -261,7 +248,6 @@
 }
 
 #pragma mark - hide/show Recents
-
 - (void)hideSearchRecents
 {
     if (self.recentSearchPopoverController != nil) {
@@ -297,7 +283,6 @@
 }
 
 #pragma mark - Popover
-
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
@@ -315,7 +300,6 @@
 
 #pragma mark - TableView
 #pragma mark UITableViewDataSource
-
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
@@ -464,7 +448,6 @@
 }
 
 #pragma mark MITNewsStoryDetailPagingDelegate
-
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
@@ -502,7 +485,6 @@
 }
 
 #pragma mark No Results / Loading More View
-
 - (void)addNoResultsView
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];

@@ -16,13 +16,21 @@
     BOOL _storyUpdateInProgress;
 }
 
-- (NSString*)identifierForCellAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark UICollectionViewDataSource
+- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
-        return MITNewsCellIdentifierStoryLoadMore;
+    NSUInteger numberOfStories = [super numberOfStoriesForCategoryInSection:section];
+    
+    if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return numberOfStories + 1;
     } else {
-        return [super identifierForCellAtIndexPath:indexPath];
+        return numberOfStories;
     }
+}
+
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
+{
+    return 0;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(MITCollectionViewGridLayout *)layout heightForItemAtIndexPath:(NSIndexPath *)indexPath withWidth:(CGFloat)width
@@ -62,10 +70,19 @@
             return cell;
         }
     }
-
     return cell;
 }
 
+- (NSString*)identifierForCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row && [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section]) {
+        return MITNewsCellIdentifierStoryLoadMore;
+    } else {
+        return [super identifierForCellAtIndexPath:indexPath];
+    }
+}
+
+#pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
@@ -80,6 +97,7 @@
     }
 }
 
+#pragma mark More Stories
 - (void)getMoreStoriesForSection:(NSInteger *)section
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
@@ -109,6 +127,7 @@
     }
 }
 
+#pragma mark Fail
 - (void)clearFailAfterTwoSeconds
 {
     NSUInteger item = [self numberOfStoriesForCategoryInSection:0] - 1;
@@ -118,27 +137,12 @@
     [self reloadItemAtIndexPath:loadMoreIndexPath];
 }
 
+#pragma mark Reload Cell
 - (void)reloadItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
     }];
-}
-
-- (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
-{
-    NSUInteger numberOfStories = [super numberOfStoriesForCategoryInSection:section];
-
-    if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
-        return numberOfStories + 1;
-    } else {
-        return numberOfStories;
-    }
-}
-
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
-{
-    return 0;
 }
 
 @end
