@@ -25,7 +25,6 @@
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) UIView *searchBarWrapper;
 @property (nonatomic,strong) NSDate *lastUpdated;
 
 @end
@@ -400,16 +399,13 @@
         UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
         [rightBarItems addObject:cancelSearchItem];
         
-        UISearchBar *searchBar = self.searchBar;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
         } else {
             self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 80, 44);
         }
         
-        self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
-        [self.searchBarWrapper addSubview:searchBar];
-        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
         [rightBarItems addObject:searchBarItem];
         [self.navigationItem setTitle:@""];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
