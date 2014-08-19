@@ -244,11 +244,19 @@
         // transitioning from/to.
         UIViewController *fromViewController = self.activeViewController;
         UIViewController *toViewController = nil;
+        
+        NSAttributedString *refreshControlTitle = self.refreshControl.attributedTitle;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
         } else {
             toViewController = self.listViewController;
         }
+        // Needed to fix alignment of refreshcontrol text
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.refreshControl beginRefreshing];
+            [self.refreshControl endRefreshing];
+        });
+        self.refreshControl.attributedTitle = refreshControlTitle;
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
