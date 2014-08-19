@@ -85,10 +85,6 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.navigationController.toolbarHidden = NO;
-    }
-    
     if (!self.activeViewController && [self class] == [MITNewsiPadViewController class]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
@@ -104,7 +100,7 @@
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
             NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self setToolbarString:updateText animated:animated];
+            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
         }
         [self updateNavigationItem:YES];
     }
@@ -206,7 +202,7 @@
 }
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
-    [self setToolbarString:@"Updating..." animated:YES];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
     [self reloadItems:^(NSError *error) {
         [refreshControl endRefreshing];
         if (error) {
@@ -216,19 +212,19 @@
                 [failedRefreshAlertView show];
             }
             if(!self.lastUpdated) {
-                [self setToolbarString:error.localizedDescription animated:YES];
+                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
             } else {
                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                     toDate:[NSDate date]];
                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                [self setToolbarString:updateText animated:YES];
+                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
             }
         } else {
             self.lastUpdated = [NSDate date];
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
             NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self setToolbarString:updateText animated:YES];
+            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
         }
 
     }];
@@ -319,20 +315,6 @@
 {
     self.presentationStyle = MITNewsPresentationStyleList;
     [self updateNavigationItem:YES];
-}
-
-#pragma mark UI Helper
-- (void)setToolbarString:(NSString*)string animated:(BOOL)animated
-{
-    UILabel *updatingLabel = [[UILabel alloc] init];
-    updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
-    updatingLabel.text = string;
-    updatingLabel.backgroundColor = [UIColor clearColor];
-    [updatingLabel sizeToFit];
-    
-    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:string]];
 }
 
 #pragma mark UIAlertViewDelegate

@@ -81,7 +81,7 @@
         NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                             toDate:[NSDate date]];
         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-        [self setToolbarString:updateText animated:NO];
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
     }
     [self updateNavigationItem:YES];
 }
@@ -91,7 +91,7 @@
     if (!_storyUpdateInProgress) {
 
         _storyUpdateInProgress = YES;
-        [self setToolbarStatusUpdating];
+        [self setRefreshStatusUpdating];
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
 
             _storyUpdateInProgress = NO;
@@ -103,6 +103,7 @@
                 }
             } else {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self setRefreshStatusUpdated];
                     [control endRefreshing];
                     if (self.activeViewController == self.gridViewController) {
                         [self.gridViewController.collectionView reloadData];
@@ -111,7 +112,6 @@
                     }
                 }];
             }
-            [self setToolbarStatusUpdated];
         }];
     }
 }
@@ -119,7 +119,7 @@
 - (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
 {
     if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
-        [self setToolbarStatusUpdating];
+        [self setRefreshStatusUpdating];
         _storyUpdateInProgress = YES;
         [self loadMoreItemsForCategoryInSection:section
                                      completion:^(NSError *error) {
@@ -141,7 +141,7 @@
                                                  }
                                              }];
                                          }
-                                         [self setToolbarStatusUpdated];
+                                         [self setRefreshStatusUpdated];
                                          if (block) {
                                              block(error);
                                          }
@@ -303,39 +303,28 @@
 }
 
 #pragma mark UI Helper
-- (void)setToolbarString:(NSString*)string animated:(BOOL)animated
+- (void)setRefreshStatusUpdating
 {
-    UILabel *updatingLabel = [[UILabel alloc] init];
-    updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
-    updatingLabel.text = string;
-    updatingLabel.backgroundColor = [UIColor clearColor];
-    [updatingLabel sizeToFit];
-    
-    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:string]];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
 }
 
-- (void)setToolbarStatusUpdating
-{
-    [self setToolbarString:@"Updating..." animated:YES];
-}
-
-- (void)setToolbarStatusUpdated
+- (void)setRefreshStatusUpdated
 {
     self.lastUpdated = [NSDate date];
     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                       toDate:[NSDate date]];
     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self setToolbarString:updateText animated:YES];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+
 }
 
-- (void)refreshToolbarStatus
+- (void)refreshRefreshStatus
 {
     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                         toDate:[NSDate date]];
     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self setToolbarString:updateText animated:YES];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+
 }
 
 #pragma mark UIAlertViewDelegate
