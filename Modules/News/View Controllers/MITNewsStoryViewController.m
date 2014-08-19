@@ -125,11 +125,6 @@
             self.nextStoryImageHeightConstraint.constant = 60;
             self.nextStoryImageWidthConstraint.constant = 90;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
-            
-            if (self.nextStoryDateLabel.frame.origin.y + self.nextStoryDateLabel.frame.size.height + self.nextStoryDateBottomVerticalConstraint.constant <  self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant + self.originalNextStoryDateBottomVerticalConstraint) {
-                self.nextStoryDateBottomVerticalConstraint.constant = (self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant + self.originalNextStoryDateBottomVerticalConstraint) - (self.nextStoryDateLabel.frame.origin.y + self.nextStoryDateLabel.frame.size.height);
-            }
-            
         } else {
             self.nextStoryImageHeightConstraint.constant = 0;
             self.nextStoryImageWidthConstraint.constant = 0;
