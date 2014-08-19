@@ -332,13 +332,6 @@
     UILabel *updatingLabel = [[UILabel alloc] init];
     updatingLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
     updatingLabel.text = string;
-    
-    if (self.navigationController.toolbar.barStyle == UIBarStyleBlack) {
-        updatingLabel.textColor = [UIColor whiteColor];
-    } else {
-        updatingLabel.textColor = [UIColor blackColor];
-    }
-    
     updatingLabel.backgroundColor = [UIColor clearColor];
     [updatingLabel sizeToFit];
     
