@@ -42,7 +42,7 @@
 
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 @property (nonatomic, strong) NSDate *lastUpdated;
-@property (nonatomic, weak) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 #pragma mark Data Source
 @property (nonatomic, copy) NSArray *categories;
@@ -139,8 +139,9 @@
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
-        [gridViewController.collectionView addSubview:refreshControl];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
         self.refreshControl = refreshControl;
+        [gridViewController.collectionView addSubview:self.refreshControl];
     }
 
     return gridViewController;
@@ -160,12 +161,13 @@
         listViewController.automaticallyAdjustsScrollViewInsets = NO;
         listViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _listViewController = listViewController;
-
+        
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
-        [listViewController.tableView addSubview:refreshControl];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
         self.refreshControl = refreshControl;
+        [listViewController.tableView addSubview:self.refreshControl];
     }
     
     return listViewController;
@@ -203,6 +205,11 @@
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+    if (!refreshControl && !self.lastUpdated) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.refreshControl beginRefreshing];
+        });
+    }
     [self reloadItems:^(NSError *error) {
         [refreshControl endRefreshing];
         if (error) {
@@ -220,6 +227,11 @@
                 [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
             }
         } else {
+            if (!self.lastUpdated) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.refreshControl endRefreshing];
+                });
+            }
             self.lastUpdated = [NSDate date];
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
@@ -244,18 +256,18 @@
         UIViewController *fromViewController = self.activeViewController;
         UIViewController *toViewController = nil;
         
-        NSAttributedString *refreshControlTitle = self.refreshControl.attributedTitle;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
         } else {
             toViewController = self.listViewController;
         }
         // Needed to fix alignment of refreshcontrol text
+      if (fromViewController) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.refreshControl beginRefreshing];
             [self.refreshControl endRefreshing];
         });
-        self.refreshControl.attributedTitle = refreshControlTitle;
+        }
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
