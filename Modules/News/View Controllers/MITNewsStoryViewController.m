@@ -19,6 +19,10 @@
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDateBottomVerticalConstraint;
+@property (nonatomic) CGFloat originalNextStoryDateBottomVerticalConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDekTitleVerticalContraint;
+
 @end
 
 @implementation MITNewsStoryViewController {
@@ -85,6 +89,7 @@
                                        }];
         }
     }
+    self.originalNextStoryDateBottomVerticalConstraint = self.nextStoryDateBottomVerticalConstraint.constant;
 }
 
 - (void)didReceiveMemoryWarning
@@ -125,6 +130,9 @@
             self.nextStoryImageWidthConstraint.constant = 0;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 0;
         }
+    }
+    if (!self.nextStoryDekLabel.text) {
+        self.nextStoryDekTitleVerticalContraint.constant = 0;
     }
 }
 
@@ -176,6 +184,8 @@
 
         [self.managedObjectContext performBlockAndWait:^{
             viewController.galleryImages = [self.story.galleryImages array];
+            viewController.storyLink = self.story.sourceURL;
+            viewController.storyTitle = self.story.title;
         }];
     }
 }
@@ -365,7 +375,7 @@
 
 - (IBAction)touchNextStoryView:(id)sender
 {
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
     
     [self setStory:nextStory];
@@ -379,9 +389,9 @@
         }];
 }
 
-- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block
+- (void)storyAfterStory:(MITNewsStory*)story completion:(void(^)(MITNewsStory *nextStory, NSError *error))block
 {
-    [self.delegate storyAfterStory:story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self.delegate storyAfterStory:story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (block) {
             block(nextStory, error);
         }
@@ -395,7 +405,7 @@
     self.nextStoryDekLabel.text = nil;
     self.nextStoryDateLabel.text = nil;
     self.nextStoryNextStoryLabel.text = nil;
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
             __block NSString *title = nil;
             __block NSString *dek = nil;
@@ -442,6 +452,8 @@
                 MITNewsStory *currentStory = nextStory;
                 __weak MITNewsStoryViewController *weakSelf = self;
                 [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                    [self.view setNeedsUpdateConstraints];
+
                     MITNewsStoryViewController *blockSelf = weakSelf;
                     if (blockSelf && (blockSelf->_story == currentStory)) {
                         if (error) {

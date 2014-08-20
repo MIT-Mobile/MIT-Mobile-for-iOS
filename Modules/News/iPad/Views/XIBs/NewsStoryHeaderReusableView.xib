@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -16,28 +16,34 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Section Header" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ts3-dj-FYh">
-                            <rect key="frame" x="0.0" y="8" width="399" height="28"/>
+                            <rect key="frame" x="0.0" y="8" width="133" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <rect key="contentStretch" x="0.050000000000000003" y="0.0" width="1" height="1"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="18"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XDc-Pn-D5s" userLabel="Separator">
                             <rect key="frame" x="0.0" y="44" width="399" height="2"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.66774964329999997" green="0.66774964329999997" blue="0.66774964329999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.9137254901960784" green="0.9137254901960784" blue="0.9137254901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="2" id="deB-2m-SZz"/>
                             </constraints>
                         </view>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="bIJ-UR-CSB">
+                            <rect key="frame" x="141" y="18" width="11" height="11"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
                     </subviews>
                     <constraints>
                         <constraint firstItem="XDc-Pn-D5s" firstAttribute="leading" secondItem="m1A-Gh-OC6" secondAttribute="leading" id="2zg-7i-Suc"/>
                         <constraint firstAttribute="trailing" secondItem="XDc-Pn-D5s" secondAttribute="trailing" id="Aw6-di-ZyP"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bIJ-UR-CSB" secondAttribute="trailing" constant="20" symbolic="YES" id="EDT-lr-RrA"/>
                         <constraint firstItem="Ts3-dj-FYh" firstAttribute="leading" secondItem="m1A-Gh-OC6" secondAttribute="leading" id="S4y-ll-iPr"/>
                         <constraint firstItem="XDc-Pn-D5s" firstAttribute="top" secondItem="Ts3-dj-FYh" secondAttribute="bottom" constant="8" symbolic="YES" id="cCo-jG-PjL"/>
+                        <constraint firstItem="bIJ-UR-CSB" firstAttribute="leading" secondItem="Ts3-dj-FYh" secondAttribute="trailing" constant="8" symbolic="YES" id="eDe-qh-mbt"/>
                         <constraint firstItem="Ts3-dj-FYh" firstAttribute="top" secondItem="m1A-Gh-OC6" secondAttribute="top" constant="8" id="eO9-ex-RdC"/>
-                        <constraint firstAttribute="trailing" secondItem="Ts3-dj-FYh" secondAttribute="trailing" id="etI-IQ-Hx3"/>
+                        <constraint firstAttribute="centerY" secondItem="bIJ-UR-CSB" secondAttribute="centerY" id="hYz-8Y-a7z"/>
                         <constraint firstAttribute="bottom" secondItem="XDc-Pn-D5s" secondAttribute="bottom" id="moO-FL-zqE"/>
                     </constraints>
                 </view>
@@ -49,9 +55,13 @@
                 <constraint firstItem="m1A-Gh-OC6" firstAttribute="top" secondItem="VOo-JH-Ppe" secondAttribute="top" id="pzs-gx-a6V"/>
             </constraints>
             <connections>
+                <outlet property="accessoryView" destination="bIJ-UR-CSB" id="8dY-Gh-MJA"/>
                 <outlet property="headerLabel" destination="Ts3-dj-FYh" id="53A-bC-ajG"/>
                 <outlet property="separatorView" destination="XDc-Pn-D5s" id="Vkv-qD-dXZ"/>
             </connections>
         </collectionReusableView>
     </objects>
+    <resources>
+        <image name="global/action-arrow.png" width="11" height="11"/>
+    </resources>
 </document>

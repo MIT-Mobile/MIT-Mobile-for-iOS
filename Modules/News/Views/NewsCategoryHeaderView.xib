@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -16,17 +16,17 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                            <rect key="frame" x="15" y="11" width="77" height="22"/>
+                            <rect key="frame" x="15" y="11" width="79" height="22"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="18"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
-                            <rect key="frame" x="100" y="16" width="11" height="11"/>
+                            <rect key="frame" x="102" y="16" width="11" height="11"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
                     </subviews>
@@ -40,12 +40,24 @@
                     </constraints>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="09T-ah-XvT" userLabel="Separator">
+                    <rect key="frame" x="15" y="42" width="305" height="2"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="2" id="OEj-rn-Bef"/>
+                    </constraints>
+                </view>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="rq1-KP-oP6" secondAttribute="trailing" id="8wA-FS-xVM"/>
                 <constraint firstItem="rq1-KP-oP6" firstAttribute="leading" secondItem="w51-xu-vRG" secondAttribute="leading" id="ASR-Rx-nCR"/>
                 <constraint firstAttribute="bottom" secondItem="rq1-KP-oP6" secondAttribute="bottom" id="Kxo-Ii-qgt"/>
+                <constraint firstItem="09T-ah-XvT" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="9" id="UR1-yO-wJl"/>
                 <constraint firstItem="rq1-KP-oP6" firstAttribute="top" secondItem="w51-xu-vRG" secondAttribute="top" id="d7i-qC-ytQ"/>
+                <constraint firstAttribute="trailing" secondItem="09T-ah-XvT" secondAttribute="trailing" id="jpI-An-COA"/>
+                <constraint firstAttribute="bottom" secondItem="09T-ah-XvT" secondAttribute="bottom" id="pbR-cQ-iFl"/>
+                <constraint firstItem="09T-ah-XvT" firstAttribute="leading" secondItem="w51-xu-vRG" secondAttribute="leading" constant="15" id="tqe-lz-ZhG"/>
             </constraints>
             <connections>
                 <outlet property="accessoryView" destination="9Sr-oA-zdz" id="RUf-05-OxL"/>

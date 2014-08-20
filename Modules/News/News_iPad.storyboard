@@ -53,12 +53,24 @@
                     <connections>
                         <outlet property="containerView" destination="VXG-S7-4t7" id="xA9-cZ-88t"/>
                         <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="g55-fq-NLw"/>
-                        <segue destination="9si-nV-Co1" kind="push" identifier="showCategoryList" id="GI6-4h-82h"/>
+                        <segue destination="9si-nV-Co1" kind="push" identifier="showCategory" id="GI6-4h-82h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e52-0i-HFC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-637" y="216"/>
+        </scene>
+        <!--News Search Controller-->
+        <scene sceneID="2b9-z6-DXE">
+            <objects>
+                <viewController storyboardIdentifier="searchView" id="aGn-G5-lyg" customClass="MITNewsSearchController" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="nXb-ze-oPc" kind="push" identifier="showStoryDetail" id="YHT-PB-8h7"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="T43-4n-heD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-577" y="1681"/>
         </scene>
         <!--News iPad Story View Controller-->
         <scene sceneID="Gpk-Vd-bz5">
@@ -69,11 +81,11 @@
                         <viewControllerLayoutGuide type="bottom" id="JeH-dg-JxY"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="LSd-EA-i8C">
-                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lbw-PH-uJi">
-                                <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
+                                <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="ZMx-FN-0Ky">
@@ -130,13 +142,14 @@
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="leading" secondItem="aRd-O6-eP4" secondAttribute="leading" id="NN8-Un-6CQ"/>
                                             <constraint firstAttribute="trailing" secondItem="aRd-O6-eP4" secondAttribute="trailing" constant="15" id="R7E-xP-Td0"/>
                                             <constraint firstItem="NuZ-d7-c35" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="Rr9-Z1-nlw"/>
+                                            <constraint firstAttribute="bottom" secondItem="MsR-he-jtK" secondAttribute="bottom" priority="749" constant="10" id="Y6d-IG-jsD"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="YUj-Xb-CFe"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="NuZ-d7-c35" secondAttribute="bottom" constant="5" id="ntY-pc-g7k"/>
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="bottom" constant="2" id="qs3-wr-fa9"/>
                                             <constraint firstAttribute="trailing" secondItem="DJg-5Q-Y2i" secondAttribute="trailing" constant="15" id="r8G-20-tDG"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="DJg-5Q-Y2i" secondAttribute="leading" id="rTK-Tf-Bgt"/>
                                             <constraint firstItem="aRd-O6-eP4" firstAttribute="top" secondItem="DJg-5Q-Y2i" secondAttribute="bottom" constant="2" id="txr-LR-ona"/>
-                                            <constraint firstAttribute="bottom" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" id="w2e-dE-rk9"/>
                                         </constraints>
                                         <connections>
@@ -170,8 +183,10 @@
                         <outlet property="bodyView" destination="ZMx-FN-0Ky" id="F5r-na-07C"/>
                         <outlet property="bodyViewHeightConstraint" destination="EtD-ah-Jgu" id="WpS-js-SBI"/>
                         <outlet property="nextStoryConstraintBetweenImageAndTitle" destination="w2e-dE-rk9" id="C6o-Jc-9Nv"/>
+                        <outlet property="nextStoryDateBottomVerticalConstraint" destination="vCr-Ar-v6y" id="yRf-2T-gnC"/>
                         <outlet property="nextStoryDateLabel" destination="aRd-O6-eP4" id="h8d-Ab-Mc6"/>
                         <outlet property="nextStoryDekLabel" destination="DJg-5Q-Y2i" id="OsE-K5-l4J"/>
+                        <outlet property="nextStoryDekTitleVerticalContraint" destination="qs3-wr-fa9" id="H8o-bb-w1Y"/>
                         <outlet property="nextStoryImageHeightConstraint" destination="nX8-sr-rAA" id="DcF-5N-RyF"/>
                         <outlet property="nextStoryImageView" destination="MsR-he-jtK" id="CNJ-yl-cna"/>
                         <outlet property="nextStoryImageWidthConstraint" destination="3nw-pn-3yB" id="5Nh-WO-Wrv"/>
@@ -212,12 +227,12 @@
                                     <segue destination="Aln-jB-QhS" kind="embed" identifier="embedPageViewController" id="Fl6-Uv-I01"/>
                                 </connections>
                             </containerView>
-                            <view opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qc8-w7-yJc" userLabel="Caption View">
-                                <rect key="frame" x="0.0" y="900" width="768" height="124"/>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qc8-w7-yJc" userLabel="Caption View">
+                                <rect key="frame" x="0.0" y="890" width="768" height="134"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Description text (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="Rbl-Gf-Oaq">
-                                        <rect key="frame" x="20" y="20" width="728" height="14"/>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description text (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="Rbl-Gf-Oaq">
+                                        <rect key="frame" x="20" y="20" width="728" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" id="y16-jB-mTB"/>
@@ -226,8 +241,8 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Credit (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="YM8-JL-rdi">
-                                        <rect key="frame" x="20" y="42" width="728" height="14"/>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Credit (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="728" translatesAutoresizingMaskIntoConstraints="NO" id="YM8-JL-rdi">
+                                        <rect key="frame" x="20" y="47" width="728" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" id="eEv-nI-g5W"/>
@@ -236,8 +251,8 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ew8-Ox-al8" userLabel="Thumbnail View" customClass="ThumbnailPickerView">
-                                        <rect key="frame" x="20" y="64" width="728" height="50"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ew8-Ox-al8" userLabel="Thumbnail View" customClass="ThumbnailPickerView">
+                                        <rect key="frame" x="20" y="74" width="728" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="JoW-34-dkb"/>
@@ -340,7 +355,7 @@
         <!--News Pad View Controller-->
         <scene sceneID="WRe-cX-FaI">
             <objects>
-                <viewController storyboardIdentifier="StoryCategoryList" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9si-nV-Co1" userLabel="News Pad View Controller" customClass="MITNewsiPadCategoryListViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryCategoryList" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9si-nV-Co1" userLabel="News Pad View Controller" customClass="MITNewsiPadCategoryViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="WO6-n8-c6z"/>
                         <viewControllerLayoutGuide type="bottom" id="IGu-Bh-h2H"/>
@@ -384,6 +399,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="IoT-Lw-NVS"/>
+        <segue reference="YHT-PB-8h7"/>
     </inferredMetricsTieBreakers>
 </document>

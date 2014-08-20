@@ -4,12 +4,15 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
-@interface MITNewsCategoryListViewController ()
-
+@interface MITNewsCategoryListViewController()
+@property (nonatomic, strong) NSString *errorMessage;
 @end
 
-@implementation MITNewsCategoryListViewController
+@implementation MITNewsCategoryListViewController {
+    BOOL _storyUpdateInProgress;
+}
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
@@ -21,71 +24,57 @@
     }
 }
 
-- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
-    }
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
     }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
+    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
 {
-    if ([self.dataSource respondsToSelector:@selector(viewController:titleForCategoryInSection:)]) {
-        return nil;//[self.dataSource viewController:self titleForCategoryInSection:section];
-    } else {
-        return nil;
-    }
-}
-
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:0];
-    } else {
-        return nil;
-    }
+    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (!_storyUpdateInProgress) {
+            [self getMoreStoriesForSection:indexPath.section];
+        }
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark UITableViewDataSource
-
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    
-    if ([identifier isEqualToString:@"LoadingMore"]) {
-        static NSString *CellIdentifier = @"Cell";
+
+    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
         
-        MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            if (self.errorMessage) {
+                cell.textLabel.text = self.errorMessage;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+            } else {
+                cell.textLabel.text = @"Load More...";
+            }
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+            
+            return cell;
         }
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-        cell.textLabel.text = @"Loading...";
-        cell.accessoryView = view;
-        [self getMoreStories];
-        return cell;
     }
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     return cell;
 }
 
@@ -96,10 +85,16 @@
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
-    } else if ([cell.reuseIdentifier isEqualToString:@"LoadingMore"]) {
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.accessoryView = view;
+    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgress) {
+            if (!cell.accessoryView) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            }
+        } else {
+            cell.accessoryView = nil;
+        }
     }
 }
 
@@ -107,33 +102,13 @@
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
-    if ([self numberOfStoriesForCategoryInSection:0] > indexPath.row) {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] > indexPath.row) {
         story = [self storyAtIndexPath:indexPath];
     }
     if (story) {
-        __block NSString *identifier = nil;
-#warning check if needed
-        //[self.managedObjectContext performBlockAndWait:^{
-            //MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-        
-        MITNewsStory *newsStory = story;
-            
-            if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-                if (newsStory.coverImage) {
-                    identifier = MITNewsStoryExternalCellIdentifier;
-                } else {
-                    identifier = MITNewsStoryExternalNoImageCellIdentifier;
-                }
-            } else if ([newsStory.dek length])  {
-                identifier = MITNewsStoryCellIdentifier;
-            } else {
-                identifier = MITNewsStoryNoDekCellIdentifier;
-            }
-       // }];
-        
-        return identifier;
-    } else if ([self numberOfStoriesForCategoryInSection:0]) {
-        return @"LoadingMore";
+        return [super reuseIdentifierForRowAtIndexPath:indexPath];
+    } else if ([self numberOfStoriesForCategoryInSection:indexPath.section]) {
+        return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
     }
@@ -143,48 +118,56 @@
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
-    if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
-        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
 }
 
-- (void)getMoreStories
+- (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        [self.dataSource loadMoreItemsForCategoryInSection:0
-                                                completion:^(NSError *error) {
-                                                    [self.tableView reloadData];
-                                                }];
+    if(!_storyUpdateInProgress && !self.errorMessage) {
+        _storyUpdateInProgress = YES;
+        [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+
+        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+            _storyUpdateInProgress = FALSE;
+            if (error) {
+                if (error.code == -1009) {
+                    self.errorMessage = @"No Internet Connection";
+                } else {
+                    self.errorMessage = @"Failed...";
+                }
+                if (self.navigationController.toolbarHidden) {
+                    
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:2
+                                                         target:self
+                                                       selector:@selector(clearFailAfterTwoSeconds)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                } else {
+                    self.errorMessage = nil;
+                }
+                [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+            }
+        }];
     }
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)clearFailAfterTwoSeconds
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+    self.errorMessage = nil;
+    [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
 }
 
-- (void)viewDidLoad
+- (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
 {
-    [super viewDidLoad];
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    // Do any additional setup after loading the view.
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
 }
 
 @end

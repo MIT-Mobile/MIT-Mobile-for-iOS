@@ -1,10 +1,11 @@
 #import <UIKit/UIKit.h>
+#import "MITCollectionViewGridLayout.h"
 
 @class MITNewsStory;
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
 
-@interface MITNewsGridViewController : UICollectionViewController
+@interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
 @property (nonatomic) NSUInteger numberOfStoriesPerCategory;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
@@ -20,4 +21,9 @@
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
+
+#pragma mark Subclass methods
+- (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
+- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
+- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 @end

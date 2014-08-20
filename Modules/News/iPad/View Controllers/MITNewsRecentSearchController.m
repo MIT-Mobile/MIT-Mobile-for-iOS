@@ -16,7 +16,6 @@
 @implementation MITNewsRecentSearchController
 
 #pragma mark - properties
-
 - (MITNewsModelController *)modelController
 {
     if(!_modelController) {
@@ -26,8 +25,39 @@
     return _modelController;
 }
 
-#pragma mark - Recent Add/Remove methods
+#pragma mark - View lifecycle
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
+    if ([self.recentResults count] == 0) {
+        self.clearButtonItem.enabled = NO;
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Recent Add/Remove methods
 - (IBAction)clearRecentsButtonClicked:(id)sender
 {
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
@@ -44,10 +74,6 @@
     NSError *error = nil;
     [self.modelController addRecentSearchItem:searchTerm error:error];
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
     self.clearButtonItem.enabled = YES;
 }
 
@@ -75,7 +101,6 @@
 }
 
 #pragma mark - Table View methods
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
@@ -84,7 +109,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
     
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     cell.textLabel.text = query.text;
@@ -106,33 +131,6 @@
     [self.searchController getResultsForString:query.text];
     [self filterResultsUsingString:query.text];
 
-}
-
-#pragma mark - View lifecycle
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-    if ([self.recentResults count] == 0) {
-        self.clearButtonItem.enabled = NO;
-    }
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

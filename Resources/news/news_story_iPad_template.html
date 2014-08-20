@@ -58,11 +58,13 @@
             #image a+a div { margin-top: 2px; }
             #body {line-height: 20px;color: #202020; margin-top: 14px;}
             .imageDescription {font-size:15px; line-height: 15px; margin: 0 0 0 8px;padding-top: 10; word-wrap:break-word; opacity:0.7;}
-            .imageCredit {font-size:14px; line-height: 14px; margin: 0 0 0 8px;padding-top: 0; word-wrap:break-word; opacity:0.6;}
+            .imageCredit {font-size:14px; line-height: 14px; margin: 0 0 0 8px;padding-top: 3; padding-bottom: 5; word-wrap:break-word; opacity:0.6;}
+            .imageSpace {padding-top: 8; margin: 0 0 0 0;}
             .gallery_image {margin-top: 14px;}
-            .gallery_image, .imageDescription, .imageCredit{
+            .gallery_image, .imageDescription, .imageCredit, .imageSpace{
                 float: right;
                 clear: right;
+                margin-left: 20px;
             }
             /* Resize embedded iframes for YouTube videos on News articles. */
             iframe {
@@ -87,6 +89,8 @@
             <a href="mitmobile://opengallery"><img class="gallery_image" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__"></a>
             <p class="imageDescription" style="width:__GALLERY_WIDTH__;">__GALLERY_DESCRIPTION__</p>
             <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
+            <p class="imageSpace" style="width:__GALLERY_WIDTH__;"> </p>
+            
             <p class="dek">__DEK__</p><div id="body">__BODY__</div>
         </div>
         <p class="horizontalRule">
@@ -95,23 +99,31 @@
     <!-- JS at the bottom instead of onload in order to do work before UIWebView slides into view -->
     <script type="text/javascript" charset="utf-8">
         // hide author if not set
-        var authorIsEmpty = (document.getElementsByClassName("author")[0].childNodes.length == 0);
-        if (authorIsEmpty) {
-            var creditNode = document.getElementsByClassName("credit")[0];
-            creditNode.parentElement.removeChild(creditNode);
-        }
-    
         var authorIsEmpty = (document.getElementsByClassName("gallery_credit")[0].childNodes.length == 0);
         if (authorIsEmpty) {
             var creditNode = document.getElementsByClassName("imageCredit")[0];
             creditNode.parentElement.removeChild(creditNode);
         }
+        var imageDescriptionIsEmpty = (document.getElementsByClassName("imageDescription")[0].childNodes.length == 0);
+        if (imageDescriptionIsEmpty) {
+            var imageDescriptionNode = document.getElementsByClassName("imageDescription")[0];
+            imageDescriptionNode.parentElement.removeChild(imageDescriptionNode);
+        }
+        var imageIsEmpty = (document.getElementsByClassName("gallery_image")[0].childNodes.length == 0);
+        if (imageIsEmpty) {
+        }
+    
+    
     
         var imageCount = __GALLERY_COUNT__;
         // remove #image block there are no images at all
         if (imageCount == 0) {
             var imageNode = document.getElementById("image");
             imageNode.parentElement.removeChild(imageNode);
+            
+            var imageNode = document.getElementsByClassName("imageSpace")[0];
+            imageDescriptionNode.parentElement.removeChild(imageNode);
+
         } else {
             document.getElementById("imageCount").innerHTML = imageCount + ((imageCount == 1) ? " image" : " images");
         }

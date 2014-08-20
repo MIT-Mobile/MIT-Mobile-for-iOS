@@ -7,33 +7,44 @@
 #import "MITNewsStoryViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "DDPopoverBackgroundView.h"
 #import "MITNewsStoriesDataSource.h"
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
 #import "MITNewsCustomWidthTableViewCell.h"
+#import "MITPopoverBackgroundView.h"
 
 @interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 
 @end
 
 @interface MITNewsSearchController()
-@property (strong, nonatomic) MITNewsRecentSearchController *recentSearchController;
+@property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
 
-- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
+@property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
+@property (nonatomic, weak) MITViewWithCenterText *messageView;
+@property (nonatomic, strong) NSString *errorMessage;
 
 @end
 
-@implementation MITNewsSearchController
+@implementation MITNewsSearchController {
+    BOOL _storyUpdateInProgress;
+}
 
 @synthesize recentSearchController = _recentSearchController;
 
-#pragma mark - Dynamic Properties
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+    }
+    
+    return self;
+}
 
+#pragma mark - Dynamic Properties
 - (MITNewsRecentSearchController *)recentSearchController
 {
     if(!_recentSearchController) {
@@ -56,7 +67,6 @@
 }
 
 #pragma mark - View lifecyle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -66,6 +76,7 @@
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
+    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 
     self.searchTableView.alpha = 0;
 }
@@ -75,32 +86,14 @@
     [super viewDidAppear:animated];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-
-}
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    
-    return self;
-}
-
 #pragma mark - SearchBar
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+- (void)searchBarCancelButtonClicked
 {
     [self hideSearchField];
 }
@@ -115,6 +108,8 @@
         self.searchTableView.alpha = 1;
         self.view.alpha = 1;
     }
+    self.messageActivityView.alpha = 1;
+
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -134,14 +129,14 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    searchBar.showsCancelButton = YES;
+    self.messageActivityView.alpha = .5;
     if ([searchBar.text isEqualToString:@""]) {
         self.searchTableView.alpha = 0;
     } else {
         self.searchTableView.alpha = .5;
     }
     [self removeNoResultsView];
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
     }
@@ -169,22 +164,20 @@
 }
 
 #pragma mark - search
-
 - (void)getResultsForString:(NSString *)searchTerm
 {
     [self removeNoResultsView];
     [self addLoadingView];
     [self clearTable];
     self.searchBar.text = searchTerm;
-    __block NSError *updateError = nil;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
     [self.dataSource refresh:^(NSError *error) {
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            
-            if (!updateError) {
-                updateError = error;
-            }
+            self.errorMessage = error.localizedDescription;
+            [self removeLoadingView];
+            [self addNoResultsView];
+
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [self removeLoadingView];
@@ -198,7 +191,6 @@
         }
     }];
     [self.searchBar resignFirstResponder];
-
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
     [UIView animateWithDuration:0.33
                           delay:0.
@@ -213,32 +205,54 @@
 
 - (void)getMoreStories
 {
-    __block NSError *updateError = nil;
-    if ([self.dataSource hasNextPage]) {
+    if ([self.dataSource hasNextPage] && !_storyUpdateInProgress) {
+        _storyUpdateInProgress = TRUE;
         [self.dataSource nextPage:^(NSError *error) {
+            _storyUpdateInProgress = FALSE;
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                
-                if (!updateError) {
-                    updateError = error;
+                self.errorMessage = error.localizedDescription;
+                if (self.navigationController.toolbarHidden) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:2
+                                                         target:self
+                                                       selector:@selector(clearFailAfterTwoSeconds)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                } else {
+                    UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                    [failedRefreshAlertView show];
+                    self.errorMessage = nil;
                 }
+                [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+
             } else {
+                self.errorMessage = nil;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.searchTableView reloadData];
                 }];
             }
         }];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }];
     }
 }
 
-#pragma mark - hide/show Recents
+- (void)clearFailAfterTwoSeconds
+{
+    self.errorMessage = nil;
+        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+}
 
+#pragma mark - hide/show Recents
 - (void)hideSearchRecents
 {
     if (self.recentSearchPopoverController != nil) {
         if (self.recentSearchController.confirmSheet == nil) {
-
+            
             [self.recentSearchPopoverController dismissPopoverAnimated:YES];
             self.recentSearchPopoverController = nil;
         }
@@ -255,15 +269,12 @@
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
-    recentSearchPopoverController.popoverBackgroundViewClass = [DDPopoverBackgroundView class];
-
-    [[DDPopoverBackgroundView class] setContentInset:0];
-    [[DDPopoverBackgroundView class] setTintColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:.8]];
+    recentSearchPopoverController.popoverBackgroundViewClass = [MITPopoverBackgroundView class];
     
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
-        
+    
 }
 
 - (void)hideSearchField
@@ -272,10 +283,10 @@
 }
 
 #pragma mark - Popover
-
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
+
     if (self.searchTableView.alpha == 0) {
         [self hideSearchField];
     }
@@ -288,32 +299,21 @@
 }
 
 #pragma mark - TableView
-
-
+#pragma mark UITableViewDataSource
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-
-    if ([identifier isEqualToString:@"LoadingMore"]) {
-        static NSString *CellIdentifier = @"Cell";
-        
-        MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[MITNewsCustomWidthTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-        cell.textLabel.text = @"Loading...";
-        cell.accessoryView = view;
-        [self getMoreStories];
-        return cell;
-    }
     
+    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    
+    if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
+        cell.textLabel.text = self.errorMessage;
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
+        cell.textLabel.text = @"Loading More...";
+    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
+        cell.textLabel.text = @"Load More...";
+    }
     return cell;
 }
 
@@ -331,8 +331,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-
-    if ([reuseIdentifier isEqualToString:@"LoadingMore"]) {
+    
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
@@ -366,7 +366,7 @@
         
         return identifier;
     } else if ([self.dataSource.objects count]) {
-        return @"LoadingMore";
+        return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
     }
@@ -376,10 +376,16 @@
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     
-    if ([cell.reuseIdentifier isEqualToString:@"LoadingMore"]) {
-        UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [view startAnimating];
-        cell.accessoryView = view;
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgress) {
+            if (!cell.accessoryView) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            }
+        } else {
+            cell.accessoryView = nil;
+        }
     } else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         
@@ -395,26 +401,54 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (!_storyUpdateInProgress) {
+            [self getMoreStories];
+        }
+    }
+        else {
+        MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
+        if (story) {
+            [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
+        }
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
-    MITNewsStoryViewController *storyDetailViewController = [storyBoard instantiateViewControllerWithIdentifier:@"NewsStoryView"];
-    storyDetailViewController.delegate = self;
+}
 
-    MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-    if (story) {
-        NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        managedObjectContext.parentContext = self.managedObjectContext;
-        storyDetailViewController.managedObjectContext = managedObjectContext;
-        storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    UIViewController *destinationViewController = [segue destinationViewController];
     
-        self.unwindFromStoryDetail = YES;
-        [self.navigationController pushViewController:storyDetailViewController animated:YES];
+    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
+    
+    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            
+            NSIndexPath *indexPath = sender;
+            
+            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+            storyDetailViewController.delegate = self;
+            MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
+            if (story) {
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                managedObjectContext.parentContext = self.managedObjectContext;
+                storyDetailViewController.managedObjectContext = managedObjectContext;
+                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                self.unwindFromStoryDetail = YES;
+            }
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    } else {
+        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
 }
 
 #pragma mark MITNewsStoryDetailPagingDelegate
-
-- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
+- (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
@@ -425,16 +459,12 @@
                 block(self.dataSource.objects[currentIndex +1], nil);
             }
         } else {
-            __block NSError *updateError = nil;
             if ([self.dataSource hasNextPage]) {
-
+                
                 [self.dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                         
-                        if (!updateError) {
-                            updateError = error;
-                        }
                     } else {
                         DDLogVerbose(@"refreshed data source %@",self.dataSource);
                         NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
@@ -455,38 +485,35 @@
 }
 
 #pragma mark No Results / Loading More View
-
 - (void)addNoResultsView
 {
-    NSUInteger tag = (int)"noResultsView";
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
     noResultsView.frame = self.searchTableView.frame;
-    noResultsView.tag = tag;
+    if (self.errorMessage) {
+        noResultsView.overviewText.text = self.errorMessage;
+        self.errorMessage = nil;
+    }
     [self.view addSubview:noResultsView];
+    self.messageView = noResultsView;
 }
 
 - (void)removeNoResultsView
 {
-    UIView *view = [self.view viewWithTag:(int)"noResultsView"];
-    if (view) {
-        [view removeFromSuperview];
-    }
+    [self.messageView removeFromSuperview];
+    self.messageView = nil;
 }
 
 - (void)addLoadingView
 {
-    NSUInteger tag = (int)"loadingActivityView";
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
     loadingActivityView.frame = self.searchTableView.frame;
-    loadingActivityView.tag = tag;
     [self.view addSubview:loadingActivityView];
+    self.messageActivityView = loadingActivityView;
 }
 
 - (void)removeLoadingView
 {
-    UIView *view = [self.view viewWithTag:(int)"loadingActivityView"];
-    if (view) {
-        [view removeFromSuperview];
-    }
+    [self.messageActivityView removeFromSuperview];
+    self.messageActivityView = nil;
 }
 @end
