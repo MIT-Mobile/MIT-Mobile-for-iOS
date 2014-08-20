@@ -87,7 +87,7 @@
     [self updateNavigationItem:YES];
 }
 
-- (void)reloadViewItems:(UIRefreshControl *)control;
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 {
     if (!_storyUpdateInProgress) {
 
@@ -97,15 +97,24 @@
 
             _storyUpdateInProgress = NO;
             if (error) {
-                if (control) {
-                    [control endRefreshing];
-                    UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                    [failedRefreshAlertView show];
+                if (refreshControl) {
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
                 }
             } else {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self setRefreshStatusUpdated];
-                    [control endRefreshing];
+                    [refreshControl endRefreshing];
                     if (self.activeViewController == self.gridViewController) {
                         [self.gridViewController.collectionView reloadData];
                     } else if (self.activeViewController == self.listViewController) {
@@ -115,6 +124,13 @@
             }
         }];
     }
+}
+
+- (void)endRefreshing
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl endRefreshing];
+    }];
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
