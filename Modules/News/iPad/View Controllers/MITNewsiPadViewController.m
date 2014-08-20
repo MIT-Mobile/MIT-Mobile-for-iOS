@@ -140,8 +140,9 @@
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         refreshControl.attributedTitle = self.refreshControl.attributedTitle;
+        [gridViewController.collectionView addSubview:refreshControl];
         self.refreshControl = refreshControl;
-        [gridViewController.collectionView addSubview:self.refreshControl];
+
     }
 
     return gridViewController;
@@ -166,8 +167,9 @@
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
         refreshControl.attributedTitle = self.refreshControl.attributedTitle;
+        [listViewController.tableView addSubview:refreshControl];
+        self.listViewController.refreshControl = refreshControl;
         self.refreshControl = refreshControl;
-        [listViewController.tableView addSubview:self.refreshControl];
     }
     
     return listViewController;
@@ -393,24 +395,36 @@
         });
     }
     [self reloadItems:^(NSError *error) {
-        [refreshControl endRefreshing];
+        //[refreshControl endRefreshing];
         if (error) {
             DDLogWarn(@"update failed; %@",error);
             if (refreshControl) {
-                UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                [failedRefreshAlertView show];
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
             }
             if(!self.lastUpdated) {
                 [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
             } else {
-                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                    toDate:[NSDate date]];
-                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+
             }
         } else {
             if (!self.lastUpdated) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    self.lastUpdated = [NSDate date];
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                        toDate:[NSDate date]];
+                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                     [self.refreshControl endRefreshing];
                 });
             }
@@ -418,10 +432,26 @@
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
             NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+            [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [NSTimer scheduledTimerWithTimeInterval:.5
+                                                 target:self
+                                               selector:@selector(endRefreshing)
+                                               userInfo:nil
+                                                repeats:NO];
+                [refreshControl endRefreshing];
+
+            }];
         }
         
     }];
+}
+
+- (void)endRefreshing
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.refreshControl endRefreshing];
+    });
 }
 
 @end
