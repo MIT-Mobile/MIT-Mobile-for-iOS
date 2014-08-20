@@ -31,4 +31,5 @@
 - (void)removeMealsObject:(MITDiningMeal *)value;
 - (void)addMeals:(NSOrderedSet *)values;
 - (void)removeMeals:(NSOrderedSet *)values;
+
 @end

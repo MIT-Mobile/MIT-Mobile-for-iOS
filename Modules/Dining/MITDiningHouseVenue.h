@@ -33,4 +33,5 @@
 - (void)removeMealsByDayObject:(MITDiningHouseDay *)value;
 - (void)addMealsByDay:(NSOrderedSet *)values;
 - (void)removeMealsByDay:(NSOrderedSet *)values;
+
 @end

@@ -27,7 +27,6 @@
     
     [self setupFetchedResultsController];
     [self.fetchedResultsController performFetch:nil];
-
 }
 
 - (void)didReceiveMemoryWarning
@@ -134,7 +133,6 @@
     _fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
-    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
