@@ -74,5 +74,4 @@
 - (void)resetURL DEPRECATED_ATTRIBUTE; // reset the URL, (i.e. path and query to empty strings)
 
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen:(BOOL)shouldOpen; // Called when a push notification arrives
-- (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
 @end

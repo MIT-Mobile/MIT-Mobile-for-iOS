@@ -96,8 +96,6 @@
                     [moduleNotifications addObject:notification];
                 }
             }
-
-            [module handleUnreadNotificationsSync:moduleNotifications];
         }
 
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
