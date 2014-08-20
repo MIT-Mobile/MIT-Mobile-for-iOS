@@ -95,33 +95,36 @@
 
 - (NSOrderedSet*)storiesUsingManagedObjectContext:(NSManagedObjectContext*)context
 {
-    if (!self.objectIdentifiers) {
+    if (!([self _canCacheRequest] || [self.objectIdentifiers count])) {
         return nil;
     } else {
-        const NSArray *objectIdentifiers = [self.objectIdentifiers array];
-
-        NSMutableArray *storyObjects = [[NSMutableArray alloc] init];
-        [context performBlockAndWait:^{
-            [objectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-                NSError *error = nil;
-                NSManagedObject *object = [context existingObjectWithID:objectID error:&error];
-
-                if (!object) {
-                    DDLogInfo(@"failed to get existing object for ID %@: %@", objectID,error);
-                } else {
-                    [storyObjects addObject:object];
-                }
-            }];
-        }];
+        NSArray *storyObjects = [context transferManagedObjects:self.fetchedResultsController.fetchedObjects];
 
         return [NSOrderedSet orderedSetWithArray:storyObjects];
+    }
+}
+
+- (BOOL)_canCacheRequest
+{
+    if (self.isFeaturedStorySource) {
+        return NO;
+    } else if ([self.query length]) {
+        return NO;
+    } else {
+        return YES;
     }
 }
 
 - (NSFetchRequest*)_fetchRequestForDataSource
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITNewsStory entityName]];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+
+    if (![self _canCacheRequest]) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+    } else if (self.categoryIdentifier) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category.identifier == %@", self.categoryIdentifier];
+    }
+
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                      [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
                                      [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
@@ -154,8 +157,11 @@
 - (void)setObjectIdentifiers:(NSOrderedSet *)objectIdentifiers
 {
     if (![_objectIdentifiers isEqualToOrderedSet:objectIdentifiers]) {
-        [self resetFetchedResultsController];
         _objectIdentifiers = [objectIdentifiers copy];
+
+        if (![self _canCacheRequest]) {
+            [self resetFetchedResultsController];
+        }
     }
 }
 
@@ -238,6 +244,7 @@
 
         [[MITNewsModelController sharedController] storiesInCategory:category query:query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
     }
+
 }
 
 - (void)_responseFailedWithError:(NSError*)error completion:(void(^)())block
