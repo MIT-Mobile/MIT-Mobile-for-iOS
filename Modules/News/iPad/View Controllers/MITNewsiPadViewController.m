@@ -395,22 +395,21 @@
         });
     }
     [self reloadItems:^(NSError *error) {
-        //[refreshControl endRefreshing];
         if (error) {
             DDLogWarn(@"update failed; %@",error);
             if (refreshControl) {
-                    if (error.code == -1009) {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
-                    } else {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
-                    }
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                if (error.code == -1009) {
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                } else {
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                }
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [NSTimer scheduledTimerWithTimeInterval:.5
+                                                     target:self
+                                                   selector:@selector(endRefreshing)
+                                                   userInfo:nil
+                                                    repeats:NO];
+                }];
             }
             if(!self.lastUpdated) {
                 [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
