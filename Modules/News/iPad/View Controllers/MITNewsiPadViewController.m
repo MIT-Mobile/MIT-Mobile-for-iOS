@@ -202,46 +202,6 @@
 {
     [self setPresentationStyle:style animated:NO];
 }
-- (void)reloadViewItems:(UIRefreshControl *)refreshControl
-{
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-    if (!refreshControl && !self.lastUpdated) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.refreshControl beginRefreshing];
-        });
-    }
-    [self reloadItems:^(NSError *error) {
-        [refreshControl endRefreshing];
-        if (error) {
-            DDLogWarn(@"update failed; %@",error);
-            if (refreshControl) {
-                UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                [failedRefreshAlertView show];
-            }
-            if(!self.lastUpdated) {
-                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
-            } else {
-                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                    toDate:[NSDate date]];
-                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-            }
-        } else {
-            if (!self.lastUpdated) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.refreshControl endRefreshing];
-                });
-            }
-            self.lastUpdated = [NSDate date];
-            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                toDate:[NSDate date]];
-            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-        }
-
-    }];
-}
-
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
     NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
@@ -421,6 +381,47 @@
     UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
     [parentViewController.navigationItem setBackBarButtonItem:nil];
     [parentViewController.navigationItem setBackBarButtonItem:item];
+}
+
+#pragma mark reloadViewItems
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl
+{
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+    if (!refreshControl && !self.lastUpdated) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.refreshControl beginRefreshing];
+        });
+    }
+    [self reloadItems:^(NSError *error) {
+        [refreshControl endRefreshing];
+        if (error) {
+            DDLogWarn(@"update failed; %@",error);
+            if (refreshControl) {
+                UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
+                [failedRefreshAlertView show];
+            }
+            if(!self.lastUpdated) {
+                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
+            } else {
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+            }
+        } else {
+            if (!self.lastUpdated) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.refreshControl endRefreshing];
+                });
+            }
+            self.lastUpdated = [NSDate date];
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+        }
+        
+    }];
 }
 
 @end
