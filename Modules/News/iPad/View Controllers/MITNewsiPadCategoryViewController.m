@@ -25,8 +25,8 @@
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic,strong) NSDate *lastUpdated;
-@property (nonatomic, weak) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @end
 
@@ -72,7 +72,7 @@
     }
     
     if (!self.lastUpdated) {
-        [self reloadViewItems:nil];
+        [self reloadViewItems:self.refreshControl];
     }
     
     self.lastUpdated = self.previousLastUpdated;
@@ -82,93 +82,8 @@
                                                                             toDate:[NSDate date]];
         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
         [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-        self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:updateText];
     }
     [self updateNavigationItem:YES];
-}
-
-- (void)reloadViewItems:(UIRefreshControl *)refreshControl;
-{
-    if (!_storyUpdateInProgress) {
-
-        _storyUpdateInProgress = YES;
-        [self setRefreshStatusUpdating];
-        [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
-
-            _storyUpdateInProgress = NO;
-            if (error) {
-                if (refreshControl) {
-                    if (error.code == -1009) {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
-                    } else {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
-                    }
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
-                }
-            } else {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self setRefreshStatusUpdated];
-                    [refreshControl endRefreshing];
-                    if (self.activeViewController == self.gridViewController) {
-                        [self.gridViewController.collectionView reloadData];
-                    } else if (self.activeViewController == self.listViewController) {
-                        [self.listViewController.tableView reloadData];
-                    }
-                }];
-            }
-        }];
-    }
-}
-
-- (void)endRefreshing
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.refreshControl endRefreshing];
-    }];
-}
-
-- (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
-{
-    if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
-        [self setRefreshStatusUpdating];
-        _storyUpdateInProgress = YES;
-        [self loadMoreItemsForCategoryInSection:section
-                                     completion:^(NSError *error) {
-                                         _storyUpdateInProgress = FALSE;
-                                         
-                                         if (error) {
-                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                                             if (!self.navigationController.toolbarHidden) {
-                                                 UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                                                 [failedRefreshAlertView show];
-                                             }
-                                         } else {
-                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 if (self.activeViewController == self.gridViewController) {
-                                                     [self.gridViewController.collectionView reloadData];
-                                                 } else if (self.activeViewController == self.listViewController) {
-                                                     [self.listViewController.tableView reloadData];
-                                                 }
-                                             }];
-                                         }
-                                         [self setRefreshStatusUpdated];
-                                         if (block) {
-                                             block(error);
-                                         }
-                                         return;
-                                     }];
-    } else {
-        if (block) {
-            block(nil);
-        }
-    }
 }
 
 - (MITNewsCategoryGridViewController*)gridViewController
@@ -186,6 +101,7 @@
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
         [gridViewController.collectionView addSubview:refreshControl];
         self.refreshControl = refreshControl;
     }
@@ -208,7 +124,9 @@
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
         [refreshControl addTarget:self action:@selector(reloadViewItems:)
                  forControlEvents:UIControlEventValueChanged];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
         [listViewController.tableView addSubview:refreshControl];
+        self.listViewController.refreshControl = refreshControl;
         self.refreshControl = refreshControl;
     }
     
@@ -259,20 +177,16 @@
         UIViewController *fromViewController = self.activeViewController;
         UIViewController *toViewController = nil;
 
-        NSAttributedString *refreshControlTitle = self.refreshControl.attributedTitle;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
         } else {
             toViewController = self.listViewController;
         }
         // Needed to fix alignment of refreshcontrol text
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
             [self.refreshControl endRefreshing];
-        });
-        self.refreshControl.attributedTitle = refreshControlTitle;
-        
-        
+        }];
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
         toViewController.view.frame = viewFrame;
@@ -326,31 +240,6 @@
                      } completion:^(BOOL finished) {
                      }];
     [self.searchBar becomeFirstResponder];
-}
-
-#pragma mark UI Helper
-- (void)setRefreshStatusUpdating
-{
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-}
-
-- (void)setRefreshStatusUpdated
-{
-    self.lastUpdated = [NSDate date];
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                      toDate:[NSDate date]];
-    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-
-}
-
-- (void)refreshRefreshStatus
-{
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                        toDate:[NSDate date]];
-    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-
 }
 
 #pragma mark UIAlertViewDelegate
@@ -435,6 +324,102 @@
     UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
     [parentViewController.navigationItem setBackBarButtonItem:nil];
     [parentViewController.navigationItem setBackBarButtonItem:item];
+}
+
+#pragma mark Story Refreshing
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl;
+{
+    if (!_storyUpdateInProgress) {
+        _storyUpdateInProgress = YES;
+        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
+            _storyUpdateInProgress = NO;
+            if (error) {
+                DDLogWarn(@"update failed; %@",error);
+                if (refreshControl.refreshing) {
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
+
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
+
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                }
+            } else {
+                self.lastUpdated = [NSDate date];
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+
+                if (refreshControl.refreshing) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                }
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (self.activeViewController == self.gridViewController) {
+                        [self.gridViewController.collectionView reloadData];
+                    } else if (self.activeViewController == self.listViewController) {
+                        [self.listViewController.tableView reloadData];
+                    }
+                }];
+            }
+        }];
+    }
+}
+
+- (void)endRefreshing
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl endRefreshing];
+    }];
+}
+
+- (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
+{
+    if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
+        _storyUpdateInProgress = YES;
+        [self loadMoreItemsForCategoryInSection:section
+                                     completion:^(NSError *error) {
+                                         _storyUpdateInProgress = FALSE;
+                                         
+                                         if (error) {
+                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                             
+                                         } else {
+                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                 if (self.activeViewController == self.gridViewController) {
+                                                     [self.gridViewController.collectionView reloadData];
+                                                 } else if (self.activeViewController == self.listViewController) {
+                                                     [self.listViewController.tableView reloadData];
+                                                 }
+                                             }];
+                                         }
+                                         if (block) {
+                                             block(error);
+                                         }
+                                         return;
+                                     }];
+    } else {
+        if (block) {
+            block(nil);
+        }
+    }
 }
 
 @end
