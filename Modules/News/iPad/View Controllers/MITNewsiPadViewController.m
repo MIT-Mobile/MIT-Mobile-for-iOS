@@ -142,7 +142,6 @@
         refreshControl.attributedTitle = self.refreshControl.attributedTitle;
         [gridViewController.collectionView addSubview:refreshControl];
         self.refreshControl = refreshControl;
-
     }
 
     return gridViewController;
@@ -224,11 +223,11 @@
             toViewController = self.listViewController;
         }
         // Needed to fix alignment of refreshcontrol text
-      if (fromViewController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.refreshControl beginRefreshing];
-            [self.refreshControl endRefreshing];
-        });
+        if (fromViewController) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+                [self.refreshControl endRefreshing];
+            }];
         }
 
         const CGRect viewFrame = self.containerView.bounds;
@@ -390,9 +389,9 @@
 {
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
     if (!refreshControl && !self.lastUpdated) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
-        });
+        }];
     }
     [self reloadItems:^(NSError *error) {
         if (error) {
@@ -418,28 +417,28 @@
             }
         } else {
             if (!self.lastUpdated) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     self.lastUpdated = [NSDate date];
                     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                         toDate:[NSDate date]];
                     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                     [self.refreshControl endRefreshing];
-                });
+                }];
             }
             self.lastUpdated = [NSDate date];
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
             NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
             [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [NSTimer scheduledTimerWithTimeInterval:.5
                                                  target:self
                                                selector:@selector(endRefreshing)
                                                userInfo:nil
                                                 repeats:NO];
-                [refreshControl endRefreshing];
-
+                self.refreshControl = refreshControl;
             }];
         }
         
@@ -448,9 +447,9 @@
 
 - (void)endRefreshing
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.refreshControl endRefreshing];
-    });
+    }];
 }
 
 @end
