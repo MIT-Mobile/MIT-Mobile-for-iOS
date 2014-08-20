@@ -63,6 +63,8 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
     if (block) {
         block(nil);
     }
+
+    return NO;
 }
 
 - (void)refresh:(void(^)(NSError *error))block
