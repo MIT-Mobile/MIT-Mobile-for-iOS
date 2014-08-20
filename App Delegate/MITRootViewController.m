@@ -1,19 +1,17 @@
 #import "MITRootViewController.h"
 #import "ECSlidingViewController.h"
 #import "MITModule.h"
-#import "MITLauncher.h"
-#import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
 #import "MITNavigationController.h"
 
 #import "MITAdditions.h"
 
-@interface MITRootViewController () <MITLauncherDataSource,MITLauncherDelegate>
+@interface MITRootViewController () <ECSlidingViewControllerDelegate,ECSlidingViewControllerLayout,UITableViewDataSource,UITableViewDelegate>
 @property (nonatomic,strong) NSArray *availableModules;
 @property (nonatomic,weak) MITModule *lastSelectedModule;
 
-@property (nonatomic,weak) ECSlidingViewController *rootDrawerViewController;
-@property (nonatomic,weak) UITableViewController *moduleListViewController;
+@property (nonatomic,weak) ECSlidingViewController *slidingViewController;
+@property (nonatomic,weak) UITableViewController *leftDrawerViewController;
 @end
 
 @implementation MITRootViewController
@@ -42,17 +40,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     if (!self.lastSelectedModule) {
         [self _presentModule:[self.modules firstObject] animated:animated];
-    }
-}
-
-#pragma mark Drawer interface specific method
-- (void)setLeftDrawerVisible:(BOOL)visible animated:(BOOL)animated
-{
-    if (self.rootDrawerViewController) {
-        [self.rootDrawerViewController anchorTopViewToRightAnimated:animated onComplete:nil];
     }
 }
 
@@ -69,43 +59,26 @@
 
 - (void)didChangeAvailableModules
 {
-    if (self.rootNavigationViewController) {
-        [self.moduleSpringboardViewController.collectionView reloadData];
-    } else if (self.rootDrawerViewController) {
-        [self.moduleListViewController.tableView reloadData];
-    }
+    [self.leftDrawerViewController.tableView reloadData];
 }
 
 - (void)_presentModule:(MITModule*)module animated:(BOOL)animated
 {
-    if (style == MITInterfaceStyleDrawer) {
-        UIViewController *moduleViewController = [module homeViewController];
+    UIViewController *moduleViewController = [module homeViewController];
 
-        NSSet *navigationViewControllerClasses = [NSSet setWithArray:@[[UINavigationController class],[UISplitViewController class],[UITabBarController class]]];
-        __block BOOL usesModuleHomeViewControllerDirectly = NO;
-        [navigationViewControllerClasses enumerateObjectsUsingBlock:^(Class klass, BOOL *stop) {
-            if ([moduleViewController isKindOfClass:klass]) {
-                usesModuleHomeViewControllerDirectly = YES;
-                (*stop) = YES;
-            }
-        }];
-
-        if (usesModuleHomeViewControllerDirectly) {
-
-        } else {
-
+    NSSet *navigationViewControllerClasses = [NSSet setWithArray:@[[UINavigationController class],[UISplitViewController class],[UITabBarController class]]];
+    __block BOOL usesModuleHomeViewControllerDirectly = NO;
+    [navigationViewControllerClasses enumerateObjectsUsingBlock:^(Class klass, BOOL *stop) {
+        if ([moduleViewController isKindOfClass:klass]) {
+            usesModuleHomeViewControllerDirectly = YES;
+            (*stop) = YES;
         }
-    } else if (style == MITInterfaceStyleSpringboard) {
-        UIViewController *moduleHomeController = module.homeViewController;
-        if ([self.rootNavigationViewController.viewControllers containsObject:moduleHomeController]) {
-            [self.rootNavigationViewController popToViewController:moduleHomeController animated:animated];
-        } else {
-            [self.rootNavigationViewController popToViewController:self.moduleSpringboardViewController animated:NO];
-            [self.rootNavigationViewController pushViewController:moduleHomeController animated:animated];
-        }
+    }];
+
+    if (usesModuleHomeViewControllerDirectly) {
+
     } else {
-        NSString *message = [NSString stringWithFormat:@"unsupported interface style %d",style];
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+
     }
 
     self.lastSelectedModule = module;
@@ -129,65 +102,47 @@
     }];
 
     if (newActiveModule) {
-        [self _presentModule:newActiveModule forInterfaceStyle:self.interfaceStyle animated:animated];
+        [self _presentModule:newActiveModule animated:animated];
         return YES;
     } else {
         return NO;
     }
 }
 
-- (void)_presentViewControllerForDrawerInterface:(BOOL)animated completion:(void (^)(BOOL finished))block
+#pragma mark Lazy Getters
+- (UITableViewController*)leftDrawerViewController
 {
-    if (self.rootDrawerViewController) {
-        if (self.interfaceStyle == MITInterfaceStyleDrawer) {
-            // We are already in the correct interface and the drawer already exists.
-            // There's nothing left to do so just bail at this point.
-            // Reasoning: Both root-level view controllers are weak references. If a reference
-            //  exists, it is a child view controller and should be considered 'active'. If both
-            //  the root view controllers exist, we have a serious problem and anything we do
-            //  at this point will only make it worse.
-            return;
-        } else if (self.interfaceStyle == MITInterfaceStyleSpringboard) {
-            // Big trouble. Somehow we are in the springboard interface style but a drawer
-            // view controller exists. There is no safe way to recover from this since we don't know
-            // what sort of state we are dealing with. Fire off an exception to let someone know that
-            // there was a serious screw up.
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"the springboard interface style is active but a drawer view controller already exists" userInfo:nil];
-        }
-    } else {
+    UITableViewController *tableViewController = _leftDrawerViewController;
 
-
-        [self _transitionFromViewController:self.rootNavigationViewController toViewController:self.rootDrawerViewController animated:YES completion:block];
+    if (!tableViewController) {
+        tableViewController = [[UITableViewController alloc] init];
+        tableViewController.tableView.delegate = self;
+        tableViewController.tableView.dataSource = self;
     }
 }
 
-- (void)willTransitionToInterfaceStyle:(MITInterfaceStyle)newStyle animated:(BOOL)animated
+- (ECSlidingViewController*)slidingViewController
 {
-    // Default implementation does nothing
-}
 
-- (void)didTransitionFromInterfaceStyle:(MITInterfaceStyle)oldStyle animated:(BOOL)animated
-{
-    // Default implementation does nothing
 }
-
 
 #pragma mark Delegation
-#pragma mark MITLauncherDataSource
-- (NSUInteger)numberOfItemsInLauncher:(MITLauncherGridViewController *)launcher
+#pragma mark UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [self.modules count];
 }
 
-- (MITModule*)launcher:(MITLauncherGridViewController *)launcher moduleAtIndexPath:(NSIndexPath *)index
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.modules[index.row];
+    
 }
 
-#pragma mark MITLauncherDelegate
-- (void)launcher:(MITLauncherGridViewController *)launcher didSelectModuleAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self _presentModule:self.modules[indexPath.row] forInterfaceStyle:self.interfaceStyle animated:YES];
-}
+#pragma mark UITableViewDelegate
 
 @end

@@ -1,5 +1,4 @@
 #import "MITLauncherListViewController.h"
-#import "MITLauncher.h"
 #import "MITLauncherListViewCell.h"
 
 static NSString* const MITLauncherModuleListCellIdentifier = @"LauncherModuleListCell";
@@ -66,16 +65,5 @@ static NSString* const MITLauncherModuleListNibName = @"LauncherModuleListCell";
     [self.delegate launcher:self didSelectModuleAtIndexPath:indexPath];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

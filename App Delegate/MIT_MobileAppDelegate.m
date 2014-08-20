@@ -34,9 +34,6 @@
 #import "ECSlidingViewController.h"
 #import "MITTouchstoneController.h"
 
-#import "MITLauncher.h"
-#import "MITLauncherGridViewController.h"
-#import "MITLauncherListViewController.h"
 #import "MITRootViewController.h"
 
 #import "MITShuttleStopNotificationManager.h"
@@ -48,9 +45,7 @@
 - (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
 @end
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,MITLauncherDataSource,MITLauncherDelegate>
-@property (nonatomic,strong) MITLauncherGridViewController *launcherViewController;
-
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
@@ -638,7 +633,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     self.window = window;
 }
-
+/*
 - (UIViewController*)createRootViewControllerForPadIdiom
 {
     MITLauncherListViewController *launcherViewController = [[MITLauncherListViewController alloc] init];
@@ -702,7 +697,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     _topNavigationController = navigationController;
     return navigationController;
-}
+}*/
 
 #pragma mark Application modules helper methods
 - (UIViewController*)rootViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
