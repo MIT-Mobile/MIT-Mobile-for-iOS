@@ -24,6 +24,6 @@
 
 @protocol MITNewsStoryViewControllerDelegate <NSObject>
 
-- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block;
+- (void)storyAfterStory:(MITNewsStory*)story completion:(void(^)(MITNewsStory *nextStory, NSError *error))block;
 
 @end

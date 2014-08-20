@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rS3-R9-Ivy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rS3-R9-Ivy">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -267,82 +267,57 @@
                             <constraint firstAttribute="trailing" secondItem="aQO-aR-W6l" secondAttribute="trailing" id="b7b-aI-5nS"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="ZAR-Fy-hRa"/>
+                    <navigationItem key="navigationItem" id="ZAR-Fy-hRa">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="3Xw-yt-gem"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="containerView" destination="aQO-aR-W6l" id="WHW-UM-52T"/>
                         <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="LJH-M1-aqG"/>
-                        <segue destination="4LW-qO-0Fw" kind="push" identifier="showCategoryDetail" id="BuS-Z8-X71"/>
+                        <segue destination="PTD-Kx-SK1" kind="push" identifier="showCategory" id="m8c-jl-0kX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m70-gP-nSu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="641" y="206"/>
         </scene>
-        <!--News Category View Controller-->
-        <scene sceneID="UOR-L4-bbH">
+        <!--Newsi Pad Category View Controller-->
+        <scene sceneID="C3T-aa-yTu">
             <objects>
-                <tableViewController storyboardIdentifier="NewsStoriesViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="4LW-qO-0Fw" customClass="MITNewsCategoryViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="N1L-vK-gev">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LoadMoreCell" textLabel="Vs1-QR-32D" rowHeight="44" style="IBUITableViewCellStyleDefault" id="HqX-Mq-js9">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="HqX-Mq-js9" id="n5q-nQ-vnf">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Load More…" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Vs1-QR-32D">
-                                            <rect key="frame" x="15" y="0.0" width="290" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <color key="textColor" red="0.66274509803921566" green="0.023529411764705882" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="4LW-qO-0Fw" id="ORz-Xk-woE"/>
-                            <outlet property="delegate" destination="4LW-qO-0Fw" id="aOB-xf-Aas"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="YZZ-bQ-JNd">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="jsg-Cn-66o">
-                            <connections>
-                                <action selector="searchButtonTapped:" destination="4LW-qO-0Fw" id="eKr-8i-xzb"/>
-                            </connections>
-                        </barButtonItem>
+                <viewController id="PTD-Kx-SK1" customClass="MITNewsiPadCategoryViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5NI-HX-igS"/>
+                        <viewControllerLayoutGuide type="bottom" id="xef-YA-Z7G"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="u2B-wE-a0U">
+                        <rect key="frame" x="0.0" y="64" width="320" height="460"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GSa-uK-WTx">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="GSa-uK-WTx" firstAttribute="leading" secondItem="u2B-wE-a0U" secondAttribute="leading" id="9Nj-7k-7Wl"/>
+                            <constraint firstItem="xef-YA-Z7G" firstAttribute="top" secondItem="GSa-uK-WTx" secondAttribute="bottom" id="beg-1a-vaw"/>
+                            <constraint firstItem="GSa-uK-WTx" firstAttribute="top" secondItem="5NI-HX-igS" secondAttribute="bottom" id="cBm-gU-Tzq"/>
+                            <constraint firstAttribute="trailing" secondItem="GSa-uK-WTx" secondAttribute="trailing" id="g2m-6u-J3y"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <navigationItem key="navigationItem" id="lUn-CY-3po">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="doS-49-mbU"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="searchDisplayController" destination="9eG-2c-rZJ" id="pei-YN-Nak"/>
-                        <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="1ee-gP-Mga"/>
+                        <outlet property="containerView" destination="GSa-uK-WTx" id="AwY-zr-nnk"/>
+                        <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="C5x-79-Tya"/>
                     </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3yq-dW-7Ss" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="9eG-2c-rZJ">
-                    <connections>
-                        <outlet property="delegate" destination="4LW-qO-0Fw" id="mxJ-69-XZi"/>
-                        <outlet property="searchBar" destination="Sao-Bh-wmX" id="ti5-YR-qYH"/>
-                        <outlet property="searchContentsController" destination="4LW-qO-0Fw" id="Ejq-TW-2Ax"/>
-                        <outlet property="searchResultsDataSource" destination="4LW-qO-0Fw" id="sUl-DA-Ekv"/>
-                        <outlet property="searchResultsDelegate" destination="4LW-qO-0Fw" id="5dW-n0-6Ke"/>
-                    </connections>
-                </searchDisplayController>
-                <searchBar contentMode="redraw" id="Sao-Bh-wmX">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="4LW-qO-0Fw" id="IjL-1h-mcY"/>
-                    </connections>
-                </searchBar>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x8J-Wn-6il" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1192" y="578"/>
+            <point key="canvasLocation" x="1102" y="519"/>
         </scene>
     </scenes>
     <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>

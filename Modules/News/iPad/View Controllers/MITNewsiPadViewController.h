@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section;
 - (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
 - (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section;
+- (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
 
 @required
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController;

@@ -125,12 +125,6 @@
             self.nextStoryImageHeightConstraint.constant = 60;
             self.nextStoryImageWidthConstraint.constant = 90;
             self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
-            
-            if (self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant + self.nextStoryDateBottomVerticalConstraint.constant > self.nextStoryView.frame.size.height) {
-                
-                self.nextStoryDateBottomVerticalConstraint.constant = (self.nextStoryImageView.frame.origin.y + self.nextStoryImageHeightConstraint.constant) - self.nextStoryView.frame.size.height + self.originalNextStoryDateBottomVerticalConstraint * 2;
-            }
-            
         } else {
             self.nextStoryImageHeightConstraint.constant = 0;
             self.nextStoryImageWidthConstraint.constant = 0;
@@ -190,6 +184,8 @@
 
         [self.managedObjectContext performBlockAndWait:^{
             viewController.galleryImages = [self.story.galleryImages array];
+            viewController.storyLink = self.story.sourceURL;
+            viewController.storyTitle = self.story.title;
         }];
     }
 }
@@ -379,7 +375,7 @@
 
 - (IBAction)touchNextStoryView:(id)sender
 {
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
     
     [self setStory:nextStory];
@@ -393,9 +389,9 @@
         }];
 }
 
-- (void)storyAfterStory:(MITNewsStory*)story return:(void(^)(MITNewsStory *nextStory, NSError *error))block
+- (void)storyAfterStory:(MITNewsStory*)story completion:(void(^)(MITNewsStory *nextStory, NSError *error))block
 {
-    [self.delegate storyAfterStory:story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self.delegate storyAfterStory:story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (block) {
             block(nextStory, error);
         }
@@ -409,7 +405,7 @@
     self.nextStoryDekLabel.text = nil;
     self.nextStoryDateLabel.text = nil;
     self.nextStoryNextStoryLabel.text = nil;
-    [self storyAfterStory:self.story return:^(MITNewsStory *nextStory, NSError *error) {
+    [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
             __block NSString *title = nil;
             __block NSString *dek = nil;

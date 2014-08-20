@@ -20,7 +20,6 @@
 #import "MITNewsiPadViewController.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
-static NSUInteger MITNewsViewControllerHeightOffset = 64;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
@@ -32,12 +31,12 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @end
 
 @implementation MITNewsListViewController
+
 #pragma mark UI Element text attributes
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     return [self initWithNibName:nibNameOrNil bundle:nibBundleOrNil managedObjectContext:nil];
 }
-
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil managedObjectContext:(NSManagedObjectContext*)context
 {
@@ -53,7 +52,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
     self.maximumNumberOfStoriesPerCategory = MITNewsDefaultNumberOfFeaturedStories;
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
@@ -176,19 +174,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
 
-        CGRect headerRect = [self.tableView convertRect:[self.tableView rectForHeaderInSection:sectionNumber]
-                                                 toView:[self.tableView superview]];
-
-        if( headerRect.origin.y <= MITNewsViewControllerHeightOffset )
-        {
-            // grey color
-#warning gray color needed?
-            //headerView.containerView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1];
-        }
-        else
-        {
-            headerView.containerView.backgroundColor = [UIColor whiteColor];
-        }
+        headerView.containerView.backgroundColor = [UIColor whiteColor];
 
         sectionNumber++;
     }

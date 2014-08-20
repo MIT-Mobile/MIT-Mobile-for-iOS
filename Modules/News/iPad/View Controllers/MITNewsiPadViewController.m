@@ -39,17 +39,19 @@
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) UIView *searchBarWrapper;
 
 @property (nonatomic) NSUInteger currentDataSourceIndex;
+@property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 #pragma mark Data Source
-@property (nonatomic,copy) NSArray *categories;
-@property (nonatomic,copy) NSArray *dataSources;
+@property (nonatomic, copy) NSArray *categories;
+@property (nonatomic, copy) NSArray *dataSources;
 @end
 
 @implementation MITNewsiPadViewController {
     BOOL _isTransitioningToPresentationStyle;
+    BOOL _storyUpdateInProgress;
 }
 
 @synthesize activeViewController = _activeViewController;
@@ -67,30 +69,22 @@
 {
     [self.gridViewController.collectionView reloadData];
 }
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
-        self.searchBarWrapper.frame = self.searchBar.bounds;
-    }
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = YES;
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
-    if ([self class] == [MITNewsiPadViewController class]) {
-        self.showsFeaturedStories = NO;
-        self.containerView.backgroundColor = [UIColor whiteColor];
-        self.containerView.autoresizesSubviews = YES;
-    }
+    self.showsFeaturedStories = NO;
+    self.containerView.backgroundColor = [UIColor whiteColor];
+    self.containerView.autoresizesSubviews = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
     
     if (!self.activeViewController && [self class] == [MITNewsiPadViewController class]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
@@ -100,14 +94,15 @@
         }
     }
     
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
-        
-        [self reloadItems:^(NSError *error) {
-            if (error) {
-                DDLogWarn(@"update failed; %@",error);
-            }
-        }];
+        if (!self.lastUpdated) {
+            [self reloadViewItems:nil];
+        } else {
+            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                toDate:[NSDate date]];
+            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+        }
         [self updateNavigationItem:YES];
     }
 }
@@ -141,6 +136,13 @@
         gridViewController.automaticallyAdjustsScrollViewInsets = NO;
         gridViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _gridViewController = gridViewController;
+        
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
+        [gridViewController.collectionView addSubview:refreshControl];
+        self.refreshControl = refreshControl;
     }
 
     return gridViewController;
@@ -160,6 +162,14 @@
         listViewController.automaticallyAdjustsScrollViewInsets = NO;
         listViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _listViewController = listViewController;
+        
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(reloadViewItems:)
+                 forControlEvents:UIControlEventValueChanged];
+        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
+        [listViewController.tableView addSubview:refreshControl];
+        self.listViewController.refreshControl = refreshControl;
+        self.refreshControl = refreshControl;
     }
     
     return listViewController;
@@ -168,7 +178,7 @@
 - (MITNewsSearchController *)searchController
 {
     if(!_searchController) {
-        MITNewsSearchController *searchController = [[MITNewsSearchController alloc] init];
+        MITNewsSearchController *searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
         searchController.view.frame = self.containerView.bounds;
         searchController.delegate = self;
         _searchController = searchController;
@@ -184,7 +194,6 @@
         searchBar.delegate = self.searchController;
         self.searchController.searchBar = searchBar;
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        searchBar.showsCancelButton = YES;
         _searchBar = searchBar;
     }
     return _searchBar;
@@ -195,7 +204,6 @@
 {
     [self setPresentationStyle:style animated:NO];
 }
-
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
     NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
@@ -209,10 +217,18 @@
         // transitioning from/to.
         UIViewController *fromViewController = self.activeViewController;
         UIViewController *toViewController = nil;
+        
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
         } else {
             toViewController = self.listViewController;
+        }
+        // Needed to fix alignment of refreshcontrol text
+        if (fromViewController) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+                [self.refreshControl endRefreshing];
+            }];
         }
 
         const CGRect viewFrame = self.containerView.bounds;
@@ -321,9 +337,6 @@
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             if (self.searching) {
                 gridItem.enabled = NO;
-                self.navigationItem.leftBarButtonItem.enabled = NO;
-            } else {
-                self.navigationItem.leftBarButtonItem.enabled = YES;
             }
             [rightBarItems addObject:gridItem];
         }
@@ -333,35 +346,114 @@
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             if (self.searching) {
                 listItem.enabled = NO;
-                self.navigationItem.leftBarButtonItem.enabled = NO;
-            } else {
-                self.navigationItem.leftBarButtonItem.enabled = YES;
             }
             [rightBarItems addObject:listItem];
         }
     }
     if (self.searching) {
-        UISearchBar *searchBar = self.searchBar;
+        
+        UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
+        [rightBarItems addObject:cancelSearchItem];
+        
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.searchBar.frame = CGRectMake(0, 0, 400, 44);
+            self.searchBar.frame = CGRectMake(0, 0, 280, 44);
+            self.navigationItem.leftBarButtonItem.enabled = NO;
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, self.view.bounds.size.width - 50, 44);
+            self.searchBar.frame = CGRectMake(0, 0, 240, 44);
+            self.navigationItem.hidesBackButton = YES;
         }
         
-        self.searchBarWrapper = [[UIView alloc]initWithFrame:searchBar.bounds];
-        [self.searchBarWrapper addSubview:searchBar];
-        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBarWrapper];
+        UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
         [rightBarItems addObject:searchBarItem];
-        [self.navigationItem setTitle:@""];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+        [self.navigationItem setTitle:@""];
 
     } else {
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
-        [self.navigationItem setTitle:@"MIT News"];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        self.navigationItem.leftBarButtonItem.enabled = YES;
+        self.navigationItem.hidesBackButton = NO;
+        [self.navigationItem setTitle:@"MIT News"];
     }
+    
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+    
+    UIViewController *parentViewController = self.parentViewController.childViewControllers[0];
+    UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
+    [parentViewController.navigationItem setBackBarButtonItem:nil];
+    [parentViewController.navigationItem setBackBarButtonItem:item];
+}
+
+#pragma mark reloadViewItems
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl
+{
+    if (!_storyUpdateInProgress) {
+        _storyUpdateInProgress = YES;
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        if (!refreshControl && !self.lastUpdated) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+            }];
+        }
+        [self reloadItems:^(NSError *error) {
+            _storyUpdateInProgress = NO;
+            if (error) {
+                DDLogWarn(@"update failed; %@",error);
+                if (refreshControl) {
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                }
+                if(!self.lastUpdated) {
+                    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
+                } else {
+                    
+                }
+            } else {
+                if (!self.lastUpdated) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.lastUpdated = [NSDate date];
+                        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                            toDate:[NSDate date]];
+                        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                        [self.refreshControl endRefreshing];
+                    }];
+                }
+                self.lastUpdated = [NSDate date];
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [NSTimer scheduledTimerWithTimeInterval:.5
+                                                     target:self
+                                                   selector:@selector(endRefreshing)
+                                                   userInfo:nil
+                                                    repeats:NO];
+                    self.refreshControl = refreshControl;
+                }];
+            }
+        }];
+    }
+}
+
+- (void)endRefreshing
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl endRefreshing];
+    }];
 }
 
 @end
@@ -380,6 +472,12 @@
 
     __weak MITNewsiPadViewController *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+        if(error) {
+            if (completion) {
+                completion(error);
+                return;
+            }
+        };
         MITNewsiPadViewController *blockSelf = weakSelf;
 
         if (!blockSelf) {
@@ -413,7 +511,7 @@
 
 - (void)refreshDataSources:(void (^)(NSError*))completion
 {
-    __block dispatch_group_t refreshGroup = dispatch_group_create();
+    dispatch_group_t refreshGroup = dispatch_group_create();
     __block NSError *updateError = nil;
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
@@ -436,15 +534,15 @@
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion(updateError);
-        });
-
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (self.activeViewController == self.gridViewController) {
                 [self.gridViewController.collectionView reloadData];
             } else if (self.activeViewController == self.listViewController) {
                 [self.listViewController.tableView reloadData];
+            }
+
+            if (completion) {
+                completion(updateError);
             }
         }];
     });
@@ -469,9 +567,16 @@
     return YES;
 }
 
+- (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
+{
+    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    [dataSource refresh:block];
+    return YES;
+}
+
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    if (_dataSources) {
+    if ([_dataSources count]) {
         [self refreshDataSources:block];
     } else {
         [self loadDataSources:block];
@@ -599,6 +704,7 @@
 
         MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
         iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
+        iPadCategoryViewController.previousLastUpdated = self.lastUpdated;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
         
@@ -611,7 +717,7 @@
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
-- (void)storyAfterStory:(MITNewsStory *)story return:(void (^)(MITNewsStory *, NSError *))block
+- (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
     
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
@@ -626,14 +732,13 @@
                 block(dataSource.objects[currentIndex +1], nil);
             }
         } else {
-            __block NSError *updateError = nil;
             if ([dataSource hasNextPage]) {
                 [dataSource nextPage:^(NSError *error) {
                     if (error) {
                         DDLogWarn(@"failed to refresh data source %@",dataSource);
                         
-                        if (!updateError) {
-                            updateError = error;
+                        if (block) {
+                            block(nil, nil);
                         }
                     } else {
                         DDLogVerbose(@"refreshed data source %@",dataSource);
@@ -646,7 +751,17 @@
                         }
                     }
                 }];
+                
+            } else {
+                if (block) {
+                    block(nil, nil);
+                }
             }
+        }
+
+    } else {
+        if (block) {
+            block(nil, nil);
         }
     }
 }

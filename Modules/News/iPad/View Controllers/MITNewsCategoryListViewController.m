@@ -4,14 +4,14 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
-@interface MITNewsCategoryListViewController ()
-
+@interface MITNewsCategoryListViewController()
+@property (nonatomic, strong) NSString *errorMessage;
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
-    BOOL _storyUpdatedFailed;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -24,21 +24,14 @@
     }
 }
 
-- (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.delegate respondsToSelector:@selector(viewController:didSelectStoryAtIndex:forCategoryInSection:)]) {
-        [self.delegate viewController:self didSelectStoryAtIndex:indexPath.row forCategoryInSection:indexPath.section];
-    }
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0] + 1;
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
     }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:0];
+    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
@@ -46,47 +39,41 @@
     return nil;
 }
 
-- (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([self.dataSource respondsToSelector:@selector(viewController:storyAtIndex:forCategoryInSection:)]) {
-        return [self.dataSource viewController:self storyAtIndex:indexPath.row forCategoryInSection:0];
-    } else {
-        return nil;
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-
-    MITNewsStory *story = [self storyAtIndexPath:indexPath];
-    if (story) {
-        [self didSelectStoryAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
-    }
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (!_storyUpdateInProgress) {
-            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self getMoreStories];
+            [self getMoreStoriesForSection:indexPath.section];
         }
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark UITableViewDataSource
-
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
 
-    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdatedFailed) {
-        cell.textLabel.text = @"Failed...";
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
-        cell.textLabel.text = @"Loading More...";
-    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
-        cell.textLabel.text = @"Load More...";
+    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+        
+            if (self.errorMessage) {
+                cell.textLabel.text = self.errorMessage;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+            } else {
+                cell.textLabel.text = @"Load More...";
+            }
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+            
+            return cell;
+        }
     }
     return cell;
 }
@@ -115,29 +102,12 @@
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
-    if ([self numberOfStoriesForCategoryInSection:0] > indexPath.row) {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] > indexPath.row) {
         story = [self storyAtIndexPath:indexPath];
     }
     if (story) {
-        __block NSString *identifier = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            
-            if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-                if (newsStory.coverImage) {
-                    identifier = MITNewsStoryExternalCellIdentifier;
-                } else {
-                    identifier = MITNewsStoryExternalNoImageCellIdentifier;
-                }
-            } else if ([newsStory.dek length])  {
-                identifier = MITNewsStoryCellIdentifier;
-            } else {
-                identifier = MITNewsStoryNoDekCellIdentifier;
-            }
-        }];
-        
-        return identifier;
-    } else if ([self numberOfStoriesForCategoryInSection:0]) {
+        return [super reuseIdentifierForRowAtIndexPath:indexPath];
+    } else if ([self numberOfStoriesForCategoryInSection:indexPath.section]) {
         return MITNewsLoadMoreCellIdentifier;
     } else {
         return nil;
@@ -151,74 +121,53 @@
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
-        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
 }
 
-- (void)getMoreStories
+- (void)getMoreStoriesForSection:(NSInteger *)section
 {
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:0] && !_storyUpdateInProgress) {
+    if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
-        [self.dataSource loadMoreItemsForCategoryInSection:0
-                                                completion:^(NSError *error) {
-                                                    _storyUpdateInProgress = FALSE;
-                                                    if (error) {
-                                                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                                                        _storyUpdatedFailed = TRUE;
-                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                                            [NSTimer scheduledTimerWithTimeInterval:2
-                                                                                             target:self
-                                                                                           selector:@selector(clearFailAfterTwoSeconds)
-                                                                                           userInfo:nil
-                                                                                            repeats:NO];
-                                                        }];
-                                                    } else {
-                                                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                            [self.tableView reloadData];
-                                                        }];
-                                                    }
-                                                }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+
+        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+            _storyUpdateInProgress = FALSE;
+            if (error) {
+                if (error.code == -1009) {
+                    self.errorMessage = @"No Internet Connection";
+                } else {
+                    self.errorMessage = @"Failed...";
+                }
+                if (self.navigationController.toolbarHidden) {
+                    
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [NSTimer scheduledTimerWithTimeInterval:2
+                                                         target:self
+                                                       selector:@selector(clearFailAfterTwoSeconds)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                } else {
+                    self.errorMessage = nil;
+                }
+                [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+            }
         }];
     }
 }
 
 - (void)clearFailAfterTwoSeconds
 {
-    _storyUpdatedFailed = FALSE;
+    self.errorMessage = nil;
+    [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
+}
+
+- (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
+{
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    // Do any additional setup after loading the view.
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end
