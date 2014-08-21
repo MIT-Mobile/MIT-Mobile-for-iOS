@@ -24,9 +24,9 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
     // This most likely will be a fairly espensive operation
     // since it involves potentially deleting a large number of
     // CoreData objects (especially with a number of subclasses)
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun);
-
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared);
+        
         if (!firstRunToken) {
             __block NSError *error = nil;
             BOOL updateDidFail = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
@@ -39,7 +39,9 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
 
             objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
-    });
+    }];
+    
+    [[NSOperationQueue mainQueue] addOperation:blockOperation];
 }
 
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext
