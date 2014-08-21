@@ -416,7 +416,11 @@
                     }];
                 }
                 if(!self.lastUpdated) {
-                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
                 }
             } else {
                 if (!self.lastUpdated) {
