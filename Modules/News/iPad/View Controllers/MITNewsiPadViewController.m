@@ -485,7 +485,6 @@
         if(error) {
             if (completion) {
                 completion(error);
-                return;
             }
         };
         MITNewsiPadViewController *blockSelf = weakSelf;
@@ -526,7 +525,11 @@
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
         dispatch_group_enter(refreshGroup);
-
+        if (self.activeViewController == self.gridViewController) {
+            [self.gridViewController.collectionView reloadData];
+        } else if (self.activeViewController == self.listViewController) {
+            [self.listViewController.tableView reloadData];
+        }
         [dataSource refresh:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",dataSource);

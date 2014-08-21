@@ -7,14 +7,17 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-
 #import "MITNewsRecentSearchList.h"
 #import "MITNewsRecentSearchQuery.h"
+
 @interface MITNewsModelController ()
 - (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))block;
+@property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @end
 
 @implementation MITNewsModelController
+@synthesize fetchedResultsController = _fetchedResultsController;
+
 + (instancetype)sharedController
 {
     static MITNewsModelController *sharedModelController = nil;
@@ -39,11 +42,39 @@
                                                                 NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
                                                                 block(objects,nil);
                                                             } else {
-                                                                block(nil,error);
+                                                                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                                NSArray *storyObjects = [mainQueueContext transferManagedObjects:self.fetchedResultsController.fetchedObjects];
+                                                                block(storyObjects,error);
                                                             }
                                                         }];
                                                     }
                                                 }];
+}
+
+- (NSFetchRequest*)_fetchRequestForCategory
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITNewsCategory entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+    return fetchRequest;
+}
+
+- (NSFetchedResultsController*)fetchedResultsController
+{
+    if (!_fetchedResultsController) {
+        NSFetchRequest *fetchRequest = [self _fetchRequestForCategory];
+        NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:mainQueueContext sectionNameKeyPath:nil cacheName:nil];
+        
+        NSError *fetchError = nil;
+        BOOL success = [fetchedResultsController performFetch:&fetchError];
+        if (!success) {
+            DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
+        }
+        
+        _fetchedResultsController = fetchedResultsController;
+    }
+    
+    return _fetchedResultsController;
 }
 
 - (void)featuredStoriesWithOffset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))completion

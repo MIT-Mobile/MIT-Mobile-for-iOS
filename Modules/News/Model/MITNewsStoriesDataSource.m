@@ -98,6 +98,7 @@
     if (!([self _canCacheRequest] || [self.objectIdentifiers count])) {
         return nil;
     } else {
+        [self.fetchedResultsController performFetch:nil];
         NSArray *storyObjects = [context transferManagedObjects:self.fetchedResultsController.fetchedObjects];
 
         return [NSOrderedSet orderedSetWithArray:storyObjects];
