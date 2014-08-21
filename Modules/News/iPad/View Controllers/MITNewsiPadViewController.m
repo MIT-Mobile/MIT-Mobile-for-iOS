@@ -472,16 +472,14 @@
 
     __weak MITNewsiPadViewController *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
-        if(error) {
+        MITNewsiPadViewController *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if(error) {
             if (completion) {
                 completion(error);
                 return;
             }
-        };
-        MITNewsiPadViewController *blockSelf = weakSelf;
-
-        if (!blockSelf) {
-            return;
         } else {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
 
@@ -504,6 +502,7 @@
 
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
+            
             [blockSelf refreshDataSources:completion];
         }
     }];
