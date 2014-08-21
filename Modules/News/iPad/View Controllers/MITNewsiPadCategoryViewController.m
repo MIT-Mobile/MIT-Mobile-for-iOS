@@ -242,6 +242,20 @@
     [self.searchBar becomeFirstResponder];
 }
 
+- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        [super showStoriesAsGrid:sender];
+    }
+}
+
+- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        [super showStoriesAsList:sender];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
