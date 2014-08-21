@@ -115,11 +115,8 @@
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self setRefreshStatusUpdated];
                     [refreshControl endRefreshing];
-                    if (self.activeViewController == self.gridViewController) {
-                        [self.gridViewController.collectionView reloadData];
-                    } else if (self.activeViewController == self.listViewController) {
-                        [self.listViewController.tableView reloadData];
-                    }
+                    
+                    [self reloadData];
                 }];
             }
         }];
@@ -151,11 +148,7 @@
                                          } else {
                                              DDLogVerbose(@"refreshed data source %@",self.dataSource);
                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 if (self.activeViewController == self.gridViewController) {
-                                                     [self.gridViewController.collectionView reloadData];
-                                                 } else if (self.activeViewController == self.listViewController) {
-                                                     [self.listViewController.tableView reloadData];
-                                                 }
+                                                 [self reloadData];
                                              }];
                                          }
                                          [self setRefreshStatusUpdated];
