@@ -503,6 +503,7 @@
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
             
+            [self reloadData];
             [blockSelf refreshDataSources:completion];
         }
     }];
@@ -515,7 +516,7 @@
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
         dispatch_group_enter(refreshGroup);
-
+        
         [dataSource refresh:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",dataSource);
@@ -534,17 +535,22 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (self.activeViewController == self.gridViewController) {
-                [self.gridViewController.collectionView reloadData];
-            } else if (self.activeViewController == self.listViewController) {
-                [self.listViewController.tableView reloadData];
-            }
-
+            [self reloadData];
+            
             if (completion) {
                 completion(updateError);
             }
         }];
     });
+}
+
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
 }
 
 - (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
