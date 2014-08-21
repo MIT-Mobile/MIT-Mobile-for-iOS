@@ -299,6 +299,15 @@
     [self updateNavigationItem:YES];
 }
 
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -504,6 +513,7 @@
             blockSelf.dataSources = dataSources;
             
             [self reloadData];
+            
             [blockSelf refreshDataSources:completion];
         }
     }];
@@ -542,15 +552,6 @@
             }
         }];
     });
-}
-
-- (void)reloadData
-{
-    if (self.activeViewController == self.gridViewController) {
-        [self.gridViewController.collectionView reloadData];
-    } else if (self.activeViewController == self.listViewController) {
-        [self.listViewController.tableView reloadData];
-    }
 }
 
 - (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
