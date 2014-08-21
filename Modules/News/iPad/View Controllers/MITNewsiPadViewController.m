@@ -565,12 +565,10 @@
     return [dataSource hasNextPage];
 }
 
-- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
+- (void)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     [dataSource nextPage:block];
-    
-    return YES;
 }
 
 - (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
