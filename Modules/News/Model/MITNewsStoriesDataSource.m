@@ -170,11 +170,8 @@
     return (self.nextPageURL != nil);
 }
 
-- (BOOL)nextPage:(void(^)(NSError *error))block
+- (void)nextPage:(void(^)(NSError *error))block
 {
-    if (![self hasNextPage]) {
-        return NO;
-    }
 
     __weak MITNewsStoriesDataSource *weakSelf = self;
     [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
@@ -197,8 +194,8 @@
             }];
         }
     }];
-
-    return YES;
+    
+    return;
 }
 
 - (void)refresh:(void(^)(NSError *error))block
