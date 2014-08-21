@@ -48,6 +48,8 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
 {
     self = [super init];
     if (self) {
+        [[self class] _clearCachedObjects];
+        
         _managedObjectContext = managedObjectContext;
     }
 
