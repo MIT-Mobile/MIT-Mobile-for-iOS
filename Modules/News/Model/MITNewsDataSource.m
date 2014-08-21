@@ -5,7 +5,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
+static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
 
 @interface MITNewsDataSource ()
 
@@ -32,12 +32,12 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
             BOOL updateDidFail = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
                 return [self clearCachedObjectsWithManagedObjectContext:context error:error];
             } error:&error];
-
+            
             if (updateDidFail) {
                 DDLogWarn(@"failed to clear cached objects for %@: %@",NSStringFromClass(self),[error localizedDescription]);
             }
-
-            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            
+            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
     }];
     
