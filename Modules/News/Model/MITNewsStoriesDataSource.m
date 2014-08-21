@@ -9,6 +9,8 @@
 
 #import "MITAdditions.h"
 
+static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
+
 @interface MITNewsStoriesDataSource ()
 @property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSURL *nextPageURL;
@@ -25,6 +27,56 @@
 
 @implementation MITNewsStoriesDataSource
 @synthesize fetchedResultsController = _fetchedResultsController;
+
++ (BOOL)clearCachedObjectsWithManagedObjectContext:(NSManagedObjectContext*)context error:(NSError**)error
+{
+    BOOL success = [super clearCachedObjectsWithManagedObjectContext:context error:error];
+    if (!success) {
+        return NO;
+    }
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
+    NSArray *result = [context executeFetchRequest:fetchRequest error:error];
+    if (!result) {
+        return NO;
+    }
+    
+    NSMutableDictionary *storiesByCategory = [[NSMutableDictionary alloc] init];
+    
+    // Run through all the story objects and stash each of them into an array
+    // keyed to the name of the category the story is in.
+    [result enumerateObjectsUsingBlock:^(MITNewsStory *story, NSUInteger idx, BOOL *stop) {
+        NSString *categoryIdentifier = story.category.identifier;
+        NSMutableArray *storiesInCategory = storiesByCategory[categoryIdentifier];
+        if (!storiesInCategory) {
+            storiesInCategory = [[NSMutableArray alloc] init];
+            storiesByCategory[categoryIdentifier] = storiesInCategory;
+        }
+        
+        [storiesInCategory addObject:story];
+    }];
+    
+    // Now go through our hash-of-arrays, and delete any objects with an index
+    // greater than the default page size
+    [storiesByCategory enumerateKeysAndObjectsUsingBlock:^(NSString *categoryIdentifier, NSMutableArray *stories, BOOL *stop) {
+        if ([stories count] >= MITNewsStoriesDataSourceDefaultPageSize) {
+            NSRange deletionRange = NSMakeRange(MITNewsStoriesDataSourceDefaultPageSize, [stories count] - MITNewsStoriesDataSourceDefaultPageSize);
+            
+            NSArray *storiesToDelete = [stories objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]];
+            [stories removeObjectsInRange:deletionRange];
+            [context performBlock:^{
+                [storiesToDelete enumerateObjectsUsingBlock:^(NSManagedObject *object, NSUInteger idx, BOOL *stop) {
+                    [context deleteObject:object];
+                }];
+            }];
+        }
+    }];
+    
+    return YES;
+}
 
 + (instancetype)featuredStoriesDataSource
 {
