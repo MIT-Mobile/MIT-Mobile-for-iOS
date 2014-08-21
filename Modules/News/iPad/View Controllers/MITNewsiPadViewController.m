@@ -289,14 +289,18 @@
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    self.presentationStyle = MITNewsPresentationStyleGrid;
-    [self updateNavigationItem:YES];
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [self updateNavigationItem:YES];
+    }
 }
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    self.presentationStyle = MITNewsPresentationStyleList;
-    [self updateNavigationItem:YES];
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [self updateNavigationItem:YES];
+    }
 }
 
 #pragma mark UIAlertViewDelegate
