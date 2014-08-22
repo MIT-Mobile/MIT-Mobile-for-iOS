@@ -184,6 +184,11 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
     if (![self _canCacheRequest] || self.objectIdentifiers) {
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+        if (self.objectIdentifiers != nil) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+        } else {
+            fetchRequest.predicate = [NSPredicate predicateWithValue:YES];
+        }
     } else if (self.categoryIdentifier) {
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category.identifier == %@", self.categoryIdentifier];
     }
