@@ -8,6 +8,7 @@
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
 #import "TopAlignedCollectionViewFlowLayout.h"
+#import "MITDiningHouseMealSelectorPad.h"
 
 static NSString * const kMITDiningHallMealCollectionCellNib = @"MITDiningHallMealCollectionCell";
 static NSString * const kMITDiningHallMealCollectionCellIdentifier = @"kMITDiningHallMealCollectionCellIdentifier";
@@ -17,11 +18,12 @@ static NSString * const kMITDiningHallMealCollectionHeaderIdentifier = @"kMITDin
 
 static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0;
 
-@interface MITDiningHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface MITDiningHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
+@property (nonatomic, weak) IBOutlet MITDiningHouseMealSelectorPad *mealSelector;
 @property (nonatomic, strong) NSDate *currentlySelectedDate;
 @property (nonatomic, strong) NSString *currentlySelectedMeal;
 @property (nonatomic, strong) NSArray *menuItemsBySection;
@@ -43,6 +45,11 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    self.navigationController.navigationBar.translucent = NO;
+    
+    self.mealSelector.horizontalInset = kMITDiningHallCollectionViewSectionHorizontalPadding / 2;
+    self.mealSelector.delegate = self;
     
     self.collectionView.collectionViewLayout = [[TopAlignedCollectionViewFlowLayout alloc] init];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionCellNib bundle:nil] forCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier];
@@ -68,6 +75,17 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.currentlySelectedDate = date;
     self.currentlySelectedMeal = mealName;
     
+    [self refreshViews];
+}
+
+- (void)refreshViews
+{
+    [self recreateMenuItemsBySection];
+    [self.collectionView reloadData];
+}
+
+- (void)recreateMenuItemsBySection
+{
     NSMutableArray *newMenuItemsBySection = [NSMutableArray array];
     
     for (NSInteger i = 0; i < self.fetchedResultsController.fetchedObjects.count; i++) {
@@ -90,8 +108,33 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     self.menuItemsBySection = [NSArray arrayWithArray:newMenuItemsBySection];
+}
+
+- (void)refreshTopMealSelectorView
+{
     
-    [self.collectionView reloadData];
+}
+
+- (void)selectBestMealForCurrentDate
+{
+    MITDiningHouseDay *dayToSelect = nil;
+    
+    for (MITDiningHouseVenue *venue in self.fetchedResultsController.fetchedObjects) {
+        for (MITDiningHouseDay *day in venue.mealsByDay) {
+            if ([[day.date dateWithoutTime] isEqualToDate:[[NSDate date] dateWithoutTime]]) {
+                dayToSelect = day;
+                break;
+            }
+        }
+    }
+    
+    if (!dayToSelect && self.fetchedResultsController.fetchedObjects.count > 0) {
+        dayToSelect = self.fetchedResultsController.fetchedObjects[0];
+    }
+    
+    MITDiningMeal *mealToSelect = [dayToSelect bestMealForDate:[NSDate date]];
+    
+    [self selectDate:dayToSelect.date mealName:mealToSelect.name];
 }
 
 #pragma mark - Fetched Results Controller
@@ -116,18 +159,21 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     _fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
+    [self.mealSelector setVenues:self.fetchedResultsController.fetchedObjects];
     
-    MITDiningHouseVenue *venue = self.fetchedResultsController.fetchedObjects[0];
-    MITDiningHouseDay *day = venue.mealsByDay[0];
-    MITDiningMeal *meal = day.meals[0];
-    
-    [self selectDate:day.date mealName:meal.name];
+    [self selectBestMealForCurrentDate];
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     NSLog(@"context changed");
-    [self.collectionView reloadData];
+    [self.mealSelector setVenues:self.fetchedResultsController.fetchedObjects];
+    
+    if (!self.currentlySelectedMeal) {
+        [self selectBestMealForCurrentDate];
+    } else {
+        [self refreshViews];
+    }
 }
 
 #pragma mark - UICollectionViewDataSource Methods
@@ -216,6 +262,13 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
     return UIEdgeInsetsMake(10, kMITDiningHallCollectionViewSectionHorizontalPadding, 10, kMITDiningHallCollectionViewSectionHorizontalPadding);
+}
+
+#pragma mark - MITDiningHouseMealSelectorPadDelegate Methods
+
+- (void)diningHouseMealSelector:(MITDiningHouseMealSelectorPad *)mealSelector didSelectMeal:(NSString *)meal onDate:(NSDate *)date
+{
+    [self selectDate:date mealName:meal];
 }
 
 @end

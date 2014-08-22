@@ -8,16 +8,17 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITDiningHomeViewControllerPad">
             <connections>
                 <outlet property="collectionView" destination="F8K-cY-Tsd" id="jAs-Zi-6GP"/>
+                <outlet property="mealSelector" destination="1Ok-kD-EwC" id="4zO-aM-MWJ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+            <rect key="frame" x="0.0" y="64" width="768" height="960"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="F8K-cY-Tsd">
-                    <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                    <rect key="frame" x="0.0" y="120" width="768" height="840"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="iNm-AE-S1Q">
@@ -32,15 +33,27 @@
                         <outlet property="delegate" destination="-1" id="Q5E-8Z-9Q8"/>
                     </connections>
                 </collectionView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Ok-kD-EwC" customClass="MITDiningHouseMealSelectorPad">
+                    <rect key="frame" x="0.0" y="0.0" width="768" height="120"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="120" id="iAY-vW-Eic"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="F8K-cY-Tsd" secondAttribute="bottom" id="Sxx-TI-bpX"/>
-                <constraint firstItem="F8K-cY-Tsd" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="ZXY-vC-OX9"/>
-                <constraint firstItem="F8K-cY-Tsd" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="ivm-9b-Goa"/>
-                <constraint firstAttribute="trailing" secondItem="F8K-cY-Tsd" secondAttribute="trailing" id="tBQ-kE-arl"/>
+                <constraint firstAttribute="trailing" secondItem="F8K-cY-Tsd" secondAttribute="trailing" id="3IW-tF-zKC"/>
+                <constraint firstItem="F8K-cY-Tsd" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="3nR-nn-Nvt"/>
+                <constraint firstAttribute="trailing" secondItem="1Ok-kD-EwC" secondAttribute="trailing" id="8M0-8A-nTV"/>
+                <constraint firstAttribute="bottom" secondItem="F8K-cY-Tsd" secondAttribute="bottom" id="8Q4-Nt-09F"/>
+                <constraint firstItem="F8K-cY-Tsd" firstAttribute="top" secondItem="1Ok-kD-EwC" secondAttribute="bottom" id="AWL-US-WFL"/>
+                <constraint firstItem="1Ok-kD-EwC" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="OG7-Ri-ocC"/>
+                <constraint firstItem="1Ok-kD-EwC" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="TEK-vX-zXH"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
         </view>
     </objects>
 </document>
