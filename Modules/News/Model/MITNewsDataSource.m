@@ -5,7 +5,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
+static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
 
 @interface MITNewsDataSource ()
 
@@ -24,28 +24,32 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
     // This most likely will be a fairly espensive operation
     // since it involves potentially deleting a large number of
     // CoreData objects (especially with a number of subclasses)
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun);
-
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared);
+        
         if (!firstRunToken) {
             __block NSError *error = nil;
             BOOL updateDidFail = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
                 return [self clearCachedObjectsWithManagedObjectContext:context error:error];
             } error:&error];
-
+            
             if (updateDidFail) {
                 DDLogWarn(@"failed to clear cached objects for %@: %@",NSStringFromClass(self),[error localizedDescription]);
             }
-
-            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceAssociatedObjectKeyFirstRun, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            
+            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
-    });
+    }];
+    
+    [[NSOperationQueue mainQueue] addOperation:blockOperation];
 }
 
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext
 {
     self = [super init];
     if (self) {
+        [[self class] _clearCachedObjects];
+        
         _managedObjectContext = managedObjectContext;
     }
 
@@ -58,7 +62,7 @@ static NSString* const MITNewsDataSourceAssociatedObjectKeyFirstRun;
     return NO;
 }
 
-- (BOOL)nextPage:(void(^)(NSError *error))block
+- (void)nextPage:(void(^)(NSError *error))block
 {
     if (block) {
         block(nil);

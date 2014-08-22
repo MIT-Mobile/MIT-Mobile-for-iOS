@@ -2,6 +2,7 @@
 
 @interface MITNewsStoriesDataSource : MITNewsDataSource
 @property (nonatomic,readonly,strong) NSOrderedSet *stories;
+@property (readonly,strong) NSDate *refreshedAt;
 
 + (instancetype)featuredStoriesDataSource;
 + (instancetype)dataSourceForQuery:(NSString*)query;

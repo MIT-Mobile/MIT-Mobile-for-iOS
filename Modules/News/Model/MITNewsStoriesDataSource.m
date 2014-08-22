@@ -9,23 +9,78 @@
 
 #import "MITAdditions.h"
 
+static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
+
 @interface MITNewsStoriesDataSource ()
 @property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) NSURL *nextPageURL;
+@property (strong) NSDate *refreshedAt;
 
 @property (nonatomic,copy) NSOrderedSet *objectIdentifiers;
 
 @property (nonatomic,copy) NSString *query;
 @property (nonatomic,copy) NSString *categoryIdentifier;
 @property (nonatomic,getter = isFeaturedStorySource) BOOL featuredStorySource;
+
+@property (getter = isRequestInProgress) BOOL requestInProgress;
 @end
 
 @implementation MITNewsStoriesDataSource
 @synthesize fetchedResultsController = _fetchedResultsController;
 
++ (BOOL)clearCachedObjectsWithManagedObjectContext:(NSManagedObjectContext*)context error:(NSError**)error
+{
+    BOOL success = [super clearCachedObjectsWithManagedObjectContext:context error:error];
+    if (!success) {
+        return NO;
+    }
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
+    NSArray *result = [context executeFetchRequest:fetchRequest error:error];
+    if (!result) {
+        return NO;
+    }
+    
+    NSMutableDictionary *storiesByCategory = [[NSMutableDictionary alloc] init];
+    
+    // Run through all the story objects and stash each of them into an array
+    // keyed to the name of the category the story is in.
+    [result enumerateObjectsUsingBlock:^(MITNewsStory *story, NSUInteger idx, BOOL *stop) {
+        NSString *categoryIdentifier = story.category.identifier;
+        NSMutableArray *storiesInCategory = storiesByCategory[categoryIdentifier];
+        if (!storiesInCategory) {
+            storiesInCategory = [[NSMutableArray alloc] init];
+            storiesByCategory[categoryIdentifier] = storiesInCategory;
+        }
+        
+        [storiesInCategory addObject:story];
+    }];
+    
+    // Now go through our hash-of-arrays, and delete any objects with an index
+    // greater than the default page size
+    [storiesByCategory enumerateKeysAndObjectsUsingBlock:^(NSString *categoryIdentifier, NSMutableArray *stories, BOOL *stop) {
+        if ([stories count] >= MITNewsStoriesDataSourceDefaultPageSize) {
+            NSRange deletionRange = NSMakeRange(MITNewsStoriesDataSourceDefaultPageSize, [stories count] - MITNewsStoriesDataSourceDefaultPageSize);
+            
+            NSArray *storiesToDelete = [stories objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]];
+            [stories removeObjectsInRange:deletionRange];
+            [context performBlock:^{
+                [storiesToDelete enumerateObjectsUsingBlock:^(NSManagedObject *object, NSUInteger idx, BOOL *stop) {
+                    [context deleteObject:object];
+                }];
+            }];
+        }
+    }];
+    
+    return YES;
+}
+
 + (instancetype)featuredStoriesDataSource
 {
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
 
     MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
     dataSource.featuredStorySource = YES;
@@ -35,7 +90,7 @@
 
 + (instancetype)dataSourceForQuery:(NSString*)query
 {
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
 
     MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
     dataSource.query = query;
@@ -45,7 +100,7 @@
 
 + (instancetype)dataSourceForCategory:(MITNewsCategory*)category
 {
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+    NSManagedObjectContext *context = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
 
     MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:context];
 
@@ -59,6 +114,7 @@
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     self = [super initWithManagedObjectContext:managedObjectContext];
+    managedObjectContext.retainsRegisteredObjects = YES;
 
     if (self) {
         self.maximumNumberOfItemsPerPage = 20;
@@ -95,57 +151,75 @@
 
 - (NSOrderedSet*)storiesUsingManagedObjectContext:(NSManagedObjectContext*)context
 {
-    if (!self.objectIdentifiers) {
-        return nil;
-    } else {
-        const NSArray *objectIdentifiers = [self.objectIdentifiers array];
-
-        NSMutableArray *storyObjects = [[NSMutableArray alloc] init];
-        [context performBlockAndWait:^{
-            [objectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-                NSError *error = nil;
-                NSManagedObject *object = [context existingObjectWithID:objectID error:&error];
-
-                if (!object) {
-                    DDLogInfo(@"failed to get existing object for ID %@: %@", objectID,error);
-                } else {
-                    [storyObjects addObject:object];
-                }
-            }];
-        }];
-
+    if ([self _canCacheRequest] || ([self.objectIdentifiers count] > 0)){
+        NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
+        NSUInteger numberOfItems = MAX(self.maximumNumberOfItemsPerPage,[self.objectIdentifiers count]);
+        numberOfItems = MIN(numberOfItems,[fetchedObjects count]);
+        
+        NSRange rangeOfObjectsToReturn = NSMakeRange(0, numberOfItems);
+        fetchedObjects = [fetchedObjects objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:rangeOfObjectsToReturn]];
+        
+        NSArray *storyObjects = [context transferManagedObjects:fetchedObjects];
+        
         return [NSOrderedSet orderedSetWithArray:storyObjects];
+    } else {
+        return nil;
     }
 }
 
-- (NSFetchRequest*)_fetchRequestForDataSource
+- (BOOL)_canCacheRequest
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITNewsStory entityName]];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+    if (self.isFeaturedStorySource) {
+        return NO;
+    } else if ([self.query length]) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (NSFetchRequest*)_configureFetchRequestForDataSource:(NSFetchRequest*)fetchRequest
+{
+    fetchRequest.entity = [MITNewsStory entityDescription];
+
+    if (![self _canCacheRequest] || self.objectIdentifiers) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF in %@",self.objectIdentifiers];
+    } else if (self.categoryIdentifier) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category.identifier == %@", self.categoryIdentifier];
+    }
+
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                      [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
                                      [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
     return fetchRequest;
 }
 
-- (void)resetFetchedResultsController
+- (void)_reloadFetchedResultsController
 {
-    _fetchedResultsController = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        if (!_fetchedResultsController) {
+            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+            [self _configureFetchRequestForDataSource:fetchRequest];
+            
+            _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+        } else {
+            [self _configureFetchRequestForDataSource:_fetchedResultsController.fetchRequest];
+        }
+        
+        [self.managedObjectContext reset];
+        
+        NSError *fetchError = nil;
+        BOOL success = [_fetchedResultsController performFetch:&fetchError];
+        if (!success) {
+            DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
+        }
+    }];
 }
 
 - (NSFetchedResultsController*)fetchedResultsController
 {
     if (!_fetchedResultsController) {
-        NSFetchRequest *fetchRequest = [self _fetchRequestForDataSource];
-        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-
-        NSError *fetchError = nil;
-        BOOL success = [fetchedResultsController performFetch:&fetchError];
-        if (!success) {
-            DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
-        }
-
-        _fetchedResultsController = fetchedResultsController;
+        [self _reloadFetchedResultsController];
     }
 
     return _fetchedResultsController;
@@ -154,8 +228,11 @@
 - (void)setObjectIdentifiers:(NSOrderedSet *)objectIdentifiers
 {
     if (![_objectIdentifiers isEqualToOrderedSet:objectIdentifiers]) {
-        [self resetFetchedResultsController];
         _objectIdentifiers = [objectIdentifiers copy];
+
+        if (![self _canCacheRequest]) {
+            [self _reloadFetchedResultsController];
+        }
     }
 }
 
@@ -164,80 +241,87 @@
     return (self.nextPageURL != nil);
 }
 
-- (BOOL)nextPage:(void(^)(NSError *error))block
+- (void)nextPage:(void(^)(NSError *error))block
 {
-    if (![self hasNextPage]) {
-        return NO;
-    }
-
-    __weak MITNewsStoriesDataSource *weakSelf = self;
-    [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        MITNewsStoriesDataSource *blockSelf = weakSelf;
-
-        if (!blockSelf) {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (![self hasNextPage]) {
             return;
-        } else if (error) {
-            [blockSelf _responseFailedWithError:error completion:^{
-                if (block) {
-                    block(error);
-                }
-            }];
-        } else {
-            NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
-            [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:^{
-                if (block) {
-                    block(error);
-                }
-            }];
         }
+        
+        __weak MITNewsStoriesDataSource *weakSelf = self;
+        [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+            MITNewsStoriesDataSource *blockSelf = weakSelf;
+            
+            if (!blockSelf) {
+                return;
+            } else if (error) {
+                [blockSelf _responseFailedWithError:error completion:^{
+                    if (block) {
+                        block(error);
+                    }
+                }];
+            } else {
+                NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
+                [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:^{
+                    if (block) {
+                        block(error);
+                    }
+                }];
+            }
+        }];
     }];
-
-    return YES;
 }
 
 - (void)refresh:(void(^)(NSError *error))block
 {
-    NSString *category = nil;
-    NSString *query = nil;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        __weak MITNewsStoriesDataSource *weakSelf = self;
+        void (^responseHandler)(NSArray*,NSDictionary*,NSError*) = ^(NSArray *stories, NSDictionary *pagingMetadata, NSError *error) {
+            MITNewsStoriesDataSource *blockSelf = weakSelf;
+            blockSelf.requestInProgress = NO;
+            
+            if (!blockSelf) {
+                return;
+            } else if (error) {
+                [self _responseFailedWithError:error completion:^{
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (block) {
+                            block(error);
+                        }
+                    }];
+                }];
+            } else {
+                // This is the main difference between a refresh and
+                // a next page load. A refresh will nil out the
+                // existing story identifiers before processing the data
+                // while a next page load will just tack on the results
+                // to the existing list of identifiers
+                blockSelf.objectIdentifiers = nil;
 
-    __weak MITNewsStoriesDataSource *weakSelf = self;
-    void (^responseHandler)(NSArray*,NSDictionary*,NSError*) = ^(NSArray *stories, NSDictionary *pagingMetadata, NSError *error) {
-        MITNewsStoriesDataSource *blockSelf = weakSelf;
-        if (!blockSelf) {
+                [self _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (block) {
+                            block(nil);
+                        }
+                    }];
+                }];
+            }
+        };
+
+        if (self.isRequestInProgress) {
             return;
-        } else if (error) {
-            [self _responseFailedWithError:error completion:^{
-                if (block) {
-                    block(error);
-                }
-            }];
-        } else {
-            // This is the main difference between a refresh and
-            // a next page load. A refresh will nil out the
-            // existing story identifiers before processing the data
-            // while a next page load will just tack on the results
-            // to the existing list of identifiers
-            blockSelf.objectIdentifiers = nil;
-
-            [self _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
-                if (block) {
-                    block(nil);
-                }
-            }];
         }
-    };
 
-    if (self.isFeaturedStorySource) {
-        [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
-    } else {
-        if (self.categoryIdentifier) {
-            category = self.categoryIdentifier;
+        self.requestInProgress = YES;
+        if (self.isFeaturedStorySource) {
+            [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
+        } else if (self.categoryIdentifier) {
+            [[MITNewsModelController sharedController] storiesInCategory:self.categoryIdentifier query:nil offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
         } else if (self.query) {
-            query = self.query;
+            [[MITNewsModelController sharedController] storiesInCategory:nil query:self.query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
         }
+    }];
 
-        [[MITNewsModelController sharedController] storiesInCategory:category query:query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
-    }
 }
 
 - (void)_responseFailedWithError:(NSError*)error completion:(void(^)())block
@@ -253,26 +337,42 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)())block
 {
-    self.nextPageURL = pagingMetadata[@"next"];
-
-    NSMutableOrderedSet *objectIdentifiers = [[NSMutableOrderedSet alloc] initWithOrderedSet:self.objectIdentifiers];
-
-    NSArray *newObjectIdentifiers = [objects valueForKey:@"objectID"];
-    [newObjectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-        if ([objectID isEqual:[NSNull null]]) {
-            return;
-        } else {
-            NSAssert([objectID isKindOfClass:[NSManagedObjectID class]],@"expected an instance of %@ but got a %@",NSStringFromClass([NSManagedObjectID class]),NSStringFromClass([objectID class]));
-
-            [objectIdentifiers addObject:objectID];
+    self.refreshedAt = [NSDate date];
+    
+    [self.managedObjectContext performBlock:^{
+        NSArray *addedObjectIdentifiers = [NSMutableArray arrayWithArray:[objects valueForKey:@"objectID"]];
+        addedObjectIdentifiers = [addedObjectIdentifiers filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSManagedObjectID *objectID, NSDictionary *bindings) {
+            return [objectID isKindOfClass:[NSManagedObjectID class]];
+        }]];
+        
+        
+        NSMutableArray *registeredObjectIDs = [NSMutableArray arrayWithArray:[[[self.managedObjectContext registeredObjects] allObjects] valueForKey:@"objectID"]];
+        [registeredObjectIDs filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSManagedObjectID *objectID, NSDictionary *bindings) {
+            return [objectID isKindOfClass:[NSManagedObjectID class]];
+        }]];
+        
+        NSMutableSet *staleObjectsSet = [NSMutableSet setWithArray:registeredObjectIDs];
+        NSSet *newObjectsSet = [NSSet setWithArray:addedObjectIdentifiers];
+        if ([staleObjectsSet intersectsSet:newObjectsSet]) {
+            [staleObjectsSet intersectSet:newObjectsSet];
+            [staleObjectsSet enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, BOOL *stop) {
+                NSManagedObject *object = [self.managedObjectContext objectRegisteredForID:objectID];
+                if (object) {
+                    [self.managedObjectContext refreshObject:object mergeChanges:NO];
+                }
+            }];
+        }
+        
+        NSMutableOrderedSet *newObjectIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:self.objectIdentifiers];
+        [newObjectIdentifiers addObjectsFromArray:addedObjectIdentifiers];
+        self.objectIdentifiers = newObjectIdentifiers;
+        
+        self.nextPageURL = pagingMetadata[@"next"];
+        
+        if (block) {
+            block();
         }
     }];
-
-    self.objectIdentifiers = objectIdentifiers;
-
-    if (block) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-    }
 }
 
 @end
