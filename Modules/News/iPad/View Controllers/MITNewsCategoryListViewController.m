@@ -8,10 +8,21 @@
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic, strong) NSMutableArray *cellHeights;
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
+}
+
+#pragma mark Dynamic Properties
+- (NSMutableArray *)cellHeights
+{
+    if (!_cellHeights) {
+        _cellHeights = [[NSMutableArray alloc] init];
+    }
+    
+    return _cellHeights;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -119,9 +130,36 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        CGFloat cellHeight = 75;
+        if ([self.cellHeights count] < indexPath.row) {
+            [self.cellHeights addObject:[NSNumber numberWithInt:cellHeight]];
+        } else {
+            [self.cellHeights insertObject:[NSNumber numberWithInt:cellHeight] atIndex:indexPath.row];
+        }
+        return cellHeight; // Fixed height for the load more cells
+    } else {
+        CGFloat cellHeight = [super tableView:tableView heightForRowAtIndexPath:indexPath];
+        if ([self.cellHeights count] < indexPath.row) {
+            [self.cellHeights addObject:[NSNumber numberWithInt:cellHeight]];
+        } else {
+            [self.cellHeights insertObject:[NSNumber numberWithInt:cellHeight] atIndex:indexPath.row];
+        }
+        return cellHeight;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
-        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
+        if ([self.cellHeights count] > indexPath.row) {
+            return [self.cellHeights[indexPath.row] intValue];
+        } else {
+            return 100;
+        }
     }
 }
 
