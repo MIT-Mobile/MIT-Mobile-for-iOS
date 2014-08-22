@@ -16,12 +16,13 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
+- (void)reloadData;
 @end
 
 @protocol MITNewsStoryDataSource <NSObject>
 @optional
 - (BOOL)viewController:(UIViewController*)viewController isFeaturedCategoryInSection:(NSUInteger)section;
-- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
+- (void)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
 - (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section;
 - (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block;
 

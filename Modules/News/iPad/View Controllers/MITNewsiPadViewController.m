@@ -303,6 +303,15 @@
     }
 }
 
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -482,16 +491,14 @@
 
     __weak MITNewsiPadViewController *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
-        if(error) {
+        MITNewsiPadViewController *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if(error) {
             if (completion) {
                 completion(error);
                 return;
             }
-        };
-        MITNewsiPadViewController *blockSelf = weakSelf;
-
-        if (!blockSelf) {
-            return;
         } else {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
 
@@ -514,6 +521,9 @@
 
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
+            
+            [self reloadData];
+            
             [blockSelf refreshDataSources:completion];
         }
     }];
@@ -526,7 +536,7 @@
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
         dispatch_group_enter(refreshGroup);
-
+        
         [dataSource refresh:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",dataSource);
@@ -545,12 +555,8 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         dispatch_group_wait(refreshGroup, DISPATCH_TIME_FOREVER);
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (self.activeViewController == self.gridViewController) {
-                [self.gridViewController.collectionView reloadData];
-            } else if (self.activeViewController == self.listViewController) {
-                [self.listViewController.tableView reloadData];
-            }
-
+            [self reloadData];
+            
             if (completion) {
                 completion(updateError);
             }
@@ -569,12 +575,10 @@
     return [dataSource hasNextPage];
 }
 
-- (BOOL)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
+- (void)loadMoreItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     [dataSource nextPage:block];
-    
-    return YES;
 }
 
 - (BOOL)refreshItemsForCategoryInSection:(NSUInteger)section completion:(void(^)(NSError *error))block

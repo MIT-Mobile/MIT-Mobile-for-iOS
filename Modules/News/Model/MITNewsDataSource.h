@@ -17,6 +17,6 @@
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext;
 
 - (BOOL)hasNextPage;
-- (BOOL)nextPage:(void(^)(NSError *error))block;
+- (void)nextPage:(void(^)(NSError *error))block;
 - (void)refresh:(void(^)(NSError *error))block;
 @end
