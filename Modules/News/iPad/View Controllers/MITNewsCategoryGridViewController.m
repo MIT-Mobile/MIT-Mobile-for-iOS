@@ -110,7 +110,11 @@
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
-                self.errorMessage = error.localizedDescription;
+                if (error.code == -1009) {
+                    self.errorMessage = @"No Internet Connection";
+                } else {
+                    self.errorMessage = @"Failed...";
+                }
                 if (self.navigationController.toolbarHidden) {
                     
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{

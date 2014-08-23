@@ -174,8 +174,11 @@
     [self.dataSource refresh:^(NSError *error) {
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            self.errorMessage = error.localizedDescription;
-            [self removeLoadingView];
+            if (error.code == -1009) {
+                self.errorMessage = @"No Internet Connection";
+            } else {
+                self.errorMessage = @"Failed...";
+            }            [self removeLoadingView];
             [self addNoResultsView];
 
         } else {
@@ -211,22 +214,20 @@
             _storyUpdateInProgress = FALSE;
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                self.errorMessage = error.localizedDescription;
-                if (self.navigationController.toolbarHidden) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:2
-                                                         target:self
-                                                       selector:@selector(clearFailAfterTwoSeconds)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                if (error.code == -1009) {
+                    self.errorMessage = @"No Internet Connection";
                 } else {
-                    UIAlertView *failedRefreshAlertView = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil , nil];
-                    [failedRefreshAlertView show];
-                    self.errorMessage = nil;
+                    self.errorMessage = @"Failed...";
                 }
-                [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [NSTimer scheduledTimerWithTimeInterval:2
+                                                     target:self
+                                                   selector:@selector(clearFailAfterTwoSeconds)
+                                                   userInfo:nil
+                                                    repeats:NO];
+                    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                }];
+                
             } else {
                 self.errorMessage = nil;
                 DDLogVerbose(@"refreshed data source %@",self.dataSource);
@@ -244,7 +245,7 @@
 - (void)clearFailAfterTwoSeconds
 {
     self.errorMessage = nil;
-        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - hide/show Recents

@@ -96,7 +96,7 @@
     
     if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
         if (!self.lastUpdated) {
-            [self reloadViewItems:nil];
+            [self reloadViewItems:self.refreshControl];
         } else {
             NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                 toDate:[NSDate date]];
@@ -289,14 +289,18 @@
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    self.presentationStyle = MITNewsPresentationStyleGrid;
-    [self updateNavigationItem:YES];
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [self updateNavigationItem:YES];
+    }
 }
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    self.presentationStyle = MITNewsPresentationStyleList;
-    [self updateNavigationItem:YES];
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [self updateNavigationItem:YES];
+    }
 }
 
 - (void)reloadData
@@ -394,28 +398,29 @@
     [parentViewController.navigationItem setBackBarButtonItem:item];
 }
 
-#pragma mark reloadViewItems
+#pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
-        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        if (!refreshControl && !self.lastUpdated) {
+        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        if (!refreshControl.refreshing && !self.lastUpdated) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl beginRefreshing];
+                [refreshControl beginRefreshing];
             }];
         }
         [self reloadItems:^(NSError *error) {
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
-                if (refreshControl) {
+                if (refreshControl.refreshing) {
                     if (error.code == -1009) {
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
                     } else {
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                     }
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
                         [NSTimer scheduledTimerWithTimeInterval:.5
                                                          target:self
                                                        selector:@selector(endRefreshing)
@@ -424,9 +429,11 @@
                     }];
                 }
                 if(!self.lastUpdated) {
-                    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:error.localizedDescription]];
-                } else {
-                    
+                    if (error.code == -1009) {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    } else {
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    }
                 }
             } else {
                 if (!self.lastUpdated) {
@@ -435,24 +442,27 @@
                         NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                             toDate:[NSDate date]];
                         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                        [self.refreshControl endRefreshing];
+                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                        [refreshControl endRefreshing];
                     }];
+                } else {
+                    self.lastUpdated = [NSDate date];
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                        toDate:[NSDate date]];
+                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                    
+                    if (refreshControl.refreshing) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            self.refreshControl = refreshControl;
+                            [NSTimer scheduledTimerWithTimeInterval:.5
+                                                             target:self
+                                                           selector:@selector(endRefreshing)
+                                                           userInfo:nil
+                                                            repeats:NO];
+                        }];
+                    }
                 }
-                self.lastUpdated = [NSDate date];
-                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                    toDate:[NSDate date]];
-                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [NSTimer scheduledTimerWithTimeInterval:.5
-                                                     target:self
-                                                   selector:@selector(endRefreshing)
-                                                   userInfo:nil
-                                                    repeats:NO];
-                    self.refreshControl = refreshControl;
-                }];
             }
         }];
     }
