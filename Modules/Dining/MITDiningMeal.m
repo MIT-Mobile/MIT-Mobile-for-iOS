@@ -1,6 +1,7 @@
 #import "MITDiningMeal.h"
 #import "MITDiningMenuItem.h"
 #import "MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITDiningMeal
 
@@ -20,7 +21,6 @@
     
     return mapping;
 }
-
 
 - (NSString *)mealHoursDescription
 {

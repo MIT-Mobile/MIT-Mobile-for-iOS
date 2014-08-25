@@ -58,6 +58,8 @@
 		22D9032B199BF54D00AEBC7D /* MITDiningRetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D9032A199BF54D00AEBC7D /* MITDiningRetailVenue.m */; };
 		22D9032E199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D9032D199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m */; };
 		22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D90330199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m */; };
+		22D90341199D497100AEBC7D /* MITDiningVenueCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D9033F199D497100AEBC7D /* MITDiningVenueCell.m */; };
+		22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22D90340199D497100AEBC7D /* MITDiningVenueCell.xib */; };
 		22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADAF198C00A4003AEF43 /* MITMasterCalendar.m */; };
 		22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -671,6 +673,9 @@
 		22D9032D199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseVenueListViewController.m; path = Dining/MITDiningHouseVenueListViewController.m; sourceTree = "<group>"; };
 		22D9032F199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueListViewController.h; path = Dining/MITDiningRetailVenueListViewController.h; sourceTree = "<group>"; };
 		22D90330199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailVenueListViewController.m; path = Dining/MITDiningRetailVenueListViewController.m; sourceTree = "<group>"; };
+		22D9033E199D497100AEBC7D /* MITDiningVenueCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningVenueCell.h; path = Dining/MITDiningVenueCell.h; sourceTree = "<group>"; };
+		22D9033F199D497100AEBC7D /* MITDiningVenueCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningVenueCell.m; path = Dining/MITDiningVenueCell.m; sourceTree = "<group>"; };
+		22D90340199D497100AEBC7D /* MITDiningVenueCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningVenueCell.xib; path = Dining/MITDiningVenueCell.xib; sourceTree = "<group>"; };
 		22DDADAE198C00A4003AEF43 /* MITMasterCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMasterCalendar.h; sourceTree = "<group>"; };
 		22DDADAF198C00A4003AEF43 /* MITMasterCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMasterCalendar.m; sourceTree = "<group>"; };
 		22DDADB8198C0A9B003AEF43 /* MITCalendarSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarSelectionViewController.h; sourceTree = "<group>"; };
@@ -1910,6 +1915,16 @@
 			name = "View Controllers";
 			sourceTree = "<group>";
 		};
+		22D9033A199D48CD00AEBC7D /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				22D9033E199D497100AEBC7D /* MITDiningVenueCell.h */,
+				22D9033F199D497100AEBC7D /* MITDiningVenueCell.m */,
+				22D90340199D497100AEBC7D /* MITDiningVenueCell.xib */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -2744,6 +2759,7 @@
 			isa = PBXGroup;
 			children = (
 				A59A259E19A1432B00AD7E3A /* Views */,
+				22D9033A199D48CD00AEBC7D /* Cells */,
 				22D90323199BE70900AEBC7D /* View Controllers */,
 				2279E180199AADF8006BBFC5 /* Model */,
 				2279E17F199AADDB006BBFC5 /* Old */,
@@ -3838,6 +3854,7 @@
 			files = (
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
+				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */,
@@ -4252,6 +4269,7 @@
 				DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */,
 				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
 				22D90327199BF0E000AEBC7D /* MITDiningHomeViewController.m in Sources */,
+				22D90341199D497100AEBC7D /* MITDiningVenueCell.m in Sources */,
 				22D902F9199BA90C00AEBC7D /* MITDiningHouseDay.m in Sources */,
 				DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */,
 				DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */,

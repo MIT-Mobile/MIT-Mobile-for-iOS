@@ -1,10 +1,14 @@
 #import "MITDiningHouseVenueListViewController.h"
+#import "MITDiningVenueCell.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
+
+static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
 @interface MITDiningHouseVenueListViewController () <NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSArray *houseVenues;
 
 @end
 
@@ -22,11 +26,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = [UIColor redColor];
-    
+        
+    [self setupTableView];
     [self setupFetchedResultsController];
-    [self.fetchedResultsController performFetch:nil];
+
+    [self fetchVenues];
 }
 
 - (void)didReceiveMemoryWarning
@@ -39,77 +43,37 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return self.houseVenues.count;
 }
 
-/*
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITDiningHouseVenue *venue = self.houseVenues[indexPath.row];
+    return [MITDiningVenueCell heightForHouseVenue:venue tableViewWidth:self.view.frame.size.width];
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    MITDiningVenueCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITDiningVenueCell forIndexPath:indexPath];
     
-    // Configure the cell...
+    [cell setHouseVenue:self.houseVenues[indexPath.row] withNumberPrefix:nil];
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+
+- (void)setupTableView
 {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+    UINib *cellNib = [UINib nibWithNibName:kMITDiningVenueCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningVenueCell];
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark - Fetched Results Controller
 
@@ -131,8 +95,12 @@
                                                    cacheName:nil];
     self.fetchedResultsController = fetchedResultsController;
     _fetchedResultsController.delegate = self;
-    
+}
+
+- (void)fetchVenues
+{
     [self.fetchedResultsController performFetch:nil];
+    self.houseVenues =  self.fetchedResultsController.fetchedObjects;
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller

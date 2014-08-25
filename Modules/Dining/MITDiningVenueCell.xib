@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="86" id="KGk-i7-Jjw" customClass="MITDiningVenueCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="86"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="85"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5dg-ex-k22">
+                        <rect key="frame" x="9" y="10" width="68" height="65"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="5dg-ex-k22" secondAttribute="height" multiplier="68:65" id="9gM-I1-Nr6"/>
+                            <constraint firstAttribute="width" constant="68" id="g4T-vP-uiO"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Venue Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="168" translatesAutoresizingMaskIntoConstraints="NO" id="hP2-Y6-ifa">
+                        <rect key="frame" x="85" y="16" width="168" height="24"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="168" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-iu-ScW">
+                        <rect key="frame" x="85" y="48" width="168" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXI-ks-tD1">
+                        <rect key="frame" x="250" y="32" width="50" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="8pg-9P-av9"/>
+                            <constraint firstAttribute="width" constant="50" id="dBg-Wa-Fki"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="hP2-Y6-ifa" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="6h9-sG-yqp"/>
+                    <constraint firstAttribute="bottom" secondItem="aWi-iu-ScW" secondAttribute="bottom" constant="20" id="DKx-aM-Ygq"/>
+                    <constraint firstItem="hP2-Y6-ifa" firstAttribute="trailing" secondItem="aWi-iu-ScW" secondAttribute="trailing" id="KZs-jy-LN4"/>
+                    <constraint firstItem="hP2-Y6-ifa" firstAttribute="leading" secondItem="aWi-iu-ScW" secondAttribute="leading" id="NLQ-lo-MNF"/>
+                    <constraint firstItem="5dg-ex-k22" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="9" id="baI-pd-3ju"/>
+                    <constraint firstItem="hP2-Y6-ifa" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="85" id="bhV-aC-hOv"/>
+                    <constraint firstItem="aWi-iu-ScW" firstAttribute="top" secondItem="hP2-Y6-ifa" secondAttribute="bottom" constant="8" id="fWP-mC-Iki"/>
+                    <constraint firstAttribute="trailing" secondItem="hP2-Y6-ifa" secondAttribute="trailing" constant="67" id="pnX-vx-wWI"/>
+                    <constraint firstAttribute="trailing" secondItem="HXI-ks-tD1" secondAttribute="trailing" constant="20" id="tQL-iQ-rpq"/>
+                    <constraint firstAttribute="centerY" secondItem="HXI-ks-tD1" secondAttribute="centerY" id="u84-ap-vND"/>
+                    <constraint firstAttribute="centerY" secondItem="5dg-ex-k22" secondAttribute="centerY" id="uLw-g4-UrE"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="venueHoursLabel" destination="aWi-iu-ScW" id="tR7-LO-Ohv"/>
+                <outlet property="venueIconImageView" destination="5dg-ex-k22" id="3kg-Gk-Adk"/>
+                <outlet property="venueNameLabel" destination="hP2-Y6-ifa" id="KCM-2Q-Boa"/>
+                <outlet property="venueStatusLabel" destination="HXI-ks-tD1" id="z2d-8b-4Lh"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+</document>

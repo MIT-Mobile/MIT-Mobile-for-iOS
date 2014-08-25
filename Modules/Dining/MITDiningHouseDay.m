@@ -118,5 +118,26 @@
     
     return openClosedStatus;
 }
+- (NSString *)houseHoursDescription
+{
+    if (self.message) {
+        return self.message;
+    }
+   
+    NSMutableArray *hoursStrings = [NSMutableArray array];
+    for (MITDiningMeal *meal in self.meals) {
+        NSString *hours = [meal mealHoursDescription];
+        if (hours) {
+            [hoursStrings addObject:hours];
+        }
+    }
+    
+    if ([hoursStrings count] > 0) {
+        return [hoursStrings componentsJoinedByString:@", "];
+    }
+    else {
+        return @"Closed for the day";
+    }
+}
 
 @end
