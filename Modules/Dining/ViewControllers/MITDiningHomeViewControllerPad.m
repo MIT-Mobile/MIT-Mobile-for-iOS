@@ -110,11 +110,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.menuItemsBySection = [NSArray arrayWithArray:newMenuItemsBySection];
 }
 
-- (void)refreshTopMealSelectorView
-{
-    
-}
-
 - (void)selectBestMealForCurrentDate
 {
     MITDiningHouseDay *dayToSelect = nil;
@@ -129,12 +124,18 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     if (!dayToSelect && self.fetchedResultsController.fetchedObjects.count > 0) {
-        dayToSelect = self.fetchedResultsController.fetchedObjects[0];
+        MITDiningHouseVenue *venue = self.fetchedResultsController.fetchedObjects[0];
+        if (venue.mealsByDay.count > 0) {
+            dayToSelect = venue.mealsByDay[0];
+        }
     }
     
-    MITDiningMeal *mealToSelect = [dayToSelect bestMealForDate:[NSDate date]];
-    
-    [self selectDate:dayToSelect.date mealName:mealToSelect.name];
+    if (dayToSelect) {
+        NSDate *currentDate = [NSDate date];
+        MITDiningMeal *mealToSelect = [dayToSelect bestMealForDate:currentDate];
+        [self.mealSelector selectMeal:mealToSelect.name onDate:currentDate];
+        [self selectDate:dayToSelect.date mealName:mealToSelect.name];
+    }
 }
 
 #pragma mark - Fetched Results Controller

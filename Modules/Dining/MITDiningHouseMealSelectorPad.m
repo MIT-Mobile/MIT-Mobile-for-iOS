@@ -11,6 +11,7 @@
 @property (nonatomic, strong) NSDictionary *dateKeyedMeals;
 @property (nonatomic, strong) NSDictionary *mealsByLetterView;
 @property (nonatomic, strong) NSDictionary *letterViewsByDate;
+@property (nonatomic, strong) NSDictionary *dateLabelsByDate;
 @property (nonatomic, strong) UILabel *selectedMealNameLabel;
 @property (nonatomic, strong) UIView *selectedMealBackground;
 @property (nonatomic, weak) UILabel *currentlySelectedLetterView;
@@ -32,19 +33,34 @@
 {
     [super layoutSubviews];
     
-    [self refreshViews];
+    [self repositionViews];
 }
 
 - (UIView *)selectedMealBackground
 {
     if (!_selectedMealBackground) {
-        _selectedMealBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
-        _selectedMealBackground.backgroundColor = [UIColor redColor];
+        _selectedMealBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
+        _selectedMealBackground.backgroundColor = [UIColor mit_tintColor];
+        _selectedMealBackground.layer.cornerRadius = 12;
         _selectedMealBackground.hidden = YES;
         [self addSubview:_selectedMealBackground];
     }
     
     return _selectedMealBackground;
+}
+
+- (UILabel *)selectedMealNameLabel
+{
+    if (!_selectedMealNameLabel) {
+        _selectedMealNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 16)];
+        _selectedMealNameLabel.font = [UIFont systemFontOfSize:12];
+        _selectedMealNameLabel.textAlignment = NSTextAlignmentCenter;
+        _selectedMealNameLabel.textColor = [UIColor mit_tintColor];
+        _selectedMealNameLabel.hidden = YES;
+        [self addSubview:_selectedMealNameLabel];
+    }
+    
+    return _selectedMealNameLabel;
 }
 
 #pragma mark - Public Methods
@@ -73,6 +89,14 @@
     letterView.textColor = [UIColor whiteColor];
     self.selectedMealBackground.center = letterView.center;
     self.selectedMealBackground.hidden = NO;
+    [self bringSubviewToFront:letterView];
+    
+    CGPoint selectedMealNameLabelCenter = self.selectedMealNameLabel.center;
+    selectedMealNameLabelCenter.x = letterView.center.x;
+    self.selectedMealNameLabel.center = selectedMealNameLabelCenter;
+    
+    self.selectedMealNameLabel.hidden = NO;
+    
     self.currentlySelectedLetterView = letterView;
 }
 
@@ -84,6 +108,7 @@
     
     letterView.textColor = [UIColor blackColor];
     self.selectedMealBackground.hidden = YES;
+    self.selectedMealNameLabel.hidden = YES;
     self.currentlySelectedLetterView = nil;
 }
 
@@ -97,6 +122,7 @@
             for (UILabel *letterView in letterViews) {
                 MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
                 if ([meal.name isEqualToString:mealName]) {
+                    self.selectedMealNameLabel.text = meal.name;
                     [self selectLetterView:letterView];
                     break;
                 }
@@ -151,9 +177,63 @@
 
 - (void)refreshViews
 {
-    for (UIView *view in self.subviews) {
-        [view removeFromSuperview];
+    for (NSDate *dateKey in [self.letterViewsByDate allKeys]) {
+        NSOrderedSet *letterViews = [self.letterViewsByDate objectForKey:dateKey];
+        for (UILabel *letterView in letterViews) {
+            [letterView removeFromSuperview];
+        }
     }
+    
+    NSArray *dateOrderedKeys = [[self.dateKeyedMeals allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [obj1 compare:obj2];
+    }];
+    
+    NSMutableDictionary *newMealsByLetterView = [NSMutableDictionary dictionary];
+    NSMutableDictionary *newLetterViewsByDate = [NSMutableDictionary dictionary];
+    NSMutableDictionary *newDateLabelsByDate = [NSMutableDictionary dictionary];
+    
+    for (NSInteger i = 0; i < dateOrderedKeys.count; i++) {
+        NSDate *date = dateOrderedKeys[i];
+        NSOrderedSet *meals = [self.dateKeyedMeals objectForKey:date];
+        
+        NSMutableOrderedSet *letterViewsForCurrentDate = [NSMutableOrderedSet orderedSet];
+        
+        for (NSInteger j = 0; j < meals.count; j++) {
+            MITDiningMeal *meal = meals[j];
+            
+            UILabel *mealLetterLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+            mealLetterLabel.text = [[meal.name substringToIndex:1] uppercaseString];
+            mealLetterLabel.userInteractionEnabled = YES;
+            mealLetterLabel.textAlignment = NSTextAlignmentCenter;
+            mealLetterLabel.backgroundColor = [UIColor clearColor];
+            [mealLetterLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(letterViewTapped:)]];
+            [self addSubview:mealLetterLabel];
+            
+            [newMealsByLetterView setObject:meal forKey:[NSString stringWithFormat:@"%p", mealLetterLabel]];
+            [letterViewsForCurrentDate addObject:mealLetterLabel];
+        }
+        
+        [newLetterViewsByDate setObject:letterViewsForCurrentDate forKey:date];
+        
+        UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        dateLabel.text = [self stringForMealDate:date];
+        dateLabel.textAlignment = NSTextAlignmentCenter;
+        dateLabel.font = [UIFont systemFontOfSize:12];
+        
+        
+        [self addSubview:dateLabel];
+        [newDateLabelsByDate setObject:dateLabel forKey:date];
+    }
+    
+    self.mealsByLetterView = [NSDictionary dictionaryWithDictionary:newMealsByLetterView];
+    self.letterViewsByDate = [NSDictionary dictionaryWithDictionary:newLetterViewsByDate];
+    self.dateLabelsByDate = [NSDictionary dictionaryWithDictionary:newDateLabelsByDate];
+    
+    [self repositionViews];
+}
+
+- (void)repositionViews
+{
     
     NSArray *dateOrderedKeys = [[self.dateKeyedMeals allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         return [obj1 compare:obj2];
@@ -166,7 +246,7 @@
     }
     
     CGFloat mealLetterLabelSize = 20; // 18pt square for each letter
-    CGFloat selectedMealNameLabelHeight = 14;
+    CGFloat selectedMealNameLabelHeight = self.selectedMealNameLabel.bounds.size.height;
     CGFloat dateLabelHeight = selectedMealNameLabelHeight;
     CGFloat verticalPadding = 10;
     
@@ -189,43 +269,27 @@
     
     CGFloat currentXOffset = self.horizontalInset;
     
-    NSMutableDictionary *newMealsByLetterView = [NSMutableDictionary dictionary];
-    NSMutableDictionary *newLetterViewsByDate = [NSMutableDictionary dictionary];
-    
     for (NSInteger i = 0; i < dateOrderedKeys.count; i++) {
         NSDate *date = dateOrderedKeys[i];
-        NSOrderedSet *meals = [self.dateKeyedMeals objectForKey:date];
+        NSOrderedSet *letterViews = [self.letterViewsByDate objectForKey:date];
         
-        NSMutableOrderedSet *letterViewsForCurrentDate = [NSMutableOrderedSet orderedSet];
         CGFloat sectionXOffset = currentXOffset;
         
-        for (NSInteger j = 0; j < meals.count; j++) {
-            MITDiningMeal *meal = meals[j];
-            
-            UILabel *mealLetterLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentXOffset, self.bounds.size.height - mealLetterLabelSize - verticalPadding, mealLetterLabelSize, mealLetterLabelSize)];
-            mealLetterLabel.text = [[meal.name substringToIndex:1] uppercaseString];
-            mealLetterLabel.userInteractionEnabled = YES;
-            mealLetterLabel.textAlignment = NSTextAlignmentCenter;
-            mealLetterLabel.backgroundColor = [UIColor clearColor];
-            [mealLetterLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(letterViewTapped:)]];
-            [self addSubview:mealLetterLabel];
-            
-            [newMealsByLetterView setObject:meal forKey:[NSString stringWithFormat:@"%p", mealLetterLabel]];
-            [letterViewsForCurrentDate addObject:mealLetterLabel];
+        for (NSInteger j = 0; j < letterViews.count; j++) {
+            UILabel *letterView = letterViews[j];
+            letterView.frame = CGRectMake(currentXOffset, self.bounds.size.height - selectedMealNameLabelHeight - mealLetterLabelSize - verticalPadding, mealLetterLabelSize, mealLetterLabelSize);
             
             currentXOffset += mealLetterLabelSize;
-            if (j != meals.count - 1) {
+            if (j != letterViews.count - 1) {
                 currentXOffset += interMealSpacing;
             }
         }
         
-        [newLetterViewsByDate setObject:letterViewsForCurrentDate forKey:date];
+        UILabel *dateLabel = [self.dateLabelsByDate objectForKey:date];
+        dateLabel.frame = CGRectMake(sectionXOffset, self.bounds.size.height - selectedMealNameLabelHeight - mealLetterLabelSize - (2 * verticalPadding) - dateLabelHeight, currentXOffset - sectionXOffset, 14);
         
-        UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(sectionXOffset, self.bounds.size.height - mealLetterLabelSize - (2 * verticalPadding) - dateLabelHeight, currentXOffset - sectionXOffset, 14)];
         CGFloat dateLabelCenterX = dateLabel.center.x;
-        dateLabel.text = [self stringForMealDate:date];
-        dateLabel.textAlignment = NSTextAlignmentCenter;
-        dateLabel.font = [UIFont systemFontOfSize:12];
+        
         CGRect dateLabelFrame = dateLabel.frame;
         dateLabelFrame.size.width = [dateLabel sizeThatFits:dateLabelFrame.size].width;
         dateLabel.frame = dateLabelFrame;
@@ -234,13 +298,18 @@
         dateLabelCenter.x = dateLabelCenterX;
         dateLabel.center = dateLabelCenter;
         
-        [self addSubview:dateLabel];
-        
         currentXOffset += interDaySpacing;
     }
     
-    self.mealsByLetterView = [NSDictionary dictionaryWithDictionary:newMealsByLetterView];
-    self.letterViewsByDate = [NSDictionary dictionaryWithDictionary:newLetterViewsByDate];
+    if (self.currentlySelectedLetterView) {
+        self.selectedMealBackground.center = self.currentlySelectedLetterView.center;
+        [self bringSubviewToFront:self.currentlySelectedLetterView];
+        
+        self.selectedMealNameLabel.frame = CGRectMake(0, self.bounds.size.height - selectedMealNameLabelHeight - verticalPadding, self.selectedMealNameLabel.frame.size.width, self.selectedMealNameLabel.frame.size.height);
+        CGPoint selectedMealNameLabelCenter = self.selectedMealNameLabel.center;
+        selectedMealNameLabelCenter.x = self.currentlySelectedLetterView.center.x;
+        self.selectedMealNameLabel.center = selectedMealNameLabelCenter;
+    }
 }
 
 - (void)letterViewTapped:(id)sender
