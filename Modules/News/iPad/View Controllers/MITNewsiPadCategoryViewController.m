@@ -242,6 +242,15 @@
     [self.searchBar becomeFirstResponder];
 }
 
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -332,6 +341,7 @@
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
             _storyUpdateInProgress = NO;
             if (error) {
@@ -345,7 +355,6 @@
 
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         self.refreshControl = refreshControl;
-
                         [NSTimer scheduledTimerWithTimeInterval:.5
                                                          target:self
                                                        selector:@selector(endRefreshing)
@@ -354,6 +363,7 @@
                     }];
                 }
             } else {
+                
                 self.lastUpdated = [NSDate date];
                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                     toDate:[NSDate date]];
@@ -370,13 +380,7 @@
                                                         repeats:NO];
                     }];
                 }
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (self.activeViewController == self.gridViewController) {
-                        [self.gridViewController.collectionView reloadData];
-                    } else if (self.activeViewController == self.listViewController) {
-                        [self.listViewController.tableView reloadData];
-                    }
-                }];
+                [self reloadData];
             }
         }];
     }

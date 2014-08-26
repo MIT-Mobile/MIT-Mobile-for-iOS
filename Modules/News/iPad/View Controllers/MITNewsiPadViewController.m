@@ -404,6 +404,7 @@
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        
         if (!refreshControl.refreshing && !self.lastUpdated) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [refreshControl endRefreshing];
@@ -411,9 +412,8 @@
 
             }];
         }
-
+        
         [self reloadItems:^(NSError *error) {
-
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
@@ -432,41 +432,25 @@
                                                     repeats:NO];
                 }];
             } else {
-                if (!self.lastUpdated) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.lastUpdated = [NSDate date];
-                        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                            toDate:[NSDate date]];
-                        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                        if (refreshControl.refreshing) {
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                self.refreshControl = refreshControl;
-                                [NSTimer scheduledTimerWithTimeInterval:.5
-                                                                 target:self
-                                                               selector:@selector(endRefreshing)
-                                                               userInfo:nil
-                                                                repeats:NO];
-                            }];
-                        }                    }];
-                } else {
-                    self.lastUpdated = [NSDate date];
-                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                        toDate:[NSDate date]];
-                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                
+                self.lastUpdated = [NSDate date];
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                    toDate:[NSDate date]];
+                NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                    
-                    if (refreshControl.refreshing) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            self.refreshControl = refreshControl;
-                            [NSTimer scheduledTimerWithTimeInterval:.5
-                                                             target:self
-                                                           selector:@selector(endRefreshing)
-                                                           userInfo:nil
-                                                            repeats:NO];
-                        }];
-                    }
+                }];
+                if (refreshControl.refreshing) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
                 }
+                [self reloadData];
             }
         }];
     }
