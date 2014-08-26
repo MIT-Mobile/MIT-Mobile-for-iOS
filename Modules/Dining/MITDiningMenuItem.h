@@ -10,4 +10,7 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * station;
 
++ (NSString *)pdfNameForDietaryFlag:(NSString *)flag;
++ (NSString *)displayNameForDietaryFlag:(NSString *)flag;
+
 @end

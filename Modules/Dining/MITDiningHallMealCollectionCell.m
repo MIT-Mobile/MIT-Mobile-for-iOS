@@ -2,6 +2,7 @@
 #import "MITDiningMenuItem.h"
 #import "DiningDietaryFlag.h"
 #import "Foundation+MITAdditions.h"
+#import "UIImage+PDF.h"
 
 @interface MITDiningHallMealCollectionCell ()
 
@@ -35,8 +36,20 @@
 - (void)setMenuItem:(MITDiningMenuItem *)menuItem
 {
     self.stationLabel.text = menuItem.station;
-    self.mealTitleLabel.text = menuItem.name;
     self.mealDescriptionLabel.text = menuItem.itemDescription;
+    
+    NSMutableAttributedString *mealNameLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", menuItem.name]];
+    
+    for (NSString *dietaryFlag in menuItem.dietaryFlags) {
+        UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
+        NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
+        dietaryFlagAttachment.image = dietaryFlagImage;
+        
+        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
+        [mealNameLabelString appendAttributedString:imageString];
+    }
+    
+    self.mealTitleLabel.attributedText = mealNameLabelString;
 }
 
 #pragma mark - Determining Dynamic Cell Height

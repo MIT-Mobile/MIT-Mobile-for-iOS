@@ -9,6 +9,8 @@
 #import "MITDiningMeal.h"
 #import "TopAlignedCollectionViewFlowLayout.h"
 #import "MITDiningHouseMealSelectorPad.h"
+#import "UIImage+PDF.h"
+#import "MITDiningMenuItem.h"
 
 static NSString * const kMITDiningHallMealCollectionCellNib = @"MITDiningHallMealCollectionCell";
 static NSString * const kMITDiningHallMealCollectionCellIdentifier = @"kMITDiningHallMealCollectionCellIdentifier";
@@ -27,6 +29,8 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 @property (nonatomic, strong) NSDate *currentlySelectedDate;
 @property (nonatomic, strong) NSString *currentlySelectedMeal;
 @property (nonatomic, strong) NSArray *menuItemsBySection;
+@property (nonatomic, strong) NSArray *dietaryFlagFilters;
+@property (nonatomic, strong) NSArray *filteredMenuItemsBySection;
 
 @end
 
@@ -44,7 +48,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
     self.navigationController.navigationBar.translucent = NO;
     
@@ -108,6 +111,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     self.menuItemsBySection = [NSArray arrayWithArray:newMenuItemsBySection];
+    [self refreshFilteredMenuItems];
 }
 
 - (void)selectBestMealForCurrentDate
@@ -136,6 +140,42 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
         [self.mealSelector selectMeal:mealToSelect.name onDate:currentDate];
         [self selectDate:dayToSelect.date mealName:mealToSelect.name];
     }
+}
+
+- (void)setDietaryFlagFilters:(NSArray *)filters
+{
+    if ([_dietaryFlagFilters isEqualToArray:filters]) {
+        return;
+    }
+    
+    _dietaryFlagFilters = filters;
+    [self refreshFilteredMenuItems];
+    [self.collectionView reloadData];
+}
+
+- (void)refreshFilteredMenuItems
+{
+    NSMutableArray *newFilteredMenuItems = [NSMutableArray array];
+    
+    for (NSArray *menuItemsArray in self.menuItemsBySection) {
+        NSMutableArray *filteredMenuItemsArray = [NSMutableArray array];
+        
+        for (MITDiningMenuItem *menuItem in menuItemsArray) {
+            if (menuItem.dietaryFlags && [menuItem.dietaryFlags isKindOfClass:[NSArray class]]) {
+                for (NSString *dietaryFlag in menuItem.dietaryFlags) {
+                    for (NSString *dietaryFlagFilter in self.dietaryFlagFilters) {
+                        if ([dietaryFlag isEqualToString:dietaryFlagFilter]) {
+                            [filteredMenuItemsArray addObject:menuItem];
+                        }
+                    }
+                }
+            }
+        }
+        
+        [newFilteredMenuItems addObject:filteredMenuItemsArray];
+    }
+    
+    self.filteredMenuItemsBySection = [NSArray arrayWithArray:newFilteredMenuItems];
 }
 
 #pragma mark - Fetched Results Controller
@@ -167,7 +207,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    NSLog(@"context changed");
     [self.mealSelector setVenues:self.fetchedResultsController.fetchedObjects];
     
     if (!self.currentlySelectedMeal) {
@@ -186,15 +225,25 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSArray *menuItemsArray = self.menuItemsBySection[section];
-    return menuItemsArray.count;
+    if (self.dietaryFlagFilters.count > 0) {
+        NSArray *menuItemsArray = self.filteredMenuItemsBySection[section];
+        return menuItemsArray.count;
+    } else {
+        NSArray *menuItemsArray = self.menuItemsBySection[section];
+        return menuItemsArray.count;
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     MITDiningHallMealCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier forIndexPath:indexPath];
     
-    NSArray *menuItemsArray = self.menuItemsBySection[indexPath.section];
+    NSArray *menuItemsArray;
+    if (self.dietaryFlagFilters.count > 0) {
+        menuItemsArray = self.filteredMenuItemsBySection[indexPath.section];
+    } else {
+        menuItemsArray = self.menuItemsBySection[indexPath.section];
+    }
     MITDiningMenuItem *menuItem = menuItemsArray[indexPath.item];
     
     [cell setMenuItem:menuItem];
@@ -239,7 +288,13 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     
     cellWidth = (collectionView.bounds.size.width - (2 * kMITDiningHallCollectionViewSectionHorizontalPadding) - ((numberOfColumns - 1) * interItemSpacing)) / numberOfColumns;
     
-    NSArray *menuItemsArray = self.menuItemsBySection[indexPath.section];
+    NSArray *menuItemsArray;
+    if (self.dietaryFlagFilters.count > 0) {
+        menuItemsArray = self.filteredMenuItemsBySection[indexPath.section];
+    } else {
+        menuItemsArray = self.menuItemsBySection[indexPath.section];
+    }
+    
     MITDiningMenuItem *menuItem = menuItemsArray[indexPath.item];
     CGFloat cellHeight = [MITDiningHallMealCollectionCell heightForMenuItem:menuItem width:cellWidth];
     
