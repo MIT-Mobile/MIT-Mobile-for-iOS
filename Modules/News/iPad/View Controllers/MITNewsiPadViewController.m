@@ -501,7 +501,6 @@
         } else if(error) {
             if (completion) {
                 completion(error);
-                return;
             }
         } if (categories) {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
