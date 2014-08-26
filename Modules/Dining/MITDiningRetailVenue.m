@@ -1,12 +1,14 @@
 #import "MITDiningRetailVenue.h"
 #import "MITDiningLocation.h"
 #import "MITDiningRetailDay.h"
-#import "MITAdditions.h"
+#import "MITDiningVenues.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITDiningRetailVenue
 
 @dynamic cuisine;
 @dynamic descriptionHTML;
+@dynamic favorite;
 @dynamic homepageURL;
 @dynamic iconURL;
 @dynamic identifier;
@@ -15,9 +17,9 @@
 @dynamic name;
 @dynamic payment;
 @dynamic shortName;
-@dynamic favorite;
 @dynamic hours;
 @dynamic location;
+@dynamic venues;
 
 + (RKMapping *)objectMapping
 {

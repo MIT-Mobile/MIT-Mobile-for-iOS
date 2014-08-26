@@ -3,12 +3,13 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITDiningLocation, MITDiningRetailDay;
+@class MITDiningLocation, MITDiningRetailDay, MITDiningVenues;
 
 @interface MITDiningRetailVenue : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) id cuisine;
 @property (nonatomic, retain) NSString * descriptionHTML;
+@property (nonatomic, retain) NSNumber * favorite;
 @property (nonatomic, retain) NSString * homepageURL;
 @property (nonatomic, retain) NSString * iconURL;
 @property (nonatomic, retain) NSString * identifier;
@@ -17,13 +18,13 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) id payment;
 @property (nonatomic, retain) NSString * shortName;
-@property (nonatomic, retain) NSNumber * favorite;
 @property (nonatomic, retain) NSOrderedSet *hours;
 @property (nonatomic, retain) MITDiningLocation *location;
+@property (nonatomic, retain) MITDiningVenues *venues;
 
 - (BOOL)isOpenNow;
-- (NSString *)hoursToday;
 - (MITDiningRetailDay *)retailDayForDate:(NSDate *)date;
+- (NSString *)hoursToday;
 
 @end
 

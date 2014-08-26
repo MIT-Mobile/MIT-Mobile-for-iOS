@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITDiningMenuItem;
+@class MITDiningHouseDay, MITDiningMenuItem;
 
 @interface MITDiningMeal : MITManagedObject <MITMappedObject>
 
@@ -11,6 +11,7 @@
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSDate * startTime;
+@property (nonatomic, retain) MITDiningHouseDay *houseDay;
 @property (nonatomic, retain) NSOrderedSet *items;
 
 - (NSString *)mealHoursDescription;

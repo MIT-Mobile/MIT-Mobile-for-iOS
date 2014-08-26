@@ -1,11 +1,13 @@
 #import "MITDiningHouseDay.h"
+#import "MITDiningHouseVenue.h"
 #import "MITDiningMeal.h"
-#import "MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITDiningHouseDay
 
 @dynamic date;
 @dynamic message;
+@dynamic houseVenue;
 @dynamic meals;
 
 + (RKMapping *)objectMapping
@@ -123,7 +125,7 @@
     if (self.message) {
         return self.message;
     }
-   
+    
     NSMutableArray *hoursStrings = [NSMutableArray array];
     for (MITDiningMeal *meal in self.meals) {
         NSString *hours = [meal mealHoursDescription];

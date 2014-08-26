@@ -1,7 +1,8 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningLocation.h"
-#import "MITAdditions.h"
+#import "MITDiningVenues.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITDiningHouseVenue
 
@@ -12,6 +13,8 @@
 @dynamic shortName;
 @dynamic location;
 @dynamic mealsByDay;
+@dynamic venues;
+
 
 + (RKMapping *)objectMapping
 {
@@ -23,7 +26,7 @@
     [mapping addAttributeMappingsFromArray:@[@"name", @"payment"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"location" toKeyPath:@"location" withMapping:[MITDiningLocation objectMapping]]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"meals_by_day" toKeyPath:@"mealsByDay" withMapping:[MITDiningHouseDay objectMapping]]];
-
+    
     [mapping setIdentificationAttributes:@[@"identifier"]];
     
     return mapping;
@@ -59,5 +62,6 @@
     MITDiningHouseDay *today = [self houseDayForDate:[NSDate date]];
     return [today dayHoursDescription];
 }
+
 
 @end

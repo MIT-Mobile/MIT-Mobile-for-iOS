@@ -1,9 +1,11 @@
 #import "MITDiningLinks.h"
+#import "MITDiningDining.h"
 
 @implementation MITDiningLinks
 
 @dynamic name;
 @dynamic url;
+@dynamic dining;
 
 + (RKMapping *)objectMapping
 {

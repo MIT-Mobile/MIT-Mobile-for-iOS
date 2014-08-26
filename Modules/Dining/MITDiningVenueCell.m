@@ -2,7 +2,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningRetailVenue.h"
 
-static CGFloat kMITDiningVenueCellEstimatedHeight = 80.0;
+static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
 @interface MITDiningVenueCell ()
 
@@ -22,6 +22,8 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 80.0;
     [self refreshLabelLayoutWidths];
    
     self.venueHoursLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    self.separatorInset = UIEdgeInsetsMake(0, 76, 0, 0);
+
 }
 
 - (void)setFrame:(CGRect)frame

@@ -1,5 +1,6 @@
 #import "MITDiningLocation.h"
-
+#import "MITDiningHouseVenue.h"
+#import "MITDiningRetailVenue.h"
 
 @implementation MITDiningLocation
 
@@ -11,6 +12,8 @@
 @dynamic state;
 @dynamic street;
 @dynamic zipCode;
+@dynamic houseVenue;
+@dynamic retailVenue;
 
 + (RKMapping *)objectMapping
 {
@@ -62,5 +65,6 @@
     }
     return locationDisplayString;
 }
+
 
 @end

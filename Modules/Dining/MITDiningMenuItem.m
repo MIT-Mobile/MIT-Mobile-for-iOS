@@ -1,5 +1,5 @@
 #import "MITDiningMenuItem.h"
-
+#import "MITDiningMeal.h"
 
 @implementation MITDiningMenuItem
 
@@ -7,6 +7,7 @@
 @dynamic itemDescription;
 @dynamic name;
 @dynamic station;
+@dynamic meal;
 
 + (RKMapping *)objectMapping
 {
@@ -15,7 +16,7 @@
     [mapping addAttributeMappingsFromArray:@[@"station", @"name"]];
     [mapping addAttributeMappingsFromDictionary:@{@"description" : @"itemDescription",
                                                   @"dietary_flags" : @"dietaryFlags"}];
-     
+    
     
     return mapping;
 }

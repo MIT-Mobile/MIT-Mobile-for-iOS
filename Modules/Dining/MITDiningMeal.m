@@ -1,6 +1,6 @@
 #import "MITDiningMeal.h"
+#import "MITDiningHouseDay.h"
 #import "MITDiningMenuItem.h"
-#import "MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 
 @implementation MITDiningMeal
@@ -9,6 +9,7 @@
 @dynamic message;
 @dynamic name;
 @dynamic startTime;
+@dynamic houseDay;
 @dynamic items;
 
 + (RKMapping *)objectMapping

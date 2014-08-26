@@ -1,36 +1,40 @@
 #import "MITDiningHouseVenueListViewController.h"
 #import "MITDiningVenueCell.h"
-#import "MITCoreData.h"
 #import "MITAdditions.h"
+#import "MITDiningDining.h"
+#import "MITDiningVenues.h"
+#import "MITDiningLinks.h"
 
+typedef NS_ENUM(NSInteger, kMITVenueListSection) {
+    kMITVenueListSectionAnnouncements = 0,
+    kMITVenueListSectionVenues,
+    kMITVenueListSectionLinks
+};
+
+static NSString *const kMITDiningAnnouncementsCell = @"kMITDiningAnnouncementsCell";
 static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
+static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
 
-@interface MITDiningHouseVenueListViewController () <NSFetchedResultsControllerDelegate>
+@interface MITDiningHouseVenueListViewController ()
 
-@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) NSArray *houseVenues;
+@property (nonatomic, strong) NSArray *diningLinks;
 
 @end
 
 @implementation MITDiningHouseVenueListViewController
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
         
     [self setupTableView];
+<<<<<<< HEAD
     [self setupFetchedResultsController];
 
     [self fetchVenues];
+=======
+>>>>>>> House Venues list complete, core data model changes mean you'll need to reinstall the app
 }
 
 - (void)didReceiveMemoryWarning
@@ -39,34 +43,7 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return self.houseVenues.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITDiningHouseVenue *venue = self.houseVenues[indexPath.row];
-    return [MITDiningVenueCell heightForHouseVenue:venue tableViewWidth:self.view.frame.size.width];
-}
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITDiningVenueCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITDiningVenueCell forIndexPath:indexPath];
-    
-    [cell setHouseVenue:self.houseVenues[indexPath.row] withNumberPrefix:nil];
-    
-    return cell;
-}
-
+#pragma mark - Table view data source/delegate
 
 - (void)setupTableView
 {
@@ -74,38 +51,146 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningVenueCell];
 }
 
-
-#pragma mark - Fetched Results Controller
-
-- (void)setupFetchedResultsController
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"MITDiningHouseVenue"
-                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
-    [fetchRequest setEntity:entity];
+    return 3;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
-                                                                   ascending:YES];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    switch (section) {
+        case kMITVenueListSectionAnnouncements:
+            return @"ANNOUNCEMENTS";
+            break;
+        case kMITVenueListSectionVenues:
+            return @"VENUES";
+            break;
+        case kMITVenueListSectionLinks:
+            return @"RESOURCES";
+            break;
+        default:
+            return @"";
+            break;
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch (section) {
+        case kMITVenueListSectionAnnouncements:
+            return 1;
+            break;
+        case kMITVenueListSectionVenues:
+            return self.houseVenues.count;
+            break;
+        case kMITVenueListSectionLinks:
+            return self.diningLinks.count;
+            
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat cellHeight = 44.0;
+    if (indexPath.section == 1) {
+        MITDiningHouseVenue *venue = self.houseVenues[indexPath.row];
+        cellHeight = [MITDiningVenueCell heightForHouseVenue:venue tableViewWidth:self.view.frame.size.width];
+    }
+    return cellHeight;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case kMITVenueListSectionAnnouncements:
+            return [self announcementCell];
+            break;
+        case kMITVenueListSectionVenues:
+            return [self houseVenueCellForIndexPath:indexPath];
+            break;
+        case kMITVenueListSectionLinks:
+            return [self linksCellForIndexPath:indexPath];
+            break;
+        default:
+            return nil;
+            break;
+    }
+}
+
+- (UITableViewCell *)houseVenueCellForIndexPath:(NSIndexPath *)indexPath
+{
+    MITDiningVenueCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningVenueCell forIndexPath:indexPath];
     
-    NSFetchedResultsController *fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
-                                          sectionNameKeyPath:nil
-                                                   cacheName:nil];
-    self.fetchedResultsController = fetchedResultsController;
-    _fetchedResultsController.delegate = self;
+    [cell setHouseVenue:self.houseVenues[indexPath.row] withNumberPrefix:nil];
+        
+    return cell;
 }
 
-- (void)fetchVenues
+- (UITableViewCell *)announcementCell
 {
-    [self.fetchedResultsController performFetch:nil];
-    self.houseVenues =  self.fetchedResultsController.fetchedObjects;
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningAnnouncementsCell];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITDiningAnnouncementsCell];
+        cell.backgroundColor = [UIColor colorWithRed:255/255.0 green:253/255.0 blue:205/255.0 alpha:1];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    
+    cell.textLabel.text = [[self.diningData.announcementsHTML stringByStrippingTags] stringByDecodingXMLEntities];
+    
+    return cell;
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
+- (UITableViewCell *)linksCellForIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"context changed");
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningLinksCell];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITDiningLinksCell];
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+    }
+    
+    MITDiningLinks *link = self.diningLinks[indexPath.row];
+    cell.textLabel.text = link.name;
+
+    return cell;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    switch (indexPath.section) {
+        case kMITVenueListSectionAnnouncements:
+            
+            break;
+        case kMITVenueListSectionVenues:
+            
+            break;
+        case kMITVenueListSectionLinks:
+        {
+            MITDiningLinks *link = self.diningLinks[indexPath.row];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link.url]];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - Setters
+
+- (void)setDiningData:(MITDiningDining *)diningData
+{
+    _diningData = diningData;
+    self.houseVenues = [diningData.venues.house array];
+    self.diningLinks = [diningData.links array];
+    [self.tableView reloadData];
+}
+
+
 
 @end

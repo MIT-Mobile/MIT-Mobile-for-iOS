@@ -1,5 +1,6 @@
 #import "MITDiningRetailDay.h"
-#import "MITAdditions.h"
+#import "MITDiningRetailVenue.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITDiningRetailDay
 
@@ -7,6 +8,7 @@
 @dynamic endTime;
 @dynamic message;
 @dynamic startTime;
+@dynamic retailHours;
 
 + (RKMapping *)objectMapping
 {
