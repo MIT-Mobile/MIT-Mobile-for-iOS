@@ -20,4 +20,42 @@
     return mapping;
 }
 
++ (NSString *)pdfNameForDietaryFlag:(NSString *)flag
+{
+    NSDictionary *flagPdfs = @{
+        @"farm to fork": @"dining/farm_to_fork.pdf",
+        @"organic": @"dining/organic.pdf",
+        @"seafood watch": @"dining/seafood_watch.pdf",
+        @"vegan": @"dining/vegan.pdf",
+        @"vegetarian": @"dining/vegetarian.pdf",
+        @"for your well-being": @"dining/well_being.pdf",
+        @"made without gluten": @"dining/gluten_free.pdf",
+        @"halal": @"dining/halal.pdf",
+        @"kosher": @"dining/kosher.pdf",
+        @"humane": @"dining/humane.pdf",
+        @"in balance": @"dining/in_balance.pdf"
+    };
+    
+    return flagPdfs[flag];
+}
+
++ (NSString *)displayNameForDietaryFlag:(NSString *)flag
+{
+    NSDictionary *flagDisplayNames = @{
+        @"farm to fork": @"Farm to Fork",
+        @"organic": @"Organic",
+        @"seafood watch": @"Seafood Watch",
+        @"vegan": @"Vegan",
+        @"vegetarian": @"Vegetarian",
+        @"for your well-being": @"For Your Well-Being",
+        @"made without gluten": @"Made Without Gluten",
+        @"halal": @"Halal",
+        @"kosher": @"Kosher",
+        @"humane": @"Humane",
+        @"in balance": @"In Balance"
+    };
+    
+    return flagDisplayNames[flag];
+}
+
 @end

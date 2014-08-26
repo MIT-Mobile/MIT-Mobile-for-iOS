@@ -3,6 +3,7 @@
 //#import "DiningData.h"
 //#import "DiningDietaryFlag.h"
 #import "MITDiningHomeViewController.h"
+#import "MITDiningHomeViewControllerPad.h"
 
 
 @implementation DiningModule
@@ -30,7 +31,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITDiningHomeViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITDiningHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end

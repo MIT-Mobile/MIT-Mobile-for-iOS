@@ -29,4 +29,5 @@
 - (void)removeItemsObject:(MITDiningMenuItem *)value;
 - (void)addItems:(NSOrderedSet *)values;
 - (void)removeItems:(NSOrderedSet *)values;
+
 @end

@@ -382,6 +382,14 @@
 		A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */; };
 		A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */; };
 		A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */; };
+		A59A259919A142EB00AD7E3A /* MITDiningHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A259719A142EB00AD7E3A /* MITDiningHomeViewControllerPad.m */; };
+		A59A259A19A142EB00AD7E3A /* MITDiningHomeViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A59A259819A142EB00AD7E3A /* MITDiningHomeViewControllerPad.xib */; };
+		A59A25A519A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25A019A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m */; };
+		A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A59A25A119A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib */; };
+		A59A25A719A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25A319A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m */; };
+		A59A25A819A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A59A25A419A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib */; };
+		A59A25AB19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */; };
+		A59A25AF19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25AE19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m */; };
 		A5A24B57198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A24B56198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m */; };
 		A5A24B5D198F255500AA1CFC /* MITCalendarEventDateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A24B5C198F255500AA1CFC /* MITCalendarEventDateParser.m */; };
 		A5A24B681994307A00AA1CFC /* MITEventSearchTypeAheadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A24B661994307A00AA1CFC /* MITEventSearchTypeAheadViewController.m */; };
@@ -1292,6 +1300,19 @@
 		A580266B193E04B600BD0DDE /* MITShuttleStopNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopNotificationManager.m; sourceTree = "<group>"; };
 		A5960A101940B98D0028E86C /* MITShuttleMapBusAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleMapBusAnnotationView.h; sourceTree = "<group>"; };
 		A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleMapBusAnnotationView.m; sourceTree = "<group>"; };
+		A59A259619A142EB00AD7E3A /* MITDiningHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHomeViewControllerPad.h; path = Dining/ViewControllers/MITDiningHomeViewControllerPad.h; sourceTree = "<group>"; };
+		A59A259719A142EB00AD7E3A /* MITDiningHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHomeViewControllerPad.m; path = Dining/ViewControllers/MITDiningHomeViewControllerPad.m; sourceTree = "<group>"; };
+		A59A259819A142EB00AD7E3A /* MITDiningHomeViewControllerPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHomeViewControllerPad.xib; path = Dining/ViewControllers/MITDiningHomeViewControllerPad.xib; sourceTree = "<group>"; };
+		A59A259F19A1434D00AD7E3A /* MITDiningHallMealCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHallMealCollectionCell.h; path = Dining/MITDiningHallMealCollectionCell.h; sourceTree = "<group>"; };
+		A59A25A019A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHallMealCollectionCell.m; path = Dining/MITDiningHallMealCollectionCell.m; sourceTree = "<group>"; };
+		A59A25A119A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHallMealCollectionCell.xib; path = Dining/MITDiningHallMealCollectionCell.xib; sourceTree = "<group>"; };
+		A59A25A219A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHallMealCollectionHeader.h; path = Dining/MITDiningHallMealCollectionHeader.h; sourceTree = "<group>"; };
+		A59A25A319A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHallMealCollectionHeader.m; path = Dining/MITDiningHallMealCollectionHeader.m; sourceTree = "<group>"; };
+		A59A25A419A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHallMealCollectionHeader.xib; path = Dining/MITDiningHallMealCollectionHeader.xib; sourceTree = "<group>"; };
+		A59A25A919A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopAlignedCollectionViewFlowLayout.h; path = Dining/TopAlignedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopAlignedCollectionViewFlowLayout.m; path = Dining/TopAlignedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		A59A25AD19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectorPad.h; path = Dining/MITDiningHouseMealSelectorPad.h; sourceTree = "<group>"; };
+		A59A25AE19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseMealSelectorPad.m; path = Dining/MITDiningHouseMealSelectorPad.m; sourceTree = "<group>"; };
 		A5A24B55198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEventDateGroupedDataSource.h; sourceTree = "<group>"; };
 		A5A24B56198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarEventDateGroupedDataSource.m; sourceTree = "<group>"; };
 		A5A24B5B198F255500AA1CFC /* MITCalendarEventDateParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEventDateParser.h; sourceTree = "<group>"; };
@@ -1869,6 +1890,9 @@
 		22D90323199BE70900AEBC7D /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				A59A259619A142EB00AD7E3A /* MITDiningHomeViewControllerPad.h */,
+				A59A259719A142EB00AD7E3A /* MITDiningHomeViewControllerPad.m */,
+				A59A259819A142EB00AD7E3A /* MITDiningHomeViewControllerPad.xib */,
 				22D90324199BF0E000AEBC7D /* MITDiningHomeViewController.h */,
 				22D90325199BF0E000AEBC7D /* MITDiningHomeViewController.m */,
 				22D90326199BF0E000AEBC7D /* MITDiningHomeViewController.xib */,
@@ -2719,11 +2743,14 @@
 		48327CDD16F74EA0003A2F23 /* Dining */ = {
 			isa = PBXGroup;
 			children = (
+				A59A259E19A1432B00AD7E3A /* Views */,
 				22D90323199BE70900AEBC7D /* View Controllers */,
 				2279E180199AADF8006BBFC5 /* Model */,
 				2279E17F199AADDB006BBFC5 /* Old */,
 				48327CDE16F74F19003A2F23 /* DiningModule.h */,
 				48327CDF16F74F19003A2F23 /* DiningModule.m */,
+				A59A25A919A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.h */,
+				A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -3207,6 +3234,21 @@
 				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		A59A259E19A1432B00AD7E3A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A59A259F19A1434D00AD7E3A /* MITDiningHallMealCollectionCell.h */,
+				A59A25A019A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m */,
+				A59A25A119A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib */,
+				A59A25A219A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.h */,
+				A59A25A319A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m */,
+				A59A25A419A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib */,
+				A59A25AD19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.h */,
+				A59A25AE19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
@@ -3849,6 +3891,7 @@
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
 				5E8CE40A1922B12E00703920 /* MITShuttleHomeViewController.xib in Resources */,
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
+				A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */,
 				5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */,
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
 				2209CC3119929BE300E17100 /* MITEventsTableViewController.xib in Resources */,
@@ -3861,9 +3904,11 @@
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
+				A59A25A819A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib in Resources */,
 				80A7CBD0199E853300BFDD39 /* MITDiningMapsViewController.xib in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
 				A53F6DB51935077D0018E66C /* MITShuttleStopAlarmCell.xib in Resources */,
+				A59A259A19A142EB00AD7E3A /* MITDiningHomeViewControllerPad.xib in Resources */,
 				5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				229FFABA198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib in Resources */,
@@ -3950,6 +3995,7 @@
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				A5A30406198AD0FB00C9C273 /* MITEventSearchViewController.m in Sources */,
+				A59A25A719A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m in Sources */,
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
 				5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */,
 				A53F6DB41935077D0018E66C /* MITShuttleStopAlarmCell.m in Sources */,
@@ -3981,6 +4027,7 @@
 				A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
+				A59A25AF19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m in Sources */,
 				2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */,
 				2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */,
 				A5A303DA1982041200C9C273 /* MITWebviewCell.m in Sources */,
@@ -4192,6 +4239,7 @@
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
+				A59A259919A142EB00AD7E3A /* MITDiningHomeViewControllerPad.m in Sources */,
 				DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */,
 				DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */,
 				DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */,
@@ -4222,6 +4270,7 @@
 				223EDB831988384E00832ACD /* MITCalendarsSponsor.m in Sources */,
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
+				A59A25AB19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
@@ -4241,6 +4290,7 @@
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
 				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
 				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
+				A59A25A519A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				22D9032E199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,

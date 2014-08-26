@@ -1,0 +1,100 @@
+#import "MITDiningHallMealCollectionHeader.h"
+#import "MITDiningHouseVenue.h"
+#import "MITDiningHouseDay.h"
+#import "MITDiningMeal.h"
+
+@interface MITDiningHallMealCollectionHeader ()
+
+@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+@property (nonatomic, weak) IBOutlet UILabel *venueNameLabel;
+@property (nonatomic, weak) IBOutlet UILabel *currentMealHoursLabel;
+@property (nonatomic, weak) IBOutlet UILabel *currentStatusLabel;
+@property (nonatomic, weak) IBOutlet UIButton *infoButton;
+
+@end
+
+@implementation MITDiningHallMealCollectionHeader
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.currentStatusLabel.preferredMaxLayoutWidth = self.currentStatusLabel.bounds.size.width;
+}
+
+#pragma mark - Public Methods
+
+- (void)setDiningHouseVenue:(MITDiningHouseVenue *)venue day:(MITDiningHouseDay *)day mealName:(NSString *)mealName
+{
+    [self.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
+    
+    
+    self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, [[day mealForDate:[NSDate date]] mealHoursDescription]];
+    
+    if ([venue isOpenNow]) {
+        self.currentStatusLabel.text = @"Open";
+        self.currentStatusLabel.textColor = [UIColor greenColor];
+    } else {
+        self.currentStatusLabel.text = @"Closed";
+        self.currentStatusLabel.textColor = [UIColor redColor];
+    }
+    
+    CGFloat remainingWidth = self.bounds.size.width;
+    remainingWidth -= self.imageView.frame.origin.x + self.imageView.frame.size.width;
+    remainingWidth -= 10; // padding from icon to name label
+    
+    remainingWidth -= self.infoButton.frame.size.width;
+    
+    remainingWidth -= self.currentStatusLabel.frame.size.width;
+    remainingWidth -= 8; // padding from status to info button
+    
+    NSDictionary *hoursTextAttributes = @{NSFontAttributeName: self.currentMealHoursLabel.font};
+    CGSize hoursSize = [self.currentMealHoursLabel.text sizeWithAttributes:hoursTextAttributes];
+    remainingWidth -= hoursSize.width;
+    remainingWidth -= 8; // padding from hours to status
+    
+    remainingWidth -= 6; // padding from namel label to hours
+    
+    self.venueNameLabel.preferredMaxLayoutWidth = remainingWidth;
+    self.venueNameLabel.text = venue.name;
+}
+
+#pragma mark - Determining Dynamic Header Height
+
++ (CGFloat)heightForDiningHouseVenue:(MITDiningHouseVenue *)venue day:(MITDiningHouseDay *)day mealName:(NSString *)mealName collectionViewWidth:(CGFloat)collectionViewWidth
+{
+    MITDiningHallMealCollectionHeader *sizingHeader = [MITDiningHallMealCollectionHeader sizingHeader];
+    [sizingHeader setDiningHouseVenue:venue day:day mealName:mealName];
+    return [MITDiningHallMealCollectionHeader heightForHeader:sizingHeader collectionViewWidth:collectionViewWidth];
+}
+
++ (CGFloat)heightForHeader:(MITDiningHallMealCollectionHeader *)header collectionViewWidth:(CGFloat)width
+{
+    CGRect frame = header.frame;
+    frame.size.width = width;
+    header.frame = frame;
+    
+    CGFloat height = [header systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    return MAX(44, height);
+}
+
++ (MITDiningHallMealCollectionHeader *)sizingHeader
+{
+    static MITDiningHallMealCollectionHeader *sizingHeader;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITDiningHallMealCollectionHeader class]) bundle:nil];
+        sizingHeader = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+    });
+    return sizingHeader;
+}
+
+@end
