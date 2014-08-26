@@ -19,6 +19,7 @@
 
 #import "MITNewsiPadCategoryViewController.h"
 #import "MITViewWithCenterText.h"
+#import "Reachability.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -45,6 +46,7 @@
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
+@property (nonatomic) Reachability *internetReachability;
 
 #pragma mark Data Source
 @property (nonatomic, copy) NSArray *categories;
@@ -80,6 +82,10 @@
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+    self.internetReachability = [Reachability reachabilityForLocalWiFi];
+	[self.internetReachability startNotifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -425,7 +431,7 @@
                 } else {
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                if (!self.lastUpdated) {
+                if (![self.categories count]) {
                     [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
                 self.refreshControl = refreshControl;
@@ -501,6 +507,17 @@
     self.messageView = nil;
 }
 
+- (void)reachabilityChanged:(NSNotification *)note
+{
+    if (!self.lastUpdated) {
+        Reachability* curReach = [note object];
+        NetworkStatus netStatus = [curReach currentReachabilityStatus];
+        if (netStatus != NotReachable ) {
+            [self reloadViewItems:self.refreshControl];
+        }
+    }
+}
+
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
@@ -520,11 +537,9 @@
         MITNewsiPadViewController *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
-        } else if(error) {
-            if (completion) {
-                completion(error);
-            }
-        } if ([categories count]) {
+        }
+        
+        if ([categories count]) {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
 
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
@@ -549,15 +564,19 @@
             
             [self reloadData];
             
-            [blockSelf refreshDataSources:completion];
+            [blockSelf refreshDataSources:completion withError:error];
+        } else {
+            if (completion) {
+                completion(error);
+            }
         }
     }];
 }
 
-- (void)refreshDataSources:(void (^)(NSError*))completion
+- (void)refreshDataSources:(void (^)(NSError*))completion withError:(NSError *)error
 {
     dispatch_group_t refreshGroup = dispatch_group_create();
-    __block NSError *updateError = nil;
+    __block NSError *updateError = error;
 
     [self.dataSources enumerateObjectsUsingBlock:^(MITNewsDataSource *dataSource, NSUInteger idx, BOOL *stop) {
         dispatch_group_enter(refreshGroup);
@@ -616,7 +635,7 @@
 - (void)reloadItems:(void(^)(NSError *error))block
 {
     if ([_dataSources count]) {
-        [self refreshDataSources:block];
+        [self refreshDataSources:block withError:nil];
     } else {
         [self loadDataSources:block];
     }
