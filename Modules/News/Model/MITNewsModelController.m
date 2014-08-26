@@ -12,9 +12,12 @@
 #import "MITNewsRecentSearchQuery.h"
 @interface MITNewsModelController ()
 - (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, NSDictionary *pagingMetadata, NSError *error))block;
+@property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @end
 
 @implementation MITNewsModelController
+@synthesize fetchedResultsController = _fetchedResultsController;
+
 + (instancetype)sharedController
 {
     static MITNewsModelController *sharedModelController = nil;
@@ -39,7 +42,8 @@
                                                                 NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
                                                                 block(objects,nil);
                                                             } else {
-                                                                block(nil,error);
+                                                                NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
+                                                                block(fetchedObjects,error);
                                                             }
                                                         }];
                                                     }
@@ -112,6 +116,46 @@
                                                         }
                                                     }
                                                 }];
+}
+
+- (NSFetchRequest*)_configureFetchRequestForDataSource:(NSFetchRequest*)fetchRequest
+{
+    fetchRequest.entity = [MITNewsCategory entityDescription];
+    
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+    return fetchRequest;
+}
+
+- (void)_reloadFetchedResultsController
+{
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    [managedObjectContext performBlockAndWait:^{
+        if (!_fetchedResultsController) {
+            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+            [self _configureFetchRequestForDataSource:fetchRequest];
+            
+            _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+        } else {
+            [self _configureFetchRequestForDataSource:_fetchedResultsController.fetchRequest];
+        }
+        
+        [managedObjectContext reset];
+        
+        NSError *fetchError = nil;
+        BOOL success = [_fetchedResultsController performFetch:&fetchError];
+        if (!success) {
+            DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
+        }
+    }];
+}
+
+- (NSFetchedResultsController*)fetchedResultsController
+{
+    if (!_fetchedResultsController) {
+        [self _reloadFetchedResultsController];
+    }
+    
+    return _fetchedResultsController;
 }
 
 #pragma mark - Recent Search List

@@ -406,37 +406,31 @@
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
         if (!refreshControl.refreshing && !self.lastUpdated) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl endRefreshing];
-                [self.refreshControl beginRefreshing];
+                [refreshControl endRefreshing];
+                [refreshControl beginRefreshing];
 
             }];
         }
+
         [self reloadItems:^(NSError *error) {
+
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
-                if (refreshControl.refreshing) {
-                    if (error.code == -1009) {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
-                    } else {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
-                    }
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.refreshControl = refreshControl;
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                if (error.code == -1009) {
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                } else {
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                if(!self.lastUpdated) {
-                    if (error.code == -1009) {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
-                    } else {
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
-                    }
-                }
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    self.refreshControl = refreshControl;
+                    [NSTimer scheduledTimerWithTimeInterval:.5
+                                                     target:self
+                                                   selector:@selector(endRefreshing)
+                                                   userInfo:nil
+                                                    repeats:NO];
+                }];
             } else {
                 if (!self.lastUpdated) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -509,7 +503,7 @@
                 completion(error);
                 return;
             }
-        } else {
+        } if (categories) {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
 
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
