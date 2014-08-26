@@ -406,7 +406,9 @@
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
         if (!refreshControl.refreshing && !self.lastUpdated) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [refreshControl beginRefreshing];
+                [self.refreshControl endRefreshing];
+                [self.refreshControl beginRefreshing];
+
             }];
         }
         [self reloadItems:^(NSError *error) {
@@ -443,8 +445,16 @@
                                                                                             toDate:[NSDate date]];
                         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                        [refreshControl endRefreshing];
-                    }];
+                        if (refreshControl.refreshing) {
+                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                self.refreshControl = refreshControl;
+                                [NSTimer scheduledTimerWithTimeInterval:.5
+                                                                 target:self
+                                                               selector:@selector(endRefreshing)
+                                                               userInfo:nil
+                                                                repeats:NO];
+                            }];
+                        }                    }];
                 } else {
                     self.lastUpdated = [NSDate date];
                     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
