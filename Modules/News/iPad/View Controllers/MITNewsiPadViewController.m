@@ -413,12 +413,10 @@
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [refreshControl endRefreshing];
                 [refreshControl beginRefreshing];
-
             }];
         }
 
         [self reloadItems:^(NSError *error) {
-            NSLog(@"MXN %@",error);
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
