@@ -4,34 +4,27 @@
 
 #import "MITDiningRetailVenue.h"
 #import "MITDiningRetailVenueDetailViewController.h"
+#import "MITDiningRetailVenueDataManager.h"
+#import "MITDiningVenueCell.h"
 
-@interface MITDiningRetailVenueListViewController () <NSFetchedResultsControllerDelegate>
 
-@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
+
+@interface MITDiningRetailVenueListViewController ()
+
+@property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 
 @end
 
 @implementation MITDiningRetailVenueListViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor blueColor];
-
+    self.dataManager = [[MITDiningRetailVenueDataManager alloc] initWithRetailVenues:self.retailVenues];
     
-    [self setupFetchedResultsController];
-    [self.fetchedResultsController performFetch:nil];
-
+    [self setupTableView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -40,118 +33,61 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table view data source/delegate
+
+- (void)setupTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:kMITDiningVenueCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningVenueCell];
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return [self.dataManager numberOfSections];
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return [self.dataManager titleForSection:section];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return [self.dataManager numberOfRowsInSection:section];
 }
 
-/*
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITDiningRetailVenue *venue = [self.dataManager venueForIndexPath:indexPath];
+    return  [MITDiningVenueCell heightForRetailVenue:venue
+                                    withNumberPrefix:[self.dataManager absoluteIndexStringForVenue:venue]
+                                      tableViewWidth:self.view.frame.size.width];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
-    // Configure the cell...
+    MITDiningVenueCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningVenueCell forIndexPath:indexPath];
+   
+    MITDiningRetailVenue *venue = [self.dataManager venueForIndexPath:indexPath];
+
+    [cell setVenue:venue withNumberPrefix:[self.dataManager absoluteIndexStringForVenue:venue]];
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-#pragma mark - Detail View Controller
-
-- (void)pushDetailViewControllerForRetailVenue:(MITDiningRetailVenue *)retailVenue
-{
-    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.retailVenue = retailVenue;
-    [self.navigationController pushViewController:detailVC animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
-#pragma mark - Fetched Results Controller
+#pragma mark - Setters
 
-- (void)setupFetchedResultsController
+- (void)setRetailVenues:(NSArray *)retailVenues
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"MITDiningRetailVenue"
-                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
-    [fetchRequest setEntity:entity];
-    
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
-                                                                   ascending:YES];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
-    
-    NSFetchedResultsController *fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
-                                          sectionNameKeyPath:nil
-                                                   cacheName:nil];
-    self.fetchedResultsController = fetchedResultsController;
-    _fetchedResultsController.delegate = self;
-    
-    [self.fetchedResultsController performFetch:nil];
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    NSLog(@"context changed");
+    _retailVenues = retailVenues;
+    self.dataManager.retailVenues = retailVenues;
+    [self.tableView reloadData];
 }
 
 @end

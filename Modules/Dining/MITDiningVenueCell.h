@@ -4,9 +4,12 @@
 
 @interface MITDiningVenueCell : UITableViewCell
 
-- (void)setHouseVenue:(MITDiningHouseVenue *)venue withNumberPrefix:(NSString *)numberPrefix;
+- (void)setVenue:(id)venue withNumberPrefix:(NSString *)numberPrefix;
 
 + (CGFloat)heightForHouseVenue:(MITDiningHouseVenue *)venue
                 tableViewWidth:(CGFloat)width;
 
++ (CGFloat)heightForRetailVenue:(MITDiningRetailVenue *)venue
+               withNumberPrefix:(NSString *)numberPrefix
+                 tableViewWidth:(CGFloat)width;
 @end

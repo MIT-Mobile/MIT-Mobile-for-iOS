@@ -1,9 +1,7 @@
 #import <UIKit/UIKit.h>
 
-@class MITDiningDining;
-
 @interface MITDiningRetailVenueListViewController : UITableViewController
 
-@property (nonatomic, strong) MITDiningDining *diningData;
+@property (nonatomic, strong) NSArray *retailVenues;
 
 @end

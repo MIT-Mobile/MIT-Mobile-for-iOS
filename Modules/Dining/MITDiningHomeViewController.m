@@ -1,6 +1,7 @@
 #import "MITDiningHomeViewController.h"
 #import "MITDiningWebservices.h"
 #import "MITDiningDining.h"
+#import "MITDiningVenues.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
 
@@ -161,7 +162,7 @@
 - (void)updateDataInSubViewControllers
 {
     self.houseListViewController.diningData = self.masterDiningData;
-    self.retailListViewController.diningData = self.masterDiningData;
+    self.retailListViewController.retailVenues = [self.masterDiningData.venues.retail array];
 }
 
 - (void)menuButtonPressed

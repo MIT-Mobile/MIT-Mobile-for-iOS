@@ -4,6 +4,7 @@
 #import "MITDiningDining.h"
 #import "MITDiningVenues.h"
 #import "MITDiningLinks.h"
+#import "MITSingleWebViewCellTableViewController.h"
 
 typedef NS_ENUM(NSInteger, kMITVenueListSection) {
     kMITVenueListSectionAnnouncements = 0,
@@ -29,12 +30,6 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     [super viewDidLoad];
         
     [self setupTableView];
-<<<<<<< HEAD
-    [self setupFetchedResultsController];
-
-    [self fetchVenues];
-=======
->>>>>>> House Venues list complete, core data model changes mean you'll need to reinstall the app
 }
 
 - (void)didReceiveMemoryWarning
@@ -127,7 +122,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
 {
     MITDiningVenueCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningVenueCell forIndexPath:indexPath];
     
-    [cell setHouseVenue:self.houseVenues[indexPath.row] withNumberPrefix:nil];
+    [cell setVenue:self.houseVenues[indexPath.row] withNumberPrefix:nil];
         
     return cell;
 }
@@ -165,7 +160,14 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     switch (indexPath.section) {
         case kMITVenueListSectionAnnouncements:
+        {
+            MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] init];
+            vc.title = @"Announcements";
+            vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+            vc.htmlContent = self.diningData.announcementsHTML;
             
+            [self.navigationController pushViewController:vc animated:YES];
+        }
             break;
         case kMITVenueListSectionVenues:
             

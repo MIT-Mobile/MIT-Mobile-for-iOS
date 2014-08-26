@@ -23,7 +23,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
    
     self.venueHoursLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
     self.separatorInset = UIEdgeInsetsMake(0, 76, 0, 0);
-
+    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
 
 - (void)setFrame:(CGRect)frame
@@ -42,18 +42,21 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
 #pragma mark - Venue Setup
 
-- (void)setHouseVenue:(MITDiningHouseVenue *)venue withNumberPrefix:(NSString *)numberPrefix
+// HouseVenue and RetailVenue aren't subclassed for CoreData reasons, but they
+// share the same methods we need here, so we'll just accept type id, which is
+/// either a house or a retail object.
+- (void)setVenue:(id)venue withNumberPrefix:(NSString *)numberPrefix
 {
-    [self.venueIconImageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
+    [self.venueIconImageView setImageWithURL:[NSURL URLWithString:[venue iconURL]]];
     
-    NSString *nameLabelText = venue.name;
+    NSString *nameLabelText = [venue name];
     if (numberPrefix) {
         nameLabelText = [NSString stringWithFormat:@"%@. %@", numberPrefix, nameLabelText];
     }
     self.venueNameLabel.text = nameLabelText;
-    self.venueHoursLabel.text = @"8-10am, 12-3pm, 5-9pm";
+    self.venueHoursLabel.text = [venue hoursToday];
     
-    if (venue.isOpenNow) {
+    if ([venue isOpenNow]) {
         self.venueStatusLabel.text = @"Open";
         self.venueStatusLabel.textColor = [UIColor colorWithRed:23.0/255.0 green:137.0/255.0 blue:27.0/255.0 alpha:1.0];
     }
@@ -70,17 +73,17 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 + (CGFloat)heightForHouseVenue:(MITDiningHouseVenue *)venue
            tableViewWidth:(CGFloat)width
 {
-    [[MITDiningVenueCell sizingCell] setHouseVenue:venue withNumberPrefix:@""];
+    [[MITDiningVenueCell sizingCell] setVenue:venue withNumberPrefix:@""];
     return [MITDiningVenueCell heightForCell:[MITDiningVenueCell sizingCell] TableWidth:width];
 }
 
-//+ (CGFloat)heightForRetailVenue:(MITDiningRetailVenue *)venue
-//              withNumberPrefix:(NSString *)numberPrefix
-//                tableViewWidth:(CGFloat)width
-//{
-//    [[MITVenueCell sizingCell] setEvent:event withNumberPrefix:numberPrefix];
-//    return [MITCalendarEventCell heightForCell:[MITCalendarEventCell sizingCell] TableWidth:width];
-//}
++ (CGFloat)heightForRetailVenue:(MITDiningRetailVenue *)venue
+              withNumberPrefix:(NSString *)numberPrefix
+                tableViewWidth:(CGFloat)width
+{
+    [[MITDiningVenueCell sizingCell] setVenue:venue withNumberPrefix:numberPrefix];
+    return [MITDiningVenueCell heightForCell:[MITDiningVenueCell sizingCell] TableWidth:width];
+}
 
 + (CGFloat)heightForCell:(MITDiningVenueCell *)cell TableWidth:(CGFloat)width
 {
