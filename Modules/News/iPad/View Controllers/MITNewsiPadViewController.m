@@ -18,6 +18,7 @@
 #import "MITAdditions.h"
 
 #import "MITNewsiPadCategoryViewController.h"
+#import "MITViewWithCenterText.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -43,6 +44,7 @@
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, weak) MITViewWithCenterText *messageView;
 
 #pragma mark Data Source
 @property (nonatomic, copy) NSArray *categories;
@@ -403,6 +405,9 @@
 {
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
+        if (self.messageView) {
+            [self removeNoResultsView];
+        }
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
         if (!refreshControl.refreshing && !self.lastUpdated) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -413,7 +418,7 @@
         }
 
         [self reloadItems:^(NSError *error) {
-
+            NSLog(@"MXN %@",error);
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
@@ -422,15 +427,18 @@
                 } else {
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                
+                if (!self.lastUpdated) {
+                    [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
+                }
+                self.refreshControl = refreshControl;
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    self.refreshControl = refreshControl;
                     [NSTimer scheduledTimerWithTimeInterval:.5
                                                      target:self
                                                    selector:@selector(endRefreshing)
                                                    userInfo:nil
                                                     repeats:NO];
                 }];
+
             } else {
                 if (!self.lastUpdated) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -440,8 +448,8 @@
                         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                         if (refreshControl.refreshing) {
+                            self.refreshControl = refreshControl;
                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                self.refreshControl = refreshControl;
                                 [NSTimer scheduledTimerWithTimeInterval:.5
                                                                  target:self
                                                                selector:@selector(endRefreshing)
@@ -457,8 +465,8 @@
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                     
                     if (refreshControl.refreshing) {
+                        self.refreshControl = refreshControl;
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            self.refreshControl = refreshControl;
                             [NSTimer scheduledTimerWithTimeInterval:.5
                                                              target:self
                                                            selector:@selector(endRefreshing)
@@ -477,6 +485,22 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.refreshControl endRefreshing];
     }];
+}
+
+#pragma mark No Results / Loading More View
+- (void)addNoResultsViewWithMessage:(NSString *)message
+{
+    MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
+    noResultsView.frame = self.activeViewController.view.frame;
+    noResultsView.overviewText.text = message;
+    [self.view addSubview:noResultsView];
+    self.messageView = noResultsView;
+}
+
+- (void)removeNoResultsView
+{
+    [self.messageView removeFromSuperview];
+    self.messageView = nil;
 }
 
 @end
@@ -502,7 +526,7 @@
             if (completion) {
                 completion(error);
             }
-        } if (categories) {
+        } if ([categories count]) {
             NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
 
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
