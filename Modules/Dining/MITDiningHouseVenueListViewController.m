@@ -81,7 +81,6 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
             break;
         case kMITVenueListSectionLinks:
             return self.diningLinks.count;
-            
             break;
         default:
             return 0;

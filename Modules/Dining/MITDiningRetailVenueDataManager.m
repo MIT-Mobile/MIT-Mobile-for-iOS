@@ -112,10 +112,10 @@
             
             NSRange numberRange = [result rangeAtIndex:2];
             NSString *numbers;
-            if (numberRange.location != NSNotFound) {
-                numbers = [roomNumber substringWithRange:numberRange];
-            } else {
+            if (numberRange.location == NSNotFound) {
                 numbers = @"0";
+            } else {
+                numbers = [roomNumber substringWithRange:numberRange];
             }
             
             building.sortableName = [NSString stringWithFormat:@"%s%5s", [letters UTF8String], [numbers UTF8String]];

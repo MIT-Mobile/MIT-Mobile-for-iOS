@@ -62,7 +62,6 @@
 
     self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
-
 }
 
 - (void)performWebserviceCall
