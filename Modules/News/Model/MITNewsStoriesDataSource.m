@@ -152,12 +152,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 - (NSOrderedSet*)storiesUsingManagedObjectContext:(NSManagedObjectContext*)context
 {
     if ([self _canCacheRequest] || ([self.objectIdentifiers count] > 0)){
-        
         NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
-        if ([fetchedObjects count] == 0) {
-            [self _reloadFetchedResultsController];
-            fetchedObjects = self.fetchedResultsController.fetchedObjects;
-        }
         NSUInteger numberOfItems = MAX(self.maximumNumberOfItemsPerPage,[self.objectIdentifiers count]);
         numberOfItems = MIN(numberOfItems,[fetchedObjects count]);
         
