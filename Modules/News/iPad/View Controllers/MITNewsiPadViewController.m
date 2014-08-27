@@ -509,9 +509,7 @@
 
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
-            
-            [self reloadData];
-            
+                        
             [blockSelf refreshDataSources:completion];
         }
     }];
