@@ -213,7 +213,7 @@
         [self.dataSource nextPage:^(NSError *error) {
             _storyUpdateInProgress = FALSE;
             if (error) {
-                DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
                 if (error.code == -1009) {
                     self.errorMessage = @"No Internet Connection";
                 } else {
@@ -230,7 +230,7 @@
                 
             } else {
                 self.errorMessage = nil;
-                DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.searchTableView reloadData];
                 }];

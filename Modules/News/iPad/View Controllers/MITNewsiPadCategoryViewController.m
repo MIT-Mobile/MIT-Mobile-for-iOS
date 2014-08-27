@@ -382,17 +382,11 @@
                                          _storyUpdateInProgress = FALSE;
                                          
                                          if (error) {
-                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                             DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
                                              
                                          } else {
-                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 if (self.activeViewController == self.gridViewController) {
-                                                     [self.gridViewController.collectionView reloadData];
-                                                 } else if (self.activeViewController == self.listViewController) {
-                                                     [self.listViewController.tableView reloadData];
-                                                 }
-                                             }];
+                                             DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
+                                              [self reloadData];
                                          }
                                          if (block) {
                                              block(error);
@@ -403,6 +397,15 @@
         if (block) {
             block(nil);
         }
+    }
+}
+
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
     }
 }
 
