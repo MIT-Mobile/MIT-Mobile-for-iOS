@@ -31,11 +31,8 @@
 #import "ShuttleModule.h"
 #import "ToursModule.h"
 
-#import "ECSlidingViewController.h"
 #import "MITTouchstoneController.h"
-
 #import "MITRootViewController.h"
-
 #import "MITShuttleStopNotificationManager.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
@@ -67,7 +64,6 @@
     MITMobile *_remoteObjectManager;
 }
 
-@synthesize rootViewController = _rootViewController;
 @dynamic coreDataController,managedObjectModel,remoteObjectManager;
 
 + (void)initialize
@@ -116,20 +112,11 @@
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
     
     [self updateBasicServerInfo];
-    
-    // TODO: don't store state like this when we're using a springboard.
-	// set modules state
-	NSDictionary *modulesState = [[NSUserDefaults standardUserDefaults] objectForKey:MITModulesSavedStateKey];
-	for (MITModule *aModule in self.modules) {
-		NSDictionary *pathAndQuery = modulesState[aModule.tag];
-		aModule.currentPath = pathAndQuery[@"path"];
-		aModule.currentQuery = pathAndQuery[@"query"];
-	}
-    
-    // Override point for customization after view hierarchy is set
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationDidFinishLaunching];
-    }
+
+
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
+
+    [self setupRootViewController];
     
     // Register for push notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
@@ -219,16 +206,9 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationDidEnterBackground];
-    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationWillEnterForeground];
-    }
-    
     [MITUnreadNotifications updateUI];
 }
 
@@ -265,6 +245,26 @@
     });
 }
 
+#pragma mark - Private
+- (void)setupRootViewController
+{
+    if (self.rootViewController) {
+        MITRootViewController *rootViewController = self.rootViewController;
+
+        NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+        [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+            UIViewController *controller = module.homeViewController;
+
+            MITDrawerItem *drawerItem = [[MITDrawerItem alloc] initWithTitle:module.shortName image:module.springboardIcon];
+            controller.drawerItem = drawerItem;
+            [viewControllers addObject:controller];
+        }];
+
+        rootViewController.viewControllers = viewControllers;
+        [self.window addGestureRecognizer:rootViewController.panGesture];
+    }
+}
+
 #pragma mark - Class Extension Methods
 // TODO: This may not belong here.
 - (void)updateBasicServerInfo
@@ -278,11 +278,11 @@
 // Call these instead of [appDelegate.tabbar presentModal...], because dismissing that crashes the app
 // Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.window.rootViewController presentViewController:viewController animated:animated completion:NULL];
+    [self.rootViewController presentViewController:viewController animated:animated completion:NULL];
 }
 
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated {    
-    [self.window.rootViewController dismissViewControllerAnimated:animated completion:NULL];
+    [self.rootViewController dismissViewControllerAnimated:animated completion:NULL];
 }
 
 #pragma mark -
@@ -445,20 +445,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return _coreDataController;
 }
 
-- (UIWindow*)window
+- (MITRootViewController*)rootViewController
 {
-    if (!_window) {
-        [self loadWindow];
-        NSAssert(_window, @"failed to load main window");
+    UIViewController *rootViewController = self.window.rootViewController;
+    if ([rootViewController isKindOfClass:[MITRootViewController class]]) {
+        return (MITRootViewController*)rootViewController;
+    } else {
+        return nil;
     }
-    
-    return _window;
-}
-
-- (UIViewController*)rootViewController
-{
-    UIUserInterfaceIdiom *userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    return [self rootViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
 }
 
 - (NSArray*)modules
@@ -612,105 +606,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     _remoteObjectManager = remoteObjectManager;
 }
 
-- (void)loadWindow
-{
-    DDLogVerbose(@"creating window for application frame %@", NSStringFromCGRect([[UIScreen mainScreen] applicationFrame]));
-    
-    UIWindow *window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    window.backgroundColor = [UIColor mit_backgroundColor];
-    
-    // iOS 6's UIWindow doesn't do tintColor
-    if ([window respondsToSelector:@selector(setTintColor:)]) {
-        window.tintColor = [UIColor mit_tintColor];
-    }
-    
-    UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    window.rootViewController = [self rootViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
-    
-//    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:window.rootViewController];
-//    navigationController.delegate = self;
-//    self.rootNavigationController = navigationController;
-    
-    self.window = window;
-}
-/*
-- (UIViewController*)createRootViewControllerForPadIdiom
-{
-    MITLauncherListViewController *launcherViewController = [[MITLauncherListViewController alloc] init];
-    launcherViewController.dataSource = self;
-    launcherViewController.delegate = self;
-
-    launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
-    
-    UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo_dark"];
-    launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
-    launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
-    
-    UIViewController *topViewController = [[UIViewController alloc] init];
-    topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
-    
-    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:topViewController];
-    navigationController.navigationBarHidden = NO;
-    navigationController.toolbarHidden = YES;
-    
-    navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    navigationController.navigationBar.translucent = YES;
-    
-    navigationController.delegate = self;
-    
-    ECSlidingViewController *slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:navigationController];
-    slidingViewController.underLeftViewController = launcherViewController;
-    slidingViewController.anchorRightRevealAmount = 280.;
-    
-    UISwipeGestureRecognizer *gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(anchorRight)];
-    gestureRecognizer.numberOfTouchesRequired = 2;
-    gestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-    [navigationController.view addGestureRecognizer:gestureRecognizer];
-    
-    _topNavigationController = navigationController;
-    _slidingViewController = slidingViewController;
-    
-    MITModule *topModule = [self.modules firstObject];
-    [self showModuleForTag:topModule.tag];
-    
-    return slidingViewController;
-}
-
-- (UINavigationController*)createRootViewControllerForPhoneIdiom
-{
-    MITLauncherGridViewController *launcherViewController = [[MITLauncherGridViewController alloc] init];
-    launcherViewController.dataSource = self;
-    launcherViewController.delegate = self;
-    
-    UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo_dark"];
-    launcherViewController.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
-    launcherViewController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
-    
-    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:launcherViewController];
-    navigationController.navigationBarHidden = NO;
-    navigationController.toolbarHidden = YES;
-    
-    navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    navigationController.navigationBar.translucent = YES;
-    
-    navigationController.delegate = self;
-    
-    _topNavigationController = navigationController;
-    return navigationController;
-}*/
 
 #pragma mark Application modules helper methods
-- (UIViewController*)rootViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
-{
-    if (!_rootViewController) {
-        MITRootViewController *rootViewController = [[MITRootViewController alloc] init];
-        rootViewController.modules = self.modules;
-        _rootViewController = rootViewController;
-    }
-    
-    return _rootViewController;
-}
-
 - (void)registerModule:(MITModule*)module
 {
     NSString *tag = module.tag;
@@ -742,7 +639,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return moduleForTag;
 }
 
-- (UIViewController*)homeViewControllerForModuleWithTag:(NSString*)tag
+- (UIViewController*)viewControllerForModuleWithTag:(NSString*)tag
 {
     UIViewController *viewController = self.viewControllersByTag[tag];
  
@@ -769,47 +666,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
 {
-    [self.rootViewController showModuleWithTag:tag animated:animated];
-}
-
-- (void)showModuleForTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated
-{
-    MITModule *module = [self moduleForTag:tag];
-    
-    if (!module) {
-        DDLogWarn(@"failed to show module: no registered module for tag %@",tag);
-        return;
-    }
-    
-    void (^showModuleBlock)(void) = ^{
-        if (self.topNavigationController) {
-            UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
-            
-            UIImage *barButtonIcon = [UIImage imageNamed:@"global/menu"];
-            UIBarButtonItem *anchorLeftButton = [[UIBarButtonItem alloc] initWithImage:barButtonIcon style:UIBarButtonItemStylePlain target:self action:@selector(anchorRight:)];
-            homeViewController.navigationItem.leftBarButtonItem = anchorLeftButton;
-            
-            self.activeModule = module;
-            if (self.topNavigationController.topViewController == homeViewController) {
-                // Absolutely nothing to do, just exit here
-                return;
-            } else if ([self.topNavigationController.viewControllers containsObject:homeViewController]) {
-                [self.topNavigationController popToViewController:homeViewController animated:animated];
-            } else {
-                [self.topNavigationController popToRootViewControllerAnimated:NO];
-                [self.topNavigationController pushViewController:homeViewController animated:YES];
-            }
-            
-        }
-    };
-    
-    if (self.slidingViewController && (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered)) {
-        [self.slidingViewController resetTopViewAnimated:YES onComplete:^{
-            showModuleBlock();
-        }];
-    } else {
-        showModuleBlock();
-    }
+    self.rootViewController.selectedViewController = [self viewControllerForModuleWithTag:tag];
 }
 
 #pragma mark Preferences
@@ -827,26 +684,16 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     [[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
 
-#pragma mark - UIActions
-- (IBAction)anchorRight:(id)sender
-{
-    UIViewController *rootViewController = self.rootViewController;
-    if ([rootViewController isKindOfClass:[ECSlidingViewController class]]) {
-        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)rootViewController;
-        [slidingViewController anchorTopViewToRightAnimated:YES];
-    }
-}
-
 #pragma mark - Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
 {
-    [[self.window rootViewController] presentViewController:viewController animated:YES completion:nil];
+    [self.rootViewController presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
 {
-    [[self.window rootViewController] dismissViewControllerAnimated:YES completion:completion];
+    [self.rootViewController dismissViewControllerAnimated:YES completion:completion];
 }
 
 @end
