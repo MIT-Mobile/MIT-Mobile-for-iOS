@@ -435,6 +435,7 @@
                     [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
                 self.refreshControl = refreshControl;
+                if ([self.categories count]) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [NSTimer scheduledTimerWithTimeInterval:.5
                                                      target:self
@@ -442,6 +443,7 @@
                                                    userInfo:nil
                                                     repeats:NO];
                 }];
+                }
 
             } else {
                 if (!self.lastUpdated) {
@@ -561,8 +563,6 @@
 
             blockSelf.categories = [categorySet array];
             blockSelf.dataSources = dataSources;
-            
-            [self reloadData];
             
             [blockSelf refreshDataSources:completion withError:error];
         } else {
