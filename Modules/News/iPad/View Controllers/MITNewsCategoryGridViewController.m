@@ -126,10 +126,6 @@
                     }];
                 }
                 [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:0]];
-            } else {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.collectionView reloadData];
-                }];
             }
         }];
     }
