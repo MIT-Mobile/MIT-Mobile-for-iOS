@@ -26,7 +26,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
-    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
+    UIViewController *controller = [storyboard instantiateInitialViewController];
     return controller;
 }
 
@@ -35,7 +35,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
-    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
+    UIViewController *controller = [storyboard instantiateInitialViewController];
     return controller;
 }
 @end
