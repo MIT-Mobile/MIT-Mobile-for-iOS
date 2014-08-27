@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6206.8" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="VSF-i2-F9v">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
+    </dependencies>
+    <scenes>
+        <!--Root View Controller-->
+        <scene sceneID="90N-Vr-VVF">
+            <objects>
+                <viewController id="VSF-i2-F9v" customClass="MITRootViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7qd-f2-T7a"/>
+                        <viewControllerLayoutGuide type="bottom" id="sjx-Wx-oXu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="pEN-BS-Xjf">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.84313725490196079" green="0.85490196078431369" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" red="0.63921568627450975" green="0.12156862745098039" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="underLeftViewControllerStoryboardId" value="UnderLeftTableViewController"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="topViewControllerStoryboardId" value="EmptyTopViewController"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ocN-Bb-a0i" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="347"/>
+        </scene>
+        <!--Table View Controller-->
+        <scene sceneID="xm9-0c-kGn">
+            <objects>
+                <tableViewController storyboardIdentifier="UnderLeftTableViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="w8S-xY-WFU" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ws4-RO-JUZ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.84313725490000002" green="0.85490196080000003" blue="0.87843137250000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <inset key="scrollIndicatorInsets" minX="0.0" minY="64" maxX="0.0" maxY="0.0"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="DrawerItemCellReuseIdentifier" textLabel="8iI-kK-M3J" style="IBUITableViewCellStyleDefault" id="T38-7b-NHV">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="T38-7b-NHV" id="lmJ-Pn-stt">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="8iI-kK-M3J">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="w8S-xY-WFU" id="Ivo-jc-mWm"/>
+                            <outlet property="delegate" destination="w8S-xY-WFU" id="b5q-oJ-b64"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iFk-Gh-U2Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="998"/>
+        </scene>
+        <!--Default Top View Controller-->
+        <scene sceneID="yCb-yi-SR7">
+            <objects>
+                <viewController storyboardIdentifier="EmptyTopViewController" id="70A-yj-Cra" userLabel="Default Top View Controller" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Inw-6g-JwS"/>
+                        <viewControllerLayoutGuide type="bottom" id="T5E-3d-tip"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8Ct-3j-So2">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <attributedString key="userComments">
+                        <fragment content="Contains no content. Used as a placeholder for ECSlidingViewController.">
+                            <attributes>
+                                <font key="NSFont" metaFont="smallSystem"/>
+                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                            </attributes>
+                        </fragment>
+                    </attributedString>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yaZ-D7-Hx9" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="-300"/>
+        </scene>
+    </scenes>
+    <color key="tintColor" red="0.63921568630000003" green="0.1215686275" blue="0.20392156859999999" alpha="1" colorSpace="calibratedRGB"/>
+</document>
