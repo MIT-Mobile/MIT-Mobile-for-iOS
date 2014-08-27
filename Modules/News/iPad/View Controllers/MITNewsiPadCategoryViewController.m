@@ -242,6 +242,15 @@
     [self.searchBar becomeFirstResponder];
 }
 
+- (void)reloadData
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -332,6 +341,7 @@
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
             _storyUpdateInProgress = NO;
             if (error) {
@@ -343,28 +353,44 @@
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                     }
 
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-              }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
+                }
             } else {
+                
                 self.lastUpdated = [NSDate date];
                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                     toDate:[NSDate date]];
                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                 [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                
+
                 if (refreshControl.refreshing) {
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        self.refreshControl = refreshControl;
+                        [NSTimer scheduledTimerWithTimeInterval:.5
+                                                         target:self
+                                                       selector:@selector(endRefreshing)
+                                                       userInfo:nil
+                                                        repeats:NO];
+                    }];
                 }
                 [self reloadData];
             }
         }];
     }
+}
+
+- (void)endRefreshing
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl endRefreshing];
+    }];
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
@@ -376,10 +402,17 @@
                                          _storyUpdateInProgress = FALSE;
                                          
                                          if (error) {
-                                             DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
+                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
                                              
                                          } else {
-                                             DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
+                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                 if (self.activeViewController == self.gridViewController) {
+                                                     [self.gridViewController.collectionView reloadData];
+                                                 } else if (self.activeViewController == self.listViewController) {
+                                                     [self.listViewController.tableView reloadData];
+                                                 }
+                                             }];
                                          }
                                          if (block) {
                                              block(error);
@@ -390,15 +423,6 @@
         if (block) {
             block(nil);
         }
-    }
-}
-
-- (void)reloadData
-{
-    if (self.activeViewController == self.gridViewController) {
-        [self.gridViewController.collectionView reloadData];
-    } else if (self.activeViewController == self.listViewController) {
-        [self.listViewController.tableView reloadData];
     }
 }
 
