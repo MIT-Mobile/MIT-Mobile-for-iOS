@@ -31,6 +31,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 @property (nonatomic, strong) NSArray *menuItemsBySection;
 @property (nonatomic, strong) NSArray *dietaryFlagFilters;
 @property (nonatomic, strong) NSArray *filteredMenuItemsBySection;
+@property (nonatomic, strong) UISegmentedControl *diningVenueTypeControl;
 
 @end
 
@@ -49,7 +50,8 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.translucent = NO;
+    [self setupNavBar];
+    [self setupToolbar];
     
     self.mealSelector.horizontalInset = kMITDiningHallCollectionViewSectionHorizontalPadding / 2;
     self.mealSelector.delegate = self;
@@ -57,6 +59,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.collectionView.collectionViewLayout = [[TopAlignedCollectionViewFlowLayout alloc] init];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionCellNib bundle:nil] forCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionHeaderNib bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMITDiningHallMealCollectionHeaderIdentifier];
+    [self.collectionView setContentInset:UIEdgeInsetsMake(14, 0, 0, 0)];
     
     [self setupFetchedResultsController];
     [MITDiningWebservices getDiningWithCompletion:NULL];
@@ -71,6 +74,51 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self.collectionView reloadData];
+}
+
+- (void)setupNavBar
+{
+    self.navigationController.navigationBar.translucent = NO;
+
+    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
+    NSLog(@"navbar bg: %@", self.navigationController.navigationBar.backgroundColor);
+    NSLog(@"mit bg: %@", [UIColor mit_backgroundColor]);
+    
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+    
+    self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
+    [self.diningVenueTypeControl setSelectedSegmentIndex:0];
+    self.navigationItem.titleView = self.diningVenueTypeControl;
+}
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *announcementsButton = [[UIBarButtonItem alloc] initWithTitle:@"Announcements" style:UIBarButtonItemStylePlain target:self action:@selector(announcementsButtonPressed:)];
+    UIBarButtonItem *linksButton = [[UIBarButtonItem alloc] initWithTitle:@"Links" style:UIBarButtonItemStylePlain target:self action:@selector(linksButtonPressed:)];
+    UIBarButtonItem *filtersButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(filtersButtonPressed:)];
+    
+    CGSize announcementsSize = [announcementsButton.title sizeWithAttributes:[announcementsButton titleTextAttributesForState:UIControlStateNormal]];
+    CGSize filtersSize = [filtersButton.title sizeWithAttributes:[announcementsButton titleTextAttributesForState:UIControlStateNormal]];
+    
+    UIBarButtonItem *evenPaddingButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    evenPaddingButton.width = announcementsSize.width - filtersSize.width;
+    
+    self.toolbarItems = @[announcementsButton,
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          linksButton,
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          evenPaddingButton,
+                          filtersButton];
 }
 
 - (void)selectDate:(NSDate *)date mealName:(NSString *)mealName
@@ -176,6 +224,23 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     self.filteredMenuItemsBySection = [NSArray arrayWithArray:newFilteredMenuItems];
+}
+
+#pragma mark - Toolbar Button Actions
+
+- (void)announcementsButtonPressed:(id)sender
+{
+    // TODO: Show announcements popover
+}
+
+- (void)linksButtonPressed:(id)sender
+{
+    // TODO: Show announcements popover
+}
+
+- (void)filtersButtonPressed:(id)sender
+{
+    // TODO: Show announcements popover
 }
 
 #pragma mark - Fetched Results Controller
