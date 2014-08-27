@@ -343,32 +343,23 @@
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                     }
 
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.refreshControl = refreshControl;
-
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
-                }
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
+              }
             } else {
                 self.lastUpdated = [NSDate date];
                 NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                                     toDate:[NSDate date]];
                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                 [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-
+                
                 if (refreshControl.refreshing) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.refreshControl = refreshControl;
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
                 }
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     if (self.activeViewController == self.gridViewController) {
@@ -380,13 +371,6 @@
             }
         }];
     }
-}
-
-- (void)endRefreshing
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.refreshControl endRefreshing];
-    }];
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block

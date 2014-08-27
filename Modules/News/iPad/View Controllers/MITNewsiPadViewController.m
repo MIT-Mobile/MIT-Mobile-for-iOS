@@ -415,7 +415,7 @@
             [self removeNoResultsView];
         }
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        if (!refreshControl.refreshing && !self.lastUpdated) {
+        if (!refreshControl.refreshing && ![self.categories count]) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [refreshControl endRefreshing];
                 [refreshControl beginRefreshing];
@@ -434,15 +434,11 @@
                 if (![self.categories count]) {
                     [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
-                self.refreshControl = refreshControl;
                 if ([self.categories count]) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [NSTimer scheduledTimerWithTimeInterval:.5
-                                                     target:self
-                                                   selector:@selector(endRefreshing)
-                                                   userInfo:nil
-                                                    repeats:NO];
-                }];
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
                 }
 
             } else {
@@ -454,15 +450,12 @@
                         NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                         if (refreshControl.refreshing) {
-                            self.refreshControl = refreshControl;
-                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                [NSTimer scheduledTimerWithTimeInterval:.5
-                                                                 target:self
-                                                               selector:@selector(endRefreshing)
-                                                               userInfo:nil
-                                                                repeats:NO];
-                            }];
-                        }                    }];
+                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                [refreshControl endRefreshing];
+                            });
+                        }
+                    }];
                 } else {
                     self.lastUpdated = [NSDate date];
                     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
@@ -470,27 +463,14 @@
                     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
                     
-                    if (refreshControl.refreshing) {
-                        self.refreshControl = refreshControl;
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [NSTimer scheduledTimerWithTimeInterval:.5
-                                                             target:self
-                                                           selector:@selector(endRefreshing)
-                                                           userInfo:nil
-                                                            repeats:NO];
-                        }];
-                    }
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
                 }
             }
         }];
     }
-}
-
-- (void)endRefreshing
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.refreshControl endRefreshing];
-    }];
 }
 
 #pragma mark No Results / Loading More View
