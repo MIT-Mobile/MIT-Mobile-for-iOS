@@ -361,13 +361,7 @@
                         [refreshControl endRefreshing];
                     });
                 }
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (self.activeViewController == self.gridViewController) {
-                        [self.gridViewController.collectionView reloadData];
-                    } else if (self.activeViewController == self.listViewController) {
-                        [self.listViewController.tableView reloadData];
-                    }
-                }];
+                [self reloadData];
             }
         }];
     }
@@ -386,7 +380,6 @@
                                              
                                          } else {
                                              DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
-                                              [self reloadData];
                                          }
                                          if (block) {
                                              block(error);

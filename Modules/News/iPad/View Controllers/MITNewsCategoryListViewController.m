@@ -152,6 +152,10 @@
                     self.errorMessage = nil;
                 }
                 [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+            } else {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.tableView reloadData];
+                }];
             }
         }];
     }
