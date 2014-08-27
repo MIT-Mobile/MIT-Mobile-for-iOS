@@ -464,10 +464,10 @@
                 
                 [self.dataSource nextPage:^(NSError *error) {
                     if (error) {
-                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                        DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
                         
                     } else {
-                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                        DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
                         NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
                         
                         if (currentIndex + 1 < [self.dataSource.objects count]) {

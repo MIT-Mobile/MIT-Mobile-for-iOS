@@ -546,9 +546,9 @@
             if ([dataSource hasNextPage]) {
                 [dataSource nextPage:^(NSError *error) {
                     if (error) {
-                        DDLogWarn(@"failed to refresh data source %@",dataSource);
+                        DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
                     } else {
-                        DDLogVerbose(@"refreshed data source %@",dataSource);
+                        DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
                         NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
                         
                         if (currentIndex + 1 < [dataSource.objects count]) {
