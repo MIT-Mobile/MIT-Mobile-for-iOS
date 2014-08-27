@@ -297,7 +297,7 @@
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress) {
+    if (!_storyUpdateInProgress && !self.messageView) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
         [self updateNavigationItem:YES];
     }
@@ -305,7 +305,7 @@
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress) {
+    if (!_storyUpdateInProgress && !self.messageView) {
         self.presentationStyle = MITNewsPresentationStyleList;
         [self updateNavigationItem:YES];
     }
