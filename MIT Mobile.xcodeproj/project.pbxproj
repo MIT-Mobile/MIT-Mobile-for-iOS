@@ -124,8 +124,6 @@
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C7DA7EB18D226B100260352 /* MITEventListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */; };
 		2C7DA7EC18D226B100260352 /* MITEventListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */; };
-		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
@@ -756,10 +754,6 @@
 		2C7DA7E818D226B100260352 /* MITEventListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventListTableViewCell.m; sourceTree = "<group>"; };
 		2C7DA7E918D226B100260352 /* MITEventListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventListTableViewCell.h; sourceTree = "<group>"; };
 		2C7DA7EA18D226B100260352 /* MITEventListTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventListTableViewCell.xib; sourceTree = "<group>"; };
-		2C7EDD901656CD2E001684E1 /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
-		2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
-		2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
-		2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2C7EEAFA1871B00E009ED73D /* MITNewsCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoriesResource.h; sourceTree = "<group>"; };
 		2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoriesResource.m; sourceTree = "<group>"; };
 		2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileRouteConstants.h; sourceTree = "<group>"; };
@@ -2040,18 +2034,6 @@
 			name = "Entities (v3)";
 			sourceTree = "<group>";
 		};
-		2C7EDD8F1656CD2E001684E1 /* GDataXML */ = {
-			isa = PBXGroup;
-			children = (
-				2C7EDD901656CD2E001684E1 /* GDataHTMLDocument.h */,
-				2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */,
-				2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */,
-				2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */,
-			);
-			name = GDataXML;
-			path = External/GDataXML;
-			sourceTree = "<group>";
-		};
 		2C920D5F1896C35C00A60BA6 /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
@@ -2603,7 +2585,6 @@
 				2C0454C218F33D8A0018073D /* AFNetworking */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C3C5D81191F076800D59D33 /* ECSlidingViewController */,
-				2C7EDD8F1656CD2E001684E1 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
 				2C1808E518F33B95008F9775 /* MITTouchstone */,
@@ -3855,8 +3836,6 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
-				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
-				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */,
