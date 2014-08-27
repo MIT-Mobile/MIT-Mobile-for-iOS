@@ -22,27 +22,27 @@
                             <constraint firstAttribute="width" constant="49" id="zdx-ST-0rb"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Venue Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="178" translatesAutoresizingMaskIntoConstraints="NO" id="hP2-Y6-ifa">
-                        <rect key="frame" x="76" y="13" width="178" height="24"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Venue Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="184" translatesAutoresizingMaskIntoConstraints="NO" id="hP2-Y6-ifa">
+                        <rect key="frame" x="76" y="13" width="184" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="178" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-iu-ScW">
-                        <rect key="frame" x="76" y="41" width="178" height="12"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" misplaced="YES" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="184" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-iu-ScW">
+                        <rect key="frame" x="76" y="39" width="184" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXI-ks-tD1">
-                        <rect key="frame" x="250" y="23" width="50" height="21"/>
+                        <rect key="frame" x="260" y="23" width="50" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="8pg-9P-av9"/>
                             <constraint firstAttribute="width" constant="50" id="dBg-Wa-Fki"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
@@ -52,11 +52,11 @@
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="13" id="W90-8P-XZr"/>
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="leading" secondItem="aWi-iu-ScW" secondAttribute="leading" id="fF5-Fg-r7C"/>
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="trailing" secondItem="aWi-iu-ScW" secondAttribute="trailing" id="fOK-pK-EhQ"/>
-                    <constraint firstAttribute="trailing" secondItem="hP2-Y6-ifa" secondAttribute="trailing" constant="66" id="h7S-u6-psG"/>
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="76" id="kCn-Qr-hEA"/>
+                    <constraint firstItem="HXI-ks-tD1" firstAttribute="leading" secondItem="hP2-Y6-ifa" secondAttribute="trailing" id="oUk-vW-PTZ"/>
                     <constraint firstItem="aWi-iu-ScW" firstAttribute="top" secondItem="hP2-Y6-ifa" secondAttribute="bottom" constant="4" id="rYL-AQ-pft"/>
                     <constraint firstItem="5dg-ex-k22" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sl2-EN-yY6"/>
-                    <constraint firstAttribute="trailing" secondItem="HXI-ks-tD1" secondAttribute="trailing" constant="20" id="tQL-iQ-rpq"/>
+                    <constraint firstAttribute="trailing" secondItem="HXI-ks-tD1" secondAttribute="trailing" constant="10" id="tQL-iQ-rpq"/>
                     <constraint firstAttribute="centerY" secondItem="HXI-ks-tD1" secondAttribute="centerY" id="u84-ap-vND"/>
                 </constraints>
             </tableViewCellContentView>

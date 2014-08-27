@@ -1,4 +1,3 @@
-
 #import "MITDiningRetailVenueDetailViewController.h"
 
 #import "MITDiningRetailVenue.h"
@@ -352,7 +351,7 @@ static int const kWebViewTag = 4231;
 
 - (UIFont *)titleTextLabelFont
 {
-    return [UIFont systemFontOfSize:15.0];
+    return [UIFont systemFontOfSize:12.0];
 }
 
 #pragma mark - UITableViewDelegate
@@ -413,6 +412,8 @@ static int const kWebViewTag = 4231;
     self.retailVenue.favorite = @(isFavorite);
     cell.textLabel.text = isFavorite ? @"Remove from Favorites" : @"Add to Favorites";
     [CoreDataManager saveData];
+    
+    [self.delegate retailDetailViewController:self didUpdateFavoriteStatusForVenue:self.retailVenue];
 }
 
 #pragma mark - UIWebViewDelegate

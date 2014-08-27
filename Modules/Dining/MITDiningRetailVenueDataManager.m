@@ -2,6 +2,8 @@
 #import "MITDiningRetailVenue.h"
 #import "MITDiningLocation.h"
 
+static NSString *const kMITFavoriteVenueKey = @"Favorites";
+
 @interface MITDiningBuilding : NSObject
 
 @property (nonatomic, strong) NSString *name;
@@ -38,6 +40,16 @@
     
     for (MITDiningRetailVenue *venue in self.retailVenues)
     {
+        if ([venue.favorite boolValue] == YES) {
+            if (venueArrays[kMITFavoriteVenueKey]) {
+                [venueArrays[kMITFavoriteVenueKey] addObject:venue];
+            }
+            else {
+                NSMutableArray *favoritesArray = [[NSMutableArray alloc] initWithObjects:venue, nil];
+                venueArrays[kMITFavoriteVenueKey] = favoritesArray;
+            }
+        }
+        
         MITDiningBuilding *building = [self buildingForVenue:venue];
         if (venueArrays[building.name]) {
             [venueArrays[building.name] addObject:venue];
@@ -55,6 +67,10 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"sortableName" ascending:YES];
     [buildings sortUsingDescriptors:@[sortDescriptor]];
     
+    if (venueArrays[kMITFavoriteVenueKey]){
+        [sectionTitles addObject:kMITFavoriteVenueKey];
+    }
+    
     for (MITDiningBuilding *building in buildings)
     {
         [sectionTitles addObject:building.name];
@@ -71,7 +87,9 @@
     NSMutableArray *sortedVenues = [[NSMutableArray alloc] init];
     for (NSString *key in self.sectionTitles)
     {
-        [sortedVenues addObjectsFromArray:self.venueArraysKeyedByBuildingName[key]];
+        if (![key isEqualToString:kMITFavoriteVenueKey]) {
+            [sortedVenues addObjectsFromArray:self.venueArraysKeyedByBuildingName[key]];
+        }
     }
     _retailVenues = sortedVenues;
 }
