@@ -1,8 +1,13 @@
-#import <UIKit/UIKit.h>
+#import "ECSlidingViewController.h"
 
-@interface MITRootViewController : UIViewController
-@property (nonatomic,copy) NSArray *modules;
+#import "UIViewController+MITDrawerNavigation.h"
+#import "MITDrawerItem.h"
 
-- (BOOL)showModuleWithTag:(NSString*)module;
-- (BOOL)showModuleWithTag:(NSString*)module animated:(BOOL)animated;
+@interface MITRootViewController : ECSlidingViewController
+@property (nonatomic,copy) NSArray *viewControllers;
+
+@property (nonatomic) NSUInteger selectedIndex;
+@property (nonatomic,weak) UIViewController *selectedViewController;
+
+- (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 @end

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6206.8" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment defaultVersion="1792" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="UITableViewHeaderFooterView">
+            <rect key="frame" x="0.0" y="0.0" width="431" height="100"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ToA-u0-ny8" userLabel="Content View">
+                    <rect key="frame" x="0.0" y="0.0" width="431" height="100"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mit-logo" translatesAutoresizingMaskIntoConstraints="NO" id="lEt-jY-xXi">
+                            <rect key="frame" x="20" y="28" width="93" height="48"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="48" id="Tbe-s0-GFd"/>
+                                <constraint firstAttribute="width" secondItem="lEt-jY-xXi" secondAttribute="height" multiplier="1.93" id="y2S-E6-w0Z"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.84313725490000002" green="0.85490196080000003" blue="0.87843137250000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="lEt-jY-xXi" firstAttribute="leading" secondItem="ToA-u0-ny8" secondAttribute="leading" constant="20" id="8hX-aA-xcL"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="lEt-jY-xXi" secondAttribute="trailing" id="Sb2-xD-SPm"/>
+                        <constraint firstItem="lEt-jY-xXi" firstAttribute="top" secondItem="ToA-u0-ny8" secondAttribute="top" constant="28" id="mw6-Kc-8mp"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="ToA-u0-ny8" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="TeD-m7-ctb"/>
+                <constraint firstItem="ToA-u0-ny8" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="WV2-Uh-MJa"/>
+                <constraint firstAttribute="bottom" secondItem="ToA-u0-ny8" secondAttribute="bottom" id="l3C-F6-kDL"/>
+                <constraint firstAttribute="trailing" secondItem="ToA-u0-ny8" secondAttribute="trailing" id="zUZ-yf-9aI"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="158.5" y="180"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="mit-logo" width="104" height="54"/>
+    </resources>
+</document>
