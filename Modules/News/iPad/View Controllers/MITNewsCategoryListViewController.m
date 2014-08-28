@@ -8,21 +8,18 @@
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic, strong) NSMutableArray *cellHeights;
+@property (nonatomic,strong) NSMapTable *storyHeights;
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
 }
 
-#pragma mark Dynamic Properties
-- (NSMutableArray *)cellHeights
+#pragma mark Lifecycle
+- (void)viewDidLoad
 {
-    if (!_cellHeights) {
-        _cellHeights = [[NSMutableArray alloc] init];
-    }
-    
-    return _cellHeights;
+    [super viewDidLoad];
+    self.storyHeights = [NSMapTable strongToStrongObjectsMapTable];
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -130,19 +127,16 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        CGFloat cellHeight = 75;
-        if ([self.cellHeights count] < indexPath.row) {
-            [self.cellHeights addObject:[NSNumber numberWithInt:cellHeight]];
-        } else {
-            [self.cellHeights insertObject:[NSNumber numberWithInt:cellHeight] atIndex:indexPath.row];
-        }
-        return cellHeight; // Fixed height for the load more cells
+        return 75; // Fixed height for the load more cells
     } else {
         CGFloat cellHeight = [super tableView:tableView heightForRowAtIndexPath:indexPath];
-        if ([self.cellHeights count] < indexPath.row) {
-            [self.cellHeights addObject:[NSNumber numberWithInt:cellHeight]];
-        } else {
-            [self.cellHeights insertObject:[NSNumber numberWithInt:cellHeight] atIndex:indexPath.row];
+        MITNewsStory *story = [self storyAtIndexPath:indexPath];
+        
+        if (story) {
+            CGFloat height = [[self.storyHeights objectForKey:story.identifier] floatValue];
+            if (!height) {
+                [self.storyHeights setObject:[NSNumber numberWithFloat:cellHeight] forKey:story.identifier];
+            }
         }
         return cellHeight;
     }
@@ -155,12 +149,14 @@
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return 75; // Fixed height for the load more cells
     } else {
-        if ([self.cellHeights count] > indexPath.row) {
-            return [self.cellHeights[indexPath.row] intValue];
-        } else {
-            return 100;
+        MITNewsStory *story = [self storyAtIndexPath:indexPath];
+        if (story) {
+            if ([self.storyHeights objectForKey:story.identifier]) {
+                return [[self.storyHeights objectForKey:story.identifier] floatValue];
+            }
         }
     }
+    return 100;
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
