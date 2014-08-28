@@ -328,7 +328,6 @@
 {
     UITapGestureRecognizer *recognizer = sender;
     MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", recognizer.view]];
-    NSLog(@"meal: %@", meal.name);
     [self mealSelected:meal.name onDate:[self dateForMeal:meal]];
 }
 

@@ -409,7 +409,7 @@
 		A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A59A25A119A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib */; };
 		A59A25A719A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25A319A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m */; };
 		A59A25A819A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A59A25A419A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib */; };
-		A59A25AB19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */; };
+		A59A25AB19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25AA19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m */; };
 		A59A25AF19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25AE19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m */; };
 		A59A25B819AE642300AD7E3A /* MITDiningLinksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A59A25B719AE642300AD7E3A /* MITDiningLinksTableViewController.m */; };
 		A5A24B57198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A24B56198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m */; };
@@ -1365,8 +1365,8 @@
 		A59A25A219A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHallMealCollectionHeader.h; path = Dining/MITDiningHallMealCollectionHeader.h; sourceTree = "<group>"; };
 		A59A25A319A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHallMealCollectionHeader.m; path = Dining/MITDiningHallMealCollectionHeader.m; sourceTree = "<group>"; };
 		A59A25A419A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHallMealCollectionHeader.xib; path = Dining/MITDiningHallMealCollectionHeader.xib; sourceTree = "<group>"; };
-		A59A25A919A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopAlignedCollectionViewFlowLayout.h; path = Dining/TopAlignedCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopAlignedCollectionViewFlowLayout.m; path = Dining/TopAlignedCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		A59A25A919A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopAlignedStickyHeaderCollectionViewFlowLayout.h; path = Dining/TopAlignedStickyHeaderCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		A59A25AA19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopAlignedStickyHeaderCollectionViewFlowLayout.m; path = Dining/TopAlignedStickyHeaderCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		A59A25AD19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectorPad.h; path = Dining/MITDiningHouseMealSelectorPad.h; sourceTree = "<group>"; };
 		A59A25AE19A4E74B00AD7E3A /* MITDiningHouseMealSelectorPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseMealSelectorPad.m; path = Dining/MITDiningHouseMealSelectorPad.m; sourceTree = "<group>"; };
 		A59A25B619AE642300AD7E3A /* MITDiningLinksTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningLinksTableViewController.h; path = Dining/MITDiningLinksTableViewController.h; sourceTree = "<group>"; };
@@ -2875,8 +2875,8 @@
 				2279E17F199AADDB006BBFC5 /* Old */,
 				48327CDE16F74F19003A2F23 /* DiningModule.h */,
 				48327CDF16F74F19003A2F23 /* DiningModule.m */,
-				A59A25A919A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.h */,
-				A59A25AA19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m */,
+				A59A25A919A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.h */,
+				A59A25AA19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -4415,7 +4415,7 @@
 				A52E0CF519B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m in Sources */,
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
-				A59A25AB19A3E07B00AD7E3A /* TopAlignedCollectionViewFlowLayout.m in Sources */,
+				A59A25AB19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
@@ -4589,7 +4589,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "347BE2E8-9409-40AC-8366-8F65C6A350E1";
+				PROVISIONING_PROFILE = "6aecebed-2b30-4c64-894a-0bb2ec830f34";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -4646,7 +4646,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "1B640798-3EF9-4A58-B610-9E9E11D12D7E";
+				PROVISIONING_PROFILE = "6aecebed-2b30-4c64-894a-0bb2ec830f34";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -4672,7 +4672,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "4F6856BA-03E9-4906-A3D5-B49E0C37235A";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -4702,7 +4702,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "2D09D2D7-0CB3-49AE-8B3C-49FDF6B406F3";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
