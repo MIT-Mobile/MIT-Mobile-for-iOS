@@ -555,6 +555,9 @@
                             }
                         }
                     }
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        [self reloadData];
+                    }];
                 }];
             }
         }
