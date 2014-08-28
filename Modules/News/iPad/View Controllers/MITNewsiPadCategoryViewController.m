@@ -547,6 +547,9 @@
                         _storyUpdateInProgress = NO;
                         if (error) {
                             DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                            if (block) {
+                                block(nil,error);
+                            }
                         } else {
                             DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
                             NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
