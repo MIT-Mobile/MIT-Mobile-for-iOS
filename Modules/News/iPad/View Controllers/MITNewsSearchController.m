@@ -334,7 +334,7 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return 75; // Fixed height for the load more cells
+        return MITNewsLoadMoreTableViewCellHeight;
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     }

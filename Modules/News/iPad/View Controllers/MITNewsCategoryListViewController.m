@@ -127,7 +127,7 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return 75; // Fixed height for the load more cells
+        return MITNewsLoadMoreTableViewCellHeight;
     } else {
         CGFloat cellHeight = [super tableView:tableView heightForRowAtIndexPath:indexPath];
         MITNewsStory *story = [self storyAtIndexPath:indexPath];
@@ -147,7 +147,7 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return 75; // Fixed height for the load more cells
+        return MITNewsLoadMoreTableViewCellHeight;
     } else {
         MITNewsStory *story = [self storyAtIndexPath:indexPath];
         if (story) {
