@@ -7,10 +7,9 @@
 #import "MITDiningRetailVenueDataManager.h"
 #import "MITDiningVenueCell.h"
 
-
 static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
-@interface MITDiningRetailVenueListViewController ()
+@interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 
@@ -75,10 +74,15 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
     return cell;
 }
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    MITDiningRetailVenue *venue = [self.dataManager venueForIndexPath:indexPath];
+    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.retailVenue = venue;
+    detailVC.delegate = self;
+    
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 #pragma mark - Setters
@@ -87,6 +91,14 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 {
     _retailVenues = retailVenues;
     self.dataManager.retailVenues = retailVenues;
+    [self.tableView reloadData];
+}
+
+#pragma mark - Dining Retail Venue Detail Delegate
+
+- (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue
+{
+    [self.dataManager updateSectionsAndVenueArrays];
     [self.tableView reloadData];
 }
 

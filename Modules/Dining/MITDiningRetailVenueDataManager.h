@@ -7,6 +7,8 @@
 @property (nonatomic, strong) NSArray *retailVenues;
 
 - (instancetype)initWithRetailVenues:(NSArray *)retailVenues;
+- (void)updateSectionsAndVenueArrays;
+
 - (NSInteger)numberOfSections;
 - (NSInteger) numberOfRowsInSection:(NSInteger)section;
 - (NSString *)titleForSection:(NSInteger)section;
