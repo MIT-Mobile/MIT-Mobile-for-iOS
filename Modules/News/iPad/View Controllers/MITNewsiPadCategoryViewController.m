@@ -528,39 +528,44 @@
 
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
-    
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    
-    MITNewsDataSource *dataSource = self.dataSource;
-    
-    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
+    if (!_storyUpdateInProgress) {
+        MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
         
-        if (currentIndex + 1 < [dataSource.objects count]) {
-            if(block) {
-                block(dataSource.objects[currentIndex + 1], nil);
-            }
-        } else {
-            if ([dataSource hasNextPage]) {
-                [dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
-                    } else {
-                        DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [dataSource.objects count]) {
-                            if(block) {
-                                block(dataSource.objects[currentIndex + 1], nil);
+        MITNewsDataSource *dataSource = self.dataSource;
+        
+        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+        if (currentIndex != NSNotFound) {
+            
+            if (currentIndex + 1 < [dataSource.objects count]) {
+                if (block) {
+                    block(dataSource.objects[currentIndex + 1], nil);
+                }
+            } else {
+                if ([dataSource hasNextPage]) {
+                    _storyUpdateInProgress = YES;
+                    [dataSource nextPage:^(NSError *error) {
+                        _storyUpdateInProgress = NO;
+                        if (error) {
+                            DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                        } else {
+                            DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
+                            NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                            
+                            if (currentIndex + 1 < [dataSource.objects count]) {
+                                if(block) {
+                                    block(dataSource.objects[currentIndex + 1], nil);
+                                }
                             }
                         }
-                    }
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self reloadData];
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self reloadData];
+                        }];
                     }];
-                }];
+                }
             }
         }
+    } else {
+        block(nil, nil);
     }
 }
 
