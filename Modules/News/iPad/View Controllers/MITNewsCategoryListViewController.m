@@ -135,7 +135,7 @@
         if (story) {
             CGFloat height = [[self.storyHeights objectForKey:story.identifier] floatValue];
             if (!height) {
-                [self.storyHeights setObject:[NSNumber numberWithFloat:cellHeight] forKey:story.identifier];
+                [self.storyHeights setObject:@(cellHeight) forKey:story.identifier];
             }
         }
         return cellHeight;
