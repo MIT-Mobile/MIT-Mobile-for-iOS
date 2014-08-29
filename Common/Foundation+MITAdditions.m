@@ -800,6 +800,34 @@ typedef struct {
     return [formatter stringFromDate:self];
 }
 
+- (NSString *)todayTomorrowYesterdayString
+{
+    static NSDateFormatter *dayOfWeekFormatter;
+    if (!dayOfWeekFormatter) {
+        dayOfWeekFormatter = [[NSDateFormatter alloc] init];
+        [dayOfWeekFormatter setDateFormat:@"EEEE"];
+    }
+    
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM d"];
+    }
+    
+    if ([self isToday]) {
+        return [NSString stringWithFormat:@"Today, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isTomorrow]) {
+        return [NSString stringWithFormat:@"Tomorrow, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isYesterday]) {
+        return [NSString stringWithFormat:@"Yesterday, %@", [dateFormatter stringFromDate:self]];
+    }
+    else {
+        return [NSString stringWithFormat:@"%@, %@", [dayOfWeekFormatter stringFromDate:self], [dateFormatter stringFromDate:self]];
+    }
+}
+
 - (NSDateComponents *)dayComponents {
     return [[NSCalendar cachedCurrentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
 }

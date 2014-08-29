@@ -13,37 +13,8 @@
 - (void)setMeal:(MITDiningMeal *)meal
 {
     _meal = meal;
-    self.dateLabel.text = [self stringForMealDate:meal.houseDay.date];
+    self.dateLabel.text = [meal.houseDay.date todayTomorrowYesterdayString];
     self.mealTimeLabel.text = [self.meal nameAndHoursDescription];
-    
-}
-
-- (NSString *)stringForMealDate:(NSDate *)date
-{
-    static NSDateFormatter *dayOfWeekFormatter;
-    if (!dayOfWeekFormatter) {
-        dayOfWeekFormatter = [[NSDateFormatter alloc] init];
-        [dayOfWeekFormatter setDateFormat:@"EEEE"];
-    }
-    
-    static NSDateFormatter *dateFormatter;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"MMM d"];
-    }
-
-    if ([date isToday]) {
-        return [NSString stringWithFormat:@"Today, %@", [dateFormatter stringFromDate:date]];
-    }
-    else if ([date isTomorrow]) {
-        return [NSString stringWithFormat:@"Tomorrow, %@", [dateFormatter stringFromDate:date]];
-    }
-    else if ([date isYesterday]) {
-        return [NSString stringWithFormat:@"Yesterday, %@", [dateFormatter stringFromDate:date]];
-    }
-    else {
-        return [NSString stringWithFormat:@"%@, %@", [dayOfWeekFormatter stringFromDate:date], [dateFormatter stringFromDate:date]];
-    }
 }
 
 @end

@@ -2,10 +2,11 @@
 #import "MITDiningHouseVenueInfoViewController.h"
 #import "MITDiningHouseMealSelectionView.h"
 #import "MITDiningHouseVenueInfoCell.h"
+#import "Foundation+MITAdditions.h"
+#import "MITDiningMenuItemCell.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
-#import "Foundation+MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
     kMITVenueDetailSectionInfo,
@@ -13,6 +14,7 @@ typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
 };
 
 static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoCell";
+static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 
 @interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate>
 
@@ -54,6 +56,9 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
     UINib *cellNib = [UINib nibWithNibName:kMITDiningHouseVenueInfoCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningHouseVenueInfoCell];
     
+    cellNib = [UINib nibWithNibName:kMITDiningMenuItemCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningMenuItemCell];
+    
     self.mealSelectionView = [[[NSBundle mainBundle] loadNibNamed:@"MITDiningHouseMealSelectionView" owner:nil options:nil] firstObject];
     [self.mealSelectionView.nextMealButton addTarget:self action:@selector(nextMealPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.mealSelectionView.previousMealButton addTarget:self action:@selector(previousMealPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -76,7 +81,7 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
             return [MITDiningHouseVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
             break;
         case kMITVenueDetailSectionMenu:
-            return 44.0;
+            return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedMeal.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
             break;
         default:
             return 0;
@@ -113,7 +118,6 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
         default:
             return nil;
             break;
-
     }
 }
 
@@ -123,12 +127,13 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
         case kMITVenueDetailSectionInfo:
             return [self venueInfoCell];
             break;
-            
+        case kMITVenueDetailSectionMenu:
+            return [self menuItemCellForIndexPath:indexPath];
+            break;
         default:
+            return [[UITableViewCell alloc] init];
             break;
     }
-    return [[UITableViewCell alloc] init];
-    
 }
 
 - (UITableViewCell *)venueInfoCell
@@ -136,6 +141,15 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
     MITDiningHouseVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
     [cell setHouseVenue:self.houseVenue];
     cell.delegate = self;
+    return cell;
+}
+
+- (UITableViewCell *)menuItemCellForIndexPath:(NSIndexPath *)indexPath
+{
+    MITDiningMenuItemCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningMenuItemCell forIndexPath:indexPath];
+    
+    [cell setMenuItem:self.currentlyDisplayedMeal.items[indexPath.row]];
+    
     return cell;
 }
 

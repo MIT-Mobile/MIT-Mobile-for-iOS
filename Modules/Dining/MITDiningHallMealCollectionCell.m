@@ -36,20 +36,16 @@
 - (void)setMenuItem:(MITDiningMenuItem *)menuItem
 {
     self.stationLabel.text = menuItem.station;
-    self.mealDescriptionLabel.text = menuItem.itemDescription;
-    
-    NSMutableAttributedString *mealNameLabelString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", menuItem.name]];
-    
-    for (NSString *dietaryFlag in menuItem.dietaryFlags) {
-        UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
-        NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
-        dietaryFlagAttachment.image = dietaryFlagImage;
-        
-        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
-        [mealNameLabelString appendAttributedString:imageString];
+    if ([menuItem.itemDescription length] > 0) {
+        self.mealDescriptionLabel.hidden = NO;
+        self.mealDescriptionLabel.text = menuItem.itemDescription;
     }
-    
-    self.mealTitleLabel.attributedText = mealNameLabelString;
+    else {
+        self.mealDescriptionLabel.hidden = YES;
+    }
+
+        
+    self.mealTitleLabel.attributedText = [menuItem attributedNameWithDietaryFlags];
 }
 
 #pragma mark - Determining Dynamic Cell Height
