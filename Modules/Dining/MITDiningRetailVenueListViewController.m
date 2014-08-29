@@ -12,6 +12,7 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 @interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
+@property (nonatomic) BOOL shouldUpdateTableData;
 
 @end
 
@@ -24,6 +25,16 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
     self.dataManager = [[MITDiningRetailVenueDataManager alloc] initWithRetailVenues:self.retailVenues];
     
     [self setupTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    if (self.shouldUpdateTableData)
+    {
+        [self.dataManager updateSectionsAndVenueArrays];
+        [self.tableView reloadData];
+        self.shouldUpdateTableData = NO;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,8 +109,7 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
 - (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue
 {
-    [self.dataManager updateSectionsAndVenueArrays];
-    [self.tableView reloadData];
+    self.shouldUpdateTableData = YES;
 }
 
 @end

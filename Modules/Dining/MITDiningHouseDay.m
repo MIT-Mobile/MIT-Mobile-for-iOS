@@ -98,7 +98,7 @@
 
 #pragma mark - Open/Closed Status
 
-- (NSString *)openClosedStatusRelativeToDate:(NSDate *)date
+- (NSString *)statusStringForDate:(NSDate *)date
 {
     NSString *openClosedStatus = @"Closed for the day";
     if (self.message) {

@@ -16,7 +16,7 @@
 - (MITDiningMeal *)mealWithName:(NSString *)name;
 - (MITDiningMeal *)mealForDate:(NSDate *)date;
 - (MITDiningMeal *)bestMealForDate:(NSDate *)date;
-- (NSString *)openClosedStatusRelativeToDate:(NSDate *)date;
+- (NSString *)statusStringForDate:(NSDate *)date;
 
 @end
 

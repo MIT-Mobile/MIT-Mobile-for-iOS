@@ -5,6 +5,7 @@
 #import "MITDiningVenues.h"
 #import "MITDiningLinks.h"
 #import "MITSingleWebViewCellTableViewController.h"
+#import "MITDiningHouseVenueDetailViewController.h"
 
 typedef NS_ENUM(NSInteger, kMITVenueListSection) {
     kMITVenueListSectionAnnouncements = 0,
@@ -169,7 +170,12 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
         }
             break;
         case kMITVenueListSectionVenues:
+        {
+            MITDiningHouseVenueDetailViewController *detailVC = [[MITDiningHouseVenueDetailViewController alloc] init];
+            detailVC.houseVenue = self.houseVenues[indexPath.row];
             
+            [self.navigationController pushViewController:detailVC animated:YES];
+        }
             break;
         case kMITVenueListSectionLinks:
         {
