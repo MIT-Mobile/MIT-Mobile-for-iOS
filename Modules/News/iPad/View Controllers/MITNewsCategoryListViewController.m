@@ -136,7 +136,7 @@
         
         CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
         if (estimatedHeight != cellHeight) {
-            self.storyHeights[indexPath] = @(cellHeight);
+            self.storyHeights[[self keyForIndexPath:indexPath]] = @(cellHeight);
         }
         
         return cellHeight;
@@ -149,11 +149,19 @@
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
-    } else if (self.storyHeights[indexPath]) {
-        return [self.storyHeights[indexPath] doubleValue];
+    } else if (self.storyHeights[[self keyForIndexPath:indexPath]]) {
+        return [self.storyHeights[[self keyForIndexPath:indexPath]] doubleValue];
     } else {
         return UITableViewAutomaticDimension;
     }
+}
+
+- (NSIndexPath *)keyForIndexPath:(NSIndexPath *)indexPath
+{
+    if ([indexPath class] == [NSIndexPath class]) {
+        return indexPath;
+    }
+    return [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
