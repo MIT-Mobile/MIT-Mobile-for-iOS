@@ -4,7 +4,7 @@
 #import "MITAdditions.h"
 #import "MITNewsModelController.h"
 
-@interface MITNewsCategoryDataSource () <NSFetchedResultsControllerDelegate>
+@interface MITNewsCategoryDataSource ()
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
 @property(nonatomic,readwrite,strong) NSDate *lastRefreshed;
 
@@ -25,6 +25,7 @@
     self = [super initWithManagedObjectContext:managedObjectContext];
     if (self) {
         _requestLock = [[NSRecursiveLock alloc] init];
+        [self _setupFetchedResultsController];
     }
 
     return self;
@@ -58,47 +59,26 @@
 #pragma mark Private
 
 #pragma mark Managing the FRC
-- (NSFetchedResultsController*)_createFetchedResultsController
-{
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
-    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                                               managedObjectContext:self.managedObjectContext
-                                                                                                 sectionNameKeyPath:nil
-                                                                                                          cacheName:nil];
-    [self _setupFetchRequestForFetchedResultsController:fetchedResultsController];
-    return fetchedResultsController;
-}
-
-- (void)_reloadFetchedResultsController
+- (void)_setupFetchedResultsController
 {
     [self.managedObjectContext performBlockAndWait:^{
-        NSFetchedResultsController *fetchedResultsController = [self _createFetchedResultsController];
+        if (!_fetchedResultsController) {
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
+            fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
-        self.fetchedResultsController = fetchedResultsController;
-        [self _refreshFetchedResultsController];
-    }];
-}
-
-- (void)_refreshFetchedResultsController
-{
-    [self.managedObjectContext performBlock:^{
-        [self.managedObjectContext reset];
+            NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                                       managedObjectContext:self.managedObjectContext
+                                                                                                         sectionNameKeyPath:nil
+                                                                                                                  cacheName:nil];
+            _fetchedResultsController = fetchedResultsController;
+        }
 
         NSError *fetchError = nil;
-        BOOL success = [self.fetchedResultsController performFetch:&fetchError];
+        BOOL success = [_fetchedResultsController performFetch:&fetchError];
         if (!success) {
             DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
         }
     }];
-}
-
-- (void)_setupFetchRequestForFetchedResultsController:(NSFetchedResultsController*)fetchedResultsController
-{
-    fetchedResultsController.delegate = self;
-
-    NSFetchRequest *fetchRequest = fetchedResultsController.fetchRequest;
-    fetchRequest.entity = [MITNewsCategory entityDescription];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 }
 
 #pragma mark Public
@@ -160,6 +140,7 @@
     NSMutableOrderedSet *allObjects = [[NSMutableOrderedSet alloc] initWithOrderedSet:self.objectIdentifiers];
     [allObjects unionOrderedSet:addedObjectIdentifiers];
     self.objectIdentifiers = allObjects;
+    [self _setupFetchedResultsController];
 }
 
 @end
