@@ -12,9 +12,8 @@
 @property (nonatomic, strong) NSString *errorMessage;
 @end
 
-@implementation MITNewsCategoryGridViewController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsCategoryGridViewController
+@synthesize storyUpdateInProgress = _storyUpdateInProgress;
 
 #pragma mark UICollectionViewDataSource
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section

@@ -242,12 +242,58 @@
     [self.searchBar becomeFirstResponder];
 }
 
+- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [self updateNavigationItem:YES];
+    }
+}
+
+- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [self updateNavigationItem:YES];
+    }
+}
+
 - (void)reloadData
 {
     if (self.activeViewController == self.gridViewController) {
         [self.gridViewController.collectionView reloadData];
     } else if (self.activeViewController == self.listViewController) {
         [self.listViewController.tableView reloadData];
+    }
+}
+
+- (void)updateLoadingCell
+{
+    [self setActiveViewControllerStoryUpdateInProgressToYes];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (self.activeViewController == self.gridViewController) {
+            [self.gridViewController.collectionView reloadData];
+        } else if (self.activeViewController == self.listViewController) {
+            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0   ]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+    }];
+}
+
+- (void)setActiveViewControllerStoryUpdateInProgressToYes
+{
+    if (self.activeViewController == self.gridViewController) {
+        self.gridViewController.storyUpdateInProgress = YES;
+    } else if (self.activeViewController == self.listViewController) {
+        self.listViewController.storyUpdateInProgress = YES;
+    }
+}
+
+- (void)setActiveViewControllerStoryUpdateInProgressToNo
+{
+    if (self.activeViewController == self.gridViewController) {
+        self.gridViewController.storyUpdateInProgress = NO;
+    } else if (self.activeViewController == self.listViewController) {
+        self.listViewController.storyUpdateInProgress = NO;
     }
 }
 
@@ -541,9 +587,15 @@
                     block(dataSource.objects[currentIndex + 1], nil);
                 }
             } else {
-                if ([dataSource hasNextPage]) {
+                if ([dataSource hasNextPage] && !_storyUpdateInProgress) {
                     _storyUpdateInProgress = YES;
+                    
+                    [self updateLoadingCell];
+                    
                     [dataSource nextPage:^(NSError *error) {
+                        [self setActiveViewControllerStoryUpdateInProgressToNo];
+                        self.gridViewController.storyUpdateInProgress = NO;
+                        
                         _storyUpdateInProgress = NO;
                         if (error) {
                             DDLogWarn(@"failed to get more stories from datasource %@",dataSource);

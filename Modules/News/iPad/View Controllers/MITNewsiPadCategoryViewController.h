@@ -8,5 +8,6 @@
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 @property (nonatomic, strong) NSDate *previousLastUpdated;
 @property (nonatomic) MITNewsPresentationStyle previousPresentationStyle;
+@property (nonatomic, readonly) BOOL storyUpdateInProgress;
 
 @end

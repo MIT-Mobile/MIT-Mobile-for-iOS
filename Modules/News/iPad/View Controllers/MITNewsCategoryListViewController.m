@@ -10,9 +10,8 @@
 @property (nonatomic, strong) NSString *errorMessage;
 @end
 
-@implementation MITNewsCategoryListViewController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsCategoryListViewController
+@synthesize storyUpdateInProgress = _storyUpdateInProgress;
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
@@ -81,7 +80,6 @@
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
