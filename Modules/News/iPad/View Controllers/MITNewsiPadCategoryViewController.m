@@ -387,7 +387,11 @@
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        
+        if (!refreshControl.refreshing) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [refreshControl beginRefreshing];
+            }];
+        }
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
             _storyUpdateInProgress = NO;
             if (error) {
