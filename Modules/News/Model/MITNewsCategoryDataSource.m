@@ -92,9 +92,9 @@
                 return;
             }
 
-            [self.managedObjectContext performBlock:^{
+            [blockSelf.managedObjectContext performBlock:^{
                 if (error) {
-                    [self _responseFailedWithError:error];
+                    [blockSelf _responseFailedWithError:error];
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         if (block) {
                             block(error);
@@ -102,13 +102,15 @@
                     }];
                 } else {
                     blockSelf.objectIdentifiers = nil;
-                    [self _responseFinishedWithObjects:categories];
+                    [blockSelf _responseFinishedWithObjects:categories];
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         if (block) {
                             block(nil);
                         }
                     }];
                 }
+
+                [blockSelf.requestLock unlock];
             }];
         }];
     } else {
