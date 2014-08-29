@@ -8,18 +8,21 @@
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic,strong) NSMapTable *storyHeights;
+@property (nonatomic, strong) NSMutableDictionary *storyHeights;
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
 }
 
-#pragma mark Lifecycle
-- (void)viewDidLoad
+#pragma mark Dynamic Properties
+- (NSMutableDictionary*)storyHeights
 {
-    [super viewDidLoad];
-    self.storyHeights = [NSMapTable strongToStrongObjectsMapTable];
+    if (!_storyHeights) {
+        NSMutableDictionary* storyHeights = [[NSMutableDictionary alloc] init];
+        _storyHeights = storyHeights;
+    }
+    return _storyHeights;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -130,14 +133,12 @@
         return MITNewsLoadMoreTableViewCellHeight;
     } else {
         CGFloat cellHeight = [super tableView:tableView heightForRowAtIndexPath:indexPath];
-        MITNewsStory *story = [self storyAtIndexPath:indexPath];
         
-        if (story) {
-            CGFloat height = [[self.storyHeights objectForKey:story.identifier] floatValue];
-            if (!height) {
-                [self.storyHeights setObject:@(cellHeight) forKey:story.identifier];
-            }
+        CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
+        if (estimatedHeight != cellHeight) {
+            self.storyHeights[indexPath] = @(cellHeight);
         }
+        
         return cellHeight;
     }
 }
@@ -148,15 +149,11 @@
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
+    } else if (self.storyHeights[indexPath]) {
+        return [self.storyHeights[indexPath] doubleValue];
     } else {
-        MITNewsStory *story = [self storyAtIndexPath:indexPath];
-        if (story) {
-            if ([self.storyHeights objectForKey:story.identifier]) {
-                return [[self.storyHeights objectForKey:story.identifier] floatValue];
-            }
-        }
+        return UITableViewAutomaticDimension;
     }
-    return 100;
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
