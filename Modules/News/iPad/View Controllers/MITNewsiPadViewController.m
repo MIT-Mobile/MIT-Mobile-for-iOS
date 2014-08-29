@@ -18,6 +18,7 @@
 #import "MITAdditions.h"
 
 #import "MITNewsiPadCategoryViewController.h"
+#import "MITNewsCategoryDataSource.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -45,7 +46,7 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 #pragma mark Data Source
-@property (nonatomic, copy) NSArray *categories;
+@property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @end
 
@@ -116,12 +117,10 @@
 #pragma mark Dynamic Properties
 - (NSManagedObjectContext*)managedObjectContext
 {
-    if (!_managedObjectContext) {
-        _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-    }
-
-    return _managedObjectContext;
+    return [[MITCoreDataController defaultController] mainQueueContext];
 }
+
+
 
 - (MITNewsGridViewController*)gridViewController
 {
@@ -481,53 +480,57 @@
 
 - (void)loadDataSources:(void (^)(NSError*))completion
 {
-    NSMutableArray *dataSources = [[NSMutableArray alloc] init];
+    MITNewsCategoryDataSource *categoriesDataSource = [[MITNewsCategoryDataSource alloc] init];
 
+    NSMutableArray *dataSources = [[NSMutableArray alloc] init];
     if (self.showsFeaturedStories) {
         MITNewsDataSource *featuredDataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
         featuredDataSource.maximumNumberOfItemsPerPage = 5;
         [dataSources addObject:featuredDataSource];
     }
 
+    [categoriesDataSource.categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+        MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
+        [dataSources addObject:dataSource];
+    }];
+
+    self.categoriesDataSource = categoriesDataSource;
+    self.dataSources = dataSources;
+    [self reloadData];
+
+    // TODO: Rework the update process; this is incredibly awkward
     __weak MITNewsiPadViewController *weakSelf = self;
-    [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+    [self.categoriesDataSource refresh:^(NSError *error) {
         MITNewsiPadViewController *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
-        } else if(error) {
-            if (completion) {
-                completion(error);
-                return;
-            }
-        } else {
-            NSMutableOrderedSet *categorySet = [[NSMutableOrderedSet alloc] init];
+        }
 
-            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-                NSManagedObjectID *objectID = [category objectID];
-                NSError *error = nil;
-                NSManagedObject *object = [blockSelf.managedObjectContext existingObjectWithID:objectID error:&error];
-
-                if (!object) {
-                    DDLogWarn(@"failed to retreive object for ID %@: %@",object,error);
-                } else {
-                    [categorySet addObject:object];
+        if (error) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (completion) {
+                    completion(error);
                 }
             }];
 
-            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-                MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
-                [dataSources addObject:dataSource];
-            }];
-
-            blockSelf.categories = [categorySet array];
-            blockSelf.dataSources = dataSources;
-            
-            [self reloadData];
-            
-            [blockSelf refreshDataSources:completion];
+            return;
         }
-    }];
-}
+
+        NSMutableArray *dataSources = [[NSMutableArray alloc] init];
+        if (self.showsFeaturedStories) {
+            MITNewsDataSource *featuredDataSource = [MITNewsStoriesDataSource featuredStoriesDataSource];
+            featuredDataSource.maximumNumberOfItemsPerPage = 5;
+            [dataSources addObject:featuredDataSource];
+        }
+
+        [blockSelf.categoriesDataSource.categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+            MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
+            [dataSources addObject:dataSource];
+        }];
+
+        blockSelf.dataSources = dataSources;
+        [blockSelf refreshDataSources:completion];
+    }];}
 
 - (void)refreshDataSources:(void (^)(NSError*))completion
 {
@@ -611,7 +614,8 @@
         if (self.showsFeaturedStories) {
             --section;
         }
-        MITNewsCategory *category = self.categories[section];
+
+        MITNewsCategory *category = self.categoriesDataSource.categories[section];
         [category.managedObjectContext performBlockAndWait:^{
             title = category.name;
         }];
