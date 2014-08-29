@@ -242,12 +242,58 @@
     [self.searchBar becomeFirstResponder];
 }
 
+- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [self updateNavigationItem:YES];
+    }
+}
+
+- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [self updateNavigationItem:YES];
+    }
+}
+
 - (void)reloadData
 {
     if (self.activeViewController == self.gridViewController) {
         [self.gridViewController.collectionView reloadData];
     } else if (self.activeViewController == self.listViewController) {
         [self.listViewController.tableView reloadData];
+    }
+}
+
+- (void)updateLoadingCell
+{
+    [self setActiveViewControllerStoryUpdateInProgressToYes];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (self.activeViewController == self.gridViewController) {
+            [self.gridViewController.collectionView reloadData];
+        } else if (self.activeViewController == self.listViewController) {
+            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0   ]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+    }];
+}
+
+- (void)setActiveViewControllerStoryUpdateInProgressToYes
+{
+    if (self.activeViewController == self.gridViewController) {
+        self.gridViewController.storyUpdateInProgress = YES;
+    } else if (self.activeViewController == self.listViewController) {
+        self.listViewController.storyUpdateInProgress = YES;
+    }
+}
+
+- (void)setActiveViewControllerStoryUpdateInProgressToNo
+{
+    if (self.activeViewController == self.gridViewController) {
+        self.gridViewController.storyUpdateInProgress = NO;
+    } else if (self.activeViewController == self.listViewController) {
+        self.listViewController.storyUpdateInProgress = NO;
     }
 }
 
@@ -341,7 +387,11 @@
     if (!_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        
+        if (!refreshControl.refreshing) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [refreshControl beginRefreshing];
+            }];
+        }
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
             _storyUpdateInProgress = NO;
             if (error) {
@@ -528,36 +578,53 @@
 
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
-    
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    
-    MITNewsDataSource *dataSource = self.dataSource;
-    
-    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
+    if (!_storyUpdateInProgress) {
+        MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
         
-        if (currentIndex + 1 < [dataSource.objects count]) {
-            if(block) {
-                block(dataSource.objects[currentIndex + 1], nil);
-            }
-        } else {
-            if ([dataSource hasNextPage]) {
-                [dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
-                    } else {
-                        DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+        MITNewsDataSource *dataSource = self.dataSource;
+        
+        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+        if (currentIndex != NSNotFound) {
+            
+            if (currentIndex + 1 < [dataSource.objects count]) {
+                if (block) {
+                    block(dataSource.objects[currentIndex + 1], nil);
+                }
+            } else {
+                if ([dataSource hasNextPage] && !_storyUpdateInProgress) {
+                    _storyUpdateInProgress = YES;
+                    
+                    [self updateLoadingCell];
+                    
+                    [dataSource nextPage:^(NSError *error) {
+                        [self setActiveViewControllerStoryUpdateInProgressToNo];
+                        self.gridViewController.storyUpdateInProgress = NO;
                         
-                        if (currentIndex + 1 < [dataSource.objects count]) {
-                            if(block) {
-                                block(dataSource.objects[currentIndex + 1], nil);
+                        _storyUpdateInProgress = NO;
+                        if (error) {
+                            DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                            if (block) {
+                                block(nil,error);
+                            }
+                        } else {
+                            DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
+                            NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                            
+                            if (currentIndex + 1 < [dataSource.objects count]) {
+                                if(block) {
+                                    block(dataSource.objects[currentIndex + 1], nil);
+                                }
                             }
                         }
-                    }
-                }];
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                            [self reloadData];
+                        }];
+                    }];
+                }
             }
         }
+    } else {
+        block(nil, nil);
     }
 }
 
