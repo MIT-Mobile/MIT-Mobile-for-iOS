@@ -29,7 +29,7 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" misplaced="YES" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="184" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-iu-ScW">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="184" translatesAutoresizingMaskIntoConstraints="NO" id="aWi-iu-ScW">
                         <rect key="frame" x="76" y="39" width="184" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -54,7 +54,7 @@
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="trailing" secondItem="aWi-iu-ScW" secondAttribute="trailing" id="fOK-pK-EhQ"/>
                     <constraint firstItem="hP2-Y6-ifa" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="76" id="kCn-Qr-hEA"/>
                     <constraint firstItem="HXI-ks-tD1" firstAttribute="leading" secondItem="hP2-Y6-ifa" secondAttribute="trailing" id="oUk-vW-PTZ"/>
-                    <constraint firstItem="aWi-iu-ScW" firstAttribute="top" secondItem="hP2-Y6-ifa" secondAttribute="bottom" constant="4" id="rYL-AQ-pft"/>
+                    <constraint firstItem="aWi-iu-ScW" firstAttribute="top" secondItem="hP2-Y6-ifa" secondAttribute="bottom" constant="6" id="rYL-AQ-pft"/>
                     <constraint firstItem="5dg-ex-k22" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sl2-EN-yY6"/>
                     <constraint firstAttribute="trailing" secondItem="HXI-ks-tD1" secondAttribute="trailing" constant="10" id="tQL-iQ-rpq"/>
                     <constraint firstAttribute="centerY" secondItem="HXI-ks-tD1" secondAttribute="centerY" id="u84-ap-vND"/>

@@ -92,11 +92,13 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 - (NSDate *)dayBefore;
 - (NSDate *)dayAfter;
 - (NSDate *)dateByAddingDay;
+- (NSDate *)dateBySubtractingDay;
 - (NSDate *)dateByAddingWeek;
 - (NSDate *)dateBySubtractingWeek;
 - (NSDate *)dateByAddingYear;
 - (NSArray *)datesInWeek;
 - (NSString *) MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
+- (NSString *)todayTomorrowYesterdayString;
 - (NSDateComponents *) dayComponents;
 - (NSDateComponents *) timeComponents;
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;

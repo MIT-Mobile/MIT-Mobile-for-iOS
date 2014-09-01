@@ -1,6 +1,7 @@
 #import "MITDiningVenueCell.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningRetailVenue.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
@@ -58,11 +59,11 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
     
     if ([venue isOpenNow]) {
         self.venueStatusLabel.text = @"Open";
-        self.venueStatusLabel.textColor = [UIColor colorWithRed:23.0/255.0 green:137.0/255.0 blue:27.0/255.0 alpha:1.0];
+        self.venueStatusLabel.textColor = [UIColor mit_openGreenColor];
     }
     else {
         self.venueStatusLabel.text = @"Closed";
-        self.venueStatusLabel.textColor = [UIColor colorWithRed:179.0/255.0 green:29.0/255.0 blue:16.0/255.0 alpha:1.0];
+        self.venueStatusLabel.textColor = [UIColor mit_closedRedColor];
     }
     
     [self layoutIfNeeded];

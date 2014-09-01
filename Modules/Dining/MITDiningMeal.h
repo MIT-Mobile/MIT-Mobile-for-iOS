@@ -15,6 +15,7 @@
 @property (nonatomic, retain) NSOrderedSet *items;
 
 - (NSString *)mealHoursDescription;
+- (NSString *)nameAndHoursDescription;
 
 @end
 

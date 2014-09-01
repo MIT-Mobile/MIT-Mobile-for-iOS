@@ -1,5 +1,6 @@
 #import "MITDiningMenuItem.h"
 #import "MITDiningMeal.h"
+#import "UIImage+PDF.h"
 
 @implementation MITDiningMenuItem
 
@@ -58,5 +59,22 @@
     
     return flagDisplayNames[flag];
 }
+
+- (NSAttributedString *)attributedNameWithDietaryFlags
+{
+    NSMutableAttributedString *itemName = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", self.name]];
+    
+    for (NSString *dietaryFlag in self.dietaryFlags) {
+        UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
+        NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
+        dietaryFlagAttachment.image = dietaryFlagImage;
+        
+        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
+        [itemName appendAttributedString:imageString];
+    }
+    
+    return itemName;
+}
+
 
 @end

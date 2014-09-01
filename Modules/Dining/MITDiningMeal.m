@@ -37,5 +37,10 @@
     return description;
 }
 
+- (NSString *)nameAndHoursDescription
+{
+    return [NSString stringWithFormat:@"%@ %@", [self.name capitalizedString], [self mealHoursDescription]];
+}
+
 
 @end
