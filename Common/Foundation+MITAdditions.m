@@ -617,16 +617,14 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateBySubtractingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *tomorrowComponents = [[NSDateComponents alloc] init];
-    [tomorrowComponents setDay:1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:tomorrowComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
 }
 
 
@@ -636,16 +634,14 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateByAddingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *yesterdayComponents = [[NSDateComponents alloc] init];
-    [yesterdayComponents setDay:-1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:yesterdayComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
 }
 
 - (NSDate *)dateWithoutTime
