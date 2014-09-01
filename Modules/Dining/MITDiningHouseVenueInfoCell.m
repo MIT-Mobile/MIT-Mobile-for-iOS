@@ -44,7 +44,6 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
     [self.venueIconImageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
     
     self.venueNameLabel.text = venue.name;
-    self.venueHoursLabel.text = [venue hoursToday];
     
     MITDiningHouseDay *diningDay = [venue houseDayForDate:[NSDate date]];
     self.venueHoursLabel.text = [diningDay statusStringForDate:[NSDate date]];

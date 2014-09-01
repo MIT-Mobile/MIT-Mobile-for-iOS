@@ -18,7 +18,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 
 @interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate>
 
-@property (nonatomic, strong) MITDiningHouseDay *currentlySelectedDay;
+@property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
 
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
@@ -35,10 +35,10 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     
     self.title = self.houseVenue.name;
     
-    self.currentlyDisplayedDate = [NSDate date];
+    self.currentlyDisplayedDate = [[NSDate date] startOfWeek];
     
-    self.currentlySelectedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
-    self.currentlyDisplayedMeal = [self.currentlySelectedDay bestMealForDate:self.currentlyDisplayedDate];
+    self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
+    self.currentlyDisplayedMeal = [self.currentlyDisplayedDay bestMealForDate:self.currentlyDisplayedDate];
     
     [self setupTableView];
 }
@@ -62,6 +62,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     self.mealSelectionView = [[[NSBundle mainBundle] loadNibNamed:@"MITDiningHouseMealSelectionView" owner:nil options:nil] firstObject];
     [self.mealSelectionView.nextMealButton addTarget:self action:@selector(nextMealPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.mealSelectionView.previousMealButton addTarget:self action:@selector(previousMealPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -87,7 +88,6 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return 0;
             break;
     }
-
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -112,7 +112,6 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return nil;
             break;
         case kMITVenueDetailSectionMenu:
-            [self updateMealSelectionView];
             return self.mealSelectionView;
             break;
         default:
@@ -165,20 +164,31 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 
 #pragma mark - Meal Selection View
 
-- (void)updateMealSelectionView
+- (void)updateMealSelection
 {
     self.mealSelectionView.meal = self.currentlyDisplayedMeal;
+    self.currentlyDisplayedDay = self.currentlyDisplayedMeal.houseDay;
+    self.currentlyDisplayedDate = self.self.currentlyDisplayedDay.date;
+    
+    self.mealSelectionView.previousMealButton.enabled = ([self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal])  ? YES : NO;
+    
+    self.mealSelectionView.nextMealButton.enabled = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal] ? YES : NO;
+    
+    [self.tableView reloadData];
 }
 
 - (void)nextMealPressed:(id)sender
 {
+    self.currentlyDisplayedMeal = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal];
 
+    [self updateMealSelection];
 }
 
 - (void)previousMealPressed:(id)sender
 {
-
-
+   self.currentlyDisplayedMeal = [self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal];
+    
+    [self updateMealSelection];
 }
 
 

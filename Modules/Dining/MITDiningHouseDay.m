@@ -22,6 +22,11 @@
 
 #pragma mark - Convenience Methods
 
+- (NSArray *)mealNames
+{
+    return @[@"breakfast", @"brunch", @"lunch", @"dinner"];
+}
+
 - (NSString *)dayHoursDescription
 {
     NSString *dayHoursDescription = nil;
@@ -140,6 +145,29 @@
     else {
         return @"Closed for the day";
     }
+}
+
+- (MITDiningMeal *)firstMealInDay
+{
+    for (int i = 0; i < self.mealNames.count; i++) {
+        MITDiningMeal *meal = [self mealWithName:self.mealNames[i]];
+        if (meal) {
+            return meal;
+        }
+    }
+    // Presuming the webservice isn't perfectly ordered, we'll default to this instead of nil
+    return self.meals[0];
+}
+
+- (MITDiningMeal *)lastMealInDay
+{
+    for (int i = self.mealNames.count - 1; i > 0; i--) {
+        MITDiningMeal *meal = [self mealWithName:self.mealNames[i]];
+        if (meal) {
+            return meal;
+        }
+    }
+    return self.meals[self.meals.count - 1];
 }
 
 @end

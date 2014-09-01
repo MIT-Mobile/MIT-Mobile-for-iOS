@@ -92,6 +92,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 - (NSDate *)dayBefore;
 - (NSDate *)dayAfter;
 - (NSDate *)dateByAddingDay;
+- (NSDate *)dateBySubtractingDay;
 - (NSDate *)dateByAddingWeek;
 - (NSDate *)dateBySubtractingWeek;
 - (NSDate *)dateByAddingYear;
