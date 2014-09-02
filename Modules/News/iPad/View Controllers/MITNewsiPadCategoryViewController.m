@@ -432,17 +432,30 @@
 {
     if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
+
+        __weak MITNewsiPadCategoryViewController *weakSelf = self;
         [self loadMoreItemsForCategoryInSection:section
                                      completion:^(NSError *error) {
                                          _storyUpdateInProgress = FALSE;
+                                         MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                         if (!strongSelf) {
+                                             MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                             if (!strongSelf) {
+                                                 if (block) {
+                                                     block(nil);
+                                                 }
+                                                 return;
+                                             }
+                                             return;
+                                         }
                                          
                                          if (error) {
-                                             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
+                                             DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
                                              
                                          } else {
-                                             DDLogVerbose(@"refreshed data source %@",self.dataSource);
+                                             DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 [self reloadData];
+                                                 [strongSelf reloadData];
                                              }];
                                          }
                                          if (block) {
