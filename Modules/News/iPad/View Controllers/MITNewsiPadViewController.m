@@ -128,8 +128,6 @@
     return [[MITCoreDataController defaultController] mainQueueContext];
 }
 
-
-
 - (MITNewsGridViewController*)gridViewController
 {
     MITNewsGridViewController *gridViewController = _gridViewController;
@@ -211,6 +209,7 @@
 {
     [self setPresentationStyle:style animated:NO];
 }
+
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
     NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
@@ -413,8 +412,12 @@
                 [refreshControl beginRefreshing];
             }];
         }
-        
+        __weak MITNewsiPadViewController *weakSelf = self;
         [self reloadItems:^(NSError *error) {
+            MITNewsiPadViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
             _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
@@ -423,10 +426,10 @@
                 } else {
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                if (![self.categoriesDataSource.objects count]) {
-                    [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
+                if (![strongSelf.categoriesDataSource.objects count]) {
+                    [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
-                if ([self.categoriesDataSource.objects count]) {
+                if ([strongSelf.categoriesDataSource.objects count]) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
                         [refreshControl endRefreshing];
@@ -434,9 +437,9 @@
                 }
                 
             } else {
-                if (!self.lastUpdated) {
-                    self.lastUpdated = [NSDate date];
-                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                if (!strongSelf.lastUpdated) {
+                    strongSelf.lastUpdated = [NSDate date];
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:strongSelf.lastUpdated
                                                                                         toDate:[NSDate date]];
                     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
@@ -447,8 +450,8 @@
                         });
                     }
                 } else {
-                    self.lastUpdated = [NSDate date];
-                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                    strongSelf.lastUpdated = [NSDate date];
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:strongSelf.lastUpdated
                                                                                         toDate:[NSDate date]];
                     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
