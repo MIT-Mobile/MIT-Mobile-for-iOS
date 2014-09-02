@@ -136,9 +136,8 @@
         
         CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
         if (estimatedHeight != cellHeight) {
-            self.storyHeights[[self keyForIndexPath:indexPath]] = @(cellHeight);
+            [self setCellHeight:cellHeight forIndexPath:indexPath];
         }
-        
         return cellHeight;
     }
 }
@@ -149,19 +148,31 @@
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
-    } else if (self.storyHeights[[self keyForIndexPath:indexPath]]) {
-        return [self.storyHeights[[self keyForIndexPath:indexPath]] doubleValue];
+    } else if ([self getHeightForIndexPath:indexPath]) {
+        return [self getHeightForIndexPath:indexPath];
     } else {
         return UITableViewAutomaticDimension;
     }
 }
 
-- (NSIndexPath *)keyForIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)getHeightForIndexPath:(NSIndexPath *)indexPath
 {
-    if ([indexPath class] == [NSIndexPath class]) {
-        return indexPath;
+    if ([indexPath isMemberOfClass:[NSIndexPath class]]) {
+        return [self.storyHeights[indexPath] doubleValue];
+    } else {
+        NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+        return [self.storyHeights[convertedIndexPath] doubleValue];
     }
-    return [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+}
+
+- (void)setCellHeight:(CGFloat)cellHeight forIndexPath:(NSIndexPath *)indexPath
+{
+    if ([indexPath isMemberOfClass:[NSIndexPath class]]) {
+        self.storyHeights[indexPath] = @(cellHeight);
+    } else {
+        NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+        self.storyHeights[convertedIndexPath] = @(cellHeight);
+    }
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
