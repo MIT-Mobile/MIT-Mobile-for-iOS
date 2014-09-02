@@ -231,13 +231,6 @@
         } else {
             toViewController = self.listViewController;
         }
-        // Needed to fix alignment of refreshcontrol text
-        if (fromViewController) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl beginRefreshing];
-                [self.refreshControl endRefreshing];
-            }];
-        }
 
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
@@ -443,19 +436,17 @@
                 
             } else {
                 if (!self.lastUpdated) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.lastUpdated = [NSDate date];
-                        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                            toDate:[NSDate date]];
-                        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                        if (refreshControl.refreshing) {
-                            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                            dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                [refreshControl endRefreshing];
-                            });
-                        }
-                    }];
+                    self.lastUpdated = [NSDate date];
+                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                                        toDate:[NSDate date]];
+                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                    if (refreshControl.refreshing) {
+                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                        dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                            [refreshControl endRefreshing];
+                        });
+                    }
                 } else {
                     self.lastUpdated = [NSDate date];
                     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated

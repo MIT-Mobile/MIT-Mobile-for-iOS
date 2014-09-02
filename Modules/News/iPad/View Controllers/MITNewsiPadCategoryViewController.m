@@ -182,11 +182,6 @@
         } else {
             toViewController = self.listViewController;
         }
-        // Needed to fix alignment of refreshcontrol text
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl beginRefreshing];
-            [self.refreshControl endRefreshing];
-        }];
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
         toViewController.view.frame = viewFrame;
@@ -402,15 +397,10 @@
                     } else {
                         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                     }
-
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.refreshControl = refreshControl;
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
                 }
             } else {
                 
@@ -421,28 +411,15 @@
                 [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
 
                 if (refreshControl.refreshing) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        self.refreshControl = refreshControl;
-                        [NSTimer scheduledTimerWithTimeInterval:.5
-                                                         target:self
-                                                       selector:@selector(endRefreshing)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
                 }
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self reloadData];
-                }];
+                [self reloadData];
             }
         }];
     }
-}
-
-- (void)endRefreshing
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.refreshControl endRefreshing];
-    }];
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
