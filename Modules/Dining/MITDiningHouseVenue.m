@@ -64,61 +64,13 @@
     return [today dayHoursDescription];
 }
 
-// These functions are designed to return correct values regardless of the ordering of the meals coming down from the webservice, which is why they're slightly more complicated.
-- (MITDiningMeal *)mealAfterMeal:(MITDiningMeal *)meal
+- (NSArray *)sortedMealsInWeek
 {
-    MITDiningMeal *nextMeal = [self mealWithinDayAfterMeal:meal];
-    if (!nextMeal) {
-        NSDate *nextDayDate = [meal.houseDay.date dateByAddingDay];
-        MITDiningHouseDay *nextDay = [self houseDayForDate:nextDayDate];
-        if (nextDay) {
-            nextMeal = [nextDay firstMealInDay];
-        }
+    NSMutableArray *allMeals = [[NSMutableArray alloc] init];
+    for (MITDiningHouseDay *houseDay in self.mealsByDay) {
+        [allMeals addObjectsFromArray:[houseDay sortedMealsArray]];
     }
-    return nextMeal;
-}
-
-- (MITDiningMeal *)mealWithinDayAfterMeal:(MITDiningMeal *)meal
-{
-    MITDiningHouseDay *houseDay = meal.houseDay;
-    NSArray *mealNames = houseDay.mealNames;
-    NSString *mealName = [meal.name lowercaseString];
-    NSInteger mealIndex = [mealNames indexOfObject:mealName] + 1;
-    for (int i = mealIndex; i < mealNames.count; i++) {
-        MITDiningMeal *meal = [houseDay mealWithName:mealNames[i]];
-        if (meal) {
-            return meal;
-        }
-    }
-    return nil;
-}
-
-- (MITDiningMeal *)mealBeforeMeal:(MITDiningMeal *)meal
-{
-    MITDiningMeal *previousMeal = [self mealWithinDayBeforeMeal:meal];
-    if (!previousMeal) {
-        NSDate *previousDayDate = [meal.houseDay.date dateBySubtractingDay];
-        MITDiningHouseDay *previousDay = [self houseDayForDate:previousDayDate];
-        if (previousDay) {
-            previousMeal = [previousDay lastMealInDay];
-        }
-    }
-    return previousMeal;
-}
-
-- (MITDiningMeal *)mealWithinDayBeforeMeal:(MITDiningMeal *)meal
-{
-    MITDiningHouseDay *houseDay = meal.houseDay;
-    NSArray *mealNames = houseDay.mealNames;
-    NSString *mealName = [meal.name lowercaseString];
-    NSInteger mealIndex = [mealNames indexOfObject:mealName] - 1;
-    for (int i = mealIndex; i > 0; i--) {
-        MITDiningMeal *meal = [houseDay mealWithName:mealNames[i]];
-        if (meal) {
-            return meal;
-        }
-    }
-    return nil;
+    return allMeals;
 }
 
 @end

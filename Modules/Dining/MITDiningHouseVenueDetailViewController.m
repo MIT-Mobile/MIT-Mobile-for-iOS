@@ -21,6 +21,8 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 @property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
 
+@property (nonatomic, strong) NSArray *sortedMeals;
+
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
 @property (nonatomic, strong) MITDiningHouseMealSelectionView *mealSelectionView;
@@ -35,7 +37,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     
     self.title = self.houseVenue.name;
     
-    self.currentlyDisplayedDate = [[NSDate date] startOfWeek];
+    self.currentlyDisplayedDate = [NSDate date];
     
     self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
     self.currentlyDisplayedMeal = [self.currentlyDisplayedDay bestMealForDate:self.currentlyDisplayedDate];
@@ -169,27 +171,43 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     self.currentlyDisplayedDay = self.currentlyDisplayedMeal.houseDay;
     self.currentlyDisplayedDate = self.self.currentlyDisplayedDay.date;
     
-    self.mealSelectionView.previousMealButton.enabled = ([self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal])  ? YES : NO;
-    
-    self.mealSelectionView.nextMealButton.enabled = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal] ? YES : NO;
+    self.mealSelectionView.nextMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1 < self.sortedMeals.count);
+    self.mealSelectionView.previousMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] > 0);
     
     [self.tableView reloadData];
 }
 
 - (void)nextMealPressed:(id)sender
 {
-    self.currentlyDisplayedMeal = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal];
+    self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1];
 
     [self updateMealSelection];
 }
 
 - (void)previousMealPressed:(id)sender
 {
-   self.currentlyDisplayedMeal = [self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal];
+   self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] - 1];
     
     [self updateMealSelection];
 }
 
+#pragma mark - Setters/Getters
+- (void)setHouseVenue:(MITDiningHouseVenue *)houseVenue
+{
+    _houseVenue = houseVenue;
+    self.currentlyDisplayedDate = [NSDate date];
+    self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
+    self.sortedMeals = nil; // Force Recalculation
+    
+    [self updateMealSelection];
+}
 
+- (NSArray *)sortedMeals
+{
+    if (!_sortedMeals) {
+        _sortedMeals = [self.houseVenue sortedMealsInWeek];
+    }
+    return _sortedMeals;
+}
 
 @end

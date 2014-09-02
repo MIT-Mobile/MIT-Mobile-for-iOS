@@ -20,9 +20,10 @@
 - (MITDiningMeal *)bestMealForDate:(NSDate *)date;
 - (NSString *)statusStringForDate:(NSDate *)date;
 
+- (NSArray *)sortedMealsArray;
+
 - (MITDiningMeal *)firstMealInDay;
 - (MITDiningMeal *)lastMealInDay;
-
 
 @end
 
