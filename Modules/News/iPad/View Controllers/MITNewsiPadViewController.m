@@ -407,7 +407,7 @@
             [self removeNoResultsView];
         }
         [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        if (!refreshControl.refreshing && ![self.categories count]) {
+        if (!refreshControl.refreshing) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [refreshControl endRefreshing];
                 [refreshControl beginRefreshing];
@@ -423,7 +423,7 @@
                 } else {
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                if (![self.categories count]) {
+                /*if (![self.categories count]) {
                     [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
                 if ([self.categories count]) {
@@ -431,7 +431,7 @@
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
                         [refreshControl endRefreshing];
                     });
-                }
+                }*/
                 
             } else {
                 if (!self.lastUpdated) {
@@ -610,7 +610,7 @@
 - (void)reloadItems:(void(^)(NSError *error))block
 {
     if ([_dataSources count]) {
-        [self refreshDataSources:block withError:nil];
+        [self refreshDataSources:block];
     } else {
         [self loadDataSources:block];
     }
