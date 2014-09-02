@@ -136,7 +136,7 @@
         
         CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
         if (estimatedHeight != cellHeight) {
-            [self setCellHeight:cellHeight forIndexPath:indexPath];
+            [self setHeight:cellHeight forRowAtIndexPath:indexPath];
         }
         return cellHeight;
     }
@@ -148,31 +148,23 @@
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
-    } else if ([self getHeightForIndexPath:indexPath]) {
-        return [self getHeightForIndexPath:indexPath];
+    } else if ([self heightForRowAtIndexPath:indexPath]) {
+        return [self heightForRowAtIndexPath:indexPath];
     } else {
         return UITableViewAutomaticDimension;
     }
 }
 
-- (CGFloat)getHeightForIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([indexPath isMemberOfClass:[NSIndexPath class]]) {
-        return [self.storyHeights[indexPath] doubleValue];
-    } else {
-        NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
-        return [self.storyHeights[convertedIndexPath] doubleValue];
-    }
+    NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+    return [self.storyHeights[convertedIndexPath] doubleValue];
 }
 
-- (void)setCellHeight:(CGFloat)cellHeight forIndexPath:(NSIndexPath *)indexPath
+- (void)setHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([indexPath isMemberOfClass:[NSIndexPath class]]) {
-        self.storyHeights[indexPath] = @(cellHeight);
-    } else {
-        NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
-        self.storyHeights[convertedIndexPath] = @(cellHeight);
-    }
+    NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+    self.storyHeights[convertedIndexPath] = @(height);
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
