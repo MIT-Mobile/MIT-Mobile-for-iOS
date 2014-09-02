@@ -423,15 +423,15 @@
                 } else {
                     [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
                 }
-                /*if (![self.categories count]) {
+                if (![self.categoriesDataSource.objects count]) {
                     [self addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
-                if ([self.categories count]) {
+                if ([self.categoriesDataSource.objects count]) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
                         [refreshControl endRefreshing];
                     });
-                }*/
+                }
                 
             } else {
                 if (!self.lastUpdated) {
