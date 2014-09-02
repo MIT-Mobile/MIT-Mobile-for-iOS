@@ -146,7 +146,6 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 - (UITableViewCell *)menuItemCellForIndexPath:(NSIndexPath *)indexPath
 {
     MITDiningMenuItemCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningMenuItemCell forIndexPath:indexPath];
-    
     [cell setMenuItem:self.currentlyDisplayedMeal.items[indexPath.row]];
     
     return cell;

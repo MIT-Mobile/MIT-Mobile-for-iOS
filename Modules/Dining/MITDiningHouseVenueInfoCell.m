@@ -90,7 +90,5 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
     [self.delegate infoCellDidPressInfoButton:self];
 }
 
-
-
 @end
 
