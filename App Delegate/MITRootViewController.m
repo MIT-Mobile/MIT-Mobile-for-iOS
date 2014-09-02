@@ -31,6 +31,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     [super viewDidLoad];
 
     [self setupTableViewController];
+    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
 }
 
 - (void)setupTableViewController {
@@ -112,7 +113,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
     [self resetTopViewAnimated:YES];
 }
-
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
 {
     return nil;
@@ -161,8 +161,10 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
         if (indexPath.row == self.selectedIndex) {
             cell.imageView.image = drawerItem.selectedImage;
+            cell.contentView.backgroundColor = self.view.tintColor;
         } else {
             cell.imageView.image = drawerItem.image;
+            cell.contentView.backgroundColor = self.view.backgroundColor;
         }
 
         cell.textLabel.text = drawerItem.title;
@@ -186,31 +188,34 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
 }
 
+- (UIViewController*)viewControllerForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    indexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
+    return self.viewControllers[indexPath.row];
+}
+
 #pragma mark UITableViewDelegate
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return YES;
 }
 
-- (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell) {
-        cell.contentView.backgroundColor = [UIColor mit_tintColor];
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    indexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
 
-}
-
-- (void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell) {
-        cell.contentView.backgroundColor = [UIColor clearColor];
+    UIViewController *viewController = [self viewControllerForRowAtIndexPath:indexPath];
+    if (viewController == self.selectedViewController) {
+        return;
     }
+
+    NSIndexPath *previouslySelectedIndexPath = [NSIndexPath indexPathForRow:self.selectedIndex inSection:0];
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:previouslySelectedIndexPath];
+    cell.contentView.backgroundColor = self.view.backgroundColor;
+
+    cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.contentView.backgroundColor = self.view.tintColor;
+    self.selectedIndex = indexPath.row;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
