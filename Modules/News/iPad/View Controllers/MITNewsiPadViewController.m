@@ -244,7 +244,13 @@
         } else {
             toViewController = self.listViewController;
         }
-
+        // Needed to fix alignment of refreshcontrol text
+        if(fromViewController) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+                [self.refreshControl endRefreshing];
+            }];
+        }
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
         fromViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
