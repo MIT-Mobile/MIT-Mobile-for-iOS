@@ -39,10 +39,16 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
+
+    NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+    NSInteger numberOfStoryHeights = [self.storyHeights count];
+    if (numberOfStoryHeights > numberOfRows) {
+        [self.storyHeights removeAllObjects];
     }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+        return numberOfRows + 1;
+    }
+    return numberOfRows;
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
