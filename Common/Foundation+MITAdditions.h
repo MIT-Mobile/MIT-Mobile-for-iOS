@@ -112,3 +112,7 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
 + (NSCalendar *)cachedCurrentCalendar;
 
 @end
+
+@interface NSIndexPath (MITAdditions)
++ (NSIndexPath*)indexPathWithIndexPath:(NSIndexPath*)indexPath;
+@end
