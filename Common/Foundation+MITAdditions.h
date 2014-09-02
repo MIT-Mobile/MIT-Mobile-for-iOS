@@ -101,3 +101,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 + (NSCalendar *)cachedCurrentCalendar;
 
 @end
+
+@interface NSIndexPath (MITAdditions)
++ (NSIndexPath*)indexPathWithIndexPath:(NSIndexPath*)indexPath;
+@end
