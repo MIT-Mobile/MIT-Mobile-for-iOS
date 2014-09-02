@@ -5,6 +5,7 @@
 #import "MITDiningHouseVenueInfoCell.h"
 #import "Foundation+MITAdditions.h"
 #import "MITDiningMenuItemCell.h"
+#import "MITDiningFiltersCell.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningMenuItem.h"
 #import "MITDiningHouseDay.h"
@@ -17,6 +18,7 @@ typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
 
 static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoCell";
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
+static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 @interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate>
 
@@ -74,6 +76,9 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     cellNib = [UINib nibWithNibName:kMITDiningMenuItemCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningMenuItemCell];
     
+    cellNib = [UINib nibWithNibName:kMITDiningFiltersCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningFiltersCell];
+    
     self.mealSelectionView = [[[NSBundle mainBundle] loadNibNamed:@"MITDiningHouseMealSelectionView" owner:nil options:nil] firstObject];
     [self.mealSelectionView.nextMealButton addTarget:self action:@selector(nextMealPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.mealSelectionView.previousMealButton addTarget:self action:@selector(previousMealPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -97,7 +102,16 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return [MITDiningHouseVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
             break;
         case kMITVenueDetailSectionMenu:
-            return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedItems[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+            if ([self hasFiltersApplied]) {
+                if (indexPath.row == 0) {
+                    return [MITDiningFiltersCell heightForFilters:self.filters tableViewWidth:self.tableView.frame.size.width];
+                } else {
+                    return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedItems[indexPath.row - 1] tableViewWidth:self.tableView.frame.size.width];
+                }
+            }
+            else {
+                return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedItems[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+            }
             break;
         default:
             return 0;
@@ -112,7 +126,12 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return 1;
             break;
         case kMITVenueDetailSectionMenu:
-            return self.currentlyDisplayedItems.count;
+            if ([self hasFiltersApplied]) {
+                return self.currentlyDisplayedItems.count + 1;
+            }
+            else {
+                return self.currentlyDisplayedItems.count;
+            }
             break;
         default:
             return 0;
@@ -142,7 +161,11 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return [self venueInfoCell];
             break;
         case kMITVenueDetailSectionMenu:
-            return [self menuItemCellForIndexPath:indexPath];
+            if ([self hasFiltersApplied] && indexPath.row == 0) {
+                return [self filtersCell];
+            } else {
+                return [self menuItemCellForIndexPath:indexPath];
+            }
             break;
         default:
             return [[UITableViewCell alloc] init];
@@ -160,8 +183,17 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 
 - (UITableViewCell *)menuItemCellForIndexPath:(NSIndexPath *)indexPath
 {
-    MITDiningMenuItemCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningMenuItemCell forIndexPath:indexPath];
-    [cell setMenuItem:self.currentlyDisplayedItems[indexPath.row]];
+    MITDiningMenuItemCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningMenuItemCell];
+    NSInteger index = [self hasFiltersApplied] ? indexPath.row - 1 : indexPath.row;
+    [cell setMenuItem:self.currentlyDisplayedItems[index]];
+    
+    return cell;
+}
+
+- (UITableViewCell *)filtersCell
+{
+    MITDiningFiltersCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningFiltersCell];
+    [cell setFilters:self.filters];
     
     return cell;
 }
@@ -260,6 +292,11 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
         self.currentlyDisplayedItems = filteredItems;
     }
     [self.tableView reloadData];
+}
+
+- (BOOL)hasFiltersApplied
+{
+    return (self.filters.count > 0);
 }
 
 @end

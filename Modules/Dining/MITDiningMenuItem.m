@@ -86,21 +86,40 @@
     return allFlagKeys;
 }
 
-- (NSAttributedString *)attributedNameWithDietaryFlags
++ (NSMutableAttributedString *)dietaryFlagsStringForFlags:(NSArray *)flags
 {
-    NSMutableAttributedString *itemName = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", self.name]];
+    NSMutableAttributedString *flagsString = [[NSMutableAttributedString alloc] init];
     
-    for (NSString *dietaryFlag in self.dietaryFlags) {
+    for (NSString *dietaryFlag in flags) {
         UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
         NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
         dietaryFlagAttachment.image = dietaryFlagImage;
         
         NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
-        [itemName appendAttributedString:imageString];
+        [flagsString appendAttributedString:imageString];
     }
+    
+    return flagsString;
+}
+
+- (NSAttributedString *)attributedNameWithDietaryFlags
+{
+    NSMutableAttributedString *itemName = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", self.name]];
+    
+    [itemName appendAttributedString:[MITDiningMenuItem dietaryFlagsStringForFlags:self.dietaryFlags]];
     
     return itemName;
 }
 
++ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags
+{
+    NSMutableAttributedString *dietaryFlagsString = [MITDiningMenuItem dietaryFlagsStringForFlags:dietaryFlags];
+    if ([dietaryFlags count] == 1) {
+        NSString *flagName = [@" " stringByAppendingString:[MITDiningMenuItem displayNameForDietaryFlag:[dietaryFlags firstObject]]];
+        
+        [dietaryFlagsString appendAttributedString:[[NSAttributedString alloc] initWithString:flagName attributes:nil]];
+    }
+    return dietaryFlagsString;
+}
 
 @end

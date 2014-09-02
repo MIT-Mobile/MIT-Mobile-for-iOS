@@ -18,6 +18,7 @@
 + (NSArray *)allDietaryFlagsKeys;
 
 - (NSAttributedString *)attributedNameWithDietaryFlags;
++ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags;
 
 @end
 
