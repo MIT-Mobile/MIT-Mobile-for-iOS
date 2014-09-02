@@ -387,8 +387,14 @@
                 [refreshControl beginRefreshing];
             }];
         }
+        
+        __weak MITNewsiPadCategoryViewController *weakSelf = self;
         [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
             _storyUpdateInProgress = NO;
+            MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
                 if (refreshControl.refreshing) {
@@ -404,8 +410,8 @@
                 }
             } else {
                 
-                self.lastUpdated = [NSDate date];
-                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                strongSelf.lastUpdated = [NSDate date];
+                NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:strongSelf.lastUpdated
                                                                                     toDate:[NSDate date]];
                 NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
                 [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
@@ -416,7 +422,7 @@
                         [refreshControl endRefreshing];
                     });
                 }
-                [self reloadData];
+                [strongSelf reloadData];
             }
         }];
     }

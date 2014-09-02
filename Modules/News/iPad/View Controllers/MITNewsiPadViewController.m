@@ -423,11 +423,11 @@
 
         __weak MITNewsiPadViewController *weakSelf = self;
         [self reloadItems:^(NSError *error) {
+            _storyUpdateInProgress = NO;
             MITNewsiPadViewController *strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
             }
-            _storyUpdateInProgress = NO;
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
                 if (error.code == -1009) {
