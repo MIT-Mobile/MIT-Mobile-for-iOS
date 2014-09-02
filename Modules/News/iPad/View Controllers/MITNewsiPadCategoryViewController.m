@@ -9,11 +9,9 @@
 #import "MITAdditions.h"
 
 @interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
-
 @end
 
 @interface MITNewsiPadCategoryViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
-
 @end
 
 @interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
@@ -27,7 +25,6 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-
 @end
 
 @implementation MITNewsiPadCategoryViewController {
@@ -50,14 +47,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     self.showsFeaturedStories = NO;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -182,6 +177,11 @@
         } else {
             toViewController = self.listViewController;
         }
+        // Needed to fix alignment of refreshcontrol text
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+            [self.refreshControl endRefreshing];
+        }];
         const CGRect viewFrame = self.containerView.bounds;
         fromViewController.view.frame = viewFrame;
         toViewController.view.frame = viewFrame;
