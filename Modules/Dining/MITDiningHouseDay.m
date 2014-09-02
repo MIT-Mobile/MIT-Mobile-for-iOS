@@ -101,6 +101,15 @@
     return returnMeal;
 }
 
+- (NSArray *)sortedMealsArray
+{
+    return [self.meals sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        MITDiningMeal *meal1 = obj1;
+        MITDiningMeal *meal2 = obj2;
+        return [meal1.startTime compare:meal2.startTime];
+    }];
+}
+
 #pragma mark - Open/Closed Status
 
 - (NSString *)statusStringForDate:(NSDate *)date
@@ -149,25 +158,13 @@
 
 - (MITDiningMeal *)firstMealInDay
 {
-    for (int i = 0; i < self.mealNames.count; i++) {
-        MITDiningMeal *meal = [self mealWithName:self.mealNames[i]];
-        if (meal) {
-            return meal;
-        }
-    }
-    // Presuming the webservice isn't perfectly ordered, we'll default to this instead of nil
-    return self.meals[0];
+    return [[self sortedMealsArray] firstObject];
 }
 
 - (MITDiningMeal *)lastMealInDay
 {
-    for (int i = self.mealNames.count - 1; i > 0; i--) {
-        MITDiningMeal *meal = [self mealWithName:self.mealNames[i]];
-        if (meal) {
-            return meal;
-        }
-    }
-    return self.meals[self.meals.count - 1];
+   
+    return [[self sortedMealsArray] lastObject];
 }
 
 @end

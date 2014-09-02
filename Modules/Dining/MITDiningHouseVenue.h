@@ -20,9 +20,7 @@
 - (MITDiningHouseDay *)houseDayForDate:(NSDate *)date;
 - (NSString *)hoursToday;
 
-- (MITDiningMeal *)mealAfterMeal:(MITDiningMeal *)meal;
-- (MITDiningMeal *)mealBeforeMeal:(MITDiningMeal *)meal;
-
+- (NSArray *)sortedMealsInWeek;
 
 @end
 

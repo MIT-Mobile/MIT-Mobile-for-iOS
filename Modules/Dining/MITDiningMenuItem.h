@@ -15,6 +15,7 @@
 
 + (NSString *)pdfNameForDietaryFlag:(NSString *)flag;
 + (NSString *)displayNameForDietaryFlag:(NSString *)flag;
++ (NSArray *)allDietaryFlagsKeys;
 
 - (NSAttributedString *)attributedNameWithDietaryFlags;
 

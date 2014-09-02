@@ -1,6 +1,7 @@
 #import "MITDiningHouseVenueDetailViewController.h"
 #import "MITDiningHouseVenueInfoViewController.h"
 #import "MITDiningHouseMealSelectionView.h"
+#import "MITDiningFilterViewController.h"
 #import "MITDiningHouseVenueInfoCell.h"
 #import "Foundation+MITAdditions.h"
 #import "MITDiningMenuItemCell.h"
@@ -16,10 +17,13 @@ typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
 static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoCell";
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 
-@interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate>
+@interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate>
 
 @property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
+
+@property (nonatomic, strong) NSArray *sortedMeals;
+@property (nonatomic, strong) NSSet *filters;
 
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
@@ -33,12 +37,14 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 {
     [super viewDidLoad];
     
-    self.title = self.houseVenue.name;
+    [self setupNavigationBar];
     
-    self.currentlyDisplayedDate = [[NSDate date] startOfWeek];
+    self.currentlyDisplayedDate = [NSDate date];
     
     self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
     self.currentlyDisplayedMeal = [self.currentlyDisplayedDay bestMealForDate:self.currentlyDisplayedDate];
+    
+    self.filters = [NSSet set];
     
     [self setupTableView];
 }
@@ -47,6 +53,12 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setupNavigationBar
+{
+    UIBarButtonItem *filterButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(showFilterSelector)];
+    self.navigationItem.rightBarButtonItem = filterButton;
 }
 
 #pragma mark - Table view data source
@@ -169,27 +181,58 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     self.currentlyDisplayedDay = self.currentlyDisplayedMeal.houseDay;
     self.currentlyDisplayedDate = self.self.currentlyDisplayedDay.date;
     
-    self.mealSelectionView.previousMealButton.enabled = ([self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal])  ? YES : NO;
-    
-    self.mealSelectionView.nextMealButton.enabled = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal] ? YES : NO;
+    self.mealSelectionView.nextMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1 < self.sortedMeals.count);
+    self.mealSelectionView.previousMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] > 0);
     
     [self.tableView reloadData];
 }
 
 - (void)nextMealPressed:(id)sender
 {
-    self.currentlyDisplayedMeal = [self.houseVenue mealAfterMeal:self.currentlyDisplayedMeal];
+    self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1];
 
     [self updateMealSelection];
 }
 
 - (void)previousMealPressed:(id)sender
 {
-   self.currentlyDisplayedMeal = [self.houseVenue mealBeforeMeal:self.currentlyDisplayedMeal];
+   self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] - 1];
     
     [self updateMealSelection];
 }
 
+#pragma mark - Setters/Getters
+- (void)setHouseVenue:(MITDiningHouseVenue *)houseVenue
+{
+    _houseVenue = houseVenue;
+    self.title = self.houseVenue.name;
+    self.currentlyDisplayedDate = [NSDate date];
+    self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
+    self.sortedMeals = nil; // Force Recalculation
+    
+    [self updateMealSelection];
+}
 
+- (NSArray *)sortedMeals
+{
+    if (!_sortedMeals) {
+        _sortedMeals = [self.houseVenue sortedMealsInWeek];
+    }
+    return _sortedMeals;
+}
+
+#pragma mark - Filtering
+
+- (void)showFilterSelector
+{
+    MITDiningFilterViewController *filterVC = [[MITDiningFilterViewController alloc] init];
+    filterVC.delegate = self;
+    [self presentViewController:[[UINavigationController alloc] initWithRootViewController:filterVC] animated:YES completion:NULL];
+}
+
+- (void)applyFilters:(NSSet *)filters
+{
+    self.filters = filters;
+}
 
 @end
