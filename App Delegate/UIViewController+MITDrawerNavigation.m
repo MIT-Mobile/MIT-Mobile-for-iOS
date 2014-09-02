@@ -1,6 +1,5 @@
 #import <objc/runtime.h>
 #import "UIViewController+MITDrawerNavigation.h"
-#import "MITDrawerItem.h"
 
 NSString* const MITDrawerItemObjectKey = @"MITDrawerNavigationItemAssociatedObjectKey";
 

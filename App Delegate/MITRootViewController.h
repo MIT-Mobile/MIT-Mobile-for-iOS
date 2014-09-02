@@ -1,7 +1,5 @@
 #import "ECSlidingViewController.h"
-
 #import "UIViewController+MITDrawerNavigation.h"
-#import "MITDrawerItem.h"
 
 @interface MITRootViewController : ECSlidingViewController
 @property (nonatomic,copy) NSArray *viewControllers;
