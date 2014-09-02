@@ -171,25 +171,32 @@
     [self clearTable];
     self.searchBar.text = searchTerm;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
+    
+    __weak MITNewsSearchController *weakSelf = self;
     [self.dataSource refresh:^(NSError *error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
             if (error.code == -1009) {
-                self.errorMessage = @"No Internet Connection";
+                strongSelf.errorMessage = @"No Internet Connection";
             } else {
-                self.errorMessage = @"Failed...";
-            }            [self removeLoadingView];
-            [self addNoResultsView];
+                strongSelf.errorMessage = @"Failed...";
+            }
+            [strongSelf removeLoadingView];
+            [strongSelf addNoResultsView];
 
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
-            [self removeLoadingView];
+            [strongSelf removeLoadingView];
             
-            if ([self.dataSource.objects count] == 0) {
-                [self addNoResultsView];
+            if ([strongSelf.dataSource.objects count] == 0) {
+                [strongSelf addNoResultsView];
             }
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.searchTableView reloadData];
+                [strongSelf.searchTableView reloadData];
             }];
         }
     }];
@@ -210,29 +217,34 @@
 {
     if ([self.dataSource hasNextPage] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = TRUE;
+        __weak MITNewsSearchController *weakSelf = self;
         [self.dataSource nextPage:^(NSError *error) {
             _storyUpdateInProgress = FALSE;
+            MITNewsSearchController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
             if (error) {
-                DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
+                DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
                 if (error.code == -1009) {
-                    self.errorMessage = @"No Internet Connection";
+                    strongSelf.errorMessage = @"No Internet Connection";
                 } else {
-                    self.errorMessage = @"Failed...";
+                    strongSelf.errorMessage = @"Failed...";
                 }
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [NSTimer scheduledTimerWithTimeInterval:2
-                                                     target:self
+                                                     target:strongSelf
                                                    selector:@selector(clearFailAfterTwoSeconds)
                                                    userInfo:nil
                                                     repeats:NO];
-                    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                    [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                 }];
                 
             } else {
-                self.errorMessage = nil;
-                DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
+                strongSelf.errorMessage = nil;
+                DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.searchTableView reloadData];
+                    [strongSelf.searchTableView reloadData];
                 }];
             }
         }];
