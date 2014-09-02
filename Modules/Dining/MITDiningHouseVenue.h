@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITDiningHouseDay, MITDiningLocation, MITDiningVenues;
+@class MITDiningHouseDay, MITDiningLocation, MITDiningVenues, MITDiningMeal;
 
 @interface MITDiningHouseVenue : MITManagedObject <MITMappedObject>
 
@@ -19,6 +19,10 @@
 - (BOOL)isOpenNow;
 - (MITDiningHouseDay *)houseDayForDate:(NSDate *)date;
 - (NSString *)hoursToday;
+
+- (MITDiningMeal *)mealAfterMeal:(MITDiningMeal *)meal;
+- (MITDiningMeal *)mealBeforeMeal:(MITDiningMeal *)meal;
+
 
 @end
 

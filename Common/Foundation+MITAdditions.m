@@ -617,16 +617,14 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateBySubtractingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *tomorrowComponents = [[NSDateComponents alloc] init];
-    [tomorrowComponents setDay:1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:tomorrowComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
 }
 
 
@@ -636,16 +634,14 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateByAddingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *yesterdayComponents = [[NSDateComponents alloc] init];
-    [yesterdayComponents setDay:-1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:yesterdayComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
 }
 
 - (NSDate *)dateWithoutTime
@@ -744,6 +740,13 @@ typedef struct {
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
+- (NSDate *)dateBySubtractingDay
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.day = -1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
 - (NSDate *)dateBySubtractingWeek
 {
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
@@ -798,6 +801,34 @@ typedef struct {
     }
     
     return [formatter stringFromDate:self];
+}
+
+- (NSString *)todayTomorrowYesterdayString
+{
+    static NSDateFormatter *dayOfWeekFormatter;
+    if (!dayOfWeekFormatter) {
+        dayOfWeekFormatter = [[NSDateFormatter alloc] init];
+        [dayOfWeekFormatter setDateFormat:@"EEEE"];
+    }
+    
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM d"];
+    }
+    
+    if ([self isToday]) {
+        return [NSString stringWithFormat:@"Today, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isTomorrow]) {
+        return [NSString stringWithFormat:@"Tomorrow, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isYesterday]) {
+        return [NSString stringWithFormat:@"Yesterday, %@", [dateFormatter stringFromDate:self]];
+    }
+    else {
+        return [NSString stringWithFormat:@"%@, %@", [dayOfWeekFormatter stringFromDate:self], [dateFormatter stringFromDate:self]];
+    }
 }
 
 - (NSDateComponents *)dayComponents {

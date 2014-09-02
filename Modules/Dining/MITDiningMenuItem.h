@@ -12,6 +12,12 @@
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * station;
 @property (nonatomic, retain) NSSet *meal;
+
++ (NSString *)pdfNameForDietaryFlag:(NSString *)flag;
++ (NSString *)displayNameForDietaryFlag:(NSString *)flag;
+
+- (NSAttributedString *)attributedNameWithDietaryFlags;
+
 @end
 
 @interface MITDiningMenuItem (CoreDataGeneratedAccessors)
@@ -20,8 +26,5 @@
 - (void)removeMealObject:(MITDiningMeal *)value;
 - (void)addMeal:(NSSet *)values;
 - (void)removeMeal:(NSSet *)values;
-
-+ (NSString *)pdfNameForDietaryFlag:(NSString *)flag;
-+ (NSString *)displayNameForDietaryFlag:(NSString *)flag;
 
 @end
