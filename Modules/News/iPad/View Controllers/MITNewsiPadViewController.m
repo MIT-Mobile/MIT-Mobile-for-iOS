@@ -114,6 +114,21 @@
         }
         [self updateNavigationItem:YES];
     }
+    if (_storyUpdateInProgress) {
+        if (_presentationStyle == MITNewsPresentationStyleGrid) {
+            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+        } else {
+            [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+        }
+        
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        if (!self.refreshControl.refreshing) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl endRefreshing];
+                [self.refreshControl beginRefreshing];
+            }];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -405,13 +420,7 @@
         if (self.messageView) {
             [self removeNoResultsView];
         }
-        [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
-        if (!refreshControl.refreshing) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [refreshControl endRefreshing];
-                [refreshControl beginRefreshing];
-            }];
-        }
+
         __weak MITNewsiPadViewController *weakSelf = self;
         [self reloadItems:^(NSError *error) {
             MITNewsiPadViewController *strongSelf = weakSelf;
