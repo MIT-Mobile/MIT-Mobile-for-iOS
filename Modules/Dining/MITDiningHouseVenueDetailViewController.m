@@ -6,6 +6,7 @@
 #import "Foundation+MITAdditions.h"
 #import "MITDiningMenuItemCell.h"
 #import "MITDiningHouseVenue.h"
+#import "MITDiningMenuItem.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
 
@@ -22,6 +23,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 @property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
 
+@property (nonatomic, strong) NSArray *currentlyDisplayedItems;
 @property (nonatomic, strong) NSArray *sortedMeals;
 @property (nonatomic, strong) NSSet *filters;
 
@@ -45,6 +47,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     self.currentlyDisplayedMeal = [self.currentlyDisplayedDay bestMealForDate:self.currentlyDisplayedDate];
     
     self.filters = [NSSet set];
+    [self updateCurrentlyDisplayedMeals];
     
     [self setupTableView];
 }
@@ -94,7 +97,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return [MITDiningHouseVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
             break;
         case kMITVenueDetailSectionMenu:
-            return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedMeal.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+            return [MITDiningMenuItemCell heightForMenuItem:self.currentlyDisplayedItems[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
             break;
         default:
             return 0;
@@ -109,7 +112,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
             return 1;
             break;
         case kMITVenueDetailSectionMenu:
-            return self.currentlyDisplayedMeal.items.count;
+            return self.currentlyDisplayedItems.count;
             break;
         default:
             return 0;
@@ -158,7 +161,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 - (UITableViewCell *)menuItemCellForIndexPath:(NSIndexPath *)indexPath
 {
     MITDiningMenuItemCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningMenuItemCell forIndexPath:indexPath];
-    [cell setMenuItem:self.currentlyDisplayedMeal.items[indexPath.row]];
+    [cell setMenuItem:self.currentlyDisplayedItems[indexPath.row]];
     
     return cell;
 }
@@ -184,7 +187,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
     self.mealSelectionView.nextMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1 < self.sortedMeals.count);
     self.mealSelectionView.previousMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] > 0);
     
-    [self.tableView reloadData];
+    [self updateCurrentlyDisplayedMeals];
 }
 
 - (void)nextMealPressed:(id)sender
@@ -226,6 +229,7 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 - (void)showFilterSelector
 {
     MITDiningFilterViewController *filterVC = [[MITDiningFilterViewController alloc] init];
+    [filterVC setSelectedFilters:self.filters];
     filterVC.delegate = self;
     [self presentViewController:[[UINavigationController alloc] initWithRootViewController:filterVC] animated:YES completion:NULL];
 }
@@ -233,6 +237,29 @@ static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 - (void)applyFilters:(NSSet *)filters
 {
     self.filters = filters;
+    [self updateCurrentlyDisplayedMeals];
+}
+
+- (void)updateCurrentlyDisplayedMeals
+{
+    if (self.filters.count == 0) {
+        self.currentlyDisplayedItems = [self.currentlyDisplayedMeal.items array];
+    }
+    else {
+        NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
+        for (MITDiningMenuItem *item in self.currentlyDisplayedMeal.items) {
+            if (item.dietaryFlags) {
+                for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
+                    if ([self.filters containsObject:dietaryFlag]) {
+                        [filteredItems addObject:item];
+                        break;
+                    }
+                }
+            }
+        }
+        self.currentlyDisplayedItems = filteredItems;
+    }
+    [self.tableView reloadData];
 }
 
 @end
