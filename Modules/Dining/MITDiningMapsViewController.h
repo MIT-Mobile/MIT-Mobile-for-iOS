@@ -1,6 +1,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class MITDiningRetailVenue;
+
 typedef NS_ENUM(NSUInteger, MITDiningMapsDisplayMode) {
     MITDiningMapsDisplayModeHouse,
     MITDiningMapsDisplayModeRetail,
@@ -9,6 +11,7 @@ typedef NS_ENUM(NSUInteger, MITDiningMapsDisplayMode) {
 
 @interface MITDiningMapsViewController : UIViewController
 
-@property (nonatomic) MITDiningMapsDisplayMode displayMode;
+- (void)updateMapWithDiningPlaces:(NSArray *)diningPlaceArray;
+- (void)showDetailForRetailVenue:(MITDiningRetailVenue *)retailVenue;
 
 @end

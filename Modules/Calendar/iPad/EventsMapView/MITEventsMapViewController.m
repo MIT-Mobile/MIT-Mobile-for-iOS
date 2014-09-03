@@ -279,7 +279,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 
 - (void)eventDetailViewControllerDidUpdateSize:(MITEventDetailViewController *)eventDetailViewController
 {
-    
+
     CGFloat tableHeight = [eventDetailViewController targetTableViewHeight];
     CGFloat maxPopoverHeight = [self maxPopoverHeight];
     CGFloat minPopoverHeight = [self minPopoverHeight];

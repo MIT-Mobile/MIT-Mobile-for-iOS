@@ -2,4 +2,6 @@
 
 @interface MITDiningHomeViewControllerPad : UIViewController
 
+@property (nonatomic, strong) NSArray *diningHouses;
+
 @end

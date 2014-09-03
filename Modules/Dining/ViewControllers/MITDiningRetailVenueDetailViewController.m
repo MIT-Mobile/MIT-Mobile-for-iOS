@@ -29,8 +29,8 @@ static int const kWebViewTag = 4231;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic, assign) CGFloat descriptionHeight;
-@property (nonatomic, strong) NSArray * availableInfoKeys;
-@property (nonatomic, strong) NSArray * formattedHoursData;
+@property (nonatomic, strong) NSArray *availableInfoKeys;
+@property (nonatomic, strong) NSArray *formattedHoursData;
 
 @end
 
@@ -60,6 +60,20 @@ static int const kWebViewTag = 4231;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (CGFloat)targetTableViewHeight
+{
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    tableHeight += CGRectGetHeight(self.tableView.tableHeaderView.bounds);
+    
+    return tableHeight;
 }
 
 #pragma mark - TableView Setup
@@ -138,7 +152,7 @@ static int const kWebViewTag = 4231;
 
 #pragma mark - Schedule Formatting
 
-- (void) formatScheduleInfo
+- (void)formatScheduleInfo
 {
     NSArray *orderedDays = [self.retailVenue.hours sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
     NSMutableArray *scheduleArray = [NSMutableArray array];
@@ -161,8 +175,6 @@ static int const kWebViewTag = 4231;
         
         previousDay = retailDay;
     }
-    
-    
     
     self.formattedHoursData = scheduleArray;
 }
@@ -423,9 +435,12 @@ static int const kWebViewTag = 4231;
     NSString *heightAsString = [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"centered-content\").scrollHeight;"];
 	CGFloat webViewHeight = [heightAsString floatValue];
     
-	if(webViewHeight != self.descriptionHeight) {
+	if (webViewHeight != self.descriptionHeight) {
 		self.descriptionHeight = webViewHeight;
 		[self.tableView reloadData];
+        if ([self.delegate respondsToSelector:@selector(retailDetailViewControllerDidUpdateSize:)]) {
+            [self.delegate retailDetailViewControllerDidUpdateSize:self];
+        }
     }
 }
 
@@ -465,12 +480,12 @@ static int const kWebViewTag = 4231;
 
 #pragma mark - Interface Orientation
 
-- (BOOL) shouldAutorotate
+- (BOOL)shouldAutorotate
 {
     return NO;
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return NO;
 }
