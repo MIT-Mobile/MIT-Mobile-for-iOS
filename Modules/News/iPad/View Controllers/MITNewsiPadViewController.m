@@ -107,10 +107,7 @@
         if (!self.lastUpdated) {
             [self reloadViewItems:self.refreshControl];
         } else {
-            NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                                toDate:[NSDate date]];
-            NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-            [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+            [self updateRefrshStatusWithCurrentTime];
         }
         [self updateNavigationItem:YES];
     }
@@ -120,8 +117,8 @@
         } else {
             [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
         }
-        
-        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Updating..."]];
+        [self updateRefreshStatusWithText:@"Updating..."];
+
         if (!self.refreshControl.refreshing) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.refreshControl endRefreshing];
@@ -437,9 +434,9 @@
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
                 if (error.code == -1009) {
-                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"No Internet Connection"]];
+                    [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
                 } else {
-                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Failed..."]];
+                    [strongSelf updateRefreshStatusWithText:@"Failed..."];
                 }
                 if (![strongSelf.categoriesDataSource.objects count]) {
                     [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
@@ -452,30 +449,16 @@
                 }
                 
             } else {
-                if (!strongSelf.lastUpdated) {
                     strongSelf.lastUpdated = [NSDate date];
-                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:strongSelf.lastUpdated
-                                                                                        toDate:[NSDate date]];
-                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+                    [strongSelf updateRefrshStatusWithCurrentTime];
+
                     if (refreshControl.refreshing) {
                         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
                         dispatch_after(popTime, dispatch_get_main_queue(), ^{
                             [refreshControl endRefreshing];
                         });
                     }
-                } else {
-                    strongSelf.lastUpdated = [NSDate date];
-                    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:strongSelf.lastUpdated
-                                                                                        toDate:[NSDate date]];
-                    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-                    [refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-                    
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-                }
+
             }
         }];
     }
@@ -505,6 +488,22 @@
         if (netStatus != NotReachable ) {
             [self reloadViewItems:self.refreshControl];
         }
+    }
+}
+
+#pragma mark Refresh Control Text
+- (void)updateRefrshStatusWithCurrentTime
+{
+    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                        toDate:[NSDate date]];
+    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+}
+
+- (void)updateRefreshStatusWithText:(NSString *)refreshText
+{
+    if (refreshText) {
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
     }
 }
 
