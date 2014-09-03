@@ -5,6 +5,7 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 #import "MITNewsLoadMoreTableViewCell.h"
+#import "Foundation+MITAdditions.h"
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
@@ -142,7 +143,7 @@
         
         CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
         if (estimatedHeight != cellHeight) {
-            [self setHeight:cellHeight forRowAtIndexPath:indexPath];
+            [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
         }
         return cellHeight;
     }
@@ -154,23 +155,23 @@
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
-    } else if ([self heightForRowAtIndexPath:indexPath]) {
-        return [self heightForRowAtIndexPath:indexPath];
+    } else if ([self cachedHeightForRowAtIndexPath:indexPath]) {
+        return [self cachedHeightForRowAtIndexPath:indexPath];
     } else {
         return UITableViewAutomaticDimension;
     }
 }
 
-- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)cachedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
-    return [self.storyHeights[convertedIndexPath] doubleValue];
+    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
+    return [self.storyHeights[keyIndexPath] doubleValue];
 }
 
-- (void)setHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
+- (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
-    self.storyHeights[convertedIndexPath] = @(height);
+    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
+    self.storyHeights[keyIndexPath] = @(height);
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
