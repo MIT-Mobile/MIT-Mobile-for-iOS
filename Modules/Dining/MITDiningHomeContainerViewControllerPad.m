@@ -217,8 +217,6 @@
         self.diningHouseViewController.diningHouses = [self.diningData.venues.house array];
         self.diningRetailViewController.retailVenues = [self.diningData.venues.retail array];
     }
-    
-    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
