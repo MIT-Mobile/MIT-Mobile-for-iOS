@@ -1,5 +1,6 @@
 #import "MITRootViewController.h"
 #import "MITAdditions.h"
+#import "MITModule.h"
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
@@ -13,6 +14,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 @implementation MITRootViewController
 @dynamic tableViewController;
 @dynamic selectedIndex;
+@dynamic selectedModule;
 
 - (instancetype)initWithModules:(NSArray *)modules
 {
@@ -59,32 +61,80 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)setModules:(NSArray *)modules
 {
-
+    [self setModules:modules animated:NO];
 }
 
 - (void)setModules:(NSArray *)modules animated:(BOOL)animated
 {
     if (![_modules isEqualToArray:modules]) {
-        MITModule *selectedModule = self.selectedModule;
-        NSIndexPath *selectedIndexPath = self.selectedIndexPath;
-
-        _modules = [modules copy];
+        _modules = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MITModule *module, NSDictionary *bindings) {
+            UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+            if ([module supportsUserInterfaceIdiom:interfaceIdiom]) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }]];
 
         [self didUpdateModules:YES];
     }
 }
 
-- (void)setSelectedIndex:(NSUInteger)selectedIndex
+- (void)didUpdateModules:(BOOL)animated
 {
-    if ([self.modules count] > selectedIndex) {
-        NSIndexPath *indexPath = [self indexPathForModule:self.modules[selectedIndex]];
-        self.selectedIndexPath = indexPath;
+    MITModule *selectedModule = self.selectedModule;
+    NSUInteger selectedIndex = self.selectedIndex;
+
+    NSIndexPath *moduleIndexPath = [self _indexPathForModule:selectedModule];
+    if (!moduleIndexPath) {
+        moduleIndexPath = [self _indexPathForModuleAtIndex:selectedIndex];
     }
+
+    if (moduleIndexPath) {
+        self.selectedIndexPath = moduleIndexPath;
+    } else {
+        self.selectedModule = [self.modules firstObject];
+    }
+
 }
 
 - (NSUInteger)selectedIndex
 {
-    return self.selectedIndexPath.row;
+    MITModule *module = self.selectedModule;
+    return [self _indexForModule:module];
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex
+{
+    NSIndexPath *selectedIndexPath = [self _indexPathForModuleAtIndex:selectedIndex];
+    if (selectedIndexPath) {
+        self.selectedIndexPath = selectedIndexPath;
+    }
+}
+
+- (MITModule*)selectedModule
+{
+    return [self _moduleForIndexPath:self.selectedIndexPath];
+}
+
+- (void)setSelectedModule:(MITModule *)selectedModule
+{
+    NSIndexPath *selectedIndexPath = [self _indexPathForModule:selectedModule];
+    if (selectedIndexPath) {
+        self.selectedIndexPath = selectedIndexPath;
+    }
+}
+
+- (void)setSelectedIndexPath:(NSIndexPath *)selectedIndexPath
+{
+    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexPath:selectedIndexPath];
+    if (![_selectedIndexPath isEqual:indexPath]) {
+        _selectedIndexPath = indexPath;
+
+        MITModule *module = self.selectedModule;
+        self.topViewController = [module homeViewController];
+        [self resetTopViewAnimated:YES];
+    }
 }
 
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
@@ -102,15 +152,33 @@ static NSUInteger const MITModuleSectionIndex = 0;
     }
 }
 
-- (MITDrawerItem*)_drawerItemForViewControllerAtIndex:(NSUInteger)index
+- (MITDrawerItem*)_drawerItemForModuleAtIndexPath:(NSIndexPath*)indexPath
 {
-    UIViewController *viewController = self.viewControllers[index];
+    MITModule *module = [self _moduleForIndexPath:indexPath];
+    UIViewController *viewController = [module homeViewController];
 
     if (!viewController.drawerItem) {
-        return [[MITDrawerItem alloc] initWithTitle:viewController.title image:nil];
+        MITDrawerItem *drawerItem = [[MITDrawerItem alloc] initWithTitle:module.shortName image:module.springboardIcon];
+        viewController.drawerItem = drawerItem;
+        return drawerItem;
     } else {
         return viewController.drawerItem;
     }
+}
+
+- (MITModule*)_moduleForIndexPath:(NSIndexPath*)indexPath
+{
+    if (indexPath.section == MITModuleSectionIndex) {
+        return self.modules[indexPath.row];
+    } else {
+        return nil;
+    }
+}
+
+- (UIViewController*)_viewControllerForIndexPath:(NSIndexPath*)indexPath
+{
+    MITModule *module = [self _moduleForIndexPath:indexPath];
+    return module.homeViewController;
 }
 
 - (NSIndexPath*)_indexPathForModule:(MITModule*)module
@@ -124,6 +192,20 @@ static NSUInteger const MITModuleSectionIndex = 0;
     }
 }
 
+- (NSIndexPath*)_indexPathForModuleAtIndex:(NSUInteger)moduleIndex
+{
+    if (moduleIndex >= [self.modules count]) {
+        return nil;
+    } else {
+        return [NSIndexPath indexPathForRow:moduleIndex inSection:MITModuleSectionIndex];
+    }
+}
+
+- (NSUInteger)_indexForModule:(MITModule*)module
+{
+    return [self.modules indexOfObject:module];
+}
+
 #pragma mark - Delegation
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -133,7 +215,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.viewControllers count];
+    return [self.modules count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -151,7 +233,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITDrawerReuseIdentifierItemCell forIndexPath:indexPath];
 
     if ([cell isKindOfClass:[UITableViewCell class]]) {
-        MITDrawerItem *drawerItem = [self _drawerItemForViewControllerAtIndex:indexPath.row];
+        MITDrawerItem *drawerItem = [self _drawerItemForModuleAtIndexPath:indexPath];
 
         if (indexPath.row == self.selectedIndex) {
             cell.imageView.image = drawerItem.selectedImage;
@@ -182,12 +264,6 @@ static NSUInteger const MITModuleSectionIndex = 0;
     }
 }
 
-- (UIViewController*)viewControllerForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    indexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    return self.viewControllers[indexPath.row];
-}
-
 #pragma mark UITableViewDelegate
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -196,20 +272,14 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    indexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-
-    UIViewController *viewController = [self viewControllerForRowAtIndexPath:indexPath];
-    if (viewController == self.selectedViewController) {
+    MITModule *module = [self _moduleForIndexPath:indexPath];
+    if (self.selectedModule == module) {
         return;
+    } else {
+        NSIndexPath *selectedIndexPath = self.selectedIndexPath;
+        self.selectedIndexPath = indexPath;
+        [tableView reloadRowsAtIndexPaths:@[selectedIndexPath,indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
-
-    NSIndexPath *previouslySelectedIndexPath = [NSIndexPath indexPathForRow:self.selectedIndex inSection:0];
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:previouslySelectedIndexPath];
-    cell.contentView.backgroundColor = self.view.backgroundColor;
-
-    cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.contentView.backgroundColor = self.view.tintColor;
-    self.selectedIndex = indexPath.row;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

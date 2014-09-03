@@ -10,6 +10,7 @@
 @property (nonatomic,weak) MITModule *selectedModule;
 
 - (instancetype)initWithModules:(NSArray*)modules;
+
 - (BOOL)showModuleForNotification:(MITNotification*)notification;
 - (BOOL)showModuleForURL:(NSURL*)url;
 @end
