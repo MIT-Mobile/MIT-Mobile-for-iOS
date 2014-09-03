@@ -44,8 +44,16 @@
     NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     NSInteger numberOfStoryHeights = [self.storyHeights count];
     if (numberOfStoryHeights > numberOfRows) {
-        [self.storyHeights removeAllObjects];
+        NSArray *sortedIndexPaths = [[self.storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
+
+        NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
+        [[sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
+                                             options:0
+                                          usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
+                                              [self.storyHeights removeObjectForKey:indexPath];
+                                          }]];
     }
+
     if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
         return numberOfRows + 1;
     }
