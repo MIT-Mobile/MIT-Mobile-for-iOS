@@ -6,7 +6,6 @@
 
 @interface MITNewsCategoryDataSource ()
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
-@property(nonatomic,readwrite,strong) NSDate *lastRefreshed;
 
 @property(nonatomic) NSUInteger numberOfObjects;
 @property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
@@ -108,6 +107,8 @@
                     }];
                 } else {
                     blockSelf.objectIdentifiers = nil;
+                    blockSelf.refreshedAt = [NSDate date];
+
                     [blockSelf _responseFinishedWithObjects:categories];
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         if (block) {
@@ -116,7 +117,7 @@
                     }];
                 }
 
-                self.updating = NO;
+                blockSelf.updating = NO;
                 [blockSelf.requestLock unlock];
             }];
         }];
@@ -137,8 +138,6 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects
 {
-    self.lastRefreshed = [NSDate date];
-
     NSMutableOrderedSet *addedObjectIdentifiers = [[NSMutableOrderedSet alloc] init];
     [[objects valueForKey:@"objectID"] enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
         if ([objectID isKindOfClass:[NSManagedObjectID class]]) {
