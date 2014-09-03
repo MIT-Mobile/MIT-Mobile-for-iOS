@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITDiningHomeViewControllerPad">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITDiningHouseHomeViewControllerPad">
             <connections>
                 <outlet property="collectionView" destination="F8K-cY-Tsd" id="jAs-Zi-6GP"/>
                 <outlet property="mealSelector" destination="1Ok-kD-EwC" id="4zO-aM-MWJ"/>

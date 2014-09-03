@@ -17,16 +17,16 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITEntityNameDiningHouseVenue = @"MITDiningHouseVenue";
 static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue";
 
-@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate>
+@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSArray *places;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 @property (strong, nonatomic) NSFetchRequest *fetchRequest;
-
 @property (nonatomic, copy) NSString *currentlyDisplayedEntityName;
+@property (nonatomic, strong) UIPopoverController *detailPopoverController;
+
 @end
 
 @implementation MITDiningMapsViewController
@@ -36,7 +36,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        _displayMode = MITDiningMapsDisplayModeNotSet;
     }
     return self;
 }
@@ -46,29 +45,10 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self setupTiledMapView];
-    [self setupFetchedResultsController];
     
     // TEMPORARY IMPLEMENTATION TO TOGGLE MAPS UNTIL READY TO IMPLEMENT
     UIBarButtonItem *topRight = [[UIBarButtonItem alloc]initWithTitle:@"Switch" style:UIBarButtonItemStylePlain target:self action:@selector(switchMaps)];
     self.navigationItem.rightBarButtonItem = topRight;
-}
-
-- (void)switchMaps
-{
-    MITDiningMapsDisplayMode modeToSet;
-    
-    switch (self.displayMode) {
-        case MITDiningMapsDisplayModeNotSet:
-        case MITDiningMapsDisplayModeHouse:
-            modeToSet = MITDiningMapsDisplayModeRetail;
-            break;
-        case MITDiningMapsDisplayModeRetail:
-            modeToSet = MITDiningMapsDisplayModeHouse;
-            break;
-    }
-    
-    self.displayMode = modeToSet;
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -87,11 +67,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     self.mapView.showsUserLocation = YES;
     self.mapView.tintColor =self.mapView.tintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     [self setupMapBoundingBoxAnimated:NO];
-}
-
-- (void)updateMapView {
-    NSArray *venues = [self.fetchedResultsController fetchedObjects];
-    [self updateMapWithDiningPlaces:venues];
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -176,9 +151,13 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-    [tap addTarget:self action:@selector(calloutTapped:)];
-    [view addGestureRecognizer:tap];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self showDetailForAnnotationView:view];
+    } else {
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+        [tap addTarget:self action:@selector(calloutTapped:)];
+        [view addGestureRecognizer:tap];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
@@ -201,23 +180,55 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         MITDiningPlace *place = view.annotation;
-        if (place.houseVenue) {
-            
-        } else if (place.retailVenue) {
-            MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
-            detailVC.retailVenue = place.retailVenue;
-            [self.navigationController pushViewController:detailVC animated:YES];
-        }
         
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            if (place.retailVenue) {
+                MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+                detailVC.retailVenue = place.retailVenue;
+                detailVC.delegate = self;
+                self.detailPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+                
+                CGFloat tableHeight = [detailVC targetTableViewHeight];
+                CGFloat minPopoverHeight = [self minPopoverHeight];
+                CGFloat maxPopoverHeight = [self maxPopoverHeight];
+                
+                if (tableHeight > maxPopoverHeight) {
+                    tableHeight = maxPopoverHeight;
+                } else if (tableHeight < minPopoverHeight) {
+                    tableHeight = minPopoverHeight;
+                }
+                
+                [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+                
+                [self.detailPopoverController presentPopoverFromRect:view.frame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            }
+        } else {
+            if (place.houseVenue) {
+                
+            } else if (place.retailVenue) {
+                MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+                detailVC.retailVenue = place.retailVenue;
+                [self.navigationController pushViewController:detailVC animated:YES];
+            }
+        }
     }
 }
+
+- (void)showDetailForRetailVenue:(MITDiningRetailVenue *)retailVenue
+{
+    for (MITDiningPlace *place in self.places) {
+        if ([place.retailVenue.identifier isEqualToString:retailVenue.identifier]) {
+            [self.mapView selectAnnotation:place animated:YES];
+        }
+    }
+}
+
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
         [self refreshPlaceAnnotations];
         self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
     }
-    
 }
 
 #pragma mark - Loading Events Into Map
@@ -254,59 +265,38 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     return self.tiledMapView.mapView;
 }
 
-#pragma mark - Fetched Results Controller
+#pragma mark - MITDiningRetailVenueDetailViewControllerDelegate Methods
 
-- (void)updateFetchRequest
+- (void)retailDetailViewControllerDidUpdateSize:(MITDiningRetailVenueDetailViewController *)retailDetailViewController
 {
-    NSEntityDescription *entity = [NSEntityDescription entityForName:self.currentlyDisplayedEntityName
-                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
-    [NSFetchedResultsController deleteCacheWithName:nil];
-    self.fetchedResultsController.fetchRequest.entity = entity;
-    [self.fetchedResultsController performFetch:nil];
-    [self updateMapView];
-}
-
-- (void)setupFetchedResultsController
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
-                                                                   ascending:YES];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    CGFloat tableHeight = [retailDetailViewController targetTableViewHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
     
-    NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                                               managedObjectContext:context
-                                                                                                 sectionNameKeyPath:nil
-                                                                                                          cacheName:nil];
-    self.fetchedResultsController.delegate = self;
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
     
-    if (self.displayMode != MITDiningMapsDisplayModeNotSet) {
-        [self updateFetchRequest];
-    }
+    [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:YES];
 }
 
-#pragma mark - NSFetchedResultsControllerDelegate
+#pragma mark - UIPopover Calculations
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
+- (CGFloat)maxPopoverHeight
 {
-    [self updateMapView];
+    CGFloat navbarHeight = 44;
+    CGFloat statusBarHeight = 20;
+    CGFloat toolbarHeight = 44;
+    CGFloat padding = 30;
+    CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
+    return maxPopoverHeight;
 }
 
-#pragma mark - Update Mode
-
-- (void)setDisplayMode:(MITDiningMapsDisplayMode)displayMode
+- (CGFloat)minPopoverHeight
 {
-    if (_displayMode != displayMode) {
-        
-        if (displayMode == MITDiningMapsDisplayModeHouse) {
-            self.currentlyDisplayedEntityName = kMITEntityNameDiningHouseVenue;
-        } else if (displayMode == MITDiningMapsDisplayModeRetail) {
-            self.currentlyDisplayedEntityName = kMITEntityNameDiningRetailVenue;
-        }
-        
-        _displayMode = displayMode;
-        [self updateFetchRequest];
-    }
+    return 360.0;
 }
 
 @end

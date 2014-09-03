@@ -89,11 +89,16 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     MITDiningRetailVenue *venue = [self.dataManager venueForIndexPath:indexPath];
-    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.retailVenue = venue;
-    detailVC.delegate = self;
     
-    [self.navigationController pushViewController:detailVC animated:YES];
+    if ([self.delegate respondsToSelector:@selector(retailVenueListViewController:didSelectVenue:)]) {
+        [self.delegate retailVenueListViewController:self didSelectVenue:venue];
+    } else {
+        MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+        detailVC.retailVenue = venue;
+        detailVC.delegate = self;
+        
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
 }
 
 #pragma mark - Setters

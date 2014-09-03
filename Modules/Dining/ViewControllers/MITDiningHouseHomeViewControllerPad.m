@@ -1,8 +1,7 @@
-#import "MITDiningHomeViewControllerPad.h"
+#import "MITDiningHouseHomeViewControllerPad.h"
 #import "MITDiningHallMealCollectionCell.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
-#import "MITDiningWebservices.h"
 #import "MITDiningHallMealCollectionHeader.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
@@ -11,9 +10,7 @@
 #import "MITDiningHouseMealSelectorPad.h"
 #import "UIImage+PDF.h"
 #import "MITDiningMenuItem.h"
-#import "MITSingleWebViewCellTableViewController.h"
-#import "MITDiningVenues.h"
-#import "MITDiningLinksTableViewController.h"
+
 
 static NSString * const kMITDiningHallMealCollectionCellNib = @"MITDiningHallMealCollectionCell";
 static NSString * const kMITDiningHallMealCollectionCellIdentifier = @"kMITDiningHallMealCollectionCellIdentifier";
@@ -23,28 +20,20 @@ static NSString * const kMITDiningHallMealCollectionHeaderIdentifier = @"kMITDin
 
 static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0;
 
-@interface MITDiningHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
+@interface MITDiningHouseHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
-@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic, strong) MITDiningDining *diningData;
-@property (nonatomic, strong) NSArray *diningHouses;
-
 @property (nonatomic, weak) IBOutlet MITDiningHouseMealSelectorPad *mealSelector;
 @property (nonatomic, strong) NSDate *currentlySelectedDate;
 @property (nonatomic, strong) NSString *currentlySelectedMeal;
 @property (nonatomic, strong) NSArray *menuItemsBySection;
 @property (nonatomic, strong) NSArray *dietaryFlagFilters;
 @property (nonatomic, strong) NSArray *filteredMenuItemsBySection;
-@property (nonatomic, strong) UISegmentedControl *diningVenueTypeControl;
-@property (nonatomic, strong) UIPopoverController *announcementsPopoverController;
-@property (nonatomic, strong) UIPopoverController *linksPopoverController;
-@property (nonatomic, strong) UIBarButtonItem *announcementsBarButton;
-@property (nonatomic, strong) UIBarButtonItem *linksBarButton;
+
 
 @end
 
-@implementation MITDiningHomeViewControllerPad
+@implementation MITDiningHouseHomeViewControllerPad
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -59,9 +48,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 {
     [super viewDidLoad];
     
-    [self setupNavBar];
-    [self setupToolbar];
-    
     self.mealSelector.horizontalInset = kMITDiningHallCollectionViewSectionHorizontalPadding / 2;
     self.mealSelector.delegate = self;
     
@@ -69,9 +55,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionCellNib bundle:nil] forCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionHeaderNib bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMITDiningHallMealCollectionHeaderIdentifier];
     [self.collectionView setContentInset:UIEdgeInsetsMake(14, 0, 0, 0)];
-    
-    [self setupFetchedResultsController];
-    [MITDiningWebservices getDiningWithCompletion:NULL];
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,49 +68,17 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     [self.collectionView reloadData];
 }
 
-- (void)setupNavBar
+- (void)setDiningHouses:(NSArray *)diningHouses
 {
-    self.navigationController.navigationBar.translucent = NO;
-
-    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
-    NSLog(@"navbar bg: %@", self.navigationController.navigationBar.backgroundColor);
-    NSLog(@"mit bg: %@", [UIColor mit_backgroundColor]);
+    if ([_diningHouses isEqualToArray:diningHouses]) {
+        return;
+    }
     
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
+    _diningHouses = diningHouses;
     
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
-    CGContextFillRect(context, rect);
+    [self.mealSelector setVenues:self.diningHouses];
     
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
-    
-    self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
-    [self.diningVenueTypeControl setSelectedSegmentIndex:0];
-    self.navigationItem.titleView = self.diningVenueTypeControl;
-}
-
-- (void)setupToolbar
-{
-    self.announcementsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Announcements" style:UIBarButtonItemStylePlain target:self action:@selector(announcementsButtonPressed:)];
-    self.linksBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Links" style:UIBarButtonItemStylePlain target:self action:@selector(linksButtonPressed:)];
-    UIBarButtonItem *filtersButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(filtersButtonPressed:)];
-    
-    CGSize announcementsSize = [self.announcementsBarButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
-    CGSize filtersSize = [filtersButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
-    
-    UIBarButtonItem *evenPaddingButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    evenPaddingButton.width = announcementsSize.width - filtersSize.width;
-    
-    self.toolbarItems = @[self.announcementsBarButton,
-                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                          self.linksBarButton,
-                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                          evenPaddingButton,
-                          filtersButton];
+    [self selectBestMealForCurrentDate];
 }
 
 - (void)selectDate:(NSDate *)date mealName:(NSString *)mealName
@@ -235,85 +186,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.filteredMenuItemsBySection = [NSArray arrayWithArray:newFilteredMenuItems];
 }
 
-#pragma mark - Toolbar Button Actions
 
-- (void)announcementsButtonPressed:(id)sender
-{
-    MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] init];
-    vc.title = @"Announcements";
-    vc.webViewInsets = UIEdgeInsetsMake(10, 0, 10, 10);
-    vc.htmlContent = self.diningData.announcementsHTML;
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
-    
-    self.announcementsPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
-    [self.announcementsPopoverController presentPopoverFromBarButtonItem:self.announcementsBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-}
-
-- (void)linksButtonPressed:(id)sender
-{
-    MITDiningLinksTableViewController *vc = [[MITDiningLinksTableViewController alloc] init];
-    vc.diningLinks = [self.diningData.links array];
-    vc.title = @"Links";
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
-    
-    self.linksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
-    [self.linksPopoverController presentPopoverFromBarButtonItem:self.linksBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-}
-
-- (void)filtersButtonPressed:(id)sender
-{
-    // TODO: Show announcements popover
-}
-
-#pragma mark - Fetched Results Controller
-
-- (void)setupFetchedResultsController
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"MITDiningDining"
-                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
-    [fetchRequest setEntity:entity];
-    
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"url"
-                                                                   ascending:YES];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
-    
-    NSFetchedResultsController *fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
-                                          sectionNameKeyPath:nil
-                                                   cacheName:nil];
-    self.fetchedResultsController = fetchedResultsController;
-    _fetchedResultsController.delegate = self;
-    
-    [self.fetchedResultsController performFetch:nil];
-    if (self.fetchedResultsController.fetchedObjects.count > 0) {
-        self.diningData = self.fetchedResultsController.fetchedObjects[0];
-        self.diningHouses = [self.diningData.venues.house array];
-    }
-    
-    [self.mealSelector setVenues:self.diningHouses];
-    
-    [self selectBestMealForCurrentDate];
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    if (self.fetchedResultsController.fetchedObjects.count > 0) {
-        self.diningData = self.fetchedResultsController.fetchedObjects[0];
-        self.diningHouses = [self.diningData.venues.house array];
-    }
-    
-    [self.mealSelector setVenues:self.diningHouses];
-    
-    if (!self.currentlySelectedMeal) {
-        [self selectBestMealForCurrentDate];
-    } else {
-        [self refreshViews];
-    }
-}
 
 #pragma mark - UICollectionViewDataSource Methods
 
