@@ -1,4 +1,4 @@
-#import "MITDiningHomeViewControllerPad.h"
+#import "MITDiningHouseHomeViewControllerPad.h"
 #import "MITDiningHallMealCollectionCell.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
@@ -20,7 +20,7 @@ static NSString * const kMITDiningHallMealCollectionHeaderIdentifier = @"kMITDin
 
 static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0;
 
-@interface MITDiningHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
+@interface MITDiningHouseHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, weak) IBOutlet MITDiningHouseMealSelectorPad *mealSelector;
@@ -33,7 +33,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 
 @end
 
-@implementation MITDiningHomeViewControllerPad
+@implementation MITDiningHouseHomeViewControllerPad
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

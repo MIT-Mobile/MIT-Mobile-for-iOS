@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITDiningHomeViewControllerPad : UIViewController
+@interface MITDiningHouseHomeViewControllerPad : UIViewController
 
 @property (nonatomic, strong) NSArray *diningHouses;
 

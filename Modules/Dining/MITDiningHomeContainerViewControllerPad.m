@@ -4,7 +4,7 @@
 #import "MITSingleWebViewCellTableViewController.h"
 #import "MITDiningDining.h"
 #import "MITCoreData.h"
-#import "MITDiningHomeViewControllerPad.h"
+#import "MITDiningHouseHomeViewControllerPad.h"
 #import "MITDiningRetailHomeViewControllerPad.h"
 #import "MITDiningWebservices.h"
 #import "MITDiningVenues.h"
@@ -20,7 +20,7 @@
 @property (nonatomic, strong) UIBarButtonItem *linksBarButton;
 
 @property (nonatomic, strong) IBOutlet UIView *containerView;
-@property (nonatomic, strong) MITDiningHomeViewControllerPad *diningHouseViewController;
+@property (nonatomic, strong) MITDiningHouseHomeViewControllerPad *diningHouseViewController;
 @property (nonatomic, strong) MITDiningRetailHomeViewControllerPad *diningRetailViewController;
 
 @end
@@ -106,7 +106,7 @@
 
 - (void)setupDiningHouseViewController
 {
-    self.diningHouseViewController = [[MITDiningHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    self.diningHouseViewController = [[MITDiningHouseHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 - (void)setupDiningRetailViewController
