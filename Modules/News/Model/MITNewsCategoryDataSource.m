@@ -11,9 +11,12 @@
 @property(nonatomic) NSUInteger numberOfObjects;
 @property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
 @property(strong) NSRecursiveLock *requestLock;
+@property(getter=isUpdating) BOOL updating;
 @end
 
 @implementation MITNewsCategoryDataSource
+@synthesize updating = _updating;
+
 - (instancetype)init
 {
     NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
@@ -82,9 +85,12 @@
 }
 
 #pragma mark Public
+
 - (void)refresh:(void (^)(NSError *error))block
 {
     if ([self.requestLock tryLock]) {
+        self.updating = YES;
+
         __weak MITNewsCategoryDataSource *weakSelf = self;
         [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
             MITNewsCategoryDataSource *blockSelf = weakSelf;
@@ -110,6 +116,7 @@
                     }];
                 }
 
+                self.updating = NO;
                 [blockSelf.requestLock unlock];
             }];
         }];

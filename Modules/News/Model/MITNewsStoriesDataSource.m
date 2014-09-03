@@ -193,6 +193,11 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     }
 }
 
+- (BOOL)isUpdating
+{
+    return self.isRequestInProgress;
+}
+
 - (BOOL)_canCacheRequest
 {
     if (self.isFeaturedStorySource) {

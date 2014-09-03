@@ -8,6 +8,7 @@
 @property (nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,readonly,strong) NSOrderedSet *objects;
 @property (nonatomic) NSUInteger maximumNumberOfItemsPerPage;
+@property (nonatomic,readonly) BOOL isUpdating;
 
 // For subclass use only
 //  Called when the first instance of a subclass

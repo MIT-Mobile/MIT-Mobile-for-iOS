@@ -56,6 +56,10 @@ static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
     return self;
 }
 
+- (BOOL)isUpdating
+{
+    return NO;
+}
 
 - (BOOL)hasNextPage
 {
