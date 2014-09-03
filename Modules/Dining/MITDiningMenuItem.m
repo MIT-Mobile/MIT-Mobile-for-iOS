@@ -89,7 +89,7 @@
 + (NSMutableAttributedString *)dietaryFlagsStringForFlags:(NSArray *)flags
 {
     NSMutableAttributedString *flagsString = [[NSMutableAttributedString alloc] init];
-    
+    NSAttributedString *spacer = [[NSAttributedString alloc] initWithString:@" "];
     for (NSString *dietaryFlag in flags) {
         UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
         NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
@@ -97,6 +97,7 @@
         
         NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
         [flagsString appendAttributedString:imageString];
+        [flagsString appendAttributedString:spacer];
     }
     
     return flagsString;
@@ -115,8 +116,7 @@
 {
     NSMutableAttributedString *dietaryFlagsString = [MITDiningMenuItem dietaryFlagsStringForFlags:dietaryFlags];
     if ([dietaryFlags count] == 1) {
-        NSString *flagName = [@" " stringByAppendingString:[MITDiningMenuItem displayNameForDietaryFlag:[dietaryFlags firstObject]]];
-        
+        NSString *flagName = [MITDiningMenuItem displayNameForDietaryFlag:[dietaryFlags firstObject]];
         [dietaryFlagsString appendAttributedString:[[NSAttributedString alloc] initWithString:flagName attributes:nil]];
     }
     return dietaryFlagsString;

@@ -14,36 +14,22 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="34"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Showing" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5bA-jI-5Hk">
-                        <rect key="frame" x="20" y="8" width="63" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="63" id="KVX-NE-9ib"/>
-                            <constraint firstAttribute="height" constant="20" id="Phx-Oe-Ncx"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="filters" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XOC-bE-opY">
-                        <rect key="frame" x="83" y="8" width="217" height="16"/>
+                        <rect key="frame" x="20" y="9" width="280" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="5bA-jI-5Hk" firstAttribute="top" secondItem="XOC-bE-opY" secondAttribute="top" id="6It-Pk-Wuf"/>
-                    <constraint firstItem="5bA-jI-5Hk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Cgd-9p-EP2"/>
-                    <constraint firstAttribute="bottom" secondItem="XOC-bE-opY" secondAttribute="bottom" constant="10" id="VoS-6H-IDp"/>
+                    <constraint firstItem="XOC-bE-opY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="Avc-33-qfI"/>
+                    <constraint firstAttribute="bottom" secondItem="XOC-bE-opY" secondAttribute="bottom" constant="9" id="VoS-6H-IDp"/>
                     <constraint firstAttribute="trailing" secondItem="XOC-bE-opY" secondAttribute="trailing" constant="20" id="f8i-uf-DwC"/>
-                    <constraint firstItem="XOC-bE-opY" firstAttribute="leading" secondItem="5bA-jI-5Hk" secondAttribute="trailing" id="xeW-v2-Ddq"/>
-                    <constraint firstItem="XOC-bE-opY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="zUI-9L-RmW"/>
+                    <constraint firstItem="XOC-bE-opY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="9" id="zUI-9L-RmW"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="filtersLabel" destination="XOC-bE-opY" id="JJa-ws-CYy"/>
-                <outlet property="showingLabel" destination="5bA-jI-5Hk" id="SBo-LN-dcc"/>
             </connections>
         </tableViewCell>
     </objects>

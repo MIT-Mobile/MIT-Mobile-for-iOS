@@ -5,7 +5,6 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 
 @interface MITDiningFiltersCell ()
 
-@property (weak, nonatomic) IBOutlet UILabel *showingLabel;
 @property (weak, nonatomic) IBOutlet UILabel *filtersLabel;
 
 @end
@@ -16,7 +15,6 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 {
     [self refreshLabelLayoutWidths];
     
-    self.showingLabel.textColor = 
     self.filtersLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
 }
 
@@ -36,7 +34,10 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 
 - (void)setFilters:(NSSet *)filters;
 {
-    self.filtersLabel.attributedText = [MITDiningMenuItem dietaryFlagsDisplayStringForFlags:[filters allObjects]];
+    NSMutableAttributedString *showingString = [[NSMutableAttributedString alloc] initWithString:@"Showing "];
+    [showingString appendAttributedString:[MITDiningMenuItem dietaryFlagsDisplayStringForFlags:[filters allObjects]]];
+    
+    self.filtersLabel.attributedText = showingString;
     
     [self layoutIfNeeded];
 }
