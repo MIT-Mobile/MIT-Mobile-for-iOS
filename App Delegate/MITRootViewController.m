@@ -3,25 +3,26 @@
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
+static NSUInteger const MITModuleSectionIndex = 0;
 
 @interface MITRootViewController () <UITableViewDataSource,UITableViewDelegate>
 @property (nonatomic,readonly) UITableViewController *tableViewController;
+@property (nonatomic,strong) NSIndexPath *selectedIndexPath;
 @end
 
 @implementation MITRootViewController
 @dynamic tableViewController;
+@dynamic selectedIndex;
 
-- (instancetype)initWithViewControllers:(NSArray *)viewControllers
+- (instancetype)initWithModules:(NSArray *)modules
 {
-    NSAssert([viewControllers count] > 0,@"view controller must have at least 1 child view controller");
+    NSAssert([modules count] > 0,@"there must be at least 1 module");
 
-    UIViewController *firstViewController = [viewControllers firstObject];
-    self = [super initWithTopViewController:firstViewController];
+    UIViewController *blankTopViewController = [[UIViewController alloc] init];
+    self = [super initWithTopViewController:blankTopViewController];
 
     if (self) {
-        _viewControllers = [viewControllers copy];
-        _selectedIndex = 0;
-        _selectedViewController = firstViewController;
+        _modules = [modules copy];
     }
 
     return self;
@@ -29,33 +30,22 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self _setupTableViewController];
 
-    [self setupTableViewController];
     self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
-}
 
-- (void)setupTableViewController {
-    if (self.tableViewController) {
-        UITableViewController *tableViewController = self.tableViewController;
-        [tableViewController.tableView registerNib:[UINib nibWithNibName:@"MITLogoReusableHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITRootLogoHeaderReuseIdentifier];
-        tableViewController.tableView.delegate = self;
-        tableViewController.tableView.dataSource = self;
-    }
+    NSIndexPath *indexPath = [self _indexPathForModule:[self.modules firstObject]];
+    self.selectedIndexPath = indexPath;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
-    if ([self.viewControllers count] == 0) {
+    if (!([self.modules count] > 0)) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"drawer view controller must have at least 1 view controller added before being presented" userInfo:nil];
     }
 }
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 
 #pragma mark Properties
 - (UITableViewController*)tableViewController
@@ -67,58 +57,51 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
 }
 
-- (void)setViewControllers:(NSArray *)viewControllers
+- (void)setModules:(NSArray *)modules
 {
-    if (![_viewControllers isEqualToArray:viewControllers]) {
-        UIViewController *selectedViewController = self.selectedViewController;
-        NSUInteger selectedIndex = self.selectedIndex;
 
-        _viewControllers = [viewControllers copy];
-
-        if ([_viewControllers containsObject:selectedViewController]) {
-            self.selectedViewController = selectedViewController;
-        } else if (self.selectedIndex < [_viewControllers count]) {
-            // Force a refresh of the current index since it may have changed
-            self.selectedIndex = selectedIndex;
-        } else {
-            self.selectedIndex = 0;
-        }
-    }
 }
 
-- (void)setSelectedViewController:(UIViewController *)selectedViewController
+- (void)setModules:(NSArray *)modules animated:(BOOL)animated
 {
-    if ([self.viewControllers containsObject:selectedViewController]) {
-        _selectedViewController = selectedViewController;
-        _selectedIndex = [self.viewControllers indexOfObject:selectedViewController];
-        self.topViewController = _selectedViewController;
-    } else {
+    if (![_modules isEqualToArray:modules]) {
+        MITModule *selectedModule = self.selectedModule;
+        NSIndexPath *selectedIndexPath = self.selectedIndexPath;
 
+        _modules = [modules copy];
+
+        [self didUpdateModules:YES];
     }
-
-    [self resetTopViewAnimated:YES];
 }
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex
 {
-    NSRange indexRange = NSMakeRange(0, [self.viewControllers count]);
-    if (NSLocationInRange(selectedIndex, indexRange)) {
-        _selectedIndex = selectedIndex;
-        _selectedViewController = [self.viewControllers objectAtIndex:selectedIndex];
-        self.topViewController = _selectedViewController;
-    } else {
-        NSString *reason = [NSString stringWithFormat:@"index (%d) is beyond bounds (%d)",selectedIndex,[self.viewControllers count]];
-        @throw [NSException exceptionWithName:NSRangeException reason:reason userInfo:nil];
+    if ([self.modules count] > selectedIndex) {
+        NSIndexPath *indexPath = [self indexPathForModule:self.modules[selectedIndex]];
+        self.selectedIndexPath = indexPath;
     }
-
-    [self resetTopViewAnimated:YES];
 }
+
+- (NSUInteger)selectedIndex
+{
+    return self.selectedIndexPath.row;
+}
+
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
 {
     return nil;
 }
 
 #pragma mark Private
+- (void)_setupTableViewController {
+    if (self.tableViewController) {
+        UITableViewController *tableViewController = self.tableViewController;
+        [tableViewController.tableView registerNib:[UINib nibWithNibName:@"MITLogoReusableHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITRootLogoHeaderReuseIdentifier];
+        tableViewController.tableView.delegate = self;
+        tableViewController.tableView.dataSource = self;
+    }
+}
+
 - (MITDrawerItem*)_drawerItemForViewControllerAtIndex:(NSUInteger)index
 {
     UIViewController *viewController = self.viewControllers[index];
@@ -127,6 +110,17 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
         return [[MITDrawerItem alloc] initWithTitle:viewController.title image:nil];
     } else {
         return viewController.drawerItem;
+    }
+}
+
+- (NSIndexPath*)_indexPathForModule:(MITModule*)module
+{
+    NSUInteger index = [self.modules indexOfObject:module];
+
+    if (index == NSNotFound) {
+        return nil;
+    } else {
+        return [NSIndexPath indexPathForRow:index inSection:MITModuleSectionIndex];
     }
 }
 
