@@ -21,6 +21,7 @@
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
 #import "MITNewsCategoryDataSource.h"
+#import "MITMobileServerConfiguration.h"
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
@@ -85,7 +86,7 @@
     self.containerView.autoresizesSubviews = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-    self.internetReachability = [Reachability reachabilityForLocalWiFi];
+    self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()];
 	[self.internetReachability startNotifier];
 }
 
