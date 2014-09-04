@@ -4,13 +4,15 @@
 #import "MITDiningVenues.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
-
 #import "MITDiningHouseVenueListViewController.h"
 #import "MITDiningRetailVenueListViewController.h"
+#import "MITDiningMapsViewController.h"
 
 @interface MITDiningHomeViewController () <NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
+@property (nonatomic, strong) UIBarButtonItem *mapBarButton;
+@property (nonatomic, strong) UIBarButtonItem *listBarButton;
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
@@ -20,6 +22,7 @@
 
 @property (nonatomic, strong) MITDiningHouseVenueListViewController *houseListViewController;
 @property (nonatomic, strong) MITDiningRetailVenueListViewController *retailListViewController;
+@property (nonatomic, strong) MITDiningMapsViewController *mapViewController;
 
 @end
 
@@ -62,6 +65,11 @@
 
     self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
+    
+    self.mapBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(mapButtonPressed)];
+    [self.navigationItem setRightBarButtonItem:self.mapBarButton];
+    // Yes, having two bar button items is silly, but switching between them looks a lot better than changing the title of a single button for some reason.
+    self.listBarButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(mapButtonPressed)];
 }
 
 - (void)performWebserviceCall
@@ -75,29 +83,42 @@
 {
     self.houseListViewController = [[MITDiningHouseVenueListViewController alloc] init];
     self.retailListViewController = [[MITDiningRetailVenueListViewController alloc] init];
+    self.mapViewController = [[MITDiningMapsViewController alloc] init];
     
     self.houseListViewController.view.frame =
-    self.retailListViewController.view.frame = self.view.bounds;
+    self.retailListViewController.view.frame =
+    self.mapViewController.view.frame = self.view.bounds;
     
     [self addChildViewController:self.houseListViewController];
     [self addChildViewController:self.retailListViewController];
+    [self addChildViewController:self.mapViewController];
    
     [self.view addSubview:self.houseListViewController.view];
     [self.view addSubview:self.retailListViewController.view];
+    [self.view addSubview:self.mapViewController.view];
     
     [self showHouseVenueList];
 }
 
 - (void)showHouseVenueList
 {
-    self.houseListViewController.view.hidden = NO;
     self.retailListViewController.view.hidden = YES;
+    self.mapViewController.view.hidden = YES;
+    self.houseListViewController.view.hidden = NO;
 }
 
 - (void)showRetailVenueList
 {
     self.houseListViewController.view.hidden = YES;
+    self.mapViewController.view.hidden = YES;
     self.retailListViewController.view.hidden = NO;
+}
+
+- (void)showMapView
+{
+    self.houseListViewController.view.hidden = YES;
+    self.retailListViewController.view.hidden = YES;
+    self.mapViewController.view.hidden = NO;
 }
 
 #pragma mark - Segmented Control
@@ -112,11 +133,18 @@
 
 - (void)segmentedControlValueChanged:(UISegmentedControl *)segmentedControl
 {
-    if (segmentedControl.selectedSegmentIndex == 0) {
-        [self showHouseVenueList];
-    }
-    else {
-        [self showRetailVenueList];
+    if (self.mapViewController.view.hidden) {
+        if (self.houseRetailSelectorSegmentedControl.selectedSegmentIndex == 0) {
+            [self showHouseVenueList];
+        } else {
+            [self showRetailVenueList];
+        }
+    } else {
+        if (self.houseRetailSelectorSegmentedControl.selectedSegmentIndex == 0) {
+            [self.mapViewController updateMapWithDiningPlaces:[self.masterDiningData.venues.house array]];
+        } else {
+            [self.mapViewController updateMapWithDiningPlaces:[self.masterDiningData.venues.retail array]];
+        }
     }
 }
 
@@ -164,9 +192,31 @@
     self.retailListViewController.retailVenues = [self.masterDiningData.venues.retail array];
 }
 
+#pragma mark - Navbar Button Actions
+
 - (void)menuButtonPressed
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)mapButtonPressed
+{
+    if (self.mapViewController.view.hidden) {
+        [self.navigationItem setRightBarButtonItem:self.listBarButton animated:YES];
+        [self showMapView];
+        if (self.houseRetailSelectorSegmentedControl.selectedSegmentIndex == 0) {
+            [self.mapViewController updateMapWithDiningPlaces:[self.masterDiningData.venues.house array]];
+        } else {
+            [self.mapViewController updateMapWithDiningPlaces:[self.masterDiningData.venues.retail array]];
+        }
+    } else {
+        [self.navigationItem setRightBarButtonItem:self.mapBarButton animated:YES];
+        if (self.houseRetailSelectorSegmentedControl.selectedSegmentIndex == 0) {
+            [self showHouseVenueList];
+        } else {
+            [self showRetailVenueList];
+        }
+    }
 }
 
 @end
