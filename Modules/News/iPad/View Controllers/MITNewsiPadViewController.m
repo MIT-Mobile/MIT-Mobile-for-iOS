@@ -511,9 +511,7 @@
 
 - (void)updateRefreshStatusWithText:(NSString *)refreshText
 {
-    if (refreshText) {
-        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
-    }
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
 }
 @end
 

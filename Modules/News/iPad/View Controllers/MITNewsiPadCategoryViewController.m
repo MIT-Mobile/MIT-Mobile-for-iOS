@@ -36,7 +36,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -56,6 +55,7 @@
 {
     self.lastUpdated = self.previousLastUpdated;
     [super viewWillAppear:animated];
+    
     if (self.previousPresentationStyle) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.previousPresentationStyle == MITNewsPresentationStyleGrid) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
@@ -237,97 +237,97 @@
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 {
-    if (!_storyUpdateInProgress) {
-        _storyUpdateInProgress = YES;
-        [self updateRefreshStatusWithText:@"Updating..."];
-        if (!refreshControl.refreshing) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [refreshControl beginRefreshing];
-            }];
-        }
-        
-        __weak MITNewsiPadCategoryViewController *weakSelf = self;
-        [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
-            _storyUpdateInProgress = NO;
-            MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (error) {
-                DDLogWarn(@"update failed; %@",error);
-                if (refreshControl.refreshing) {
-                    if (error.code == NSURLErrorNotConnectedToInternet) {
-                        [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
-                    } else {
-                        [strongSelf updateRefreshStatusWithText:@"Failed..."];
-                    }
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-                }
-            } else {
-                strongSelf.lastUpdated = [NSDate date];
-                [strongSelf updateRefreshStatusWithLastUpdatedTime];
-
-                if (refreshControl.refreshing) {
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-                }
-                [strongSelf reloadData];
-            }
+    if (_storyUpdateInProgress) {
+        return;
+    }
+    
+    _storyUpdateInProgress = YES;
+    [self updateRefreshStatusWithText:@"Updating..."];
+    if (!refreshControl.refreshing) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [refreshControl beginRefreshing];
         }];
     }
+    
+    __weak MITNewsiPadCategoryViewController *weakSelf = self;
+    [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
+        _storyUpdateInProgress = NO;
+        MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        if (error) {
+            DDLogWarn(@"update failed; %@",error);
+            if (refreshControl.refreshing) {
+                if (error.code == NSURLErrorNotConnectedToInternet) {
+                    [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
+                } else {
+                    [strongSelf updateRefreshStatusWithText:@"Failed..."];
+                }
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                    [refreshControl endRefreshing];
+                });
+            }
+        } else {
+            strongSelf.lastUpdated = [NSDate date];
+            [strongSelf updateRefreshStatusWithLastUpdatedTime];
+            
+            if (refreshControl.refreshing) {
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                    [refreshControl endRefreshing];
+                });
+            }
+            [strongSelf reloadData];
+        }
+    }];
 }
- 
+
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
-    if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
-        _storyUpdateInProgress = YES;
-
-        __weak MITNewsiPadCategoryViewController *weakSelf = self;
-        [self loadMoreItemsForCategoryInSection:section
-                                     completion:^(NSError *error) {
-                                         _storyUpdateInProgress = FALSE;
-                                         MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-                                         if (!strongSelf) {
-                                             if (block) {
-                                                 block(nil);
-                                             }
-                                             return;
-                                         }
-                                         
-                                         if (error) {
-                                             DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                                             if (error.code == NSURLErrorNotConnectedToInternet) {
-                                                 strongSelf.errorMessasge = @"No Internet Connection";
-                                             } else {
-                                                 strongSelf.errorMessasge = @"Failed";
-                                             }
-                                             [strongSelf updateLoadingCell];
-                                             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                                             dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                                 [strongSelf updateLoadingCell];
-                                             });
-                                         } else {
-                                             DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
-                                            //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
-                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 [strongSelf reloadData];
-                                             }];
-                                         }
-                                         if (block) {
-                                             block(error);
-                                         }
-                                         return;
-                                     }];
-    } else {
+    if (![self canLoadMoreItemsForCategoryInSection:section] || _storyUpdateInProgress) {
         if (block) {
             block(nil);
         }
     }
+    _storyUpdateInProgress = YES;
+    
+    __weak MITNewsiPadCategoryViewController *weakSelf = self;
+    [self loadMoreItemsForCategoryInSection:section
+                                 completion:^(NSError *error) {
+                                     _storyUpdateInProgress = FALSE;
+                                     MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                     if (!strongSelf) {
+                                         if (block) {
+                                             block(nil);
+                                         }
+                                         return;
+                                     }
+                                     
+                                     if (error) {
+                                         DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
+                                         if (error.code == NSURLErrorNotConnectedToInternet) {
+                                             strongSelf.errorMessasge = @"No Internet Connection";
+                                         } else {
+                                             strongSelf.errorMessasge = @"Failed";
+                                         }
+                                         [strongSelf updateLoadingCell];
+                                         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                                         dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                             [strongSelf updateLoadingCell];
+                                         });
+                                     } else {
+                                         DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
+                                         //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
+                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                             [strongSelf reloadData];
+                                         }];
+                                     }
+                                     if (block) {
+                                         block(error);
+                                     }
+                                 }];
 }
 
 #pragma mark Refresh Control Text
@@ -341,11 +341,8 @@
 
 - (void)updateRefreshStatusWithText:(NSString *)refreshText
 {
-    if (refreshText) {
-        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
-    }
+    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
 }
-
 @end
 
 @implementation MITNewsiPadCategoryViewController (NewsDataSource)
@@ -378,13 +375,11 @@
         return nil;
     }
 }
-
 @end
 
 @implementation MITNewsiPadCategoryViewController (NewsDelegate)
 
 #pragma mark MITNewsStoryDetailPagingDelegate
-
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
     return nil;
@@ -433,7 +428,6 @@
                 managedObjectContext.parentContext = self.managedObjectContext;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
@@ -445,47 +439,48 @@
     }
 }
 
-
 #pragma mark MITNewsStoryDetailPagingDelegate
-
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
-    if (!_storyUpdateInProgress) {
-        MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-        
-        MITNewsDataSource *dataSource = self.dataSource;
-        
-        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-        if (currentIndex != NSNotFound) {
-            
-            if (currentIndex + 1 < [dataSource.objects count]) {
-                if (block) {
-                    block(dataSource.objects[currentIndex + 1], nil);
-                }
-            } else {
-                
-                [self getMoreStoriesForSection:0 completion:^(NSError *error) {
-                    if (error) {
-                        block(nil, error);
-                    } else {
-                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [dataSource.objects count]) {
-                            if (block) {
-                                block(dataSource.objects[currentIndex + 1], nil);
-                            }
-                        } else {
-                            if (block) {
-                                block(nil, nil);
-                            }
-                        }
-                    }
-                }];
-            }
+    if (_storyUpdateInProgress) {
+        if (block) {
+            block(nil, nil);
+        }
+        return;
+    }
+    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
+    MITNewsDataSource *dataSource = self.dataSource;
+    
+    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+    if (currentIndex == NSNotFound) {
+        if (block) {
+            block(nil, nil);
+        }
+        return;
+    }
+    if (currentIndex + 1 < [dataSource.objects count]) {
+        if (block) {
+            block(dataSource.objects[currentIndex + 1], nil);
         }
     } else {
-        block(nil, nil);
+        
+        [self getMoreStoriesForSection:0 completion:^(NSError *error) {
+            if (error) {
+                block(nil, error);
+            } else {
+                NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                
+                if (currentIndex + 1 < [dataSource.objects count]) {
+                    if (block) {
+                        block(dataSource.objects[currentIndex + 1], nil);
+                    }
+                } else {
+                    if (block) {
+                        block(nil, nil);
+                    }
+                }
+            }
+        }];
     }
 }
-
 @end
