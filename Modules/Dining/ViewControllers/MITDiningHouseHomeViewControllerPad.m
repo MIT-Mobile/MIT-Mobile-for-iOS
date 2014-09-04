@@ -10,7 +10,7 @@
 #import "MITDiningHouseMealSelectorPad.h"
 #import "UIImage+PDF.h"
 #import "MITDiningMenuItem.h"
-
+#import "MITDiningHouseVenueInfoViewController.h"
 
 static NSString * const kMITDiningHallMealCollectionCellNib = @"MITDiningHallMealCollectionCell";
 static NSString * const kMITDiningHallMealCollectionCellIdentifier = @"kMITDiningHallMealCollectionCellIdentifier";
@@ -20,7 +20,7 @@ static NSString * const kMITDiningHallMealCollectionHeaderIdentifier = @"kMITDin
 
 static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0;
 
-@interface MITDiningHouseHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate>
+@interface MITDiningHouseHomeViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, MITDiningHouseMealSelectorPadDelegate, MITDiningHallMealCollectionHeaderDelegate>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, weak) IBOutlet MITDiningHouseMealSelectorPad *mealSelector;
@@ -184,7 +184,17 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.filteredMenuItemsBySection = [NSArray arrayWithArray:newFilteredMenuItems];
 }
 
-
+- (void)showInfoForVenue:(MITDiningHouseVenue *)houseVenue
+{
+    MITDiningHouseVenueInfoViewController *infoVC = [[MITDiningHouseVenueInfoViewController alloc] init];
+    infoVC.houseVenue = houseVenue;
+    infoVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:infoVC action:@selector(dismiss)];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:infoVC];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self presentViewController:navController animated:YES completion:nil];
+}
 
 #pragma mark - UICollectionViewDataSource Methods
 
@@ -237,6 +247,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     [header setDiningHouseVenue:venue day:day mealName:self.currentlySelectedMeal];
+    header.delegate = self;
     
     return header;
 }
@@ -295,6 +306,13 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 - (void)diningHouseMealSelector:(MITDiningHouseMealSelectorPad *)mealSelector didSelectMeal:(NSString *)meal onDate:(NSDate *)date
 {
     [self selectDate:date mealName:meal];
+}
+
+#pragma mark - MITDiningHallMealCollectionHeaderDelegate Methods
+
+- (void)diningHallHeaderInfoButtonPressedForHouse:(MITDiningHouseVenue *)houseVenue
+{
+    [self showInfoForVenue:houseVenue];
 }
 
 @end

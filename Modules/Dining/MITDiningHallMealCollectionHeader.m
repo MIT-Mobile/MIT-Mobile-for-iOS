@@ -10,6 +10,10 @@
 @property (nonatomic, weak) IBOutlet UILabel *currentMealHoursLabel;
 @property (nonatomic, weak) IBOutlet UILabel *currentStatusLabel;
 @property (nonatomic, weak) IBOutlet UIButton *infoButton;
+@property (nonatomic, strong) MITDiningHouseVenue *venue;
+
+
+- (IBAction)infoButtonPressed:(id)sender;
 
 @end
 
@@ -30,10 +34,19 @@
     self.currentStatusLabel.preferredMaxLayoutWidth = self.currentStatusLabel.bounds.size.width;
 }
 
+- (IBAction)infoButtonPressed:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(diningHallHeaderInfoButtonPressedForHouse:)]) {
+        [self.delegate diningHallHeaderInfoButtonPressedForHouse:self.venue];
+    }
+}
+
 #pragma mark - Public Methods
 
 - (void)setDiningHouseVenue:(MITDiningHouseVenue *)venue day:(MITDiningHouseDay *)day mealName:(NSString *)mealName
 {
+    self.venue = venue;
+    
     self.imageView.image = nil;
     [self.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
     

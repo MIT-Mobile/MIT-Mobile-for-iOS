@@ -6,4 +6,6 @@
 
 @property (nonatomic, strong) MITDiningHouseVenue *houseVenue;
 
+- (void)dismiss;
+
 @end
