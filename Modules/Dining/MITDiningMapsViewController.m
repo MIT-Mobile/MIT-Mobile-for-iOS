@@ -1,16 +1,14 @@
-
 #import "MITDiningMapsViewController.h"
-
 #import "MITTiledMapView.h"
 #import "MITDiningPlace.h"
 #import "MITCoreData.h"
 #import "MITAdditions.h"
 #import "MITMapPlaceAnnotationView.h"
-
 #import "MITDiningRetailVenue.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningRetailVenueDetailViewController.h"
 #import "DiningHallMenuViewController.h"
+#import "MITDiningHouseVenueDetailViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -45,10 +43,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self setupTiledMapView];
-    
-    // TEMPORARY IMPLEMENTATION TO TOGGLE MAPS UNTIL READY TO IMPLEMENT
-    UIBarButtonItem *topRight = [[UIBarButtonItem alloc]initWithTitle:@"Switch" style:UIBarButtonItemStylePlain target:self action:@selector(switchMaps)];
-    self.navigationItem.rightBarButtonItem = topRight;
 }
 
 - (void)didReceiveMemoryWarning
@@ -204,7 +198,9 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
             }
         } else {
             if (place.houseVenue) {
-                
+                MITDiningHouseVenueDetailViewController *detailVC = [[MITDiningHouseVenueDetailViewController alloc] init];
+                detailVC.houseVenue = place.houseVenue;
+                [self.navigationController pushViewController:detailVC animated:YES];
             } else if (place.retailVenue) {
                 MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
                 detailVC.retailVenue = place.retailVenue;
