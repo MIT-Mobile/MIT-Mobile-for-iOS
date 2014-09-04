@@ -30,7 +30,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -38,7 +37,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
     if ([self.recentResults count] == 0) {
         self.clearButtonItem.enabled = NO;
@@ -54,7 +52,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Recent Add/Remove methods
@@ -63,8 +60,6 @@
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
     NSString *clearAllRecentsButtonTitle = NSLocalizedString(@"Clear All Recents", @"Clear All Recents button title");
     
-    // If the user taps the Clear Recents button, present an action sheet to confirm.
-
     self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:clearAllRecentsButtonTitle otherButtonTitles:nil];
     [self.confirmSheet showInView:self.view];
 }
@@ -130,7 +125,6 @@
     [self.modelController addRecentSearchItem:query.text error:error];
     [self.searchController getResultsForString:query.text];
     [self filterResultsUsingString:query.text];
-
 }
 
 @end

@@ -30,9 +30,7 @@
 
 @end
 
-@implementation MITNewsSearchController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsSearchController
 
 @synthesize recentSearchController = _recentSearchController;
 
@@ -195,9 +193,7 @@
             if ([strongSelf.dataSource.objects count] == 0) {
                 [strongSelf addNoResultsView];
             }
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [strongSelf.searchTableView reloadData];
-            }];
+            [strongSelf.searchTableView reloadData];
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -213,17 +209,19 @@
                      }];
 }
 
-- (void)getMoreStories
+- (void)getMoreStoriesOnCompletion:(void (^)(NSError *))block
 {
-    if ([self.dataSource hasNextPage] && !_storyUpdateInProgress) {
-        _storyUpdateInProgress = TRUE;
+    if ([self.dataSource hasNextPage] && !self.dataSource.isUpdating) {
         __weak MITNewsSearchController *weakSelf = self;
         [self.dataSource nextPage:^(NSError *error) {
-            _storyUpdateInProgress = FALSE;
             MITNewsSearchController *strongSelf = weakSelf;
             if (!strongSelf) {
+                if (block) {
+                    block(nil);
+                }
                 return;
             }
+            
             if (error) {
                 DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
                 if (error.code == NSURLErrorNotConnectedToInternet) {
@@ -244,6 +242,9 @@
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [strongSelf.searchTableView reloadData];
                 }];
+            }
+            if (block) {
+                block(error);
             }
         }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -314,7 +315,7 @@
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && self.dataSource.isUpdating) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
         cell.textLabel.text = @"Load More...";
@@ -382,7 +383,7 @@
 {
     
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgress) {
+        if (self.dataSource.isUpdating) {
             if (!cell.accessoryView) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
@@ -408,11 +409,11 @@
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (!_storyUpdateInProgress) {
-            [self getMoreStories];
-        }
+        [self getMoreStoriesOnCompletion:^(NSError *error) {
+            
+        }];
     }
-        else {
+    else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         if (story) {
             [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
@@ -431,13 +432,13 @@
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
             
             NSIndexPath *indexPath = sender;
-            
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            storyDetailViewController.delegate = self;
             MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
+                
+                MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+                storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
                 self.unwindFromStoryDetail = YES;
@@ -460,37 +461,42 @@
     if (currentIndex != NSNotFound) {
         
         if (currentIndex + 1 < [self.dataSource.objects count]) {
-            if(block) {
-                block(self.dataSource.objects[currentIndex +1], nil);
+            if (block) {
+                block(self.dataSource.objects[currentIndex + 1], nil);
             }
         } else {
-            if ([self.dataSource hasNextPage]) {
-               __weak MITNewsSearchController *weakSelf = self;
-                
-                [self.dataSource nextPage:^(NSError *error) {
-                    MITNewsSearchController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
+            __weak MITNewsSearchController *weakSelf = self;
+            
+            [self getMoreStoriesOnCompletion:^(NSError * error) {
+                MITNewsSearchController *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    if (block) {
+                        block(nil, error);
                     }
-                
-                    if (error) {
-                        DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
-                        
-                    } else {
-                        DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
-                        NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
-                            if(block) {
-                                block(strongSelf.dataSource.objects[currentIndex + 1], nil);
-                            }
+                    return;
+                }
+                if (error) {
+                    block(nil, error);
+                    
+                } else {
+                    NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
+                    
+                    if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
+                        if (block) {
+                            block(strongSelf.dataSource.objects[currentIndex + 1], nil);
                         }
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [strongSelf.searchTableView reloadData];
-                        }];
+                    } else {
+                        if (block) {
+                            block(nil, error);
+                        }
                     }
-                }];
-            }
+                    [strongSelf.searchTableView reloadData];
+                }
+            }];
+        }
+    } else {
+        if (block) {
+            block (nil, nil);
         }
     }
 }
