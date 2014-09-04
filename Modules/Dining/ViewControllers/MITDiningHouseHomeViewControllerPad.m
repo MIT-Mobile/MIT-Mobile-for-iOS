@@ -27,9 +27,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 @property (nonatomic, strong) NSDate *currentlySelectedDate;
 @property (nonatomic, strong) NSString *currentlySelectedMeal;
 @property (nonatomic, strong) NSArray *menuItemsBySection;
-@property (nonatomic, strong) NSArray *dietaryFlagFilters;
 @property (nonatomic, strong) NSArray *filteredMenuItemsBySection;
-
 
 @end
 

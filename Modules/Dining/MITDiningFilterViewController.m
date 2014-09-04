@@ -5,6 +5,8 @@
 
 static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
 
+static CGFloat const kMITDiningFilterHeaderHeight = 40.0;
+
 @interface MITDiningFilterViewController ()
 
 @property (nonatomic, strong) NSMutableSet *mutableSelectedFilters;
@@ -14,12 +16,26 @@ static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
 
 @implementation MITDiningFilterViewController
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [self customInit];
+    }
+    return self;
+}
+
+- (void)customInit
+{
+    self.allFilters = [MITDiningMenuItem allDietaryFlagsKeys];
+}
+
 - (void)setSelectedFilters:(NSSet *)filters
 {
     self.mutableSelectedFilters = [filters mutableCopy];
 }
 
-- (void) commitChanges:(id)sender
+- (void)commitChanges:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(applyFilters:)]) {
         [self.delegate applyFilters:self.mutableSelectedFilters];
@@ -39,9 +55,9 @@ static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
     self.title = @"Filters";
     self.tableView.rowHeight = 44;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commitChanges:)];
-    
-    self.allFilters = [MITDiningMenuItem allDietaryFlagsKeys];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(commitChanges:)];
+    }
     
     if (!self.mutableSelectedFilters) {
         self.selectedFilters = [[NSMutableSet alloc] init];
@@ -54,7 +70,7 @@ static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
 {
     UILabel *headerLabel = [UILabel new];
     headerLabel.text = @"Select options to be viewed.";
-    headerLabel.bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40);
+    headerLabel.bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), kMITDiningFilterHeaderHeight);
     headerLabel.textAlignment = NSTextAlignmentCenter;
     headerLabel.textColor = [UIColor darkTextColor];
     headerLabel.backgroundColor = [UIColor clearColor];
@@ -62,7 +78,22 @@ static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
     self.tableView.tableHeaderView = headerLabel;
 }
 
+- (CGFloat)targetTableViewHeight
+{
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    tableHeight += kMITDiningFilterHeaderHeight;
+    
+    return tableHeight;
+}
+
 #pragma mark - Rotation
+
 - (NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
@@ -126,6 +157,12 @@ static NSString *const kMITDiningFilterCell = @"kMITDiningFilterCell";
         [self.mutableSelectedFilters addObject:filterKey];
     }
     [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        if ([self.delegate respondsToSelector:@selector(applyFilters:)]) {
+            [self.delegate applyFilters:self.mutableSelectedFilters];
+        }
+    }
 }
 
 @end
