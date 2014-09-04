@@ -593,6 +593,13 @@ typedef struct {
                                 NSDayCalendarUnit)];
 }
 
+- (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date
+{
+    return [self isEqualToDate:date
+                    components:(NSHourCalendarUnit |
+                                NSMinuteCalendarUnit)];
+}
+
 - (BOOL) isEqualToDate:(NSDate*)otherDate
             components:(NSCalendarUnit)components
 {

@@ -2,6 +2,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningMeal.h"
 #import "Foundation+MITAdditions.h"
+#import "MITDiningMealSummary.h"
 
 @implementation MITDiningHouseDay
 
@@ -163,8 +164,17 @@
 
 - (MITDiningMeal *)lastMealInDay
 {
-   
     return [[self sortedMealsArray] lastObject];
+}
+
+- (MITDiningMealSummary *)mealSummaryForDay
+{
+    MITDiningMealSummary *mealSummary = [[MITDiningMealSummary alloc] init];
+    mealSummary.meals = [self sortedMealsArray];
+    mealSummary.startDate =
+    mealSummary.endDate = self.date;
+    
+    return mealSummary;
 }
 
 @end

@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITDiningHouseVenue, MITDiningMeal;
+@class MITDiningHouseVenue, MITDiningMeal, MITDiningMealSummary;
 
 @interface MITDiningHouseDay : MITManagedObject <MITMappedObject>
 
@@ -24,6 +24,9 @@
 
 - (MITDiningMeal *)firstMealInDay;
 - (MITDiningMeal *)lastMealInDay;
+
+- (MITDiningMealSummary *)mealSummaryForDay;
+
 
 @end
 

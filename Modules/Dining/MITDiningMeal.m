@@ -42,5 +42,12 @@
     return [NSString stringWithFormat:@"%@ %@", [self.name capitalizedString], [self mealHoursDescription]];
 }
 
+// This checks only if the meals are the same meal (i.e. breakfast) and at the same time of day... it doesn't check what day they're on, or if the menu items are the same.
+- (BOOL)isSuperficiallyEqualToMeal:(MITDiningMeal *)meal
+{
+    return ([self.name isEqualToString:meal.name] && ([self.message isEqualToString:meal.message] ||
+                                              ([self.startTime isEqualToTimeIgnoringDay:meal.startTime] &&
+                                               [self.endTime isEqualToTimeIgnoringDay:meal.endTime])));
+}
 
 @end

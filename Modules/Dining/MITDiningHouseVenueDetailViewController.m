@@ -240,7 +240,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 - (void)setHouseVenue:(MITDiningHouseVenue *)houseVenue
 {
     _houseVenue = houseVenue;
-    self.title = self.houseVenue.name;
+    self.title = self.houseVenue.shortName;
     self.currentlyDisplayedDate = [NSDate date];
     self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:self.currentlyDisplayedDate];
     self.sortedMeals = nil; // Force Recalculation

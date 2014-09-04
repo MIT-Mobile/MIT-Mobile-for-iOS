@@ -17,6 +17,8 @@ static CGFloat kMITDiningMenuItemCellEstimatedHeight = 44.0;
 {
     [self refreshLabelLayoutWidths];
     
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     self.stationLabel.textColor =
     self.ingredientsLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
 }
