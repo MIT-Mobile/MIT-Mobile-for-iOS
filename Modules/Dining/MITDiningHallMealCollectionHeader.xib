@@ -46,6 +46,9 @@
                     <state key="normal" title="Info">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
+                    <connections>
+                        <action selector="infoButtonPressed:" destination="iN0-l3-epB" eventType="touchUpInside" id="Bgt-m1-ho5"/>
+                    </connections>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fiE-sg-QFm">
                     <rect key="frame" x="60" y="43" width="418" height="1"/>

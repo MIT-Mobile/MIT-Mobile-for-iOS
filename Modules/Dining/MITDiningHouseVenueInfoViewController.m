@@ -54,6 +54,11 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
+- (void)dismiss
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
