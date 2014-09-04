@@ -34,8 +34,8 @@
 
 - (void)setDiningHouseVenue:(MITDiningHouseVenue *)venue day:(MITDiningHouseDay *)day mealName:(NSString *)mealName
 {
+    self.imageView.image = nil;
     [self.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
-    
     
     self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, [[day mealForDate:[NSDate date]] mealHoursDescription]];
     
