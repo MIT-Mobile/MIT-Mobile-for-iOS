@@ -19,6 +19,7 @@ NSString* const MITNewsStoryExternalNoImageCellNibName = @"NewsStoryExternalNoIm
 NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
 
 NSUInteger const MITNewsDefaultNumberOfStoriesPerPage = 20;
+NSUInteger const MITNewsRefreshControlHangTime = 0.5;
 
 NSString* const MITNewsCellIdentifierStoryJumbo = @"NewsStoryJumboCollectionViewCell";
 NSString* const MITNewsCellIdentifierStoryDek = @"NewsStoryDekCollectionViewCell";

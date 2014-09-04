@@ -443,23 +443,22 @@
                     [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 }
                 if ([strongSelf.categoriesDataSource.objects count]) {
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
                         [refreshControl endRefreshing];
                     });
                 }
                 
             } else {
-                    strongSelf.lastUpdated = [NSDate date];
-                    [strongSelf updateRefreshStatusWithLastUpdatedTime];
-
-                    if (refreshControl.refreshing) {
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                            [refreshControl endRefreshing];
-                        });
-                    }
-
+                strongSelf.lastUpdated = [NSDate date];
+                [strongSelf updateRefreshStatusWithLastUpdatedTime];
+                
+                if (refreshControl.refreshing) {
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [refreshControl endRefreshing];
+                    });
+                }
             }
         }];
     }
