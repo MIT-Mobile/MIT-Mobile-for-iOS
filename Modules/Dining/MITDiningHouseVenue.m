@@ -4,6 +4,7 @@
 #import "MITDiningLocation.h"
 #import "MITDiningVenues.h"
 #import "Foundation+MITAdditions.h"
+#import "MITDiningMealSummary.h"
 
 @implementation MITDiningHouseVenue
 
@@ -71,6 +72,32 @@
         [allMeals addObjectsFromArray:[houseDay sortedMealsArray]];
     }
     return allMeals;
+}
+
+- (NSArray *)groupedMealTimeSummaries
+{
+    NSMutableArray *groupedMealSummaries = [[NSMutableArray alloc] init];
+    
+    MITDiningMealSummary *mealSummary;
+    
+    for (MITDiningHouseDay *houseDay in self.mealsByDay) {
+        MITDiningMealSummary *mealSummaryInDay = [houseDay mealSummaryForDay];
+        if (mealSummary) {
+            if ([mealSummary mealSummaryContainsSameMeals:mealSummaryInDay]) {
+                mealSummary.endDate = mealSummaryInDay.endDate;
+            }
+            else {
+                [groupedMealSummaries addObject:mealSummary];
+                mealSummary = mealSummaryInDay;
+            }
+        }
+        else {
+            mealSummary = mealSummaryInDay;
+        }
+    }
+    [groupedMealSummaries addObject:mealSummary];
+    
+    return groupedMealSummaries;
 }
 
 @end

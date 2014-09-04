@@ -82,6 +82,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 + (NSDate *)fakeDateForDining;
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time;
 - (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
+- (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date;
 - (BOOL) isToday;
 - (BOOL) isTomorrow;
 - (BOOL) isYesterday;
