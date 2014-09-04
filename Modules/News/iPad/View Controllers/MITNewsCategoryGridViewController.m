@@ -7,9 +7,12 @@
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsLoadMoreCollectionViewCell.h"
 #import "MITCollectionViewGridLayout.h"
+#import "MITNewsDataSource.h"
+#import "MITNewsiPadCategoryViewController.h"
 
 @interface MITNewsCategoryGridViewController()
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 @end
 
 @implementation MITNewsCategoryGridViewController
@@ -51,10 +54,13 @@
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
             MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;
 
+            MITNewsiPadCategoryViewController *categoryVC = (MITNewsiPadCategoryViewController *)self.dataSource;
+            MITNewsDataSource *dataSource = categoryVC.dataSource;
+
             if(self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
                 loadMoreCell.loadingIndicator.hidden = YES;
-            } else if (_storyUpdateInProgress) {
+            } else if (dataSource.isUpdating || _storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
             } else {
@@ -97,7 +103,7 @@
 }
 
 #pragma mark More Stories
-- (void)getMoreStoriesForSection:(NSInteger *)section
+- (void)getMoreStoriesForSection:(NSInteger)section
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;

@@ -5,9 +5,12 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 #import "MITNewsLoadMoreTableViewCell.h"
+#import "MITNewsDataSource.h"
+#import "MITNewsiPadCategoryViewController.h"
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 @end
 
 @implementation MITNewsCategoryListViewController
@@ -61,9 +64,12 @@
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
             [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
         
+            MITNewsiPadCategoryViewController *categoryVC = (MITNewsiPadCategoryViewController *)self.dataSource;
+            MITNewsDataSource *dataSource = categoryVC.dataSource;
+       
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
-            } else if (_storyUpdateInProgress) {
+            } else if (_storyUpdateInProgress || dataSource.isUpdating) {
                 cell.textLabel.text = @"Loading More...";
             } else {
                 cell.textLabel.text = @"Load More...";
@@ -123,7 +129,7 @@
     }
 }
 
-- (void)getMoreStoriesForSection:(NSInteger *)section
+- (void)getMoreStoriesForSection:(NSInteger)section
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;

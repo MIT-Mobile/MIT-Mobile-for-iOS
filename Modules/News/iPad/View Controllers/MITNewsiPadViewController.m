@@ -524,6 +524,7 @@
 
     [categoriesDataSource.categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
         MITNewsDataSource *dataSource = [MITNewsStoriesDataSource dataSourceForCategory:category];
+
         [dataSources addObject:dataSource];
     }];
 
@@ -758,8 +759,6 @@
         iPadCategoryViewController.previousLastUpdated = self.lastUpdated;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
-        
-        
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }

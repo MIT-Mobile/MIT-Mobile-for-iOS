@@ -185,32 +185,13 @@
 
 - (void)updateLoadingCell
 {
-    [self setActiveViewControllerStoryUpdateInProgressToYes];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if (self.activeViewController == self.gridViewController) {
             [self.gridViewController.collectionView reloadData];
         } else if (self.activeViewController == self.listViewController) {
-            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0   ]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
     }];
-}
-
-- (void)setActiveViewControllerStoryUpdateInProgressToYes
-{
-    if (self.activeViewController == self.gridViewController) {
-        self.gridViewController.storyUpdateInProgress = YES;
-    } else if (self.activeViewController == self.listViewController) {
-        self.listViewController.storyUpdateInProgress = YES;
-    }
-}
-
-- (void)setActiveViewControllerStoryUpdateInProgressToNo
-{
-    if (self.activeViewController == self.gridViewController) {
-        self.gridViewController.storyUpdateInProgress = NO;
-    } else if (self.activeViewController == self.listViewController) {
-        self.listViewController.storyUpdateInProgress = NO;
-    }
 }
 
 #pragma mark UIAlertViewDelegate
@@ -301,7 +282,7 @@
     }
 }
  
-- (void)getMoreStoriesForSection:(NSInteger *)section completion:(void (^)(NSError *))block
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
     if([self canLoadMoreItemsForCategoryInSection:section] && !_storyUpdateInProgress) {
         _storyUpdateInProgress = YES;
@@ -312,19 +293,15 @@
                                          _storyUpdateInProgress = FALSE;
                                          MITNewsiPadCategoryViewController *strongSelf = weakSelf;
                                          if (!strongSelf) {
-                                             MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-                                             if (!strongSelf) {
-                                                 if (block) {
-                                                     block(nil);
-                                                 }
-                                                 return;
+                                             if (block) {
+                                                 block(nil);
                                              }
                                              return;
                                          }
                                          
                                          if (error) {
                                              DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                                             
+                                             [self updateLoadingCell];
                                          } else {
                                              DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
                                             //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
@@ -477,36 +454,24 @@
                     block(dataSource.objects[currentIndex + 1], nil);
                 }
             } else {
-                if ([dataSource hasNextPage] && !_storyUpdateInProgress) {
-                    _storyUpdateInProgress = YES;
-                    
-                    [self updateLoadingCell];
-                    
-                    [dataSource nextPage:^(NSError *error) {
-                        [self setActiveViewControllerStoryUpdateInProgressToNo];
-                        self.gridViewController.storyUpdateInProgress = NO;
+                
+                [self getMoreStoriesForSection:0 completion:^(NSError *error) {
+                    if (error) {
+                        block(nil, error);
+                    } else {
+                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
                         
-                        _storyUpdateInProgress = NO;
-                        if (error) {
-                            DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                        if (currentIndex + 1 < [dataSource.objects count]) {
                             if (block) {
-                                block(nil,error);
+                                block(dataSource.objects[currentIndex + 1], nil);
                             }
                         } else {
-                            DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                            NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                            
-                            if (currentIndex + 1 < [dataSource.objects count]) {
-                                if(block) {
-                                    block(dataSource.objects[currentIndex + 1], nil);
-                                }
+                            if (block) {
+                                block(nil, nil);
                             }
                         }
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self reloadData];
-                        }];
-                    }];
-                }
+                    }
+                }];
             }
         }
     } else {
