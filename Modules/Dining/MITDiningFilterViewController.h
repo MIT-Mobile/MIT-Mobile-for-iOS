@@ -11,5 +11,6 @@
 @property (nonatomic) id<MITDiningFilterDelegate> delegate;
 
 - (void)setSelectedFilters:(NSSet *)filters;
+- (CGFloat)targetTableViewHeight;
 
 @end

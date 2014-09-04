@@ -8,16 +8,19 @@
 #import "MITDiningRetailHomeViewControllerPad.h"
 #import "MITDiningWebservices.h"
 #import "MITDiningVenues.h"
+#import "MITDiningFilterViewController.h"
 
-@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate>
+@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) MITDiningDining *diningData;
 @property (nonatomic, strong) UISegmentedControl *diningVenueTypeControl;
 @property (nonatomic, strong) UIPopoverController *announcementsPopoverController;
 @property (nonatomic, strong) UIPopoverController *linksPopoverController;
+@property (nonatomic, strong) UIPopoverController *filtersPopoverController;
 @property (nonatomic, strong) UIBarButtonItem *announcementsBarButton;
 @property (nonatomic, strong) UIBarButtonItem *linksBarButton;
+@property (nonatomic, strong) UIBarButtonItem *filtersBarButton;
 
 @property (nonatomic, strong) IBOutlet UIView *containerView;
 @property (nonatomic, strong) MITDiningHouseHomeViewControllerPad *diningHouseViewController;
@@ -88,10 +91,10 @@
     self.navigationController.toolbar.translucent = NO;
     self.announcementsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Announcements" style:UIBarButtonItemStylePlain target:self action:@selector(announcementsButtonPressed:)];
     self.linksBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Links" style:UIBarButtonItemStylePlain target:self action:@selector(linksButtonPressed:)];
-    UIBarButtonItem *filtersButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(filtersButtonPressed:)];
+    self.filtersBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(filtersButtonPressed:)];
     
     CGSize announcementsSize = [self.announcementsBarButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
-    CGSize filtersSize = [filtersButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
+    CGSize filtersSize = [self.filtersBarButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
     
     UIBarButtonItem *evenPaddingButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     evenPaddingButton.width = announcementsSize.width - filtersSize.width;
@@ -101,7 +104,7 @@
                           self.linksBarButton,
                           [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                           evenPaddingButton,
-                          filtersButton];
+                          self.filtersBarButton];
 }
 
 - (void)setupDiningHouseViewController
@@ -187,7 +190,23 @@
 
 - (void)filtersButtonPressed:(id)sender
 {
-    // TODO: Show announcements popover
+    MITDiningFilterViewController *filterVC = [[MITDiningFilterViewController alloc] init];
+    NSSet *filtersSet = [NSSet setWithArray:self.diningHouseViewController.dietaryFlagFilters];
+    [filterVC setSelectedFilters:filtersSet];
+    filterVC.delegate = self;
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:filterVC];
+    
+    self.filtersPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.filtersPopoverController setPopoverContentSize:CGSizeMake(320, [filterVC targetTableViewHeight] + navController.navigationBar.frame.size.height)];
+    [self.filtersPopoverController presentPopoverFromBarButtonItem:self.filtersBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+}
+
+#pragma mark - MITDiningFilterDelegate Methods
+
+- (void)applyFilters:(NSSet *)filters
+{
+    [self.diningHouseViewController setDietaryFlagFilters:[filters allObjects]];
 }
 
 #pragma mark - Fetched Results Controller
