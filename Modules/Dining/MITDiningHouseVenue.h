@@ -21,6 +21,7 @@
 - (NSString *)hoursToday;
 
 - (NSArray *)sortedMealsInWeek;
+- (NSArray *)groupedMealTimeSummaries;
 
 @end
 
