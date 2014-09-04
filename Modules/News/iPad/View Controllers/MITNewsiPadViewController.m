@@ -26,12 +26,11 @@
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
 - (void)reloadItems:(void(^)(NSError *error))block;
-
 - (void)loadDataSources:(void(^)(NSError*))completion;
+
 @end
 
 @interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
-
 @end
 
 @interface MITNewsiPadViewController ()
@@ -39,20 +38,22 @@
 @property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
 @property (nonatomic, strong) MITNewsSearchController *searchController;
-
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
+
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
 
-@property (nonatomic) NSUInteger currentDataSourceIndex;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic) Reachability *internetReachability;
 
 #pragma mark Data Source
 @property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
+@property (nonatomic) NSUInteger currentDataSourceIndex;
+
 @end
 
 @implementation MITNewsiPadViewController {
@@ -71,6 +72,13 @@
     return self;
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark Lifecycle
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [self.gridViewController.collectionView reloadData];
@@ -85,6 +93,11 @@
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
     
+    [self beginReachability];
+}
+
+- (void)beginReachability
+{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
     self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()];
 	[self.internetReachability startNotifier];
@@ -112,6 +125,7 @@
         }
         [self updateNavigationItem:YES];
     }
+    
     if (_storyUpdateInProgress) {
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
@@ -127,12 +141,6 @@
             }];
         }
     }
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark Dynamic Properties
@@ -151,6 +159,7 @@
         gridViewController = [[MITNewsGridViewController alloc] init];
         gridViewController.delegate = self;
         gridViewController.dataSource = self;
+        
         gridViewController.automaticallyAdjustsScrollViewInsets = NO;
         gridViewController.edgesForExtendedLayout = UIRectEdgeAll;
         _gridViewController = gridViewController;
@@ -207,7 +216,7 @@
 
 - (UISearchBar *)searchBar
 {
-    if(!_searchBar) {
+    if (!_searchBar) {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self.searchController;
         self.searchController.searchBar = searchBar;
@@ -243,7 +252,7 @@
             toViewController = self.listViewController;
         }
         // Needed to fix alignment of refreshcontrol text
-        if(fromViewController) {
+        if (fromViewController) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.refreshControl beginRefreshing];
                 [self.refreshControl endRefreshing];
@@ -300,8 +309,8 @@
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                          self.searchController.view.alpha = .5;
-                     } completion:^(BOOL finished) {
-                     }];
+                     } completion:nil];
+    
     [self.searchBar becomeFirstResponder];
 }
 
@@ -419,49 +428,49 @@
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
-    if (!_storyUpdateInProgress) {
-        _storyUpdateInProgress = YES;
-        if (self.messageView) {
-            [self removeNoResultsView];
-        }
-
-        __weak MITNewsiPadViewController *weakSelf = self;
-        [self reloadItems:^(NSError *error) {
-            _storyUpdateInProgress = NO;
-            MITNewsiPadViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (error) {
-                DDLogWarn(@"update failed; %@",error);
-                if (error.code == NSURLErrorNotConnectedToInternet) {
-                    [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
-                } else {
-                    [strongSelf updateRefreshStatusWithText:@"Failed..."];
-                }
-                if (![strongSelf.categoriesDataSource.objects count]) {
-                    [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
-                }
-                if ([strongSelf.categoriesDataSource.objects count]) {
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-                }
-                
-            } else {
-                strongSelf.lastUpdated = [NSDate date];
-                [strongSelf updateRefreshStatusWithLastUpdatedTime];
-                
-                if (refreshControl.refreshing) {
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        [refreshControl endRefreshing];
-                    });
-                }
-            }
-        }];
+    if (_storyUpdateInProgress) {
+        return;
     }
+    
+    _storyUpdateInProgress = YES;
+    if (self.messageView) {
+        [self removeNoResultsView];
+    }
+    
+    __weak MITNewsiPadViewController *weakSelf = self;
+    [self reloadItems:^(NSError *error) {
+        _storyUpdateInProgress = NO;
+        MITNewsiPadViewController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        if (error) {
+            DDLogWarn(@"update failed; %@",error);
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
+            } else {
+                [strongSelf updateRefreshStatusWithText:@"Failed..."];
+            }
+            if (![strongSelf.categoriesDataSource.objects count]) {
+                [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
+            }
+            if ([strongSelf.categoriesDataSource.objects count]) {
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                    [refreshControl endRefreshing];
+                });
+            }
+            
+        } else {
+            strongSelf.lastUpdated = [NSDate date];
+            [strongSelf updateRefreshStatusWithLastUpdatedTime];
+            
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                [refreshControl endRefreshing];
+            });
+        }
+    }];
 }
 
 #pragma mark No Results / Loading More View
@@ -485,7 +494,7 @@
     if (!self.lastUpdated) {
         Reachability* curReach = [note object];
         NetworkStatus netStatus = [curReach currentReachabilityStatus];
-        if (netStatus != NotReachable ) {
+        if (netStatus != NotReachable) {
             [self reloadViewItems:self.refreshControl];
         }
     }
@@ -506,7 +515,6 @@
         [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
     }
 }
-
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
@@ -771,43 +779,42 @@
     MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
     
     NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
-        
-        if (currentIndex + 1 < [dataSource.objects count]) {
-            if(block) {
-                block(dataSource.objects[currentIndex +1], nil);
-            }
-        } else {
-            if ([dataSource hasNextPage]) {
-                [dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
-                        
-                        if (block) {
-                            block(nil, nil);
-                        }
-                    } else {
-                        DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                        NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [dataSource.objects count]) {
-                            if(block) {
-                                block(dataSource.objects[currentIndex + 1], nil);
-                            }
-                        }
-                    }
-                }];
-                
-            } else {
-                if (block) {
-                    block(nil, nil);
-                }
-            }
-        }
-
-    } else {
+    if (currentIndex == NSNotFound) {
         if (block) {
             block(nil, nil);
+        }
+        return;
+    }
+    
+    if (currentIndex + 1 < [dataSource.objects count]) {
+        if(block) {
+            block(dataSource.objects[currentIndex +1], nil);
+        }
+    } else {
+        if ([dataSource hasNextPage]) {
+            [dataSource nextPage:^(NSError *error) {
+                if (error) {
+                    DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                    
+                    if (block) {
+                        block(nil, error);
+                    }
+                } else {
+                    DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
+                    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                    
+                    if (currentIndex + 1 < [dataSource.objects count]) {
+                        if(block) {
+                            block(dataSource.objects[currentIndex + 1], nil);
+                        }
+                    }
+                }
+            }];
+            
+        } else {
+            if (block) {
+                block(nil, nil);
+            }
         }
     }
 }

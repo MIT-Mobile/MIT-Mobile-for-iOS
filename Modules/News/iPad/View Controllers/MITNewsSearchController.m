@@ -209,15 +209,15 @@
                      }];
 }
 
-- (void)getMoreStoriesOnCompletion:(void (^)(NSError *))block
+- (void)getMoreStories:(void (^)(NSError *))completion
 {
     if ([self.dataSource hasNextPage] && !self.dataSource.isUpdating) {
         __weak MITNewsSearchController *weakSelf = self;
         [self.dataSource nextPage:^(NSError *error) {
             MITNewsSearchController *strongSelf = weakSelf;
             if (!strongSelf) {
-                if (block) {
-                    block(nil);
+                if (completion) {
+                    completion(nil);
                 }
                 return;
             }
@@ -243,8 +243,8 @@
                     [strongSelf.searchTableView reloadData];
                 }];
             }
-            if (block) {
-                block(error);
+            if (completion) {
+                completion(error);
             }
         }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -409,7 +409,7 @@
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        [self getMoreStoriesOnCompletion:^(NSError *error) {
+        [self getMoreStories:^(NSError *error) {
             
         }];
     }
@@ -467,7 +467,7 @@
         } else {
             __weak MITNewsSearchController *weakSelf = self;
             
-            [self getMoreStoriesOnCompletion:^(NSError * error) {
+            [self getMoreStories:^(NSError * error) {
                 MITNewsSearchController *strongSelf = weakSelf;
                 if (!strongSelf) {
                     if (block) {
