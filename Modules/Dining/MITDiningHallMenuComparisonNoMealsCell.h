@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface DiningHallMenuComparisonNoMealsCell : UICollectionViewCell
+@interface MITDiningHallMenuComparisonNoMealsCell : UICollectionViewCell
 
 @property (nonatomic, readonly, strong) UILabel   * primaryLabel;
 

@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "DiningMenuCompareViewController.h"
+#import "MITDiningMenuComparisonViewController.h"
 #import "DiningMenuFilterViewController.h"
 #import "CoreDataManager.h"
 #import "MealReference.h"

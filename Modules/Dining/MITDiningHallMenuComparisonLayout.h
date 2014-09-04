@@ -10,7 +10,7 @@ extern NSString * const MITDiningMenuComparisonSectionHeaderKind;
 
 @end
 
-@interface DiningHallMenuCompareLayout : UICollectionViewLayout
+@interface MITDiningHallMenuComparisonLayout : UICollectionViewLayout
 
 @property (nonatomic, assign) CGFloat columnWidth;
 //@property (nonatomic, assign) id<CollectionViewDelegateMenuCompareLayout> delegate;

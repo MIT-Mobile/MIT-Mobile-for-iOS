@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "DiningHallMenuCompareLayout.h"
+#import "MITDiningHallMenuComparisonLayout.h"
 
 @interface SectionDividerView : UICollectionReusableView
 @end
@@ -21,7 +21,7 @@ NSString * const MITDiningMenuComparisonCellKind = @"DiningMenuCell";
 NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionHeader";
 NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSectionDivider";
 
-@interface DiningHallMenuCompareLayout ()
+@interface MITDiningHallMenuComparisonLayout ()
 
 @property (nonatomic) UIEdgeInsets itemInsets;
 @property (nonatomic) CGSize itemSize;
@@ -33,7 +33,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
 
 @end
 
-@implementation DiningHallMenuCompareLayout
+@implementation MITDiningHallMenuComparisonLayout
 
 - (void) setup
 {

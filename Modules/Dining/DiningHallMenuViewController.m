@@ -33,7 +33,7 @@
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
-@property (nonatomic,weak) DiningMenuCompareViewController *comparisonVC;
+@property (nonatomic,weak) MITDiningMenuComparisonViewController *comparisonVC;
 
 @end
 
@@ -238,7 +238,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
-        DiningMenuCompareViewController *comparisonViewController = [[DiningMenuCompareViewController alloc] init];
+        MITDiningMenuComparisonViewController *comparisonViewController = [[MITDiningMenuComparisonViewController alloc] init];
         comparisonViewController.filtersApplied = self.filtersApplied;
         comparisonViewController.mealRef = self.mealRef;
         
@@ -269,7 +269,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
                             [comparisonViewController didMoveToParentViewController:self];
                         }];
     } else {
-        DiningMenuCompareViewController *comparisonViewController = self.comparisonVC;
+        MITDiningMenuComparisonViewController *comparisonViewController = self.comparisonVC;
         self.mealRef = [comparisonViewController visibleMealReference];
         
         [comparisonViewController willMoveToParentViewController:nil];

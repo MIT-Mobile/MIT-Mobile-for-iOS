@@ -1,5 +1,5 @@
-#import "DiningMenuCompareViewController.h"
-#import "DiningHallMenuCompareView.h"
+#import "MITDiningMenuComparisonViewController.h"
+#import "MITDiningHallMenuComparisonView.h"
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 
@@ -38,16 +38,16 @@
 
 
 
-@interface DiningMenuCompareViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
+@interface MITDiningMenuComparisonViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
 
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *topSpacingConstraint;
 
 @property (nonatomic,strong) MealReference *visibleMealReference;
 
-@property (nonatomic,weak) DiningHallMenuCompareView * previous;     // on left
-@property (nonatomic,weak) DiningHallMenuCompareView * current;      // center
-@property (nonatomic,weak) DiningHallMenuCompareView * next;         // on right
+@property (nonatomic,weak) MITDiningHallMenuComparisonView * previous;     // on left
+@property (nonatomic,weak) MITDiningHallMenuComparisonView * current;      // center
+@property (nonatomic,weak) MITDiningHallMenuComparisonView * next;         // on right
 
 @property (nonatomic, strong) NSArray * houseVenueSections;     // array of houseVenueSection titles, needed because fetchedResultsController will not return empty sections
 
@@ -59,7 +59,7 @@
 @property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
 @end
 
-@implementation DiningMenuCompareViewController
+@implementation MITDiningMenuComparisonViewController
 
 typedef enum {
     // used in paging logic
@@ -89,17 +89,17 @@ typedef enum {
     self.scrollView.showsVerticalScrollIndicator = NO;
     self.scrollView.backgroundColor = [UIColor clearColor];
     
-    DiningHallMenuCompareView *previous = [[DiningHallMenuCompareView alloc] init];
+    MITDiningHallMenuComparisonView *previous = [[MITDiningHallMenuComparisonView alloc] init];
     previous.delegate = self;
     [self.scrollView addSubview:previous];
     self.previous = previous;
     
-    DiningHallMenuCompareView *current = [[DiningHallMenuCompareView alloc] init];
+    MITDiningHallMenuComparisonView *current = [[MITDiningHallMenuComparisonView alloc] init];
     current.delegate = self;
     [self.scrollView addSubview:current];
     self.current = current;
     
-    DiningHallMenuCompareView *next = [[DiningHallMenuCompareView alloc] init];
+    MITDiningHallMenuComparisonView *next = [[MITDiningHallMenuComparisonView alloc] init];
     next.delegate = self;
     [self.scrollView addSubview:next];
     self.next = next;
@@ -209,7 +209,7 @@ typedef enum {
             reference = self.visibleMealReference;
         }
     
-        [views enumerateObjectsUsingBlock:^(DiningHallMenuCompareView *menuView, NSUInteger idx, BOOL *stop) {
+        [views enumerateObjectsUsingBlock:^(MITDiningHallMenuComparisonView *menuView, NSUInteger idx, BOOL *stop) {
             if ([menuView.mealRef isEqual:reference]) {
                 (*stop) = YES;
                 index = idx;
@@ -217,14 +217,14 @@ typedef enum {
         }];
         
         if (index != NSNotFound) {
-            DiningHallMenuCompareView *menuView = views[index];
+            MITDiningHallMenuComparisonView *menuView = views[index];
             
             CGPoint targetPoint = CGRectInset(menuView.frame, -DAY_VIEW_PADDING, 0.).origin;
             
             [self.scrollView setContentOffset:targetPoint animated:animated];
             
             if (index && (index < [views count])) {
-                DiningHallMenuCompareView *previousView = views[index - 1];
+                MITDiningHallMenuComparisonView *previousView = views[index - 1];
                 [previousView setScrollOffsetAgainstRightEdge];
             }
         }
@@ -321,7 +321,7 @@ typedef enum {
 {
     scrollView.scrollEnabled = YES;
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
-    DiningHallMenuCompareView *viewToRecenter = self.current;
+    MITDiningHallMenuComparisonView *viewToRecenter = self.current;
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
     if (scrollView.contentOffset.x > scrollView.bounds.size.width) {
@@ -511,7 +511,7 @@ typedef enum {
     [self.next reloadData];
 }
 
-- (NSFetchedResultsController *) resultsControllerForCompareView:(DiningHallMenuCompareView *)compareView
+- (NSFetchedResultsController *) resultsControllerForCompareView:(MITDiningHallMenuComparisonView *)compareView
 {
     if (compareView == self.previous) {
         return self.previousFRC;
@@ -533,7 +533,7 @@ typedef enum {
 }
 
 #pragma mark - DiningCompareViewDelegate
-- (NSString *) titleForCompareView:(DiningHallMenuCompareView *)compareView
+- (NSString *) titleForCompareView:(MITDiningHallMenuComparisonView *)compareView
 {
     MealReference *mRef;
     MealPageDirection direction = kPageDirectionNone;
@@ -541,27 +541,27 @@ typedef enum {
         direction = kPageDirectionBackward;
         
     } else if (compareView == self.current) {
-        return [DiningHallMenuCompareView stringForMeal:self.mealRef.name onDate:self.mealRef.date];
+        return [MITDiningHallMenuComparisonView stringForMeal:self.mealRef.name onDate:self.mealRef.date];
     } else if (compareView == self.next) {
         direction = kPageDirectionForward;
     }
     
     mRef = [self mealReferenceForMealInDirection:direction];
-    return [DiningHallMenuCompareView stringForMeal:mRef.name onDate:mRef.date];
+    return [MITDiningHallMenuComparisonView stringForMeal:mRef.name onDate:mRef.date];
 }
 
-- (NSInteger) numberOfSectionsInCompareView:(DiningHallMenuCompareView *)compareView
+- (NSInteger) numberOfSectionsInCompareView:(MITDiningHallMenuComparisonView *)compareView
 {
 #warning potentially unsafe hardcoded value
     return 5;
 }
 
-- (NSString *) compareView:(DiningHallMenuCompareView *)compareView titleForSection:(NSInteger)section
+- (NSString *) compareView:(MITDiningHallMenuComparisonView *)compareView titleForSection:(NSInteger)section
 {
     return self.houseVenueSections[section];
 }
 
-- (NSString *) compareView:(DiningHallMenuCompareView *)compareView subtitleForSection:(NSInteger)section
+- (NSString *) compareView:(MITDiningHallMenuComparisonView *)compareView subtitleForSection:(NSInteger)section
 {
     DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[section]];
     if (!meal) {
@@ -573,7 +573,7 @@ typedef enum {
     return [NSString stringWithFormat:@"%@ - %@", start, end];
 }
 
-- (NSInteger) compareView:(DiningHallMenuCompareView *)compareView numberOfItemsInSection:(NSInteger) section
+- (NSInteger) compareView:(MITDiningHallMenuComparisonView *)compareView numberOfItemsInSection:(NSInteger) section
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     if (!controller) {
@@ -592,7 +592,7 @@ typedef enum {
     }
 }
 
-- (UICollectionViewCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *) compareView:(MITDiningHallMenuComparisonView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     NSInteger cSectionIndex = [self indexOfSectionInController:controller withCompareViewSection:indexPath.section];
@@ -606,14 +606,14 @@ typedef enum {
     }
     
     if (item) {
-        DiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
+        MITDiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
         cell.primaryLabel.text = item.name;
         cell.primaryLabel.textAlignment = NSTextAlignmentLeft;
         cell.secondaryLabel.text = item.subtitle;
         cell.dietaryTypes = [item.dietaryFlags allObjects];
         return cell;
     } else {
-        DiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
+        MITDiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
         DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[indexPath.section]];
         NSString *text;
         if (!meal) {
@@ -629,7 +629,7 @@ typedef enum {
     }
 }
 
-- (CGFloat) compareView:(DiningHallMenuCompareView *)compareView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat) compareView:(MITDiningHallMenuComparisonView *)compareView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     NSInteger cSectionIndex = [self indexOfSectionInController:controller withCompareViewSection:indexPath.section];
@@ -641,13 +641,13 @@ typedef enum {
     DiningMealItem *item = [sectionInfo objects][indexPath.row];
     
     if (item) {
-        return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth withPrimaryText:item.name secondaryText:item.subtitle numDietaryTypes:[item.dietaryFlags count]];
+        return [MITDiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth withPrimaryText:item.name secondaryText:item.subtitle numDietaryTypes:[item.dietaryFlags count]];
     } else {
         return 30;
     }
 }
 
-- (void) compareViewDidEndDecelerating:(DiningHallMenuCompareView *)compareView
+- (void) compareViewDidEndDecelerating:(MITDiningHallMenuComparisonView *)compareView
 {
     if (self.pauseBeforeResettingScrollOffset) {
         if (self.previous == compareView) {

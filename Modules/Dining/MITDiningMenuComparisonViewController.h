@@ -2,7 +2,7 @@
 #import "MealReference.h"
 
 
-@interface DiningMenuCompareViewController : UIViewController
+@interface MITDiningMenuComparisonViewController : UIViewController
 @property (nonatomic, strong) NSSet * filtersApplied;
 @property (nonatomic, strong) MealReference * mealRef;
 @property (nonatomic, readonly, strong) MealReference *visibleMealReference;

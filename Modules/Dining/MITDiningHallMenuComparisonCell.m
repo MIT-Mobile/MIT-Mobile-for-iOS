@@ -1,4 +1,4 @@
-#import "DiningHallMenuComparisonCell.h"
+#import "MITDiningHallMenuComparisonCell.h"
 #import "UIImage+PDF.h"
 #import "UIKit+MITAdditions.h"
 #import "DiningDietaryFlag.h"
@@ -40,7 +40,7 @@
 #pragma mark -
 #pragma mark DiningHallMenuComparisonCell
 
-@interface DiningHallMenuComparisonCell ()
+@interface MITDiningHallMenuComparisonCell ()
 
 @property (nonatomic, strong) UILabel   * primaryLabel;
 @property (nonatomic, strong) UILabel   * secondaryLabel;
@@ -52,7 +52,7 @@
 #define ICON_SQUARE 16
 #define ICON_PADDING 4
 
-@implementation DiningHallMenuComparisonCell
+@implementation MITDiningHallMenuComparisonCell
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -63,12 +63,12 @@
         self.primaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, STANDARD_PADDING, labelWidth, 10)]; // height is one line of font
         self.primaryLabel.numberOfLines = 0;
         self.primaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.primaryLabel.font = [DiningHallMenuComparisonCell fontForPrimaryLabel];
+        self.primaryLabel.font = [MITDiningHallMenuComparisonCell fontForPrimaryLabel];
         
         self.secondaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, CGRectGetMaxY(self.primaryLabel.frame), labelWidth, 10)];
         self.secondaryLabel.numberOfLines = 0;
         self.secondaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.secondaryLabel.font = [DiningHallMenuComparisonCell fontForSecondaryLabel];
+        self.secondaryLabel.font = [MITDiningHallMenuComparisonCell fontForSecondaryLabel];
         
         self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(frame) - (STANDARD_PADDING + ICON_SQUARE), STANDARD_PADDING, ICON_SQUARE, ICON_SQUARE)]; // width is from spec, height allows for single dietary type item
         // custom backgroundView to draw divider

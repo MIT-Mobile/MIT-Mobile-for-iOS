@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface DiningHallMenuComparisonSectionHeaderView : UICollectionReusableView
+@interface MITDiningHallMenuComparisonSectionHeaderView : UICollectionReusableView
 
 @property (nonatomic, readonly, strong) UILabel * titleLabel;
 @property (nonatomic, readonly, strong) UILabel * timeLabel;

@@ -1,13 +1,13 @@
 
-#import "DiningHallMenuComparisonNoMealsCell.h"
+#import "MITDiningHallMenuComparisonNoMealsCell.h"
 
-@interface DiningHallMenuComparisonNoMealsCell ()
+@interface MITDiningHallMenuComparisonNoMealsCell ()
 
 @property (nonatomic, strong) UILabel   * primaryLabel;
 
 @end
 
-@implementation DiningHallMenuComparisonNoMealsCell
+@implementation MITDiningHallMenuComparisonNoMealsCell
 
 - (id)initWithFrame:(CGRect)frame
 {
