@@ -256,7 +256,7 @@
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
                 if (refreshControl.refreshing) {
-                    if (error.code == -1009) {
+                    if (error.code == NSURLErrorNotConnectedToInternet) {
                         [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
                     } else {
                         [strongSelf updateRefreshStatusWithText:@"Failed..."];
@@ -301,7 +301,16 @@
                                          
                                          if (error) {
                                              DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                                             [self updateLoadingCell];
+                                             if (error.code == NSURLErrorNotConnectedToInternet) {
+                                                 strongSelf.errorMessasge = @"No Internet Connection";
+                                             } else {
+                                                 strongSelf.errorMessasge = @"Failed";
+                                             }
+                                             [strongSelf updateLoadingCell];
+                                             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                                             dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                                 [strongSelf updateLoadingCell];
+                                             });
                                          } else {
                                              DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
                                             //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds

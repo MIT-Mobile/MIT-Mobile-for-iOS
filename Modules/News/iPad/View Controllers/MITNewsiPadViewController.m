@@ -433,7 +433,7 @@
             }
             if (error) {
                 DDLogWarn(@"update failed; %@",error);
-                if (error.code == -1009) {
+                if (error.code == NSURLErrorNotConnectedToInternet) {
                     [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
                 } else {
                     [strongSelf updateRefreshStatusWithText:@"Failed..."];

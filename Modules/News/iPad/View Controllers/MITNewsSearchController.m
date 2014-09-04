@@ -180,7 +180,7 @@
         }
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            if (error.code == -1009) {
+            if (error.code == NSURLErrorNotConnectedToInternet) {
                 strongSelf.errorMessage = @"No Internet Connection";
             } else {
                 strongSelf.errorMessage = @"Failed...";
@@ -226,7 +226,7 @@
             }
             if (error) {
                 DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                if (error.code == -1009) {
+                if (error.code == NSURLErrorNotConnectedToInternet) {
                     strongSelf.errorMessage = @"No Internet Connection";
                 } else {
                     strongSelf.errorMessage = @"Failed...";

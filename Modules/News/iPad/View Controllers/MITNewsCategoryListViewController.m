@@ -66,6 +66,8 @@
         
             MITNewsiPadCategoryViewController *categoryVC = (MITNewsiPadCategoryViewController *)self.dataSource;
             MITNewsDataSource *dataSource = categoryVC.dataSource;
+            self.errorMessage = categoryVC.errorMessasge;
+            categoryVC.errorMessasge = nil;
        
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
@@ -133,40 +135,42 @@
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
-        [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+        
+        NSUInteger item = [self numberOfStoriesForCategoryInSection:section];
+        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+        [self reloadCellAtIndexPath:loadMoreIndexPath];
 
+        __weak MITNewsCategoryListViewController *weakSelf = self;
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
+            MITNewsCategoryListViewController *strongSelf = weakSelf;
+
             if (error) {
-                if (error.code == -1009) {
-                    self.errorMessage = @"No Internet Connection";
+                if (error.code == NSURLErrorNotConnectedToInternet) {
+                    strongSelf.errorMessage = @"No Internet Connection";
                 } else {
-                    self.errorMessage = @"Failed...";
+                    strongSelf.errorMessage = @"Failed...";
                 }
-                if (self.navigationController.toolbarHidden) {
-                    
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:2
-                                                         target:self
-                                                       selector:@selector(clearFailAfterTwoSeconds)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                if (strongSelf.navigationController.toolbarHidden) {
+
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        
+                        strongSelf.errorMessage = nil;
+                        NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
+                        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+                        [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
+                    });
                 } else {
-                    self.errorMessage = nil;
+                    strongSelf.errorMessage = nil;
                 }
-                [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+                NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
+                NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+                [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
             }
         }];
     }
 }
-
-- (void)clearFailAfterTwoSeconds
-{
-    self.errorMessage = nil;
-    [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
-}
-
 - (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
