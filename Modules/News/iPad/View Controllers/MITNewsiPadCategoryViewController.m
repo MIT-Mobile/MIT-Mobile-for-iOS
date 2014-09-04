@@ -290,6 +290,7 @@
         if (block) {
             block(nil);
         }
+        return;
     }
     _storyUpdateInProgress = YES;
     

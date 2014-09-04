@@ -68,7 +68,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
@@ -87,7 +86,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - SearchBar
@@ -211,46 +209,52 @@
 
 - (void)getMoreStories:(void (^)(NSError *))completion
 {
-    if ([self.dataSource hasNextPage] && !self.dataSource.isUpdating) {
-        __weak MITNewsSearchController *weakSelf = self;
-        [self.dataSource nextPage:^(NSError *error) {
-            MITNewsSearchController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                if (completion) {
-                    completion(nil);
-                }
-                return;
-            }
-            
-            if (error) {
-                DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                if (error.code == NSURLErrorNotConnectedToInternet) {
-                    strongSelf.errorMessage = @"No Internet Connection";
-                } else {
-                    strongSelf.errorMessage = @"Failed...";
-                }
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                    strongSelf.errorMessage = nil;
-                    [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                });
-                [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                
-            } else {
-                strongSelf.errorMessage = nil;
-                DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [strongSelf.searchTableView reloadData];
-                }];
-            }
-            if (completion) {
-                completion(error);
-            }
-        }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }];
+    
+    if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
+        if (completion) {
+            completion(nil);
+        }
+        return;
     }
+    
+    __weak MITNewsSearchController *weakSelf = self;
+    [self.dataSource nextPage:^(NSError *error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            if (completion) {
+                completion(nil);
+            }
+            return;
+        }
+        
+        if (error) {
+            DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                strongSelf.errorMessage = @"No Internet Connection";
+            } else {
+                strongSelf.errorMessage = @"Failed...";
+            }
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                strongSelf.errorMessage = nil;
+                [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            });
+            [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            
+        } else {
+            strongSelf.errorMessage = nil;
+            DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [strongSelf.searchTableView reloadData];
+            }];
+        }
+        if (completion) {
+            completion(error);
+        }
+    }];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
 }
 
 #pragma mark - hide/show Recents
@@ -456,48 +460,54 @@
 #pragma mark MITNewsStoryDetailPagingDelegate
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
+    if (self.dataSource.isUpdating) {
+        if (block) {
+            block(nil, nil);
+        }
+        return;
+    }
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
+    if (currentIndex == NSNotFound) {
+        if (block) {
+            block(nil, nil);
+        }
+        return;
+    }
+    
+    if (currentIndex + 1 < [self.dataSource.objects count]) {
+        if (block) {
+            block(self.dataSource.objects[currentIndex + 1], nil);
+        }
+    } else {
+        __weak MITNewsSearchController *weakSelf = self;
         
-        if (currentIndex + 1 < [self.dataSource.objects count]) {
-            if (block) {
-                block(self.dataSource.objects[currentIndex + 1], nil);
+        [self getMoreStories:^(NSError * error) {
+            MITNewsSearchController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                if (block) {
+                    block(nil, error);
+                }
+                return;
             }
-        } else {
-            __weak MITNewsSearchController *weakSelf = self;
-            
-            [self getMoreStories:^(NSError * error) {
-                MITNewsSearchController *strongSelf = weakSelf;
-                if (!strongSelf) {
+            if (error) {
+                block(nil, error);
+                
+            } else {
+                NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
+                
+                if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
+                    if (block) {
+                        block(strongSelf.dataSource.objects[currentIndex + 1], nil);
+                    }
+                } else {
                     if (block) {
                         block(nil, error);
                     }
-                    return;
                 }
-                if (error) {
-                    block(nil, error);
-                    
-                } else {
-                    NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
-                    
-                    if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
-                        if (block) {
-                            block(strongSelf.dataSource.objects[currentIndex + 1], nil);
-                        }
-                    } else {
-                        if (block) {
-                            block(nil, error);
-                        }
-                    }
-                    [strongSelf.searchTableView reloadData];
-                }
-            }];
-        }
-    } else {
-        if (block) {
-            block (nil, nil);
-        }
+                [strongSelf.searchTableView reloadData];
+            }
+        }];
     }
 }
 

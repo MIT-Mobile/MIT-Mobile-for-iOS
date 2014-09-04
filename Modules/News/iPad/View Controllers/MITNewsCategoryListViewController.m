@@ -30,7 +30,7 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-    if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+    if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
         return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
     }
     return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
@@ -58,7 +58,6 @@
 #pragma mark UITableViewDataSource
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
     UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
@@ -133,7 +132,7 @@
 
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
-    if(!_storyUpdateInProgress && !self.errorMessage) {
+    if (!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
         
         NSUInteger item = [self numberOfStoriesForCategoryInSection:section];
