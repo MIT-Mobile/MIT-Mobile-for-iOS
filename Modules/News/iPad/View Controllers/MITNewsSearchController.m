@@ -231,14 +231,12 @@
                 } else {
                     strongSelf.errorMessage = @"Failed...";
                 }
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [NSTimer scheduledTimerWithTimeInterval:2
-                                                     target:strongSelf
-                                                   selector:@selector(clearFailAfterTwoSeconds)
-                                                   userInfo:nil
-                                                    repeats:NO];
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                    strongSelf.errorMessage = nil;
                     [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                }];
+                });
+                [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                 
             } else {
                 strongSelf.errorMessage = nil;
@@ -252,12 +250,6 @@
             [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }];
     }
-}
-
-- (void)clearFailAfterTwoSeconds
-{
-    self.errorMessage = nil;
-    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - hide/show Recents
@@ -473,22 +465,28 @@
             }
         } else {
             if ([self.dataSource hasNextPage]) {
+               __weak MITNewsSearchController *weakSelf = self;
                 
                 [self.dataSource nextPage:^(NSError *error) {
+                    MITNewsSearchController *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                
                     if (error) {
                         DDLogWarn(@"failed to get more stories from datasource %@",self.dataSource);
                         
                     } else {
                         DDLogVerbose(@"retrieved more stores from datasource %@",self.dataSource);
-                        NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
+                        NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
                         
-                        if (currentIndex + 1 < [self.dataSource.objects count]) {
+                        if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
                             if(block) {
-                                block(self.dataSource.objects[currentIndex + 1], nil);
+                                block(strongSelf.dataSource.objects[currentIndex + 1], nil);
                             }
                         }
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.searchTableView reloadData];
+                            [strongSelf.searchTableView reloadData];
                         }];
                     }
                 }];
