@@ -438,6 +438,9 @@
     }
     
     __weak MITNewsiPadViewController *weakSelf = self;
+    if (refreshControl.refreshing) {
+        [self updateRefreshStatusWithText:@"Updating..."];
+    }
     [self reloadItems:^(NSError *error) {
         _storyUpdateInProgress = NO;
         MITNewsiPadViewController *strongSelf = weakSelf;
