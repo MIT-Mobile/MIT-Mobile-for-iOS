@@ -221,9 +221,6 @@
     [self.dataSource nextPage:^(NSError *error) {
         MITNewsSearchController *strongSelf = weakSelf;
         if (!strongSelf) {
-            if (completion) {
-                completion(nil);
-            }
             return;
         }
         
@@ -485,9 +482,6 @@
         [self getMoreStories:^(NSError * error) {
             MITNewsSearchController *strongSelf = weakSelf;
             if (!strongSelf) {
-                if (block) {
-                    block(nil, error);
-                }
                 return;
             }
             if (error) {

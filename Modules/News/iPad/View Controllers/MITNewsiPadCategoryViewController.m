@@ -301,9 +301,6 @@
                                      [self setProgress:FALSE];
                                      MITNewsiPadCategoryViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
-                                         if (block) {
-                                             block(nil);
-                                         }
                                          return;
                                      }
                                      
