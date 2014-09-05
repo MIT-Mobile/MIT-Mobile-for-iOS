@@ -23,6 +23,7 @@ extern NSString* const MITNewsStoryExternalNoImageCellNibName;
 
 extern NSString* const MITNewsCategoryHeaderIdentifier;
 extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;
+extern NSUInteger const MITNewsRefreshControlHangTime;
 
 #pragma mark iPad stories
 

@@ -264,10 +264,12 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         if (![self hasNextPage]) {
             return;
         }
-        
+        self.requestInProgress = YES;
+
         __weak MITNewsStoriesDataSource *weakSelf = self;
         [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
             MITNewsStoriesDataSource *blockSelf = weakSelf;
+            self.requestInProgress = NO;
             
             if (!blockSelf) {
                 return;

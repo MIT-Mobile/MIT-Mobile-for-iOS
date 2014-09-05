@@ -30,9 +30,7 @@
 
 @end
 
-@implementation MITNewsSearchController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsSearchController
 
 @synthesize recentSearchController = _recentSearchController;
 
@@ -70,7 +68,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
@@ -89,7 +86,6 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - SearchBar
@@ -171,26 +167,31 @@
     [self clearTable];
     self.searchBar.text = searchTerm;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
+    
+    __weak MITNewsSearchController *weakSelf = self;
     [self.dataSource refresh:^(NSError *error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
         if (error) {
             DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-            if (error.code == -1009) {
-                self.errorMessage = @"No Internet Connection";
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                strongSelf.errorMessage = @"No Internet Connection";
             } else {
-                self.errorMessage = @"Failed...";
-            }            [self removeLoadingView];
-            [self addNoResultsView];
+                strongSelf.errorMessage = @"Failed...";
+            }
+            [strongSelf removeLoadingView];
+            [strongSelf addNoResultsView];
 
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
-            [self removeLoadingView];
+            [strongSelf removeLoadingView];
             
-            if ([self.dataSource.objects count] == 0) {
-                [self addNoResultsView];
+            if ([strongSelf.dataSource.objects count] == 0) {
+                [strongSelf addNoResultsView];
             }
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.searchTableView reloadData];
-            }];
+            [strongSelf.searchTableView reloadData];
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -206,46 +207,51 @@
                      }];
 }
 
-- (void)getMoreStories
+- (void)getMoreStories:(void (^)(NSError *))completion
 {
-    if ([self.dataSource hasNextPage] && !_storyUpdateInProgress) {
-        _storyUpdateInProgress = TRUE;
-        [self.dataSource nextPage:^(NSError *error) {
-            _storyUpdateInProgress = FALSE;
-            if (error) {
-                DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                if (error.code == -1009) {
-                    self.errorMessage = @"No Internet Connection";
-                } else {
-                    self.errorMessage = @"Failed...";
-                }
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [NSTimer scheduledTimerWithTimeInterval:2
-                                                     target:self
-                                                   selector:@selector(clearFailAfterTwoSeconds)
-                                                   userInfo:nil
-                                                    repeats:NO];
-                    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                }];
-                
-            } else {
-                self.errorMessage = nil;
-                DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.searchTableView reloadData];
-                }];
-            }
-        }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }];
+    
+    if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
+        if (completion) {
+            completion(nil);
+        }
+        return;
     }
-}
-
-- (void)clearFailAfterTwoSeconds
-{
-    self.errorMessage = nil;
-    [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    
+    __weak MITNewsSearchController *weakSelf = self;
+    [self.dataSource nextPage:^(NSError *error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        
+        if (error) {
+            DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                strongSelf.errorMessage = @"No Internet Connection";
+            } else {
+                strongSelf.errorMessage = @"Failed...";
+            }
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                strongSelf.errorMessage = nil;
+                [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            });
+            [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            
+        } else {
+            strongSelf.errorMessage = nil;
+            DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [strongSelf.searchTableView reloadData];
+            }];
+        }
+        if (completion) {
+            completion(error);
+        }
+    }];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
 }
 
 #pragma mark - hide/show Recents
@@ -310,7 +316,7 @@
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && self.dataSource.isUpdating) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
         cell.textLabel.text = @"Load More...";
@@ -378,7 +384,7 @@
 {
     
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgress) {
+        if (self.dataSource.isUpdating) {
             if (!cell.accessoryView) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
@@ -404,11 +410,11 @@
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (!_storyUpdateInProgress) {
-            [self getMoreStories];
-        }
+        [self getMoreStories:^(NSError *error) {
+            
+        }];
     }
-        else {
+    else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
         if (story) {
             [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
@@ -427,13 +433,13 @@
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
             
             NSIndexPath *indexPath = sender;
-            
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            storyDetailViewController.delegate = self;
             MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
+                
+                MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+                storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
                 self.unwindFromStoryDetail = YES;
@@ -451,37 +457,51 @@
 #pragma mark MITNewsStoryDetailPagingDelegate
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
+    if (self.dataSource.isUpdating) {
+        if (block) {
+            block(nil, nil);
+        }
+        return;
+    }
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-    if (currentIndex != NSNotFound) {
-        
-        if (currentIndex + 1 < [self.dataSource.objects count]) {
-            if(block) {
-                block(self.dataSource.objects[currentIndex +1], nil);
-            }
-        } else {
-            if ([self.dataSource hasNextPage]) {
-                
-                [self.dataSource nextPage:^(NSError *error) {
-                    if (error) {
-                        DDLogWarn(@"failed to refresh data source %@",self.dataSource);
-                        
-                    } else {
-                        DDLogVerbose(@"refreshed data source %@",self.dataSource);
-                        NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-                        
-                        if (currentIndex + 1 < [self.dataSource.objects count]) {
-                            if(block) {
-                                block(self.dataSource.objects[currentIndex + 1], nil);
-                            }
-                        }
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [self.searchTableView reloadData];
-                        }];
-                    }
-                }];
-            }
+    if (currentIndex == NSNotFound) {
+        if (block) {
+            block(nil, nil);
         }
+        return;
+    }
+    
+    if (currentIndex + 1 < [self.dataSource.objects count]) {
+        if (block) {
+            block(self.dataSource.objects[currentIndex + 1], nil);
+        }
+    } else {
+        __weak MITNewsSearchController *weakSelf = self;
+        
+        [self getMoreStories:^(NSError * error) {
+            MITNewsSearchController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (error) {
+                block(nil, error);
+                
+            } else {
+                NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
+                
+                if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
+                    if (block) {
+                        block(strongSelf.dataSource.objects[currentIndex + 1], nil);
+                    }
+                } else {
+                    if (block) {
+                        block(nil, error);
+                    }
+                }
+                [strongSelf.searchTableView reloadData];
+            }
+        }];
     }
 }
 

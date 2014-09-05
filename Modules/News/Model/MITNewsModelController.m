@@ -15,6 +15,7 @@
 @end
 
 @implementation MITNewsModelController
+
 + (instancetype)sharedController
 {
     static MITNewsModelController *sharedModelController = nil;
@@ -113,6 +114,7 @@
                                                     }
                                                 }];
 }
+
 
 #pragma mark - Recent Search List
 

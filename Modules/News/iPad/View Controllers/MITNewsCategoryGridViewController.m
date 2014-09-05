@@ -7,14 +7,16 @@
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITNewsLoadMoreCollectionViewCell.h"
 #import "MITCollectionViewGridLayout.h"
+#import "MITNewsDataSource.h"
+#import "MITNewsiPadCategoryViewController.h"
 
 @interface MITNewsCategoryGridViewController()
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 @end
 
-@implementation MITNewsCategoryGridViewController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsCategoryGridViewController
+@synthesize storyUpdateInProgress = _storyUpdateInProgress;
 
 #pragma mark UICollectionViewDataSource
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
@@ -50,10 +52,11 @@
 
     if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;
-
+            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;;
+            
             if(self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
@@ -98,47 +101,43 @@
 }
 
 #pragma mark More Stories
-- (void)getMoreStoriesForSection:(NSInteger *)section
+- (void)getMoreStoriesForSection:(NSInteger)section
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [self.collectionView reloadData];
-                    }];
+            [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]];
+        }];
         
+        __weak MITNewsCategoryGridViewController *weakSelf = self;
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
+            MITNewsCategoryGridViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
             if (error) {
-                if (error.code == -1009) {
-                    self.errorMessage = @"No Internet Connection";
+                if (error.code == NSURLErrorNotConnectedToInternet) {
+                    strongSelf.errorMessage = @"No Internet Connection";
                 } else {
-                    self.errorMessage = @"Failed...";
+                    strongSelf.errorMessage = @"Failed...";
                 }
-                if (self.navigationController.toolbarHidden) {
+                if (strongSelf.navigationController.toolbarHidden) {
                     
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:2
-                                                         target:self
-                                                       selector:@selector(clearFailAfterTwoSeconds)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        
+                        strongSelf.errorMessage = nil;
+                        NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section] - 1;
+                        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+                        [strongSelf reloadItemAtIndexPath:loadMoreIndexPath];
+                    });
                 }
-                [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:0]];
+                [strongSelf reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]];
             }
         }];
     }
-}
-
-#pragma mark Fail
-- (void)clearFailAfterTwoSeconds
-{
-    NSUInteger item = [self numberOfStoriesForCategoryInSection:0] - 1;
-    NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:0];
-
-    self.errorMessage = nil;
-    [self reloadItemAtIndexPath:loadMoreIndexPath];
 }
 
 #pragma mark Reload Cell
@@ -149,4 +148,13 @@
     }];
 }
 
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
+}
 @end

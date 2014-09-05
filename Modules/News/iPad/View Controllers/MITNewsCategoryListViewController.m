@@ -9,11 +9,11 @@
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 @end
 
-@implementation MITNewsCategoryListViewController {
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsCategoryListViewController
+@synthesize storyUpdateInProgress = _storyUpdateInProgress;
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
@@ -58,12 +58,11 @@
 #pragma mark UITableViewDataSource
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
     UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
             [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-        
+       
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
             } else if (_storyUpdateInProgress) {
@@ -83,7 +82,6 @@
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
@@ -127,49 +125,61 @@
     }
 }
 
-- (void)getMoreStoriesForSection:(NSInteger *)section
+- (void)getMoreStoriesForSection:(NSInteger)section
 {
-    if(!_storyUpdateInProgress && !self.errorMessage) {
+    if (!_storyUpdateInProgress && !self.errorMessage) {
         _storyUpdateInProgress = YES;
-        [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+        
+        NSUInteger item = [self numberOfStoriesForCategoryInSection:section];
+        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+        [self reloadCellAtIndexPath:loadMoreIndexPath];
 
+        __weak MITNewsCategoryListViewController *weakSelf = self;
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
             _storyUpdateInProgress = FALSE;
+            MITNewsCategoryListViewController *strongSelf = weakSelf;
+
             if (error) {
-                if (error.code == -1009) {
-                    self.errorMessage = @"No Internet Connection";
+                if (error.code == NSURLErrorNotConnectedToInternet) {
+                    strongSelf.errorMessage = @"No Internet Connection";
                 } else {
-                    self.errorMessage = @"Failed...";
+                    strongSelf.errorMessage = @"Failed...";
                 }
-                if (self.navigationController.toolbarHidden) {
-                    
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        [NSTimer scheduledTimerWithTimeInterval:2
-                                                         target:self
-                                                       selector:@selector(clearFailAfterTwoSeconds)
-                                                       userInfo:nil
-                                                        repeats:NO];
-                    }];
+                if (strongSelf.navigationController.toolbarHidden) {
+
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        
+                        strongSelf.errorMessage = nil;
+                        NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
+                        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+                        [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
+                    });
                 } else {
-                    self.errorMessage = nil;
+                    strongSelf.errorMessage = nil;
                 }
-                [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] inSection:0]];
+                NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
+                NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
+                [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
             }
         }];
     }
 }
-
-- (void)clearFailAfterTwoSeconds
-{
-    self.errorMessage = nil;
-    [self reloadCellAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] inSection:0]];
-}
-
 - (void)reloadCellAtIndexPath:(NSIndexPath *)indexPath
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
+}
+
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
 }
 
 @end
