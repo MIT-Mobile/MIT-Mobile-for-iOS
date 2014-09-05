@@ -2,6 +2,7 @@
 
 extern NSString* const MITNewsLoadMoreCellIdentifier;
 extern NSString* const MITNewsLoadMoreCellNibName;
+extern CGFloat const MITNewsLoadMoreTableViewCellHeight;
 
 // Regular stories consist of an optional image,
 // an optional dek, and a title

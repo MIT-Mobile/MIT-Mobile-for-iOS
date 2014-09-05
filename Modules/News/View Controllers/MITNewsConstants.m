@@ -2,6 +2,7 @@
 
 NSString* const MITNewsLoadMoreCellIdentifier = @"NewsLoadMoreCell";
 NSString* const MITNewsLoadMoreCellNibName = @"NewsLoadMoreTableCell";
+CGFloat const MITNewsLoadMoreTableViewCellHeight = 75;
 
 NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
 NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";

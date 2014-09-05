@@ -8,8 +8,8 @@
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
 
 @property(nonatomic) NSUInteger numberOfObjects;
-@property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
-@property(strong) NSRecursiveLock *requestLock;
+@property(strong) dispatch_semaphore_t requestMutex;
+
 @property(getter=isUpdating) BOOL updating;
 @end
 
@@ -18,7 +18,7 @@
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
@@ -26,8 +26,8 @@
 {
     self = [super initWithManagedObjectContext:managedObjectContext];
     if (self) {
-        _requestLock = [[NSRecursiveLock alloc] init];
-        [self _setupFetchedResultsController];
+        _requestMutex = dispatch_semaphore_create(1);
+        [self _updateFetchedResultsController];
     }
 
     return self;
@@ -39,6 +39,9 @@
     [self.objects enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
         if ([object isKindOfClass:[MITNewsCategory class]]) {
             [categories addObject:object];
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"expected an object of type %@, got %@", NSStringFromClass([MITNewsCategory class]), NSStringFromClass([object class])];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
         }
     }];
 
@@ -61,7 +64,7 @@
 #pragma mark Private
 
 #pragma mark Managing the FRC
-- (void)_setupFetchedResultsController
+- (void)_updateFetchedResultsController
 {
     [self.managedObjectContext performBlockAndWait:^{
         if (!_fetchedResultsController) {
@@ -87,43 +90,44 @@
 
 - (void)refresh:(void (^)(NSError *error))block
 {
-    if ([self.requestLock tryLock]) {
-        self.updating = YES;
+    NSInteger result = dispatch_semaphore_wait(self.requestMutex, DISPATCH_TIME_NOW);
+    if (result) {
+        // Error
+        return;
+    }
 
-        __weak MITNewsCategoryDataSource *weakSelf = self;
-        [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
-            MITNewsCategoryDataSource *blockSelf = weakSelf;
-            if (!blockSelf) {
-                return;
+    self.updating = YES;
+
+    __weak MITNewsCategoryDataSource *weakSelf = self;
+    [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+        MITNewsCategoryDataSource *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        }
+
+        [blockSelf.managedObjectContext performBlock:^{
+            if (error) {
+                [blockSelf _responseFailedWithError:error];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(error);
+                    }
+                }];
+            } else {
+                blockSelf.refreshedAt = [NSDate date];
+
+                [blockSelf _responseFinishedWithObjects:categories];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil);
+                    }
+                }];
             }
 
-            [blockSelf.managedObjectContext performBlock:^{
-                if (error) {
-                    [blockSelf _responseFailedWithError:error];
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(error);
-                        }
-                    }];
-                } else {
-                    blockSelf.objectIdentifiers = nil;
-                    blockSelf.refreshedAt = [NSDate date];
-
-                    [blockSelf _responseFinishedWithObjects:categories];
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(nil);
-                        }
-                    }];
-                }
-
-                blockSelf.updating = NO;
-                [blockSelf.requestLock unlock];
-            }];
+            blockSelf.updating = NO;
+            dispatch_semaphore_signal(blockSelf.requestMutex);
         }];
-    } else {
-        // Signal back to the block that the request will not be completed
-    }
+    }];
 }
 
 - (BOOL)hasNextPage
@@ -138,17 +142,7 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects
 {
-    NSMutableOrderedSet *addedObjectIdentifiers = [[NSMutableOrderedSet alloc] init];
-    [[objects valueForKey:@"objectID"] enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-        if ([objectID isKindOfClass:[NSManagedObjectID class]]) {
-            [addedObjectIdentifiers addObject:objectID];
-        }
-    }];
-
-    NSMutableOrderedSet *allObjects = [[NSMutableOrderedSet alloc] initWithOrderedSet:self.objectIdentifiers];
-    [allObjects unionOrderedSet:addedObjectIdentifiers];
-    self.objectIdentifiers = allObjects;
-    [self _setupFetchedResultsController];
+    [self _updateFetchedResultsController];
 }
 
 @end
