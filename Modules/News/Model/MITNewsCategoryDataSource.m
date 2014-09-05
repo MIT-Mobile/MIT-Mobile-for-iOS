@@ -9,7 +9,8 @@
 
 @property(nonatomic) NSUInteger numberOfObjects;
 @property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
-@property(strong) NSRecursiveLock *requestLock;
+@property(strong) dispatch_semaphore_t requestMutex;
+
 @property(getter=isUpdating) BOOL updating;
 @end
 
@@ -26,8 +27,8 @@
 {
     self = [super initWithManagedObjectContext:managedObjectContext];
     if (self) {
-        _requestLock = [[NSRecursiveLock alloc] init];
-        [self _setupFetchedResultsController];
+        _requestMutex = dispatch_semaphore_create(1);
+        [self _updateFetchedResultsController];
     }
 
     return self;
@@ -87,43 +88,44 @@
 
 - (void)refresh:(void (^)(NSError *error))block
 {
-    if ([self.requestLock tryLock]) {
-        self.updating = YES;
+    NSInteger result = dispatch_semaphore_wait(self.requestMutex, DISPATCH_TIME_NOW);
+    if (result) {
+        // Error
+        return;
+    }
 
-        __weak MITNewsCategoryDataSource *weakSelf = self;
-        [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
-            MITNewsCategoryDataSource *blockSelf = weakSelf;
-            if (!blockSelf) {
-                return;
+    self.updating = YES;
+
+    __weak MITNewsCategoryDataSource *weakSelf = self;
+    [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
+        MITNewsCategoryDataSource *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        }
+
+        [blockSelf.managedObjectContext performBlock:^{
+            if (error) {
+                [blockSelf _responseFailedWithError:error];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(error);
+                    }
+                }];
+            } else {
+                blockSelf.refreshedAt = [NSDate date];
+
+                [blockSelf _responseFinishedWithObjects:categories];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil);
+                    }
+                }];
             }
 
-            [blockSelf.managedObjectContext performBlock:^{
-                if (error) {
-                    [blockSelf _responseFailedWithError:error];
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(error);
-                        }
-                    }];
-                } else {
-                    blockSelf.objectIdentifiers = nil;
-                    blockSelf.refreshedAt = [NSDate date];
-
-                    [blockSelf _responseFinishedWithObjects:categories];
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(nil);
-                        }
-                    }];
-                }
-
-                blockSelf.updating = NO;
-                [blockSelf.requestLock unlock];
-            }];
+            blockSelf.updating = NO;
+            dispatch_semaphore_signal(blockSelf.requestMutex);
         }];
-    } else {
-        // Signal back to the block that the request will not be completed
-    }
+    }];
 }
 
 - (BOOL)hasNextPage
