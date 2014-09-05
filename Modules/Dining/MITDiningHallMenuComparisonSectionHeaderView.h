@@ -2,7 +2,7 @@
 
 @interface MITDiningHallMenuComparisonSectionHeaderView : UICollectionReusableView
 
-@property (nonatomic, readonly, strong) UILabel * titleLabel;
-@property (nonatomic, readonly, strong) UILabel * timeLabel;
+@property (nonatomic, readonly, strong) UILabel *titleLabel;
+@property (nonatomic, readonly, strong) UILabel *timeLabel;
 
 @end

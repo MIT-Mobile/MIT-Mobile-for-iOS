@@ -29,6 +29,10 @@
 		22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */; };
 		225A22C119829D2300276F27 /* MITDatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225A22BF19829D2300276F27 /* MITDatePickerViewController.m */; };
 		225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225A22C019829D2300276F27 /* MITDatePickerViewController.xib */; };
+		225AC09019B8F3EB008854BC /* MITDiningComparisonDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 225AC08F19B8F3EB008854BC /* MITDiningComparisonDataManager.m */; };
+		225AC09619B8F5AC008854BC /* MITDiningAggregatedMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 225AC09519B8F5AC008854BC /* MITDiningAggregatedMeal.m */; };
+		225AC0A319BA132B008854BC /* MITDiningHouseVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225AC0A119BA132B008854BC /* MITDiningHouseVenueDetailViewController.m */; };
+		225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225AC0A219BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib */; };
 		225F2190197D5AD500F34DE9 /* MITEventsHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F218E197D5AD500F34DE9 /* MITEventsHomeViewController.m */; };
 		225F2191197D5AD500F34DE9 /* MITEventsHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225F218F197D5AD500F34DE9 /* MITEventsHomeViewController.xib */; };
 		225F2195197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */; };
@@ -54,7 +58,6 @@
 		22C012BC19B7BA6000879EF6 /* MITDiningScheduleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22C012BA19B7BA6000879EF6 /* MITDiningScheduleCell.xib */; };
 		22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C238461978744A00A8BA87 /* MITMapPlace+Comparison.m */; };
 		22C7530019AD125600DD6E73 /* MITDiningRetailVenueDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C752FF19AD125600DD6E73 /* MITDiningRetailVenueDataManager.m */; };
-		22CFC19C19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22CFC19B19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.m */; };
 		22CFC1A819AE623F003BD72A /* MITDiningHouseVenueInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22CFC1A619AE623F003BD72A /* MITDiningHouseVenueInfoCell.m */; };
 		22CFC1A919AE623F003BD72A /* MITDiningHouseVenueInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22CFC1A719AE623F003BD72A /* MITDiningHouseVenueInfoCell.xib */; };
 		22CFC1B219AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22CFC1B119AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.m */; };
@@ -641,6 +644,13 @@
 		225A22BE19829D2300276F27 /* MITDatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITDatePickerViewController.h; sourceTree = "<group>"; };
 		225A22BF19829D2300276F27 /* MITDatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITDatePickerViewController.m; sourceTree = "<group>"; };
 		225A22C019829D2300276F27 /* MITDatePickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITDatePickerViewController.xib; sourceTree = "<group>"; };
+		225AC08E19B8F3EB008854BC /* MITDiningComparisonDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningComparisonDataManager.h; path = Dining/MITDiningComparisonDataManager.h; sourceTree = "<group>"; };
+		225AC08F19B8F3EB008854BC /* MITDiningComparisonDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningComparisonDataManager.m; path = Dining/MITDiningComparisonDataManager.m; sourceTree = "<group>"; };
+		225AC09419B8F5AC008854BC /* MITDiningAggregatedMeal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningAggregatedMeal.h; path = Dining/MITDiningAggregatedMeal.h; sourceTree = "<group>"; };
+		225AC09519B8F5AC008854BC /* MITDiningAggregatedMeal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningAggregatedMeal.m; path = Dining/MITDiningAggregatedMeal.m; sourceTree = "<group>"; };
+		225AC0A019BA132B008854BC /* MITDiningHouseVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseVenueDetailViewController.h; path = Dining/MITDiningHouseVenueDetailViewController.h; sourceTree = "<group>"; };
+		225AC0A119BA132B008854BC /* MITDiningHouseVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseVenueDetailViewController.m; path = Dining/MITDiningHouseVenueDetailViewController.m; sourceTree = "<group>"; };
+		225AC0A219BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHouseVenueDetailViewController.xib; path = Dining/MITDiningHouseVenueDetailViewController.xib; sourceTree = "<group>"; };
 		225F218D197D5AD500F34DE9 /* MITEventsHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEventsHomeViewController.h; sourceTree = "<group>"; };
 		225F218E197D5AD500F34DE9 /* MITEventsHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventsHomeViewController.m; sourceTree = "<group>"; };
 		225F218F197D5AD500F34DE9 /* MITEventsHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventsHomeViewController.xib; sourceTree = "<group>"; };
@@ -682,8 +692,6 @@
 		22C238461978744A00A8BA87 /* MITMapPlace+Comparison.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MITMapPlace+Comparison.m"; path = "Model/MITMapPlace+Comparison.m"; sourceTree = "<group>"; };
 		22C752FE19AD125600DD6E73 /* MITDiningRetailVenueDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueDataManager.h; path = Dining/MITDiningRetailVenueDataManager.h; sourceTree = "<group>"; };
 		22C752FF19AD125600DD6E73 /* MITDiningRetailVenueDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailVenueDataManager.m; path = Dining/MITDiningRetailVenueDataManager.m; sourceTree = "<group>"; };
-		22CFC19A19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseVenueDetailViewController.h; path = Dining/MITDiningHouseVenueDetailViewController.h; sourceTree = "<group>"; };
-		22CFC19B19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseVenueDetailViewController.m; path = Dining/MITDiningHouseVenueDetailViewController.m; sourceTree = "<group>"; };
 		22CFC1A519AE623F003BD72A /* MITDiningHouseVenueInfoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseVenueInfoCell.h; path = Dining/MITDiningHouseVenueInfoCell.h; sourceTree = "<group>"; };
 		22CFC1A619AE623F003BD72A /* MITDiningHouseVenueInfoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseVenueInfoCell.m; path = Dining/MITDiningHouseVenueInfoCell.m; sourceTree = "<group>"; };
 		22CFC1A719AE623F003BD72A /* MITDiningHouseVenueInfoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHouseVenueInfoCell.xib; path = Dining/MITDiningHouseVenueInfoCell.xib; sourceTree = "<group>"; };
@@ -1935,6 +1943,10 @@
 				22C752FF19AD125600DD6E73 /* MITDiningRetailVenueDataManager.m */,
 				22C012B219B7A47E00879EF6 /* MITDiningMealSummary.h */,
 				22C012B319B7A47E00879EF6 /* MITDiningMealSummary.m */,
+				225AC08E19B8F3EB008854BC /* MITDiningComparisonDataManager.h */,
+				225AC08F19B8F3EB008854BC /* MITDiningComparisonDataManager.m */,
+				225AC09419B8F5AC008854BC /* MITDiningAggregatedMeal.h */,
+				225AC09519B8F5AC008854BC /* MITDiningAggregatedMeal.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1958,8 +1970,9 @@
 				22B2890319B63E780093DE9E /* MITDiningFilterViewController.m */,
 				22D9032C199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.h */,
 				22D9032D199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m */,
-				22CFC19A19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.h */,
-				22CFC19B19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.m */,
+				225AC0A019BA132B008854BC /* MITDiningHouseVenueDetailViewController.h */,
+				225AC0A119BA132B008854BC /* MITDiningHouseVenueDetailViewController.m */,
+				225AC0A219BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib */,
 				22CFC1B019AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.h */,
 				22CFC1B119AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.m */,
 				225AC08919B8D110008854BC /* Menu Comparison */,
@@ -4022,6 +4035,7 @@
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */,
 				225F2191197D5AD500F34DE9 /* MITEventsHomeViewController.xib in Resources */,
+				225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */,
@@ -4267,6 +4281,7 @@
 				2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */,
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
+				225AC09019B8F3EB008854BC /* MITDiningComparisonDataManager.m in Sources */,
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
 				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
@@ -4313,7 +4328,6 @@
 				2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */,
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
-				22CFC19C19AE5CF4003BD72A /* MITDiningHouseVenueDetailViewController.m in Sources */,
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
 				22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
@@ -4329,6 +4343,7 @@
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
 				2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
+				225AC09619B8F5AC008854BC /* MITDiningAggregatedMeal.m in Sources */,
 				8012D47E199BFE450037ED99 /* MITDiningInfoScheduleCell.m in Sources */,
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				2CF61DD11889C9DE00D43381 /* MITNewsCategory.m in Sources */,
@@ -4500,6 +4515,7 @@
 				48873E571727159A009C22F3 /* MITDiningHallMenuComparisonCell.m in Sources */,
 				5E70E39C192F87CA00165B41 /* MITShuttleMapViewController.m in Sources */,
 				5E0693031947522A009D1449 /* MITShuttleRootViewController.m in Sources */,
+				225AC0A319BA132B008854BC /* MITDiningHouseVenueDetailViewController.m in Sources */,
 				2CCF06CE18B6741F008869BC /* MITNewsConstants.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 				DED41FD8173849500048376F /* DiningData.m in Sources */,

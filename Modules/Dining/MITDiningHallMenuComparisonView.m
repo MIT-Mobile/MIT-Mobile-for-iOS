@@ -3,11 +3,15 @@
 #import "Foundation+MITAdditions.h"
 #import "MITDiningHallMenuComparisonLayout.h"
 #import "MITDiningHallMenuComparisonSectionHeaderView.h"
+#import "MITDiningHallMenuComparisonCell.h"
+#import "MITDiningHallMenuComparisonNoMealsCell.h"
+#import "MITDiningMeal.h"
+#import "MITDiningAggregatedMeal.h"
 
 @interface MITDiningHallMenuComparisonView () <UICollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
-@property (nonatomic, strong) UILabel * headerView;
-@property (nonatomic, strong) UICollectionView * collectionView;
+@property (nonatomic, strong) UILabel *headerView;
+@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
@@ -161,35 +165,5 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     }
     self.isScrolling = NO;
 }
-
-#pragma mark Class Methods
-+ (NSString *) stringForMeal:(NSString *)mealName onDate:(NSDate *)date
-{
-    // Formats string for compareView Header
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
-    NSString *dayString;
-    if ([date isToday]) {
-        dayString = @"Today";
-    } else if ([date isTomorrow]) {
-        dayString = @"Tomorrow";
-    } else if ([date isYesterday]) {
-        dayString = @"Yesterday";
-    } else {
-        [dateFormatter setDateFormat:@"EEEE"];
-        dayString = [dateFormatter stringFromDate:date];
-    }
-    
-    [dateFormatter setDateFormat:@"MMM d"];
-    NSString *fullDate = [dateFormatter stringFromDate:date];
-    
-    if (mealName && ![mealName isEqualToString:MealReferenceEmptyMeal]) {
-        NSString * mealString = [mealName capitalizedString];
-        return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
-    } else {
-        return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
-    }
-}
-
 
 @end

@@ -1,8 +1,8 @@
 #import "MITDiningHallMenuComparisonCell.h"
 #import "UIImage+PDF.h"
 #import "UIKit+MITAdditions.h"
-#import "DiningDietaryFlag.h"
-
+#import "MITDiningMenuItem.h"
+//#import "DiningDietaryFlag.h"
 
 @interface ComparisonBackgroundView : UIView
 
@@ -29,22 +29,13 @@
 
 @end
 
-
-
-
-
-
-
-
-
-#pragma mark -
-#pragma mark DiningHallMenuComparisonCell
+#pragma mark - DiningHallMenuComparisonCell
 
 @interface MITDiningHallMenuComparisonCell ()
 
-@property (nonatomic, strong) UILabel   * primaryLabel;
-@property (nonatomic, strong) UILabel   * secondaryLabel;
-@property (nonatomic, strong) UIView    * typeContainer;
+@property (nonatomic, strong) UILabel *primaryLabel;
+@property (nonatomic, strong) UILabel *secondaryLabel;
+@property (nonatomic, strong) UIView *typeContainer;
 
 @end
 
@@ -83,13 +74,13 @@
     return self;
 }
 
-- (void) setDietaryTypes:(NSArray *)dietaryTypes
+- (void)setDietaryTypes:(NSArray *)dietaryTypes
 {
     _dietaryTypes = dietaryTypes;
     [self setNeedsLayout];
 }
 
-- (void) prepareForReuse
+- (void)prepareForReuse
 {
     self.primaryLabel.text = @"";
     self.secondaryLabel.text = @"";
@@ -110,7 +101,6 @@
     return [UIFont systemFontOfSize:12];
 }
 
-
 - (CGRect) frameForLabel:(UILabel *)label constrainedToSize:(CGSize) constraint
 {
     CGSize necessaryLabelSize = [[label text] sizeWithFont:label.font constrainedToSize:constraint lineBreakMode:label.lineBreakMode];
@@ -119,7 +109,6 @@
     newFrame.size   = CGSizeMake(constraint.width, necessaryLabelSize.height);
     return newFrame;
 }
-
 
 - (void) layoutSubviews
 {
@@ -138,7 +127,7 @@
     
 }
 
-- (void) layoutDietaryTypes
+- (void)layoutDietaryTypes
 {
     if ((!self.dietaryTypes || [self.dietaryTypes count] == 0) && [self.typeContainer subviews]) {
         [self.typeContainer removeAllSubviews];
@@ -151,13 +140,13 @@
     
     
     CGSize iconSize = CGSizeMake(ICON_SQUARE, ICON_SQUARE);
-    int i = 0;
-    for (DiningDietaryFlag *type in self.dietaryTypes) {
-        UIImage *icon = [UIImage imageWithPDFNamed:type.pdfPath atSize:iconSize];
+    int flagIndexOffset = 0;
+    for (NSString *flag in self.dietaryTypes) {
+        UIImage *icon = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:flag] atSize:iconSize];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:icon];
         
-        imgView.center = CGPointMake(ICON_SQUARE / 2.0, (ICON_SQUARE / 2.0) + ((ICON_SQUARE + iconPadding) * i));
-        i++;
+        imgView.center = CGPointMake(ICON_SQUARE / 2.0, (ICON_SQUARE / 2.0) + ((ICON_SQUARE + iconPadding) * flagIndexOffset));
+        flagIndexOffset++;
         
         [self.typeContainer addSubview:imgView];
     }

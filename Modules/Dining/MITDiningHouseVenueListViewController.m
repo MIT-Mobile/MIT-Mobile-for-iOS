@@ -1,3 +1,4 @@
+#import "MITDiningHouseVenueDetailViewController.h"
 #import "MITDiningHouseVenueListViewController.h"
 #import "MITDiningVenueCell.h"
 #import "MITAdditions.h"
@@ -5,7 +6,6 @@
 #import "MITDiningVenues.h"
 #import "MITDiningLinks.h"
 #import "MITSingleWebViewCellTableViewController.h"
-#import "MITDiningHouseVenueDetailViewController.h"
 
 typedef NS_ENUM(NSInteger, kMITVenueListSection) {
     kMITVenueListSectionAnnouncements = 0,
@@ -195,6 +195,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     _diningData = diningData;
     self.houseVenues = [diningData.venues.house array];
     self.diningLinks = [diningData.links array];
+    
     [self.tableView reloadData];
 }
 
