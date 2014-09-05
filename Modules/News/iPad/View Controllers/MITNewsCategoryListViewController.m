@@ -5,6 +5,7 @@
 #import "MITNewsConstants.h"
 #import "MITNewsSearchController.h"
 #import "MITNewsLoadMoreTableViewCell.h"
+#import "Foundation+MITAdditions.h"
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
@@ -28,10 +29,11 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
+    NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section] + 1;
+        return numberOfRows + 1;
     }
-    return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+    return numberOfRows;
 }
 
 - (NSString*)titleForCategoryInSection:(NSUInteger)section
@@ -119,7 +121,7 @@
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return 75; // Fixed height for the load more cells
+        return MITNewsLoadMoreTableViewCellHeight;
     } else {
         return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }

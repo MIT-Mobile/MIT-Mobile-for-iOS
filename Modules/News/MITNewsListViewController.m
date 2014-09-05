@@ -25,12 +25,25 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
+@property (nonatomic, strong) NSMutableDictionary *storyHeights;
 
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
 @implementation MITNewsListViewController
+
+
+#pragma mark Dynamic Properties
+- (NSMutableDictionary*)storyHeights
+{
+    if (!_storyHeights) {
+        NSMutableDictionary* storyHeights = [[NSMutableDictionary alloc] init];
+        _storyHeights = storyHeights;
+    }
+    return _storyHeights;
+}
+
 
 #pragma mark UI Element text attributes
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -244,8 +257,39 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+    CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+    CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
+    if (estimatedHeight != cellHeight) {
+        [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
+    }
+    return cellHeight;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        return MITNewsLoadMoreTableViewCellHeight;
+    } else if ([self cachedHeightForRowAtIndexPath:indexPath]) {
+        return [self cachedHeightForRowAtIndexPath:indexPath];
+    } else {
+        return UITableViewAutomaticDimension;
+    }
+}
+
+- (CGFloat)cachedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
+    return [self.storyHeights[keyIndexPath] doubleValue];
+}
+
+- (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
+    self.storyHeights[keyIndexPath] = @(height);
+}
+
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -276,6 +320,20 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
+ 
+    NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+    NSInteger numberOfStoryHeights = [self.storyHeights count];
+    if (numberOfStoryHeights > numberOfRows) {
+        NSArray *sortedIndexPaths = [[self.storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
+        
+        NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
+        [sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
+                                            options:0
+                                         usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
+                                             [self.storyHeights removeObjectForKey:indexPath];
+                                         }];
+    }
+    
     return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
 }
 
