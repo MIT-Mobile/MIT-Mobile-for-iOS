@@ -39,6 +39,9 @@
     [self.objects enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
         if ([object isKindOfClass:[MITNewsCategory class]]) {
             [categories addObject:object];
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"expected an object of type %@, got %@", NSStringFromClass([MITNewsCategory class]), NSStringFromClass([object class])];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
         }
     }];
 
@@ -61,7 +64,7 @@
 #pragma mark Private
 
 #pragma mark Managing the FRC
-- (void)_setupFetchedResultsController
+- (void)_updateFetchedResultsController
 {
     [self.managedObjectContext performBlockAndWait:^{
         if (!_fetchedResultsController) {
@@ -139,7 +142,7 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects
 {
-    [self _setupFetchedResultsController];
+    [self _updateFetchedResultsController];
 }
 
 @end
