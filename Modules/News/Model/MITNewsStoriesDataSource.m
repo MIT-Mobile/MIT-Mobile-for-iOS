@@ -164,33 +164,59 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     return description;
 }
 
+
+- (NSOrderedSet*)categories
+{
+    NSMutableOrderedSet *categories = [[NSMutableOrderedSet alloc] init];
+    [self.objects enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
+        if ([object isKindOfClass:[MITNewsCategory class]]) {
+            [categories addObject:object];
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"expected an object of type %@, got %@", NSStringFromClass([MITNewsCategory class]), NSStringFromClass([object class])];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+        }
+    }];
+
+    return categories;
+}
+
 - (NSOrderedSet*)objects
 {
-    return self.stories;
-}
-
-- (NSOrderedSet*)stories
-{
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-    return [self storiesUsingManagedObjectContext:mainQueueContext];
+    return [self objectsUsingManagedObjectContext:mainQueueContext];
 }
 
-- (NSOrderedSet*)storiesUsingManagedObjectContext:(NSManagedObjectContext*)context
+- (NSOrderedSet*)objectsUsingManagedObjectContext:(NSManagedObjectContext*)context
 {
     if ([self _canCacheRequest] || ([self.objectIdentifiers count] > 0)){
         NSArray *fetchedObjects = self.fetchedResultsController.fetchedObjects;
         NSUInteger numberOfItems = MAX(self.maximumNumberOfItemsPerPage,[self.objectIdentifiers count]);
         numberOfItems = MIN(numberOfItems,[fetchedObjects count]);
-        
+
         NSRange rangeOfObjectsToReturn = NSMakeRange(0, numberOfItems);
         fetchedObjects = [fetchedObjects objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:rangeOfObjectsToReturn]];
-        
+
         NSArray *storyObjects = [context transferManagedObjects:fetchedObjects];
-        
+
         return [NSOrderedSet orderedSetWithArray:storyObjects];
     } else {
         return nil;
     }
+}
+
+- (NSOrderedSet*)stories
+{
+    NSMutableOrderedSet *stories = [[NSMutableOrderedSet alloc] init];
+    [self.objects enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
+        if ([object isKindOfClass:[MITNewsStory class]]) {
+            [stories addObject:object];
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"expected an object of type %@, got %@", NSStringFromClass([MITNewsStory class]), NSStringFromClass([object class])];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+        }
+    }];
+
+    return stories;
 }
 
 - (BOOL)isUpdating
