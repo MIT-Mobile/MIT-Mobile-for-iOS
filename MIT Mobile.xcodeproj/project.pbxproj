@@ -20,6 +20,8 @@
 		27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */; };
 		27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD2199318CF00DF36B1 /* PeopleRecentSearchTermList.m */; };
 		27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */; };
+		27C5B4B819B564CD006DD95A /* MITFacilitiesHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */; };
+		27C5B4BA19B56644006DD95A /* MITFacilities_iphone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */; };
 		27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */; };
 		27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -548,6 +550,9 @@
 		27B4FDD4199318D000DF36B1 /* PeopleRecentSearchTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTerm.h; sourceTree = "<group>"; };
 		27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTerm.m; sourceTree = "<group>"; };
 		27B4FDD719931FBA00DF36B1 /* PeopleDataModel 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 8.xcdatamodel"; sourceTree = "<group>"; };
+		27C5B4B619B564CD006DD95A /* MITFacilitiesHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITFacilitiesHomeViewController.h; path = v2/MITFacilitiesHomeViewController.h; sourceTree = "<group>"; };
+		27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITFacilitiesHomeViewController.m; path = v2/MITFacilitiesHomeViewController.m; sourceTree = "<group>"; };
+		27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = MITFacilities_iphone.storyboard; path = v2/MITFacilities_iphone.storyboard; sourceTree = "<group>"; };
 		27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleFavoriteData.h; sourceTree = "<group>"; };
 		27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleFavoriteData.m; sourceTree = "<group>"; };
 		27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleFavoritesTableViewController.h; sourceTree = "<group>"; };
@@ -1590,6 +1595,20 @@
 			name = iPad;
 			sourceTree = "<group>";
 		};
+		27C5B4B219B56462006DD95A /* Old */ = {
+			isa = PBXGroup;
+			children = (
+				2C40A0F01367362600C83847 /* FacilitiesLocation */,
+				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
+				2C20332B135F64920033E80A /* FacilitiesRoot */,
+				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
+				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
+				2C1807391382C2DA000CCB6F /* FacilitiesType */,
+				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
+			);
+			name = Old;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -1797,18 +1816,15 @@
 		2C1A45E6135DD0A8006A2EE4 /* Building Services */ = {
 			isa = PBXGroup;
 			children = (
+				27C5B4B219B56462006DD95A /* Old */,
 				2CCB85F61361D9790024E474 /* Model */,
-				2C40A0F01367362600C83847 /* FacilitiesLocation */,
-				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
-				2C20332B135F64920033E80A /* FacilitiesRoot */,
-				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
-				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
-				2C1807391382C2DA000CCB6F /* FacilitiesType */,
-				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
 				2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */,
 				2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */,
 				2C2E95411382F00200FA5557 /* FacilitiesConstants.h */,
 				2C2E95401382F00200FA5557 /* FacilitiesConstants.m */,
+				27C5B4B619B564CD006DD95A /* MITFacilitiesHomeViewController.h */,
+				27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */,
+				27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */,
 			);
 			name = "Building Services";
 			path = Modules/Facilities;
@@ -3460,6 +3476,7 @@
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
+				27C5B4BA19B56644006DD95A /* MITFacilities_iphone.storyboard in Resources */,
 				EB5C621E1201D92E00805EBE /* map in Resources */,
 				EB5C625A1201D93A00805EBE /* news in Resources */,
 				EB5C625B1201D93A00805EBE /* people in Resources */,
@@ -3620,6 +3637,7 @@
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
 				EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */,
 				EB8392491163EF340067C0A3 /* EventCategory.m in Sources */,
+				27C5B4B819B564CD006DD95A /* MITFacilitiesHomeViewController.m in Sources */,
 				EB976D18116CF6630036A18E /* EventListTableView.m in Sources */,
 				2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */,
 				2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */,
