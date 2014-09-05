@@ -8,7 +8,6 @@
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
 
 @property(nonatomic) NSUInteger numberOfObjects;
-@property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
 @property(strong) dispatch_semaphore_t requestMutex;
 
 @property(getter=isUpdating) BOOL updating;
@@ -140,16 +139,6 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects
 {
-    NSMutableOrderedSet *addedObjectIdentifiers = [[NSMutableOrderedSet alloc] init];
-    [[objects valueForKey:@"objectID"] enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-        if ([objectID isKindOfClass:[NSManagedObjectID class]]) {
-            [addedObjectIdentifiers addObject:objectID];
-        }
-    }];
-
-    NSMutableOrderedSet *allObjects = [[NSMutableOrderedSet alloc] initWithOrderedSet:self.objectIdentifiers];
-    [allObjects unionOrderedSet:addedObjectIdentifiers];
-    self.objectIdentifiers = allObjects;
     [self _setupFetchedResultsController];
 }
 
