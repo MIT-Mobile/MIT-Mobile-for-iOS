@@ -5,7 +5,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
-static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
+static void const *MITDataSourceCachedObjectsClearedKey = &MITDataSourceCachedObjectsClearedKey;
 
 @interface MITNewsDataSource ()
 
@@ -26,7 +26,7 @@ static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
     // since it involves potentially deleting a large number of
     // CoreData objects (especially with a number of subclasses)
     NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
-        id firstRunToken = objc_getAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared);
+        id firstRunToken = objc_getAssociatedObject(self, MITDataSourceCachedObjectsClearedKey);
         
         if (!firstRunToken) {
             __block NSError *error = nil;
@@ -38,7 +38,7 @@ static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
                 DDLogWarn(@"failed to clear cached objects for %@: %@",NSStringFromClass(self),[error localizedDescription]);
             }
             
-            objc_setAssociatedObject(self, (__bridge const void*)MITNewsDataSourceObjectKeyCacheWasCleared, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject(self, MITDataSourceCachedObjectsClearedKey, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
     }];
     
