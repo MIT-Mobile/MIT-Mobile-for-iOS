@@ -62,15 +62,10 @@
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
             [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-        
-            MITNewsiPadCategoryViewController *categoryVC = (MITNewsiPadCategoryViewController *)self.dataSource;
-            MITNewsDataSource *dataSource = categoryVC.dataSource;
-            self.errorMessage = categoryVC.errorMessasge;
-            categoryVC.errorMessasge = nil;
        
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
-            } else if (_storyUpdateInProgress || dataSource.isUpdating) {
+            } else if (_storyUpdateInProgress) {
                 cell.textLabel.text = @"Loading More...";
             } else {
                 cell.textLabel.text = @"Load More...";
@@ -175,6 +170,16 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
+}
+
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
 }
 
 @end

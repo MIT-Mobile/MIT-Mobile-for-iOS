@@ -52,18 +52,13 @@
 
     if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;
-
-            MITNewsiPadCategoryViewController *categoryVC = (MITNewsiPadCategoryViewController *)self.dataSource;
-            MITNewsDataSource *dataSource = categoryVC.dataSource;
-            self.errorMessage = categoryVC.errorMessasge;
-            categoryVC.errorMessasge = nil;
+            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;;
             
             if(self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
                 self.errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
-            } else if (dataSource.isUpdating || _storyUpdateInProgress) {
+            } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
             } else {
@@ -153,4 +148,13 @@
     }];
 }
 
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
+}
 @end

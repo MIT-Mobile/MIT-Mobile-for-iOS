@@ -293,11 +293,12 @@
         return;
     }
     _storyUpdateInProgress = YES;
-    
+    [self setProgress:YES];
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
                                      _storyUpdateInProgress = FALSE;
+                                     [self setProgress:FALSE];
                                      MITNewsiPadCategoryViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
                                          if (block) {
@@ -309,9 +310,9 @@
                                      if (error) {
                                          DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
                                          if (error.code == NSURLErrorNotConnectedToInternet) {
-                                             strongSelf.errorMessasge = @"No Internet Connection";
+                                             [self setError:@"No Internet Connection"];
                                          } else {
-                                             strongSelf.errorMessasge = @"Failed";
+                                             [self setError:@"Failed..."];
                                          }
                                          [strongSelf updateLoadingCell];
                                          dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
@@ -329,6 +330,24 @@
                                          block(error);
                                      }
                                  }];
+}
+
+- (void)setError:(NSString *)message
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController setError:message];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController setError:message];
+    }
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController setProgress:progress];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController setProgress:progress];
+    }
 }
 
 #pragma mark Refresh Control Text

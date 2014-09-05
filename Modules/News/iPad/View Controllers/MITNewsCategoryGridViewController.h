@@ -3,7 +3,11 @@
 @protocol MITNewsGridDelegate;
 
 @interface MITNewsCategoryGridViewController : MITNewsGridViewController
+
 @property (nonatomic, weak) id<MITNewsGridDelegate, MITNewsStoryDelegate> delegate;
+- (void)setError:(NSString *)errorMessage;
+- (void)setProgress:(BOOL)progress;
+
 @end
 
 @protocol MITNewsGridDelegate <NSObject>
