@@ -530,7 +530,8 @@
 
         blockSelf.dataSources = dataSources;
         [blockSelf refreshDataSources:completion];
-    }];}
+    }];
+}
 
 - (void)refreshDataSources:(void (^)(NSError*))completion
 {
