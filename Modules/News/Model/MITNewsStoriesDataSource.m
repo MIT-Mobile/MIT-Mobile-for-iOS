@@ -13,11 +13,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 @interface MITNewsStoriesDataSource ()
 @property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic,strong) id changeNotificationToken;
-
 @property(nonatomic,strong) NSURL *nextPageURL;
-
-
 @property (nonatomic,copy) NSOrderedSet *objectIdentifiers;
 
 @property (nonatomic,copy) NSString *query;
@@ -83,16 +79,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 + (instancetype)featuredStoriesDataSource
 {
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    privateContext.parentContext = mainQueueContext;
-
-    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:privateContext];
+    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:mainQueueContext];
     dataSource.featuredStorySource = YES;
-
-    dataSource.changeNotificationToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:mainQueueContext queue:nil usingBlock:^(NSNotification *note) {
-        [privateContext mergeChangesFromContextDidSaveNotification:note];
-    }];
-
 
     return dataSource;
 }
@@ -100,15 +88,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 + (instancetype)dataSourceForQuery:(NSString*)query
 {
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    privateContext.parentContext = mainQueueContext;
-
-    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:privateContext];
+    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:mainQueueContext];
     dataSource.query = query;
-
-    dataSource.changeNotificationToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:mainQueueContext queue:nil usingBlock:^(NSNotification *note) {
-        [privateContext mergeChangesFromContextDidSaveNotification:note];
-    }];
 
     return dataSource;
 }
@@ -116,16 +97,9 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 + (instancetype)dataSourceForCategory:(MITNewsCategory*)category
 {
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    privateContext.parentContext = mainQueueContext;
-
-    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:privateContext];
+    MITNewsStoriesDataSource *dataSource = [[self alloc] initWithManagedObjectContext:mainQueueContext];
     [category.managedObjectContext performBlockAndWait:^{
         dataSource.categoryIdentifier = category.identifier;
-    }];
-    
-    dataSource.changeNotificationToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:mainQueueContext queue:nil usingBlock:^(NSNotification *note) {
-        [privateContext mergeChangesFromContextDidSaveNotification:note];
     }];
 
     return dataSource;
@@ -140,13 +114,6 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     }
 
     return self;
-}
-
-- (void)dealloc
-{
-    if (self.changeNotificationToken) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self.changeNotificationToken];
-    }
 }
 
 - (NSString*)description

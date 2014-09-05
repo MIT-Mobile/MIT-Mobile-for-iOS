@@ -8,7 +8,7 @@
 static void const *MITDataSourceCachedObjectsClearedKey = &MITDataSourceCachedObjectsClearedKey;
 
 @interface MITNewsDataSource ()
-
+@property(strong) id parentContextDidSaveObserverToken;
 @end
 
 @implementation MITNewsDataSource
@@ -50,11 +50,26 @@ static void const *MITDataSourceCachedObjectsClearedKey = &MITDataSourceCachedOb
     self = [super init];
     if (self) {
         [[self class] _clearCachedObjects];
-        
-        _managedObjectContext = managedObjectContext;
+
+        NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        childContext.parentContext = managedObjectContext;
+
+        id notificationToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:managedObjectContext queue:nil usingBlock:^(NSNotification *note) {
+            [childContext mergeChangesFromContextDidSaveNotification:note];
+        }];
+        self.parentContextDidSaveObserverToken = notificationToken;
+
+        _managedObjectContext = childContext;
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    if (self.parentContextDidSaveObserverToken) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.parentContextDidSaveObserverToken];
+    }
 }
 
 - (BOOL)isUpdating
