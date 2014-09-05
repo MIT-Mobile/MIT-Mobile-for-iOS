@@ -187,7 +187,7 @@
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if (self.activeViewController == self.gridViewController) {
-            [self.gridViewController.collectionView reloadData];
+            [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
         } else if (self.activeViewController == self.listViewController) {
             [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
