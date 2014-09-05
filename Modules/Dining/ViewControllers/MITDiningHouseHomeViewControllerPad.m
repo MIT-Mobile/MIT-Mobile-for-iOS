@@ -6,7 +6,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
-#import "TopAlignedCollectionViewFlowLayout.h"
+#import "TopAlignedStickyHeaderCollectionViewFlowLayout.h"
 #import "MITDiningHouseMealSelectorPad.h"
 #import "UIImage+PDF.h"
 #import "MITDiningMenuItem.h"
@@ -49,10 +49,9 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.mealSelector.horizontalInset = kMITDiningHallCollectionViewSectionHorizontalPadding / 2;
     self.mealSelector.delegate = self;
     
-    self.collectionView.collectionViewLayout = [[TopAlignedCollectionViewFlowLayout alloc] init];
+    self.collectionView.collectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionCellNib bundle:nil] forCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionHeaderNib bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMITDiningHallMealCollectionHeaderIdentifier];
-    [self.collectionView setContentInset:UIEdgeInsetsMake(14, 0, 0, 0)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -81,10 +80,16 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 
 - (void)selectDate:(NSDate *)date mealName:(NSString *)mealName
 {
+    if ([self.currentlySelectedDate isEqualToDate:date] && [self.currentlySelectedMeal isEqualToString:mealName]) {
+        return;
+    }
+    
     self.currentlySelectedDate = date;
     self.currentlySelectedMeal = mealName;
     
+    
     [self refreshViews];
+    [self.collectionView scrollRectToVisible:CGRectMake(0, 0, self.collectionView.bounds.size.width, self.collectionView.bounds.size.height) animated:NO];
 }
 
 - (void)refreshViews
