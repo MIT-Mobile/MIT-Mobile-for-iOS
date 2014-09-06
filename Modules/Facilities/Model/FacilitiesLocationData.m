@@ -581,7 +581,17 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
             location.uid = [loc objectForKey:@"id"];
         }
         
-        location.name = [loc objectForKey:@"name"];
+        // TODO: occasionally server would return a dictionary here as opposed to a string.
+        // making sure app doesn't crash in that case.
+        if( [[loc objectForKey:@"name"] isKindOfClass:[NSString class]] )
+        {
+            location.name = [loc objectForKey:@"name"];
+        }
+        else
+        {
+            location.name = @"";
+        }
+
         location.number = [loc objectForKey:@"bldgnum"];
         
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];
