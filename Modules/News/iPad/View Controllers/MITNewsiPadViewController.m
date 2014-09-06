@@ -95,7 +95,7 @@
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     
-    if (!self.activeViewController && [self class] == [MITNewsiPadViewController class]) {
+    if (!self.activeViewController) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
@@ -103,11 +103,11 @@
         }
     }
     
-    if ([self class] == [MITNewsiPadViewController class] && !self.isSearching) {
+    if (!self.isSearching) {
         if (!self.lastUpdated) {
             [self reloadViewItems:self.refreshControl];
         } else {
-            [self updateRefrshStatusWithCurrentTime];
+            [self updateRefreshStatusWithLastUpdatedTime];
         }
         [self updateNavigationItem:YES];
     }
@@ -450,7 +450,7 @@
                 
             } else {
                     strongSelf.lastUpdated = [NSDate date];
-                    [strongSelf updateRefrshStatusWithCurrentTime];
+                    [strongSelf updateRefreshStatusWithLastUpdatedTime];
 
                     if (refreshControl.refreshing) {
                         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
@@ -492,7 +492,7 @@
 }
 
 #pragma mark Refresh Control Text
-- (void)updateRefrshStatusWithCurrentTime
+- (void)updateRefreshStatusWithLastUpdatedTime
 {
     NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
                                                                         toDate:[NSDate date]];
@@ -765,14 +765,10 @@
     }
 }
 
-
 #pragma mark MITNewsStoryDetailPagingDelegate
-
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
-    
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    
     MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
     
     NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
