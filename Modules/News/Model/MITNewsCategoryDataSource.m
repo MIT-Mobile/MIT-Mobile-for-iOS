@@ -6,14 +6,16 @@
 
 @interface MITNewsCategoryDataSource ()
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
-@property(nonatomic,readwrite,strong) NSDate *lastRefreshed;
 
 @property(nonatomic) NSUInteger numberOfObjects;
 @property(nonatomic,copy) NSOrderedSet *objectIdentifiers;
 @property(strong) NSRecursiveLock *requestLock;
+@property(getter=isUpdating) BOOL updating;
 @end
 
 @implementation MITNewsCategoryDataSource
+@synthesize updating = _updating;
+
 - (instancetype)init
 {
     NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
@@ -82,9 +84,12 @@
 }
 
 #pragma mark Public
+
 - (void)refresh:(void (^)(NSError *error))block
 {
     if ([self.requestLock tryLock]) {
+        self.updating = YES;
+
         __weak MITNewsCategoryDataSource *weakSelf = self;
         [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
             MITNewsCategoryDataSource *blockSelf = weakSelf;
@@ -102,6 +107,8 @@
                     }];
                 } else {
                     blockSelf.objectIdentifiers = nil;
+                    blockSelf.refreshedAt = [NSDate date];
+
                     [blockSelf _responseFinishedWithObjects:categories];
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         if (block) {
@@ -110,6 +117,7 @@
                     }];
                 }
 
+                blockSelf.updating = NO;
                 [blockSelf.requestLock unlock];
             }];
         }];
@@ -130,8 +138,6 @@
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects
 {
-    self.lastRefreshed = [NSDate date];
-
     NSMutableOrderedSet *addedObjectIdentifiers = [[NSMutableOrderedSet alloc] init];
     [[objects valueForKey:@"objectID"] enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
         if ([objectID isKindOfClass:[NSManagedObjectID class]]) {

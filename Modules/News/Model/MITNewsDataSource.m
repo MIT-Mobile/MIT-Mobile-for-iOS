@@ -13,6 +13,7 @@ static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
 
 @implementation MITNewsDataSource
 @synthesize managedObjectContext = _managedObjectContext;
+
 + (BOOL)clearCachedObjectsWithManagedObjectContext:(NSManagedObjectContext*)context error:(NSError**)error
 {
     /* Do Nothing, just fail-by-success for the default implementation */
@@ -56,6 +57,10 @@ static NSString* const MITNewsDataSourceObjectKeyCacheWasCleared;
     return self;
 }
 
+- (BOOL)isUpdating
+{
+    return NO;
+}
 
 - (BOOL)hasNextPage
 {

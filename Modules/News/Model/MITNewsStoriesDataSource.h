@@ -6,7 +6,6 @@
 @property (nonatomic,readonly) BOOL isFeaturedStorySource;
 
 @property (nonatomic,readonly,strong) NSOrderedSet *stories;
-@property (readonly,strong) NSDate *refreshedAt;
 
 + (instancetype)featuredStoriesDataSource;
 + (instancetype)dataSourceForQuery:(NSString*)query;

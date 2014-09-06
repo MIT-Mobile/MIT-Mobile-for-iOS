@@ -15,8 +15,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 @property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,strong) id changeNotificationToken;
 
-@property (nonatomic,strong) NSURL *nextPageURL;
-@property (strong) NSDate *refreshedAt;
+@property(nonatomic,strong) NSURL *nextPageURL;
+
 
 @property (nonatomic,copy) NSOrderedSet *objectIdentifiers;
 
@@ -193,6 +193,11 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     }
 }
 
+- (BOOL)isUpdating
+{
+    return self.isRequestInProgress;
+}
+
 - (BOOL)_canCacheRequest
 {
     if (self.isFeaturedStorySource) {
@@ -316,6 +321,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
                 // while a next page load will just tack on the results
                 // to the existing list of identifiers
                 blockSelf.objectIdentifiers = nil;
+                self.refreshedAt = [NSDate date];
 
                 [blockSelf _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -356,8 +362,6 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)())block
 {
-    self.refreshedAt = [NSDate date];
-    
     [self.managedObjectContext performBlock:^{
         NSArray *addedObjectIdentifiers = [NSMutableArray arrayWithArray:[objects valueForKey:@"objectID"]];
         addedObjectIdentifiers = [addedObjectIdentifiers filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSManagedObjectID *objectID, NSDictionary *bindings) {
