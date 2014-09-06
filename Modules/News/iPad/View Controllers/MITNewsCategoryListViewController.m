@@ -9,21 +9,10 @@
 
 @interface MITNewsCategoryListViewController()
 @property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic, strong) NSMutableDictionary *storyHeights;
 @end
 
 @implementation MITNewsCategoryListViewController {
     BOOL _storyUpdateInProgress;
-}
-
-#pragma mark Dynamic Properties
-- (NSMutableDictionary*)storyHeights
-{
-    if (!_storyHeights) {
-        NSMutableDictionary* storyHeights = [[NSMutableDictionary alloc] init];
-        _storyHeights = storyHeights;
-    }
-    return _storyHeights;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
@@ -40,20 +29,7 @@
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
-
     NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
-    NSInteger numberOfStoryHeights = [self.storyHeights count];
-    if (numberOfStoryHeights > numberOfRows) {
-        NSArray *sortedIndexPaths = [[self.storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
-
-        NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
-        [[sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
-                                             options:0
-                                          usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
-                                              [self.storyHeights removeObjectForKey:indexPath];
-                                          }]];
-    }
-
     if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
         return numberOfRows + 1;
     }
@@ -147,39 +123,8 @@
     if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         return MITNewsLoadMoreTableViewCellHeight;
     } else {
-        CGFloat cellHeight = [super tableView:tableView heightForRowAtIndexPath:indexPath];
-        
-        CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
-        if (estimatedHeight != cellHeight) {
-            [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
-        }
-        return cellHeight;
+        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
     }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    
-    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return MITNewsLoadMoreTableViewCellHeight;
-    } else if ([self cachedHeightForRowAtIndexPath:indexPath]) {
-        return [self cachedHeightForRowAtIndexPath:indexPath];
-    } else {
-        return UITableViewAutomaticDimension;
-    }
-}
-
-- (CGFloat)cachedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    return [self.storyHeights[keyIndexPath] doubleValue];
-}
-
-- (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    self.storyHeights[keyIndexPath] = @(height);
 }
 
 - (void)getMoreStoriesForSection:(NSInteger *)section
