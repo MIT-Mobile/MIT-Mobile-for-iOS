@@ -789,12 +789,10 @@ typedef struct {
     NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSMinuteCalendarUnit
                                                                          fromDate:self];
     
-    // (bskinner,TODO)
-    // Profile this method in the wild. These NSDateFormatter allocs are expensive
-    // but I'm not sure if we're calling this method enough for it to require caching.
-    // Possible add in a thread-local cached copy if we need to.
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    
+    static NSDateFormatter *formatter;
+    if (!formatter) {
+        formatter = [[NSDateFormatter alloc] init];
+    }    
     
     // If the minute value is not zero, use an alternate format
     // that includes the minutes. Otherwise, just ignore them and

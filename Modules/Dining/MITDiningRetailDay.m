@@ -4,19 +4,20 @@
 
 @implementation MITDiningRetailDay
 
-@dynamic date;
-@dynamic endTime;
+@dynamic dateString;
+@dynamic endTimeString;
 @dynamic message;
-@dynamic startTime;
+@dynamic startTimeString;
 @dynamic retailHours;
 
 + (RKMapping *)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     
-    [mapping addAttributeMappingsFromDictionary:@{@"start_time" : @"startTime",
-                                                  @"end_time" : @"endTime"}];
-    [mapping addAttributeMappingsFromArray:@[@"date", @"message"]];
+    [mapping addAttributeMappingsFromDictionary:@{@"date" : @"dateString",
+                                                  @"start_time" : @"startTimeString",
+                                                  @"end_time" : @"endTimeString"}];
+    [mapping addAttributeMappingsFromArray:@[@"message"]];
     
     return mapping;
 }
@@ -29,7 +30,7 @@
     
     if (self.message) {
         hoursSummary = self.message;
-    } else if (self.startTime && self.endTime) {
+    } else if (self.startTimeString  && self.endTimeString) {
         NSString *startString = [self.startTime MITShortTimeOfDayString];
         NSString *endString = [self.endTime MITShortTimeOfDayString];
         
@@ -61,6 +62,38 @@
     }
     
     return openClosedStatus;
+}
+
+- (NSDateFormatter *)retailDateFormatter
+{
+    static NSDateFormatter *mealFormatter;
+    if (!mealFormatter) {
+        mealFormatter = [[NSDateFormatter alloc] init];
+        [mealFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
+    }
+    return mealFormatter;
+}
+
+- (NSDate *)startTime
+{
+    NSString *dateString = [self.dateString stringByAppendingString:self.startTimeString];
+    return [[self retailDateFormatter] dateFromString:dateString];
+}
+
+- (NSDate *)endTime
+{
+    NSString *dateString = [self.dateString stringByAppendingString:self.endTimeString];
+    return [[self retailDateFormatter] dateFromString:dateString];
+}
+
+- (NSDate *)date
+{
+    static NSDateFormatter *formatter;
+    if (!formatter) {
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-mm-dd"];
+    }
+    return [formatter dateFromString:self.dateString];
 }
 
 @end
