@@ -1,13 +1,14 @@
 #import "MITCalendarsContact.h"
-
+#import "MITCalendarsEvent.h"
 
 @implementation MITCalendarsContact
 
-@dynamic name;
 @dynamic email;
-@dynamic websiteURL;
 @dynamic location;
+@dynamic name;
 @dynamic phone;
+@dynamic websiteURL;
+@dynamic events;
 
 +(RKMapping *)objectMapping
 {

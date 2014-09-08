@@ -7,7 +7,7 @@
         <relationship name="venues" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningVenues" inverseName="dining" inverseEntity="MITDiningVenues" syncable="YES"/>
     </entity>
     <entity name="MITDiningHouseDay" representedClassName="MITDiningHouseDay" syncable="YES">
-        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="houseVenue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningHouseVenue" inverseName="mealsByDay" inverseEntity="MITDiningHouseVenue" syncable="YES"/>
         <relationship name="meals" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningMeal" inverseName="houseDay" inverseEntity="MITDiningMeal" syncable="YES"/>
@@ -40,10 +40,10 @@
         <relationship name="retailVenue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningRetailVenue" inverseName="location" inverseEntity="MITDiningRetailVenue" syncable="YES"/>
     </entity>
     <entity name="MITDiningMeal" representedClassName="MITDiningMeal" syncable="YES">
-        <attribute name="endTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="endTimeString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="startTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="startTimeString" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="houseDay" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningHouseDay" inverseName="meals" inverseEntity="MITDiningHouseDay" syncable="YES"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningMenuItem" inverseName="meal" inverseEntity="MITDiningMenuItem" syncable="YES"/>
     </entity>
@@ -55,10 +55,10 @@
         <relationship name="meal" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITDiningMeal" inverseName="items" inverseEntity="MITDiningMeal" syncable="YES"/>
     </entity>
     <entity name="MITDiningRetailDay" representedClassName="MITDiningRetailDay" syncable="YES">
-        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="endTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="endTimeString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="startTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="startTimeString" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="retailHours" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITDiningRetailVenue" inverseName="hours" inverseEntity="MITDiningRetailVenue" syncable="YES"/>
     </entity>
     <entity name="MITDiningRetailVenue" representedClassName="MITDiningRetailVenue" syncable="YES">
@@ -84,13 +84,13 @@
     </entity>
     <elements>
         <element name="MITDiningDining" positionX="-63" positionY="-18" width="128" height="103"/>
-        <element name="MITDiningHouseDay" positionX="18" positionY="54" width="128" height="103"/>
+        <element name="MITDiningHouseDay" positionX="18" positionY="54" width="128" height="105"/>
         <element name="MITDiningHouseVenue" positionX="-9" positionY="63" width="128" height="163"/>
         <element name="MITDiningLinks" positionX="9" positionY="45" width="128" height="88"/>
         <element name="MITDiningLocation" positionX="0" positionY="36" width="128" height="193"/>
-        <element name="MITDiningMeal" positionX="-9" positionY="27" width="128" height="133"/>
+        <element name="MITDiningMeal" positionX="-9" positionY="27" width="128" height="135"/>
         <element name="MITDiningMenuItem" positionX="0" positionY="36" width="128" height="120"/>
-        <element name="MITDiningRetailDay" positionX="36" positionY="72" width="128" height="120"/>
+        <element name="MITDiningRetailDay" positionX="36" positionY="72" width="128" height="118"/>
         <element name="MITDiningRetailVenue" positionX="-18" positionY="18" width="128" height="253"/>
         <element name="MITDiningVenues" positionX="-54" positionY="-9" width="128" height="88"/>
     </elements>

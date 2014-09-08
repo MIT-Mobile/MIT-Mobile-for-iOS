@@ -6,7 +6,7 @@
 
 @implementation MITDiningHouseDay
 
-@dynamic date;
+@dynamic dateString;
 @dynamic message;
 @dynamic houseVenue;
 @dynamic meals;
@@ -15,7 +15,8 @@
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     
-    [mapping addAttributeMappingsFromArray:@[@"date", @"message"]];
+    [mapping addAttributeMappingsFromDictionary:@{@"date" : @"dateString"}];
+    [mapping addAttributeMappingsFromArray:@[@"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"meals" toKeyPath:@"meals" withMapping:[MITDiningMeal objectMapping]]];
     
     return mapping;
@@ -174,6 +175,21 @@
     mealSummary.endDate = self.date;
     
     return mealSummary;
+}
+
++ (NSDateFormatter *)houseDayDateFormatter
+{
+    static NSDateFormatter *formatter;
+    if (!formatter) {
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-MM-dd"];
+    }
+    return formatter;
+}
+
+- (NSDate *)date
+{
+    return [[MITDiningHouseDay houseDayDateFormatter] dateFromString:self.dateString];
 }
 
 @end

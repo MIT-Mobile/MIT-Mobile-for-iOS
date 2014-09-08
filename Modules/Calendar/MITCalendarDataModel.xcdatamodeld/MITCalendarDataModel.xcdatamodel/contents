@@ -7,6 +7,7 @@
         <attribute name="shortName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" inverseName="parentCategory" inverseEntity="CalendarsCalendar" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsEvent" inverseName="categories" inverseEntity="CalendarsEvent" syncable="YES"/>
         <relationship name="parentCategory" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" inverseName="categories" inverseEntity="CalendarsCalendar" syncable="YES"/>
     </entity>
     <entity name="CalendarsContact" representedClassName="MITCalendarsContact" syncable="YES">
@@ -15,6 +16,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="websiteURL" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsEvent" inverseName="contact" inverseEntity="CalendarsEvent" syncable="YES"/>
     </entity>
     <entity name="CalendarsEvent" representedClassName="MITCalendarsEvent" syncable="YES">
         <attribute name="cancelled" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -35,20 +37,22 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="typeCode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" syncable="YES"/>
-        <relationship name="contact" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsContact" syncable="YES"/>
-        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsLocation" syncable="YES"/>
-        <relationship name="seriesInfo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsSeriesInfo" syncable="YES"/>
-        <relationship name="sponsors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsSponsor" syncable="YES"/>
+        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CalendarsCalendar" inverseName="events" inverseEntity="CalendarsCalendar" syncable="YES"/>
+        <relationship name="contact" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsContact" inverseName="events" inverseEntity="CalendarsContact" syncable="YES"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsLocation" inverseName="events" inverseEntity="CalendarsLocation" syncable="YES"/>
+        <relationship name="seriesInfo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsSeriesInfo" inverseName="event" inverseEntity="CalendarsSeriesInfo" syncable="YES"/>
+        <relationship name="sponsors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsSponsor" inverseName="event" inverseEntity="CalendarsSponsor" syncable="YES"/>
     </entity>
     <entity name="CalendarsLocation" representedClassName="MITCalendarsLocation" syncable="YES">
         <attribute name="coordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="locationDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="roomNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsEvent" inverseName="location" inverseEntity="CalendarsEvent" syncable="YES"/>
     </entity>
     <entity name="CalendarsSeriesInfo" representedClassName="MITCalendarsSeriesInfo" syncable="YES">
         <attribute name="seriesDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CalendarsEvent" inverseName="seriesInfo" inverseEntity="CalendarsEvent" syncable="YES"/>
     </entity>
     <entity name="CalendarsSponsor" representedClassName="MITCalendarsSponsor" syncable="YES">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
@@ -57,13 +61,14 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="websiteURL" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="event" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CalendarsEvent" inverseName="sponsors" inverseEntity="CalendarsEvent" syncable="YES"/>
     </entity>
     <elements>
-        <element name="CalendarsCalendar" positionX="0" positionY="0" width="128" height="150"/>
-        <element name="CalendarsContact" positionX="0" positionY="0" width="128" height="120"/>
-        <element name="CalendarsEvent" positionX="0" positionY="0" width="128" height="390"/>
-        <element name="CalendarsLocation" positionX="0" positionY="0" width="128" height="90"/>
-        <element name="CalendarsSeriesInfo" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="CalendarsSponsor" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="CalendarsCalendar" positionX="0" positionY="0" width="128" height="163"/>
+        <element name="CalendarsContact" positionX="0" positionY="0" width="128" height="133"/>
+        <element name="CalendarsEvent" positionX="0" positionY="0" width="128" height="388"/>
+        <element name="CalendarsLocation" positionX="0" positionY="0" width="128" height="103"/>
+        <element name="CalendarsSeriesInfo" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="CalendarsSponsor" positionX="0" positionY="0" width="128" height="150"/>
     </elements>
 </model>

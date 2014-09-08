@@ -5,18 +5,18 @@
 
 @implementation MITDiningMeal
 
-@dynamic endTime;
+@dynamic endTimeString;
 @dynamic message;
 @dynamic name;
-@dynamic startTime;
+@dynamic startTimeString;
 @dynamic houseDay;
 @dynamic items;
 
 + (RKMapping *)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
-    [mapping addAttributeMappingsFromDictionary:@{@"start_time" : @"startTime",
-                                                  @"end_time" : @"endTime"}];
+    [mapping addAttributeMappingsFromDictionary:@{@"start_time" : @"startTimeString",
+                                                  @"end_time" : @"endTimeString"}];
     [mapping addAttributeMappingsFromArray:@[@"name", @"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"items" withMapping:[MITDiningMenuItem objectMapping]]];
     
@@ -26,7 +26,7 @@
 - (NSString *)mealHoursDescription
 {
     NSString *description = nil;
-    if (!self.startTime || !self.endTime) {
+    if (!self.startTimeString || !self.endTimeString) {
         description = self.message;
     } else {
         NSString *startString = [self.startTime MITShortTimeOfDayString];
@@ -46,8 +46,30 @@
 - (BOOL)isSuperficiallyEqualToMeal:(MITDiningMeal *)meal
 {
     return ([self.name isEqualToString:meal.name] && ([self.message isEqualToString:meal.message] ||
-                                              ([self.startTime isEqualToTimeIgnoringDay:meal.startTime] &&
-                                               [self.endTime isEqualToTimeIgnoringDay:meal.endTime])));
+                                              ([self.startTimeString isEqualToString:meal.startTimeString] &&
+                                               [self.endTimeString isEqualToString:meal.endTimeString])));
+}
+
++ (NSDateFormatter *)mealDateFormatter
+{
+    static NSDateFormatter *mealFormatter;
+    if (!mealFormatter) {
+        mealFormatter = [[NSDateFormatter alloc] init];
+        [mealFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
+    }
+    return mealFormatter;
+}
+
+- (NSDate *)startTime
+{
+    NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.houseDay.dateString, self.startTimeString];
+    return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
+}
+
+- (NSDate *)endTime
+{
+    NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.houseDay.dateString, self.endTimeString];
+    return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
 }
 
 @end

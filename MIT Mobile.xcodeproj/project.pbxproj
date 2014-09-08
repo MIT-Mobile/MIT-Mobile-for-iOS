@@ -16,14 +16,9 @@
 		2209CC3019929BE300E17100 /* MITEventsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209CC2E19929BE300E17100 /* MITEventsTableViewController.m */; };
 		2209CC3119929BE300E17100 /* MITEventsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2209CC2F19929BE300E17100 /* MITEventsTableViewController.xib */; };
 		223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */; };
-		223EDB711988384C00832ACD /* MITCalendarsSeriesInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB701988384C00832ACD /* MITCalendarsSeriesInfo.m */; };
-		223EDB741988384D00832ACD /* MITCalendarsContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB731988384D00832ACD /* MITCalendarsContact.m */; };
-		223EDB831988384E00832ACD /* MITCalendarsSponsor.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB821988384E00832ACD /* MITCalendarsSponsor.m */; };
-		223EDB8719883C7F00832ACD /* MITCalendarsEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB8619883C7F00832ACD /* MITCalendarsEvent.m */; };
 		223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB891988428A00832ACD /* MITCalendarWebservices.m */; };
 		224B337C19B10A000031817B /* MITDiningMenuItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 224B337A19B10A000031817B /* MITDiningMenuItemCell.m */; };
 		224B337D19B10A000031817B /* MITDiningMenuItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 224B337B19B10A000031817B /* MITDiningMenuItemCell.xib */; };
-		224F0C57198B32E000B33667 /* MITCalendarsCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 224F0C56198B32E000B33667 /* MITCalendarsCalendar.m */; };
 		2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */; };
 		22589D7F19AFC0040007966A /* MITDiningHouseMealSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */; };
 		22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */; };
@@ -38,9 +33,14 @@
 		225F2195197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */; };
 		225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */; };
 		225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */; };
-		22643F0819892D8800BCE9D4 /* MITCalendarsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 22643F0719892D8800BCE9D4 /* MITCalendarsLocation.m */; };
 		2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2279E17A199AAD5D006BBFC5 /* MITDiningResource.m */; };
 		2279E183199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2279E181199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodeld */; };
+		2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */; };
+		2287A7CF19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7CE19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m */; };
+		2287A7D219BE2CAA008B0DF6 /* MITCalendarsContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D119BE2CAA008B0DF6 /* MITCalendarsContact.m */; };
+		2287A7D519BE2CAA008B0DF6 /* MITCalendarsSponsor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D419BE2CAA008B0DF6 /* MITCalendarsSponsor.m */; };
+		2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D719BE2CAA008B0DF6 /* MITCalendarsEvent.m */; };
+		2287A7DB19BE2CAA008B0DF6 /* MITCalendarsCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7DA19BE2CAA008B0DF6 /* MITCalendarsCalendar.m */; };
 		228D661E19B6612500C7B78B /* MITDiningFiltersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */; };
 		228D661F19B6612500C7B78B /* MITDiningFiltersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */; };
 		229FFAB9198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */; };
@@ -621,21 +621,11 @@
 		2209CC2E19929BE300E17100 /* MITEventsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEventsTableViewController.m; sourceTree = "<group>"; };
 		2209CC2F19929BE300E17100 /* MITEventsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventsTableViewController.xib; sourceTree = "<group>"; };
 		223EDB691988095C00832ACD /* MITCalendarDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITCalendarDataModel.xcdatamodel; sourceTree = "<group>"; };
-		223EDB6F1988384C00832ACD /* MITCalendarsSeriesInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsSeriesInfo.h; sourceTree = "<group>"; };
-		223EDB701988384C00832ACD /* MITCalendarsSeriesInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsSeriesInfo.m; sourceTree = "<group>"; };
-		223EDB721988384D00832ACD /* MITCalendarsContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsContact.h; sourceTree = "<group>"; };
-		223EDB731988384D00832ACD /* MITCalendarsContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsContact.m; sourceTree = "<group>"; };
-		223EDB811988384E00832ACD /* MITCalendarsSponsor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsSponsor.h; sourceTree = "<group>"; };
-		223EDB821988384E00832ACD /* MITCalendarsSponsor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsSponsor.m; sourceTree = "<group>"; };
-		223EDB8519883C7F00832ACD /* MITCalendarsEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsEvent.h; sourceTree = "<group>"; };
-		223EDB8619883C7F00832ACD /* MITCalendarsEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsEvent.m; sourceTree = "<group>"; };
 		223EDB881988428A00832ACD /* MITCalendarWebservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarWebservices.h; sourceTree = "<group>"; };
 		223EDB891988428A00832ACD /* MITCalendarWebservices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarWebservices.m; sourceTree = "<group>"; };
 		224B337919B10A000031817B /* MITDiningMenuItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningMenuItemCell.h; path = Dining/MITDiningMenuItemCell.h; sourceTree = "<group>"; };
 		224B337A19B10A000031817B /* MITDiningMenuItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningMenuItemCell.m; path = Dining/MITDiningMenuItemCell.m; sourceTree = "<group>"; };
 		224B337B19B10A000031817B /* MITDiningMenuItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningMenuItemCell.xib; path = Dining/MITDiningMenuItemCell.xib; sourceTree = "<group>"; };
-		224F0C55198B32E000B33667 /* MITCalendarsCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsCalendar.h; sourceTree = "<group>"; };
-		224F0C56198B32E000B33667 /* MITCalendarsCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsCalendar.m; sourceTree = "<group>"; };
 		2253E46A196DCD8800D04069 /* MITMapDefaultCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapDefaultCategoryViewController.h; sourceTree = "<group>"; };
 		2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapDefaultCategoryViewController.m; sourceTree = "<group>"; };
 		22589D7D19AFC0040007966A /* MITDiningHouseMealSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectionView.h; path = Dining/MITDiningHouseMealSelectionView.h; sourceTree = "<group>"; };
@@ -659,11 +649,21 @@
 		225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITDayOfTheWeekCell.xib; sourceTree = "<group>"; };
 		225F21A3197EBB6D00F34DE9 /* MITCalendarsResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsResource.h; sourceTree = "<group>"; };
 		225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsResource.m; sourceTree = "<group>"; };
-		22643F0619892D8800BCE9D4 /* MITCalendarsLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsLocation.h; sourceTree = "<group>"; };
-		22643F0719892D8800BCE9D4 /* MITCalendarsLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsLocation.m; sourceTree = "<group>"; };
 		2279E179199AAD5D006BBFC5 /* MITDiningResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITDiningResource.h; sourceTree = "<group>"; };
 		2279E17A199AAD5D006BBFC5 /* MITDiningResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITDiningResource.m; sourceTree = "<group>"; };
 		2279E182199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITDiningDataModel.xcdatamodel; sourceTree = "<group>"; };
+		2287A7CA19BE2CA9008B0DF6 /* MITCalendarsLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsLocation.h; sourceTree = "<group>"; };
+		2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsLocation.m; sourceTree = "<group>"; };
+		2287A7CD19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsSeriesInfo.h; sourceTree = "<group>"; };
+		2287A7CE19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsSeriesInfo.m; sourceTree = "<group>"; };
+		2287A7D019BE2CAA008B0DF6 /* MITCalendarsContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsContact.h; sourceTree = "<group>"; };
+		2287A7D119BE2CAA008B0DF6 /* MITCalendarsContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsContact.m; sourceTree = "<group>"; };
+		2287A7D319BE2CAA008B0DF6 /* MITCalendarsSponsor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsSponsor.h; sourceTree = "<group>"; };
+		2287A7D419BE2CAA008B0DF6 /* MITCalendarsSponsor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsSponsor.m; sourceTree = "<group>"; };
+		2287A7D619BE2CAA008B0DF6 /* MITCalendarsEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsEvent.h; sourceTree = "<group>"; };
+		2287A7D719BE2CAA008B0DF6 /* MITCalendarsEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsEvent.m; sourceTree = "<group>"; };
+		2287A7D919BE2CAA008B0DF6 /* MITCalendarsCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsCalendar.h; sourceTree = "<group>"; };
+		2287A7DA19BE2CAA008B0DF6 /* MITCalendarsCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsCalendar.m; sourceTree = "<group>"; };
 		228D661B19B6612500C7B78B /* MITDiningFiltersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningFiltersCell.h; path = Dining/MITDiningFiltersCell.h; sourceTree = "<group>"; };
 		228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningFiltersCell.m; path = Dining/MITDiningFiltersCell.m; sourceTree = "<group>"; };
 		228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningFiltersCell.xib; path = Dining/MITDiningFiltersCell.xib; sourceTree = "<group>"; };
@@ -1820,18 +1820,18 @@
 		223EDB8419883BE700832ACD /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				22643F0619892D8800BCE9D4 /* MITCalendarsLocation.h */,
-				22643F0719892D8800BCE9D4 /* MITCalendarsLocation.m */,
-				223EDB8519883C7F00832ACD /* MITCalendarsEvent.h */,
-				223EDB8619883C7F00832ACD /* MITCalendarsEvent.m */,
-				223EDB811988384E00832ACD /* MITCalendarsSponsor.h */,
-				223EDB821988384E00832ACD /* MITCalendarsSponsor.m */,
-				224F0C55198B32E000B33667 /* MITCalendarsCalendar.h */,
-				224F0C56198B32E000B33667 /* MITCalendarsCalendar.m */,
-				223EDB721988384D00832ACD /* MITCalendarsContact.h */,
-				223EDB731988384D00832ACD /* MITCalendarsContact.m */,
-				223EDB6F1988384C00832ACD /* MITCalendarsSeriesInfo.h */,
-				223EDB701988384C00832ACD /* MITCalendarsSeriesInfo.m */,
+				2287A7D919BE2CAA008B0DF6 /* MITCalendarsCalendar.h */,
+				2287A7DA19BE2CAA008B0DF6 /* MITCalendarsCalendar.m */,
+				2287A7D619BE2CAA008B0DF6 /* MITCalendarsEvent.h */,
+				2287A7D719BE2CAA008B0DF6 /* MITCalendarsEvent.m */,
+				2287A7D319BE2CAA008B0DF6 /* MITCalendarsSponsor.h */,
+				2287A7D419BE2CAA008B0DF6 /* MITCalendarsSponsor.m */,
+				2287A7D019BE2CAA008B0DF6 /* MITCalendarsContact.h */,
+				2287A7D119BE2CAA008B0DF6 /* MITCalendarsContact.m */,
+				2287A7CD19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.h */,
+				2287A7CE19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m */,
+				2287A7CA19BE2CA9008B0DF6 /* MITCalendarsLocation.h */,
+				2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */,
 			);
 			name = Entities;
 			sourceTree = "<group>";
@@ -4136,7 +4136,6 @@
 				2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */,
 				2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */,
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
-				223EDB741988384D00832ACD /* MITCalendarsContact.m in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
@@ -4204,7 +4203,6 @@
 				5EC89F591926514800E06204 /* MITShuttleDataModel.xcdatamodeld in Sources */,
 				2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */,
 				5E617F0E1926693F00091656 /* MITShuttleController.m in Sources */,
-				223EDB711988384C00832ACD /* MITCalendarsSeriesInfo.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
 				2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */,
 				2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */,
@@ -4212,6 +4210,7 @@
 				EB4C2914127B224800058748 /* IconGrid.m in Sources */,
 				EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
+				2287A7D519BE2CAA008B0DF6 /* MITCalendarsSponsor.m in Sources */,
 				22D902FF199BA90D00AEBC7D /* MITDiningDining.m in Sources */,
 				2CF9F90A181ABC3800EDB359 /* MITFetchedResultsTableViewController.m in Sources */,
 				DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */,
@@ -4252,7 +4251,6 @@
 				A5A24B7419946FA400AA1CFC /* MITEventsRecentSearches.m in Sources */,
 				22CFC1A819AE623F003BD72A /* MITDiningHouseVenueInfoCell.m in Sources */,
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
-				224F0C57198B32E000B33667 /* MITCalendarsCalendar.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				5E62A9B9194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m in Sources */,
@@ -4295,7 +4293,6 @@
 				2C18090818F33B95008F9775 /* NSMutableURLRequest+ECP.m in Sources */,
 				2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */,
 				2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */,
-				223EDB8719883C7F00832ACD /* MITCalendarsEvent.m in Sources */,
 				2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */,
 				80F021B0199272C50056CA06 /* MITEventsMapViewController.m in Sources */,
 				5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */,
@@ -4430,14 +4427,15 @@
 				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
-				22643F0819892D8800BCE9D4 /* MITCalendarsLocation.m in Sources */,
+				2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
 				2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */,
-				223EDB831988384E00832ACD /* MITCalendarsSponsor.m in Sources */,
 				A52E0CF519B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m in Sources */,
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
+				2287A7D219BE2CAA008B0DF6 /* MITCalendarsContact.m in Sources */,
+				2287A7CF19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m in Sources */,
 				A59A25AB19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
@@ -4478,6 +4476,7 @@
 				2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */,
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
 				48327CE016F74F19003A2F23 /* DiningModule.m in Sources */,
+				2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */,
 				2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */,
 				48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */,
 				4869CE77170380D800A3662B /* MITDiningMenuComparisonViewController.m in Sources */,
@@ -4494,6 +4493,7 @@
 				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
 				2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */,
 				22D902FC199BA90D00AEBC7D /* MITDiningVenues.m in Sources */,
+				2287A7DB19BE2CAA008B0DF6 /* MITCalendarsCalendar.m in Sources */,
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
 				A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,

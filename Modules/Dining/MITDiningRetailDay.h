@@ -7,12 +7,15 @@
 
 @interface MITDiningRetailDay : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSDate * date;
-@property (nonatomic, retain) NSDate * endTime;
-@property (nonatomic, retain) NSString * message;
-@property (nonatomic, retain) NSDate * startTime;
+@property (nonatomic, retain) NSString *dateString;
+@property (nonatomic, retain) NSString *endTimeString;
+@property (nonatomic, retain) NSString *message;
+@property (nonatomic, retain) NSString *startTimeString;
 @property (nonatomic, retain) NSSet *retailHours;
 
+- (NSDate *)startTime;
+- (NSDate *)endTime;
+- (NSDate *)date;
 - (NSString *)hoursSummary;
 - (NSString *)openClosedStatusRelativeToDate:(NSDate *)date;
 

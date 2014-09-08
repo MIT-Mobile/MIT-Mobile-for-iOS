@@ -199,6 +199,4 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     [self.tableView reloadData];
 }
 
-
-
 @end

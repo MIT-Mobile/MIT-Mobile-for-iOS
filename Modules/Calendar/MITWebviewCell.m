@@ -36,16 +36,10 @@
 {
     CGFloat newHeight = self.webView.scrollView.contentSize.height;
     
-    if (self.webView.frame.size.height != newHeight) {
-        CGRect frame = webView.frame;
-        frame.size.height = newHeight;
-        webView.frame = frame;
-        
-        if ([self.delegate respondsToSelector:@selector(webviewCellDidResize:toHeight:)]) {
-            CGFloat verticalPadding = 6;
-            [self.delegate webviewCellDidResize:self toHeight:(newHeight + verticalPadding * 2)];
+    if (self.webView.frame.size.height != newHeight &&
+        [self.delegate respondsToSelector:@selector(webviewCellDidResize:toHeight:)]) {
+            [self.delegate webviewCellDidResize:self toHeight:(newHeight + 12)]; // Vertical padding
         }
-    }
 }
 
 @end

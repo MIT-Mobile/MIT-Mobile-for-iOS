@@ -48,11 +48,13 @@
     NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
     BOOL isOpenNow = NO;
     for (MITDiningRetailDay *retailDay in self.hours) {
-        NSTimeInterval retailDayStartTime = [retailDay.startTime timeIntervalSince1970];
-        NSTimeInterval retailDayEndTime = [retailDay.endTime timeIntervalSince1970];
-        if (retailDayStartTime <= currentTime && currentTime <= retailDayEndTime) {
-            isOpenNow = YES;
-            break;
+        if (retailDay.startTimeString) {
+            NSTimeInterval retailDayStartTime = [retailDay.startTime timeIntervalSince1970];
+            NSTimeInterval retailDayEndTime = [retailDay.endTime timeIntervalSince1970];
+            if (retailDayStartTime <= currentTime && currentTime <= retailDayEndTime) {
+                isOpenNow = YES;
+                break;
+            }
         }
     }
     return isOpenNow;

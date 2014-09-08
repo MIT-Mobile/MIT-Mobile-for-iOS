@@ -9,24 +9,24 @@
 
 @interface MITCalendarsEvent : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSString * identifier;
-@property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSDate * startAt;
-@property (nonatomic, retain) NSDate * endAt;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * htmlDescription;
-@property (nonatomic, retain) NSString * tickets;
-@property (nonatomic, retain) NSString * cost;
-@property (nonatomic, retain) NSString * openTo;
-@property (nonatomic, retain) NSString * ownerID;
-@property (nonatomic, retain) NSString * lecturer;
-@property (nonatomic, retain) NSNumber * cancelled;
-@property (nonatomic, retain) NSString * typeCode;
-@property (nonatomic, retain) NSString * statusCode;
-@property (nonatomic, retain) NSString * createdBy;
-@property (nonatomic, retain) NSDate * createdAt;
-@property (nonatomic, retain) NSString * modifiedBy;
-@property (nonatomic, retain) NSDate * modifiedAt;
+@property (nonatomic, retain) NSString *identifier;
+@property (nonatomic, retain) NSString *url;
+@property (nonatomic, retain) NSDate *startAt;
+@property (nonatomic, retain) NSDate *endAt;
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *htmlDescription;
+@property (nonatomic, retain) NSString *tickets;
+@property (nonatomic, retain) NSString *cost;
+@property (nonatomic, retain) NSString *openTo;
+@property (nonatomic, retain) NSString *ownerID;
+@property (nonatomic, retain) NSString *lecturer;
+@property (nonatomic, retain) NSNumber *cancelled;
+@property (nonatomic, retain) NSString *typeCode;
+@property (nonatomic, retain) NSString *statusCode;
+@property (nonatomic, retain) NSString *createdBy;
+@property (nonatomic, retain) NSDate *createdAt;
+@property (nonatomic, retain) NSString *modifiedBy;
+@property (nonatomic, retain) NSDate *modifiedAt;
 @property (nonatomic, retain) MITCalendarsLocation *location;
 @property (nonatomic, retain) NSOrderedSet *categories;
 @property (nonatomic, retain) NSSet *sponsors;

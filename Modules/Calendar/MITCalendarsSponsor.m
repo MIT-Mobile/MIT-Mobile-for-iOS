@@ -1,4 +1,5 @@
 #import "MITCalendarsSponsor.h"
+#import "MITCalendarsEvent.h"
 
 @implementation MITCalendarsSponsor
 
@@ -8,6 +9,7 @@
 @dynamic websiteURL;
 @dynamic location;
 @dynamic phone;
+@dynamic events;
 
 +(RKMapping *)objectMapping
 {
@@ -15,7 +17,7 @@
     [mapping addAttributeMappingsFromDictionary:@{@"group_id": @"groupID",
                                                   @"website_url" : @"websiteURL"}];
     [mapping addAttributeMappingsFromArray:@[@"name", @"email", @"location", @"phone"]];
-
+    
     [mapping setIdentificationAttributes:@[@"websiteURL", @"name"]];
     
     return mapping;

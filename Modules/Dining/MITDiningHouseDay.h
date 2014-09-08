@@ -7,13 +7,14 @@
 
 @interface MITDiningHouseDay : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSDate * date;
+@property (nonatomic, retain) NSString * dateString;
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic, retain) MITDiningHouseVenue *houseVenue;
 @property (nonatomic, retain) NSOrderedSet *meals;
 
 + (NSArray *)mealNames;
 
+- (NSDate *)date;
 - (NSString *)dayHoursDescription;
 - (MITDiningMeal *)mealWithName:(NSString *)name;
 - (MITDiningMeal *)mealForDate:(NSDate *)date;
