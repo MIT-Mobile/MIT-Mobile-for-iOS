@@ -4,4 +4,7 @@
 
 @property (nonatomic, strong) NSArray *diningLinks;
 
+
+- (CGFloat)targetTableViewHeight;
+
 @end
