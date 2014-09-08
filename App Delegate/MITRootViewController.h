@@ -5,12 +5,11 @@
 
 @interface MITRootViewController : ECSlidingViewController
 @property (nonatomic,copy) NSArray *modules;
-
-@property (nonatomic) NSUInteger selectedIndex;
-@property (nonatomic,weak) MITModule *selectedModule;
+@property (nonatomic,weak) MITModule *visibleModule;
 
 - (instancetype)initWithModules:(NSArray*)modules;
 
-- (BOOL)showModuleForNotification:(MITNotification*)notification;
-- (BOOL)showModuleForURL:(NSURL*)url;
+- (void)setVisibleModuleWithTag:(NSString*)moduleTag;
+- (BOOL)setVisibleModuleWithNotification:(MITNotification*)notification;
+- (BOOL)setVisibleModuleWithURL:(NSURL*)url;
 @end

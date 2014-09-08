@@ -250,17 +250,7 @@
 {
     if (self.rootViewController) {
         MITRootViewController *rootViewController = self.rootViewController;
-
-        NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-        [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-            UIViewController *controller = module.homeViewController;
-
-            MITDrawerItem *drawerItem = [[MITDrawerItem alloc] initWithTitle:module.shortName image:module.springboardIcon];
-            controller.drawerItem = drawerItem;
-            [viewControllers addObject:controller];
-        }];
-
-        rootViewController.viewControllers = viewControllers;
+        rootViewController.modules = self.modules;
         [self.window addGestureRecognizer:rootViewController.panGesture];
     }
 }
@@ -666,7 +656,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
 {
-    self.rootViewController.selectedViewController = [self viewControllerForModuleWithTag:tag];
+    self.rootViewController.selectedModule = [self moduleForTag:tag];
 }
 
 #pragma mark Preferences

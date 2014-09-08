@@ -1,20 +1,16 @@
 #import "MITRootViewController.h"
 #import "MITAdditions.h"
 #import "MITModule.h"
+#import "MITDrawerViewController.h"
 
-static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
-static NSUInteger const MITModuleSectionIndex = 0;
 
 @interface MITRootViewController () <UITableViewDataSource,UITableViewDelegate>
-@property (nonatomic,readonly) UITableViewController *tableViewController;
-@property (nonatomic,strong) NSIndexPath *selectedIndexPath;
+@property (nonatomic,readonly) MITDrawerViewController *drawerViewController;
 @end
 
 @implementation MITRootViewController
-@dynamic tableViewController;
-@dynamic selectedIndex;
-@dynamic selectedModule;
+@dynamic drawerViewController;
 
 - (instancetype)initWithModules:(NSArray *)modules
 {
@@ -32,12 +28,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self _setupTableViewController];
-
     self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
-
-    NSIndexPath *indexPath = [self _indexPathForModule:[self.modules firstObject]];
-    self.selectedIndexPath = indexPath;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -47,13 +38,15 @@ static NSUInteger const MITModuleSectionIndex = 0;
     if (!([self.modules count] > 0)) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"drawer view controller must have at least 1 view controller added before being presented" userInfo:nil];
     }
+
+    [self _showInitialModuleIfNeeded];
 }
 
 #pragma mark Properties
-- (UITableViewController*)tableViewController
+- (MITDrawerViewController*)drawerViewController
 {
-    if ([self.underLeftViewController isKindOfClass:[UITableViewController class]]) {
-        return (UITableViewController*)self.underLeftViewController;
+    if ([self.underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
+        return (MITDrawerViewController*)self.underLeftViewController;
     } else {
         return nil;
     }
@@ -67,6 +60,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 - (void)setModules:(NSArray *)modules animated:(BOOL)animated
 {
     if (![_modules isEqualToArray:modules]) {
+        NSArray *previousModules = _modules;
         _modules = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MITModule *module, NSDictionary *bindings) {
             UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
             if ([module supportsUserInterfaceIdiom:interfaceIdiom]) {
@@ -76,65 +70,64 @@ static NSUInteger const MITModuleSectionIndex = 0;
             }
         }]];
 
-        [self didUpdateModules:YES];
+        if (![previousModules containsObject:self.visibleModule]) {
+            NSUInteger selectedIndex = [previousModules indexOfObject:self.visibleModule];
+            NSRange indexRange = NSMakeRange(0, [_modules count]);
+
+            if (NSLocationInRange(selectedIndex, indexRange)) {
+                self.visibleModule = _modules[selectedIndex];
+            } else {
+                self.visibleModule = [_modules firstObject];
+            }
+        }
+
+        self.drawerViewController.modules = _modules;
     }
 }
 
-- (void)didUpdateModules:(BOOL)animated
+- (void)setVisibleModule:(MITModule*)module
 {
-    MITModule *selectedModule = self.selectedModule;
-    NSUInteger selectedIndex = self.selectedIndex;
-
-    NSIndexPath *moduleIndexPath = [self _indexPathForModule:selectedModule];
-    if (!moduleIndexPath) {
-        moduleIndexPath = [self _indexPathForModuleAtIndex:selectedIndex];
+    if (![self.modules containsObject:module]) {
+        NSString *reason = [NSString stringWithFormat:@"view controller does not have a module with tag '%@'",module.tag];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
 
-    if (moduleIndexPath) {
-        self.selectedIndexPath = moduleIndexPath;
-    } else {
-        self.selectedModule = [self.modules firstObject];
-    }
+    _visibleModule = module;
+    [self setVisibleViewController:module.homeViewController];
+}
+
+- (void)setVisibleModuleWithTag:(NSString *)moduleTag
+{
+    __block MITModule *selectedModule = nil;
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module.tag isEqualToString:moduleTag]) {
+            selectedModule = module;
+            (*stop) = YES;
+        }
+    }];
+
+    [self setVisibleModule:selectedModule];
+}
+
+- (BOOL)setVisibleModuleWithNotification:(MITNotification *)notification
+{
+    
+}
+
+- (BOOL)setVisibleModuleWithURL:(NSURL *)url
+{
 
 }
 
-- (NSUInteger)selectedIndex
+- (void)setVisibleViewController:(UIViewController*)viewController
 {
-    MITModule *module = self.selectedModule;
-    return [self _indexForModule:module];
-}
-
-- (void)setSelectedIndex:(NSUInteger)selectedIndex
-{
-    NSIndexPath *selectedIndexPath = [self _indexPathForModuleAtIndex:selectedIndex];
-    if (selectedIndexPath) {
-        self.selectedIndexPath = selectedIndexPath;
+    if (!viewController) {
+        viewController = [[UIViewController alloc] init];
+        viewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        viewController.view.backgroundColor = [UIColor mit_backgroundColor];
     }
-}
 
-- (MITModule*)selectedModule
-{
-    return [self _moduleForIndexPath:self.selectedIndexPath];
-}
-
-- (void)setSelectedModule:(MITModule *)selectedModule
-{
-    NSIndexPath *selectedIndexPath = [self _indexPathForModule:selectedModule];
-    if (selectedIndexPath) {
-        self.selectedIndexPath = selectedIndexPath;
-    }
-}
-
-- (void)setSelectedIndexPath:(NSIndexPath *)selectedIndexPath
-{
-    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexPath:selectedIndexPath];
-    if (![_selectedIndexPath isEqual:indexPath]) {
-        _selectedIndexPath = indexPath;
-
-        MITModule *module = self.selectedModule;
-        self.topViewController = [module homeViewController];
-        [self resetTopViewAnimated:YES];
-    }
+    [self setTopViewController:viewController];
 }
 
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
@@ -143,155 +136,10 @@ static NSUInteger const MITModuleSectionIndex = 0;
 }
 
 #pragma mark Private
-- (void)_setupTableViewController {
-    if (self.tableViewController) {
-        UITableViewController *tableViewController = self.tableViewController;
-        [tableViewController.tableView registerNib:[UINib nibWithNibName:@"MITLogoReusableHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITRootLogoHeaderReuseIdentifier];
-        tableViewController.tableView.delegate = self;
-        tableViewController.tableView.dataSource = self;
+- (void)_showInitialModuleIfNeeded
+{
+    if (!self.visibleModule) {
+        self.visibleModule = [self.modules firstObject];
     }
 }
-
-- (MITDrawerItem*)_drawerItemForModuleAtIndexPath:(NSIndexPath*)indexPath
-{
-    MITModule *module = [self _moduleForIndexPath:indexPath];
-    UIViewController *viewController = [module homeViewController];
-
-    if (!viewController.drawerItem) {
-        MITDrawerItem *drawerItem = [[MITDrawerItem alloc] initWithTitle:module.shortName image:module.springboardIcon];
-        viewController.drawerItem = drawerItem;
-        return drawerItem;
-    } else {
-        return viewController.drawerItem;
-    }
-}
-
-- (MITModule*)_moduleForIndexPath:(NSIndexPath*)indexPath
-{
-    if (indexPath.section == MITModuleSectionIndex) {
-        return self.modules[indexPath.row];
-    } else {
-        return nil;
-    }
-}
-
-- (UIViewController*)_viewControllerForIndexPath:(NSIndexPath*)indexPath
-{
-    MITModule *module = [self _moduleForIndexPath:indexPath];
-    return module.homeViewController;
-}
-
-- (NSIndexPath*)_indexPathForModule:(MITModule*)module
-{
-    NSUInteger index = [self.modules indexOfObject:module];
-
-    if (index == NSNotFound) {
-        return nil;
-    } else {
-        return [NSIndexPath indexPathForRow:index inSection:MITModuleSectionIndex];
-    }
-}
-
-- (NSIndexPath*)_indexPathForModuleAtIndex:(NSUInteger)moduleIndex
-{
-    if (moduleIndex >= [self.modules count]) {
-        return nil;
-    } else {
-        return [NSIndexPath indexPathForRow:moduleIndex inSection:MITModuleSectionIndex];
-    }
-}
-
-- (NSUInteger)_indexForModule:(MITModule*)module
-{
-    return [self.modules indexOfObject:module];
-}
-
-#pragma mark - Delegation
-#pragma mark UITableViewDataSource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [self.modules count];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 44.;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 44.;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITDrawerReuseIdentifierItemCell forIndexPath:indexPath];
-
-    if ([cell isKindOfClass:[UITableViewCell class]]) {
-        MITDrawerItem *drawerItem = [self _drawerItemForModuleAtIndexPath:indexPath];
-
-        if (indexPath.row == self.selectedIndex) {
-            cell.imageView.image = drawerItem.selectedImage;
-            cell.contentView.backgroundColor = self.view.tintColor;
-        } else {
-            cell.imageView.image = drawerItem.image;
-            cell.contentView.backgroundColor = self.view.backgroundColor;
-        }
-
-        cell.textLabel.text = drawerItem.title;
-    }
-
-    return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 100.;
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    if (section == 0) {
-        UITableViewHeaderFooterView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITRootLogoHeaderReuseIdentifier];
-        return headerView;
-    } else {
-        return nil;
-    }
-}
-
-#pragma mark UITableViewDelegate
-- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITModule *module = [self _moduleForIndexPath:indexPath];
-    if (self.selectedModule == module) {
-        return;
-    } else {
-        NSIndexPath *selectedIndexPath = self.selectedIndexPath;
-        self.selectedIndexPath = indexPath;
-        [tableView reloadRowsAtIndexPaths:@[selectedIndexPath,indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    }
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    UIView *headerView = [self.tableViewController.tableView headerViewForSection:0];
-    if (headerView) {
-        if (scrollView.contentOffset.y < 0) {
-            headerView.layer.transform = CATransform3DMakeTranslation(0, -scrollView.contentOffset.y, 0);
-        } else {
-            headerView.layer.transform = CATransform3DIdentity;
-        }
-    }
-}
-
 @end
