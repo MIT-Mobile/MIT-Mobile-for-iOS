@@ -14,7 +14,7 @@
 #define SECONDS_IN_DAY 86400
 #define DAY_VIEW_PADDING 5      // padding on each side of day view. doubled when two views are adjacent
 
-@interface MITDiningMenuComparisonViewController () <UIScrollViewDelegate, DiningCompareViewDelegate>
+@interface MITDiningMenuComparisonViewController () <UIScrollViewDelegate, MITDiningCompareViewDelegate>
 
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *topSpacingConstraint;

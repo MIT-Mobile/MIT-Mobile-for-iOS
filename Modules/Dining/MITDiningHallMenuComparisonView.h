@@ -3,12 +3,11 @@
 
 @class MITDiningHallMenuComparisonView, MITDiningAggregatedMeal;
 
-@protocol DiningCompareViewDelegate <NSObject>
+@protocol MITDiningCompareViewDelegate <NSObject>
 
 @required
 - (NSString *)titleForCompareView:(MITDiningHallMenuComparisonView *)compareView;
-- (NSInteger) numberOfSectionsInCompareView:(MITDiningHallMenuComparisonView *)compareView;
-
+- (NSInteger)numberOfSectionsInCompareView:(MITDiningHallMenuComparisonView *)compareView;
 - (NSString *)compareView:(MITDiningHallMenuComparisonView *)compareView titleForSection:(NSInteger)section;
 - (NSString *)compareView:(MITDiningHallMenuComparisonView *)compareView subtitleForSection:(NSInteger)section;
 - (NSInteger)compareView:(MITDiningHallMenuComparisonView *)compareView numberOfItemsInSection:(NSInteger) section;
@@ -17,6 +16,7 @@
 
 @optional
 - (void) compareViewDidEndDecelerating:(MITDiningHallMenuComparisonView *)compareView;
+
 @end
 
 @interface MITDiningHallMenuComparisonView : UIView
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) MITDiningAggregatedMeal *aggregateMeal;
 @property (nonatomic, assign) CGFloat columnWidth;
 
-@property (nonatomic, weak) id<DiningCompareViewDelegate> delegate;
+@property (nonatomic, weak) id<MITDiningCompareViewDelegate> delegate;
 @property (nonatomic, assign) BOOL isScrolling;
 
 - (void)reloadData;
