@@ -189,8 +189,6 @@
             }];
 
             CGPoint contentOffset = self.collectionView.contentOffset;
-            contentOffset.y += self.collectionView.contentInset.top;
-            contentOffset.x += self.collectionView.contentInset.left;
             UICollectionViewLayoutAttributes *headerLayoutAttributes = [sectionLayout headerLayoutAttributesWithContentOffset:contentOffset];
             if (headerLayoutAttributes) {
                 [visibleLayoutAttributes addObject:headerLayoutAttributes];
