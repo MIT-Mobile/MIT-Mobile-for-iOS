@@ -766,7 +766,6 @@
 
         MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
         iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
-        iPadCategoryViewController.previousLastUpdated = self.lastUpdated;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
     } else {

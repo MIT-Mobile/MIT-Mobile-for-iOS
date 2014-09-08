@@ -53,7 +53,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.lastUpdated = self.previousLastUpdated;
+    self.lastUpdated = self.dataSource.refreshedAt;
     [super viewWillAppear:animated];
     
     if (self.previousPresentationStyle) {
