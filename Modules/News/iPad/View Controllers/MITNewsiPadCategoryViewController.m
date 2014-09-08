@@ -202,6 +202,22 @@
     }];
 }
 
+- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [super updateNavigationItem:YES];
+    }
+}
+
+- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [super updateNavigationItem:YES];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
