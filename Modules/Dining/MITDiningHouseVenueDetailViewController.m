@@ -1,14 +1,18 @@
 #import "MITDiningHouseVenueDetailViewController.h"
 #import "MITDiningHouseVenueInfoViewController.h"
+#import "MITDiningMenuComparisonViewController.h"
 #import "MITDiningHouseMealSelectionView.h"
+#import "MITDiningComparisonDataManager.h"
 #import "MITDiningFilterViewController.h"
 #import "MITDiningHouseVenueInfoCell.h"
+#import "MITDiningAggregatedMeal.h"
 #import "Foundation+MITAdditions.h"
 #import "MITDiningMenuItemCell.h"
 #import "MITDiningFiltersCell.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningMenuItem.h"
 #import "MITDiningHouseDay.h"
+#import "MITDiningVenues.h"
 #import "MITDiningMeal.h"
 
 typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
@@ -20,7 +24,7 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoC
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
-@interface MITDiningHouseVenueDetailViewController () <MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate>
+@interface MITDiningHouseVenueDetailViewController () <UITableViewDataSource, UITableViewDelegate, MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate>
 
 @property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
@@ -32,6 +36,11 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 @property (nonatomic, strong) NSDate *currentlyDisplayedDate;
 
 @property (nonatomic, strong) MITDiningHouseMealSelectionView *mealSelectionView;
+
+@property (weak, nonatomic) IBOutlet UIView *comparisonContainerView;
+@property (nonatomic, strong) MITDiningMenuComparisonViewController *comparisonViewController;
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 
@@ -54,16 +63,11 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self setupTableView];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)setupNavigationBar
 {
     UIBarButtonItem *filterButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(showFilterSelector)];
     self.navigationItem.rightBarButtonItem = filterButton;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 #pragma mark - Table view data source
@@ -225,13 +229,13 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 - (void)nextMealPressed:(id)sender
 {
     self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1];
-
+    
     [self updateMealSelection];
 }
 
 - (void)previousMealPressed:(id)sender
 {
-   self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] - 1];
+    self.currentlyDisplayedMeal = self.sortedMeals[[self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] - 1];
     
     [self updateMealSelection];
 }
@@ -297,6 +301,64 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 - (BOOL)hasFiltersApplied
 {
     return (self.filters.count > 0);
+}
+
+#pragma mark - Landscape Comparison VC
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    
+    if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
+        self.comparisonViewController = [[MITDiningMenuComparisonViewController alloc] init];
+        self.comparisonViewController.houseVenues = [self.houseVenue.venues.house array];
+        self.comparisonViewController.filtersApplied = self.filters;
+        
+        self.comparisonViewController.visibleMeal = self.currentlyDisplayedMeal;
+        
+        [self addChildViewController:self.comparisonViewController];
+        UIView *comparisonView = self.comparisonViewController.view;
+        [self.comparisonContainerView addSubview:comparisonView];
+        
+        comparisonView.translatesAutoresizingMaskIntoConstraints = NO;
+        id viewBindings = @{@"compareView" : comparisonView};
+        [self.comparisonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[compareView]|"
+                                                                                             options:0
+                                                                                             metrics:nil
+                                                                                               views:viewBindings]];
+        [self.comparisonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[compareView]|"
+                                                                                             options:0
+                                                                                             metrics:nil
+                                                                                               views:viewBindings]];
+        
+        [self.navigationController setNavigationBarHidden:YES animated:YES];
+        [UIView transitionFromView:self.tableView
+                            toView:self.comparisonContainerView
+                          duration:duration
+                           options:(UIViewAnimationOptionOverrideInheritedOptions |
+                                    UIViewAnimationOptionShowHideTransitionViews |
+                                    UIViewAnimationOptionTransitionCrossDissolve)
+                        completion:^(BOOL finished) {
+                            [self.comparisonViewController didMoveToParentViewController:self];
+                        }];
+    } else {
+
+        self.currentlyDisplayedMeal = [self.comparisonViewController.dataManager mealForAggregatedMeal:self.comparisonViewController.visibleAggregatedMeal inVenue:self.houseVenue];
+        [self updateMealSelection];
+        
+        [self.comparisonViewController willMoveToParentViewController:nil];
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+        
+        [UIView transitionFromView:self.comparisonContainerView
+                            toView:self.tableView
+                          duration:duration
+                           options:(UIViewAnimationOptionShowHideTransitionViews)
+                        completion:^(BOOL finished) {
+                            [self.comparisonViewController.view removeFromSuperview];
+                            [self.comparisonViewController removeFromParentViewController];
+                            self.comparisonViewController = nil;
+                        }];
+    }
 }
 
 @end

@@ -23,7 +23,7 @@
 
 #pragma mark - Convenience Methods
 
-- (NSArray *)mealNames
++ (NSArray *)mealNames
 {
     return @[@"breakfast", @"brunch", @"lunch", @"dinner"];
 }
@@ -49,7 +49,6 @@
         else {
             dayHoursDescription = @"Closed for the day";
         }
-        
     }
     return dayHoursDescription;
 }

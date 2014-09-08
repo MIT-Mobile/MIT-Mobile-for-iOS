@@ -374,7 +374,7 @@ static int const kWebViewTag = 4231;
     CGFloat heightToReturn = 60.0;
     
     if ([rowKey isEqualToString:kDescriptionHTMLKey]) {
-        heightToReturn = self.descriptionHeight + 20; // add some vertical padding
+        heightToReturn = self.descriptionHeight;
     } else if ([rowKey isEqualToString:kCuisinesKey]) {
         NSString *cuisineString = [self.retailVenue.cuisine componentsJoinedByString:@", "];
         heightToReturn = [self heightForString:cuisineString];

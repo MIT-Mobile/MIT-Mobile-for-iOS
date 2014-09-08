@@ -1,13 +1,12 @@
+#import "MITDiningHallMenuComparisonNoMealsCell.h"
 
-#import "DiningHallMenuComparisonNoMealsCell.h"
-
-@interface DiningHallMenuComparisonNoMealsCell ()
+@interface MITDiningHallMenuComparisonNoMealsCell ()
 
 @property (nonatomic, strong) UILabel   * primaryLabel;
 
 @end
 
-@implementation DiningHallMenuComparisonNoMealsCell
+@implementation MITDiningHallMenuComparisonNoMealsCell
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -26,15 +25,5 @@
 {
     self.primaryLabel.text = @"";
 }
-
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end

@@ -8,9 +8,9 @@
 @interface MITDiningMenuItem : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) id dietaryFlags;
-@property (nonatomic, retain) NSString * itemDescription;
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSString * station;
+@property (nonatomic, retain) NSString *itemDescription;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *station;
 @property (nonatomic, retain) NSSet *meal;
 
 + (NSString *)pdfNameForDietaryFlag:(NSString *)flag;

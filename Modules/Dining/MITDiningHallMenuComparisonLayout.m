@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "DiningHallMenuCompareLayout.h"
+#import "MITDiningHallMenuComparisonLayout.h"
 
 @interface SectionDividerView : UICollectionReusableView
 @end
@@ -16,12 +16,11 @@
 }
 @end
 
-
 NSString * const MITDiningMenuComparisonCellKind = @"DiningMenuCell";
 NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionHeader";
 NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSectionDivider";
 
-@interface DiningHallMenuCompareLayout ()
+@interface MITDiningHallMenuComparisonLayout ()
 
 @property (nonatomic) UIEdgeInsets itemInsets;
 @property (nonatomic) CGSize itemSize;
@@ -33,20 +32,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
 
 @end
 
-@implementation DiningHallMenuCompareLayout
-
-- (void) setup
-{
-    // layout some default values
-    self.itemInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-    self.itemSize = CGSizeMake(60, 40);
-    self.interItemSpacingY = 5;
-    self.numberOfColumns = 5;
-    self.heightOfSectionHeader = 48;
-    
-    [self registerClass:[SectionDividerView class] forDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind];
-    
-}
+@implementation MITDiningHallMenuComparisonLayout
 
 - (id) init
 {
@@ -64,6 +50,19 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
         [self setup];
     }
     return self;
+}
+
+- (void) setup
+{
+    // layout some default values
+    self.itemInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.itemSize = CGSizeMake(60, 40);
+    self.interItemSpacingY = 5;
+    self.numberOfColumns = 5;
+    self.heightOfSectionHeader = 48;
+    
+    [self registerClass:[SectionDividerView class] forDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind];
+    
 }
 
 - (id<CollectionViewDelegateMenuCompareLayout>) layoutDelegate
@@ -220,7 +219,5 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     
     return CGSizeMake(width, height);
 }
-
-
 
 @end

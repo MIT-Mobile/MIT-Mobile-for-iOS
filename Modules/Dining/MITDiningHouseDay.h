@@ -12,7 +12,7 @@
 @property (nonatomic, retain) MITDiningHouseVenue *houseVenue;
 @property (nonatomic, retain) NSOrderedSet *meals;
 
-@property (nonatomic, readonly) NSArray *mealNames;
++ (NSArray *)mealNames;
 
 - (NSString *)dayHoursDescription;
 - (MITDiningMeal *)mealWithName:(NSString *)name;

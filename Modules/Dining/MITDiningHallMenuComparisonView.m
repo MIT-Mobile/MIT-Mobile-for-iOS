@@ -1,13 +1,17 @@
-#import "DiningHallMenuCompareView.h"
+#import "MITDiningHallMenuComparisonView.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "DiningHallMenuCompareLayout.h"
-#import "DiningHallMenuComparisonSectionHeaderView.h"
+#import "MITDiningHallMenuComparisonLayout.h"
+#import "MITDiningHallMenuComparisonSectionHeaderView.h"
+#import "MITDiningHallMenuComparisonCell.h"
+#import "MITDiningHallMenuComparisonNoMealsCell.h"
+#import "MITDiningMeal.h"
+#import "MITDiningAggregatedMeal.h"
 
-@interface DiningHallMenuCompareView () <UICollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
+@interface MITDiningHallMenuComparisonView () <UICollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
-@property (nonatomic, strong) UILabel * headerView;
-@property (nonatomic, strong) UICollectionView * collectionView;
+@property (nonatomic, strong) UILabel *headerView;
+@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
@@ -16,7 +20,7 @@
 #define DEFAULT_COLUMN_WIDTH 170
 static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
-@implementation DiningHallMenuCompareView
+@implementation MITDiningHallMenuComparisonView
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -32,7 +36,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
-        DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
+        MITDiningHallMenuComparisonLayout *layout = [[MITDiningHallMenuComparisonLayout alloc] init];
         
         self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         self.columnWidth = DEFAULT_COLUMN_WIDTH;
@@ -45,9 +49,9 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.collectionView.alwaysBounceVertical = YES;
         self.collectionView.alwaysBounceHorizontal = NO;
         self.collectionView.backgroundColor = [UIColor whiteColor];
-        [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];                  // may want a delegate method or some way to register classes outside ComparisonView
-        [self.collectionView registerClass:[DiningHallMenuComparisonNoMealsCell class] forCellWithReuseIdentifier:@"DiningMenuNoMealsCell"];
-        [self.collectionView registerClass:[DiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
+        [self.collectionView registerClass:[MITDiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];                  // may want a delegate method or some way to register classes outside ComparisonView
+        [self.collectionView registerClass:[MITDiningHallMenuComparisonNoMealsCell class] forCellWithReuseIdentifier:@"DiningMenuNoMealsCell"];
+        [self.collectionView registerClass:[MITDiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
         
         [self addSubview:self.headerView];
         [self addSubview:self.collectionView];
@@ -72,7 +76,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 - (void) setColumnWidth:(CGFloat)columnWidth
 {
     _columnWidth = columnWidth;
-    ((DiningHallMenuCompareLayout *)self.collectionView.collectionViewLayout).columnWidth = columnWidth;
+    ((MITDiningHallMenuComparisonLayout *)self.collectionView.collectionViewLayout).columnWidth = columnWidth;
     [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -115,7 +119,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    DiningHallMenuComparisonSectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SectionHeaderIdentifier forIndexPath:indexPath];
+    MITDiningHallMenuComparisonSectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SectionHeaderIdentifier forIndexPath:indexPath];
     headerView.titleLabel.text = [self.delegate compareView:self titleForSection:indexPath.section];
     headerView.timeLabel.text = [self.delegate compareView:self subtitleForSection:indexPath.section];
     
@@ -161,35 +165,5 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     }
     self.isScrolling = NO;
 }
-
-#pragma mark Class Methods
-+ (NSString *) stringForMeal:(NSString *)mealName onDate:(NSDate *)date
-{
-    // Formats string for compareView Header
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
-    NSString *dayString;
-    if ([date isToday]) {
-        dayString = @"Today";
-    } else if ([date isTomorrow]) {
-        dayString = @"Tomorrow";
-    } else if ([date isYesterday]) {
-        dayString = @"Yesterday";
-    } else {
-        [dateFormatter setDateFormat:@"EEEE"];
-        dayString = [dateFormatter stringFromDate:date];
-    }
-    
-    [dateFormatter setDateFormat:@"MMM d"];
-    NSString *fullDate = [dateFormatter stringFromDate:date];
-    
-    if (mealName && ![mealName isEqualToString:MealReferenceEmptyMeal]) {
-        NSString * mealString = [mealName capitalizedString];
-        return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
-    } else {
-        return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
-    }
-}
-
 
 @end
