@@ -105,7 +105,7 @@
 		2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A5C161887296B0013981A /* MITNewsViewController.m */; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
 		2C5CA5B119ACD861004C6FC6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CA5B019ACD861004C6FC6 /* Main.storyboard */; };
-		2C5CA5C919AE3B6B004C6FC6 /* MITRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CA5C419AE3B6B004C6FC6 /* MITRootViewController.m */; };
+		2C5CA5C919AE3B6B004C6FC6 /* MITSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */; };
 		2C5CA5CA19AE3B6B004C6FC6 /* UIViewController+MITDrawerNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5CA5C619AE3B6B004C6FC6 /* UIViewController+MITDrawerNavigation.m */; };
 		2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -717,8 +717,8 @@
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
 		2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesUserLocationViewController.m; sourceTree = "<group>"; };
 		2C5CA5B019ACD861004C6FC6 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		2C5CA5C319AE3B6B004C6FC6 /* MITRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITRootViewController.h; path = "App Delegate/MITRootViewController.h"; sourceTree = "<group>"; };
-		2C5CA5C419AE3B6B004C6FC6 /* MITRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITRootViewController.m; path = "App Delegate/MITRootViewController.m"; sourceTree = "<group>"; };
+		2C5CA5C319AE3B6B004C6FC6 /* MITSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITSlidingViewController.h; path = "App Delegate/MITSlidingViewController.h"; sourceTree = "<group>"; };
+		2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITSlidingViewController.m; path = "App Delegate/MITSlidingViewController.m"; sourceTree = "<group>"; };
 		2C5CA5C519AE3B6B004C6FC6 /* UIViewController+MITDrawerNavigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+MITDrawerNavigation.h"; path = "App Delegate/UIViewController+MITDrawerNavigation.h"; sourceTree = "<group>"; };
 		2C5CA5C619AE3B6B004C6FC6 /* UIViewController+MITDrawerNavigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+MITDrawerNavigation.m"; path = "App Delegate/UIViewController+MITDrawerNavigation.m"; sourceTree = "<group>"; };
 		2C5CE69917FDC1BE009B850D /* MITMapModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MITMapModel.h; path = Model/MITMapModel.h; sourceTree = "<group>"; };
@@ -1972,8 +1972,8 @@
 		2C5D78791918191E00ECB388 /* Module Launcher */ = {
 			isa = PBXGroup;
 			children = (
-				2C5CA5C319AE3B6B004C6FC6 /* MITRootViewController.h */,
-				2C5CA5C419AE3B6B004C6FC6 /* MITRootViewController.m */,
+				2C5CA5C319AE3B6B004C6FC6 /* MITSlidingViewController.h */,
+				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 				2C44DA9D19B79F09001AA874 /* MITDrawerViewController.h */,
 				2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */,
 				2C21581319BA1EF500D5A3A7 /* MITGradientView.h */,
@@ -3843,7 +3843,7 @@
 				2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */,
 				2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */,
 				2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */,
-				2C5CA5C919AE3B6B004C6FC6 /* MITRootViewController.m in Sources */,
+				2C5CA5C919AE3B6B004C6FC6 /* MITSlidingViewController.m in Sources */,
 				2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */,
 				4431A8DABEAF34B5B5A061EB /* MITAnnotationAdaptor.m in Sources */,
 				2CA010BE1694A7CC00B87CF0 /* MGSSimpleAnnotation.m in Sources */,

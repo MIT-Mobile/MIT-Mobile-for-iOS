@@ -3,7 +3,7 @@
 
 @class MITModule;
 
-@interface MITRootViewController : ECSlidingViewController
+@interface MITSlidingViewController : ECSlidingViewController
 @property (nonatomic,copy) NSArray *modules;
 @property (nonatomic,weak) MITModule *visibleModule;
 

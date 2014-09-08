@@ -1,7 +1,7 @@
 #import "MITDrawerViewController.h"
 #import "UIViewController+MITDrawerNavigation.h"
 #import "MITModule.h"
-#import "MITRootViewController.h"
+#import "MITSlidingViewController.h"
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSUInteger const MITModuleSectionIndex = 0;
@@ -80,7 +80,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITDrawerReuseIdentifierItemCell forIndexPath:indexPath];
 
     if ([cell isKindOfClass:[UITableViewCell class]]) {
-        MITRootViewController *slidingViewController = [[MIT_MobileAppDelegate applicationDelegate] rootViewController];
+        MITSlidingViewController *slidingViewController = [[MIT_MobileAppDelegate applicationDelegate] rootViewController];
         MITModule *module = [self _moduleForIndexPath:indexPath];
 
         if (slidingViewController.selectedModule == module) {
@@ -105,7 +105,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITRootViewController *slidingViewController = [[MIT_MobileAppDelegate applicationDelegate] rootViewController];
+    MITSlidingViewController *slidingViewController = [[MIT_MobileAppDelegate applicationDelegate] rootViewController];
     MITModule *selectedModule = slidingViewController.selectedModule;
     MITModule *module = [self _moduleForIndexPath:indexPath];
     if (slidingViewController.selectedModule == module) {

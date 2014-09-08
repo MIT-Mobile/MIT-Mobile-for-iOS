@@ -7,10 +7,10 @@
         <capability name="Constraints with attributes relative to the layout margin" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Root View Controller-->
+        <!--Sliding View Controller-->
         <scene sceneID="90N-Vr-VVF">
             <objects>
-                <viewController id="VSF-i2-F9v" customClass="MITRootViewController" sceneMemberID="viewController">
+                <viewController id="VSF-i2-F9v" customClass="MITSlidingViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7qd-f2-T7a"/>
                         <viewControllerLayoutGuide type="bottom" id="sjx-Wx-oXu"/>

@@ -1,15 +1,15 @@
-#import "MITRootViewController.h"
+#import "MITSlidingViewController.h"
 #import "MITAdditions.h"
 #import "MITModule.h"
 #import "MITDrawerViewController.h"
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
-@interface MITRootViewController () <UITableViewDataSource,UITableViewDelegate>
+@interface MITSlidingViewController () <UITableViewDataSource,UITableViewDelegate>
 @property (nonatomic,readonly) MITDrawerViewController *drawerViewController;
 @end
 
-@implementation MITRootViewController
+@implementation MITSlidingViewController
 @dynamic drawerViewController;
 
 - (instancetype)initWithModules:(NSArray *)modules

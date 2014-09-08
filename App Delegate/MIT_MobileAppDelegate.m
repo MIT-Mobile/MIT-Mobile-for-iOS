@@ -32,7 +32,7 @@
 #import "ToursModule.h"
 
 #import "MITTouchstoneController.h"
-#import "MITRootViewController.h"
+#import "MITSlidingViewController.h"
 #import "MITShuttleStopNotificationManager.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
@@ -249,7 +249,7 @@
 - (void)setupRootViewController
 {
     if (self.rootViewController) {
-        MITRootViewController *rootViewController = self.rootViewController;
+        MITSlidingViewController *rootViewController = self.rootViewController;
         rootViewController.modules = self.modules;
         [self.window addGestureRecognizer:rootViewController.panGesture];
     }
@@ -435,11 +435,11 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return _coreDataController;
 }
 
-- (MITRootViewController*)rootViewController
+- (MITSlidingViewController*)rootViewController
 {
     UIViewController *rootViewController = self.window.rootViewController;
-    if ([rootViewController isKindOfClass:[MITRootViewController class]]) {
-        return (MITRootViewController*)rootViewController;
+    if ([rootViewController isKindOfClass:[MITSlidingViewController class]]) {
+        return (MITSlidingViewController*)rootViewController;
     } else {
         return nil;
     }
