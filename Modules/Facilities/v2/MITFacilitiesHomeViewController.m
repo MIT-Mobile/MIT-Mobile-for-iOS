@@ -7,6 +7,9 @@
 //
 
 #import "MITFacilitiesHomeViewController.h"
+#import "FacilitiesCategoryViewController.h"
+#import "MITBuildingServicesReportForm.h"
+
 #import "UIKit+MITAdditions.h"
 #import <MessageUI/MFMailComposeViewController.h>
 
@@ -31,6 +34,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 @property (nonatomic, assign) BOOL hasSelectedBuilding;
 
+@property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
+
 @end
 
 @implementation MITFacilitiesHomeViewController
@@ -49,11 +54,20 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    
     self.hasSelectedBuilding = NO;
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self.contactFacilitiesButton addTarget:self action:@selector(contactFacilitiesAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -126,13 +140,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 #pragma mark - tableview stuff
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if( indexPath.row == [self lastRowIndex] )
-    {
-        return 62;
-    }
-    
-    return 44;
+{    
+    return 62;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -190,6 +199,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
     UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
+    subitleLabel.text = nil;
     
     switch (row) {
         case MITFacilitiesFormFieldEmail:
@@ -197,6 +207,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
         case MITFacilitiesFormFieldLocation:
             titleLabel.text = @"location";
+            subitleLabel.text = self.reportForm.location.name;
             hasDisclosureIndicator = YES;
             break;
         case MITFacilitiesFormFieldRoom:
@@ -212,7 +223,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
     }
     
-    subitleLabel.text = @"";
     titleLabel.textColor = [UIColor mit_tintColor];
     titleLabel.font = [UIFont systemFontOfSize:14];
     
@@ -229,6 +239,14 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if( indexPath.row == MITFacilitiesFormFieldLocation )
+    {
+        FacilitiesCategoryViewController *vc = [[FacilitiesCategoryViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+        
+        return;
+    }
 }
 
 #pragma mark - helpers

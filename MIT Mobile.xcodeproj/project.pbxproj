@@ -11,6 +11,8 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		273B0D0219BC10830092BC46 /* MITBuildingServicesReportForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B0D0119BC10830092BC46 /* MITBuildingServicesReportForm.m */; };
+		273B0D0819BCA2410092BC46 /* UINavigationController+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B0D0719BCA2410092BC46 /* UINavigationController+MITAdditions.m */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
@@ -531,6 +533,10 @@
 		1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MIT_MobileAppDelegate.m; path = "App Delegate/MIT_MobileAppDelegate.m"; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* MITMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MITMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		273B0D0019BC10830092BC46 /* MITBuildingServicesReportForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITBuildingServicesReportForm.h; path = v2/MITBuildingServicesReportForm.h; sourceTree = "<group>"; };
+		273B0D0119BC10830092BC46 /* MITBuildingServicesReportForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITBuildingServicesReportForm.m; path = v2/MITBuildingServicesReportForm.m; sourceTree = "<group>"; };
+		273B0D0619BCA2410092BC46 /* UINavigationController+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+MITAdditions.h"; path = "Categories/UINavigationController+MITAdditions.h"; sourceTree = "<group>"; };
+		273B0D0719BCA2410092BC46 /* UINavigationController+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+MITAdditions.m"; path = "Categories/UINavigationController+MITAdditions.m"; sourceTree = "<group>"; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
 		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
@@ -1825,6 +1831,8 @@
 				27C5B4B619B564CD006DD95A /* MITFacilitiesHomeViewController.h */,
 				27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */,
 				27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */,
+				273B0D0019BC10830092BC46 /* MITBuildingServicesReportForm.h */,
+				273B0D0119BC10830092BC46 /* MITBuildingServicesReportForm.m */,
 			);
 			name = "Building Services";
 			path = Modules/Facilities;
@@ -1923,6 +1931,8 @@
 				2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */,
 				5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */,
 				5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */,
+				273B0D0619BCA2410092BC46 /* UINavigationController+MITAdditions.h */,
+				273B0D0719BCA2410092BC46 /* UINavigationController+MITAdditions.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -3762,6 +3772,7 @@
 				EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */,
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
+				273B0D0819BCA2410092BC46 /* UINavigationController+MITAdditions.m in Sources */,
 				274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,
 				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,
@@ -3773,6 +3784,7 @@
 				EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */,
 				2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */,
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
+				273B0D0219BC10830092BC46 /* MITBuildingServicesReportForm.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,

@@ -27,7 +27,7 @@
 @property (nonatomic,strong) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
 
-- (BOOL)shouldShowLocationSection;
+- (BOOL)shouldShowLocationRow;
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
 - (NSArray*)resultsForSearchString:(NSString*)searchText;
@@ -40,7 +40,7 @@
 {
     self = [super init];
     if (self) {
-        self.title = @"Where is it?";
+        self.title = @"Location";
         self.locationData = [FacilitiesLocationData sharedData];
         self.filterPredicate = [NSPredicate predicateWithFormat:@"locations.@count > 0"];
     }
@@ -186,7 +186,8 @@
 
 
 #pragma mark - Private Methods
-- (BOOL)shouldShowLocationSection {
+- (BOOL)shouldShowLocationRow
+{
     if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
         return NO;
     } else {
@@ -233,12 +234,24 @@
 - (void)configureMainTableCell:(UITableViewCell *)cell
                   forIndexPath:(NSIndexPath *)indexPath
 {
-    if ((indexPath.section == 0) && ([self shouldShowLocationSection])) {
+    BOOL shouldShowLocationRow = [self shouldShowLocationRow];
+    if( indexPath.row == 0 && shouldShowLocationRow )
+    {
         cell.textLabel.text = @"Use my location";
-    } else {
-        FacilitiesCategory *cat = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
-        cell.textLabel.text = cat.name;
+        
+        return;
     }
+
+    NSInteger row = indexPath.row;
+    
+    if( shouldShowLocationRow )
+    {
+        // since we inserted a location row, need to update cachedData index
+        row--;
+    }
+    
+    FacilitiesCategory *cat = (FacilitiesCategory*)[self.cachedData objectAtIndex:row];
+    cell.textLabel.text = cat.name;
 }
 
 - (void)configureSearchCell:(HighlightTableViewCell *)cell
@@ -278,11 +291,22 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UIViewController *nextViewController = nil;
     
-    if (tableView == self.tableView) {
-        if ((indexPath.section == 0) && [self shouldShowLocationSection]) {
+    if (tableView == self.tableView)
+    {
+        BOOL shouldShowLocationRow = [self shouldShowLocationRow];
+        
+        if ((indexPath.row == 0) && shouldShowLocationRow)
+        {
             nextViewController = [[FacilitiesUserLocationViewController alloc] init];
-        } else {
-            FacilitiesCategory *category = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
+        }
+        else
+        {
+            NSInteger row = indexPath.row;
+            
+            // if showing location row, then need to adjust row index to the previous one (e.g. due to inserting location at index 0).
+            if( shouldShowLocationRow ) row--;
+            
+            FacilitiesCategory *category = (FacilitiesCategory*)[self.cachedData objectAtIndex:row];
             FacilitiesLocationViewController *controller = [[FacilitiesLocationViewController alloc] init];
             controller.category = category;
             nextViewController = controller;
@@ -310,25 +334,26 @@
         }
     }
     
-    [self.navigationController pushViewController:nextViewController
-                                         animated:YES];
+    [self.navigationController pushViewController:nextViewController animated:YES];
     
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UITableViewDataSource Methods
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView) {
-        return ([self shouldShowLocationSection] ? 2 : 1);
-    } else {
-        return 1;
-    }
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView) {
-        return ((section == 0) && [self shouldShowLocationSection]) ? 1 : [self.cachedData count];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (tableView == self.tableView)
+    {
+        NSInteger firstRowOffset = 0;
+        
+        if( [self shouldShowLocationRow] ) firstRowOffset++;
+        
+        return ( [self.cachedData count] + firstRowOffset );
     } else {
         return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;
     }
@@ -338,13 +363,15 @@
     static NSString *facilitiesIdentifier = @"facilitiesCell";
     static NSString *searchIdentifier = @"searchCell";
     
-    if (tableView == self.tableView) {
+    if (tableView == self.tableView)
+    {
         UITableViewCell *cell = nil;
         cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
-        if (cell == nil) {
+        if (cell == nil)
+        {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:facilitiesIdentifier];
+                                          reuseIdentifier:facilitiesIdentifier];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         

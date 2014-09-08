@@ -1,5 +1,6 @@
 #import "FacilitiesLocationViewController.h"
 
+#import "MITBuildingServicesReportForm.h"
 #import "FacilitiesCategory.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
@@ -11,6 +12,7 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
+#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesLocationViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -125,6 +127,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if( self.category.name )
+    {
+        self.title = self.category.name;
+    }
+    
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
                                                                    style:UIBarButtonItemStyleBordered
                                                                   target:nil
@@ -301,18 +309,21 @@
         }
     }
     
-    if ([location.isLeased boolValue]) {
-        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
-    } else {
-        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-        controller.location = location;
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
-    }
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location];
+    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    
+//    if ([location.isLeased boolValue]) {
+//        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
+//        
+//        [self.navigationController pushViewController:controller
+//                                             animated:YES];
+//    } else {
+//        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
+//        controller.location = location;
+//        
+//        [self.navigationController pushViewController:controller
+//                                             animated:YES];
+//    }
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
@@ -342,7 +353,6 @@
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                            reuseIdentifier:facilitiesIdentifier];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
         [self configureMainTableCell:cell 
