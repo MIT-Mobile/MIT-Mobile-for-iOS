@@ -2,6 +2,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITDiningHallMealCollectionHeader ()
 
@@ -54,10 +55,10 @@
     
     if ([venue isOpenNow]) {
         self.currentStatusLabel.text = @"Open";
-        self.currentStatusLabel.textColor = [UIColor greenColor];
+        self.currentStatusLabel.textColor = [UIColor mit_openGreenColor];
     } else {
         self.currentStatusLabel.text = @"Closed";
-        self.currentStatusLabel.textColor = [UIColor redColor];
+        self.currentStatusLabel.textColor = [UIColor mit_closedRedColor];
     }
     
     CGFloat remainingWidth = self.bounds.size.width;
