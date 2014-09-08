@@ -50,7 +50,7 @@
                                                [self.endTimeString isEqualToString:meal.endTimeString])));
 }
 
-- (NSDateFormatter *)mealDateFormatter
++ (NSDateFormatter *)mealDateFormatter
 {
     static NSDateFormatter *mealFormatter;
     if (!mealFormatter) {
@@ -63,13 +63,13 @@
 - (NSDate *)startTime
 {
     NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.houseDay.dateString, self.startTimeString];
-    return [[self mealDateFormatter] dateFromString:dateString];
+    return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
 }
 
 - (NSDate *)endTime
 {
     NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.houseDay.dateString, self.endTimeString];
-    return [[self mealDateFormatter] dateFromString:dateString];
+    return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
 }
 
 @end

@@ -64,36 +64,41 @@
     return openClosedStatus;
 }
 
-- (NSDateFormatter *)retailDateFormatter
++ (NSDateFormatter *)retailDateFormatter
 {
-    static NSDateFormatter *mealFormatter;
-    if (!mealFormatter) {
-        mealFormatter = [[NSDateFormatter alloc] init];
-        [mealFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
+    static NSDateFormatter *retailFormatter;
+    if (!retailFormatter) {
+        retailFormatter = [[NSDateFormatter alloc] init];
+        [retailFormatter setDateFormat:@"yyyy-MM-dd HH:mm:SS"];
     }
-    return mealFormatter;
+    return retailFormatter;
+}
+
++ (NSDateFormatter *)dayOnlyFormatter
+{
+    static NSDateFormatter *dayFormatter;
+    if (!dayFormatter) {
+        dayFormatter = [[NSDateFormatter alloc] init];
+        [dayFormatter setDateFormat:@"yyyy-MM-dd"];
+    }
+    return dayFormatter;
 }
 
 - (NSDate *)startTime
 {
-    NSString *dateString = [self.dateString stringByAppendingString:self.startTimeString];
-    return [[self retailDateFormatter] dateFromString:dateString];
+    NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.dateString, self.startTimeString];
+    return [[MITDiningRetailDay retailDateFormatter] dateFromString:dateString];
 }
 
 - (NSDate *)endTime
 {
-    NSString *dateString = [self.dateString stringByAppendingString:self.endTimeString];
-    return [[self retailDateFormatter] dateFromString:dateString];
+    NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.dateString, self.endTimeString];
+    return [[MITDiningRetailDay retailDateFormatter] dateFromString:dateString];
 }
 
 - (NSDate *)date
 {
-    static NSDateFormatter *formatter;
-    if (!formatter) {
-        formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy-mm-dd"];
-    }
-    return [formatter dateFromString:self.dateString];
+    return [[MITDiningRetailDay dayOnlyFormatter] dateFromString:self.dateString];
 }
 
 @end

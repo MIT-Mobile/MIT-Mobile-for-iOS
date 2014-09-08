@@ -177,14 +177,19 @@
     return mealSummary;
 }
 
-- (NSDate *)date
++ (NSDateFormatter *)houseDayDateFormatter
 {
     static NSDateFormatter *formatter;
     if (!formatter) {
         formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"yyyy-MM-dd"];
     }
-    return [formatter dateFromString:self.dateString];
+    return formatter;
+}
+
+- (NSDate *)date
+{
+    return [[MITDiningHouseDay houseDayDateFormatter] dateFromString:self.dateString];
 }
 
 @end
