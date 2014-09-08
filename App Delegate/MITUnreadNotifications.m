@@ -4,9 +4,6 @@
 #import "MITModule.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
-#define TAB_COUNT 4
-
-
 @implementation MITUnreadNotifications
 
 // save the unread notifications to disk, it overwrites the previous notifications
@@ -174,34 +171,116 @@
 
 @end
 
+@interface MITNotification ()
+@property (nonatomic,readwrite,copy) NSString *tag;
+@property (nonatomic,readwrite,copy) NSString *identifier;
+@end
+
 @implementation MITNotification
-@synthesize moduleName, noticeId;
-
-+ (MITNotification *) fromString: (NSString *)noticeString {
-	// a colon is used to seperate the moduleName from the notification id
-	NSRange colonRange = [noticeString rangeOfString:@":"];
-	
-	return [[self alloc] initWithModuleName:[noticeString substringToIndex:colonRange.location] noticeId:[noticeString substringFromIndex:(colonRange.location+1)]];
-}
-	
-- (id) initWithModuleName: (NSString *)aModuleName noticeId: (NSString *)anId {
-	self = [super init];
-	if (self) {
-		moduleName = [aModuleName copy];
-		noticeId = [anId copy];
-	}
-	return self;
-}
-	
-- (NSString *) string {
-	return [NSString stringWithFormat:@"%@:%@", moduleName, noticeId];
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
-- (BOOL) isEqualTo: (MITNotification *)other {
-	return [[self string] isEqualToString:[other string]];
++ (instancetype)notificationWithString:(NSString*)string
+{
+    NSRange delimiterRange = [string rangeOfString:@":"];
+
+    if (delimiterRange.location == NSNotFound) {
+        return nil;
+    }
+
+    NSString *tag = [string substringToIndex:delimiterRange.location];
+    NSString *identifier = [string substringFromIndex:delimiterRange.location + 1];
+    return [[self alloc] initWithModuleTag:tag noticeIdentifier:identifier];
 }
 
-- (NSString *) description {
-	return [NSString stringWithFormat:@"{module:%@, tag:%@}", moduleName, noticeId];
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    NSString *tag = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"MITNotification.key"];
+    NSString *identifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"MITNotification.identifier"];
+
+    return [self initWithModuleTag:tag noticeIdentifier:identifier];
+}
+
+- (instancetype)initWithModuleTag:(NSString*)tag noticeIdentifier:(NSString*)identifier
+{
+    NSParameterAssert(tag);
+    NSParameterAssert(identifier);
+
+    self = [super init];
+    if (self) {
+        _tag = [tag copy];
+        _identifier = [identifier copy];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.tag forKey:@"MITNotification.key"];
+    [aCoder encodeObject:self.identifier forKey:@"MITNotification.identifier"];
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"{module:%@, tag:%@}", self.tag, self.identifier];
+}
+
+- (NSString*)stringValue
+{
+    return [NSString stringWithFormat:@"%@:%@", self.tag, self.identifier];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    BOOL result = [super isEqual:object];
+    if (result) {
+        return YES;
+    } else if ([object isKindOfClass:[MITNotification class]]) {
+        return [self isEqualToNotification:(MITNotification*)object];
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isEqualToNotification:(MITNotification*)otherNotification
+{
+    return ([self.tag isEqualToString:otherNotification.tag] &&
+            [self.identifier isEqualToString:otherNotification.identifier]);
+}
+
+@end
+
+@implementation MITNotification (Legacy)
++ (MITNotification*)fromString:(NSString*)noticeString\
+{
+    return [self notificationWithString:noticeString];
+}
+	
+- (id)initWithModuleName:(NSString *)aModuleName noticeId:(NSString *)anId
+{
+    return [self initWithModuleTag:aModuleName noticeIdentifier:anId];
+}
+
+- (NSString*)moduleName
+{
+    return self.tag;
+}
+
+- (NSString*)noticeId
+{
+    return self.identifier;
+}
+
+- (NSString *) string
+{
+    return [self stringValue];
+}
+
+- (BOOL)isEqualTo:(MITNotification *)other
+{
+    return [self isEqualToNotification:other];
 }
 @end

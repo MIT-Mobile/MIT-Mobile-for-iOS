@@ -1,22 +1,24 @@
 #import <Foundation/Foundation.h>
 #import "MITDeviceRegistration.h"
 
-@interface MITNotification : NSObject
-{
-	NSString *moduleName;
-	NSString *noticeId;
-}
+@interface MITNotification : NSObject <NSSecureCoding>
+@property (nonatomic,readonly,copy) NSString *tag;
+@property (nonatomic,readonly,copy) NSString *identifier;
 
-@property (readonly) NSString *moduleName;
-@property (readonly) NSString *noticeId;
++ (instancetype)notificationWithString:(NSString*)string;
+- (instancetype)initWithModuleTag:(NSString*)tag noticeIdentifier:(NSString*)identifier;
+- (NSString*)stringValue;
+- (BOOL)isEqual:(id)object;
+- (BOOL)isEqualToNotification:(MITNotification*)otherNotification;
+@end
 
-+ (MITNotification *) fromString: (NSString *)noticeString;
-
-- (id) initWithModuleName: (NSString *)moduleName noticeId: (NSString *)noticeId;
-
-- (NSString *) string;
-
-- (BOOL) isEqualTo: (MITNotification *)other;
+@interface MITNotification (Legacy)
+@property (nonatomic,readonly) NSString *moduleName;
+@property (nonatomic,readonly) NSString *noticeId;
++ (instancetype)fromString:(NSString*)noticeString;
+- (instancetype)initWithModuleName:(NSString*)moduleName noticeId:(NSString*)noticeId;
+- (NSString*)string;
+- (BOOL)isEqualTo:(MITNotification*)other;
 @end
 
 @interface MITUnreadNotifications : NSObject {
