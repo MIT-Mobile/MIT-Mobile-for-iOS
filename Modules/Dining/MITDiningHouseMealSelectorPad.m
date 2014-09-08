@@ -134,7 +134,7 @@
             for (UILabel *letterView in letterViews) {
                 MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
                 if ([meal.name isEqualToString:mealName]) {
-                    self.selectedMealNameLabel.text = meal.name;
+                    self.selectedMealNameLabel.text = [meal titleCaseName];
                     [self selectLetterView:letterView];
                     break;
                 }

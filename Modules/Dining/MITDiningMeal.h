@@ -20,6 +20,7 @@
 - (NSString *)mealHoursDescription;
 - (NSString *)nameAndHoursDescription;
 - (BOOL)isSuperficiallyEqualToMeal:(MITDiningMeal *)meal;
+- (NSString *)titleCaseName;
 
 @end
 
