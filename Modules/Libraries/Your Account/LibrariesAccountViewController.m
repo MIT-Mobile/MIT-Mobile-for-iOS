@@ -314,7 +314,7 @@ typedef enum {
     
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {
-        if ((error.code == MobileWebInvalidLoginError) || (error.code == NSUserCancelledError))
+        if ((error.code == MITMobileRequestInvalidLoginError) || (error.code == NSUserCancelledError))
         {
             [self.requestOperations cancelAllOperations];
             [self.navigationController popViewControllerAnimated:YES];

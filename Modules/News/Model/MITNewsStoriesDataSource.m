@@ -20,7 +20,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 @property (nonatomic,copy) NSString *categoryIdentifier;
 @property (nonatomic,getter = isFeaturedStorySource) BOOL featuredStorySource;
 
-@property (getter = isRequestInProgress) BOOL requestInProgress;
+@property(strong) dispatch_semaphore_t requestSemaphore;
+@property(nonatomic,getter=isUpdating) BOOL updating;
 @end
 
 @implementation MITNewsStoriesDataSource
@@ -111,6 +112,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
     if (self) {
         self.maximumNumberOfItemsPerPage = 20;
+        _requestSemaphore = dispatch_semaphore_create(1);
     }
 
     return self;
@@ -188,7 +190,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 - (BOOL)isUpdating
 {
-    return self.isRequestInProgress;
+    return _updating;
 }
 
 - (BOOL)_canCacheRequest
@@ -260,88 +262,115 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 - (void)nextPage:(void(^)(NSError *error))block
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (![self hasNextPage]) {
-            return;
-        }
-        self.requestInProgress = YES;
+    if (![self hasNextPage]) {
+        return;
+    }
 
-        __weak MITNewsStoriesDataSource *weakSelf = self;
-        [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-            MITNewsStoriesDataSource *blockSelf = weakSelf;
-            self.requestInProgress = NO;
-            
-            if (!blockSelf) {
-                return;
-            } else if (error) {
-                [blockSelf _responseFailedWithError:error completion:^{
-                    if (block) {
-                        block(error);
-                    }
-                }];
-            } else {
-                NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
-                [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:^{
-                    if (block) {
-                        block(error);
-                    }
-                }];
+    dispatch_semaphore_t requestSemaphore = self.requestSemaphore;
+    NSInteger result = dispatch_semaphore_wait(requestSemaphore, DISPATCH_TIME_NOW);
+    if (result) {
+        // semaphore wait timed out
+        NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(error);
             }
         }];
+
+        DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
+        return;
+    }
+
+    __weak MITNewsStoriesDataSource *weakSelf = self;
+    [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        MITNewsStoriesDataSource *blockSelf = weakSelf;
+        
+        if (!blockSelf) {
+            dispatch_semaphore_signal(requestSemaphore);
+            return;
+        } else if (error) {
+            [blockSelf _responseFailedWithError:error completion:^{
+                if (block) {
+                    block(error);
+                }
+            }];
+        } else {
+            NSDictionary *pagingMetadata = MITPagingMetadataFromResponse(response);
+            [blockSelf _responseFinishedWithObjects:[result array] pagingMetadata:pagingMetadata completion:^{
+                if (block) {
+                    block(error);
+                }
+            }];
+        }
+
+        blockSelf.updating = NO;
+        dispatch_semaphore_signal(requestSemaphore);
     }];
 }
 
 - (void)refresh:(void(^)(NSError *error))block
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        __weak MITNewsStoriesDataSource *weakSelf = self;
-        void (^responseHandler)(NSArray*,NSDictionary*,NSError*) = ^(NSArray *stories, NSDictionary *pagingMetadata, NSError *error) {
-            MITNewsStoriesDataSource *blockSelf = weakSelf;
-            blockSelf.requestInProgress = NO;
-            
-            if (!blockSelf) {
-                return;
-            } else if (error) {
-                [blockSelf _responseFailedWithError:error completion:^{
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(error);
-                        }
-                    }];
-                }];
-            } else {
-                // This is the main difference between a refresh and
-                // a next page load. A refresh will nil out the
-                // existing story identifiers before processing the data
-                // while a next page load will just tack on the results
-                // to the existing list of identifiers
-                blockSelf.objectIdentifiers = nil;
-                self.refreshedAt = [NSDate date];
-
-                [blockSelf _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(nil);
-                        }
-                    }];
-                }];
+    dispatch_semaphore_t requestSemaphore = self.requestSemaphore;
+    NSInteger result = dispatch_semaphore_wait(requestSemaphore, DISPATCH_TIME_NOW);
+    if (result) {
+        // semaphore wait timed out
+        NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(error);
             }
-        };
+        }];
 
-        if (self.isRequestInProgress) {
+        DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
+        return;
+    }
+
+    __weak MITNewsStoriesDataSource *weakSelf = self;
+    void (^responseHandler)(NSArray*,NSDictionary*,NSError*) = ^(NSArray *stories, NSDictionary *pagingMetadata, NSError *error) {
+        MITNewsStoriesDataSource *blockSelf = weakSelf;
+        if (!blockSelf) {
+            dispatch_semaphore_signal(requestSemaphore);
             return;
         }
 
-        self.requestInProgress = YES;
-        if (self.isFeaturedStorySource) {
-            [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
-        } else if (self.categoryIdentifier) {
-            [[MITNewsModelController sharedController] storiesInCategory:self.categoryIdentifier query:nil offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
-        } else if (self.query) {
-            [[MITNewsModelController sharedController] storiesInCategory:nil query:self.query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
-        }
-    }];
+        if (error) {
+            [blockSelf _responseFailedWithError:error completion:^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(error);
+                    }
+                }];
+            }];
+        } else {
+            // This is the main difference between a refresh and
+            // a next page load. A refresh will nil out the
+            // existing story identifiers before processing the data
+            // while a next page load will just tack on the results
+            // to the existing list of identifiers
+            blockSelf.objectIdentifiers = nil;
+            self.refreshedAt = [NSDate date];
 
+            [blockSelf _responseFinishedWithObjects:stories pagingMetadata:pagingMetadata completion:^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil);
+                    }
+                }];
+            }];
+        }
+
+        blockSelf.updating = NO;
+        dispatch_semaphore_signal(requestSemaphore);
+    };
+
+    self.updating = YES;
+    if (self.isFeaturedStorySource) {
+        [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
+    } else if (self.categoryIdentifier) {
+        [[MITNewsModelController sharedController] storiesInCategory:self.categoryIdentifier query:nil offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
+    } else if (self.query) {
+        [[MITNewsModelController sharedController] storiesInCategory:nil query:self.query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
+    }
 }
 
 - (void)_responseFailedWithError:(NSError*)error completion:(void(^)())block
