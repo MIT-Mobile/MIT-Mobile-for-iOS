@@ -264,7 +264,9 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         if (![self hasNextPage]) {
             return;
         }
+
         self.requestInProgress = YES;
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
 
         __weak MITNewsStoriesDataSource *weakSelf = self;
         [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
@@ -333,6 +335,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         }
 
         self.requestInProgress = YES;
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
+
         if (self.isFeaturedStorySource) {
             [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
         } else if (self.categoryIdentifier) {
@@ -353,6 +357,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     if (block) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
     }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
 }
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)())block
@@ -372,6 +378,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         if (block) {
             block();
         }
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
     }];
 }
 
