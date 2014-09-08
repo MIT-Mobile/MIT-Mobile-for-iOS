@@ -1,8 +1,8 @@
-#import "DiningHallMenuComparisonCell.h"
+#import "MITDiningHallMenuComparisonCell.h"
 #import "UIImage+PDF.h"
 #import "UIKit+MITAdditions.h"
-#import "DiningDietaryFlag.h"
-
+#import "MITDiningMenuItem.h"
+//#import "DiningDietaryFlag.h"
 
 @interface ComparisonBackgroundView : UIView
 
@@ -29,22 +29,13 @@
 
 @end
 
+#pragma mark - DiningHallMenuComparisonCell
 
+@interface MITDiningHallMenuComparisonCell ()
 
-
-
-
-
-
-
-#pragma mark -
-#pragma mark DiningHallMenuComparisonCell
-
-@interface DiningHallMenuComparisonCell ()
-
-@property (nonatomic, strong) UILabel   * primaryLabel;
-@property (nonatomic, strong) UILabel   * secondaryLabel;
-@property (nonatomic, strong) UIView    * typeContainer;
+@property (nonatomic, strong) UILabel *primaryLabel;
+@property (nonatomic, strong) UILabel *secondaryLabel;
+@property (nonatomic, strong) UIView *typeContainer;
 
 @end
 
@@ -52,7 +43,7 @@
 #define ICON_SQUARE 16
 #define ICON_PADDING 4
 
-@implementation DiningHallMenuComparisonCell
+@implementation MITDiningHallMenuComparisonCell
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -63,12 +54,12 @@
         self.primaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, STANDARD_PADDING, labelWidth, 10)]; // height is one line of font
         self.primaryLabel.numberOfLines = 0;
         self.primaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.primaryLabel.font = [DiningHallMenuComparisonCell fontForPrimaryLabel];
+        self.primaryLabel.font = [MITDiningHallMenuComparisonCell fontForPrimaryLabel];
         
         self.secondaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, CGRectGetMaxY(self.primaryLabel.frame), labelWidth, 10)];
         self.secondaryLabel.numberOfLines = 0;
         self.secondaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.secondaryLabel.font = [DiningHallMenuComparisonCell fontForSecondaryLabel];
+        self.secondaryLabel.font = [MITDiningHallMenuComparisonCell fontForSecondaryLabel];
         
         self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(frame) - (STANDARD_PADDING + ICON_SQUARE), STANDARD_PADDING, ICON_SQUARE, ICON_SQUARE)]; // width is from spec, height allows for single dietary type item
         // custom backgroundView to draw divider
@@ -83,13 +74,13 @@
     return self;
 }
 
-- (void) setDietaryTypes:(NSArray *)dietaryTypes
+- (void)setDietaryTypes:(NSArray *)dietaryTypes
 {
     _dietaryTypes = dietaryTypes;
     [self setNeedsLayout];
 }
 
-- (void) prepareForReuse
+- (void)prepareForReuse
 {
     self.primaryLabel.text = @"";
     self.secondaryLabel.text = @"";
@@ -110,7 +101,6 @@
     return [UIFont systemFontOfSize:12];
 }
 
-
 - (CGRect) frameForLabel:(UILabel *)label constrainedToSize:(CGSize) constraint
 {
     CGSize necessaryLabelSize = [[label text] sizeWithFont:label.font constrainedToSize:constraint lineBreakMode:label.lineBreakMode];
@@ -119,7 +109,6 @@
     newFrame.size   = CGSizeMake(constraint.width, necessaryLabelSize.height);
     return newFrame;
 }
-
 
 - (void) layoutSubviews
 {
@@ -138,7 +127,7 @@
     
 }
 
-- (void) layoutDietaryTypes
+- (void)layoutDietaryTypes
 {
     if ((!self.dietaryTypes || [self.dietaryTypes count] == 0) && [self.typeContainer subviews]) {
         [self.typeContainer removeAllSubviews];
@@ -151,13 +140,13 @@
     
     
     CGSize iconSize = CGSizeMake(ICON_SQUARE, ICON_SQUARE);
-    int i = 0;
-    for (DiningDietaryFlag *type in self.dietaryTypes) {
-        UIImage *icon = [UIImage imageWithPDFNamed:type.pdfPath atSize:iconSize];
+    int flagIndexOffset = 0;
+    for (NSString *flag in self.dietaryTypes) {
+        UIImage *icon = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:flag] atSize:iconSize];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:icon];
         
-        imgView.center = CGPointMake(ICON_SQUARE / 2.0, (ICON_SQUARE / 2.0) + ((ICON_SQUARE + iconPadding) * i));
-        i++;
+        imgView.center = CGPointMake(ICON_SQUARE / 2.0, (ICON_SQUARE / 2.0) + ((ICON_SQUARE + iconPadding) * flagIndexOffset));
+        flagIndexOffset++;
         
         [self.typeContainer addSubview:imgView];
     }

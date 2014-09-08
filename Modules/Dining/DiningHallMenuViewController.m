@@ -33,7 +33,7 @@
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
-@property (nonatomic,weak) DiningMenuCompareViewController *comparisonVC;
+//@property (nonatomic,weak) MITDiningMenuComparisonViewController *comparisonVC;
 
 @end
 
@@ -226,11 +226,11 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    if (self.comparisonVC) {
-        return UIInterfaceOrientationLandscapeLeft;
-    } else {
-        return UIInterfaceOrientationPortrait;
-    }
+//    if (self.comparisonVC) {
+//        return UIInterfaceOrientationLandscapeLeft;
+//    } else {
+//        return UIInterfaceOrientationPortrait;
+//    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -238,52 +238,52 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
-        DiningMenuCompareViewController *comparisonViewController = [[DiningMenuCompareViewController alloc] init];
-        comparisonViewController.filtersApplied = self.filtersApplied;
-        comparisonViewController.mealRef = self.mealRef;
-        
-        [self addChildViewController:comparisonViewController];
-        UIView *comparisonView = comparisonViewController.view;
-        [self.compareContainerView addSubview:comparisonView];
-        self.comparisonVC = comparisonViewController;
-    
-        comparisonView.translatesAutoresizingMaskIntoConstraints = NO;
-        id viewBindings = @{@"compareView" : comparisonView};
-        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[compareView]|"
-                                                                                          options:0
-                                                                                          metrics:nil
-                                                                                            views:viewBindings]];
-        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[compareView]|"
-                                                                                          options:0
-                                                                                          metrics:nil
-                                                                                            views:viewBindings]];
-        
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [UIView transitionFromView:self.tableView
-                            toView:self.compareContainerView
-                          duration:duration
-                           options:(UIViewAnimationOptionOverrideInheritedOptions |
-                                    UIViewAnimationOptionShowHideTransitionViews |
-                                    UIViewAnimationOptionTransitionCrossDissolve)
-                        completion:^(BOOL finished) {
-                            [comparisonViewController didMoveToParentViewController:self];
-                        }];
+       // MITDiningMenuComparisonViewController *comparisonViewController = [[MITDiningMenuComparisonViewController alloc] init];
+//        comparisonViewController.filtersApplied = self.filtersApplied;
+//        //comparisonViewController.mealRef = self.mealRef;
+//        
+//        [self addChildViewController:comparisonViewController];
+//        UIView *comparisonView = comparisonViewController.view;
+//        [self.compareContainerView addSubview:comparisonView];
+//        self.comparisonVC = comparisonViewController;
+//    
+//        comparisonView.translatesAutoresizingMaskIntoConstraints = NO;
+//        id viewBindings = @{@"compareView" : comparisonView};
+//        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[compareView]|"
+//                                                                                          options:0
+//                                                                                          metrics:nil
+//                                                                                            views:viewBindings]];
+//        [self.compareContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[compareView]|"
+//                                                                                          options:0
+//                                                                                          metrics:nil
+//                                                                                            views:viewBindings]];
+//        
+//        [self.navigationController setNavigationBarHidden:YES animated:YES];
+//        [UIView transitionFromView:self.tableView
+//                            toView:self.compareContainerView
+//                          duration:duration
+//                           options:(UIViewAnimationOptionOverrideInheritedOptions |
+//                                    UIViewAnimationOptionShowHideTransitionViews |
+//                                    UIViewAnimationOptionTransitionCrossDissolve)
+//                        completion:^(BOOL finished) {
+//                            [comparisonViewController didMoveToParentViewController:self];
+//                        }];
     } else {
-        DiningMenuCompareViewController *comparisonViewController = self.comparisonVC;
-        self.mealRef = [comparisonViewController visibleMealReference];
-        
-        [comparisonViewController willMoveToParentViewController:nil];
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
-        
-        [UIView transitionFromView:self.compareContainerView
-                            toView:self.tableView
-                          duration:duration
-                           options:(UIViewAnimationOptionShowHideTransitionViews)
-                        completion:^(BOOL finished) {
-                            [comparisonViewController.view removeFromSuperview];
-                            [comparisonViewController removeFromParentViewController];
-                            self.comparisonVC = nil;
-                        }];
+       // MITDiningMenuComparisonViewController *comparisonViewController = self.comparisonVC;
+        //self.mealRef = [comparisonViewController visibleMealReference];
+//        
+//        [comparisonViewController willMoveToParentViewController:nil];
+//        [self.navigationController setNavigationBarHidden:NO animated:YES];
+//        
+//        [UIView transitionFromView:self.compareContainerView
+//                            toView:self.tableView
+//                          duration:duration
+//                           options:(UIViewAnimationOptionShowHideTransitionViews)
+//                        completion:^(BOOL finished) {
+//                            [comparisonViewController.view removeFromSuperview];
+//                            [comparisonViewController removeFromParentViewController];
+//                            self.comparisonVC = nil;
+//                        }];
     }
 }
 

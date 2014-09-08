@@ -2,7 +2,7 @@
 
 @class MITDiningHouseVenue;
 
-@interface MITDiningHouseVenueDetailViewController : UITableViewController
+@interface MITDiningHouseVenueDetailViewController : UIViewController
 
 @property (nonatomic, strong) MITDiningHouseVenue *houseVenue;
 

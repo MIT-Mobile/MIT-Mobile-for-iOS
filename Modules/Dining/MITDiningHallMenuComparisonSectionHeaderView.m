@@ -1,14 +1,14 @@
-#import "DiningHallMenuComparisonSectionHeaderView.h"
+#import "MITDiningHallMenuComparisonSectionHeaderView.h"
 #import "UIKit+MITAdditions.h"
 
-@interface DiningHallMenuComparisonSectionHeaderView ()
+@interface MITDiningHallMenuComparisonSectionHeaderView ()
 
 @property (nonatomic, strong) UILabel * titleLabel;
 @property (nonatomic, strong) UILabel * timeLabel;
 
 @end
 
-@implementation DiningHallMenuComparisonSectionHeaderView
+@implementation MITDiningHallMenuComparisonSectionHeaderView
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -43,14 +43,5 @@
     self.titleLabel.text = nil;
     self.timeLabel.text = nil;
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end
