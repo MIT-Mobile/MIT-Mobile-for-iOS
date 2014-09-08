@@ -656,7 +656,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
 {
-    self.rootViewController.selectedModule = [self moduleForTag:tag];
+    [self.rootViewController setVisibleModuleWithTag:tag];
 }
 
 #pragma mark Preferences
