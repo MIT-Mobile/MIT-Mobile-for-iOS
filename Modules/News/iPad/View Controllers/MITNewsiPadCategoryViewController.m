@@ -22,6 +22,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic) BOOL movingBackFromStory;
 @end
 
 @implementation MITNewsiPadCategoryViewController {
@@ -69,7 +70,11 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [self intervalUpdate];
+    [super viewDidAppear:animated];
+    if (!self.movingBackFromStory) {
+        [self intervalUpdate];
+        self.movingBackFromStory = YES;
+    }
 }
 
 - (MITNewsCategoryGridViewController*)gridViewController
@@ -268,7 +273,6 @@
                 });
             }
         } else {
-            strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
             
             if (refreshControl.refreshing) {
@@ -348,7 +352,7 @@
 #pragma mark Refresh Control Text
 - (void)updateRefreshStatusWithLastUpdatedTime
 {
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.dataSource.refreshedAt
                                                                         toDate:[NSDate date]];
     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
@@ -361,9 +365,9 @@
 
 - (void)intervalUpdate
 {
-    if (self.lastUpdated) {
+    if (self.dataSource.refreshedAt) {
         NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
-                                                                     fromDate:self.lastUpdated
+                                                                     fromDate:self.dataSource.refreshedAt
                                                                        toDate:[NSDate date]
                                                                       options:0];
         
