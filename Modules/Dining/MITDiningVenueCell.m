@@ -22,7 +22,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 {
     [self refreshLabelLayoutWidths];
    
-    self.venueHoursLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    self.venueHoursLabel.textColor = [UIColor mit_greyTextColor];
     self.separatorInset = UIEdgeInsetsMake(0, 76, 0, 0);
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }

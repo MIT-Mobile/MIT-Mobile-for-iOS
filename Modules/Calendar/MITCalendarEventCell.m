@@ -1,5 +1,6 @@
 #import "MITCalendarEventCell.h"
 #import "MITCalendarsLocation.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 
@@ -18,7 +19,7 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 {
     [self refreshLabelLayoutWidths];
     self.eventLocationLabel.textColor =
-    self.eventTimeLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    self.eventTimeLabel.textColor = [UIColor mit_greyTextColor];
 }
 
 - (void)setFrame:(CGRect)frame

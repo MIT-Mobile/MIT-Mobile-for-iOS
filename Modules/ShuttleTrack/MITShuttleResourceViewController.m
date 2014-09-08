@@ -92,7 +92,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleResourceSection) {
     cell.textLabel.text = resource[kResourceDescriptionKey];
     cell.detailTextLabel.text = resource[kResourceFormattedPhoneNumberKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-    cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    cell.detailTextLabel.textColor = [UIColor mit_greyTextColor];
     return cell;
 }
 
