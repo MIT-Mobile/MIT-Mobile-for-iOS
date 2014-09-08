@@ -24,7 +24,7 @@
         MITDiningHouseDay *houseDay = [houseVenue houseDayForDate:self.date];
         
         for (MITDiningMeal *meal in houseDay.meals) {
-            if ([meal.name isEqualToString:self.mealName]) {
+            if ([[meal.name lowercaseString] isEqualToString:[self.mealName lowercaseString]]) {
                 mealToReturn = meal;
                 break;
             }

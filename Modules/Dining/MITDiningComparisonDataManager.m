@@ -24,8 +24,6 @@
     NSDictionary *houseDaysByDate = [self houseDaysKeyedByDate];
     
     self.aggregatedMeals = [self mealsArrayForHouseDaysDateKeyedDictionary:houseDaysByDate];
-    
-    NSLog(@"Aggregated Meals: %@", self.aggregatedMeals);
 }
 
 - (NSDictionary *)houseDaysKeyedByDate
@@ -70,7 +68,7 @@
                 for (MITDiningMeal *meal in houseDay.meals) {
                     
                     // If it does, then add that an aggregated meal with that name on that day to the list.
-                    if ([meal.name isEqualToString:mealName]) {
+                    if ([[meal.name lowercaseString] isEqualToString:[mealName lowercaseString]]) {
                         aggregatedMeal = [[MITDiningAggregatedMeal alloc] initWithVenues:self.houseVenues date:dateKey mealName:mealName];
                         [mealsArray addObject:aggregatedMeal];
                         break;
@@ -107,7 +105,7 @@
         if ([[meal.houseDay.date dateWithoutTime] compare:[aggregatedMeal.date dateWithoutTime]] == NSOrderedSame) {
             matchedMeal = meal;
             matchedDay = YES;
-            if ([meal.name isEqualToString:aggregatedMeal.mealName]) {
+            if ([[meal.name lowercaseString] isEqualToString:[aggregatedMeal.mealName lowercaseString]]) {
                 matchedMealName = YES;
             }
         }
