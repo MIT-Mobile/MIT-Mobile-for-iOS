@@ -92,34 +92,39 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
 
-    _visibleModule = module;
-    [self setVisibleViewController:module.homeViewController];
+    [self setVisibleModule:module withViewController:module.homeViewController];
 }
 
 - (void)setVisibleModuleWithTag:(NSString *)moduleTag
 {
-    __block MITModule *selectedModule = nil;
-    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-        if ([module.tag isEqualToString:moduleTag]) {
-            selectedModule = module;
-            (*stop) = YES;
-        }
-    }];
-
-    [self setVisibleModule:selectedModule];
+    MITModule *module = [self _moduleWithTag:moduleTag];
+    [self setVisibleModule:module];
 }
 
 - (BOOL)setVisibleModuleWithNotification:(MITNotification *)notification
 {
-    
+    MITModule *module = [self _moduleWithTag:notification.tag];
+    if (!module) {
+        DDLogWarn(@"failed to find module with tag '%@'", notification.tag);
+        return NO;
+    }
+
+    UIViewController *viewController = [module homeViewControllerForNotification:notification];
+    if (!viewController) {
+        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", module.tag);
+        return NO;
+    }
+
+    [self setVisibleModule:module withViewController:viewController];
+    return YES;
 }
 
 - (BOOL)setVisibleModuleWithURL:(NSURL *)url
 {
-
+    
 }
 
-- (void)setVisibleViewController:(UIViewController*)viewController
+- (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)viewController
 {
     if (!viewController) {
         viewController = [[UIViewController alloc] init];
@@ -127,6 +132,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
         viewController.view.backgroundColor = [UIColor mit_backgroundColor];
     }
 
+    _visibleModule = module;
     [self setTopViewController:viewController];
 }
 
@@ -141,5 +147,18 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     if (!self.visibleModule) {
         self.visibleModule = [self.modules firstObject];
     }
+}
+
+- (MITModule*)_moduleWithTag:(NSString*)tag
+{
+    __block MITModule *selectedModule = nil;
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module.tag isEqualToString:tag]) {
+            selectedModule = module;
+            (*stop) = YES;
+        }
+    }];
+
+    return selectedModule;
 }
 @end
