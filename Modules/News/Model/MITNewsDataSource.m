@@ -7,6 +7,9 @@
 
 static void const *MITDataSourceCachedObjectsClearedKey = &MITDataSourceCachedObjectsClearedKey;
 
+NSString* const MITNewsDataSourceDidBeginUpdatingNotification = @"MITNewsDataSourceDidBeginUpdatingNotification";
+NSString* const MITNewsDataSourceDidEndUpdatingNotification = @"MITNewsDataSourceDidEndUpdatingNotification";
+
 @interface MITNewsDataSource ()
 @property(strong) id parentContextDidSaveObserverToken;
 @end
