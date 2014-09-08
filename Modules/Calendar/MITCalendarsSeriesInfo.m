@@ -1,10 +1,11 @@
 #import "MITCalendarsSeriesInfo.h"
-
+#import "MITCalendarsEvent.h"
 
 @implementation MITCalendarsSeriesInfo
 
-@dynamic title;
 @dynamic seriesDescription;
+@dynamic title;
+@dynamic event;
 
 +(RKMapping *)objectMapping
 {

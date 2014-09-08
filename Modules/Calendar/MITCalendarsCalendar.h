@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITCalendarsCalendar;
+@class MITCalendarsCalendar, MITCalendarsEvent;
 
 @interface MITCalendarsCalendar : MITManagedObject <MITMappedObject>
 
@@ -14,12 +14,15 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSOrderedSet *categories;
 @property (nonatomic, retain) NSOrderedSet *parentCategory;
+@property (nonatomic, retain) NSSet *events;
+
 @property (nonatomic, readonly) BOOL hasSubCategories;
 - (BOOL)isEqualToCalendar:(MITCalendarsCalendar *)calendar;
 
 @end
 
 @interface MITCalendarsCalendar (CoreDataGeneratedAccessors)
+
 - (void)insertObject:(MITCalendarsCalendar *)value inCategoriesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromCategoriesAtIndex:(NSUInteger)idx;
 - (void)insertCategories:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
@@ -40,4 +43,9 @@
 - (void)removeParentCategoryObject:(MITCalendarsCalendar *)value;
 - (void)addParentCategory:(NSOrderedSet *)values;
 - (void)removeParentCategory:(NSOrderedSet *)values;
+- (void)addEventsObject:(MITCalendarsEvent *)value;
+- (void)removeEventsObject:(MITCalendarsEvent *)value;
+- (void)addEvents:(NSSet *)values;
+- (void)removeEvents:(NSSet *)values;
+
 @end

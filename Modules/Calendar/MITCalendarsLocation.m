@@ -1,8 +1,9 @@
 #import "MITCalendarsLocation.h"
-
+#import "MITCalendarsEvent.h"
 
 @implementation MITCalendarsLocation
 
+@dynamic events;
 @dynamic locationDescription;
 @dynamic roomNumber;
 @dynamic coordinates;
@@ -13,7 +14,7 @@
     [mapping addAttributeMappingsFromDictionary:@{@"room_number": @"roomNumber",
                                                   @"description" : @"locationDescription"}];
     [mapping addAttributeMappingsFromArray:@[@"coordinates"]];
-
+    
     [mapping setIdentificationAttributes:@[@"roomNumber", @"locationDescription"]];
     return mapping;
 }

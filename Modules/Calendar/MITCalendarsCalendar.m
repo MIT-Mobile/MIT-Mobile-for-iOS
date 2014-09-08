@@ -1,7 +1,6 @@
 #import "MITCalendarsCalendar.h"
 #import "MITCalendarsCalendar.h"
 
-
 @implementation MITCalendarsCalendar
 
 @dynamic eventsUrl;
@@ -11,6 +10,8 @@
 @dynamic url;
 @dynamic categories;
 @dynamic parentCategory;
+@dynamic events;
+
 
 - (BOOL)hasSubCategories
 {
