@@ -64,9 +64,12 @@
         }
         self.previousPresentationStyle = nil;
     }
-    // TODO: Setup 5 minute interval datasource sync
-
     [self updateNavigationItem:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self intervalUpdate];
 }
 
 - (MITNewsCategoryGridViewController*)gridViewController
@@ -237,17 +240,12 @@
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 {
-    if (_storyUpdateInProgress) {
+    if (_storyUpdateInProgress || self.dataSource.isUpdating) {
         return;
     }
     
     _storyUpdateInProgress = YES;
     [self updateRefreshStatusWithText:@"Updating..."];
-    if (!refreshControl.refreshing) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [refreshControl beginRefreshing];
-        }];
-    }
     
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
@@ -360,6 +358,30 @@
 {
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
 }
+
+- (void)intervalUpdate
+{
+    if (self.lastUpdated) {
+        NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
+                                                                     fromDate:self.lastUpdated
+                                                                       toDate:[NSDate date]
+                                                                      options:0];
+        
+        NSInteger minutes = ([dateDiff second] / 60);
+        if (minutes >= 5) {
+            if (_presentationStyle == MITNewsPresentationStyleGrid) {
+                [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+            } else {
+                [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+            }
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.refreshControl beginRefreshing];
+                }];
+            [self reloadViewItems:self.refreshControl];
+        }
+    }
+}
+
 @end
 
 @implementation MITNewsiPadCategoryViewController (NewsDataSource)
