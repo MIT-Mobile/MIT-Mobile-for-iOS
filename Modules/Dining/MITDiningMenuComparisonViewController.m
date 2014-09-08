@@ -118,14 +118,14 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
     //
     self.visibleAggregatedMeal = self.aggregatedMeal;
     
-    if ([self didReachEdgeInDirection:MITPageDirectionBackward]) {
+    if (self.indexOfCurrentAggregateMeal == 0) {
         // Set the 'current'  meal reference (in this case, middle of the current page)
         // to the next meal..
         self.aggregatedMeal = [self aggregatedMealForMealInDirection:MITPageDirectionForward];
         
         //...and move the pointers around so everything is happy
         [self pagePointersRight];
-    } else if ([self didReachEdgeInDirection:MITPageDirectionForward]) { // Same as the above, only in the opposite direction
+    } else if (self.indexOfCurrentAggregateMeal >= self.dataManager.aggregatedMeals.count - 1) { // Same as the above, only in the opposite direction
         self.aggregatedMeal = [self aggregatedMealForMealInDirection:MITPageDirectionBackward];
         [self pagePointersLeft];
     } else {
@@ -151,7 +151,6 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
     // the meal and everything (should) be set by now.
     [self scrollAggregateMealToVisible:self.visibleAggregatedMeal animated:animated];
 }
-
 
 - (void)viewDidDisappear:(BOOL)animated
 {
@@ -398,6 +397,7 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
             break;
         case MITPageDirectionBackward:
             return self.dataManager.aggregatedMeals[self.indexOfCurrentAggregateMeal - 1];
+            break;
         default:
             return self.dataManager.aggregatedMeals[self.indexOfCurrentAggregateMeal];
             break;

@@ -344,7 +344,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     } else {
 
         self.currentlyDisplayedMeal = [self.comparisonViewController.dataManager mealForAggregatedMeal:self.comparisonViewController.visibleAggregatedMeal inVenue:self.houseVenue];
-        [self updateMealSelection];
         
         [self.comparisonViewController willMoveToParentViewController:nil];
         [self.navigationController setNavigationBarHidden:NO animated:YES];
@@ -357,6 +356,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
                             [self.comparisonViewController.view removeFromSuperview];
                             [self.comparisonViewController removeFromParentViewController];
                             self.comparisonViewController = nil;
+                            [self updateMealSelection];
                         }];
     }
 }
