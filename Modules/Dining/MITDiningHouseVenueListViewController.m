@@ -134,6 +134,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITDiningAnnouncementsCell];
         cell.backgroundColor = [UIColor colorWithRed:255/255.0 green:253/255.0 blue:205/255.0 alpha:1];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     }
     
     cell.textLabel.text = [[self.diningData.announcementsHTML stringByStrippingTags] stringByDecodingXMLEntities];
@@ -151,7 +152,8 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     
     MITDiningLinks *link = self.diningLinks[indexPath.row];
     cell.textLabel.text = link.name;
-
+    cell.textLabel.font = [UIFont systemFontOfSize:17.0];
+    
     return cell;
 }
 
