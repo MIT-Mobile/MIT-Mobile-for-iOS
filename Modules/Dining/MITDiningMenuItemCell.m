@@ -1,5 +1,6 @@
 #import "MITDiningMenuItemCell.h"
 #import "MITDiningMenuItem.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat kMITDiningMenuItemCellEstimatedHeight = 44.0;
 
@@ -20,7 +21,7 @@ static CGFloat kMITDiningMenuItemCellEstimatedHeight = 44.0;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.stationLabel.textColor =
-    self.ingredientsLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    self.ingredientsLabel.textColor = [UIColor mit_greyTextColor];
 }
 
 - (void)setFrame:(CGRect)frame

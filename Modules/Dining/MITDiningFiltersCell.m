@@ -1,5 +1,6 @@
 #import "MITDiningFiltersCell.h"
 #import "MITDiningMenuItem.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 
@@ -15,7 +16,7 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 {
     [self refreshLabelLayoutWidths];
     
-    self.filtersLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+    self.filtersLabel.textColor = [UIColor mit_greyTextColor];
 }
 
 - (void)setFrame:(CGRect)frame

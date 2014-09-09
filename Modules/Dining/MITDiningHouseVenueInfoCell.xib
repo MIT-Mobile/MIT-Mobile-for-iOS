@@ -15,22 +15,22 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PaQ-M5-92d">
-                        <rect key="frame" x="20" y="9" width="49" height="48"/>
+                        <rect key="frame" x="15" y="9" width="49" height="48"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="48" id="IGe-Rf-MDN"/>
                             <constraint firstAttribute="width" constant="49" id="rUE-Tq-A8b"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Venue Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="194" translatesAutoresizingMaskIntoConstraints="NO" id="NYM-ks-JwF">
-                        <rect key="frame" x="86" y="9" width="194" height="20"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Venue Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="201" translatesAutoresizingMaskIntoConstraints="NO" id="NYM-ks-JwF">
+                        <rect key="frame" x="79" y="9" width="201" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="194" translatesAutoresizingMaskIntoConstraints="NO" id="ugQ-uo-qCz">
-                        <rect key="frame" x="86" y="33" width="194" height="16"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Venue Hours" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="201" translatesAutoresizingMaskIntoConstraints="NO" id="ugQ-uo-qCz">
+                        <rect key="frame" x="79" y="33" width="201" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
@@ -47,8 +47,8 @@
                     </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="PaQ-M5-92d" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="0NB-UJ-hii"/>
-                    <constraint firstItem="NYM-ks-JwF" firstAttribute="leading" secondItem="PaQ-M5-92d" secondAttribute="trailing" constant="17" id="6kj-VU-to1"/>
+                    <constraint firstItem="PaQ-M5-92d" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="0NB-UJ-hii"/>
+                    <constraint firstItem="NYM-ks-JwF" firstAttribute="leading" secondItem="PaQ-M5-92d" secondAttribute="trailing" constant="15" id="6kj-VU-to1"/>
                     <constraint firstItem="NYM-ks-JwF" firstAttribute="trailing" secondItem="ugQ-uo-qCz" secondAttribute="trailing" id="A6O-Ox-WPB"/>
                     <constraint firstAttribute="centerY" secondItem="PaQ-M5-92d" secondAttribute="centerY" constant="0.5" id="EO4-kM-Obl"/>
                     <constraint firstAttribute="bottom" secondItem="ugQ-uo-qCz" secondAttribute="bottom" constant="17" id="Ekd-lz-NNP"/>

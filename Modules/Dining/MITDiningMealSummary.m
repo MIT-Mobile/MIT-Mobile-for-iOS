@@ -20,7 +20,7 @@
     }
 }
 
-- (NSString *)dateRangesString
++ (NSDateFormatter *)mealSummaryFormatter
 {
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {
@@ -28,11 +28,19 @@
         [dateFormatter setDateFormat:@"EE"];
         [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     }
+    return dateFormatter;
+}
+
+- (NSString *)dateRangesString
+{
+    NSString *startString = [[MITDiningMealSummary mealSummaryFormatter] stringFromDate:self.startDate];
+    NSString *endString = [[MITDiningMealSummary mealSummaryFormatter] stringFromDate:self.endDate];
     
-    NSString *startString = [dateFormatter stringFromDate:self.startDate];
-    NSString *endString = [dateFormatter stringFromDate:self.endDate];
-    
-    return [[NSString stringWithFormat:@"%@ - %@", startString, endString] lowercaseString];
+    if ([startString isEqualToString:endString]) {
+        return startString;
+    } else {
+        return [[NSString stringWithFormat:@"%@ - %@", startString, endString] lowercaseString];
+    }
 }
 
 - (NSString *)mealNamesStringsOnSeparateLines

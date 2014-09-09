@@ -96,7 +96,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return section == kMITVenueDetailSectionMenu ? 64.0 : 0.0;
+    return section == kMITVenueDetailSectionMenu ? 54.0 : 0.0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

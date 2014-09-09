@@ -15,36 +15,39 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Station" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cqE-h0-hTR">
-                        <rect key="frame" x="20" y="6" width="280" height="17"/>
+                        <rect key="frame" x="15" y="6" width="290" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="17" id="d4y-KE-vyh"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="Uxd-bK-vzi">
-                        <rect key="frame" x="20" y="24" width="280" height="21"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="Uxd-bK-vzi">
+                        <rect key="frame" x="15" y="24" width="290" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ingredients" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="G99-jO-sDe">
-                        <rect key="frame" x="20" y="46" width="280" height="17"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ingredients" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="G99-jO-sDe">
+                        <rect key="frame" x="15" y="45" width="290" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="cqE-h0-hTR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="0az-u7-3rk"/>
-                    <constraint firstItem="G99-jO-sDe" firstAttribute="leading" secondItem="Uxd-bK-vzi" secondAttribute="leading" id="2s5-kJ-skQ"/>
-                    <constraint firstAttribute="trailing" secondItem="cqE-h0-hTR" secondAttribute="trailing" constant="20" id="UEi-es-xd9"/>
-                    <constraint firstItem="G99-jO-sDe" firstAttribute="trailing" secondItem="Uxd-bK-vzi" secondAttribute="trailing" id="agu-gw-pqG"/>
-                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="trailing" secondItem="cqE-h0-hTR" secondAttribute="trailing" id="bIz-Z3-OTk"/>
-                    <constraint firstItem="G99-jO-sDe" firstAttribute="top" secondItem="Uxd-bK-vzi" secondAttribute="bottom" constant="1" id="bbJ-SD-g3m"/>
-                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="leading" secondItem="cqE-h0-hTR" secondAttribute="leading" id="c7C-3T-VCB"/>
-                    <constraint firstItem="cqE-h0-hTR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="mJI-Jh-usK"/>
-                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="top" secondItem="cqE-h0-hTR" secondAttribute="bottom" constant="1" id="oKQ-rP-KSE"/>
-                    <constraint firstAttribute="bottom" secondItem="G99-jO-sDe" secondAttribute="bottom" constant="6" id="z9C-pf-4jm"/>
+                    <constraint firstAttribute="bottom" secondItem="G99-jO-sDe" secondAttribute="bottom" constant="7" id="6Lh-zV-EkT"/>
+                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="trailing" secondItem="cqE-h0-hTR" secondAttribute="trailing" id="QWP-7L-iVC"/>
+                    <constraint firstAttribute="trailing" secondItem="cqE-h0-hTR" secondAttribute="trailing" constant="15" id="WW9-Ai-kLH"/>
+                    <constraint firstItem="G99-jO-sDe" firstAttribute="top" secondItem="Uxd-bK-vzi" secondAttribute="bottom" constant="1" id="Zhs-7z-qe0"/>
+                    <constraint firstItem="cqE-h0-hTR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="b6a-yG-sVA"/>
+                    <constraint firstItem="cqE-h0-hTR" firstAttribute="leading" secondItem="Uxd-bK-vzi" secondAttribute="leading" id="c75-fr-0U4"/>
+                    <constraint firstItem="G99-jO-sDe" firstAttribute="trailing" secondItem="Uxd-bK-vzi" secondAttribute="trailing" id="ciC-4j-Est"/>
+                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="leading" secondItem="G99-jO-sDe" secondAttribute="leading" id="oQR-Yy-d0o"/>
+                    <constraint firstItem="Uxd-bK-vzi" firstAttribute="top" secondItem="cqE-h0-hTR" secondAttribute="bottom" constant="1" id="umZ-bf-mZ5"/>
+                    <constraint firstItem="cqE-h0-hTR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="xLg-jw-fTu"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

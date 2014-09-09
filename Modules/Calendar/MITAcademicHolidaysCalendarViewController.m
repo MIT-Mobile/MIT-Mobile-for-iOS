@@ -2,6 +2,7 @@
 #import "MITCalendarManager.h"
 #import "MITCalendarWebservices.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString *const kMITHolidayCellName = @"kHolidayCellName";
 
@@ -83,7 +84,7 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITHolidayCellName];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITHolidayCellName];
-        cell.detailTextLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+        cell.detailTextLabel.textColor = [UIColor mit_greyTextColor];
     }
     
     MITCalendarsEvent *event = self.events[indexPath.row];
