@@ -42,29 +42,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rc1-4y-XxV" userLabel="Logo View">
-                                <rect key="frame" x="16" y="20" width="568" height="83"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mit-logo" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-H9-lcz">
-                                        <rect key="frame" x="26" y="28" width="66" height="35"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="cj9-H9-lcz" secondAttribute="height" multiplier="126:66" id="kcd-sB-FVy"/>
-                                            <constraint firstAttribute="width" constant="66" id="qkz-5q-cY3"/>
-                                        </constraints>
-                                    </imageView>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="cj9-H9-lcz" secondAttribute="bottom" constant="20" id="541-0L-6iD"/>
-                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="leading" secondItem="rc1-4y-XxV" secondAttribute="leading" constant="26" id="TZh-Dd-ic6"/>
-                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="top" secondItem="rc1-4y-XxV" secondAttribute="top" constant="28" id="akO-hf-JfP"/>
-                                </constraints>
-                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PGF-OG-hTZ">
-                                <rect key="frame" x="16" y="111" width="568" height="489"/>
+                                <rect key="frame" x="16" y="75" width="568" height="525"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="28" reuseIdentifier="DrawerItemCellReuseIdentifier" textLabel="OXW-jM-6Ec" style="IBUITableViewCellStyleDefault" id="faF-RV-gs1">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="28" reuseIdentifier="DrawerItemCellReuseIdentifier" textLabel="OXW-jM-6Ec" style="IBUITableViewCellStyleDefault" id="faF-RV-gs1">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="faF-RV-gs1" id="7sI-dV-o0O">
@@ -72,6 +54,7 @@
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXW-jM-6Ec">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
@@ -80,39 +63,78 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="Gno-Gy-Qfl" id="NFJ-KP-AJS"/>
+                                    <outlet property="delegate" destination="Gno-Gy-Qfl" id="kLM-Yt-u6A"/>
+                                </connections>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tWq-mE-HwC" customClass="MITGradientView">
-                                <rect key="frame" x="16" y="536" width="568" height="64"/>
-                                <color key="backgroundColor" white="1" alpha="0.69999999999999996" colorSpace="calibratedWhite"/>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tWq-mE-HwC" userLabel="Bottom Gradient View" customClass="MITGradientView">
+                                <rect key="frame" x="16" y="504" width="568" height="96"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                                </accessibility>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="64" id="vz9-7M-OjR"/>
+                                    <constraint firstAttribute="height" constant="96" id="vz9-7M-OjR"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L2p-My-RBr" userLabel="Logo Container">
+                                <rect key="frame" x="16" y="20" width="568" height="55"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mit-logo" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-H9-lcz">
+                                        <rect key="frame" x="20" y="20" width="66" height="35"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="cj9-H9-lcz" secondAttribute="height" multiplier="126:66" id="kcd-sB-FVy"/>
+                                            <constraint firstAttribute="width" constant="66" id="qkz-5q-cY3"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="leading" secondItem="L2p-My-RBr" secondAttribute="leading" constant="20" id="1Oy-K2-Neg"/>
+                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="top" constant="20" id="7ne-LI-Y05"/>
+                                    <constraint firstAttribute="bottom" secondItem="cj9-H9-lcz" secondAttribute="bottom" id="ZwT-83-zi9"/>
+                                </constraints>
+                            </view>
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rc1-4y-XxV" userLabel="Top Gradient View" customClass="MITGradientView">
+                                <rect key="frame" x="16" y="75" width="568" height="20"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="Drm-nh-P3S"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="L2p-My-RBr" firstAttribute="top" secondItem="C4C-1f-Nig" secondAttribute="bottom" id="22t-Pk-2Kf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="rc1-4y-XxV" secondAttribute="trailing" id="4QJ-yk-VQ1"/>
+                            <constraint firstItem="L2p-My-RBr" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="7WY-sb-LVy"/>
                             <constraint firstItem="cW3-k6-Ycr" firstAttribute="top" secondItem="PGF-OG-hTZ" secondAttribute="bottom" id="FYw-oo-EFP"/>
                             <constraint firstItem="PGF-OG-hTZ" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="Hzw-bg-a60"/>
                             <constraint firstItem="tWq-mE-HwC" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="Jih-6y-6T8"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="rc1-4y-XxV" secondAttribute="trailing" id="L3L-pX-Isl"/>
                             <constraint firstItem="tWq-mE-HwC" firstAttribute="trailing" secondItem="eTz-6P-ORC" secondAttribute="trailingMargin" id="Qqu-kg-sJa"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PGF-OG-hTZ" secondAttribute="trailing" id="TBF-aY-IaH"/>
-                            <constraint firstItem="rc1-4y-XxV" firstAttribute="top" secondItem="C4C-1f-Nig" secondAttribute="bottom" id="Xdw-Kz-tG9"/>
-                            <constraint firstItem="rc1-4y-XxV" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="Xer-Xu-rq2"/>
-                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="top" secondItem="rc1-4y-XxV" secondAttribute="bottom" constant="8" id="mpX-4Q-iAq"/>
+                            <constraint firstItem="rc1-4y-XxV" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="bottom" id="VSe-Oc-M1w"/>
+                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="bottom" id="fev-Vu-SZ4"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="L2p-My-RBr" secondAttribute="trailing" id="je7-T9-py6"/>
+                            <constraint firstItem="rc1-4y-XxV" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="uLa-az-hbV"/>
                             <constraint firstItem="cW3-k6-Ycr" firstAttribute="top" secondItem="tWq-mE-HwC" secondAttribute="bottom" id="yho-qT-1S5"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="gradientView" destination="tWq-mE-HwC" id="gjl-ch-0Zc"/>
+                        <outlet property="bottomGradientView" destination="tWq-mE-HwC" id="EYr-Rj-z84"/>
+                        <outlet property="logoContainer" destination="L2p-My-RBr" id="7Hb-ZH-yKA"/>
                         <outlet property="logoView" destination="cj9-H9-lcz" id="oRO-aN-jlI"/>
                         <outlet property="tableView" destination="PGF-OG-hTZ" id="6rB-j1-ena"/>
-                        <outlet property="topView" destination="rc1-4y-XxV" id="1zg-vr-6GL"/>
+                        <outlet property="topGradientView" destination="rc1-4y-XxV" id="3Qd-Jg-epK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOj-io-mdT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="436" y="996"/>
+            <point key="canvasLocation" x="436" y="990"/>
         </scene>
         <!--Default Top View Controller-->
         <scene sceneID="yCb-yi-SR7">
