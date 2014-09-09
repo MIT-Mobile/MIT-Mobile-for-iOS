@@ -370,14 +370,8 @@
                                                                      fromDate:self.dataSource.refreshedAt
                                                                        toDate:[NSDate date]
                                                                       options:0];
-        
         NSInteger minutes = ([dateDiff second] / 60);
         if (minutes >= 5) {
-            if (_presentationStyle == MITNewsPresentationStyleGrid) {
-                [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
-            } else {
-                [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
-            }
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.refreshControl beginRefreshing];
                 }];
