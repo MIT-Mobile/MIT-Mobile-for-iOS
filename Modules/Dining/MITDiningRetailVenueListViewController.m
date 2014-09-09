@@ -1,15 +1,13 @@
 #import "MITDiningRetailVenueListViewController.h"
-#import "MITCoreData.h"
-#import "MITAdditions.h"
-
 #import "MITDiningRetailVenue.h"
 #import "MITDiningRetailVenueDetailViewController.h"
 #import "MITDiningRetailVenueDataManager.h"
 #import "MITDiningVenueCell.h"
 
+
 static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
-@interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate>
+@interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate, MITDiningRefreshableViewController>
 
 @property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 @property (nonatomic) BOOL shouldUpdateTableData;
@@ -49,6 +47,9 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 {
     UINib *cellNib = [UINib nibWithNibName:kMITDiningVenueCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningVenueCell];
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -115,6 +116,20 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 - (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue
 {
     self.shouldUpdateTableData = YES;
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlValueChanged
+{
+    if (self.refreshControl.refreshing && [self.refreshDelegate respondsToSelector:@selector(viewControllerRequestsDataUpdate:)]) {
+        [self.refreshDelegate viewControllerRequestsDataUpdate:self];
+    }
+}
+
+- (void)refreshRequestComplete
+{
+    [self.refreshControl endRefreshing];
 }
 
 @end

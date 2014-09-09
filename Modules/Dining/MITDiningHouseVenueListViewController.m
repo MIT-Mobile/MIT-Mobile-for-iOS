@@ -33,18 +33,15 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     [self setupTableView];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source/delegate
 
 - (void)setupTableView
 {
     UINib *cellNib = [UINib nibWithNibName:kMITDiningVenueCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningVenueCell];
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -188,6 +185,20 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
         default:
             break;
     }
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlValueChanged
+{
+    if (self.refreshControl.refreshing && [self.refreshDelegate respondsToSelector:@selector(viewControllerRequestsDataUpdate:)]) {
+        [self.refreshDelegate viewControllerRequestsDataUpdate:self];
+    }
+}
+
+- (void)refreshRequestComplete
+{
+    [self.refreshControl endRefreshing];
 }
 
 #pragma mark - Setters
