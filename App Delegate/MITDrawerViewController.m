@@ -1,5 +1,4 @@
 #import "MITDrawerViewController.h"
-#import "UIViewController+MITDrawerNavigation.h"
 #import "MITModule.h"
 #import "MITSlidingViewController.h"
 #import "MITGradientView.h"
@@ -32,7 +31,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 {
     [super viewWillAppear:animated];
     
-    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.topGradientView.frame), 0, 0, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.topGradientView.frame), 0, CGRectGetHeight(self.bottomGradientView.frame) / 2.0, 0);
     [self.tableView reloadData];
 }
 
