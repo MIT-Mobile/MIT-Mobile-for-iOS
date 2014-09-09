@@ -72,9 +72,17 @@ static CGFloat const kMITDiningFilterHeaderHeight = 40.0;
     headerLabel.text = @"Select options to be viewed.";
     headerLabel.bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), kMITDiningFilterHeaderHeight);
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.textColor = [UIColor darkTextColor];
-    headerLabel.backgroundColor = [UIColor clearColor];
-    headerLabel.font = [UIFont systemFontOfSize:15.0];
+    headerLabel.textColor = [UIColor mit_greyTextColor];
+    headerLabel.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    headerLabel.font = [UIFont systemFontOfSize:14.0];
+    
+    UIView *separatorBar = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                                    kMITDiningFilterHeaderHeight -1,
+                                                                    headerLabel.bounds.size.width,
+                                                                    1)];
+    separatorBar.backgroundColor = [UIColor colorWithRed:227.0/255.0 green:227.0/255.0 blue:229.0/255.0 alpha:1.0];
+    [headerLabel addSubview:separatorBar];
+    
     self.tableView.tableHeaderView = headerLabel;
 }
 
