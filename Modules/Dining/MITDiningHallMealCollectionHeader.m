@@ -51,7 +51,11 @@
     self.imageView.image = nil;
     [self.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
     
-    self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, [[day mealForDate:[NSDate date]] mealHoursDescription]];
+    NSString *mealHoursString = @"";
+    if ([day mealWithName:mealName]) {
+        mealHoursString = [[day mealWithName:mealName] mealHoursDescription];
+    }
+    self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, mealHoursString];
     
     if ([venue isOpenNow]) {
         self.currentStatusLabel.text = @"Open";

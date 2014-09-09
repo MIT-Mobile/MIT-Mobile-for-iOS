@@ -127,13 +127,20 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 
 - (void)selectBestMealForCurrentDate
 {
+    NSDate *currentDate = [NSDate date];
     MITDiningHouseDay *dayToSelect = nil;
+    MITDiningMeal *closestMeal = nil;
     
     for (MITDiningHouseVenue *venue in self.diningHouses) {
         for (MITDiningHouseDay *day in venue.mealsByDay) {
             if ([[day.date dateWithoutTime] isEqualToDate:[[NSDate date] dateWithoutTime]]) {
-                dayToSelect = day;
-                break;
+                MITDiningMeal *bestMealInDay = [day bestMealForDate:currentDate];
+                NSTimeInterval bestMealInDayTimeDifference = [bestMealInDay startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
+                NSTimeInterval closestMealTimeDifference = [closestMeal startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
+                if (!closestMeal || bestMealInDayTimeDifference < closestMealTimeDifference) {
+                    closestMeal = bestMealInDay;
+                    dayToSelect = day;
+                }
             }
         }
     }
@@ -146,7 +153,6 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     }
     
     if (dayToSelect) {
-        NSDate *currentDate = [NSDate date];
         MITDiningMeal *mealToSelect = [dayToSelect bestMealForDate:currentDate];
         [self.mealSelector selectMeal:mealToSelect.name onDate:currentDate];
         [self selectDate:dayToSelect.date mealName:mealToSelect.name];
