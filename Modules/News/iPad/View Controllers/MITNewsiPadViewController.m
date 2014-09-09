@@ -278,6 +278,12 @@
                             } completion:^(BOOL finished) {
                                 _isTransitioningToPresentationStyle = NO;
                                 [toViewController didMoveToParentViewController:self];
+                                //In landscape mode we need this to show the refresh when first starting module
+                                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                    if (!self.lastUpdated) {
+                                        [self startAndShowRefreshControl];
+                                    }
+                                }];
                             }];
         } else {
             [fromViewController willMoveToParentViewController:nil];
@@ -293,6 +299,25 @@
                                         [toViewController didMoveToParentViewController:self];
                                         [fromViewController removeFromParentViewController];
                                     }];
+        }
+    }
+}
+
+- (void)startAndShowRefreshControl
+{
+    if (_storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
+        if (_presentationStyle == MITNewsPresentationStyleGrid) {
+            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+        } else {
+            [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+        }
+        [self updateRefreshStatusWithText:@"Updating..."];
+        
+        if (!self.refreshControl.refreshing) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl endRefreshing];
+                [self.refreshControl beginRefreshing];
+            }];
         }
     }
 }
@@ -438,16 +463,23 @@
     }
     
     __weak MITNewsiPadViewController *weakSelf = self;
+    __weak UIRefreshControl *weakRefresh = refreshControl;
     if (refreshControl.refreshing) {
         [self updateRefreshStatusWithText:@"Updating..."];
     }
     [self reloadItems:^(NSError *error) {
         _storyUpdateInProgress = NO;
         MITNewsiPadViewController *strongSelf = weakSelf;
+        UIRefreshControl *strongRefresh = weakRefresh;
+        
         if (!strongSelf) {
             return;
         }
         if (error) {
+            if (!strongRefresh) {
+                return;
+            }
+            strongSelf.refreshControl = strongRefresh;
             DDLogWarn(@"update failed; %@",error);
             if (error.code == NSURLErrorNotConnectedToInternet) {
                 [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
@@ -458,20 +490,27 @@
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
             }
             if ([strongSelf.categoriesDataSource.objects count]) {
-                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                    [refreshControl endRefreshing];
-                });
+                if (strongRefresh.refreshing) {
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                        [strongRefresh endRefreshing];
+                    });
+                }
             }
             
         } else {
+            if (!strongRefresh) {
+                return;
+            }
+            strongSelf.refreshControl = strongRefresh;
             strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
-            
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                [refreshControl endRefreshing];
-            });
+            if (strongRefresh.refreshing) {
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                    [strongRefresh endRefreshing];
+                });
+            }
         }
     }];
 }
