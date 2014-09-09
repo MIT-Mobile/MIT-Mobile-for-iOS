@@ -155,12 +155,11 @@ static NSUInteger const MITModuleSectionIndex = 0;
     if (![self.selectedIndexPath isEqual:indexPath]) {
         NSIndexPath *previousIndexPath = self.selectedIndexPath;
         self.selectedIndexPath = indexPath;
-        
-        MITModule *module = [self _moduleForIndexPath:indexPath];
-        [MIT_MobileAppDelegate applicationDelegate].rootViewController.visibleModule = module;
-        
         [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath,previousIndexPath] withRowAnimation:UITableViewScrollPositionNone];
     }
+    
+    MITModule *module = [self _moduleForIndexPath:indexPath];
+    [MIT_MobileAppDelegate applicationDelegate].rootViewController.visibleModule = module;
 }
 
 @end
