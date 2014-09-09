@@ -8,6 +8,7 @@
 
 #import "MITFacilitiesHomeViewController.h"
 #import "FacilitiesCategoryViewController.h"
+#import "FacilitiesTypeViewController.h"
 #import "MITBuildingServicesReportForm.h"
 
 #import "UIKit+MITAdditions.h"
@@ -186,52 +187,98 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView attributeCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
+    UITableViewCell *cell = nil;
     
-    NSInteger row = indexPath.row;
-    
-    if( !self.hasSelectedBuilding && row >= MITFacilitiesFormFieldRoom )
-    {
-        row++;
-    }
-    
-    BOOL hasDisclosureIndicator = NO;
-    
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
-    subitleLabel.text = nil;
+    NSInteger row = [self adjustedFieldRow:indexPath.row];
     
     switch (row) {
         case MITFacilitiesFormFieldEmail:
-            titleLabel.text = @"email";
+            cell = [self emailFieldCellWithIndexPath:indexPath];
             break;
         case MITFacilitiesFormFieldLocation:
-            titleLabel.text = @"location";
-            subitleLabel.text = self.reportForm.location.name;
-            hasDisclosureIndicator = YES;
+            cell = [self locationFieldCellWithIndexPath:indexPath];
             break;
         case MITFacilitiesFormFieldRoom:
-            titleLabel.text = @"room";
-            hasDisclosureIndicator = YES;
+            cell = [self roomFieldCellWithIndexPath:indexPath];
             break;
         case MITFacilitiesFormFieldProblemType:
-            titleLabel.text = @"problem type";
-            hasDisclosureIndicator = YES;
+            cell = [self problemTypeFieldCellWithIndexPath:indexPath];
             break;
         case MITFacilitiesFormFieldDescription:
-            titleLabel.text = @"description";
+            cell = [self descriptionFieldCellWithIndexPath:indexPath];
             break;
     }
+    
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
     
     titleLabel.textColor = [UIColor mit_tintColor];
     titleLabel.font = [UIFont systemFontOfSize:14];
     
     cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
     
-    if( hasDisclosureIndicator )
-    {
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
+    return cell;
+}
+
+- (UITableViewCell *)emailFieldCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    titleLabel.text = @"email";
+    
+    return cell;
+}
+
+- (UITableViewCell *)locationFieldCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
+    
+    titleLabel.text = @"location";
+    subitleLabel.text = self.reportForm.location.name;
+    
+    return cell;
+}
+
+- (UITableViewCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    titleLabel.text = @"room";
+    
+    return cell;
+}
+
+- (UITableViewCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
+    
+    titleLabel.text = @"problem type";
+    subitleLabel.text = self.reportForm.problemType.name;
+    
+    return cell;
+}
+
+- (UITableViewCell *)descriptionFieldCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    titleLabel.text = @"description";
     
     return cell;
 }
@@ -240,12 +287,19 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if( indexPath.row == MITFacilitiesFormFieldLocation )
+    NSInteger row = [self adjustedFieldRow:indexPath.row];
+    
+    if( row == MITFacilitiesFormFieldLocation )
     {
         FacilitiesCategoryViewController *vc = [[FacilitiesCategoryViewController alloc] init];
         [self.navigationController pushViewController:vc animated:YES];
         
         return;
+    }
+    else if( row == MITFacilitiesFormFieldProblemType )
+    {
+        FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
     }
 }
 
@@ -262,6 +316,16 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (NSInteger)lastRowIndex
 {
     return [self numberOfFormFields] - 1;
+}
+
+- (NSInteger)adjustedFieldRow:(NSInteger)row
+{
+    if( !self.hasSelectedBuilding && row >= MITFacilitiesFormFieldRoom )
+    {
+        row++;
+    }
+    
+    return row;
 }
 
 /*

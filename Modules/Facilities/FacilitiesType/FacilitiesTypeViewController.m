@@ -3,7 +3,9 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocationData.h"
 #import "UIKit+MITAdditions.h"
+#import "UINavigationController+MITAdditions.h"
 #import "FacilitiesRepairType.h"
+#import "MITBuildingServicesReportForm.h"
 #import <QuartzCore/QuartzCore.h>
 
 @interface FacilitiesTypeViewController ()
@@ -142,14 +144,18 @@
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.userData];
-    [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
-             forKey:FacilitiesRequestRepairTypeKey];
+//    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.userData];
+//    [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
+//             forKey:FacilitiesRequestRepairTypeKey];
     
-    FacilitiesSummaryViewController *vc = [[FacilitiesSummaryViewController alloc] init];
-    vc.reportData = dict;
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
+//    FacilitiesSummaryViewController *vc = [[FacilitiesSummaryViewController alloc] init];
+//    vc.reportData = dict;
+//    [self.navigationController pushViewController:vc
+//                                         animated:YES];
+    
+    FacilitiesRepairType *problemType = [self repairTypes][indexPath.row];
+    [[MITBuildingServicesReportForm sharedServiceReport] setProblemType:problemType];
+    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
