@@ -28,7 +28,8 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
+    
+    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -103,13 +104,15 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (BOOL)setVisibleModuleWithNotification:(MITNotification *)notification
 {
+    NSAssert(NO, @"Not implemented yet");
+    
     MITModule *module = [self _moduleWithTag:notification.tag];
     if (!module) {
         DDLogWarn(@"failed to find module with tag '%@'", notification.tag);
         return NO;
     }
 
-    UIViewController *viewController = [module homeViewControllerForNotification:notification];
+    UIViewController *viewController = nil;
     if (!viewController) {
         DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", module.tag);
         return NO;
@@ -121,7 +124,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (BOOL)setVisibleModuleWithURL:(NSURL *)url
 {
-    
+    return NO;
 }
 
 - (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)viewController
@@ -133,7 +136,18 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
 
     _visibleModule = module;
+    self.drawerViewController.selectedModule = module;
+    
+    if (self.topViewController != viewController) {
+        [self.topViewController.view removeGestureRecognizer:self.panGesture];
+    }
+    
     [self setTopViewController:viewController];
+    [self resetTopViewAnimated:YES onComplete:^{
+        if (![viewController.view.gestureRecognizers containsObject:self.panGesture]) {
+            [viewController.view addGestureRecognizer:self.panGesture];
+        }
+    }];
 }
 
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
