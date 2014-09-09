@@ -1,7 +1,7 @@
 #import "ECSlidingViewController.h"
-#import "UIViewController+MITDrawerNavigation.h"
 
 @class MITModule;
+@class MITNotification;
 
 @interface MITSlidingViewController : ECSlidingViewController
 @property (nonatomic,copy) NSArray *modules;

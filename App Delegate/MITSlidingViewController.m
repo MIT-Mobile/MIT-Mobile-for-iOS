@@ -2,11 +2,13 @@
 #import "MITAdditions.h"
 #import "MITModule.h"
 #import "MITDrawerViewController.h"
+#import "MITScaleAnimationController.h"
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
-@interface MITSlidingViewController () <UITableViewDataSource,UITableViewDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate>
 @property (nonatomic,readonly) MITDrawerViewController *drawerViewController;
+@property(nonatomic,weak) id<UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout> animationController;
 @end
 
 @implementation MITSlidingViewController
@@ -28,7 +30,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.delegate = self;
     self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
 }
 
@@ -124,7 +126,28 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (BOOL)setVisibleModuleWithURL:(NSURL *)url
 {
-    return NO;
+    NSAssert(NO, @"Not implemented yet");
+    
+    if (![url.scheme isEqualToString:MITInternalURLScheme]) {
+        DDLogWarn(@"unable to open URL with scheme '%@'",url.scheme);
+        return NO;
+    }
+    
+    NSString *tag = url.host;
+    MITModule *module = [self _moduleWithTag:tag];
+    if (!module) {
+        DDLogWarn(@"failed to find module with tag '%@'",tag);
+        return NO;
+    }
+    
+    UIViewController *viewController = nil;
+    if (!viewController) {
+        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", module.tag);
+        return NO;
+    }
+    
+    [self setVisibleModule:module withViewController:viewController];
+    return YES;
 }
 
 - (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)viewController
@@ -140,9 +163,9 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     
     if (self.topViewController != viewController) {
         [self.topViewController.view removeGestureRecognizer:self.panGesture];
+        [self setTopViewController:viewController];
     }
     
-    [self setTopViewController:viewController];
     [self resetTopViewAnimated:YES onComplete:^{
         if (![viewController.view.gestureRecognizers containsObject:self.panGesture]) {
             [viewController.view addGestureRecognizer:self.panGesture];
@@ -152,7 +175,11 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
 {
-    return nil;
+    if (self.animationController) {
+        return self;
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark Private
@@ -174,5 +201,27 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }];
 
     return selectedModule;
+}
+
+#pragma mark Delegation
+- (id<UIViewControllerAnimatedTransitioning>)slidingViewController:(ECSlidingViewController *)slidingViewController
+                                   animationControllerForOperation:(ECSlidingViewControllerOperation)operation
+                                                 topViewController:(UIViewController *)topViewController {
+    CGFloat scaleFactor = [self _scaleFactorForFrame:slidingViewController.view.bounds];
+    MITScaleAnimationController *animationController = [[MITScaleAnimationController alloc] initWithOperation:operation scaleFactor:scaleFactor];
+    
+    self.animationController = animationController;
+    return animationController;
+}
+
+- (id<ECSlidingViewControllerLayout>)slidingViewController:(ECSlidingViewController *)slidingViewController
+                        layoutControllerForTopViewPosition:(ECSlidingViewControllerTopViewPosition)topViewPosition {
+    return self.animationController;
+}
+
+- (CGFloat)_scaleFactorForFrame:(CGRect)frame
+{
+    CGFloat statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) * 2.;
+    return (CGRectGetHeight(frame) - statusBarHeight) / CGRectGetHeight(frame);
 }
 @end
