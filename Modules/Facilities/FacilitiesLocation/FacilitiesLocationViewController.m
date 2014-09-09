@@ -91,9 +91,6 @@
     {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            searchBar.barStyle = UIBarStyleBlackOpaque;
-        }
         
         UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
                                                                                         contentsController:self];
