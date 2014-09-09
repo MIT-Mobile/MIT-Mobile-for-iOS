@@ -24,15 +24,15 @@
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yGB-Ho-16b">
-                    <rect key="frame" x="292" y="16" width="13" height="22"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yGB-Ho-16b">
+                    <rect key="frame" x="304" y="16" width="16" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" image="global/action-arrow-right.png">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q57-Wq-ALT">
-                    <rect key="frame" x="20" y="16" width="13" height="22"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q57-Wq-ALT">
+                    <rect key="frame" x="0.0" y="16" width="16" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" image="global/action-arrow-left.png">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -44,11 +44,11 @@
                 <constraint firstAttribute="bottom" secondItem="38G-rP-lhX" secondAttribute="bottom" constant="6" id="2Uc-BH-d6o"/>
                 <constraint firstAttribute="centerY" secondItem="yGB-Ho-16b" secondAttribute="centerY" id="336-76-Rhw"/>
                 <constraint firstAttribute="centerY" secondItem="Q57-Wq-ALT" secondAttribute="centerY" id="H1i-I2-hyl"/>
-                <constraint firstItem="Q57-Wq-ALT" firstAttribute="leading" secondItem="xwp-xB-Ll1" secondAttribute="leading" constant="20" id="bfR-em-3al"/>
+                <constraint firstItem="Q57-Wq-ALT" firstAttribute="leading" secondItem="xwp-xB-Ll1" secondAttribute="leading" id="bfR-em-3al"/>
                 <constraint firstAttribute="centerX" secondItem="38G-rP-lhX" secondAttribute="centerX" id="e49-rY-Tm2"/>
                 <constraint firstAttribute="centerX" secondItem="Y1Z-Tv-fQv" secondAttribute="centerX" id="iXW-8Z-crl"/>
                 <constraint firstItem="Y1Z-Tv-fQv" firstAttribute="top" secondItem="xwp-xB-Ll1" secondAttribute="top" constant="7" id="sMe-vr-4qi"/>
-                <constraint firstAttribute="trailing" secondItem="yGB-Ho-16b" secondAttribute="trailing" constant="15" id="zGV-74-agQ"/>
+                <constraint firstAttribute="trailing" secondItem="yGB-Ho-16b" secondAttribute="trailing" id="zGV-74-agQ"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
