@@ -629,26 +629,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return moduleForTag;
 }
 
-- (UIViewController*)viewControllerForModuleWithTag:(NSString*)tag
-{
-    UIViewController *viewController = self.viewControllersByTag[tag];
- 
-    if (!_viewControllersByTag) {
-        self.viewControllersByTag = [[NSMutableDictionary alloc] init];
-    }
-    
-    if (!viewController) {
-        MITModule *module = [self moduleForTag:tag];
-        viewController = [module homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
-        
-        if (viewController) {
-            self.viewControllersByTag[tag] = viewController;
-        }
-    }
-    
-    return viewController;
-}
-
 - (void)showModuleForTag:(NSString *)tag
 {
     [self showModuleForTag:tag animated:YES];

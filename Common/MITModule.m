@@ -41,20 +41,21 @@
 
 - (UIViewController*)homeViewController
 {
-    return [self homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
-}
-
-- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
-{
-    UIViewController *viewController = nil;
-    if (idiom == UIUserInterfaceIdiomPad) {
-        viewController = [self createHomeViewControllerForPadIdiom];
-    } else if (idiom == UIUserInterfaceIdiomPhone) {
-        viewController = [self createHomeViewControllerForPhoneIdiom];
+    UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    UIViewController *viewController = _homeViewController;
+    
+    if (!viewController) {
+        if (idiom == UIUserInterfaceIdiomPad) {
+            viewController = [self createHomeViewControllerForPadIdiom];
+        } else if (idiom == UIUserInterfaceIdiomPhone) {
+            viewController = [self createHomeViewControllerForPhoneIdiom];
+        }
+        
+        _homeViewController = viewController;
     }
     
-    _homeViewController = viewController;
     return viewController;
+    
 }
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
