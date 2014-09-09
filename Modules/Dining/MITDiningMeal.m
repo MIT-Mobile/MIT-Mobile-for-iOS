@@ -45,7 +45,7 @@
 // This checks only if the meals are the same meal (i.e. breakfast) and at the same time of day... it doesn't check what day they're on, or if the menu items are the same.
 - (BOOL)isSuperficiallyEqualToMeal:(MITDiningMeal *)meal
 {
-    return ([self.name isEqualToString:meal.name] && ([self.message isEqualToString:meal.message] ||
+    return ([[self.name lowercaseString] isEqualToString:[meal.name lowercaseString]] && ([self.message isEqualToString:meal.message] ||
                                               ([self.startTimeString isEqualToString:meal.startTimeString] &&
                                                [self.endTimeString isEqualToString:meal.endTimeString])));
 }
