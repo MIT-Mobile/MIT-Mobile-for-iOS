@@ -4,7 +4,6 @@
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with attributes relative to the layout margin" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Sliding View Controller-->
@@ -43,7 +42,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PGF-OG-hTZ">
-                                <rect key="frame" x="16" y="75" width="568" height="525"/>
+                                <rect key="frame" x="0.0" y="75" width="600" height="525"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="28" reuseIdentifier="DrawerItemCellReuseIdentifier" textLabel="OXW-jM-6Ec" style="IBUITableViewCellStyleDefault" id="faF-RV-gs1">
@@ -69,7 +68,7 @@
                                 </connections>
                             </tableView>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tWq-mE-HwC" userLabel="Bottom Gradient View" customClass="MITGradientView">
-                                <rect key="frame" x="16" y="504" width="568" height="96"/>
+                                <rect key="frame" x="0.0" y="504" width="600" height="96"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
@@ -79,7 +78,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L2p-My-RBr" userLabel="Logo Container">
-                                <rect key="frame" x="16" y="20" width="568" height="55"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="55"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mit-logo" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-H9-lcz">
                                         <rect key="frame" x="20" y="20" width="66" height="35"/>
@@ -97,7 +96,7 @@
                                 </constraints>
                             </view>
                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rc1-4y-XxV" userLabel="Top Gradient View" customClass="MITGradientView">
-                                <rect key="frame" x="16" y="75" width="568" height="20"/>
+                                <rect key="frame" x="0.0" y="75" width="600" height="20"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
@@ -110,17 +109,17 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="L2p-My-RBr" firstAttribute="top" secondItem="C4C-1f-Nig" secondAttribute="bottom" id="22t-Pk-2Kf"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="rc1-4y-XxV" secondAttribute="trailing" id="4QJ-yk-VQ1"/>
-                            <constraint firstItem="L2p-My-RBr" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="7WY-sb-LVy"/>
+                            <constraint firstAttribute="trailing" secondItem="rc1-4y-XxV" secondAttribute="trailing" id="4QJ-yk-VQ1"/>
+                            <constraint firstItem="L2p-My-RBr" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="7WY-sb-LVy"/>
                             <constraint firstItem="cW3-k6-Ycr" firstAttribute="top" secondItem="PGF-OG-hTZ" secondAttribute="bottom" id="FYw-oo-EFP"/>
-                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="Hzw-bg-a60"/>
-                            <constraint firstItem="tWq-mE-HwC" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="Jih-6y-6T8"/>
-                            <constraint firstItem="tWq-mE-HwC" firstAttribute="trailing" secondItem="eTz-6P-ORC" secondAttribute="trailingMargin" id="Qqu-kg-sJa"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="PGF-OG-hTZ" secondAttribute="trailing" id="TBF-aY-IaH"/>
+                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="Hzw-bg-a60"/>
+                            <constraint firstItem="tWq-mE-HwC" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="Jih-6y-6T8"/>
+                            <constraint firstItem="tWq-mE-HwC" firstAttribute="trailing" secondItem="eTz-6P-ORC" secondAttribute="trailing" id="Qqu-kg-sJa"/>
+                            <constraint firstAttribute="trailing" secondItem="PGF-OG-hTZ" secondAttribute="trailing" id="TBF-aY-IaH"/>
                             <constraint firstItem="rc1-4y-XxV" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="bottom" id="VSe-Oc-M1w"/>
                             <constraint firstItem="PGF-OG-hTZ" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="bottom" id="fev-Vu-SZ4"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="L2p-My-RBr" secondAttribute="trailing" id="je7-T9-py6"/>
-                            <constraint firstItem="rc1-4y-XxV" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leadingMargin" id="uLa-az-hbV"/>
+                            <constraint firstAttribute="trailing" secondItem="L2p-My-RBr" secondAttribute="trailing" id="je7-T9-py6"/>
+                            <constraint firstItem="rc1-4y-XxV" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="uLa-az-hbV"/>
                             <constraint firstItem="cW3-k6-Ycr" firstAttribute="top" secondItem="tWq-mE-HwC" secondAttribute="bottom" id="yho-qT-1S5"/>
                         </constraints>
                     </view>
