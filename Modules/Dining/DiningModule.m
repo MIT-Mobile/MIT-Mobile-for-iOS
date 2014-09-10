@@ -1,7 +1,4 @@
 #import "DiningModule.h"
-//#import "DiningMapListViewController.h"
-//#import "DiningData.h"
-//#import "DiningDietaryFlag.h"
 #import "MITDiningHomeViewController.h"
 #import "MITDiningHomeContainerViewControllerPad.h"
 

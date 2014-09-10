@@ -1,13 +1,10 @@
 #import "MITDiningRetailVenueDetailViewController.h"
-
 #import "MITDiningRetailVenue.h"
 #import "MITDiningRetailDay.h"
 #import "MITDiningLocation.h"
-
-#import "DiningHallDetailHeaderView.h"
+#import "MITDiningVenueInfoCell.h"
 #import "MITDiningCustomSeparatorCell.h"
 #import "MITDiningRetailInfoScheduleCell.h"
-
 #import "CoreDataManager.h"
 #import "MITAdditions.h"
 
@@ -19,6 +16,8 @@ static NSString * const kPaymentMethodsKey = @"paymentMethods";
 static NSString * const kLocationKey = @"location";
 static NSString * const kHomePageURLKey = @"homepageURL";
 static NSString * const kAddToFavoritesKey = @"addToFavorites";
+
+static NSString *const kMITVenueInfoCell = @"MITDiningVenueInfoCell";
 
 static CGFloat const kLeftPadding = 15.0;
 
@@ -52,7 +51,6 @@ static int const kWebViewTag = 4231;
     self.title = self.retailVenue.shortName;
     
     [self setupTableView];
-    [self setupHeaderView];
     [self setupAvailableInfoKeys];
 }
 
@@ -83,36 +81,9 @@ static int const kWebViewTag = 4231;
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-}
-
-#pragma mark - Header Setup
-
-- (void)setupHeaderView
-{
-    CGRect headerRect = CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87);
-    DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:headerRect];
-    headerView.titleLabel.text = self.retailVenue.name;
-    headerView.infoButton.hidden = YES;
-    headerView.shouldIncludeSeparator = NO;
     
-    [headerView.iconView setImageWithURL:[NSURL URLWithString:self.retailVenue.iconURL]];
-    
-    headerView.timeLabel.textColor = self.retailVenue.isOpenNow ? [UIColor colorWithHexString:@"#009900"] : [UIColor colorWithHexString:@"#d20000"];
-    headerView.timeLabel.text = [self openClosedStatus];
-    self.tableView.tableHeaderView = headerView;
-}
-
-- (NSString *)openClosedStatus
-{
-    NSDate *date = [NSDate date];
-    MITDiningRetailDay *yesterday = [self.retailVenue retailDayForDate:[date dayBefore]];
-    MITDiningRetailDay *currentDay = [self.retailVenue retailDayForDate:date];
-    
-    NSTimeInterval nowInterval = [date timeIntervalSince1970];
-    NSTimeInterval yesterdayEnd = [yesterday.endTime timeIntervalSince1970];
-    
-    // It's possible that yesterday's hours actually extend into today.  (ie: if a venue is open til 2 am)
-    return nowInterval < yesterdayEnd ? [yesterday openClosedStatusRelativeToDate:date] : [currentDay openClosedStatusRelativeToDate:date];
+    UINib *cellNib = [UINib nibWithNibName:kMITVenueInfoCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITVenueInfoCell];
 }
 
 #pragma mark - Available Info Keys Setup
@@ -188,16 +159,27 @@ static int const kWebViewTag = 4231;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)row
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.availableInfoKeys count];
+    if (section == 0) {
+        return 1;
+    }
+    else {
+        return [self.availableInfoKeys count];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.section == 0) {
+        MITDiningVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITVenueInfoCell];
+        [cell setRetailVenue:self.retailVenue];
+        return cell;
+    }
+    
     NSString *currentRow = self.availableInfoKeys[indexPath.row];
     MITDiningCustomSeparatorCell *cell = nil;
     
@@ -370,6 +352,10 @@ static int const kWebViewTag = 4231;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.section == 0) {
+      return [MITDiningVenueInfoCell heightForRetailVenue:self.retailVenue tableViewWidth:self.tableView.frame.size.width];
+    }
+    
     NSString *rowKey = self.availableInfoKeys[indexPath.row];
     CGFloat heightToReturn = 60.0;
     

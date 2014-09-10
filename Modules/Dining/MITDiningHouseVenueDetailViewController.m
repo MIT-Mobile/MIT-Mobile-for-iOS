@@ -4,7 +4,7 @@
 #import "MITDiningHouseMealSelectionView.h"
 #import "MITDiningComparisonDataManager.h"
 #import "MITDiningFilterViewController.h"
-#import "MITDiningHouseVenueInfoCell.h"
+#import "MITDiningVenueInfoCell.h"
 #import "MITDiningAggregatedMeal.h"
 #import "Foundation+MITAdditions.h"
 #import "MITDiningMenuItemCell.h"
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, kMITVenueDetailSection) {
     kMITVenueDetailSectionMenu
 };
 
-static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoCell";
+static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningVenueInfoCell";
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
@@ -103,7 +103,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 {
     switch (indexPath.section) {
         case kMITVenueDetailSectionInfo:
-            return [MITDiningHouseVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
+            return [MITDiningVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
             break;
         case kMITVenueDetailSectionMenu:
             if ([self hasFiltersApplied]) {
@@ -179,7 +179,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (UITableViewCell *)venueInfoCell
 {
-    MITDiningHouseVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
+    MITDiningVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
     [cell setHouseVenue:self.houseVenue];
     cell.delegate = self;
     return cell;
@@ -203,7 +203,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 }
 
 #pragma mark - Cell Delegate
-- (void)infoCellDidPressInfoButton:(MITDiningHouseVenueInfoCell *)infoCell
+- (void)infoCellDidPressInfoButton:(MITDiningVenueInfoCell *)infoCell
 {
     MITDiningHouseVenueInfoViewController *infoVC = [[MITDiningHouseVenueInfoViewController alloc] init];
     infoVC.houseVenue = self.houseVenue;

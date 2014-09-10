@@ -1,6 +1,4 @@
-
 #import "MITDiningPlace.h"
-
 #import "MITDiningRetailVenue.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningLocation.h"
@@ -42,7 +40,6 @@
         succeeded = YES;
     }
     return succeeded;
-    
 }
 
 - (NSString *)title

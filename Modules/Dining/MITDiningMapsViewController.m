@@ -7,7 +7,6 @@
 #import "MITDiningRetailVenue.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningRetailVenueDetailViewController.h"
-#import "DiningHallMenuViewController.h"
 #import "MITDiningHouseVenueDetailViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";

@@ -508,14 +508,12 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 {
     NSArray *modelNames = @[@"MITCalendarDataModel",
                             @"CampusMap",
-                            @"Dining",
                             @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
                             @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
-                            //@"ShuttleTrack",
                             @"MITShuttleDataModel",
                             @"Tours",
                             @"PeopleDataModel"];

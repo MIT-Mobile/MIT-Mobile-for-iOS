@@ -17,7 +17,7 @@
 - (NSDate *)endTime;
 - (NSDate *)date;
 - (NSString *)hoursSummary;
-- (NSString *)openClosedStatusRelativeToDate:(NSDate *)date;
+- (NSString *)statusStringForDate:(NSDate *)date;
 
 @end
 
