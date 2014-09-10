@@ -7,9 +7,12 @@
 //
 
 #import "MITFacilitiesHomeViewController.h"
+#import "MITBuildingServicesReportForm.h"
+#import "MITTouchstoneController.h"
+
 #import "FacilitiesCategoryViewController.h"
 #import "FacilitiesTypeViewController.h"
-#import "MITBuildingServicesReportForm.h"
+#import "FacilitiesRoomViewController.h"
 
 #import "UIKit+MITAdditions.h"
 #import <MessageUI/MFMailComposeViewController.h>
@@ -33,8 +36,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *contactFacilitiesButton;
 
-@property (nonatomic, assign) BOOL hasSelectedBuilding;
-
 @property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
 
 @end
@@ -56,8 +57,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     // Do any additional setup after loading the view.
     
     self.reportForm = [MITBuildingServicesReportForm sharedServiceReport];
-    
-    self.hasSelectedBuilding = NO;
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -228,7 +227,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    UITextField *subtitleTextField = (UITextField *)[cell viewWithTag:2];
+    
     titleLabel.text = @"email";
+    subtitleTextField.text = [[MITTouchstoneController sharedController] userEmailAddress];
     
     return cell;
 }
@@ -253,7 +255,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
+    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
+    
     titleLabel.text = @"room";
+    subitleLabel.text = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
     
     return cell;
 }
@@ -289,16 +294,24 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
-    if( row == MITFacilitiesFormFieldLocation )
+    if( row == MITFacilitiesFormFieldEmail )
+    {
+        
+    }
+    else if( row == MITFacilitiesFormFieldLocation )
     {
         FacilitiesCategoryViewController *vc = [[FacilitiesCategoryViewController alloc] init];
         [self.navigationController pushViewController:vc animated:YES];
-        
-        return;
     }
     else if( row == MITFacilitiesFormFieldProblemType )
     {
         FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    else if( row == MITFacilitiesFormFieldRoom )
+    {
+        FacilitiesRoomViewController *vc = [[FacilitiesRoomViewController alloc] init];
+        vc.location = self.reportForm.location;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
@@ -307,7 +320,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (NSInteger)numberOfFormFields
 {
-    NSInteger numberOfRows = self.hasSelectedBuilding ? 6 : 5;
+    NSInteger numberOfRows = self.reportForm.shouldSetRoom ? 6 : 5;
     
     return numberOfRows;
 }
@@ -320,7 +333,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (NSInteger)adjustedFieldRow:(NSInteger)row
 {
-    if( !self.hasSelectedBuilding && row >= MITFacilitiesFormFieldRoom )
+    if( !self.reportForm.shouldSetRoom && row >= MITFacilitiesFormFieldRoom )
     {
         row++;
     }

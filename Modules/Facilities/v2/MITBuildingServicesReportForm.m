@@ -19,6 +19,13 @@
     return sharedReport;
 }
 
+- (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom
+{
+    self.location = location;
+    
+    self.shouldSetRoom = shouldSetRoom;
+}
+
 - (void)clearAll
 {
     self.location = nil;

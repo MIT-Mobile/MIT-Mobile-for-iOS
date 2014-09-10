@@ -9,6 +9,8 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
+#import "UINavigationController+MITAdditions.h"
+#import "MITBuildingServicesReportForm.h"
 
 @interface FacilitiesRoomViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -291,23 +293,27 @@
         }
     }
     
-    FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
+//    FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
+//    
+//    if (room) {
+//        dict[FacilitiesRequestLocationRoomKey] = room;
+//    } else if (altName) {
+//        dict[FacilitiesRequestLocationUserRoomKey] = altName;
+//    }
+//    
+//    dict[FacilitiesRequestLocationBuildingKey] = self.location;
+//    
+//    vc.userData = dict;
+//    
+//    [self.navigationController pushViewController:vc
+//                                         animated:YES];
     
-    if (room) {
-        dict[FacilitiesRequestLocationRoomKey] = room;
-    } else if (altName) {
-        dict[FacilitiesRequestLocationUserRoomKey] = altName;
-    }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    dict[FacilitiesRequestLocationBuildingKey] = self.location;
+    [MITBuildingServicesReportForm sharedServiceReport].room = room;
+    [MITBuildingServicesReportForm sharedServiceReport].roomAltName = altName;
     
-    vc.userData = dict;
-    
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
-    
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
 }
 
 #pragma mark - UITableViewDataSource Methods

@@ -306,7 +306,7 @@
         }
     }
     
-    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location];
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
     [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     
 //    if ([location.isLeased boolValue]) {
