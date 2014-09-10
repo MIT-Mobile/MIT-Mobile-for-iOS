@@ -99,7 +99,8 @@
 - (void)beginReachability
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-    self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()];
+    //Needs to be a hostname and not a URL
+    self.internetReachability = [Reachability reachabilityWithHostName:@"www.mit.edu"];
 	[self.internetReachability startNotifier];
 }
 
