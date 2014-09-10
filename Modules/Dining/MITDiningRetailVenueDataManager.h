@@ -10,7 +10,7 @@
 - (void)updateSectionsAndVenueArrays;
 
 - (NSInteger)numberOfSections;
-- (NSInteger) numberOfRowsInSection:(NSInteger)section;
+- (NSInteger)numberOfRowsInSection:(NSInteger)section;
 - (NSString *)titleForSection:(NSInteger)section;
 - (NSString *)absoluteIndexStringForVenue:(MITDiningRetailVenue *)venue;
 - (MITDiningRetailVenue *)venueForIndexPath:(NSIndexPath *)indexPath;

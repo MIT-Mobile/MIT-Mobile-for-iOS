@@ -81,7 +81,12 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
    
     MITDiningRetailVenue *venue = [self.dataManager venueForIndexPath:indexPath];
 
-    [cell setVenue:venue withNumberPrefix:[self.dataManager absoluteIndexStringForVenue:venue]];
+    if ([venue.favorite boolValue] && indexPath.section == 0) { // Cell is in favorites section
+        [cell setVenue:venue withNumberPrefix:nil];
+    }
+    else {
+        [cell setVenue:venue withNumberPrefix:[self.dataManager absoluteIndexStringForVenue:venue]];
+    }
     
     return cell;
 }
