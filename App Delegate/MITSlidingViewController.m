@@ -7,7 +7,7 @@
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
 @interface MITSlidingViewController () <ECSlidingViewControllerDelegate>
-@property (nonatomic,readonly) MITDrawerViewController *drawerViewController;
+@property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
 @property(nonatomic,weak) id<UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout> animationController;
 @end
 
@@ -31,7 +31,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.delegate = self;
-    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
+    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -167,8 +167,8 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
     
     [self resetTopViewAnimated:YES onComplete:^{
-        if (![viewController.view.gestureRecognizers containsObject:self.panGesture]) {
-            [viewController.view addGestureRecognizer:self.panGesture];
+        if (![self.topViewController.view.gestureRecognizers containsObject:self.panGesture]) {
+            [self.topViewController.view addGestureRecognizer:self.panGesture];
         }
     }];
 }
