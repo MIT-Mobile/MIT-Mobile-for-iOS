@@ -30,7 +30,9 @@
 
 @end
 
-@implementation MITNewsSearchController
+@implementation MITNewsSearchController {
+    BOOL _storyUpdateInProgress;
+}
 
 @synthesize recentSearchController = _recentSearchController;
 
@@ -218,7 +220,10 @@
     }
     
     __weak MITNewsSearchController *weakSelf = self;
+    _storyUpdateInProgress = YES;
     [self.dataSource nextPage:^(NSError *error) {
+        _storyUpdateInProgress = NO;
+
         MITNewsSearchController *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
@@ -316,7 +321,7 @@
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && self.dataSource.isUpdating) {
+    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
         cell.textLabel.text = @"Loading More...";
     } else if (identifier == MITNewsLoadMoreCellIdentifier) {
         cell.textLabel.text = @"Load More...";
@@ -384,7 +389,7 @@
 {
     
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (self.dataSource.isUpdating) {
+        if (_storyUpdateInProgress == YES) {
             if (!cell.accessoryView) {
                 UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [view startAnimating];
@@ -457,12 +462,6 @@
 #pragma mark MITNewsStoryDetailPagingDelegate
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
-    if (self.dataSource.isUpdating) {
-        if (block) {
-            block(nil, nil);
-        }
-        return;
-    }
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
     if (currentIndex == NSNotFound) {
