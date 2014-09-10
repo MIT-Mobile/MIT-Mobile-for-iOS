@@ -173,15 +173,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }];
 }
 
-- (id<UIViewControllerTransitionCoordinator>)transitionCoordinator
-{
-    if (self.animationController) {
-        return self;
-    } else {
-        return nil;
-    }
-}
-
 #pragma mark Private
 - (void)_showInitialModuleIfNeeded
 {
