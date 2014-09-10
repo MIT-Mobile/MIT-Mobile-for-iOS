@@ -1,14 +1,15 @@
+#import "MITDiningRetailVenueListViewController.h"
+#import "MITDiningHouseVenueListViewController.h"
+#import "MITDiningRefreshDataProtocols.h"
 #import "MITDiningHomeViewController.h"
+#import "MITDiningMapsViewController.h"
 #import "MITDiningWebservices.h"
 #import "MITDiningDining.h"
 #import "MITDiningVenues.h"
-#import "MITCoreData.h"
 #import "MITAdditions.h"
-#import "MITDiningHouseVenueListViewController.h"
-#import "MITDiningRetailVenueListViewController.h"
-#import "MITDiningMapsViewController.h"
+#import "MITCoreData.h"
 
-@interface MITDiningHomeViewController () <NSFetchedResultsControllerDelegate>
+@interface MITDiningHomeViewController () <NSFetchedResultsControllerDelegate, MITDiningRefreshRequestDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIBarButtonItem *mapBarButton;
@@ -84,6 +85,9 @@
     self.houseListViewController = [[MITDiningHouseVenueListViewController alloc] init];
     self.retailListViewController = [[MITDiningRetailVenueListViewController alloc] init];
     self.mapViewController = [[MITDiningMapsViewController alloc] init];
+    
+    self.houseListViewController.refreshDelegate = self;
+    self.retailListViewController.refreshDelegate = self;
     
     self.houseListViewController.view.frame =
     self.retailListViewController.view.frame =
@@ -217,6 +221,13 @@
             [self showRetailVenueList];
         }
     }
+}
+
+#pragma mark - Refreshing Delegate
+- (void)viewControllerRequestsDataUpdate:(UIViewController<MITDiningRefreshableViewController> *)viewController{
+    [MITDiningWebservices getDiningWithCompletion:^(MITDiningDining *dining, NSError *error) {
+        [viewController refreshRequestComplete];
+    }];
 }
 
 @end
