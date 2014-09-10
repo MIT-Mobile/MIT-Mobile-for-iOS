@@ -48,6 +48,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 /// either a house or a retail object.
 - (void)setVenue:(id)venue withNumberPrefix:(NSString *)numberPrefix
 {
+    self.venueIconImageView.image = nil;
     [self.venueIconImageView setImageWithURL:[NSURL URLWithString:[venue iconURL]]];
     
     NSString *nameLabelText = [venue name];
