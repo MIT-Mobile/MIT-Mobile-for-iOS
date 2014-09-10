@@ -213,7 +213,7 @@ static int const kWebViewTag = 4231;
         if ([currentRow isEqualToString:kMenuURLKey]){
             cell.textLabel.text = @"menu";
             cell.detailTextLabel.text = self.retailVenue.menuURL;
-            cell.detailTextLabel.numberOfLines = 1;
+            cell.detailTextLabel.numberOfLines = 0;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             cell.shouldIncludeSeparator = YES;
@@ -237,7 +237,7 @@ static int const kWebViewTag = 4231;
         } else if ([currentRow isEqualToString:kHomePageURLKey]) {
             cell.textLabel.text = @"home page";
             cell.detailTextLabel.text = self.retailVenue.homepageURL;
-            cell.detailTextLabel.numberOfLines = 1;
+            cell.detailTextLabel.numberOfLines = 0;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             cell.shouldIncludeSeparator = YES;
@@ -380,6 +380,10 @@ static int const kWebViewTag = 4231;
         heightToReturn = [self heightForString:cuisineString];
     } else if ([rowKey isEqualToString:kLocationKey]) {
         heightToReturn = [self heightForString:[self.retailVenue.location locationDisplayString]] + [self titleTextLabelFont].lineHeight + 10;
+    } else if ([rowKey isEqualToString:kHomePageURLKey]) {
+        heightToReturn = [self heightForString:self.retailVenue.homepageURL] + [self titleTextLabelFont].lineHeight + 10;
+    } else if ([rowKey isEqualToString:kMenuURLKey]) {
+        heightToReturn = [self heightForString:self.retailVenue.menuURL] + [self titleTextLabelFont].lineHeight + 10;
     } else if ([rowKey isEqualToString:kHoursKey]) {
         heightToReturn = [MITDiningRetailInfoScheduleCell heightForCellWithScheduleInfo:self.formattedHoursData];
     }
@@ -389,7 +393,7 @@ static int const kWebViewTag = 4231;
 
 - (CGFloat)heightForString:(NSString *)string
 {
-    CGFloat maxWidth = CGRectGetWidth(self.view.bounds) - (kLeftPadding * 2.0);
+    CGFloat maxWidth = CGRectGetWidth(self.view.bounds) - (kLeftPadding * 4.0);
     CGSize constraint = CGSizeMake(maxWidth, CGFLOAT_MAX);
     NSDictionary *attributes = @{NSFontAttributeName : [self detailTextLabelFont]};
     NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:string
