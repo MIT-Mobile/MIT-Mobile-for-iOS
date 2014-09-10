@@ -28,6 +28,18 @@ static NSString *const kMITDiningLinksTableViewControllerCell = @"kMITDiningLink
     // Dispose of any resources that can be recreated.
 }
 
+- (CGFloat)targetTableViewHeight
+{
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    return tableHeight;
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

@@ -50,6 +50,11 @@
                                                [self.endTimeString isEqualToString:meal.endTimeString])));
 }
 
+- (NSString *)titleCaseName
+{
+    return [NSString stringWithFormat:@"%@%@", [[self.name substringToIndex:1] uppercaseString], [[self.name substringFromIndex:1] lowercaseString]];
+}
+
 + (NSDateFormatter *)mealDateFormatter
 {
     static NSDateFormatter *mealFormatter;

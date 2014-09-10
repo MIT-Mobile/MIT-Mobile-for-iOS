@@ -37,14 +37,12 @@
 {
     self.stationLabel.text = menuItem.station;
     if ([menuItem.itemDescription length] > 0) {
-        self.mealDescriptionLabel.hidden = NO;
         self.mealDescriptionLabel.text = menuItem.itemDescription;
     }
     else {
-        self.mealDescriptionLabel.hidden = YES;
+        self.mealDescriptionLabel.text = @"";
     }
 
-        
     self.mealTitleLabel.attributedText = [menuItem attributedNameWithDietaryFlags];
 }
 

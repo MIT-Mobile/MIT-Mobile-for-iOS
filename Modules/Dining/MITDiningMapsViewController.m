@@ -147,6 +147,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self showDetailForAnnotationView:view];
+        [self.mapView deselectAnnotation:view.annotation animated:NO];
     } else {
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
         [tap addTarget:self action:@selector(calloutTapped:)];

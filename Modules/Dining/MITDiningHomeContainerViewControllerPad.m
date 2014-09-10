@@ -10,7 +10,7 @@
 #import "MITDiningVenues.h"
 #import "MITDiningFilterViewController.h"
 
-@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate>
+@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate, MITSingleWebViewCellTableViewControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) MITDiningDining *diningData;
@@ -169,10 +169,12 @@
     vc.title = @"Announcements";
     vc.webViewInsets = UIEdgeInsetsMake(10, 0, 10, 10);
     vc.htmlContent = self.diningData.announcementsHTML;
+    vc.delegate = self;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
     
     self.announcementsPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.announcementsPopoverController setPopoverContentSize:CGSizeMake(320, [vc targetTableViewHeight] + navController.navigationBar.frame.size.height)];
     [self.announcementsPopoverController presentPopoverFromBarButtonItem:self.announcementsBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
@@ -185,6 +187,7 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
     
     self.linksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.linksPopoverController setPopoverContentSize:CGSizeMake(320, [vc targetTableViewHeight] + navController.navigationBar.frame.size.height)];
     [self.linksPopoverController presentPopoverFromBarButtonItem:self.linksBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
@@ -200,6 +203,15 @@
     self.filtersPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     [self.filtersPopoverController setPopoverContentSize:CGSizeMake(320, [filterVC targetTableViewHeight] + navController.navigationBar.frame.size.height)];
     [self.filtersPopoverController presentPopoverFromBarButtonItem:self.filtersBarButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+}
+
+#pragma mark - MITSingleWebViewCellTableViewControllerDelegate Methods
+
+- (void)singleWebViewCellTableViewControllerDidUpdateHeight:(MITSingleWebViewCellTableViewController *)tableViewController
+{
+    UINavigationController *navController = (UINavigationController *)self.announcementsPopoverController.contentViewController;
+    MITSingleWebViewCellTableViewController *announcementsVC = navController.viewControllers[0];
+    [self.announcementsPopoverController setPopoverContentSize:CGSizeMake(320, [announcementsVC targetTableViewHeight] + navController.navigationBar.frame.size.height)];
 }
 
 #pragma mark - MITDiningFilterDelegate Methods

@@ -134,7 +134,7 @@
             for (UILabel *letterView in letterViews) {
                 MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
                 if ([meal.name isEqualToString:mealName]) {
-                    self.selectedMealNameLabel.text = meal.name;
+                    self.selectedMealNameLabel.text = [meal titleCaseName];
                     [self selectLetterView:letterView];
                     break;
                 }
@@ -354,14 +354,14 @@
     }
     
     NSDate *currentDateWithoutTime = [[NSDate date] dateWithoutTime];
-    NSDateComponents *comps = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:currentDateWithoutTime];
+    NSDateComponents *inputDateComps = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:date];
     
     if ([[date dateWithoutTime] isEqualToDate:currentDateWithoutTime]) {
-        return [NSString stringWithFormat:@"Today %i", comps.day];
+        return [NSString stringWithFormat:@"Today %i", inputDateComps.day];
     } else if ([[date dateWithoutTime] timeIntervalSince1970] == ([currentDateWithoutTime timeIntervalSince1970] - 60 * 60 * 24)) {
-        return [NSString stringWithFormat:@"Yesterday %i", comps.day];
+        return [NSString stringWithFormat:@"Yesterday %i", inputDateComps.day];
     } else if ([[date dateWithoutTime] timeIntervalSince1970] == ([currentDateWithoutTime timeIntervalSince1970] + 60 * 60 * 24)) {
-        return [NSString stringWithFormat:@"Tomorrow %i", comps.day];
+        return [NSString stringWithFormat:@"Tomorrow %i", inputDateComps.day];
     } else {
         return [mealDateFormatter stringFromDate:date];
     }

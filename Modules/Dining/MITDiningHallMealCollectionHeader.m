@@ -2,6 +2,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
 #import "MITDiningMeal.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITDiningHallMealCollectionHeader ()
 
@@ -50,14 +51,18 @@
     self.imageView.image = nil;
     [self.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
     
-    self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, [[day mealForDate:[NSDate date]] mealHoursDescription]];
+    NSString *mealHoursString = @"";
+    if ([day mealWithName:mealName]) {
+        mealHoursString = [[day mealWithName:mealName] mealHoursDescription];
+    }
+    self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, mealHoursString];
     
     if ([venue isOpenNow]) {
         self.currentStatusLabel.text = @"Open";
-        self.currentStatusLabel.textColor = [UIColor greenColor];
+        self.currentStatusLabel.textColor = [UIColor mit_openGreenColor];
     } else {
         self.currentStatusLabel.text = @"Closed";
-        self.currentStatusLabel.textColor = [UIColor redColor];
+        self.currentStatusLabel.textColor = [UIColor mit_closedRedColor];
     }
     
     CGFloat remainingWidth = self.bounds.size.width;
