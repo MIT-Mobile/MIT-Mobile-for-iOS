@@ -324,6 +324,9 @@
     }
     _storyUpdateInProgress = YES;
     [self setProgress:YES];
+    
+    [self updateLoadingCell];
+    
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
