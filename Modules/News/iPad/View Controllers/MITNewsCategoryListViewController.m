@@ -65,6 +65,7 @@
        
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
             } else if (_storyUpdateInProgress) {
                 cell.textLabel.text = @"Loading More...";
             } else {
