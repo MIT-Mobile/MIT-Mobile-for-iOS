@@ -233,7 +233,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 {
     [self removeAllPlaceAnnotations];
     NSMutableArray *annotationsToAdd = [NSMutableArray array];
-    int totalNumberOfPlacesWithoutLocation = 0;
     for (int i = 0; i < diningPlaceArray.count; i++) {
         
         id venue = diningPlaceArray[i];
@@ -244,10 +243,8 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
             diningPlace = [[MITDiningPlace alloc] initWithHouseVenue:venue];
         }
         if (diningPlace) {
-            diningPlace.displayNumber = (i + 1) - totalNumberOfPlacesWithoutLocation;
+            diningPlace.displayNumber = (i + 1);
             [annotationsToAdd addObject:diningPlace];
-        } else {
-            totalNumberOfPlacesWithoutLocation++;
         }
     }
     
