@@ -12,16 +12,16 @@
 @property (nonatomic,strong) MITNewsStory *story;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryConstraintBetweenImageAndTitle;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryImageTitleHorizontalConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDekTitleVerticalContraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDateBottomVerticalConstraint;
+
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDekLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryDateLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDateBottomVerticalConstraint;
-@property (nonatomic) CGFloat originalNextStoryDateBottomVerticalConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nextStoryDekTitleVerticalContraint;
 
 @end
 
@@ -66,11 +66,10 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
+    [self setupNextStory];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self setupNextStory];
-    } else {
-        
+    if (!UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+
         __block NSURL *imageURL = nil;
         [self.managedObjectContext performBlockAndWait:^{
             if (self.story) {
@@ -89,7 +88,6 @@
                                        }];
         }
     }
-    self.originalNextStoryDateBottomVerticalConstraint = self.nextStoryDateBottomVerticalConstraint.constant;
 }
 
 - (void)didReceiveMemoryWarning
@@ -124,11 +122,11 @@
         if (self.nextStoryImageView.image != NULL) {
             self.nextStoryImageHeightConstraint.constant = 60;
             self.nextStoryImageWidthConstraint.constant = 90;
-            self.nextStoryConstraintBetweenImageAndTitle.constant = 8;
+            self.nextStoryImageTitleHorizontalConstraint.constant = 8;
         } else {
             self.nextStoryImageHeightConstraint.constant = 0;
             self.nextStoryImageWidthConstraint.constant = 0;
-            self.nextStoryConstraintBetweenImageAndTitle.constant = 0;
+            self.nextStoryImageTitleHorizontalConstraint.constant = 0;
         }
     }
     if (!self.nextStoryDekLabel.text) {
@@ -377,14 +375,14 @@
 {
     [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
-    
-    [self setStory:nextStory];
-    
-    [self setupNextStory];
-    
-    [self.bodyView loadHTMLString:[self htmlBody]
-                          baseURL:nil];
-    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+            
+            [self setStory:nextStory];
+            
+            [self setupNextStory];
+            
+            [self.bodyView loadHTMLString:[self htmlBody]
+                                  baseURL:nil];
+            [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
         }
         }];
 }
