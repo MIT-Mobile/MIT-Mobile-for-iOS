@@ -1,7 +1,9 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicleList.h"
+#import "MITShuttlePrediction.h"
 
+NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttleVehicleCoordinateUpdatedNotification";
 
 @implementation MITShuttleVehicle
 
@@ -9,10 +11,12 @@
 @dynamic identifier;
 @dynamic latitude;
 @dynamic longitude;
+@dynamic routeId;
 @dynamic secondsSinceReport;
 @dynamic speedKph;
 @dynamic route;
 @dynamic vehicleList;
+@dynamic predictions;
 
 + (RKMapping *)objectMapping
 {
@@ -25,6 +29,31 @@
                                                   @"seconds_since_report": @"secondsSinceReport"}];
     [mapping setIdentificationAttributes:@[@"identifier"]];
     return mapping;
+}
+
++ (RKMapping *)objectMappingFromVehicleList
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.route_id": @"routeId"}];
+    [mapping addConnectionForRelationship:@"route" connectedBy:@{@"routeId": @"identifier"}];
+    return mapping;
+}
+
+#pragma mark - MKAnnotation
+
+- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMITShuttleVehicleCoordinateUpdatedNotification object:self];
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+}
+
+- (NSString *)title
+{
+    return self.route.title;
 }
 
 @end

@@ -53,6 +53,10 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<string></string>
 	<key>MITFeedbackAddress</key>
 	<string>iphone-app-feedback@mit.edu</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIStatusBarStyle</key>

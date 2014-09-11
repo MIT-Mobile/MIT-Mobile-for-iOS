@@ -1,6 +1,9 @@
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleRoute.h"
 
+NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
+NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
+
 static const CGFloat kCellHeightNoAlert = 45.0;
 static const CGFloat kCellHeightAlert = 62.0;
 
@@ -38,13 +41,21 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible
 
 - (void)setRoute:(MITShuttleRoute *)route
 {
-    if ([route.scheduled boolValue]) {
-        self.statusIconImageView.image = [route.predictable boolValue] ? [UIImage imageNamed:@"shuttle/shuttle"] : [UIImage imageNamed:@""];
-    } else {
-        self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle-off"];
+    switch ([route status]) {
+        case MITShuttleRouteStatusNotInService:
+            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle-off"];
+            break;
+        case MITShuttleRouteStatusInService:
+            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle"];
+            break;
+        case MITShuttleRouteStatusPredictionsUnavailable:
+#warning TODO: question mark image
+            self.statusIconImageView.image = [UIImage imageNamed:@""];
+            break;
+        default:
+            break;
     }
     self.nameLabel.text = route.title;
-#warning TODO: alerts
 }
 
 + (CGFloat)cellHeightForRoute:(MITShuttleRoute *)route

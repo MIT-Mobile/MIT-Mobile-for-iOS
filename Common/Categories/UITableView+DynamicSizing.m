@@ -22,8 +22,18 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     // Order is important! This depends on !nilOrClass short-circuiting the
     // OR.
-    NSParameterAssert(!nilOrClass || class_isMetaClass(object_getClass(nilOrClass)));
-    NSParameterAssert(!nilOrClass || [nilOrClass isSubclassOfClass:[UITableViewCell class]]);
+
+    // See if something was passed in. nil is a perfectly acceptable value here
+    // so the next checks will be to ensure that a) we have a class and b)
+    // said class is a subclass of UITableViewCell
+    if (nilOrClass) {
+        if (!class_isMetaClass(object_getClass(nilOrClass))) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"%@ requires a nil or Class-type object" userInfo:nil];
+        } else if (![nilOrClass isSubclassOfClass:[UITableViewCell class]]) {
+            NSString *message = [NSString stringWithFormat:@"expected nilOrClass to be a subclass of %@",NSStringFromClass([UITableViewCell class])];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+        }
+    }
 
     [self registerClass:nilOrClass forCellReuseIdentifier:cellReuseIdentifier];
 
@@ -49,7 +59,6 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     NSMutableDictionary *cachedLayoutCells = [self _cachedLayoutCells];
 
     if (nilOrNib) {
-
         // If we are on iOS 6.1 or lower, manually create the cell from the nib. iOS 6 behaves
         // extremely poorly if you ask UITableView to dequeue a reusable cell and then not
         // use it for display.
@@ -68,7 +77,15 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 - (CGFloat)minimumHeightForCellWithReuseIdentifier:(NSString *)reuseIdentifier atIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *layoutCell = [self _dequeueReusableLayoutCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-    NSAssert(layoutCell, @"failed to dequeue a valid layout cell");
+
+    if (!layoutCell) {
+        if (self.rowHeight != UITableViewAutomaticDimension) {
+            DDLogWarn(@"failed to dequeue a layout cell, falling back to default table view row height");
+            return self.rowHeight;
+        } else {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"failed to dequeue a valid layout cell and table view requires an automatic dimension" userInfo:nil];
+        }
+    }
 
     if ([self.dataSource conformsToProtocol:@protocol(UITableViewDataSourceDynamicSizing)]) {
         id<UITableViewDataSourceDynamicSizing> dataSource = (id<UITableViewDataSourceDynamicSizing>)self.dataSource;
