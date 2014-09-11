@@ -16,7 +16,6 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
 - (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
-- (void)reloadData;
 - (void)updateNavigationItem:(BOOL)animated;
 @end
 

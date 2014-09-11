@@ -64,8 +64,6 @@ CGFloat const refreshControlTextHeight = 19;
 }
 
 @synthesize activeViewController = _activeViewController;
-@synthesize gridViewController = _gridViewController;
-@synthesize listViewController = _listViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
