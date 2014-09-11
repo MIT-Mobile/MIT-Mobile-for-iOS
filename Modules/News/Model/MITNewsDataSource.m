@@ -30,11 +30,11 @@ static void const *MITDataSourceCachedObjectsClearedKey = &MITDataSourceCachedOb
         
         if (!firstRunToken) {
             __block NSError *error = nil;
-            BOOL updateDidFail = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+            BOOL updatePassed = [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
                 return [self clearCachedObjectsWithManagedObjectContext:context error:error];
             } error:&error];
             
-            if (updateDidFail) {
+            if (!updatePassed) {
                 DDLogWarn(@"failed to clear cached objects for %@: %@",NSStringFromClass(self),[error localizedDescription]);
             }
             

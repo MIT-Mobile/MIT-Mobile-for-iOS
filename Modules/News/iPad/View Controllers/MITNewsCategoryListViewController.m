@@ -65,6 +65,7 @@
        
             if (self.errorMessage) {
                 cell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
             } else if (_storyUpdateInProgress) {
                 cell.textLabel.text = @"Loading More...";
             } else {
@@ -128,40 +129,7 @@
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
     if (!_storyUpdateInProgress && !self.errorMessage) {
-        _storyUpdateInProgress = YES;
-        
-        NSUInteger item = [self numberOfStoriesForCategoryInSection:section];
-        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
-        [self reloadCellAtIndexPath:loadMoreIndexPath];
-
-        __weak MITNewsCategoryListViewController *weakSelf = self;
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-            _storyUpdateInProgress = FALSE;
-            MITNewsCategoryListViewController *strongSelf = weakSelf;
-
-            if (error) {
-                if (error.code == NSURLErrorNotConnectedToInternet) {
-                    strongSelf.errorMessage = @"No Internet Connection";
-                } else {
-                    strongSelf.errorMessage = @"Failed...";
-                }
-                if (strongSelf.navigationController.toolbarHidden) {
-
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        
-                        strongSelf.errorMessage = nil;
-                        NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
-                        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
-                        [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
-                    });
-                } else {
-                    strongSelf.errorMessage = nil;
-                }
-                NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section];
-                NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
-                [strongSelf reloadCellAtIndexPath:loadMoreIndexPath];
-            }
         }];
     }
 }

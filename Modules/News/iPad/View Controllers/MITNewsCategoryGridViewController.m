@@ -104,38 +104,7 @@
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
     if(!_storyUpdateInProgress && !self.errorMessage) {
-        _storyUpdateInProgress = YES;
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]];
-        }];
-        
-        __weak MITNewsCategoryGridViewController *weakSelf = self;
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-            _storyUpdateInProgress = FALSE;
-            MITNewsCategoryGridViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (error) {
-                if (error.code == NSURLErrorNotConnectedToInternet) {
-                    strongSelf.errorMessage = @"No Internet Connection";
-                } else {
-                    strongSelf.errorMessage = @"Failed...";
-                }
-                if (strongSelf.navigationController.toolbarHidden) {
-                    
-                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                        
-                        strongSelf.errorMessage = nil;
-                        NSUInteger item = [strongSelf numberOfStoriesForCategoryInSection:section] - 1;
-                        NSIndexPath *loadMoreIndexPath = [NSIndexPath indexPathForItem:item inSection:section];
-                        [strongSelf reloadItemAtIndexPath:loadMoreIndexPath];
-                    });
-                }
-                [strongSelf reloadItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:section] - 1 inSection:section]];
-            }
         }];
     }
 }

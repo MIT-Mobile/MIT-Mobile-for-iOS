@@ -202,6 +202,22 @@
     }];
 }
 
+- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
+        [super updateNavigationItem:YES];
+    }
+}
+
+- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
+{
+    if (!_storyUpdateInProgress) {
+        self.presentationStyle = MITNewsPresentationStyleList;
+        [super updateNavigationItem:YES];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -253,35 +269,47 @@
     [self updateRefreshStatusWithText:@"Updating..."];
     
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
+    __weak UIRefreshControl *weakRefresh = refreshControl;
+
     [self refreshItemsForCategoryInSection:0 completion:^(NSError *error) {
         _storyUpdateInProgress = NO;
         MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+        UIRefreshControl *strongRefresh = weakRefresh;
+
         if (!strongSelf) {
             return;
         }
         if (error) {
+            if (!strongRefresh) {
+                return;
+            }
             DDLogWarn(@"update failed; %@",error);
-            if (refreshControl.refreshing) {
-                if (error.code == NSURLErrorNotConnectedToInternet) {
-                    [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
-                } else {
-                    [strongSelf updateRefreshStatusWithText:@"Failed..."];
-                }
+            strongSelf.refreshControl = strongRefresh;
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
+            } else {
+                [strongSelf updateRefreshStatusWithText:@"Failed..."];
+            }
+            if (strongRefresh.refreshing) {
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                    [refreshControl endRefreshing];
+                    [strongRefresh endRefreshing];
                 });
             }
         } else {
+            [strongSelf reloadData];
+            if (!strongRefresh) {
+                return;
+            }
+            strongSelf.refreshControl = strongRefresh;
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
-            
-            if (refreshControl.refreshing) {
+ 
+            if (strongRefresh.refreshing) {
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                    [refreshControl endRefreshing];
+                    [strongRefresh endRefreshing];
                 });
             }
-            [strongSelf reloadData];
         }
     }];
 }
@@ -296,6 +324,9 @@
     }
     _storyUpdateInProgress = YES;
     [self setProgress:YES];
+    
+    [self updateLoadingCell];
+    
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
