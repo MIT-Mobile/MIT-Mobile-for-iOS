@@ -1,4 +1,3 @@
-
 #import "MITDiningRetailInfoScheduleCell.h"
 
 @interface MITDiningRetailInfoScheduleCell ()

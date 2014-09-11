@@ -1,11 +1,13 @@
-#import "MITDiningHouseVenueInfoCell.h"
+#import "MITDiningVenueInfoCell.h"
 #import "MITDiningHouseVenue.h"
 #import "MITDiningHouseDay.h"
+#import "MITDiningRetailVenue.h"
+#import "MITDiningRetailDay.h"
 #import "UIKit+MITAdditions.h"
 
 static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
-@interface MITDiningHouseVenueInfoCell ()
+@interface MITDiningVenueInfoCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *venueNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *venueHoursLabel;
@@ -15,7 +17,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
 @end
 
-@implementation MITDiningHouseVenueInfoCell
+@implementation MITDiningVenueInfoCell
 
 - (void)awakeFromNib
 {
@@ -43,14 +45,28 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
 - (void)setHouseVenue:(MITDiningHouseVenue *)venue
 {
-    [self.venueIconImageView setImageWithURL:[NSURL URLWithString:venue.iconURL]];
-    
-    self.venueNameLabel.text = venue.name;
-    
     MITDiningHouseDay *diningDay = [venue houseDayForDate:[NSDate date]];
     self.venueHoursLabel.text = [diningDay statusStringForDate:[NSDate date]];
 
-    self.venueHoursLabel.textColor = venue.isOpenNow ? [UIColor mit_openGreenColor] : [UIColor mit_closedRedColor];
+    [self setVenue:venue];
+}
+
+- (void)setRetailVenue:(MITDiningRetailVenue *)venue
+{
+    MITDiningRetailDay *retailDay = [venue retailDayForDate:[NSDate date]];
+    self.venueHoursLabel.text = [retailDay statusStringForDate:[NSDate date]];
+    
+    self.infoButton.hidden = YES;
+    [self setVenue:venue];
+}
+
+- (void)setVenue:(id)venue
+{
+    [self.venueIconImageView setImageWithURL:[NSURL URLWithString:[venue iconURL]]];
+    
+    self.venueNameLabel.text = [venue name];
+    
+    self.venueHoursLabel.textColor = [venue isOpenNow] ? [UIColor mit_openGreenColor] : [UIColor mit_closedRedColor];
     
     [self layoutIfNeeded];
 }
@@ -60,11 +76,17 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 + (CGFloat)heightForHouseVenue:(MITDiningHouseVenue *)venue
                 tableViewWidth:(CGFloat)width
 {
-    [[MITDiningHouseVenueInfoCell sizingCell] setHouseVenue:venue];
-    return [MITDiningHouseVenueInfoCell heightForCell:[MITDiningHouseVenueInfoCell sizingCell] TableWidth:width];
+    [[MITDiningVenueInfoCell sizingCell] setHouseVenue:venue];
+    return [MITDiningVenueInfoCell heightForCell:[MITDiningVenueInfoCell sizingCell] TableWidth:width];
 }
 
-+ (CGFloat)heightForCell:(MITDiningHouseVenueInfoCell *)cell TableWidth:(CGFloat)width
++ (CGFloat)heightForRetailVenue:(MITDiningRetailVenue *)venue tableViewWidth:(CGFloat)width
+{
+    [[MITDiningVenueInfoCell sizingCell] setRetailVenue:venue];
+    return [MITDiningVenueInfoCell heightForCell:[MITDiningVenueInfoCell sizingCell] TableWidth:width];
+}
+
++ (CGFloat)heightForCell:(MITDiningVenueInfoCell *)cell TableWidth:(CGFloat)width
 {
     CGRect frame = cell.frame;
     frame.size.width = width;
@@ -75,12 +97,12 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
     return MAX(kMITDiningVenueCellEstimatedHeight, height);
 }
 
-+ (MITDiningHouseVenueInfoCell *)sizingCell
++ (MITDiningVenueInfoCell *)sizingCell
 {
-    static MITDiningHouseVenueInfoCell *sizingCell;
+    static MITDiningVenueInfoCell *sizingCell;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITDiningHouseVenueInfoCell class]) bundle:nil];
+        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITDiningVenueInfoCell class]) bundle:nil];
         sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
     });
     return sizingCell;

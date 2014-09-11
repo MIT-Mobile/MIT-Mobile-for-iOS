@@ -1,4 +1,3 @@
-
 #import "MITDiningCustomSeparatorCell.h"
 
 static CGFloat const kLeftOffset = 15.0;
@@ -10,20 +9,6 @@ static CGFloat const kLeftOffset = 15.0;
 @end
 
 @implementation MITDiningCustomSeparatorCell
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
-    }
-    return self;
-}
-
-- (void)awakeFromNib
-{
-    // Initialization code
-}
 
 - (void)layoutSubviews
 {

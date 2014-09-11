@@ -4,11 +4,11 @@
 #import "UIKit+MITAdditions.h"
 
 #import "MITDiningScheduleCell.h"
-#import "MITDiningHouseVenueInfoCell.h"
+#import "MITDiningVenueInfoCell.h"
 
 #import "Foundation+MITAdditions.h"
 
-static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningHouseVenueInfoCell";
+static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningVenueInfoCell";
 static NSString *const kMITDiningScheduleCell = @"MITDiningScheduleCell";
 static NSString *const kMITDiningPaymentCell = @"kMITDiningPaymentCell";
 static NSString *const kMITDiningLocationCell = @"kMITDiningLocationCell";
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
     switch (indexPath.section) {
         case kMITVenueInfoVenueHeaderAndPayment:
             if (indexPath.row == 0) {
-                return [MITDiningHouseVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
+                return [MITDiningVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.tableView.frame.size.width];
             }
             else {
                 return 60;
@@ -131,7 +131,7 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
 
 - (UITableViewCell *)venueHeaderCell
 {
-    MITDiningHouseVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
+    MITDiningVenueInfoCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
     [cell setHouseVenue:self.houseVenue];
     cell.infoButton.hidden = YES;
     return cell;

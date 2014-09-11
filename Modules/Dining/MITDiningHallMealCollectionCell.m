@@ -1,6 +1,5 @@
 #import "MITDiningHallMealCollectionCell.h"
 #import "MITDiningMenuItem.h"
-#import "DiningDietaryFlag.h"
 #import "Foundation+MITAdditions.h"
 #import "UIImage+PDF.h"
 
