@@ -40,8 +40,6 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
     NSMutableArray *buildings = [[NSMutableArray alloc] init];
     NSMutableArray *sectionTitles = [[NSMutableArray alloc] init];
     
-    self.fullSectionTitles = nil;
-    
     for (MITDiningRetailVenue *venue in self.retailVenues)
     {
         if ([venue.favorite boolValue] == YES) {
@@ -80,7 +78,11 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
         [sectionTitles addObject:building.name];
     }
     self.sectionTitles = sectionTitles;
+    if (self.sectionTitles.count != self.fullSectionTitles.count) {
+        self.fullSectionTitles = nil;
+    }
     [self generateFullSectionTitles];
+
     
     [self rebuildMasterVenuesArray];
 }
