@@ -80,6 +80,17 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
 }
 
++ (UIColor *)mit_systemTintColor
+{
+    static UIColor *systemTintColor = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        UIView *view = [[UIView alloc] init];
+        systemTintColor = view.tintColor;
+    });
+    return systemTintColor;
+}
+
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
 // color must be either of the format @"0099FF" or @"#0099FF" or @"0x0099FF"
 + (UIColor *)colorWithHexString:(NSString *)hexString  
@@ -424,4 +435,29 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 }
+
+@end
+
+@implementation UISearchBar (MITUIAdditions)
+
+// have to iterate through the subviews to change text color. Using appearance proxy doesn't
+// work unless it's changed once at searchBar creation time.
+// http://stackoverflow.com/questions/19048766/uisearchbar-text-color-change-in-ios-7
+- (void)setSearchTextColor:(UIColor *)color
+{
+    for (UIView *subView in self.subviews)
+    {
+        for (UIView *secondLevelSubview in subView.subviews)
+        {
+            if ([secondLevelSubview isKindOfClass:[UITextField class]])
+            {
+                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
+                [searchBarTextField setTextColor:color];
+                
+                break;
+            }
+        }
+    }
+}
+
 @end

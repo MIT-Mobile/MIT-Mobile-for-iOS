@@ -6,6 +6,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePredictionList.h"
 #import "MITShuttleVehicleList.h"
+#import "MITShuttleVehicle.h"
 
 @implementation MITShuttleRoutesResource
 
@@ -19,6 +20,21 @@
     }
     
     return self;
+}
+
+- (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[url relativePath] stringByAppendingString:@"/"]];
+    
+    NSDictionary *parameters = nil;
+    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+    
+    if (matches) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        return fetchRequest;
+    }
+    return nil;
 }
 
 @end
@@ -83,6 +99,21 @@
     }
     
     return self;
+}
+
+- (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[url relativePath] stringByAppendingString:@"/"]];
+    
+    NSDictionary *parameters = nil;
+    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+
+    if (matches) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        return fetchRequest;
+    }
+    return nil;
 }
 
 @end
