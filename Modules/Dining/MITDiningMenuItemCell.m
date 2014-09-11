@@ -43,7 +43,7 @@ static CGFloat kMITDiningMenuItemCellEstimatedHeight = 44.0;
 - (void)setMenuItem:(MITDiningMenuItem *)menuItem
 {
     self.stationLabel.text = menuItem.station;
-    self.itemNameLabel.attributedText = [menuItem attributedNameWithDietaryFlags];
+    self.itemNameLabel.attributedText = [menuItem attributedNameWithDietaryFlagsAtSize:CGSizeMake(14, 14) verticalAdjustment:-2];
     self.ingredientsLabel.text = menuItem.itemDescription;
     
     [self layoutIfNeeded];

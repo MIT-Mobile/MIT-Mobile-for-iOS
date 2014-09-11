@@ -42,7 +42,7 @@
         self.mealDescriptionLabel.text = @"";
     }
 
-    self.mealTitleLabel.attributedText = [menuItem attributedNameWithDietaryFlags];
+    self.mealTitleLabel.attributedText = [menuItem attributedNameWithDietaryFlagsAtSize:CGSizeMake(14, 14) verticalAdjustment:-2];
 }
 
 #pragma mark - Determining Dynamic Cell Height
