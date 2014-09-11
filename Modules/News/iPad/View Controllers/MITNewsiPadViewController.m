@@ -23,6 +23,8 @@
 #import "MITNewsCategoryDataSource.h"
 #import "MITMobileServerConfiguration.h"
 
+CGFloat const refreshControlTextHeight = 19;
+
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
 
 - (void)reloadItems:(void(^)(NSError *error))block;
@@ -62,6 +64,8 @@
 }
 
 @synthesize activeViewController = _activeViewController;
+@synthesize gridViewController = _gridViewController;
+@synthesize listViewController = _listViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -128,10 +132,14 @@
     }
     
     if (_storyUpdateInProgress) {
+        CGFloat textHeight = 0;
+        if (!self.refreshControl.attributedTitle.string) {
+            textHeight = refreshControlTextHeight;
+        }
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
         } else {
-            [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
+            [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
         }
         [self updateRefreshStatusWithText:@"Updating..."];
 
@@ -358,9 +366,9 @@
 
 - (void)reloadData
 {
-    if (self.activeViewController == self.gridViewController) {
+    if (self.activeViewController == _gridViewController) {
         [self.gridViewController.collectionView reloadData];
-    } else if (self.activeViewController == self.listViewController) {
+    } else if (self.activeViewController == _listViewController) {
         [self.listViewController.tableView reloadData];
     }
 }
