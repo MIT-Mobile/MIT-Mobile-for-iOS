@@ -75,13 +75,17 @@
         
         self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification object:self.dataSource
                              queue:nil usingBlock:^(NSNotification *note){
-                                 [[NSNotificationCenter defaultCenter] removeObserver:weakSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:weakSelf.dataSource];
+                                 MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                 if (!strongSelf) {
+                                     return;
+                                 }
+                                 [[NSNotificationCenter defaultCenter] removeObserver:strongSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:strongSelf.dataSource];
 
                                  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                                  dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                     [weakSelf.refreshControl endRefreshing];
+                                     [strongSelf.refreshControl endRefreshing];
                                  });
-                                 [weakSelf updateRefreshStatusWithLastUpdatedTime];
+                                 [strongSelf updateRefreshStatusWithLastUpdatedTime];
                              }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
