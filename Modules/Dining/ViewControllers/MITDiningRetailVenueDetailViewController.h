@@ -4,10 +4,9 @@
 
 @protocol MITDiningRetailVenueDetailViewControllerDelegate <NSObject>
 
+@optional
 - (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController
    didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue;
-
-@optional
 - (void)retailDetailViewControllerDidUpdateSize:(MITDiningRetailVenueDetailViewController *)retailDetailViewController;
 
 @end
