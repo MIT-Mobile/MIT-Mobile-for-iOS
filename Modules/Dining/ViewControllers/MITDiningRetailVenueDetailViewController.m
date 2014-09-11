@@ -415,7 +415,9 @@ static int const kWebViewTag = 4231;
     cell.textLabel.text = isFavorite ? @"Remove from Favorites" : @"Add to Favorites";
     [CoreDataManager saveData];
     
-    [self.delegate retailDetailViewController:self didUpdateFavoriteStatusForVenue:self.retailVenue];
+    if ([self.delegate respondsToSelector:@selector(retailDetailViewController:didUpdateFavoriteStatusForVenue:)]) {
+        [self.delegate retailDetailViewController:self didUpdateFavoriteStatusForVenue:self.retailVenue];
+    }
 }
 
 #pragma mark - UIWebViewDelegate

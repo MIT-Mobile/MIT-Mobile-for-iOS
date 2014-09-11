@@ -334,6 +334,13 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:YES];
 }
 
+- (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue
+{
+    if ([self.delegate respondsToSelector:@selector(popoverChangedFavoriteStatusForRetailVenue:)]) {
+        [self.delegate popoverChangedFavoriteStatusForRetailVenue:venue];
+    }
+}
+
 #pragma mark - UIPopover Calculations
 
 - (CGFloat)maxPopoverHeight

@@ -5,7 +5,7 @@
 #import "MITDiningMapsViewController.h"
 #import "MITDiningRetailVenueDataManager.h"
 
-@interface MITDiningRetailHomeViewControllerPad () <MKMapViewDelegate, MITDiningRetailVenueListViewControllerDelegate>
+@interface MITDiningRetailHomeViewControllerPad () <MKMapViewDelegate, MITDiningRetailVenueListViewControllerDelegate, MITDiningMapsViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 @property (nonatomic, strong) MITDiningRetailVenueListViewController *listViewController;
@@ -74,6 +74,7 @@
 - (void)setupMapView
 {
     self.mapsViewController = [[MITDiningMapsViewController alloc] initWithNibName:nil bundle:nil];
+    self.mapsViewController.delegate = self;
     self.mapsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.mapsViewController.view];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView][mapView]|" options:0 metrics:nil views:@{@"mapView": self.mapsViewController.view,
@@ -87,6 +88,15 @@
 - (void)retailVenueListViewController:(MITDiningRetailVenueListViewController *)listViewController didSelectVenue:(MITDiningRetailVenue *)venue
 {
     [self.mapsViewController showDetailForRetailVenue:venue];
+}
+
+#pragma mark - MITDiningMapsViewControllerDelegate Methods
+
+- (void)popoverChangedFavoriteStatusForRetailVenue:(MITDiningRetailVenue *)retailVenue
+{
+    [self.dataManager updateSectionsAndVenueArrays];
+    self.listViewController.retailVenues = self.dataManager.retailVenues;
+    [self.listViewController.tableView reloadData];
 }
 
 @end
