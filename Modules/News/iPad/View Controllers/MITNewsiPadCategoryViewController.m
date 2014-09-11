@@ -72,10 +72,11 @@
 
         __weak MITNewsiPadCategoryViewController *weakSelf = self;
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-        NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
         
         self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification object:self.dataSource
-                             queue:mainQueue usingBlock:^(NSNotification *note){
+                             queue:nil usingBlock:^(NSNotification *note){
+                                 [[NSNotificationCenter defaultCenter] removeObserver:weakSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:weakSelf.dataSource];
+
                                  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                                  dispatch_after(popTime, dispatch_get_main_queue(), ^{
                                      [weakSelf.refreshControl endRefreshing];
@@ -432,13 +433,6 @@
                 }];
             [self reloadViewItems:self.refreshControl];
         }
-    }
-}
-
-- (void)dealloc
-{
-    if (self.dataSourceDidEndUpdatingToken) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self.dataSourceDidEndUpdatingToken];
     }
 }
 
