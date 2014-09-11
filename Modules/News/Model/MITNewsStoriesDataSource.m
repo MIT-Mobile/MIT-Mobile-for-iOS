@@ -20,7 +20,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 @property (nonatomic,copy) NSString *categoryIdentifier;
 @property (nonatomic,getter = isFeaturedStorySource) BOOL featuredStorySource;
 
-@property (getter = isRequestInProgress) BOOL requestInProgress;
+@property(strong) dispatch_semaphore_t requestSemaphore;
+@property(nonatomic,getter=isUpdating) BOOL updating;
 @end
 
 @implementation MITNewsStoriesDataSource
@@ -111,6 +112,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
     if (self) {
         self.maximumNumberOfItemsPerPage = 20;
+        _requestSemaphore = dispatch_semaphore_create(1);
     }
 
     return self;
@@ -188,7 +190,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 - (BOOL)isUpdating
 {
-    return self.isRequestInProgress;
+    return _updating;
 }
 
 - (BOOL)_canCacheRequest
@@ -260,20 +262,31 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
 
 - (void)nextPage:(void(^)(NSError *error))block
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (![self hasNextPage]) {
-            return;
-        }
+    if (![self hasNextPage]) {
+        return;
+    }
 
-        self.requestInProgress = YES;
+    dispatch_semaphore_t requestSemaphore = self.requestSemaphore;
+    NSInteger result = dispatch_semaphore_wait(requestSemaphore, DISPATCH_TIME_NOW);
+    if (result) {
+        // semaphore wait timed out
+        NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
+            if (block) {
+                block(error);
+            }
+        }];
+
+        DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
+        return;
+    }
 
         __weak MITNewsStoriesDataSource *weakSelf = self;
         [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
             MITNewsStoriesDataSource *blockSelf = weakSelf;
-            self.requestInProgress = NO;
             
             if (!blockSelf) {
+            dispatch_semaphore_signal(requestSemaphore);
                 return;
             } else if (error) {
                 [blockSelf _responseFailedWithError:error completion:^{
@@ -289,21 +302,38 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
                     }
                 }];
             }
+
+        blockSelf.updating = NO;
+        dispatch_semaphore_signal(requestSemaphore);
         }];
-    }];
 }
 
 - (void)refresh:(void(^)(NSError *error))block
 {
+    dispatch_semaphore_t requestSemaphore = self.requestSemaphore;
+    NSInteger result = dispatch_semaphore_wait(requestSemaphore, DISPATCH_TIME_NOW);
+    if (result) {
+        // semaphore wait timed out
+        NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(error);
+            }
+        }];
+
+        DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
+        return;
+    }
+
         __weak MITNewsStoriesDataSource *weakSelf = self;
         void (^responseHandler)(NSArray*,NSDictionary*,NSError*) = ^(NSArray *stories, NSDictionary *pagingMetadata, NSError *error) {
             MITNewsStoriesDataSource *blockSelf = weakSelf;
-            blockSelf.requestInProgress = NO;
-            
             if (!blockSelf) {
+            dispatch_semaphore_signal(requestSemaphore);
                 return;
-            } else if (error) {
+        }
+
+        if (error) {
                 [blockSelf _responseFailedWithError:error completion:^{
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                         if (block) {
@@ -328,13 +358,12 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
                     }];
                 }];
             }
+
+        blockSelf.updating = NO;
+        dispatch_semaphore_signal(requestSemaphore);
         };
 
-        if (self.isRequestInProgress) {
-            return;
-        }
-
-        self.requestInProgress = YES;
+    self.updating = YES;
         [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
 
         if (self.isFeaturedStorySource) {
@@ -344,8 +373,6 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         } else if (self.query) {
             [[MITNewsModelController sharedController] storiesInCategory:nil query:self.query offset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
         }
-    }];
-
 }
 
 - (void)_responseFailedWithError:(NSError*)error completion:(void(^)())block

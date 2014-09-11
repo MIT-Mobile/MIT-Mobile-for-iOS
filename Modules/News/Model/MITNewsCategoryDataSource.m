@@ -8,8 +8,8 @@
 @property(nonatomic,readwrite,strong) NSFetchedResultsController *fetchedResultsController;
 
 @property(nonatomic) NSUInteger numberOfObjects;
-@property(strong) dispatch_semaphore_t requestMutex;
 
+@property(strong) dispatch_semaphore_t requestSemaphore;
 @property(getter=isUpdating) BOOL updating;
 @end
 
@@ -26,7 +26,7 @@
 {
     self = [super initWithManagedObjectContext:managedObjectContext];
     if (self) {
-        _requestMutex = dispatch_semaphore_create(1);
+        _requestSemaphore = dispatch_semaphore_create(1);
         [self _updateFetchedResultsController];
     }
 
@@ -90,9 +90,18 @@
 
 - (void)refresh:(void (^)(NSError *error))block
 {
-    NSInteger result = dispatch_semaphore_wait(self.requestMutex, DISPATCH_TIME_NOW);
+    dispatch_semaphore_t requestSemaphore = self.requestSemaphore;
+    NSInteger result = dispatch_semaphore_wait(requestSemaphore, DISPATCH_TIME_NOW);
     if (result) {
-        // Error
+        // semaphore wait timed out
+        NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(error);
+            }
+        }];
+
+        DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
         return;
     }
 
@@ -102,7 +111,9 @@
     __weak MITNewsCategoryDataSource *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
         MITNewsCategoryDataSource *blockSelf = weakSelf;
+
         if (!blockSelf) {
+            dispatch_semaphore_signal(requestSemaphore);
             return;
         }
 
@@ -127,7 +138,7 @@
 
             blockSelf.updating = NO;
             [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
-            dispatch_semaphore_signal(blockSelf.requestMutex);
+            dispatch_semaphore_signal(requestSemaphore);
         }];
     }];
 }
