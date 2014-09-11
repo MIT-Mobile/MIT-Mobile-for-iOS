@@ -215,8 +215,12 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     for (MITDiningPlace *place in self.places) {
         if ([place.retailVenue.identifier isEqualToString:retailVenue.identifier]) {
             [self.mapView selectAnnotation:place animated:YES];
+            return;
         }
     }
+    
+    // If we get here, the place doesn't have an annotation (probably because it has missing/invalid location data)
+    [self showRetailPopoverForVenueWithoutAnnotation:retailVenue];
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
@@ -254,6 +258,32 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
     
     [self.detailPopoverController presentPopoverFromRect:view.frame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+- (void)showRetailPopoverForVenueWithoutAnnotation:(MITDiningRetailVenue *)retailVenue
+{
+    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.retailVenue = retailVenue;
+    detailVC.delegate = self;
+    self.detailPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+    
+    CGFloat tableHeight = [detailVC targetTableViewHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
+    
+    [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+    
+    CLLocationCoordinate2D presentationCoordinate = CLLocationCoordinate2DMake(self.mapView.region.center.latitude, self.mapView.region.center.longitude + (0.4 * self.mapView.region.span.longitudeDelta));
+    CGPoint presentationPoint = [self.mapView convertCoordinate:presentationCoordinate toPointToView:self.mapView];
+    // TODO: Move the popover presentation point to the left to account for the missing arrow. Need to use our custom popover bg view class because simply moving this point doesnt work with permittedArrowDirections:0
+    CGRect presentationRectInMapView = CGRectMake(presentationPoint.x, presentationPoint.y, 10, 10);
+    [self.detailPopoverController presentPopoverFromRect:presentationRectInMapView inView:self.mapView permittedArrowDirections:0 animated:YES];
 }
 
 #pragma mark - Loading Events Into Map
