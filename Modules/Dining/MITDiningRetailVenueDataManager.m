@@ -88,8 +88,10 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
 - (void)generateFullSectionTitles
 {
     [[MITMapModelController sharedController] buildingNamesForBuildingNumbers:self.sectionTitles completion:^(NSArray *buildingNames, NSError *error) {
-        self.fullSectionTitles = buildingNames;
-        [self.delegate dataManagerDidUpdateSectionTitles:self];
+        if (!error){
+            self.fullSectionTitles = buildingNames;
+            [self.delegate dataManagerDidUpdateSectionTitles:self];
+        }
     }];
 }
 
