@@ -23,6 +23,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 @property (strong, nonatomic) NSFetchRequest *fetchRequest;
 @property (nonatomic, copy) NSString *currentlyDisplayedEntityName;
 @property (nonatomic, strong) UIPopoverController *detailPopoverController;
+@property (nonatomic, strong) MKAnnotationView *annotationViewForPopoverAfterRegionChange;
 
 @end
 
@@ -177,24 +178,23 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             if (place.retailVenue) {
-                MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
-                detailVC.retailVenue = place.retailVenue;
-                detailVC.delegate = self;
-                self.detailPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+                // Scroll map so that the annotation is centered vertically, and on the right edge horizontally
+                // This ensures that the popover will not cover the left list
+                MKCoordinateRegion newMapRegion = self.mapView.region;
+                CLLocationCoordinate2D newMapRegionCenter = newMapRegion.center;
+                newMapRegionCenter.latitude = place.coordinate.latitude;
+                newMapRegionCenter.longitude = place.coordinate.longitude - (0.4 * newMapRegion.span.longitudeDelta);
+                newMapRegion.center = newMapRegionCenter;
                 
-                CGFloat tableHeight = [detailVC targetTableViewHeight];
-                CGFloat minPopoverHeight = [self minPopoverHeight];
-                CGFloat maxPopoverHeight = [self maxPopoverHeight];
-                
-                if (tableHeight > maxPopoverHeight) {
-                    tableHeight = maxPopoverHeight;
-                } else if (tableHeight < minPopoverHeight) {
-                    tableHeight = minPopoverHeight;
+                // The map region is not exact when set. The new region can be within a margin of error and the regionDidChange delegate call will never be called.
+                // Have to check within this margin to make sure we show the popover if the map is already scrolled to the right spot. This seems right based on testing, there is no official answer.
+                if (newMapRegion.center.latitude > self.mapView.region.center.latitude - 0.00000001 && newMapRegion.center.latitude < self.mapView.region.center.latitude + 0.00000001 &&
+                    newMapRegion.center.longitude > self.mapView.region.center.longitude - 0.00000001 && newMapRegion.center.longitude < self.mapView.region.center.longitude + 0.00000001) {
+                    [self showRetailPopoverForAnnotationView:view];
+                } else {
+                    self.annotationViewForPopoverAfterRegionChange = view;
+                    [self.mapView setRegion:newMapRegion animated:YES];
                 }
-                
-                [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-                
-                [self.detailPopoverController presentPopoverFromRect:view.frame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
             }
         } else {
             if (place.houseVenue) {
@@ -224,7 +224,36 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
         [self refreshPlaceAnnotations];
         self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
+    } else if (self.annotationViewForPopoverAfterRegionChange) {
+        MITDiningPlace *place = self.annotationViewForPopoverAfterRegionChange.annotation;
+        if (place.retailVenue) {
+            [self showRetailPopoverForAnnotationView:self.annotationViewForPopoverAfterRegionChange];
+        }
+        self.annotationViewForPopoverAfterRegionChange = nil;
     }
+}
+
+- (void)showRetailPopoverForAnnotationView:(MKAnnotationView *)view
+{
+    MITDiningPlace *place = view.annotation;
+    MITDiningRetailVenueDetailViewController *detailVC = [[MITDiningRetailVenueDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.retailVenue = place.retailVenue;
+    detailVC.delegate = self;
+    self.detailPopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+    
+    CGFloat tableHeight = [detailVC targetTableViewHeight];
+    CGFloat minPopoverHeight = [self minPopoverHeight];
+    CGFloat maxPopoverHeight = [self maxPopoverHeight];
+    
+    if (tableHeight > maxPopoverHeight) {
+        tableHeight = maxPopoverHeight;
+    } else if (tableHeight < minPopoverHeight) {
+        tableHeight = minPopoverHeight;
+    }
+    
+    [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
+    
+    [self.detailPopoverController presentPopoverFromRect:view.frame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 #pragma mark - Loading Events Into Map
@@ -233,7 +262,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 {
     [self removeAllPlaceAnnotations];
     NSMutableArray *annotationsToAdd = [NSMutableArray array];
-    int totalNumberOfPlacesWithoutLocation = 0;
     for (int i = 0; i < diningPlaceArray.count; i++) {
         
         id venue = diningPlaceArray[i];
@@ -244,10 +272,8 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
             diningPlace = [[MITDiningPlace alloc] initWithHouseVenue:venue];
         }
         if (diningPlace) {
-            diningPlace.displayNumber = (i + 1) - totalNumberOfPlacesWithoutLocation;
+            diningPlace.displayNumber = (i + 1);
             [annotationsToAdd addObject:diningPlace];
-        } else {
-            totalNumberOfPlacesWithoutLocation++;
         }
     }
     
