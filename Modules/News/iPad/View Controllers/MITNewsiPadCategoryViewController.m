@@ -440,6 +440,13 @@
     }
 }
 
+- (void)dealloc
+{
+    if (self.dataSourceDidEndUpdatingToken) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.dataSourceDidEndUpdatingToken];
+    }
+}
+
 @end
 
 @implementation MITNewsiPadCategoryViewController (NewsDataSource)
