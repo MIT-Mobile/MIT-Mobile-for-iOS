@@ -222,6 +222,39 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     return fetchRequest;
 }
 
+// This takes an array, and returns a keyed dictionary, because otherwise we'd
+// have to fetch request for each individual name desired, rather than just
+// making one fetch.
+- (void)buildingNamesForBuildingNumbers:(NSArray *)buildingNumbers completion:(void (^)(NSArray *, NSError *))completion
+{
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        NSArray *buildingNames = [self buildingNamesFromResults:result.array buildingNumbers:buildingNumbers];
+                                                        completion(buildingNames, nil);
+                                                    } else {
+                                                        completion(nil, error);
+                                                    }
+                                                }];
+}
+
+- (NSArray *)buildingNamesFromResults:(NSArray *)resultsArray buildingNumbers:(NSArray *)buildingNumbers
+{
+    NSMutableArray *buildingNames = [[NSMutableArray alloc] init];
+    for (NSString *buildingNumber in buildingNumbers) {
+        NSString *buildingName = buildingNumber;
+        for (MITMapPlace *place in resultsArray) {
+            if ([place.buildingNumber isEqualToString:buildingNumber]) {
+                buildingName = place.name;
+                break;
+            }
+        }
+        [buildingNames addObject:buildingName];
+    }
+    return buildingNames.count > 0 ? buildingNames : nil;
+}
+
 - (NSUInteger)numberOfBookmarks
 {
     if ([self bookmarkMigrationNeeded]) {

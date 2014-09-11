@@ -1,4 +1,5 @@
 #import "MITDiningRetailVenueDataManager.h"
+#import "MITMapModelController.h"
 #import "MITDiningRetailVenue.h"
 #import "MITDiningLocation.h"
 
@@ -11,9 +12,10 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
 
 @end
 
-
 @interface MITDiningRetailVenueDataManager ()
 
+@property (nonatomic, strong) NSArray *fullSectionTitles;
+// Getting the full section titles is asynchronous, so we'll keep the short names too.
 @property (nonatomic, strong) NSArray *sectionTitles;
 @property (nonatomic, strong) NSDictionary *venueArraysKeyedByBuildingName;
 
@@ -37,6 +39,8 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
     NSMutableDictionary *venueArrays = [[NSMutableDictionary alloc] init];
     NSMutableArray *buildings = [[NSMutableArray alloc] init];
     NSMutableArray *sectionTitles = [[NSMutableArray alloc] init];
+    
+    self.fullSectionTitles = nil;
     
     for (MITDiningRetailVenue *venue in self.retailVenues)
     {
@@ -76,8 +80,17 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
         [sectionTitles addObject:building.name];
     }
     self.sectionTitles = sectionTitles;
+    [self generateFullSectionTitles];
     
     [self rebuildMasterVenuesArray];
+}
+
+- (void)generateFullSectionTitles
+{
+    [[MITMapModelController sharedController] buildingNamesForBuildingNumbers:self.sectionTitles completion:^(NSArray *buildingNames, NSError *error) {
+        self.fullSectionTitles = buildingNames;
+        [self.delegate dataManagerDidUpdateSectionTitles:self];
+    }];
 }
 
 // This re-sorts the master list of venues, so that we can easily pull down the
@@ -85,8 +98,7 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
 - (void)rebuildMasterVenuesArray
 {
     NSMutableArray *sortedVenues = [[NSMutableArray alloc] init];
-    for (NSString *key in self.sectionTitles)
-    {
+    for (NSString *key in self.sectionTitles) {
         if (![key isEqualToString:kMITFavoriteVenueKey]) {
             [sortedVenues addObjectsFromArray:self.venueArraysKeyedByBuildingName[key]];
         }
@@ -172,7 +184,11 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
 
 - (NSString *)titleForSection:(NSInteger)section
 {
-    return self.sectionTitles[section];
+    if (self.fullSectionTitles) {
+        return self.fullSectionTitles[section];
+    } else {
+        return self.sectionTitles[section];
+    }
 }
 
 - (MITDiningRetailVenue *)venueForIndexPath:(NSIndexPath *)indexPath

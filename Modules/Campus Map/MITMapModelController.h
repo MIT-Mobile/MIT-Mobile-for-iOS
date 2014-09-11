@@ -22,6 +22,8 @@
 - (NSFetchRequest*)places:(MITMobileManagedResult)block;
 - (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMobileManagedResult)block;
 
+- (void)buildingNamesForBuildingNumbers:(NSArray *)buildingNumbers completion:(void (^)(NSArray *buildingNames, NSError *error))completion;
+
 - (NSUInteger)numberOfBookmarks;
 - (NSFetchRequest*)bookmarkedPlaces:(MITMobileManagedResult)block;
 

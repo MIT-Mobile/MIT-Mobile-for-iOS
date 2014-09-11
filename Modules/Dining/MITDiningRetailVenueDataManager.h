@@ -1,10 +1,17 @@
 #import <Foundation/Foundation.h>
 
-@class MITDiningRetailVenue;
+@class MITDiningRetailVenue, MITDiningRetailVenueDataManager;
+
+@protocol MITDiningRetailVenueDataManagerDelegate <NSObject>
+
+- (void)dataManagerDidUpdateSectionTitles:(MITDiningRetailVenueDataManager *)dataManager;
+
+@end
 
 @interface MITDiningRetailVenueDataManager : NSObject
 
 @property (nonatomic, strong) NSArray *retailVenues;
+@property (nonatomic, weak) id<MITDiningRetailVenueDataManagerDelegate> delegate;
 
 - (instancetype)initWithRetailVenues:(NSArray *)retailVenues;
 - (void)updateSectionsAndVenueArrays;
