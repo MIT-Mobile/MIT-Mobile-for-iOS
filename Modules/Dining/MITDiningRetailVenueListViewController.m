@@ -4,10 +4,9 @@
 #import "MITDiningRetailVenueDataManager.h"
 #import "MITDiningVenueCell.h"
 
-
 static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
-@interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate, MITDiningRefreshableViewController>
+@interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate, MITDiningRefreshableViewController, MITDiningRetailVenueDataManagerDelegate>
 
 @property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 @property (nonatomic) BOOL shouldUpdateTableData;
@@ -21,6 +20,7 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
     [super viewDidLoad];
     
     self.dataManager = [[MITDiningRetailVenueDataManager alloc] initWithRetailVenues:self.retailVenues];
+    self.dataManager.delegate = self;
     
     [self setupTableView];
 }
@@ -121,6 +121,11 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 - (void)retailDetailViewController:(MITDiningRetailVenueDetailViewController *)viewController didUpdateFavoriteStatusForVenue:(MITDiningRetailVenue *)venue
 {
     self.shouldUpdateTableData = YES;
+}
+
+- (void)dataManagerDidUpdateSectionTitles:(MITDiningRetailVenueDataManager *)dataManager
+{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Refresh Control
