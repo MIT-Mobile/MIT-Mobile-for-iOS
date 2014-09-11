@@ -21,6 +21,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 + (UIColor *)mit_tintColor;
 + (UIColor *)mit_openGreenColor;
 + (UIColor *)mit_closedRedColor;
++ (UIColor *)mit_cellSeparatorColor;
 + (UIColor *)mit_systemTintColor;
 
 /*!
