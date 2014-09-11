@@ -118,7 +118,7 @@
         }
     }
     
-    if (!self.isSearching) {
+    if (!self.isSearching && !_storyUpdateInProgress) {
         if (!self.lastUpdated) {
             [self reloadViewItems:self.refreshControl];
         } else {
@@ -546,10 +546,12 @@
 #pragma mark Refresh Control Text
 - (void)updateRefreshStatusWithLastUpdatedTime
 {
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
-                                                                        toDate:[NSDate date]];
-    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+    if (self.lastUpdated) {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdated
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+    }
 }
 
 - (void)updateRefreshStatusWithText:(NSString *)refreshText
