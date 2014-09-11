@@ -23,6 +23,8 @@
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic) BOOL movingBackFromStory;
+
+@property(strong) id dataSourceDidEndUpdatingToken;
 @end
 
 @implementation MITNewsiPadCategoryViewController {
@@ -66,12 +68,37 @@
         self.previousPresentationStyle = nil;
     }
     [self updateNavigationItem:YES];
+    if (self.dataSource.isUpdating) {
+
+        __weak MITNewsiPadCategoryViewController *weakSelf = self;
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        
+        self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification object:self.dataSource
+                             queue:nil usingBlock:^(NSNotification *note){
+                                 MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                 if (!strongSelf) {
+                                     return;
+                                 }
+                                 [[NSNotificationCenter defaultCenter] removeObserver:strongSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:strongSelf.dataSource];
+
+                                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                     [strongSelf.refreshControl endRefreshing];
+                                 });
+                                 [strongSelf updateRefreshStatusWithLastUpdatedTime];
+                             }];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+        }];
+        [self updateRefreshStatusWithText:@"Updating..."];
+    }
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if (!self.movingBackFromStory) {
+    if (!self.movingBackFromStory && self.dataSource.refreshedAt) {
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
@@ -383,10 +410,12 @@
 #pragma mark Refresh Control Text
 - (void)updateRefreshStatusWithLastUpdatedTime
 {
-    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.dataSource.refreshedAt
-                                                                        toDate:[NSDate date]];
-    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+    if (self.dataSource.refreshedAt) {
+        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.dataSource.refreshedAt
+                                                                            toDate:[NSDate date]];
+        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
+    }
 }
 
 - (void)updateRefreshStatusWithText:(NSString *)refreshText
@@ -408,6 +437,13 @@
                 }];
             [self reloadViewItems:self.refreshControl];
         }
+    }
+}
+
+- (void)dealloc
+{
+    if (self.dataSourceDidEndUpdatingToken) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.dataSourceDidEndUpdatingToken];
     }
 }
 
