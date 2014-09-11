@@ -33,7 +33,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     if (!success) {
         return NO;
     }
-    
+
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                      [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
@@ -42,9 +42,9 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     if (!result) {
         return NO;
     }
-    
+
     NSMutableDictionary *storiesByCategory = [[NSMutableDictionary alloc] init];
-    
+
     // Run through all the story objects and stash each of them into an array
     // keyed to the name of the category the story is in.
     [result enumerateObjectsUsingBlock:^(MITNewsStory *story, NSUInteger idx, BOOL *stop) {
@@ -54,16 +54,16 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
             storiesInCategory = [[NSMutableArray alloc] init];
             storiesByCategory[categoryIdentifier] = storiesInCategory;
         }
-        
+
         [storiesInCategory addObject:story];
     }];
-    
+
     // Now go through our hash-of-arrays, and delete any objects with an index
     // greater than the default page size
     [storiesByCategory enumerateKeysAndObjectsUsingBlock:^(NSString *categoryIdentifier, NSMutableArray *stories, BOOL *stop) {
         if ([stories count] >= MITNewsStoriesDataSourceDefaultPageSize) {
             NSRange deletionRange = NSMakeRange(MITNewsStoriesDataSourceDefaultPageSize, [stories count] - MITNewsStoriesDataSourceDefaultPageSize);
-            
+
             NSArray *storiesToDelete = [stories objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]];
             [stories removeObjectsInRange:deletionRange];
             [context performBlock:^{
@@ -73,7 +73,7 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
             }];
         }
     }];
-    
+
     return YES;
 }
 
@@ -227,13 +227,13 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     [self.managedObjectContext performBlockAndWait:^{
         NSFetchRequest *fetchRequest = [self _fetchRequestForDataSource];
         NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-        
+
         NSError *fetchError = nil;
         BOOL success = [fetchedResultsController performFetch:&fetchError];
         if (!success) {
             DDLogWarn(@"failed to perform fetch for %@: %@", [self description], fetchError);
         }
-        
+
         _fetchedResultsController = fetchedResultsController;
     }];
 }
@@ -271,20 +271,21 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     if (result) {
         // semaphore wait timed out
         NSError *error = [NSError errorWithDomain:MITErrorDomain code:MITRequestInProgressError userInfo:nil];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (block) {
-                block(error);
-            }
-        }];
+        if (block) {
+            block(error);
+        }
 
         DDLogInfo(@"failed to dispatch %@, request already in progress", NSStringFromSelector(_cmd));
         return;
     }
 
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
+    self.updating = YES;
     __weak MITNewsStoriesDataSource *weakSelf = self;
     [[MITMobile defaultManager] getObjectsForURL:self.nextPageURL completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
         MITNewsStoriesDataSource *blockSelf = weakSelf;
-        
+
         if (!blockSelf) {
             dispatch_semaphore_signal(requestSemaphore);
             return;
@@ -364,6 +365,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     };
 
     self.updating = YES;
+    [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
+
     if (self.isFeaturedStorySource) {
         [[MITNewsModelController sharedController] featuredStoriesWithOffset:0 limit:self.maximumNumberOfItemsPerPage completion:responseHandler];
     } else if (self.categoryIdentifier) {
@@ -382,6 +385,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
     if (block) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
     }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
 }
 
 - (void)_responseFinishedWithObjects:(NSArray*)objects pagingMetadata:(NSDictionary*)pagingMetadata completion:(void(^)())block
@@ -401,6 +406,8 @@ static const NSUInteger MITNewsStoriesDataSourceDefaultPageSize = 20;
         if (block) {
             block();
         }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
     }];
 }
 

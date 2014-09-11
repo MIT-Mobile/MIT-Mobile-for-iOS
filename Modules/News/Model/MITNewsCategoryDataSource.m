@@ -106,6 +106,7 @@
     }
 
     self.updating = YES;
+    [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidBeginUpdatingNotification object:self];
 
     __weak MITNewsCategoryDataSource *weakSelf = self;
     [[MITNewsModelController sharedController] categories:^(NSArray *categories, NSError *error) {
@@ -136,6 +137,7 @@
             }
 
             blockSelf.updating = NO;
+            [[NSNotificationCenter defaultCenter] postNotificationName:MITNewsDataSourceDidEndUpdatingNotification object:self];
             dispatch_semaphore_signal(requestSemaphore);
         }];
     }];
