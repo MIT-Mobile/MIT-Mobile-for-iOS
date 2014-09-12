@@ -4,9 +4,6 @@
 #import "MITFacilitiesHomeViewController.h"
 
 @interface FacilitiesModule()
-
-@property (nonatomic, readonly) MITFacilitiesHomeViewController *facilitiesHomeVC;
-
 @end
 
 @implementation FacilitiesModule
@@ -31,9 +28,7 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_iphone" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
-    _facilitiesHomeVC = [storyboard instantiateInitialViewController];
-    
-    return _facilitiesHomeVC;
+    return [storyboard instantiateInitialViewController];
 }
 
 /*

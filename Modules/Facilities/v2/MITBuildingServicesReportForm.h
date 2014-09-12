@@ -19,6 +19,8 @@
 @property (nonatomic, strong) FacilitiesRoom *room;
 @property (nonatomic, strong) NSString *roomAltName;
 
+@property (nonatomic, strong) NSString *description;
+
 + (MITBuildingServicesReportForm *)sharedServiceReport;
 
 - (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom;

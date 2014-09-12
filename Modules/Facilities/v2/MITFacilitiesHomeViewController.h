@@ -10,3 +10,17 @@
 @interface MITFacilitiesHomeViewController : UIViewController
 
 @end
+
+@interface MITFacilitiesEditableFieldCell : UITableViewCell
+
+@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
+@property (nonatomic, strong) IBOutlet UITextView *subtitleTextView;
+
+@end
+
+@interface MITFacilitiesNonEditableFieldCell : UITableViewCell
+
+@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
+@property (nonatomic, strong) IBOutlet UILabel *subtitleLabel;
+
+@end

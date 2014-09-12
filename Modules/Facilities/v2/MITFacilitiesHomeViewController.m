@@ -28,15 +28,17 @@ typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
-@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate>
+@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *contactFacilitiesButton;
 
 @property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
+
+@property (nonatomic, strong) UITextView *editingTextView;
+@property (nonatomic, assign) NSInteger editingRow;
 
 @end
 
@@ -57,6 +59,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     // Do any additional setup after loading the view.
     
     self.reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    [self.reportForm clearAll];
+    
+    self.editingTextView = nil;
+    self.editingRow = -1;
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -67,13 +73,35 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
     [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self.editingTextView resignFirstResponder];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - actions
@@ -140,8 +168,19 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 #pragma mark - tableview stuff
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{    
-    return 62;
+{
+    static NSInteger defaultHeight = 62;
+    
+    NSInteger row = [self adjustedFieldRow:indexPath.row];
+    
+    if( self.editingTextView != nil && row == self.editingRow && row != MITFacilitiesFormFieldEmail )
+    {
+        CGSize size = [self.editingTextView sizeThatFits:CGSizeMake(self.editingTextView.frame.size.width, FLT_MAX)];
+        
+        return (defaultHeight - 20) + size.height;
+    }
+    
+    return defaultHeight;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -208,82 +247,66 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
     }
     
-    
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
-    
-    titleLabel.textColor = [UIColor mit_tintColor];
-    titleLabel.font = [UIFont systemFontOfSize:14];
-    
     cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
     
     return cell;
 }
 
-- (UITableViewCell *)emailFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (MITFacilitiesEditableFieldCell *)emailFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+    MITFacilitiesEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.accessoryType = UITableViewCellAccessoryNone;
     
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UITextField *subtitleTextField = (UITextField *)[cell viewWithTag:2];
-    
-    titleLabel.text = @"email";
-    subtitleTextField.text = [[MITTouchstoneController sharedController] userEmailAddress];
+    cell.titleLabel.text = @"email";
+    cell.subtitleTextView.text = [[MITTouchstoneController sharedController] userEmailAddress];
+    cell.subtitleTextView.delegate = self;
     
     return cell;
 }
 
-- (UITableViewCell *)locationFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (MITFacilitiesNonEditableFieldCell *)locationFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
-    
-    titleLabel.text = @"location";
-    subitleLabel.text = self.reportForm.location.name;
+    cell.titleLabel.text = @"location";
+    cell.subtitleLabel.text = self.reportForm.location.name;
     
     return cell;
 }
 
-- (UITableViewCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (MITFacilitiesNonEditableFieldCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
-    
-    titleLabel.text = @"room";
-    subitleLabel.text = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
+    cell.titleLabel.text = @"room";
+    cell.subtitleLabel.text = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
     
     return cell;
 }
 
-- (UITableViewCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (MITFacilitiesNonEditableFieldCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    UILabel *subitleLabel = (UILabel *)[cell viewWithTag:2];
-    
-    titleLabel.text = @"problem type";
-    subitleLabel.text = self.reportForm.problemType.name;
+    cell.titleLabel.text = @"problem type";
+    cell.subtitleLabel.text = self.reportForm.problemType.name;
     
     return cell;
 }
 
-- (UITableViewCell *)descriptionFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (MITFacilitiesEditableFieldCell *)descriptionFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+    MITFacilitiesEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryNone;
     
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:1];
-    titleLabel.text = @"description";
+    cell.titleLabel.text = @"description";
+    
+    cell.subtitleTextView.delegate = self;
+    cell.subtitleTextView.text = self.reportForm.description;
     
     return cell;
 }
@@ -291,6 +314,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    UIViewController *vc = nil;
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
@@ -300,20 +325,94 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     }
     else if( row == MITFacilitiesFormFieldLocation )
     {
-        FacilitiesCategoryViewController *vc = [[FacilitiesCategoryViewController alloc] init];
-        [self.navigationController pushViewController:vc animated:YES];
+        vc = [[FacilitiesCategoryViewController alloc] init];
     }
     else if( row == MITFacilitiesFormFieldProblemType )
     {
-        FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
-        [self.navigationController pushViewController:vc animated:YES];
+        vc = [[FacilitiesTypeViewController alloc] init];
     }
     else if( row == MITFacilitiesFormFieldRoom )
     {
-        FacilitiesRoomViewController *vc = [[FacilitiesRoomViewController alloc] init];
-        vc.location = self.reportForm.location;
+        FacilitiesRoomViewController *fvc = [[FacilitiesRoomViewController alloc] init];
+        fvc.location = self.reportForm.location;
+        
+        vc = fvc;
+    }
+    
+    if( vc != nil )
+    {
         [self.navigationController pushViewController:vc animated:YES];
     }
+}
+
+#pragma mark - keyboard related
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    if( self.editingTextView == nil )
+    {
+        return;
+    }
+    
+    NSValue *keyboard = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect = [self.view convertRect:[keyboard CGRectValue] fromView:nil];
+    CGSize keyboardSize = keyboardRect.size;
+    
+    CGRect tableViewRect = self.tableView.frame;
+    tableViewRect.size.height -= keyboardSize.height;
+    self.tableView.frame = tableViewRect;
+    
+    if( self.editingRow == MITFacilitiesFormFieldDescription )
+    {
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingRow inSection:0]
+                              atScrollPosition:UITableViewRowAnimationTop animated:YES];
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification
+{
+    if( self.editingTextView == nil )
+    {
+        return;
+    }
+    
+    NSValue *keyboardValue = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
+    CGRect keyboardRect = [keyboardValue CGRectValue];
+    CGSize keyboardSize = keyboardRect.size;
+    
+    CGRect tableViewRect = self.tableView.frame;
+    tableViewRect.size.height += keyboardSize.height;
+    self.tableView.frame = tableViewRect;
+}
+
+#pragma mark - textViewDelegate
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+    CGPoint point = [textView convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *editingTextViewIndexPath = [self.tableView indexPathForRowAtPoint:point];
+    
+    self.editingRow = [self adjustedFieldRow:editingTextViewIndexPath.row];
+    self.editingTextView = textView;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+    
+    return YES;
+}
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    self.reportForm.description = textView.text;
+    
+    CGFloat fixedWidth = textView.frame.size.width;
+    CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, FLT_MAX)];
+    CGRect newFrame = textView.frame;
+    newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+    textView.frame = newFrame;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 #pragma mark - helpers
@@ -351,5 +450,33 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     // Pass the selected object to the new view controller.
 }
 */
+
+@end
+
+@implementation MITFacilitiesEditableFieldCell
+
+- (void)awakeFromNib
+{
+    [self.subtitleTextView setFont:[UIFont systemFontOfSize:16]];
+    CGSize size = [self.subtitleTextView sizeThatFits:CGSizeMake(self.subtitleTextView.frame.size.width, FLT_MAX)];
+    CGRect textViewFrame = self.subtitleTextView.frame;
+    textViewFrame.size.height = size.height;
+    self.subtitleTextView.frame = textViewFrame;
+    
+    [self.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    [self.titleLabel setTextColor:[UIColor mit_tintColor]];
+}
+
+@end
+
+@implementation MITFacilitiesNonEditableFieldCell
+
+- (void)awakeFromNib
+{
+    [self.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    [self.subtitleLabel setFont:[UIFont systemFontOfSize:16]];
+    
+    self.titleLabel.textColor = [UIColor mit_tintColor];
+}
 
 @end

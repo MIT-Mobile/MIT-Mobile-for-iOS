@@ -784,9 +784,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         MITModule *module = [self moduleForTag:tag];
         viewController = [module homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
         
-        if (viewController) {
-            self.viewControllersByTag[tag] = viewController;
-        }
+//        if (viewController) {
+//            self.viewControllersByTag[tag] = viewController;
+//        }
     }
     
     return viewController;
