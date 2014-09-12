@@ -30,6 +30,7 @@
 @implementation MITNewsiPadCategoryViewController {
     BOOL _isTransitioningToPresentationStyle;
     BOOL _storyUpdateInProgress;
+    BOOL _loadingMoreStories;
 }
 
 @synthesize presentationStyle = _presentationStyle;
@@ -288,6 +289,11 @@
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 {
+    if (_loadingMoreStories) {
+        [refreshControl endRefreshing];
+        return;
+    }
+    
     if (_storyUpdateInProgress || self.dataSource.isUpdating) {
         return;
     }
@@ -350,6 +356,7 @@
         return;
     }
     _storyUpdateInProgress = YES;
+    _loadingMoreStories = YES;
     [self setProgress:YES];
     
     [self updateLoadingCell];
@@ -357,8 +364,9 @@
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
-                                     _storyUpdateInProgress = FALSE;
-                                     [self setProgress:FALSE];
+                                     _storyUpdateInProgress = NO;
+                                     [self setProgress:NO];
+                                     _loadingMoreStories = NO;
                                      MITNewsiPadCategoryViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
                                          return;
