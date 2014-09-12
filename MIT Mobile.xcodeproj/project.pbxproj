@@ -424,6 +424,9 @@
 		A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
+		A5FD261E19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */; };
+		A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD262319C384FC0057CE9D /* MITDiningDietaryFlagListCell.m */; };
+		A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FD262419C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
@@ -1364,6 +1367,11 @@
 		A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapHomeViewController.h; sourceTree = "<group>"; };
 		A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapHomeViewController.m; sourceTree = "<group>"; };
 		A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapHomeViewController.xib; sourceTree = "<group>"; };
+		A5FD261C19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListViewController.h; path = Dining/MITDiningDietaryFlagListViewController.h; sourceTree = "<group>"; };
+		A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningDietaryFlagListViewController.m; path = Dining/MITDiningDietaryFlagListViewController.m; sourceTree = "<group>"; };
+		A5FD262219C384FC0057CE9D /* MITDiningDietaryFlagListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListCell.h; path = Dining/MITDiningDietaryFlagListCell.h; sourceTree = "<group>"; };
+		A5FD262319C384FC0057CE9D /* MITDiningDietaryFlagListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningDietaryFlagListCell.m; path = Dining/MITDiningDietaryFlagListCell.m; sourceTree = "<group>"; };
+		A5FD262419C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningDietaryFlagListCell.xib; path = Dining/MITDiningDietaryFlagListCell.xib; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
 		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
@@ -1964,6 +1972,8 @@
 				A52E0CF219B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.h */,
 				A52E0CF319B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m */,
 				A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */,
+				A5FD261C19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.h */,
+				A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -1981,6 +1991,9 @@
 				22D90340199D497100AEBC7D /* MITDiningVenueCell.xib */,
 				80F6E2B7199A932A0060C971 /* MITDiningCustomSeparatorCell.h */,
 				80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */,
+				A5FD262219C384FC0057CE9D /* MITDiningDietaryFlagListCell.h */,
+				A5FD262319C384FC0057CE9D /* MITDiningDietaryFlagListCell.m */,
+				A5FD262419C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib */,
 			);
 			name = "Shared Cells";
 			sourceTree = "<group>";
@@ -3824,6 +3837,7 @@
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
+				A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */,
@@ -3981,6 +3995,7 @@
 				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
+				A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
@@ -4275,6 +4290,7 @@
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
 				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,
 				2C18090A18F33B95008F9775 /* MITTouchstoneNetworkIdentityProvider.m in Sources */,
+				A5FD261E19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m in Sources */,
 				2CCF81511636F69900DE273F /* DDASLLogger.m in Sources */,
 				2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */,
 				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
