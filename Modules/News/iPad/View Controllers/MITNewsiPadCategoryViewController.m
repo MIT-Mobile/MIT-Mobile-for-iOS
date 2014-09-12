@@ -246,6 +246,15 @@
     }
 }
 
+- (void)reloadData
+{
+    if (self.activeViewController == _gridViewController) {
+        [self.gridViewController.collectionView reloadData];
+    } else if (self.activeViewController == _listViewController) {
+        [self.listViewController.tableView reloadData];
+    }
+}
+
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
