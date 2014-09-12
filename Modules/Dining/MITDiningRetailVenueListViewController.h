@@ -1,8 +1,7 @@
 #import "MITDiningRefreshDataProtocols.h"
 #import <UIKit/UIKit.h>
 
-@class MITDiningRetailVenueListViewController;
-@class MITDiningRetailVenue;
+@class MITDiningRetailVenueListViewController, MITDiningRetailVenue, MITDiningRetailVenueDataManager;
 
 @protocol MITDiningRetailVenueListViewControllerDelegate <NSObject>
 
@@ -16,5 +15,7 @@
 @property (nonatomic, weak) id<MITDiningRefreshRequestDelegate>refreshDelegate;
 
 @property (nonatomic, strong) NSArray *retailVenues;
+@property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
+
 
 @end

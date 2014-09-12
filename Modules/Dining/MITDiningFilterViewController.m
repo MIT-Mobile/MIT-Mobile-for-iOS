@@ -80,7 +80,7 @@ static CGFloat const kMITDiningFilterHeaderHeight = 40.0;
                                                                     kMITDiningFilterHeaderHeight -1,
                                                                     headerLabel.bounds.size.width,
                                                                     1)];
-    separatorBar.backgroundColor = [UIColor colorWithRed:227.0/255.0 green:227.0/255.0 blue:229.0/255.0 alpha:1.0];
+    separatorBar.backgroundColor = [UIColor mit_cellSeparatorColor];
     [headerLabel addSubview:separatorBar];
     
     self.tableView.tableHeaderView = headerLabel;

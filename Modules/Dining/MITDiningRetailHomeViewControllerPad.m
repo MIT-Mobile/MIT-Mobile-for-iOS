@@ -7,7 +7,6 @@
 
 @interface MITDiningRetailHomeViewControllerPad () <MKMapViewDelegate, MITDiningRetailVenueListViewControllerDelegate, MITDiningMapsViewControllerDelegate>
 
-@property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 @property (nonatomic, strong) MITDiningRetailVenueListViewController *listViewController;
 @property (nonatomic, strong) MITDiningMapsViewController *mapsViewController;
 
@@ -29,7 +28,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    self.dataManager = [[MITDiningRetailVenueDataManager alloc] initWithRetailVenues:self.retailVenues];
     [self setupListViewController];
     [self setupMapView];
 }
@@ -54,16 +52,14 @@
     }
     
     _retailVenues = retailVenues;
-    self.dataManager.retailVenues = _retailVenues;
-    self.listViewController.retailVenues = self.dataManager.retailVenues;
-    [self.mapsViewController updateMapWithDiningPlaces:self.dataManager.retailVenues];
+    self.listViewController.retailVenues = retailVenues;
+    [self.mapsViewController updateMapWithDiningPlaces:retailVenues];
 }
 
 - (void)setupListViewController
 {
     self.listViewController = [[MITDiningRetailVenueListViewController alloc] init];
     self.listViewController.delegate = self;
-    self.listViewController.retailVenues = self.dataManager.retailVenues;
     [self addChildViewController:self.listViewController];
     self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.listViewController.view];
@@ -80,7 +76,7 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView][mapView]|" options:0 metrics:nil views:@{@"mapView": self.mapsViewController.view,
                                                                                                                                       @"listView": self.listViewController.view}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[mapView]-0-|" options:0 metrics:nil views:@{@"mapView": self.mapsViewController.view}]];
-    [self.mapsViewController updateMapWithDiningPlaces:self.dataManager.retailVenues];
+    [self.mapsViewController updateMapWithDiningPlaces:self.retailVenues];
 }
 
 #pragma mark - MITDiningRetailVenueListViewControllerDelegate Methods
@@ -94,8 +90,7 @@
 
 - (void)popoverChangedFavoriteStatusForRetailVenue:(MITDiningRetailVenue *)retailVenue
 {
-    [self.dataManager updateSectionsAndVenueArrays];
-    self.listViewController.retailVenues = self.dataManager.retailVenues;
+    [self.listViewController.dataManager updateSectionsAndVenueArrays];
     [self.listViewController.tableView reloadData];
 }
 

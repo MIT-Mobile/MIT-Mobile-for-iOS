@@ -8,7 +8,6 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
 @interface MITDiningRetailVenueListViewController () <MITDiningRetailVenueDetailViewControllerDelegate, MITDiningRefreshableViewController, MITDiningRetailVenueDataManagerDelegate>
 
-@property (nonatomic, strong) MITDiningRetailVenueDataManager *dataManager;
 @property (nonatomic) BOOL shouldUpdateTableData;
 
 @end

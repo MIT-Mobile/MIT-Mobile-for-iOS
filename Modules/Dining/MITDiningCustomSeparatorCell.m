@@ -1,4 +1,5 @@
 #import "MITDiningCustomSeparatorCell.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat const kLeftOffset = 15.0;
 
@@ -33,13 +34,13 @@ static CGFloat const kLeftOffset = 15.0;
 - (void)drawCellSeparator
 {
     self.cellSeparator = [CALayer layer];
-    self.cellSeparator.backgroundColor = [UIColor lightGrayColor].CGColor;
+    self.cellSeparator.backgroundColor = [UIColor mit_cellSeparatorColor].CGColor;
     [self.layer addSublayer:self.cellSeparator];
 }
 
 - (void)positionCellSeparator
 {
-    self.cellSeparator.frame = CGRectMake(kLeftOffset, CGRectGetMaxY(self.bounds), CGRectGetWidth(self.bounds) - kLeftOffset, -0.5);
+    self.cellSeparator.frame = CGRectMake(kLeftOffset, CGRectGetMaxY(self.bounds), CGRectGetWidth(self.bounds) - kLeftOffset, -1);
 }
 
 @end
