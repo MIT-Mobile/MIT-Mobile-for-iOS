@@ -9,6 +9,7 @@
 #import "MITFacilitiesHomeViewController.h"
 #import "MITBuildingServicesReportForm.h"
 #import "MITTouchstoneController.h"
+#import "MITActionSheetHandler.h"
 
 #import "FacilitiesCategoryViewController.h"
 #import "FacilitiesTypeViewController.h"
@@ -22,13 +23,14 @@ typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
     MITFacilitiesFormFieldLocation,
     MITFacilitiesFormFieldRoom,
     MITFacilitiesFormFieldProblemType,
-    MITFacilitiesFormFieldDescription
+    MITFacilitiesFormFieldDescription,
+    MITFacilitiesFormFieldAttachPhoto
 };
 
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
-@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate>
+@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -39,6 +41,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 @property (nonatomic, strong) UITextView *editingTextView;
 @property (nonatomic, assign) NSInteger editingRow;
+
+@property (nonatomic, strong) MITActionSheetHandler *actionSheetHandler;
 
 @end
 
@@ -108,54 +112,100 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (void)contactFacilitiesAction:(id)sender
 {
+    __weak MITFacilitiesHomeViewController *weakSelf = self;
+    
+    self.actionSheetHandler = [MITActionSheetHandler new];
+    [self.actionSheetHandler setActionSheetTintColor:[UIColor mit_tintColor]];
+    
+    self.actionSheetHandler.delegateBlock = ^(UIActionSheet *actionSheet, NSInteger buttonIndex)
+    {
+        if( buttonIndex == actionSheet.cancelButtonIndex )
+        {
+            return;
+        }
+        
+        if( buttonIndex == actionSheet.destructiveButtonIndex )
+        {
+            // call
+            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
+            if ([[UIApplication sharedApplication] canOpenURL:url])
+            {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+        }
+        else
+        {
+            // email
+            if ([MFMailComposeViewController canSendMail])
+            {
+                MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
+                [mailView setMailComposeDelegate:weakSelf];
+                [mailView setSubject:@"Request from Building Services"];
+                [mailView setToRecipients:[NSArray arrayWithObject:kFacilitiesEmailAddress]];
+                [weakSelf presentViewController:mailView animated:YES completion:NULL];
+            }
+        }
+    };
+    
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
+                                                             delegate:self.actionSheetHandler
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:[NSString stringWithFormat:@"Call %@", kFacilitiesPhoneNumber]
                                                     otherButtonTitles:[NSString stringWithFormat:@"Email %@", kFacilitiesEmailAddress], nil];
     [actionSheet showInView:self.view];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)attachPhotoAction
 {
-    if( buttonIndex == actionSheet.cancelButtonIndex )
-    {
-        return;
-    }
+    __weak MITFacilitiesHomeViewController *weakSelf = self;
     
-    if( buttonIndex == actionSheet.destructiveButtonIndex )
+    self.actionSheetHandler = [MITActionSheetHandler new];
+    [self.actionSheetHandler setActionSheetTintColor:[UIColor mit_tintColor]];
+    self.actionSheetHandler.delegateBlock = ^(UIActionSheet *actionSheet, NSInteger buttonIndex)
     {
-        // call
-        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
-        if ([[UIApplication sharedApplication] canOpenURL:url])
+        if( buttonIndex == actionSheet.cancelButtonIndex )
         {
-            [[UIApplication sharedApplication] openURL:url];
+            return;
         }
-    }
-    else
-    {
-        // email
-        if ([MFMailComposeViewController canSendMail])
+        
+        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+        
+        if( buttonIndex == actionSheet.destructiveButtonIndex )
         {
-            MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
-            [mailView setMailComposeDelegate:self];
-            [mailView setSubject:@"Request from Building Services"];
-            [mailView setToRecipients:[NSArray arrayWithObject:kFacilitiesEmailAddress]];
-            [self presentViewController:mailView animated:YES completion:NULL];
+            // take photo
+            
+            if( ![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] )
+            {
+                UIAlertView *warningAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                           message:@"Device has no camera"
+                                                                          delegate:nil
+                                                                 cancelButtonTitle:@"OK"
+                                                                 otherButtonTitles:nil];
+                
+                [warningAlertView show];
+                
+                return;
+            }
+            
+            controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+            controller.showsCameraControls = YES;
         }
-    }
-}
-
-- (void)willPresentActionSheet:(UIActionSheet *)actionSheet
-{
-    for (UIView *subview in actionSheet.subviews)
-    {
-        if ([subview isKindOfClass:[UIButton class]])
+        else
         {
-            UIButton *button = (UIButton *)subview;
-            [button setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
+            // choose photo
+            controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         }
-    }
+        
+        controller.delegate = weakSelf;
+        [weakSelf.navigationController presentViewController:controller animated:YES completion:NULL];
+    };
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self.actionSheetHandler
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:@"Take Photo"
+                                                    otherButtonTitles:@"Choose Photo", nil];
+    [actionSheet showInView:self.view];
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
@@ -319,11 +369,13 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
-    if( row == MITFacilitiesFormFieldEmail )
+    if( row == MITFacilitiesFormFieldAttachPhoto )
     {
-        
+        [self attachPhotoAction];
+        return;
     }
-    else if( row == MITFacilitiesFormFieldLocation )
+    
+    if( row == MITFacilitiesFormFieldLocation )
     {
         vc = [[FacilitiesCategoryViewController alloc] init];
     }
@@ -413,6 +465,19 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
+}
+
+#pragma mark - UIImagePickerDelegate
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    
+    if( image == nil )
+    {
+        image = info[UIImagePickerControllerOriginalImage];
+    }
+    
+    [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - helpers
