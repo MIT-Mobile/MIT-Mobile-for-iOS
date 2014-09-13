@@ -332,6 +332,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    NSInteger numberOfSections = [self numberOfCategories];
+    NSInteger numberOfCachedSections = [self.storyHeightsArray count];
+    
+    if (numberOfCachedSections > numberOfSections) {
+        NSRange deletionRange = NSMakeRange(numberOfSections, numberOfCachedSections - numberOfSections);
+        [self.storyHeightsArray removeObjectsInRange:deletionRange];
+    }
+    
     return [self numberOfCategories];
 }
 
