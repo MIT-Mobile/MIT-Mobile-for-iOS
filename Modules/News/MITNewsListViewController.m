@@ -23,9 +23,10 @@ static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
-@property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
-@property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
-@property (nonatomic, strong) NSMutableDictionary *storyHeights;
+@property (nonatomic, strong) NSMapTable *gestureRecognizersByView;
+@property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
+@property (nonatomic, strong) NSMutableArray *storyHeightsArray;
+
 
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
@@ -35,13 +36,13 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 
 #pragma mark Dynamic Properties
-- (NSMutableDictionary*)storyHeights
+- (NSMutableArray*)storyHeightsArray
 {
-    if (!_storyHeights) {
-        NSMutableDictionary* storyHeights = [[NSMutableDictionary alloc] init];
-        _storyHeights = storyHeights;
+    if (!_storyHeightsArray) {
+        NSMutableArray *storyHeightsArray = [[NSMutableArray alloc] init];
+        _storyHeightsArray = storyHeightsArray;
     }
-    return _storyHeights;
+    return _storyHeightsArray;
 }
 
 
@@ -258,8 +259,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
-    CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
-    if (estimatedHeight != cellHeight) {
+    if ([self.storyHeightsArray count] > indexPath.section) {
+        
+        NSMutableDictionary *storyHeights = self.storyHeightsArray[indexPath.section];
+        CGFloat estimatedHeight = [storyHeights[indexPath] doubleValue];
+        if (estimatedHeight != cellHeight) {
+            [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
+        }
+    } else {
         [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
     }
     return cellHeight;
@@ -281,13 +288,25 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (CGFloat)cachedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    return [self.storyHeights[keyIndexPath] doubleValue];
+    if ([self.storyHeightsArray count] > keyIndexPath.section) {
+      
+        NSMutableDictionary *storyHeights = self.storyHeightsArray[keyIndexPath.section];
+        return [storyHeights[keyIndexPath] doubleValue];
+    }
+    return UITableViewAutomaticDimension;
 }
 
 - (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    self.storyHeights[keyIndexPath] = @(height);
+    NSMutableDictionary *storyHeights;
+    if ([self.storyHeightsArray count] > keyIndexPath.section) {
+        storyHeights = self.storyHeightsArray[keyIndexPath.section];
+    } else {
+        storyHeights = [[NSMutableDictionary alloc] init];
+        [self.storyHeightsArray addObject:storyHeights];
+    }
+    storyHeights[keyIndexPath] = @(height);
 }
 
 
@@ -321,17 +340,21 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
  
-    NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
-    NSInteger numberOfStoryHeights = [self.storyHeights count];
-    if (numberOfStoryHeights > numberOfRows) {
-        NSArray *sortedIndexPaths = [[self.storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    if ([self.storyHeightsArray count] > section) {
+        NSMutableDictionary *storyHeights = self.storyHeightsArray[section];
         
-        NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
-        [sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
-                                            options:0
-                                         usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
-                                             [self.storyHeights removeObjectForKey:indexPath];
-                                         }];
+        NSInteger numberOfStoryHeights = [storyHeights count];
+        NSInteger numberOfRows = MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
+        if (numberOfStoryHeights > numberOfRows) {
+            NSArray *sortedIndexPaths = [[storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
+            
+            NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
+            [sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
+                                                options:0
+                                             usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
+                                                 [storyHeights removeObjectForKey:indexPath];
+                                             }];
+        }
     }
     
     return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
