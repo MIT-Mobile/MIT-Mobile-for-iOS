@@ -260,6 +260,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        return MITNewsLoadMoreTableViewCellHeight;
+    }
     CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     CGFloat estimatedHeight = [self.storyHeights[indexPath] doubleValue];
     if (estimatedHeight != cellHeight) {
@@ -310,7 +313,16 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self didSelectStoryAtIndexPath:indexPath];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (!_storyUpdateInProgress) {
+            [self getMoreStoriesForSection:indexPath.section];
+        }
+    } else {
+        [self didSelectStoryAtIndexPath:indexPath];
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark UITableViewDataSource
@@ -350,14 +362,32 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            
+            if (self.errorMessage) {
+                cell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+            } else {
+                cell.textLabel.text = @"Load More...";
+            }
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+            
+            return cell;
+        }
+    }
     return cell;
 }
+
 
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -365,6 +395,16 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
+    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgress) {
+            if (!cell.accessoryView) {
+                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [view startAnimating];
+                cell.accessoryView = view;
+            }
+        } else {
+            cell.accessoryView = nil;
+        }
     }
 }
 
@@ -389,6 +429,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         return identifier;
     } else {
+        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isCategory == YES) {
+            return MITNewsLoadMoreCellIdentifier;
+        }
         return nil;
     }
 }
@@ -453,4 +496,21 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     }
 }
 
+- (void)getMoreStoriesForSection:(NSInteger)section
+{
+    if (!_storyUpdateInProgress && !self.errorMessage) {
+        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+        }];
+    }
+}
+
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
+}
 @end

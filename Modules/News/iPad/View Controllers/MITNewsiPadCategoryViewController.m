@@ -11,7 +11,7 @@
 @interface MITNewsiPadCategoryViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate>
 @end
 
-@interface MITNewsiPadCategoryViewController () </*MITNewsListDelegate, */MITNewsGridDelegate>
+@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
 
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
@@ -26,9 +26,6 @@
     BOOL _loadingMoreStories;
 }
 
-@synthesize presentationStyle = _presentationStyle;
-@synthesize activeViewController = _activeViewController;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -41,6 +38,9 @@
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
+#warning come back to this
+    self.gridViewController.isCategory = YES;
+    self.listViewController.isCategory = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -144,7 +144,7 @@
             [[UIApplication sharedApplication] openURL:url];
         }
     }
-    if (_presentationStyle == MITNewsPresentationStyleList) {
+    if (self.presentationStyle == MITNewsPresentationStyleList) {
         [self.listViewController.tableView deselectRowAtIndexPath:[self.listViewController.tableView indexPathForSelectedRow] animated:YES];
     }
 }
