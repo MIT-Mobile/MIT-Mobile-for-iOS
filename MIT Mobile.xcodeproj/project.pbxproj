@@ -969,8 +969,8 @@
 		2CE1C89B18C156B0001B8FEB /* DiningMenuCompareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DiningMenuCompareViewController.xib; path = XIBs/DiningMenuCompareViewController.xib; sourceTree = "<group>"; };
 		2CE20DA218885F2C0010FA49 /* MITDisclosureHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDisclosureHeaderView.h; path = Views/MITDisclosureHeaderView.h; sourceTree = "<group>"; };
 		2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDisclosureHeaderView.m; path = Views/MITDisclosureHeaderView.m; sourceTree = "<group>"; };
-		2CE355641959F673004011C5 /* MITNewsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsListViewController.h; path = ../../MITNewsListViewController.h; sourceTree = "<group>"; };
-		2CE355651959F673004011C5 /* MITNewsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsListViewController.m; path = ../../MITNewsListViewController.m; sourceTree = "<group>"; };
+		2CE355641959F673004011C5 /* MITNewsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsListViewController.h; sourceTree = "<group>"; };
+		2CE355651959F673004011C5 /* MITNewsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsListViewController.m; sourceTree = "<group>"; };
 		2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MapKit+MITAdditions.h"; path = "Categories/MapKit+MITAdditions.h"; sourceTree = "<group>"; };
 		2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MapKit+MITAdditions.m"; path = "Categories/MapKit+MITAdditions.m"; sourceTree = "<group>"; };
 		2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MFMailComposeViewController+RFC2368.h"; sourceTree = "<group>"; };
@@ -1715,24 +1715,6 @@
 			path = iPad;
 			sourceTree = "<group>";
 		};
-
-		277B3DCD194DC7610032229E /* iPad */ = {
-			isa = PBXGroup;
-			children = (
-				277493C81971C88100EB7904 /* MITPeopleSearchRootViewController.h */,
-				277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */,
-				2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */,
-				2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */,
-				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
-				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
-				27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */,
-				27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */,
-				27AB921419737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.h */,
-				27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */,
-			);
-			name = iPad;
-			sourceTree = "<group>";
-		};
 		0B1689CD1937D15D001EB3B1 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1860,6 +1842,23 @@
 				1D6058910D05DD3D006BFB54 /* MITMobile.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		277B3DCD194DC7610032229E /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				277493C81971C88100EB7904 /* MITPeopleSearchRootViewController.h */,
+				277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */,
+				2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */,
+				2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */,
+				277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */,
+				277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */,
+				27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */,
+				27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */,
+				27AB921419737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.h */,
+				27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */,
+			);
+			name = iPad;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
