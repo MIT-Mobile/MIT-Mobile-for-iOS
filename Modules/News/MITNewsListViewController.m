@@ -299,7 +299,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    NSMutableDictionary *storyHeights;
+    NSMutableDictionary *storyHeights = nil;
     if ([self.storyHeightsArray count] > keyIndexPath.section) {
         storyHeights = self.storyHeightsArray[keyIndexPath.section];
     } else {
