@@ -15,8 +15,6 @@
 
 @interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
 @property (nonatomic, weak) IBOutlet UIView *containerView;
-@property (nonatomic, weak) IBOutlet MITNewsCategoryGridViewController *gridViewController;
-@property (nonatomic, weak) IBOutlet MITNewsCategoryListViewController *listViewController;
 
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
@@ -103,53 +101,6 @@
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
-}
-
-- (MITNewsCategoryGridViewController*)gridViewController
-{
-    MITNewsCategoryGridViewController *gridViewController = _gridViewController;
-    
-    if (![self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-        return nil;
-    } else if (!gridViewController) {
-        gridViewController = [[MITNewsCategoryGridViewController alloc] init];
-        gridViewController.delegate = self;
-        gridViewController.dataSource = self;
-        _gridViewController = gridViewController;
-
-        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [refreshControl addTarget:self action:@selector(reloadViewItems:)
-                 forControlEvents:UIControlEventValueChanged];
-        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
-        [gridViewController.collectionView addSubview:refreshControl];
-        self.refreshControl = refreshControl;
-    }
-    
-    return gridViewController;
-}
-
-- (MITNewsCategoryListViewController*)listViewController
-{
-    MITNewsCategoryListViewController *listViewController = _listViewController;
-    
-    if (![self supportsPresentationStyle:MITNewsPresentationStyleList]) {
-        return nil;
-    } else if (!listViewController) {
-        listViewController = [[MITNewsCategoryListViewController alloc] init];
-        listViewController.delegate = self;
-        listViewController.dataSource = self;
-        _listViewController = listViewController;
-
-        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [refreshControl addTarget:self action:@selector(reloadViewItems:)
-                 forControlEvents:UIControlEventValueChanged];
-        refreshControl.attributedTitle = self.refreshControl.attributedTitle;
-        [listViewController.tableView addSubview:refreshControl];
-        self.listViewController.refreshControl = refreshControl;
-        self.refreshControl = refreshControl;
-    }
-    
-    return listViewController;
 }
 
 #pragma mark UI Actions

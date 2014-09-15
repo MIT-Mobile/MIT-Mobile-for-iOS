@@ -1,4 +1,6 @@
 #import <UIKit/UIKit.h>
+#import "MITNewsGridViewController.H"
+#import "MITNewsListViewController.h"
 
 @class MITNewsStory;
 @class MITNewsCategory;
@@ -9,6 +11,17 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 };
 
 @interface MITNewsiPadViewController : UIViewController
+
+@property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
+@property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
+@property (nonatomic, weak) IBOutlet UIView *containerView;
+@property (nonatomic, readonly, weak) UIViewController *activeViewController;
+@property (nonatomic, getter=isSearching) BOOL searching;
+@property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+- (void)reloadData;
+
+
 @property (nonatomic,readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 @property (nonatomic) BOOL showsFeaturedStories;

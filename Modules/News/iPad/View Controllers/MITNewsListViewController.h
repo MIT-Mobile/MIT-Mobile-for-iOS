@@ -24,4 +24,8 @@
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
+
+
+- (void)setError:(NSString *)errorMessage;
+- (void)setProgress:(BOOL)progress;
 @end

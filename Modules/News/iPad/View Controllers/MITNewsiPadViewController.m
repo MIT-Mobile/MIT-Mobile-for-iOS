@@ -36,17 +36,9 @@ CGFloat const refreshControlTextHeight = 19;
 @end
 
 @interface MITNewsiPadViewController ()
-@property (nonatomic, weak) IBOutlet UIView *containerView;
-@property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
-@property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
 @property (nonatomic, strong) MITNewsSearchController *searchController;
-@property (nonatomic, readonly, weak) UIViewController *activeViewController;
 
-@property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
-
-@property (nonatomic, strong) NSDate *lastUpdated;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic) Reachability *internetReachability;

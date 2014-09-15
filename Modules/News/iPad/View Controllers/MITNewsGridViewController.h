@@ -26,4 +26,8 @@
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
 - (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
+
+
+- (void)setError:(NSString *)errorMessage;
+- (void)setProgress:(BOOL)progress;
 @end
