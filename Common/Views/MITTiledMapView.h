@@ -7,7 +7,10 @@ extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 @interface MITTiledMapView : UIView
 
 @property (nonatomic, strong) MKMapView *mapView;
+
 @property (nonatomic, weak) id<MITTiledMapViewButtonDelegate> buttonDelegate;
+
+- (void)setMapDelegate:(id<MKMapViewDelegate>) mapDelegate;
 
 - (void)setButtonsHidden:(BOOL)hidden animated:(BOOL)animated;
 - (void)setLeftButtonHidden:(BOOL)hidden animated:(BOOL)animated;

@@ -2,6 +2,4 @@
 
 @interface MITMapHomeViewController : UIViewController
 
-
-
 @end

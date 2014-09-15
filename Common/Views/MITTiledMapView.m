@@ -1,4 +1,5 @@
 #import "MITTiledMapView.h"
+#import "MITMapDelegateInterceptor.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 
@@ -6,10 +7,12 @@ static CGFloat const kBottomButtonSize = 44;
 static CGFloat const kBottomButtonXPadding = 8;
 static CGFloat const kBottomButtonYPadding = 20;
 
-@interface MITTiledMapView() <UIAlertViewDelegate>
+@interface MITTiledMapView() <UIAlertViewDelegate, MKMapViewDelegate>
 
 @property (nonatomic, strong) UIButton *leftButton;
 @property (nonatomic, strong) UIButton *rightButton;
+
+@property (nonatomic, strong) MITMapDelegateInterceptor *delegateInterceptor;
 
 @end
 
@@ -31,15 +34,6 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
     return self;
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 #pragma mark - Private Methods
 
@@ -106,13 +100,32 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
-- (void)centerMapOnUserLocation
+- (void)toggleUserTrackingMode
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
-        [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-    } else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted ||
-               [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+        if (self.mapView.userTrackingMode == MKUserTrackingModeNone) {
+            [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+        }
+        else {
+            [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
+        }
+            
+        [self updateLeftButtonForCurrentUserTrackingMode];
+    }
+    else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted ||
+             [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+        [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
         [self showLocationServicesAlert];
+    }
+}
+
+- (void)updateLeftButtonForCurrentUserTrackingMode
+{
+    if (self.mapView.userTrackingMode == MKUserTrackingModeFollow) {
+        self.leftButton.selected = YES;
+    }
+    else {
+        self.leftButton.selected = NO;
     }
 }
 
@@ -152,6 +165,8 @@ static CGFloat const kBottomButtonYPadding = 20;
 {
     self.leftButton = [[UIButton alloc] initWithFrame:CGRectMake(kBottomButtonXPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonYPadding, kBottomButtonSize, kBottomButtonSize)];
     [self.leftButton setImage:[UIImage imageNamed:@"map/map_location"] forState:UIControlStateNormal];
+    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location_selected"] forState:UIControlStateSelected];
+
     [self.leftButton addTarget:self action:@selector(leftButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.leftButton.layer.borderWidth = 1;
     self.leftButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
@@ -184,7 +199,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 - (void)leftButtonTapped:(id)sender
 {
-    [self centerMapOnUserLocation];
+    [self toggleUserTrackingMode];
 }
 
 - (void)rightButtonTapped:(id)sender
@@ -220,6 +235,31 @@ static CGFloat const kBottomButtonYPadding = 20;
     baseTileOverlay.canReplaceMapContent = YES;
     
     [self.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
+}
+
+#pragma mark - Map View Delegate
+
+
+- (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    [self updateLeftButtonForCurrentUserTrackingMode];
+}
+
+- (void)setMapDelegate:(id<MKMapViewDelegate>)mapDelegate
+{
+    self.delegateInterceptor.middleManDelegate = self;
+    self.delegateInterceptor.endOfLineDelegate = mapDelegate;
+    
+    self.mapView.delegate = self.delegateInterceptor;
+}
+
+- (MITMapDelegateInterceptor *)delegateInterceptor
+{
+    if (!_delegateInterceptor) {
+        _delegateInterceptor = [[MITMapDelegateInterceptor alloc] init];
+
+    }
+    return _delegateInterceptor;
 }
 
 @end
