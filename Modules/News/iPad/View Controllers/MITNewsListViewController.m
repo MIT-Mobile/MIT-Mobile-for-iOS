@@ -27,6 +27,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic, strong) NSMutableDictionary *storyHeights;
 
+@property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
+
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
@@ -320,6 +323,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
+    
+    if (self.isCategory) {
+        NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+        if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+            return numberOfRows + 1;
+        }
+        return numberOfRows;
+    }
  
     NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
     NSInteger numberOfStoryHeights = [self.storyHeights count];

@@ -31,6 +31,8 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
 - (void)reloadData;
 - (void)updateNavigationItem:(BOOL)animated;
+- (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated;
+
 @end
 
 @protocol MITNewsStoryDataSource <NSObject>

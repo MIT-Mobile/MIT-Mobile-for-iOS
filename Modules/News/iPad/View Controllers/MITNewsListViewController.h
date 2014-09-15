@@ -2,6 +2,7 @@
 
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
+@protocol MITNewsListDelegate;
 
 @class MITNewsCategory;
 @class MITNewsStory;
@@ -25,7 +26,12 @@
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
 
-
+@property (nonatomic) BOOL isCategory;
 - (void)setError:(NSString *)errorMessage;
 - (void)setProgress:(BOOL)progress;
+
+@end
+
+@protocol MITNewsListDelegate <NSObject>
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError * error))block;
 @end

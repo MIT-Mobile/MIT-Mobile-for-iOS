@@ -28,11 +28,10 @@
 - (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 
-
+@property (nonatomic) BOOL isCategory;
 - (void)setError:(NSString *)errorMessage;
 - (void)setProgress:(BOOL)progress;
 
-@property (nonatomic) BOOL isCategory;
 @end
 
 @protocol MITNewsGridDelegate <NSObject>

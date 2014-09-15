@@ -12,12 +12,9 @@
 @end
 
 @interface MITNewsiPadCategoryViewController () </*MITNewsListDelegate, */MITNewsGridDelegate>
-@property (nonatomic, weak) IBOutlet UIView *containerView;
 
-@property (nonatomic, readonly, weak) UIViewController *activeViewController;
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic) BOOL movingBackFromStory;
 
 @property(strong) id dataSourceDidEndUpdatingToken;
@@ -44,7 +41,6 @@
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
-    self.gridViewController.isCategory = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -60,8 +56,10 @@
     if (self.previousPresentationStyle) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.previousPresentationStyle == MITNewsPresentationStyleGrid) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
+            self.gridViewController.isCategory = YES;
         } else {
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
+            self.listViewController.isCategory = YES;
         }
         self.previousPresentationStyle = nil;
     }
@@ -100,73 +98,10 @@
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
-}
-
-#pragma mark UI Actions
-- (void)setPresentationStyle:(MITNewsPresentationStyle)style
-{
-    [self setPresentationStyle:style animated:NO];
-}
-
-- (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
-{
-    NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
-    
-    if (![self supportsPresentationStyle:style]) {
-        return;
-    } else if ((_presentationStyle != style) || !self.activeViewController) {
-        _presentationStyle = style;
-        
-        // Figure out which view controllers we are going to be
-        // transitioning from/to.
-        UIViewController *fromViewController = self.activeViewController;
-        UIViewController *toViewController = nil;
-
-        if (_presentationStyle == MITNewsPresentationStyleGrid) {
-            toViewController = self.gridViewController;
-        } else {
-            toViewController = self.listViewController;
-        }
-        // Needed to fix alignment of refreshcontrol text
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
             [self.refreshControl endRefreshing];
         }];
-        const CGRect viewFrame = self.containerView.bounds;
-        fromViewController.view.frame = viewFrame;
-        toViewController.view.frame = viewFrame;
-        
-        const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
-        _isTransitioningToPresentationStyle = YES;
-        _activeViewController = toViewController;
-        if (!fromViewController) {
-            [self addChildViewController:toViewController];
-            
-            [UIView transitionWithView:self.containerView
-                              duration:animationDuration
-                               options:0
-                            animations:^{
-                                [self.containerView addSubview:toViewController.view];
-                            } completion:^(BOOL finished) {
-                                _isTransitioningToPresentationStyle = NO;
-                                [toViewController didMoveToParentViewController:self];
-                            }];
-        } else {
-            [fromViewController willMoveToParentViewController:nil];
-            [self addChildViewController:toViewController];
-            
-            [self transitionFromViewController:fromViewController
-                              toViewController:toViewController
-                                      duration:animationDuration
-                                       options:0
-                                    animations:nil
-                                    completion:^(BOOL finished) {
-                                        _isTransitioningToPresentationStyle = NO;
-                                        [toViewController didMoveToParentViewController:self];
-                                        [fromViewController removeFromParentViewController];
-                                    }];
-        }
-    }
 }
 
 - (void)updateLoadingCell
@@ -184,6 +119,8 @@
 {
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
+        [self setPresentationStyle:self.presentationStyle animated:YES];
+        self.gridViewController.isCategory = YES;
         [self updateNavigationItem:YES];
     }
 }
@@ -192,6 +129,8 @@
 {
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleList;
+        [self setPresentationStyle:self.presentationStyle animated:YES];
+        self.listViewController.isCategory = YES;
         [self updateNavigationItem:YES];
     }
 }
