@@ -339,6 +339,14 @@
     return ceil(cellSize.height);
 }
 
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
+{
+    if (self.isCategory) {
+        return 0;
+    }
+    return 44;
+}
+
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
     return [self heightForItemAtIndexPath:indexPath withWidth:width];
