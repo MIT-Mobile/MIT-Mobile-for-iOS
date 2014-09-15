@@ -25,7 +25,7 @@
 
 CGFloat const refreshControlTextHeight = 19;
 
-@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
+@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource, MITNewsListDelegate, MITNewsGridDelegate>
 
 - (void)reloadItems:(void(^)(NSError *error))block;
 - (void)loadDataSources:(void(^)(NSError*))completion;
@@ -47,6 +47,8 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (nonatomic) NSUInteger currentDataSourceIndex;
+
+@property (nonatomic) BOOL category;
 
 @end
 
@@ -249,8 +251,10 @@ CGFloat const refreshControlTextHeight = 19;
         
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
+            self.gridViewController.isCategory = self.category;
         } else {
             toViewController = self.listViewController;
+            self.listViewController.isCategory = self.category;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {

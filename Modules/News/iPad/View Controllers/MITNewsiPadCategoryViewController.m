@@ -16,6 +16,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
+@property (nonatomic) BOOL category;
 
 @property(strong) id dataSourceDidEndUpdatingToken;
 @end
@@ -39,8 +40,6 @@
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
 #warning come back to this
-    self.gridViewController.isCategory = YES;
-    self.listViewController.isCategory = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,6 +49,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
     [super viewWillAppear:animated];
     
@@ -120,7 +120,6 @@
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
         [self setPresentationStyle:self.presentationStyle animated:YES];
-        self.gridViewController.isCategory = YES;
         [self updateNavigationItem:YES];
     }
 }
@@ -130,7 +129,6 @@
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleList;
         [self setPresentationStyle:self.presentationStyle animated:YES];
-        self.listViewController.isCategory = YES;
         [self updateNavigationItem:YES];
     }
 }
