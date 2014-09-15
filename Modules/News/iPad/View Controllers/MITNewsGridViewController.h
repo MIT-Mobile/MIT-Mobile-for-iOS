@@ -4,12 +4,13 @@
 @class MITNewsStory;
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
+@protocol MITNewsGridDelegate;
 
 @interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
 @property (nonatomic) NSUInteger numberOfStoriesPerCategory;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property (nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+@property (nonatomic,weak) id<MITNewsStoryDelegate, MITNewsGridDelegate> delegate;
 
 @property (nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
 @property (nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
@@ -30,4 +31,10 @@
 
 - (void)setError:(NSString *)errorMessage;
 - (void)setProgress:(BOOL)progress;
+
+@property (nonatomic) BOOL isCategory;
+@end
+
+@protocol MITNewsGridDelegate <NSObject>
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError * error))block;
 @end

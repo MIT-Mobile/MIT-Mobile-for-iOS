@@ -1,6 +1,4 @@
 #import "MITNewsiPadCategoryViewController.h"
-#import "MITNewsCategoryListViewController.h"
-#import "MITNewsCategoryGridViewController.h"
 #import "MITCoreData.h"
 #import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesDataSource.h"
@@ -13,7 +11,7 @@
 @interface MITNewsiPadCategoryViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate>
 @end
 
-@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
+@interface MITNewsiPadCategoryViewController () </*MITNewsListDelegate, */MITNewsGridDelegate>
 @property (nonatomic, weak) IBOutlet UIView *containerView;
 
 @property (nonatomic, readonly, weak) UIViewController *activeViewController;
@@ -46,6 +44,7 @@
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
+    self.gridViewController.isCategory = YES;
 }
 
 - (void)didReceiveMemoryWarning
