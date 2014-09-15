@@ -184,7 +184,7 @@
 {
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        [super updateNavigationItem:YES];
+        [self updateNavigationItem:YES];
     }
 }
 
@@ -192,7 +192,7 @@
 {
     if (!_storyUpdateInProgress) {
         self.presentationStyle = MITNewsPresentationStyleList;
-        [super updateNavigationItem:YES];
+        [self updateNavigationItem:YES];
     }
 }
 
