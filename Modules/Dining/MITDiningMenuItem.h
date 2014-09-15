@@ -17,8 +17,8 @@
 + (NSString *)displayNameForDietaryFlag:(NSString *)flag;
 + (NSArray *)allDietaryFlagsKeys;
 
-- (NSAttributedString *)attributedNameWithDietaryFlags;
-+ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags;
+- (NSAttributedString *)attributedNameWithDietaryFlagsAtSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment;
++ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags atSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment;
 
 @end
 

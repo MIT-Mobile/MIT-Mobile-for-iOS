@@ -36,7 +36,7 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 - (void)setFilters:(NSSet *)filters;
 {
     NSMutableAttributedString *showingString = [[NSMutableAttributedString alloc] initWithString:@"Showing "];
-    [showingString appendAttributedString:[MITDiningMenuItem dietaryFlagsDisplayStringForFlags:[filters allObjects]]];
+    [showingString appendAttributedString:[MITDiningMenuItem dietaryFlagsDisplayStringForFlags:[filters allObjects] atSize:CGSizeMake(14, 14) verticalAdjustment:-2]];
     
     self.filtersLabel.attributedText = showingString;
     

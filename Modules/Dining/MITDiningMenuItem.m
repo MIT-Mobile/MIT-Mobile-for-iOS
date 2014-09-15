@@ -86,14 +86,15 @@
     return allFlagKeys;
 }
 
-+ (NSMutableAttributedString *)dietaryFlagsStringForFlags:(NSArray *)flags
++ (NSMutableAttributedString *)dietaryFlagsStringForFlags:(NSArray *)flags atSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment
 {
     NSMutableAttributedString *flagsString = [[NSMutableAttributedString alloc] init];
     NSAttributedString *spacer = [[NSAttributedString alloc] initWithString:@" "];
     for (NSString *dietaryFlag in flags) {
-        UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:CGSizeMake(14, 14)];
+        UIImage *dietaryFlagImage = [UIImage imageWithPDFNamed:[MITDiningMenuItem pdfNameForDietaryFlag:dietaryFlag] atSize:size];
         NSTextAttachment *dietaryFlagAttachment = [[NSTextAttachment alloc] init];
         dietaryFlagAttachment.image = dietaryFlagImage;
+        dietaryFlagAttachment.bounds = CGRectMake(0, verticalAdjustment, size.width, size.height);
         
         NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:dietaryFlagAttachment];
         [flagsString appendAttributedString:imageString];
@@ -103,18 +104,18 @@
     return flagsString;
 }
 
-- (NSAttributedString *)attributedNameWithDietaryFlags
+- (NSAttributedString *)attributedNameWithDietaryFlagsAtSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment
 {
     NSMutableAttributedString *itemName = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", self.name]];
     
-    [itemName appendAttributedString:[MITDiningMenuItem dietaryFlagsStringForFlags:self.dietaryFlags]];
+    [itemName appendAttributedString:[MITDiningMenuItem dietaryFlagsStringForFlags:self.dietaryFlags atSize:size verticalAdjustment:verticalAdjustment]];
     
     return itemName;
 }
 
-+ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags
++ (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags atSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment
 {
-    NSMutableAttributedString *dietaryFlagsString = [MITDiningMenuItem dietaryFlagsStringForFlags:dietaryFlags];
+    NSMutableAttributedString *dietaryFlagsString = [MITDiningMenuItem dietaryFlagsStringForFlags:dietaryFlags atSize:size verticalAdjustment:verticalAdjustment];
     if ([dietaryFlags count] == 1) {
         NSString *flagName = [MITDiningMenuItem displayNameForDietaryFlag:[dietaryFlags firstObject]];
         [dietaryFlagsString appendAttributedString:[[NSAttributedString alloc] initWithString:flagName attributes:nil]];

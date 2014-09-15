@@ -21,38 +21,42 @@
                         <color key="textColor" white="0.30061017335766421" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Labelpqg" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="YhI-et-sjG">
-                        <rect key="frame" x="0.0" y="20" width="251" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Labelpqg" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="0VP-H1-ej5">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Labelpqg" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="0VP-H1-ej5">
                         <rect key="frame" x="0.0" y="43" width="251" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.30120894160583944" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oMN-bm-cfJ">
+                        <rect key="frame" x="0.0" y="20" width="251" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        <connections>
+                            <outlet property="delegate" destination="87s-6g-WnJ" id="ALV-Qi-3f1"/>
+                        </connections>
+                    </textView>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="YhI-et-sjG" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="16s-8h-ZAe"/>
-                <constraint firstAttribute="trailing" secondItem="YhI-et-sjG" secondAttribute="trailing" id="AkW-18-9Qx"/>
-                <constraint firstItem="0VP-H1-ej5" firstAttribute="top" secondItem="YhI-et-sjG" secondAttribute="bottom" constant="4" id="BZA-Hi-nDT"/>
-                <constraint firstItem="YhI-et-sjG" firstAttribute="top" secondItem="1Jf-iB-rpG" secondAttribute="bottom" constant="4" id="ByQ-NF-DHi"/>
+                <constraint firstItem="oMN-bm-cfJ" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="81g-ep-Wna"/>
+                <constraint firstAttribute="trailing" secondItem="oMN-bm-cfJ" secondAttribute="trailing" id="Dtn-Wr-0WM"/>
                 <constraint firstItem="1Jf-iB-rpG" firstAttribute="top" secondItem="87s-6g-WnJ" secondAttribute="top" id="I0x-tP-BrN"/>
                 <constraint firstItem="1Jf-iB-rpG" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="LMz-Oe-Lar"/>
                 <constraint firstAttribute="trailing" secondItem="0VP-H1-ej5" secondAttribute="trailing" id="WYs-Eg-B7F"/>
                 <constraint firstItem="0VP-H1-ej5" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="XSV-1P-wSc"/>
                 <constraint firstAttribute="bottom" secondItem="0VP-H1-ej5" secondAttribute="bottom" id="k0D-Q9-VL4"/>
                 <constraint firstAttribute="trailing" secondItem="1Jf-iB-rpG" secondAttribute="trailing" id="nTb-HS-nOy"/>
+                <constraint firstItem="0VP-H1-ej5" firstAttribute="top" secondItem="oMN-bm-cfJ" secondAttribute="bottom" id="pyH-j4-Wq3"/>
+                <constraint firstItem="oMN-bm-cfJ" firstAttribute="top" secondItem="1Jf-iB-rpG" secondAttribute="bottom" id="w8c-TJ-Dzs"/>
             </constraints>
             <size key="customSize" width="251" height="59"/>
             <connections>
                 <outlet property="mealDescriptionLabel" destination="0VP-H1-ej5" id="SzW-Qf-Ohl"/>
-                <outlet property="mealTitleLabel" destination="YhI-et-sjG" id="qsO-MB-GFr"/>
+                <outlet property="mealTitleTextView" destination="oMN-bm-cfJ" id="ubW-NF-HDk"/>
                 <outlet property="stationLabel" destination="1Jf-iB-rpG" id="b3d-n9-Vyr"/>
             </connections>
         </collectionViewCell>
