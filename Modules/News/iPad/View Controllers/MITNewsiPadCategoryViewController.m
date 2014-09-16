@@ -29,16 +29,17 @@
     return self;
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+#pragma mark Lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
     self.dataSources = @[self.dataSource];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -86,6 +87,7 @@
     }];
 }
 
+#pragma mark Datasource Notification
 - (void)setupFinishedUpdateNotification
 {
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
@@ -125,6 +127,7 @@
     }
 }
 
+#pragma mark Story Downloading
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
     if (![self canLoadMoreItemsForCategoryInSection:section] || _storyUpdateInProgress) {
@@ -172,24 +175,6 @@
     }];
 }
 
-- (void)setError:(NSString *)message
-{
-    if (self.activeViewController == self.gridViewController) {
-        [self.gridViewController setError:message];
-    } else if (self.activeViewController == self.listViewController) {
-        [self.listViewController setError:message];
-    }
-}
-
-- (void)setProgress:(BOOL)progress
-{
-    if (self.activeViewController == self.gridViewController) {
-        [self.gridViewController setProgress:progress];
-    } else if (self.activeViewController == self.listViewController) {
-        [self.listViewController setProgress:progress];
-    }
-}
-
 - (void)intervalUpdate
 {
     if (!self.dataSource.refreshedAt) {
@@ -205,6 +190,25 @@
             [self.refreshControl beginRefreshing];
         }];
         [self reloadViewItems:self.refreshControl];
+    }
+}
+
+#pragma mark setters
+- (void)setError:(NSString *)message
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController setError:message];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController setError:message];
+    }
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    if (self.activeViewController == self.gridViewController) {
+        [self.gridViewController setProgress:progress];
+    } else if (self.activeViewController == self.listViewController) {
+        [self.listViewController setProgress:progress];
     }
 }
 
