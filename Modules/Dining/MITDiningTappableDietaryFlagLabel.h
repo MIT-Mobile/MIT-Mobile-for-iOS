@@ -29,13 +29,12 @@
 
 @protocol MITDiningTappableDietaryFlagLabelDelegate <NSObject>
 
-- (void)dietaryFlagTappedInLabel:(MITDiningTappableDietaryFlagLabel *)label;
+- (void)dietaryFlagTappedInLabel:(MITDiningTappableDietaryFlagLabel *)label withPopoverRect:(CGRect)popoverRect;
 
 @end
 
 @interface MITDiningTappableDietaryFlagLabel : UILabel <NSLayoutManagerDelegate>
 
 @property (nonatomic, weak) id<MITDiningTappableDietaryFlagLabelDelegate> delegate;
-@property (nonatomic, assign) CGRect rectForLastDietaryFlag;
 
 @end

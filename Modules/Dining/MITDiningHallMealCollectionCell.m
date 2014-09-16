@@ -119,7 +119,7 @@
 
 #pragma mark - MITDiningTappableDietaryFlagLabelDelegate Methods
 
-- (void)dietaryFlagTappedInLabel:(MITDiningTappableDietaryFlagLabel *)label
+- (void)dietaryFlagTappedInLabel:(MITDiningTappableDietaryFlagLabel *)label withPopoverRect:(CGRect)popoverRect
 {
     if (![self.menuItem.dietaryFlags isKindOfClass:[NSArray class]]) {
         return;
@@ -132,7 +132,7 @@
     self.dietaryFlagPopoverController = [[UIPopoverController alloc] initWithContentViewController:flagsVC];
     self.dietaryFlagPopoverController.popoverContentSize = [flagsVC targetTableViewSize];
     
-    [self.dietaryFlagPopoverController presentPopoverFromRect:self.mealTitleLabel.rectForLastDietaryFlag inView:self.mealTitleLabel permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    [self.dietaryFlagPopoverController presentPopoverFromRect:popoverRect inView:self.mealTitleLabel permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 #pragma mark - Determining Dynamic Cell Height

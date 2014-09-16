@@ -39,8 +39,6 @@
 // Backing storage for text that is rendered by the layout manager
 @property (nonatomic, retain) NSTextStorage *textStorage;
 
-@property (nonatomic, strong) NSArray *dietaryFlagAttachmentRanges;
-
 @property (nonatomic, assign) BOOL isTouchMoved;
 
 @end
@@ -110,32 +108,6 @@
     [super setAttributedText:attributedText];
     
     [self updateTextStoreWithAttributedString:attributedText];
-}
-
-- (void)updateDietaryFlagAttachmentRanges
-{
-    NSMutableArray *newDietaryFlagAttachmentRanges = [NSMutableArray array];
-    __block BOOL foundFlag = NO;
-    __block NSRange lastFlagCharacterRange;
-    
-    [self.attributedText enumerateAttributesInRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
-        if ([attrs objectForKey:NSAttachmentAttributeName]) {
-            [newDietaryFlagAttachmentRanges addObject:[NSValue valueWithRange:range]];
-            foundFlag = YES;
-            lastFlagCharacterRange = range;
-        }
-    }];
-    
-    if (foundFlag) {
-        NSRange flagsGlyphRange = [self.layoutManager glyphRangeForCharacterRange:lastFlagCharacterRange actualCharacterRange:NULL];
-        self.rectForLastDietaryFlag = [self.layoutManager boundingRectForGlyphRange:flagsGlyphRange inTextContainer:self.textContainer];
-    }
-    
-    if (newDietaryFlagAttachmentRanges.count > 0) {
-        self.dietaryFlagAttachmentRanges = [NSArray arrayWithArray:newDietaryFlagAttachmentRanges];
-    } else {
-        self.dietaryFlagAttachmentRanges = nil;
-    }
 }
 
 #pragma mark - Text Storage Management
@@ -249,8 +221,6 @@
     
     // Update our container size when the view frame changes
     self.textContainer.size = self.bounds.size;
-    
-    [self updateDietaryFlagAttachmentRanges];
 }
 
 
@@ -307,13 +277,58 @@
         return;
     }
     
-    for (NSValue *dietaryFlagAttachmentRangeValue in self.dietaryFlagAttachmentRanges) {
-        NSRange dietaryFlagAttachmentRange = [dietaryFlagAttachmentRangeValue rangeValue];
-        if (touchedChar >= dietaryFlagAttachmentRange.location && touchedChar < (dietaryFlagAttachmentRange.location + dietaryFlagAttachmentRange.length)) {
-            if ([self.delegate respondsToSelector:@selector(dietaryFlagTappedInLabel:)]) {
-                [self.delegate dietaryFlagTappedInLabel:self];
-            }
+    
+    
+    if ([self characterAtIndexIsFlagAttachment:touchedChar]) {
+        if ([self.delegate respondsToSelector:@selector(dietaryFlagTappedInLabel:withPopoverRect:)]) {
+            [self.delegate dietaryFlagTappedInLabel:self withPopoverRect:[self rectForDietaryFlags]];
         }
+    }
+}
+
+- (BOOL)characterAtIndexIsFlagAttachment:(NSUInteger)characterIndex
+{
+    NSMutableArray *dietaryFlagAttachmentRanges = [NSMutableArray array];
+    
+    [self.attributedText enumerateAttributesInRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        if ([attrs objectForKey:NSAttachmentAttributeName]) {
+            [dietaryFlagAttachmentRanges addObject:[NSValue valueWithRange:range]];
+        }
+    }];
+    
+    for (NSValue *dietaryFlagAttachmentRangeValue in dietaryFlagAttachmentRanges) {
+        NSRange dietaryFlagAttachmentRange = [dietaryFlagAttachmentRangeValue rangeValue];
+        if (characterIndex >= dietaryFlagAttachmentRange.location && characterIndex < (dietaryFlagAttachmentRange.location + dietaryFlagAttachmentRange.length)) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+// Note: This rect will not be very useful if the dietary flags span more than one line. Considering the current app requirements specifically indicate that this is not allowed,
+// I am leaving this without a solution. Simple solutions would be to check if the flags span more than one line, and then return either the rect for the first flag, last flag, first line, or last line
+- (CGRect)rectForDietaryFlags
+{
+    __block BOOL foundFlag = NO;
+    __block NSRange firstFlagCharacterRange;
+    __block NSRange lastFlagCharacterRange;
+    
+    [self.attributedText enumerateAttributesInRange:NSMakeRange(0, self.attributedText.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        if ([attrs objectForKey:NSAttachmentAttributeName]) {
+            if (!foundFlag) {
+                foundFlag = YES;
+                firstFlagCharacterRange = range;
+            }
+            lastFlagCharacterRange = range;
+        }
+    }];
+    
+    if (foundFlag) {
+        NSRange flagsGlyphRange = [self.layoutManager glyphRangeForCharacterRange:NSMakeRange(firstFlagCharacterRange.location, (lastFlagCharacterRange.location - firstFlagCharacterRange.location) + lastFlagCharacterRange.length) actualCharacterRange:NULL];
+        return [self.layoutManager boundingRectForGlyphRange:flagsGlyphRange inTextContainer:self.textContainer];
+    } else {
+        return CGRectNull;
     }
 }
 
