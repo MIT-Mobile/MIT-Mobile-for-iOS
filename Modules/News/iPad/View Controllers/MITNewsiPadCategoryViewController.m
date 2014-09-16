@@ -15,7 +15,6 @@
 @property (nonatomic) BOOL movingBackFromStory;
 @property (nonatomic) BOOL category;
 @property (nonatomic, copy) NSArray *dataSources;
-
 @property(strong) id dataSourceDidEndUpdatingToken;
 @end
 
@@ -61,29 +60,7 @@
 
     [self updateNavigationItem:YES];
     if (self.dataSource.isUpdating) {
-
-        __weak MITNewsiPadCategoryViewController *weakSelf = self;
-        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-        
-        self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification object:self.dataSource
-                             queue:nil usingBlock:^(NSNotification *note){
-                                 MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-                                 if (!strongSelf) {
-                                     return;
-                                 }
-                                 [[NSNotificationCenter defaultCenter] removeObserver:strongSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:strongSelf.dataSource];
-
-                                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
-                                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                     [strongSelf.refreshControl endRefreshing];
-                                 });
-                                 self.lastUpdated = [NSDate date];
-                                 [strongSelf updateRefreshStatusWithLastUpdatedTime];
-                             }];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl beginRefreshing];
-        }];
-        [self updateRefreshStatusWithText:@"Updating..."];
+        [self setupFinishedUpdateNotification];
     }
 
 }
@@ -110,6 +87,32 @@
             [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
     }];
+}
+
+- (void)setupFinishedUpdateNotification
+{
+    __weak MITNewsiPadCategoryViewController *weakSelf = self;
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    
+    self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification object:self.dataSource
+                                                              queue:nil usingBlock:^(NSNotification *note){
+                                                                  MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+                                                                  if (!strongSelf) {
+                                                                      return;
+                                                                  }
+                                                                  [[NSNotificationCenter defaultCenter] removeObserver:strongSelf.dataSourceDidEndUpdatingToken name:MITNewsDataSourceDidEndUpdatingNotification object:strongSelf.dataSource];
+                                                                  
+                                                                  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
+                                                                  dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                                                      [strongSelf.refreshControl endRefreshing];
+                                                                  });
+                                                                  self.lastUpdated = [NSDate date];
+                                                                  [strongSelf updateRefreshStatusWithLastUpdatedTime];
+                                                              }];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl beginRefreshing];
+    }];
+    [self updateRefreshStatusWithText:@"Updating..."];
 }
 
 #pragma mark Utility Methods
@@ -192,18 +195,19 @@
 
 - (void)intervalUpdate
 {
-    if (self.dataSource.refreshedAt) {
-        NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
-                                                                     fromDate:self.dataSource.refreshedAt
-                                                                       toDate:[NSDate date]
-                                                                      options:0];
-        NSInteger minutes = ([dateDiff second] / 60);
-        if (minutes >= 5) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self.refreshControl beginRefreshing];
-                }];
-            [self reloadViewItems:self.refreshControl];
-        }
+    if (!self.dataSource.refreshedAt) {
+        return;
+    }
+    NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
+                                                                 fromDate:self.dataSource.refreshedAt
+                                                                   toDate:[NSDate date]
+                                                                  options:0];
+    NSInteger minutes = ([dateDiff second] / 60);
+    if (minutes >= 5) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+        }];
+        [self reloadViewItems:self.refreshControl];
     }
 }
 
