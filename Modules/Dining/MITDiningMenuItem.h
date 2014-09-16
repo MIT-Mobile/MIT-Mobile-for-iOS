@@ -19,6 +19,7 @@
 
 - (NSAttributedString *)attributedNameWithDietaryFlagsAtSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment;
 + (NSAttributedString *)dietaryFlagsDisplayStringForFlags:(NSArray *)dietaryFlags atSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment;
++ (NSMutableAttributedString *)dietaryFlagsStringForFlags:(NSArray *)flags atSize:(CGSize)size verticalAdjustment:(CGFloat)verticalAdjustment;
 
 @end
 

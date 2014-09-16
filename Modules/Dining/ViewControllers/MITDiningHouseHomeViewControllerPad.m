@@ -238,6 +238,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     MITDiningMenuItem *menuItem = menuItemsArray[indexPath.item];
     
     [cell setMenuItem:menuItem];
+    [cell setTargetWidth:[self collectionView:collectionView layout:collectionView.collectionViewLayout sizeForItemAtIndexPath:indexPath].width];
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];

@@ -3,11 +3,12 @@
 #import "Foundation+MITAdditions.h"
 #import "UIImage+PDF.h"
 #import "MITDiningDietaryFlagListViewController.h"
+#import "MITDiningTappableDietaryFlagLabel.h"
 
-@interface MITDiningHallMealCollectionCell () <UITextViewDelegate>
+@interface MITDiningHallMealCollectionCell () <UITextViewDelegate, MITDiningTappableDietaryFlagLabelDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *stationLabel;
-@property (nonatomic, weak) IBOutlet UITextView *mealTitleTextView;
+@property (nonatomic, weak) IBOutlet MITDiningTappableDietaryFlagLabel *mealTitleLabel;
 @property (nonatomic, weak) IBOutlet UILabel *mealDescriptionLabel;
 @property (nonatomic, strong) UIPopoverController *dietaryFlagPopoverController;
 
@@ -29,17 +30,16 @@
     [super layoutSubviews];
     self.stationLabel.preferredMaxLayoutWidth = self.bounds.size.width;
     self.mealDescriptionLabel.preferredMaxLayoutWidth = self.bounds.size.width;
+    self.mealTitleLabel.preferredMaxLayoutWidth = self.bounds.size.width;
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    self.mealTitleTextView.contentInset = UIEdgeInsetsMake(0, -5, 0, -5);
-    self.mealTitleTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    [self.mealTitleTextView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mealTitleTapped:)]];
+    self.mealTitleLabel.delegate = self;
 }
 
-- (void)mealTitleTapped:(UITapGestureRecognizer *)tapGestureRecognizer
+- (void)fixHangingFlags
 {
     if (![self.menuItem.dietaryFlags isKindOfClass:[NSArray class]]) {
         return;
@@ -47,39 +47,34 @@
         return;
     }
     
-    // We need to find the dietary flag images and search to see if the tap is in the bounding box for each of them
-    // We search each one separately in case there is overflow due to lots of flags and/or a very long final word. Can't count on the bounding box for all of them together not to contain other areas
-    NSMutableArray *flagRangesArray = [NSMutableArray array];
-    [self.mealTitleTextView.attributedText enumerateAttributesInRange:NSMakeRange(0, self.mealTitleTextView.attributedText.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+    NSMutableAttributedString *dietaryFlagString = [MITDiningMenuItem dietaryFlagsStringForFlags:self.menuItem.dietaryFlags atSize:CGSizeMake(20, 20) verticalAdjustment:-5];
+    NSMutableAttributedString *titleString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", self.menuItem.name] attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17]}];
+    [titleString appendAttributedString:dietaryFlagString];
+    
+    NSMutableAttributedString *titleWithoutFlags = [[NSMutableAttributedString alloc] initWithAttributedString:titleString];
+    __block BOOL foundFlag = NO;
+    __block NSUInteger locationOfFirstFlag = 0;
+    [titleWithoutFlags enumerateAttributesInRange:NSMakeRange(0, titleWithoutFlags.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
         if ([attrs objectForKey:NSAttachmentAttributeName]) {
-            [flagRangesArray addObject:[NSValue valueWithRange:range]];
+            if (!foundFlag) {
+                foundFlag = YES;
+                locationOfFirstFlag = range.location;
+            }
         }
     }];
     
-    if (flagRangesArray.count > 0) {
-        BOOL tapIsOnFlag = NO;
-        CGPoint tapLocation = [tapGestureRecognizer locationInView:self.mealTitleTextView];
+    if (foundFlag) {
+        [titleWithoutFlags deleteCharactersInRange:NSMakeRange(locationOfFirstFlag, titleWithoutFlags.length - locationOfFirstFlag)];
+        CGRect fullStringRect = [titleString boundingRectWithSize:CGSizeMake(self.targetWidth, CGFLOAT_MAX) options:(NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin) context:nil];
+        CGRect stringWithoutFlagsRect = [titleWithoutFlags boundingRectWithSize:CGSizeMake(self.targetWidth, CGFLOAT_MAX) options:(NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin) context:nil];
         
-        for (NSValue *rangeValue in flagRangesArray) {
-            NSRange flagCharacterRange = [rangeValue rangeValue];
-            NSRange flagGlyphRange = [self.mealTitleTextView.layoutManager glyphRangeForCharacterRange:flagCharacterRange actualCharacterRange:NULL];
-            CGRect flagBoundingBox = [self.mealTitleTextView.layoutManager boundingRectForGlyphRange:flagGlyphRange inTextContainer:self.mealTitleTextView.textContainer];
-            if (CGRectContainsPoint(flagBoundingBox, tapLocation)) {
-                tapIsOnFlag = YES;
-                break;
-            }
-        }
-        
-        if (tapIsOnFlag) {
-            MITDiningDietaryFlagListViewController *flagsVC = [[MITDiningDietaryFlagListViewController alloc] init];
-            flagsVC.flags = self.menuItem.dietaryFlags;
-            self.dietaryFlagPopoverController = [[UIPopoverController alloc] initWithContentViewController:flagsVC];
-            self.dietaryFlagPopoverController.popoverContentSize = [flagsVC targetTableViewSize];
-            
-            NSRange lastFlagCharacterRange = [flagRangesArray.lastObject rangeValue];
-            NSRange flagsGlyphRange = [self.mealTitleTextView.layoutManager glyphRangeForCharacterRange:lastFlagCharacterRange actualCharacterRange:NULL];
-            CGRect dietaryFlagRect = [self.mealTitleTextView.layoutManager boundingRectForGlyphRange:flagsGlyphRange inTextContainer:self.mealTitleTextView.textContainer];
-            [self.dietaryFlagPopoverController presentPopoverFromRect:dietaryFlagRect inView:self.mealTitleTextView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        // The dietary flag icons make the string slightly taller (~1pt). We want to know if the string is tall enough to warrant an extra line, so we add a little padding
+        // Also need to check if the returned bounding box will render wider than the target width...for some reason the bounding box method seems to think this is ok sometimes
+        if (ceil(fullStringRect.size.height) > (ceil(stringWithoutFlagsRect.size.height) + 5) || ceil(fullStringRect.size.width) > self.targetWidth) {
+            // If the flags will push the string to a new line, find the space before last word and add a newline char before it
+            NSRange rangeOfLastSpace = [[self.menuItem.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] rangeOfString:@" " options:NSBackwardsSearch];
+            [titleString replaceCharactersInRange:rangeOfLastSpace withString:@"\n"];
+            self.mealTitleLabel.attributedText = [[NSAttributedString alloc] initWithAttributedString:titleString];
         }
     }
 }
@@ -92,19 +87,52 @@
         return;
     }
     
-    self.stationLabel.text = menuItem.station;
-    if ([menuItem.itemDescription length] > 0) {
-        self.mealDescriptionLabel.text = menuItem.itemDescription;
+    _menuItem = menuItem;
+    
+    if (menuItem.station.length > 0) {
+        self.stationLabel.text = menuItem.station;
+    } else {
+        self.stationLabel.text = @"";
     }
-    else {
+    
+    if (menuItem.itemDescription.length > 0) {
+        self.mealDescriptionLabel.text = menuItem.itemDescription;
+    } else {
         self.mealDescriptionLabel.text = @"";
     }
 
-    NSMutableAttributedString *dietaryFlagString = [[NSMutableAttributedString alloc] initWithAttributedString:[menuItem attributedNameWithDietaryFlagsAtSize:CGSizeMake(20, 20) verticalAdjustment:-5]];
-    [dietaryFlagString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17] range:NSMakeRange(0, dietaryFlagString.length)];
-    self.mealTitleTextView.attributedText = [[NSAttributedString alloc] initWithAttributedString:dietaryFlagString];
+    if (menuItem.name.length > 0) {
+        NSMutableAttributedString *dietaryFlagString = [MITDiningMenuItem dietaryFlagsStringForFlags:menuItem.dietaryFlags atSize:CGSizeMake(20, 20) verticalAdjustment:-5];
+        NSMutableAttributedString *titleString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", menuItem.name] attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17]}];
+        [titleString appendAttributedString:dietaryFlagString];
+        self.mealTitleLabel.attributedText = [[NSAttributedString alloc] initWithAttributedString:titleString];
+    } else {
+        self.mealTitleLabel.text = @"";
+    }
+}
+
+- (void)setTargetWidth:(CGFloat)targetWidth
+{
+    _targetWidth = floor(targetWidth);
+    [self fixHangingFlags];
+}
+
+#pragma mark - MITDiningTappableDietaryFlagLabelDelegate Methods
+
+- (void)dietaryFlagTappedInLabel:(MITDiningTappableDietaryFlagLabel *)label
+{
+    if (![self.menuItem.dietaryFlags isKindOfClass:[NSArray class]]) {
+        return;
+    } else if (((NSArray *)self.menuItem.dietaryFlags).count < 1) {
+        return;
+    }
     
-    _menuItem = menuItem;
+    MITDiningDietaryFlagListViewController *flagsVC = [[MITDiningDietaryFlagListViewController alloc] init];
+    flagsVC.flags = self.menuItem.dietaryFlags;
+    self.dietaryFlagPopoverController = [[UIPopoverController alloc] initWithContentViewController:flagsVC];
+    self.dietaryFlagPopoverController.popoverContentSize = [flagsVC targetTableViewSize];
+    
+    [self.dietaryFlagPopoverController presentPopoverFromRect:self.mealTitleLabel.rectForLastDietaryFlag inView:self.mealTitleLabel permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 #pragma mark - Determining Dynamic Cell Height
@@ -113,6 +141,7 @@
 {
     MITDiningHallMealCollectionCell *sizingCell = [MITDiningHallMealCollectionCell sizingCell];
     [sizingCell setMenuItem:menuItem];
+    sizingCell.targetWidth = width;
     return [MITDiningHallMealCollectionCell heightForCell:sizingCell width:width];
 }
 
@@ -122,13 +151,13 @@
     [cell updateConstraintsIfNeeded];
     
     CGRect frame = cell.frame;
-    frame.size.width = width;
+    frame.size.width = floor(width);
     cell.frame = frame;
     
     [cell setNeedsLayout];
     [cell layoutIfNeeded];
     
-    CGFloat height = [cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    CGFloat height = ceil([cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height);
     return MAX(44, height);
 }
 

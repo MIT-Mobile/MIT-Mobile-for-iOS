@@ -6,6 +6,7 @@
 @interface MITDiningHallMealCollectionCell : UICollectionViewCell
 
 @property (nonatomic, strong) MITDiningMenuItem *menuItem;
+@property (nonatomic, assign) CGFloat targetWidth;
 
 + (CGFloat)heightForMenuItem:(MITDiningMenuItem *)menuItem width:(CGFloat)width;
 
