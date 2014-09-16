@@ -5,9 +5,6 @@
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
 
-@interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
-@end
-
 @interface MITNewsiPadCategoryViewController ()
 
 @property (nonatomic, getter=isSearching) BOOL searching;
@@ -215,39 +212,6 @@
 {
     if (self.dataSourceDidEndUpdatingToken) {
         [[NSNotificationCenter defaultCenter] removeObserver:self.dataSourceDidEndUpdatingToken];
-    }
-}
-
-@end
-
-@implementation MITNewsiPadCategoryViewController (NewsDataSource)
-- (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
-{
-    return self.dataSource;
-}
-
-- (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
-{
-    return ([self.dataSource.objects count] ? 1 : 0);
-}
-
-- (NSString*)viewController:(UIViewController*)viewController titleForCategoryInSection:(NSUInteger)section
-{
-    return nil;
-}
-
-- (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
-{
-    return [self.dataSource.objects count];
-}
-
-- (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
-{
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
-    if ([dataSource.objects count ] > index) {
-        return dataSource.objects[index];
-    } else {
-        return nil;
     }
 }
 @end

@@ -745,7 +745,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if ([viewController class] == [MITNewsiPadCategoryViewController class]) {
+    if (self.category) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -760,6 +760,9 @@ CGFloat const refreshControlTextHeight = 19;
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    if ([dataSource.objects count] <= index) {
+        return nil;
+    }
     return dataSource.objects[index];
 }
 
