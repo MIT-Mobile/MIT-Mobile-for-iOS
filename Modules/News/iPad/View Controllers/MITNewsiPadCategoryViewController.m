@@ -79,6 +79,7 @@
                                  dispatch_after(popTime, dispatch_get_main_queue(), ^{
                                      [strongSelf.refreshControl endRefreshing];
                                  });
+                                 self.lastUpdated = [NSDate date];
                                  [strongSelf updateRefreshStatusWithLastUpdatedTime];
                              }];
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -193,6 +194,7 @@
                 return;
             }
             strongSelf.refreshControl = strongRefresh;
+            self.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
  
             if (strongRefresh.refreshing) {
@@ -271,22 +273,6 @@
     } else if (self.activeViewController == self.listViewController) {
         [self.listViewController setProgress:progress];
     }
-}
-
-#pragma mark Refresh Control Text
-- (void)updateRefreshStatusWithLastUpdatedTime
-{
-    if (self.dataSource.refreshedAt) {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.dataSource.refreshedAt
-                                                                            toDate:[NSDate date]];
-        NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-        [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:updateText]];
-    }
-}
-
-- (void)updateRefreshStatusWithText:(NSString *)refreshText
-{
-    [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
 }
 
 - (void)intervalUpdate

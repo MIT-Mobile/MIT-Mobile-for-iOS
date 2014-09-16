@@ -30,6 +30,8 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (void)updateNavigationItem:(BOOL)animated;
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated;
 - (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style;
+- (void)updateRefreshStatusWithLastUpdatedTime;
+- (void)updateRefreshStatusWithText:(NSString *)refreshText;
 
 @end
 
