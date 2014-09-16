@@ -244,12 +244,12 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
     return 360.0;
 }
 
-//#pragma mark - Map View
-//
-//- (MKMapView *)mapView
-//{
-//    return self.tiledMapView.mapView;
-//}
+#pragma mark - Map View
+
+- (MKMapView *)mapView
+{
+    return self.tiledMapView.mapView;
+}
 
 #pragma mark - Loading Events Into Map
 
