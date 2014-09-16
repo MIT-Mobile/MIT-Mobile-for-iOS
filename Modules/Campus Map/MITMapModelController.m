@@ -246,7 +246,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         NSString *buildingName = buildingNumber;
         for (MITMapPlace *place in resultsArray) {
             if ([place.buildingNumber isEqualToString:buildingNumber]) {
-                buildingName = place.name;
+                buildingName = [NSString stringWithFormat:@"%@ - %@", buildingName, [place.name uppercaseString]];
                 break;
             }
         }

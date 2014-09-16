@@ -81,7 +81,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 - (void)setupMapView
 {
     [self.tiledMapView setButtonsHidden:YES animated:NO];
-    self.mapView.delegate = self;
+    self.tiledMapView.mapDelegate = self;
     self.mapView.showsUserLocation = YES;
     
     // This sets the color of the current location pin, which is otherwise inherited from the main window's MIT tint color...

@@ -139,7 +139,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)setupMapView
 {
     self.tiledMapView.buttonDelegate = self;
-    self.mapView.delegate = self;
+    
+    [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = YES;
     
     // This sets the color of the current location pin, which is otherwise inherited from the main window's MIT tint color...

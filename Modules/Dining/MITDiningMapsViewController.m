@@ -57,7 +57,8 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 {
     [self.tiledMapView setLeftButtonHidden:NO animated:NO];
     [self.tiledMapView setRightButtonHidden:YES animated:NO];
-    self.mapView.delegate = self;
+    //self.mapView.delegate = self;
+    [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = YES;
     self.mapView.tintColor =self.mapView.tintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     [self setupMapBoundingBoxAnimated:NO];

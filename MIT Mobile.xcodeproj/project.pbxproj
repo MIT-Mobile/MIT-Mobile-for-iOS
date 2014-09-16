@@ -35,6 +35,7 @@
 		225F2195197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */; };
 		225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */; };
 		225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */; };
+		2268F39919C728FA007CD3F7 /* MITMapDelegateInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */; };
 		2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2279E17A199AAD5D006BBFC5 /* MITDiningResource.m */; };
 		2279E183199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2279E181199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodeld */; };
 		2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */; };
@@ -630,6 +631,8 @@
 		225F2196197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITDayOfTheWeekCell.xib; sourceTree = "<group>"; };
 		225F21A3197EBB6D00F34DE9 /* MITCalendarsResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsResource.h; sourceTree = "<group>"; };
 		225F21A4197EBB6D00F34DE9 /* MITCalendarsResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsResource.m; sourceTree = "<group>"; };
+		2268F39719C728FA007CD3F7 /* MITMapDelegateInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapDelegateInterceptor.h; sourceTree = "<group>"; };
+		2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapDelegateInterceptor.m; sourceTree = "<group>"; };
 		2279E179199AAD5D006BBFC5 /* MITDiningResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITDiningResource.h; sourceTree = "<group>"; };
 		2279E17A199AAD5D006BBFC5 /* MITDiningResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITDiningResource.m; sourceTree = "<group>"; };
 		2279E182199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITDiningDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -3260,6 +3263,8 @@
 			children = (
 				A544EEFE1961D1B60046823E /* MITTiledMapView.h */,
 				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
+				2268F39719C728FA007CD3F7 /* MITMapDelegateInterceptor.h */,
+				2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4297,6 +4302,7 @@
 				2C18090918F33B95008F9775 /* MITTouchstoneIdentityProvider.m in Sources */,
 				22312DC819C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m in Sources */,
 				2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */,
+				2268F39919C728FA007CD3F7 /* MITMapDelegateInterceptor.m in Sources */,
 				A5A24B681994307A00AA1CFC /* MITEventSearchTypeAheadViewController.m in Sources */,
 				2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */,
 				A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */,
