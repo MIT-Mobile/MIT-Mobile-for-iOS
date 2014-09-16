@@ -491,10 +491,10 @@ CGFloat const refreshControlTextHeight = 19;
             } else {
                 [strongSelf updateRefreshStatusWithText:@"Failed..."];
             }
-            if (![strongSelf.categoriesDataSource.objects count]) {
+            if (![strongSelf.dataSources count]) {
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
             }
-            if ([strongSelf.categoriesDataSource.objects count]) {
+            if ([strongSelf.dataSources count]) {
                 if (strongRefresh.refreshing) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
