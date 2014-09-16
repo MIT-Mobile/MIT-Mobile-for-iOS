@@ -14,7 +14,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="251" height="59"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" misplaced="YES" text="Labelpqg" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="1Jf-iB-rpG">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Labelpqg" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="1Jf-iB-rpG">
                         <rect key="frame" x="0.0" y="0.0" width="251" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -28,35 +28,32 @@
                         <color key="textColor" white="0.30120894160583944" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oMN-bm-cfJ">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="251" translatesAutoresizingMaskIntoConstraints="NO" id="G3k-zo-OXv" customClass="MITDiningTappableDietaryFlagLabel">
                         <rect key="frame" x="0.0" y="20" width="251" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
-                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                        <connections>
-                            <outlet property="delegate" destination="87s-6g-WnJ" id="ALV-Qi-3f1"/>
-                        </connections>
-                    </textView>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="oMN-bm-cfJ" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="81g-ep-Wna"/>
-                <constraint firstAttribute="trailing" secondItem="oMN-bm-cfJ" secondAttribute="trailing" id="Dtn-Wr-0WM"/>
+                <constraint firstItem="G3k-zo-OXv" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="Aao-Ej-9O3"/>
                 <constraint firstItem="1Jf-iB-rpG" firstAttribute="top" secondItem="87s-6g-WnJ" secondAttribute="top" id="I0x-tP-BrN"/>
                 <constraint firstItem="1Jf-iB-rpG" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="LMz-Oe-Lar"/>
+                <constraint firstAttribute="trailing" secondItem="G3k-zo-OXv" secondAttribute="trailing" id="UWP-TV-WuO"/>
                 <constraint firstAttribute="trailing" secondItem="0VP-H1-ej5" secondAttribute="trailing" id="WYs-Eg-B7F"/>
                 <constraint firstItem="0VP-H1-ej5" firstAttribute="leading" secondItem="87s-6g-WnJ" secondAttribute="leading" id="XSV-1P-wSc"/>
+                <constraint firstItem="0VP-H1-ej5" firstAttribute="top" secondItem="G3k-zo-OXv" secondAttribute="bottom" constant="3" id="cS7-Fa-8WR"/>
+                <constraint firstItem="G3k-zo-OXv" firstAttribute="top" secondItem="1Jf-iB-rpG" secondAttribute="bottom" constant="4" id="dCk-hR-Et9"/>
                 <constraint firstAttribute="bottom" secondItem="0VP-H1-ej5" secondAttribute="bottom" id="k0D-Q9-VL4"/>
                 <constraint firstAttribute="trailing" secondItem="1Jf-iB-rpG" secondAttribute="trailing" id="nTb-HS-nOy"/>
-                <constraint firstItem="0VP-H1-ej5" firstAttribute="top" secondItem="oMN-bm-cfJ" secondAttribute="bottom" id="pyH-j4-Wq3"/>
-                <constraint firstItem="oMN-bm-cfJ" firstAttribute="top" secondItem="1Jf-iB-rpG" secondAttribute="bottom" id="w8c-TJ-Dzs"/>
             </constraints>
             <size key="customSize" width="251" height="59"/>
             <connections>
                 <outlet property="mealDescriptionLabel" destination="0VP-H1-ej5" id="SzW-Qf-Ohl"/>
-                <outlet property="mealTitleTextView" destination="oMN-bm-cfJ" id="ubW-NF-HDk"/>
+                <outlet property="mealTitleLabel" destination="G3k-zo-OXv" id="ySl-5G-XZm"/>
                 <outlet property="stationLabel" destination="1Jf-iB-rpG" id="b3d-n9-Vyr"/>
             </connections>
         </collectionViewCell>
