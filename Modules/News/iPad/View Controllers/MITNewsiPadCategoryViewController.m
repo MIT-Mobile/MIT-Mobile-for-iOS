@@ -8,12 +8,13 @@
 @interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
 @end
 
-@interface MITNewsiPadCategoryViewController () <MITNewsStoryViewControllerDelegate>
+@interface MITNewsiPadCategoryViewController ()
 
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
 @property (nonatomic) BOOL category;
+@property (nonatomic, copy) NSArray *dataSources;
 
 @property(strong) id dataSourceDidEndUpdatingToken;
 @end
@@ -36,6 +37,7 @@
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
+    self.dataSources = @[self.dataSource];
 }
 
 - (void)didReceiveMemoryWarning
@@ -341,51 +343,6 @@
         return dataSource.objects[index];
     } else {
         return nil;
-    }
-}
-
-#pragma mark MITNewsStoryDetailPagingDelegate
-- (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
-{
-    if (_storyUpdateInProgress) {
-        if (block) {
-            block(nil, nil);
-        }
-        return;
-    }
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    MITNewsDataSource *dataSource = self.dataSource;
-    
-    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-    if (currentIndex == NSNotFound) {
-        if (block) {
-            block(nil, nil);
-        }
-        return;
-    }
-    if (currentIndex + 1 < [dataSource.objects count]) {
-        if (block) {
-            block(dataSource.objects[currentIndex + 1], nil);
-        }
-    } else {
-        
-        [self getMoreStoriesForSection:0 completion:^(NSError *error) {
-            if (error) {
-                block(nil, error);
-            } else {
-                NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                
-                if (currentIndex + 1 < [dataSource.objects count]) {
-                    if (block) {
-                        block(dataSource.objects[currentIndex + 1], nil);
-                    }
-                } else {
-                    if (block) {
-                        block(nil, nil);
-                    }
-                }
-            }
-        }];
     }
 }
 @end
