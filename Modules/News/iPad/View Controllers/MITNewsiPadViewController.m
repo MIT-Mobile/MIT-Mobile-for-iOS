@@ -869,6 +869,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)hideSearchField
 {
     self.searchBar = nil;
+    [self.searchController willMoveToParentViewController:nil];
     [self.searchController.view removeFromSuperview];
     [self.searchController removeFromParentViewController];
     self.searchController = nil;

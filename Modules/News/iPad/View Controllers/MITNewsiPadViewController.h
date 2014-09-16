@@ -26,12 +26,10 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 @property (nonatomic) BOOL showsFeaturedStories;
 
-- (IBAction)searchButtonWasTriggered:(UIBarButtonItem*)sender;
-- (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
-- (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
 - (void)reloadData;
 - (void)updateNavigationItem:(BOOL)animated;
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated;
+- (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style;
 
 @end
 

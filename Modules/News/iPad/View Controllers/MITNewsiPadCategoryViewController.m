@@ -8,10 +8,7 @@
 @interface MITNewsiPadCategoryViewController (NewsDataSource) <MITNewsStoryDataSource>
 @end
 
-@interface MITNewsiPadCategoryViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsStoryViewControllerDelegate>
-@end
-
-@interface MITNewsiPadCategoryViewController () <MITNewsListDelegate, MITNewsGridDelegate>
+@interface MITNewsiPadCategoryViewController () <MITNewsStoryViewControllerDelegate>
 
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
@@ -132,34 +129,7 @@
     }
 }
 
-#pragma mark UIAlertViewDelegate
-- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == alertView.firstOtherButtonIndex) {
-        NSURL *url = [NSURL URLWithString:alertView.message];
-        if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[UIApplication sharedApplication] openURL:url];
-        }
-    }
-    if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController.tableView deselectRowAtIndexPath:[self.listViewController.tableView indexPathForSelectedRow] animated:YES];
-    }
-}
-
 #pragma mark Utility Methods
-- (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style
-{
-    if (style == MITNewsPresentationStyleList) {
-        return YES;
-    } else if (style == MITNewsPresentationStyleGrid) {
-        const CGFloat minimumWidthForGrid = 768.;
-        const CGFloat boundsWidth = CGRectGetWidth(self.view.bounds);
-        
-        return (boundsWidth >= minimumWidthForGrid);
-    }
-    return NO;
-}
-
 - (void)updateNavigationItem:(BOOL)animated
 {
     [super updateNavigationItem:animated];
@@ -371,69 +341,6 @@
         return dataSource.objects[index];
     } else {
         return nil;
-    }
-}
-@end
-
-@implementation MITNewsiPadCategoryViewController (NewsDelegate)
-
-#pragma mark MITNewsStoryDetailPagingDelegate
-- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
-{
-    return nil;
-}
-
-- (MITNewsStory*)viewController:(UIViewController *)viewController didSelectStoryAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section;
-{
-    MITNewsStory *story = [self viewController:self storyAtIndex:index forCategoryInSection:section];
-    if (story) {
-        __block BOOL isExternalStory = NO;
-        __block NSURL *externalURL = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-                isExternalStory = YES;
-                externalURL = story.sourceURL;
-            }
-        }];
-        
-        if (isExternalStory) {
-            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
-            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
-            [willOpenInExternalBrowserAlertView show];
-        } else {
-            [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
-        }
-    }
-    return nil;
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    UIViewController *destinationViewController = [segue destinationViewController];
-    
-    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
-    
-    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
-            
-            NSIndexPath *indexPath = sender;
-            
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            storyDetailViewController.delegate = self;
-            MITNewsStory *story = [self viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
-            if (story) {
-                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-                managedObjectContext.parentContext = self.managedObjectContext;
-                storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-            }
-        } else {
-            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsStoryViewController class]),
-                      NSStringFromClass([[segue destinationViewController] class]));
-        }
-    } else {
-        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
 }
 
