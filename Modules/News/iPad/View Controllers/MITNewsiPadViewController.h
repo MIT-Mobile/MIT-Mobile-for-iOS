@@ -19,8 +19,6 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-- (void)reloadData;
-
 
 @property (nonatomic,readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
@@ -32,6 +30,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style;
 - (void)updateRefreshStatusWithLastUpdatedTime;
 - (void)updateRefreshStatusWithText:(NSString *)refreshText;
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 
 @end
 

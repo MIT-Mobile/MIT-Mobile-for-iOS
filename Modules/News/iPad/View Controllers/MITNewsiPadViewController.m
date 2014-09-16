@@ -683,7 +683,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    if ([_dataSources count]) {
+    if ([self.dataSources count]) {
         [self refreshDataSources:block];
     } else {
         [self loadDataSources:block];
