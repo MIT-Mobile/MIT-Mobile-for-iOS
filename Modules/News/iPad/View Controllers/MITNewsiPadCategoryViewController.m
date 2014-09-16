@@ -39,7 +39,6 @@
 {
     [super viewDidLoad];
     self.showsFeaturedStories = NO;
-#warning come back to this
 }
 
 - (void)didReceiveMemoryWarning
