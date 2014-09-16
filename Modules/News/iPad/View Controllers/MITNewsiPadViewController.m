@@ -109,7 +109,7 @@ CGFloat const refreshControlTextHeight = 19;
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     
     if (!self.activeViewController) {
-        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
+        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && !self.isCurrentPresentationStyleAList) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];

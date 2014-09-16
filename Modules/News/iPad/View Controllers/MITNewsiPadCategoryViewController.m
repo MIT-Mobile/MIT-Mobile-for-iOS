@@ -49,18 +49,16 @@
 {
     self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
-    [super viewWillAppear:animated];
-    
-    if (self.previousPresentationStyle) {
-        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.previousPresentationStyle == MITNewsPresentationStyleGrid) {
-            [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
-            self.gridViewController.isCategory = YES;
-        } else {
-            [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
-            self.listViewController.isCategory = YES;
-        }
-        self.previousPresentationStyle = nil;
+    if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
+        self.isCurrentPresentationStyleAList = YES;
+        self.listViewController.isCategory = YES;
+    } else {
+        self.gridViewController.isCategory = YES;
     }
+    self.previousPresentationStyle = nil;
+    
+    [super viewWillAppear:animated];
+
     [self updateNavigationItem:YES];
     if (self.dataSource.isUpdating) {
 
