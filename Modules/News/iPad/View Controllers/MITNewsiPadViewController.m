@@ -562,6 +562,35 @@ CGFloat const refreshControlTextHeight = 19;
 {
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
 }
+
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
+{
+    if (![self canLoadMoreItemsForCategoryInSection:section] || _storyUpdateInProgress) {
+        if (block) {
+            block(nil);
+        }
+        return;
+    }
+    _storyUpdateInProgress = YES;
+    __weak MITNewsiPadViewController *weakSelf = self;
+    [self loadMoreItemsForCategoryInSection:section
+                                 completion:^(NSError *error) {
+                                     _storyUpdateInProgress = NO;
+                                     MITNewsiPadViewController *strongSelf = weakSelf;
+                                     if (!strongSelf) {
+                                         return;
+                                     }
+                                     
+                                     if (error) {
+                                         DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSources[section]);
+                                     } else {
+                                         DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSources[section]);
+                                     }
+                                     if (block) {
+                                         block(error);
+                                     }
+                                 }];
+}
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)

@@ -160,39 +160,36 @@
     [self updateLoadingCell];
     
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
-    [self loadMoreItemsForCategoryInSection:section
-                                 completion:^(NSError *error) {
-                                     _storyUpdateInProgress = NO;
-                                     [self setProgress:NO];
-                                     _loadingMoreStories = NO;
-                                     MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-                                     if (!strongSelf) {
-                                         return;
-                                     }
-                                     
-                                     if (error) {
-                                         DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-                                         if (error.code == NSURLErrorNotConnectedToInternet) {
-                                             [self setError:@"No Internet Connection"];
-                                         } else {
-                                             [self setError:@"Failed..."];
-                                         }
-                                         [strongSelf updateLoadingCell];
-                                         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-                                         dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                             [strongSelf updateLoadingCell];
-                                         });
-                                     } else {
-                                         DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
-                                         //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
-                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                             [strongSelf reloadData];
-                                         }];
-                                     }
-                                     if (block) {
-                                         block(error);
-                                     }
-                                 }];
+    [super getMoreStoriesForSection:section completion:^(NSError *error) {
+        _storyUpdateInProgress = NO;
+        [self setProgress:NO];
+        _loadingMoreStories = NO;
+        MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        
+        if (error) {
+            if (error.code == NSURLErrorNotConnectedToInternet) {
+                [self setError:@"No Internet Connection"];
+            } else {
+                [self setError:@"Failed..."];
+            }
+            [strongSelf updateLoadingCell];
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                [strongSelf updateLoadingCell];
+            });
+        } else {
+            //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [strongSelf reloadData];
+            }];
+        }
+        if (block) {
+            block(error);
+        }
+    }];
 }
 
 - (void)setError:(NSString *)message
