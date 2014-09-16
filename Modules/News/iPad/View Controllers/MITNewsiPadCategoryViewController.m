@@ -114,24 +114,6 @@
     }];
 }
 
-- (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
-{
-    if (!_storyUpdateInProgress) {
-        self.presentationStyle = MITNewsPresentationStyleGrid;
-        [self setPresentationStyle:self.presentationStyle animated:YES];
-        [self updateNavigationItem:YES];
-    }
-}
-
-- (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
-{
-    if (!_storyUpdateInProgress) {
-        self.presentationStyle = MITNewsPresentationStyleList;
-        [self setPresentationStyle:self.presentationStyle animated:YES];
-        [self updateNavigationItem:YES];
-    }
-}
-
 #pragma mark Utility Methods
 - (void)updateNavigationItem:(BOOL)animated
 {
