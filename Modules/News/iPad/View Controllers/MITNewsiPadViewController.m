@@ -49,13 +49,12 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 
 @property (nonatomic) BOOL category;
+@property (nonatomic) BOOL storyUpdateInProgress;
+@property (nonatomic) BOOL loadingMoreStories;
 
 @end
 
-@implementation MITNewsiPadViewController {
-    BOOL _isTransitioningToPresentationStyle;
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsiPadViewController
 
 @synthesize activeViewController = _activeViewController;
 @synthesize gridViewController = _gridViewController;
@@ -270,7 +269,6 @@ CGFloat const refreshControlTextHeight = 19;
         toViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
 
         const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
-        _isTransitioningToPresentationStyle = YES;
         _activeViewController = toViewController;
         if (!fromViewController) {
             [self addChildViewController:toViewController];
@@ -281,7 +279,6 @@ CGFloat const refreshControlTextHeight = 19;
                             animations:^{
                                 [self.containerView addSubview:toViewController.view];
                             } completion:^(BOOL finished) {
-                                _isTransitioningToPresentationStyle = NO;
                                 [toViewController didMoveToParentViewController:self];
                                 //In landscape mode we need this to show the refresh when first starting module
                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -300,7 +297,6 @@ CGFloat const refreshControlTextHeight = 19;
                                        options:0
                                     animations:nil
                                     completion:^(BOOL finished) {
-                                        _isTransitioningToPresentationStyle = NO;
                                         [toViewController didMoveToParentViewController:self];
                                         [fromViewController removeFromParentViewController];
                                     }];
@@ -458,11 +454,16 @@ CGFloat const refreshControlTextHeight = 19;
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
-    if (_storyUpdateInProgress) {
+    if (self.loadingMoreStories) {
+        [self.refreshControl endRefreshing];
         return;
     }
     
-    _storyUpdateInProgress = YES;
+    if (self.storyUpdateInProgress) {
+        return;
+    }
+    
+    self.storyUpdateInProgress = YES;
     if (self.messageView) {
         [self removeNoResultsView];
     }
@@ -473,7 +474,7 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateRefreshStatusWithText:@"Updating..."];
     }
     [self reloadItems:^(NSError *error) {
-        _storyUpdateInProgress = NO;
+        self.storyUpdateInProgress = NO;
         MITNewsiPadViewController *strongSelf = weakSelf;
         UIRefreshControl *strongRefresh = weakRefresh;
         
@@ -565,17 +566,17 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
-    if (![self canLoadMoreItemsForCategoryInSection:section] || _storyUpdateInProgress) {
+    if (![self canLoadMoreItemsForCategoryInSection:section] || self.storyUpdateInProgress) {
         if (block) {
             block(nil);
         }
         return;
     }
-    _storyUpdateInProgress = YES;
+    self.loadingMoreStories = YES;
     __weak MITNewsiPadViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
-                                     _storyUpdateInProgress = NO;
+                                     self.loadingMoreStories = NO;
                                      MITNewsiPadViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
                                          return;
@@ -591,6 +592,7 @@ CGFloat const refreshControlTextHeight = 19;
                                      }
                                  }];
 }
+
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)

@@ -13,13 +13,11 @@
 @property (nonatomic) BOOL category;
 @property (nonatomic, copy) NSArray *dataSources;
 @property(strong) id dataSourceDidEndUpdatingToken;
+@property (nonatomic) BOOL storyUpdateInProgress;
+@property (nonatomic) BOOL loadingMoreStories;
 @end
 
-@implementation MITNewsiPadCategoryViewController {
-    BOOL _isTransitioningToPresentationStyle;
-    BOOL _storyUpdateInProgress;
-    BOOL _loadingMoreStories;
-}
+@implementation MITNewsiPadCategoryViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -70,10 +68,10 @@
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl beginRefreshing];
-            [self.refreshControl endRefreshing];
-        }];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.refreshControl beginRefreshing];
+        [self.refreshControl endRefreshing];
+    }];
 }
 
 - (void)updateLoadingCell
@@ -130,23 +128,19 @@
 #pragma mark Story Downloading
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
-    if (![self canLoadMoreItemsForCategoryInSection:section] || _storyUpdateInProgress) {
+    if (self.storyUpdateInProgress || self.loadingMoreStories) {
         if (block) {
             block(nil);
         }
         return;
     }
-    _storyUpdateInProgress = YES;
-    _loadingMoreStories = YES;
+
     [self setProgress:YES];
-    
     [self updateLoadingCell];
     
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [super getMoreStoriesForSection:section completion:^(NSError *error) {
-        _storyUpdateInProgress = NO;
         [self setProgress:NO];
-        _loadingMoreStories = NO;
         MITNewsiPadCategoryViewController *strongSelf = weakSelf;
         if (!strongSelf) {
             return;

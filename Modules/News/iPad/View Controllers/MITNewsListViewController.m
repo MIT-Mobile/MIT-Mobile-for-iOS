@@ -315,9 +315,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (!_storyUpdateInProgress) {
-            [self getMoreStoriesForSection:indexPath.section];
-        }
+        [self getMoreStoriesForSection:indexPath.section];
     } else {
         [self didSelectStoryAtIndexPath:indexPath];
     }
@@ -498,10 +496,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
-    if (!_storyUpdateInProgress && !self.errorMessage) {
         [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
         }];
-    }
 }
 
 - (void)setError:(NSString *)errorMessage

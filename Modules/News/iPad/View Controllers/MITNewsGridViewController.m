@@ -149,11 +149,7 @@
     NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
     
     if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
-        BOOL canLoadMoreItems = [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section];
-        if (canLoadMoreItems && !_storyUpdateInProgress) {
-            [self getMoreStoriesForSection:indexPath.section];
-            return;
-        }
+        [self getMoreStoriesForSection:indexPath.section];
     }
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     if (story) {
@@ -446,10 +442,8 @@
 #pragma mark More Stories
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
-    if(!_storyUpdateInProgress && !self.errorMessage) {
-        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-        }];
-    }
+    [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+    }];
 }
 
 - (void)setError:(NSString *)errorMessage
