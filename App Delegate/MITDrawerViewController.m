@@ -1,7 +1,6 @@
 #import "MITDrawerViewController.h"
 #import "MITModule.h"
 #import "MITSlidingViewController.h"
-#import "MITGradientView.h"
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSUInteger const MITModuleSectionIndex = 0;
@@ -21,17 +20,12 @@ static NSUInteger const MITModuleSectionIndex = 0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.topGradientView.direction = CGRectMinYEdge;
-    self.bottomGradientView.direction = CGRectMaxYEdge;
-    
     // Do any additional setup after loading the view from its nib.
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.topGradientView.frame), 0, CGRectGetHeight(self.bottomGradientView.frame) / 2.0, 0);
     [self.tableView reloadData];
 }
 

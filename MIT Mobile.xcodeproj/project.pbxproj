@@ -67,7 +67,6 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
-		2C21581519BA1EF500D5A3A7 /* MITGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C21581419BA1EF500D5A3A7 /* MITGradientView.m */; };
 		2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */; };
 		2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */; };
 		2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */; };
@@ -647,8 +646,6 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
-		2C21581319BA1EF500D5A3A7 /* MITGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITGradientView.h; path = "App Delegate/MITGradientView.h"; sourceTree = "<group>"; };
-		2C21581419BA1EF500D5A3A7 /* MITGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITGradientView.m; path = "App Delegate/MITGradientView.m"; sourceTree = "<group>"; };
 		2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElement.h; path = "Form Elements/LibraryFormElement.h"; sourceTree = "<group>"; };
 		2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryFormElement.m; path = "Form Elements/LibraryFormElement.m"; sourceTree = "<group>"; };
 		2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuLibraryFormElement.h; path = "Form Elements/MenuLibraryFormElement.h"; sourceTree = "<group>"; };
@@ -1976,8 +1973,6 @@
 				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 				2C44DA9D19B79F09001AA874 /* MITDrawerViewController.h */,
 				2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */,
-				2C21581319BA1EF500D5A3A7 /* MITGradientView.h */,
-				2C21581419BA1EF500D5A3A7 /* MITGradientView.m */,
 				2CD0A1B219BF5F8A000593AD /* MITScaleAnimationController.h */,
 				2CD5471B19C08706005BC4F6 /* MITScaleAnimationController.m */,
 			);
@@ -3558,7 +3553,6 @@
 				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
-				2C21581519BA1EF500D5A3A7 /* MITGradientView.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
