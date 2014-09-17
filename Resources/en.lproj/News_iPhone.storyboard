@@ -145,11 +145,11 @@
                         <viewControllerLayoutGuide type="bottom" id="a6D-cv-E86"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ncx-q4-JCJ">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZw-zT-ldn">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZw-zT-ldn">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="saG-db-2yb">
@@ -319,6 +319,18 @@
             </objects>
             <point key="canvasLocation" x="1102" y="519"/>
         </scene>
+        <!--News Search Controller-->
+        <scene sceneID="kSj-yD-2Bw">
+            <objects>
+                <viewController storyboardIdentifier="searchView" id="HiI-zf-r8K" customClass="MITNewsSearchController" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="Xac-Io-x1x"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qaX-RV-5dI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1094" y="-254"/>
+        </scene>
     </scenes>
     <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
@@ -327,6 +339,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="LJH-M1-aqG"/>
+        <segue reference="Xac-Io-x1x"/>
     </inferredMetricsTieBreakers>
 </document>

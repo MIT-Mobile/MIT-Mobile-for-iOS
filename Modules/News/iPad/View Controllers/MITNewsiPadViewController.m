@@ -207,7 +207,14 @@ CGFloat const refreshControlTextHeight = 19;
 - (MITNewsSearchController *)searchController
 {
     if(!_searchController) {
-        MITNewsSearchController *searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+        MITNewsSearchController *searchController = nil;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+        } else {
+            searchController = [[UIStoryboard storyboardWithName:@"News_iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+
+        }
+        
         searchController.view.frame = self.containerView.bounds;
         searchController.delegate = self;
         _searchController = searchController;
