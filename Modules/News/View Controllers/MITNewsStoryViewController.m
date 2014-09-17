@@ -66,7 +66,6 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    [self setupNextStory];
 
     if (!UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 
