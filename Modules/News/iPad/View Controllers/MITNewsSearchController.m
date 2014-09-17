@@ -27,6 +27,7 @@
 @property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic, strong) NSString *errorMessage;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *resignSearchTapGestureRecognizer;
 
 @end
 
@@ -143,10 +144,12 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
+        [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
         self.searchTableView.alpha = 0;
         self.view.alpha = .5;
         [self clearTable];
     } else {
+        [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
         self.searchTableView.alpha = .5;
         self.view.alpha = 1;
     }
@@ -407,6 +410,10 @@
             }];
         }
     }
+}
+- (IBAction)tappedHideSearchFieldArea:(id)sender
+{
+    [self hideSearchField];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
