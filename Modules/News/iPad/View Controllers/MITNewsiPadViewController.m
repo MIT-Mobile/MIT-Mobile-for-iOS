@@ -825,12 +825,12 @@ CGFloat const refreshControlTextHeight = 19;
 
             NSIndexPath *indexPath = sender;
 
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            storyDetailViewController.delegate = self;
             MITNewsStory *story = [self viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
+                MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+                storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
                 

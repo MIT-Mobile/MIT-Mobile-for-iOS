@@ -436,11 +436,11 @@
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
             
             NSIndexPath *indexPath = sender;
+            
             MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
-                
                 MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
                 storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;

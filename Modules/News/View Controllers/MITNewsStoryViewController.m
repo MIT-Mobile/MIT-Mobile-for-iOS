@@ -87,6 +87,13 @@
                                            [self.view setNeedsUpdateConstraints];
                                        }];
         }
+        self.nextStoryImageView.image = nil;
+        self.nextStoryTitleLabel.text = nil;
+        self.nextStoryDekLabel.text = nil;
+        self.nextStoryDateLabel.text = nil;
+        self.nextStoryNextStoryLabel.text = nil;
+    } else {
+        [self setupNextStory];
     }
 }
 
