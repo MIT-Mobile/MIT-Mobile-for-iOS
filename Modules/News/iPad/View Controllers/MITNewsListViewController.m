@@ -395,11 +395,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         storyCell.story = [self storyAtIndexPath:indexPath];
     } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (_storyUpdateInProgress) {
-            if (!cell.accessoryView) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-            }
+            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [view startAnimating];
+            cell.accessoryView = view;
         } else {
             cell.accessoryView = nil;
         }
