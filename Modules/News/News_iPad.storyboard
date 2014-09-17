@@ -156,7 +156,7 @@
                                             <outletCollection property="gestureRecognizers" destination="ki1-hl-xJV" appends="YES" id="Ax4-yX-5JW"/>
                                         </connections>
                                     </view>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G6e-Mr-MOn">
+                                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G6e-Mr-MOn">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
@@ -221,6 +221,7 @@
                 </tapGestureRecognizer>
                 <tapGestureRecognizer id="cfR-9B-sdu" userLabel="Media Gallery Tap Gesture Recognizer">
                     <connections>
+                        <outlet property="delegate" destination="nXb-ze-oPc" id="6dx-gN-gsa"/>
                         <segue destination="jao-yi-cxX" kind="modal" identifier="showMediaGallery" id="uTR-Kf-7Cp"/>
                     </connections>
                 </tapGestureRecognizer>
