@@ -155,27 +155,44 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     return YES;
 }
 
-- (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)viewController
+- (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)newTopViewController
 {
-    if (!viewController) {
-        viewController = [[UIViewController alloc] init];
-        viewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        viewController.view.backgroundColor = [UIColor mit_backgroundColor];
+    if (!newTopViewController) {
+        newTopViewController = [[UIViewController alloc] init];
+        newTopViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        newTopViewController.view.backgroundColor = [UIColor mit_backgroundColor];
     }
 
     _visibleModule = module;
     self.drawerViewController.selectedModule = module;
     
-    if (self.topViewController != viewController) {
+    if (self.topViewController != newTopViewController) {
         [self.topViewController.view removeGestureRecognizer:self.panGesture];
-        [self setTopViewController:viewController];
+        [self setTopViewController:newTopViewController];
     }
-    
-    [self resetTopViewAnimated:YES onComplete:^{
-        if (![self.topViewController.view.gestureRecognizers containsObject:self.panGesture]) {
-            [self.topViewController.view addGestureRecognizer:self.panGesture];
-        }
-    }];
+
+    [newTopViewController.view addGestureRecognizer:self.panGesture];
+
+    // If the top view is a UINavigationController, automatically add a button to toggle the state
+    // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+    // controller must do something itself.
+    if ([newTopViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController*)newTopViewController;
+        UIImage *image = [UIImage imageNamed:@"global/menu"];
+        UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(toggleAnchorRight:)];
+        navigationController.topViewController.navigationItem.leftBarButtonItem = leftBarButtonItem;
+    }
+
+    [self resetTopViewAnimated:YES];
+}
+
+- (IBAction)toggleAnchorRight:(id)sender
+{
+    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
+        [self anchorTopViewToRightAnimated:YES];
+    } else {
+        [self resetTopViewAnimated:YES];
+    }
 }
 
 #pragma mark Private

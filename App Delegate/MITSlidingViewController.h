@@ -12,4 +12,6 @@
 - (void)setVisibleModuleWithTag:(NSString*)moduleTag;
 - (BOOL)setVisibleModuleWithNotification:(MITNotification*)notification;
 - (BOOL)setVisibleModuleWithURL:(NSURL*)url;
+
+- (IBAction)toggleAnchorRight:(id)sender;
 @end
