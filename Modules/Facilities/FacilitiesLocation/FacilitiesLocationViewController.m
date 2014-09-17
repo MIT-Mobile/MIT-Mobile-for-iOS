@@ -309,21 +309,7 @@
     [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
     [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     
-//    if ([location.isLeased boolValue]) {
-//        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-//        
-//        [self.navigationController pushViewController:controller
-//                                             animated:YES];
-//    } else {
-//        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-//        controller.location = location;
-//        
-//        [self.navigationController pushViewController:controller
-//                                             animated:YES];
-//    }
-    
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 

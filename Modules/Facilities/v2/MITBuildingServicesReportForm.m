@@ -29,10 +29,11 @@
 - (void)clearAll
 {
     self.location = nil;
-    self.description = nil;
+    self.reportDescription = nil;
     self.problemType = nil;
     self.room = nil;
     self.roomAltName = nil;
+    self.reportImage = nil;
     self.shouldSetRoom = NO;
 }
 

@@ -16,6 +16,7 @@
 #import "FacilitiesRoomViewController.h"
 
 #import "UIKit+MITAdditions.h"
+#import "UIImage+Metadata.h"
 #import <MessageUI/MFMailComposeViewController.h>
 
 typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
@@ -40,7 +41,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 @property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
 
 @property (nonatomic, strong) UITextView *editingTextView;
-@property (nonatomic, assign) NSInteger editingRow;
+@property (nonatomic, strong) NSIndexPath *editingIndexPath;
 
 @property (nonatomic, strong) MITActionSheetHandler *actionSheetHandler;
 
@@ -66,7 +67,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [self.reportForm clearAll];
     
     self.editingTextView = nil;
-    self.editingRow = -1;
+    self.editingIndexPath = nil;
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -155,6 +156,34 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [actionSheet showInView:self.view];
 }
 
+- (void)removePhotoAction
+{
+    __weak MITFacilitiesHomeViewController *weakSelf = self;
+    
+    self.actionSheetHandler = [MITActionSheetHandler new];
+    [self.actionSheetHandler setActionSheetTintColor:[UIColor mit_tintColor]];
+    self.actionSheetHandler.delegateBlock = ^(UIActionSheet *actionSheet, NSInteger buttonIndex)
+    {
+        if( buttonIndex == actionSheet.cancelButtonIndex )
+        {
+            return;
+        }
+        
+        [[MITBuildingServicesReportForm sharedServiceReport] setReportImage:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.tableView reloadData];
+        });
+    };
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self.actionSheetHandler
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:@"Remove Photo"
+                                                    otherButtonTitles:nil];
+    [actionSheet showInView:self.view];
+}
+
 - (void)attachPhotoAction
 {
     __weak MITFacilitiesHomeViewController *weakSelf = self;
@@ -221,13 +250,19 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     static NSInteger defaultHeight = 62;
     
+    BOOL isEditingRow = indexPath.row == self.editingIndexPath.row;
+    
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
-    if( self.editingTextView != nil && row == self.editingRow && row != MITFacilitiesFormFieldEmail )
+    if( self.editingTextView != nil && isEditingRow && row != MITFacilitiesFormFieldEmail )
     {
         CGSize size = [self.editingTextView sizeThatFits:CGSizeMake(self.editingTextView.frame.size.width, FLT_MAX)];
         
         return (defaultHeight - 20) + size.height;
+    }
+    else if( row == MITFacilitiesFormFieldAttachPhoto && self.reportForm.reportImage != nil )
+    {
+        return 386;
     }
     
     return defaultHeight;
@@ -264,9 +299,31 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActionCell" forIndexPath:indexPath];
     
-    UILabel *actionLabel = (UILabel *)[cell viewWithTag:1];
-    [actionLabel setText:@"Attach Photo"];
-    [actionLabel setTextColor:[UIColor mit_tintColor]];
+    UIButton *attachPhotoBtn = (UIButton *)[cell viewWithTag:1];
+    [attachPhotoBtn setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
+    [attachPhotoBtn removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
+    
+    if( self.reportForm.reportImage != nil )
+    {
+        [attachPhotoBtn setTitle:@"Remove Photo" forState:UIControlStateNormal];
+        [attachPhotoBtn addTarget:self action:@selector(removePhotoAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    else
+    {
+        [attachPhotoBtn setTitle:@"Attach Photo" forState:UIControlStateNormal];
+        [attachPhotoBtn addTarget:self action:@selector(attachPhotoAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    // image attachment
+    UIImageView *imageView = (UIImageView *)[cell viewWithTag:2];
+    if( self.reportForm.reportImage != nil )
+    {
+        imageView.image = self.reportForm.reportImage;
+    }
+    else
+    {
+        imageView.image = nil;
+    }
     
     cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
     
@@ -356,7 +413,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.titleLabel.text = @"description";
     
     cell.subtitleTextView.delegate = self;
-    cell.subtitleTextView.text = self.reportForm.description;
+    cell.subtitleTextView.text = self.reportForm.reportDescription;
     
     return cell;
 }
@@ -371,7 +428,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     if( row == MITFacilitiesFormFieldAttachPhoto )
     {
-        [self attachPhotoAction];
         return;
     }
     
@@ -414,9 +470,9 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     tableViewRect.size.height -= keyboardSize.height;
     self.tableView.frame = tableViewRect;
     
-    if( self.editingRow == MITFacilitiesFormFieldDescription )
+    if( [self adjustedFieldRow:self.editingIndexPath.row] == MITFacilitiesFormFieldDescription )
     {
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingRow inSection:0]
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingIndexPath.row inSection:0]
                               atScrollPosition:UITableViewRowAnimationTop animated:YES];
     }
 }
@@ -442,9 +498,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
     CGPoint point = [textView convertPoint:CGPointZero toView:self.tableView];
-    NSIndexPath *editingTextViewIndexPath = [self.tableView indexPathForRowAtPoint:point];
-    
-    self.editingRow = [self adjustedFieldRow:editingTextViewIndexPath.row];
+    self.editingIndexPath = [self.tableView indexPathForRowAtPoint:point];
     self.editingTextView = textView;
     
     [self.tableView beginUpdates];
@@ -455,7 +509,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    self.reportForm.description = textView.text;
+    self.reportForm.reportDescription = textView.text;
     
     CGFloat fixedWidth = textView.frame.size.width;
     CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, FLT_MAX)];
@@ -477,7 +531,36 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         image = info[UIImagePickerControllerOriginalImage];
     }
     
+    NSMutableDictionary *imageProperties = [NSMutableDictionary dictionary];
+    
+    if( [picker sourceType] == UIImagePickerControllerSourceTypeCamera )
+    {
+        NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
+        if( metadata )
+        {
+            [imageProperties addEntriesFromDictionary:metadata];
+        }
+        
+        dispatch_queue_t tempQueue = dispatch_queue_create("edu.mit.mobile.facilities.UIImagePickerControllerDelegate", 0);
+        dispatch_async(tempQueue, ^(void)
+        {
+            [image updateMetadata:imageProperties withCompletionHandler:^(NSData *imageData)
+            {
+                [self attachImage:image withImageData:imageData];
+            }];
+        });
+    }
+    
     [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
+}
+
+- (void)attachImage:(UIImage *)image withImageData:(NSData *)imageData
+{
+    [[MITBuildingServicesReportForm sharedServiceReport] setReportImage:image];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
 }
 
 #pragma mark - helpers

@@ -19,7 +19,9 @@
 @property (nonatomic, strong) FacilitiesRoom *room;
 @property (nonatomic, strong) NSString *roomAltName;
 
-@property (nonatomic, strong) NSString *description;
+@property (nonatomic, strong) NSString *reportDescription;
+
+@property (nonatomic, strong) UIImage *reportImage;
 
 + (MITBuildingServicesReportForm *)sharedServiceReport;
 
