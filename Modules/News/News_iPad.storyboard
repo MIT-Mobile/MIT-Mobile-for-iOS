@@ -156,7 +156,7 @@
                                             <outletCollection property="gestureRecognizers" destination="ki1-hl-xJV" appends="YES" id="Ax4-yX-5JW"/>
                                         </connections>
                                     </view>
-                                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G6e-Mr-MOn">
+                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G6e-Mr-MOn">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
