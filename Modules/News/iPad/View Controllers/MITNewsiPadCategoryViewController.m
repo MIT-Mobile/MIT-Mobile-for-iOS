@@ -12,7 +12,7 @@
 @property (nonatomic) BOOL movingBackFromStory;
 @property (nonatomic) BOOL category;
 @property (nonatomic, copy) NSArray *dataSources;
-@property(strong) id dataSourceDidEndUpdatingToken;
+@property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @property (nonatomic) BOOL loadingMoreStories;
 @end
