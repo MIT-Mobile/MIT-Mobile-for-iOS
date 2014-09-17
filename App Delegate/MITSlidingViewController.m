@@ -2,7 +2,6 @@
 #import "MITAdditions.h"
 #import "MITModule.h"
 #import "MITDrawerViewController.h"
-#import "MITScaleAnimationController.h"
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
@@ -30,8 +29,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.delegate = self;
-    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -43,6 +40,14 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
 
     [self _showInitialModuleIfNeeded];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
+    self.customAnchoredGestures = @[];
 }
 
 #pragma mark Properties
@@ -194,25 +199,4 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     return selectedModule;
 }
 
-#pragma mark Delegation
-- (id<UIViewControllerAnimatedTransitioning>)slidingViewController:(ECSlidingViewController *)slidingViewController
-                                   animationControllerForOperation:(ECSlidingViewControllerOperation)operation
-                                                 topViewController:(UIViewController *)topViewController {
-    CGFloat scaleFactor = [self _scaleFactorForFrame:slidingViewController.view.bounds];
-    MITScaleAnimationController *animationController = [[MITScaleAnimationController alloc] initWithOperation:operation scaleFactor:scaleFactor];
-    
-    self.animationController = animationController;
-    return animationController;
-}
-
-- (id<ECSlidingViewControllerLayout>)slidingViewController:(ECSlidingViewController *)slidingViewController
-                        layoutControllerForTopViewPosition:(ECSlidingViewControllerTopViewPosition)topViewPosition {
-    return self.animationController;
-}
-
-- (CGFloat)_scaleFactorForFrame:(CGRect)frame
-{
-    CGFloat statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) * 2.;
-    return (CGRectGetHeight(frame) - statusBarHeight) / CGRectGetHeight(frame);
-}
 @end

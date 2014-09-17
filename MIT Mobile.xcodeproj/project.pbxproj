@@ -162,7 +162,6 @@
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */; };
-		2CD5471C19C08706005BC4F6 /* MITScaleAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD5471B19C08706005BC4F6 /* MITScaleAnimationController.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
@@ -820,13 +819,11 @@
 		2CCF81481636F69900DE273F /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
 		2CCF81491636F69900DE273F /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
 		2CCF814F1636F69900DE273F /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
-		2CD0A1B219BF5F8A000593AD /* MITScaleAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITScaleAnimationController.h; path = "App Delegate/MITScaleAnimationController.h"; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
 		2CD27AA91709D3EF002E220E /* MGSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSGeometry.h; sourceTree = "<group>"; };
 		2CD27AAA1709D3EF002E220E /* MGSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSGeometry.m; sourceTree = "<group>"; };
 		2CD4F69B188ED4EB003F2C46 /* MITManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITManagedObject.h; sourceTree = "<group>"; };
 		2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITManagedObject.m; sourceTree = "<group>"; };
-		2CD5471B19C08706005BC4F6 /* MITScaleAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITScaleAnimationController.m; path = "App Delegate/MITScaleAnimationController.m"; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
 		2CDA8AB71762445F001F011F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -1973,8 +1970,6 @@
 				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 				2C44DA9D19B79F09001AA874 /* MITDrawerViewController.h */,
 				2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */,
-				2CD0A1B219BF5F8A000593AD /* MITScaleAnimationController.h */,
-				2CD5471B19C08706005BC4F6 /* MITScaleAnimationController.m */,
 			);
 			name = "Module Launcher";
 			sourceTree = "<group>";
@@ -3678,7 +3673,6 @@
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
 				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
-				2CD5471C19C08706005BC4F6 /* MITScaleAnimationController.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,
 				EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */,
