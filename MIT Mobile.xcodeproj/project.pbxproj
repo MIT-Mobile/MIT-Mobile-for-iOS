@@ -419,6 +419,7 @@
 		A5A30407198AD0FB00C9C273 /* MITEventSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A30405198AD0FB00C9C273 /* MITEventSearchViewController.xib */; };
 		A5A9A98319C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A9A98219C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m */; };
 		A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */; };
+		A5A9A99019CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A9A98F19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m */; };
 		A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */; };
 		A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */; };
 		A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26081969FCB400D73AF5 /* MITMapPlaceNameCell.m */; };
@@ -1364,6 +1365,8 @@
 		A5A9A98219C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningTappableDietaryFlagLabel.m; path = Dining/MITDiningTappableDietaryFlagLabel.m; sourceTree = "<group>"; };
 		A5A9A98819CA14CB0090BE4F /* MITExtendedNavBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITExtendedNavBarView.h; sourceTree = "<group>"; };
 		A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITExtendedNavBarView.m; sourceTree = "<group>"; };
+		A5A9A98E19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationBar+ExtensionPrep.h"; path = "Categories/UINavigationBar+ExtensionPrep.h"; sourceTree = "<group>"; };
+		A5A9A98F19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationBar+ExtensionPrep.m"; path = "Categories/UINavigationBar+ExtensionPrep.m"; sourceTree = "<group>"; };
 		A5BF25FF1969E24400D73AF5 /* MITMapPlacePhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlacePhotoCell.h; sourceTree = "<group>"; };
 		A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacePhotoCell.m; sourceTree = "<group>"; };
 		A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlacePhotoCell.xib; sourceTree = "<group>"; };
@@ -2325,6 +2328,8 @@
 				2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */,
 				5ED47246194F2419001D6B78 /* UITableView+MITAdditions.h */,
 				5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */,
+				A5A9A98E19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.h */,
+				A5A9A98F19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -4246,6 +4251,7 @@
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
 				A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */,
+				A5A9A99019CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m in Sources */,
 				2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,

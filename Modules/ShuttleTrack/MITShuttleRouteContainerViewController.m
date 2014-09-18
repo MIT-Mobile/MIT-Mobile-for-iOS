@@ -8,6 +8,7 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITExtendedNavBarView.h"
+#import "UINavigationBar+ExtensionPrep.h"
 
 static const NSTimeInterval kStateTransitionDurationPortrait = 0.5;
 static const NSTimeInterval kStateTransitionDurationLandscape = 0.3;
@@ -148,21 +149,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 - (void)setupNavBar
 {
-    self.navigationController.navigationBar.translucent = NO;
-    
-    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
-    
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
-    CGContextFillRect(context, rect);
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar prepareForExtension];
     
     self.navigationBarExtensionViewHeightConstraint.constant = kNavigationBarStopStateExtensionHeight;
 }

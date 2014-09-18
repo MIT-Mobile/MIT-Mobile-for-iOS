@@ -9,6 +9,7 @@
 #import "MITDiningWebservices.h"
 #import "MITDiningVenues.h"
 #import "MITDiningFilterViewController.h"
+#import "UINavigationBar+ExtensionPrep.h"
 
 @interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate, MITSingleWebViewCellTableViewControllerDelegate>
 
@@ -62,21 +63,7 @@
 
 - (void)setupNavBar
 {
-    self.navigationController.navigationBar.translucent = NO;
-    
-    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
-    
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
-    CGContextFillRect(context, rect);
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar prepareForExtension];
     
     self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
     [self.diningVenueTypeControl setSelectedSegmentIndex:0];
