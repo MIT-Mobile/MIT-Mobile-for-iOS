@@ -167,6 +167,7 @@
 #pragma mark - search
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
     [self clearTable];
