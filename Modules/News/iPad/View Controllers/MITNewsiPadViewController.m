@@ -115,7 +115,7 @@ CGFloat const refreshControlTextHeight = 19;
         }
     }
     
-    if (!self.isSearching && !_storyUpdateInProgress) {
+    if (!self.isSearching && !self.storyUpdateInProgress) {
         if (!self.lastUpdated) {
             [self reloadViewItems:self.refreshControl];
         } else {
@@ -124,7 +124,7 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateNavigationItem:YES];
     }
     
-    if (_storyUpdateInProgress) {
+    if (self.storyUpdateInProgress) {
         CGFloat textHeight = 0;
         if (!self.refreshControl.attributedTitle.string) {
             textHeight = refreshControlTextHeight;
@@ -313,8 +313,8 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)startAndShowRefreshControl
 {
-    if (_storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
-        if (_presentationStyle == MITNewsPresentationStyleGrid) {
+    if (self.storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
+        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
             [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
         } else {
             [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
@@ -349,7 +349,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress && !self.messageView) {
+    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
         [self updateNavigationItem:YES];
     }
@@ -357,7 +357,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress && !self.messageView) {
+    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleList;
         [self updateNavigationItem:YES];
     }
@@ -580,10 +580,13 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     self.loadingMoreStories = YES;
+    
     __weak MITNewsiPadViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
+
                                      self.loadingMoreStories = NO;
+                                     
                                      MITNewsiPadViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
                                          return;

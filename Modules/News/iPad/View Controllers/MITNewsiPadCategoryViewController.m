@@ -137,10 +137,14 @@
 
     [self setProgress:YES];
     [self updateLoadingCell];
+    self.loadingMoreStories = YES;
     
     __weak MITNewsiPadCategoryViewController *weakSelf = self;
     [super getMoreStoriesForSection:section completion:^(NSError *error) {
+        
         [self setProgress:NO];
+        self.loadingMoreStories = NO;
+        
         MITNewsiPadCategoryViewController *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
