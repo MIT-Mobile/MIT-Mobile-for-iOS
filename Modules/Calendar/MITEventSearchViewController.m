@@ -7,6 +7,8 @@
 #import "MITCalendarEventDateGroupedDataSource.h"
 #import "MITEventSearchTypeAheadViewController.h"
 #import "MITEventSearchResultsViewController.h"
+#import "MITExtendedNavBarView.h"
+#import "UINavigationBar+ExtensionPrep.h"
 
 typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     MITEventSearchViewControllerStateTypeAhead,
@@ -18,23 +20,16 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 @property (nonatomic) MITEventSearchViewControllerState state;
 @property (nonatomic, strong) MITEventSearchTypeAheadViewController *typeAheadViewController;
 @property (nonatomic, strong) MITEventSearchResultsViewController *resultsViewController;
-//@property (nonatomic) MITEventSearchViewControllerResultsTimeframe resultsTimeframe;
-//@property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, weak) IBOutlet UIView *tableViewContainerView;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewContainerViewBottomLayoutConstraint;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *tableViewContainerViewTopLayoutConstraint;
 @property (nonatomic, strong) UISearchBar *searchBar;
-//@property (nonatomic, strong) MITCalendarEventDateGroupedDataSource *resultsDataSource;
-//@property (nonatomic, strong) NSArray *typeAheadArray;
 
 // Currently only a single MITCalendarsCalendar object. When additional filters are specified, perhaps a filter object will be useful to create
 //@property (nonatomic, strong) NSArray *filtersArray;
 @property (nonatomic, strong) MITCalendarsCalendar *currentCalendar;
-@property (nonatomic, strong) UILabel *currentCalendarLabel;
-@property (nonatomic, strong) UIView *currentCalendarLabelContainerView;
-
-@property (weak, nonatomic) UIView *navBarSeparatorView;
-@property (strong, nonatomic) UIView *repositionedNavBarSeparatorView;
+@property (nonatomic, strong) IBOutlet UILabel *currentCalendarLabel;
+@property (nonatomic, strong) IBOutlet MITExtendedNavBarView *currentCalendarLabelContainerView;
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *currentCalendarContainerTopSpaceConstraint;
 
 @end
 
@@ -74,12 +69,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    navigationBar.opaque = YES;
-    navigationBar.translucent = NO;
-    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
-    [navigationBar setBarTintColor:navbarGrey];
-    
+    [self setupNavBar];
     [self setupSearchBar];
     self.state = MITEventSearchViewControllerStateTypeAhead;
     [self setTypeAheadViewControllerActive];
@@ -88,7 +78,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.navBarSeparatorView.hidden = YES;
+    [self.navigationController.navigationBar removeShadow];
     [self registerForKeyboardNotifications];
     [self.typeAheadViewController updateWithTypeAheadText:self.searchBar.text];
     if (self.state == MITEventSearchViewControllerStateTypeAhead) {
@@ -99,13 +89,20 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    self.navBarSeparatorView.hidden = NO;
+    [self.navigationController.navigationBar restoreShadow];
     [self unregisterForKeyboardNotifications];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     self.searchBar.frame = self.navigationController.navigationBar.bounds;
+}
+
+- (void)setupNavBar
+{
+    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
+    self.currentCalendarContainerTopSpaceConstraint.constant = -(self.currentCalendarLabelContainerView.frame.size.height);
 }
 
 - (void)setupSearchBar
@@ -119,59 +116,19 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     [self.navigationController.navigationBar addSubview:self.searchBar];
 }
 
-- (void)addExtendedNavBar
+- (void)addCurrentCalendarLabel
 {
     if (!self.currentCalendar) {
         return;
     }
     
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
-    
-    self.currentCalendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, -2, self.view.frame.size.width, 16)];
     self.currentCalendarLabel.text = [NSString stringWithFormat:@"In %@", self.currentCalendar.name];
-    self.currentCalendarLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
-    self.currentCalendarLabel.font = [UIFont systemFontOfSize:14];
-    self.currentCalendarLabel.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:self.currentCalendarLabel];
-    
-    self.currentCalendarLabelContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, navigationBar.frame.origin.y + navigationBar.frame.size.height, self.view.frame.size.width, 20)];
-    self.currentCalendarLabelContainerView.backgroundColor = navbarGrey;
-    [self.currentCalendarLabelContainerView addSubview:self.currentCalendarLabel];
-    [self.view addSubview:self.currentCalendarLabelContainerView];
-    
-    self.tableViewContainerViewTopLayoutConstraint.constant = 20;
-    
-    self.navBarSeparatorView = [self findHairlineImageViewUnder:navigationBar];
-    self.navBarSeparatorView.hidden = YES;
-    
-    self.repositionedNavBarSeparatorView = [[UIImageView alloc] initWithFrame:self.navBarSeparatorView.frame];
-    self.repositionedNavBarSeparatorView.backgroundColor = [UIColor colorWithRed:150.0/255.0 green:152.0/255.0 blue:156.0/255.0 alpha:1.0];
-    CGRect repositionedFrame = self.repositionedNavBarSeparatorView.frame;
-    repositionedFrame.origin.y = self.currentCalendarLabelContainerView.frame.size.height - self.repositionedNavBarSeparatorView.frame.size.height;
-    self.repositionedNavBarSeparatorView.frame = repositionedFrame;
-    self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.currentCalendarLabelContainerView addSubview:self.repositionedNavBarSeparatorView];
+    self.currentCalendarContainerTopSpaceConstraint.constant = 0;
 }
 
-- (void)removeExtendedNavBar
+- (void)removeCurrentCalendarLabel
 {
-    [self.currentCalendarLabelContainerView removeFromSuperview];
-    self.tableViewContainerViewTopLayoutConstraint.constant = 0;
-    self.navBarSeparatorView.hidden = NO;
-}
-
-- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
-    if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
-        return (UIImageView *)view;
-    }
-    for (UIView *subview in view.subviews) {
-        UIImageView *imageView = [self findHairlineImageViewUnder:subview];
-        if (imageView) {
-            return imageView;
-        }
-    }
-    return nil;
+    self.currentCalendarContainerTopSpaceConstraint.constant = -(self.currentCalendarLabelContainerView.frame.size.height);
 }
 
 - (void)setCurrentCalendar:(MITCalendarsCalendar *)currentCalendar
@@ -205,12 +162,12 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     switch (newState) {
         case MITEventSearchViewControllerStateTypeAhead: {
             [self setTypeAheadViewControllerActive];
-            [self removeExtendedNavBar];
+            [self removeCurrentCalendarLabel];
             break;
         }
         case MITEventSearchViewControllerStateResults: {
             [self setResultsViewControllerActive];
-            [self addExtendedNavBar];
+            [self addCurrentCalendarLabel];
             break;
         }
     }

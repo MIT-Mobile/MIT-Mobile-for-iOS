@@ -6,7 +6,7 @@
 {
     self.translucent = NO;
     
-    [self setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
+    [self removeShadow];
     
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
     UIGraphicsBeginImageContext(rect.size);
@@ -19,6 +19,16 @@
     UIGraphicsEndImageContext();
     
     [self setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+}
+
+- (void)removeShadow
+{
+    [self setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
+}
+
+- (void)restoreShadow
+{
+    [self setShadowImage:nil];
 }
 
 @end
