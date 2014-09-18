@@ -1,8 +1,9 @@
 #import <UIKit/UIKit.h>
+#import "MITExtendedNavBarView.h"
 
 @protocol MITDiningHouseMealSelectorPadDelegate;
 
-@interface MITDiningHouseMealSelectorPad : UIView
+@interface MITDiningHouseMealSelectorPad : MITExtendedNavBarView
 
 @property (nonatomic, weak) id<MITDiningHouseMealSelectorPadDelegate>delegate;
 @property (nonatomic) CGFloat horizontalInset; // Inset for left and right side of the view

@@ -9,8 +9,9 @@
 #import "MITCalendarWebservices.h"
 #import "MITCalendarManager.h"
 #import "MITEventSearchViewController.h"
-
 #import "MITCalendarPageViewController.h"
+#import "UINavigationBar+ExtensionPrep.h"
+#import "MITExtendedNavBarView.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -26,16 +27,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, MITDatePickerViewControllerDelegate, MITCalendarSelectionDelegate, MITCalendarPageViewControllerDelegate>
 
-@property (weak, nonatomic) IBOutlet UIView *dayPickerContainerView;
+@property (weak, nonatomic) IBOutlet MITExtendedNavBarView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
 @property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
 @property (strong, nonatomic) NSDateFormatter *dayLabelDateFormatter;
-
-@property (weak, nonatomic) UIView *navBarSeparatorView;
-@property (strong, nonatomic) UIView *repositionedNavBarSeparatorView;
 
 @property (nonatomic) CGFloat pageWidth;
 
@@ -96,14 +94,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.navBarSeparatorView.hidden = YES;
+    [self.navigationController.navigationBar removeShadow];
     
     [self centerDayPickerCollectionView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    self.navBarSeparatorView.hidden = NO;
+    [self.navigationController.navigationBar restoreShadow];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -118,23 +116,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)setupExtendedNavBar
 {
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    
-    self.navBarSeparatorView = [self findHairlineImageViewUnder:navigationBar];
-    
-    self.repositionedNavBarSeparatorView = [[UIImageView alloc] initWithFrame:self.navBarSeparatorView.frame];
-    self.repositionedNavBarSeparatorView.backgroundColor = [UIColor colorWithRed:150.0/255.0 green:152.0/255.0 blue:156.0/255.0 alpha:1.0];
-    CGRect repositionedFrame = self.repositionedNavBarSeparatorView.frame;
-    repositionedFrame.origin.y = 62.5;
-    self.repositionedNavBarSeparatorView.frame = repositionedFrame;
-    self.repositionedNavBarSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.dayPickerContainerView addSubview:self.repositionedNavBarSeparatorView];
-    
-    navigationBar.opaque = YES;
-    navigationBar.translucent = NO;
     UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
-    [navigationBar setBarTintColor:navbarGrey];
+    
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
+    
     self.dayPickerContainerView.backgroundColor = navbarGrey;
+    [self.view bringSubviewToFront:self.dayPickerContainerView];
 }
 
 - (void)setupEventsContainer
@@ -147,19 +134,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.eventsController.view.frame = self.eventsTableContainerView.bounds;
     [self.eventsTableContainerView addSubview:self.eventsController.view];
     [self.eventsController didMoveToParentViewController:self];
-}
-
-- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
-    if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
-        return (UIImageView *)view;
-    }
-    for (UIView *subview in view.subviews) {
-        UIImageView *imageView = [self findHairlineImageViewUnder:subview];
-        if (imageView) {
-            return imageView;
-        }
-    }
-    return nil;
 }
 
 - (void)setupDayPickerCollectionView
