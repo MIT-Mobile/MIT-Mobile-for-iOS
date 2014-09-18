@@ -7,6 +7,7 @@
 #import "MITShuttleStopPredictionLoader.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "MITExtendedNavBarView.h"
 
 static const NSTimeInterval kStateTransitionDurationPortrait = 0.5;
 static const NSTimeInterval kStateTransitionDurationLandscape = 0.3;
@@ -17,7 +18,7 @@ static const CGFloat kMapContainerViewEmbeddedWidthRatioLandscape = 320.0 / 568.
 static const CGFloat kStopSubtitleAnimationSpan = 40.0;
 static const NSTimeInterval kStopSubtitleAnimationDuration = 0.3;
 
-static const CGFloat kNavigationBarStopStateExtension = 14.0;
+static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 
 typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     MITShuttleStopSubtitleLabelAnimationTypeNone = 0,
@@ -38,7 +39,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 @property (strong, nonatomic) IBOutlet UIView *stopTitleView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *stopSubtitleLabel;
-@property (weak, nonatomic) IBOutlet UIView *navigationBarExtensionView;
+@property (weak, nonatomic) IBOutlet MITExtendedNavBarView *navigationBarExtensionView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewTopSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewZeroHeightConstraint;
@@ -49,6 +50,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *routeContainerViewLandscapeTrailingSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopsScrollViewLandscapeTrailingSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarExtensionViewTopSpaceConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stopSubtitleLabelCenterAlignmentConstraint;
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
@@ -86,6 +88,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    [self setupNavBar];
     [self displayAllChildViewControllers];
     [self layoutStopViews];
     [self setupToolbar];
@@ -142,6 +145,27 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 }
 
 #pragma mark - Setup
+
+- (void)setupNavBar
+{
+    self.navigationController.navigationBar.translucent = NO;
+    
+    [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
+    
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+    
+    self.navigationBarExtensionViewHeightConstraint.constant = kNavigationBarStopStateExtensionHeight;
+}
 
 - (void)setupChildViewControllers
 {
@@ -416,6 +440,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         default:
             break;
     }
+    
+    // Always bring this to the front, since even though we set up our constraints properly, if another view is 0px below this and has a higher z-index, the extension view's layer shadow will be covered
+    [self.view bringSubviewToFront:self.navigationBarExtensionView];
 }
 
 - (void)configureLayoutForRouteStateAnimated:(BOOL)animated
@@ -461,7 +488,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         animationBlock();
         completionBlock(YES);
     }
-    
 }
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
@@ -512,7 +538,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     }
     
     [self configureStopViewControllerRefreshing];
-
 }
 
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
@@ -607,15 +632,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 - (void)setNavigationBarExtended:(BOOL)extended
 {
-    self.navigationBarExtensionViewHeightConstraint.constant = extended ? kNavigationBarStopStateExtension : 0;
-    
     dispatch_block_t frameAdjustmentBlock = ^{
-        UINavigationBar *navigationBar = self.navigationController.navigationBar;
-        UIView *navigationBarBackgroundView = navigationBar.subviews[0];
-        CGFloat navigationBarMaxY = CGRectGetMaxY(navigationBar.frame);
-        CGRect frame = navigationBarBackgroundView.frame;
-        frame.size.height = extended ? navigationBarMaxY + kNavigationBarStopStateExtension : navigationBarMaxY;
-        navigationBarBackgroundView.frame = frame;
+        self.navigationBarExtensionViewTopSpaceConstraint.constant = extended ? 0 : -kNavigationBarStopStateExtensionHeight;
     };
     
     if (extended && self.isRotating) {

@@ -65,8 +65,6 @@
     self.navigationController.navigationBar.translucent = NO;
     
     [self.navigationController.navigationBar setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
-    NSLog(@"navbar bg: %@", self.navigationController.navigationBar.backgroundColor);
-    NSLog(@"mit bg: %@", [UIColor mit_backgroundColor]);
     
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
     UIGraphicsBeginImageContext(rect.size);

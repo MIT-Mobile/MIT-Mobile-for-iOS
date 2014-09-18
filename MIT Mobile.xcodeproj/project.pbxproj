@@ -418,6 +418,7 @@
 		A5A30406198AD0FB00C9C273 /* MITEventSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A30404198AD0FB00C9C273 /* MITEventSearchViewController.m */; };
 		A5A30407198AD0FB00C9C273 /* MITEventSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A30405198AD0FB00C9C273 /* MITEventSearchViewController.xib */; };
 		A5A9A98319C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A9A98219C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m */; };
+		A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */; };
 		A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */; };
 		A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */; };
 		A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5BF26081969FCB400D73AF5 /* MITMapPlaceNameCell.m */; };
@@ -1361,6 +1362,8 @@
 		A5A30405198AD0FB00C9C273 /* MITEventSearchViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventSearchViewController.xib; sourceTree = "<group>"; };
 		A5A9A98119C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningTappableDietaryFlagLabel.h; path = Dining/MITDiningTappableDietaryFlagLabel.h; sourceTree = "<group>"; };
 		A5A9A98219C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningTappableDietaryFlagLabel.m; path = Dining/MITDiningTappableDietaryFlagLabel.m; sourceTree = "<group>"; };
+		A5A9A98819CA14CB0090BE4F /* MITExtendedNavBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITExtendedNavBarView.h; sourceTree = "<group>"; };
+		A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITExtendedNavBarView.m; sourceTree = "<group>"; };
 		A5BF25FF1969E24400D73AF5 /* MITMapPlacePhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlacePhotoCell.h; sourceTree = "<group>"; };
 		A5BF26001969E24400D73AF5 /* MITMapPlacePhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacePhotoCell.m; sourceTree = "<group>"; };
 		A5BF26011969E24400D73AF5 /* MITMapPlacePhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlacePhotoCell.xib; sourceTree = "<group>"; };
@@ -3268,6 +3271,8 @@
 				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
 				2268F39719C728FA007CD3F7 /* MITMapDelegateInterceptor.h */,
 				2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */,
+				A5A9A98819CA14CB0090BE4F /* MITExtendedNavBarView.h */,
+				A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4255,6 +4260,7 @@
 				2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */,
 				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
+				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
