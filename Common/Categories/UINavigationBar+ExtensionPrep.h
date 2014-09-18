@@ -2,6 +2,6 @@
 
 @interface UINavigationBar (ExtensionPrep)
 
-- (void)prepareForExtension;
+- (void)prepareForExtensionWithBackgroundColor:(UIColor *)backgroundColor;
 
 @end

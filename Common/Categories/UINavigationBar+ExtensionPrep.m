@@ -2,7 +2,7 @@
 
 @implementation UINavigationBar (ExtensionPrep)
 
-- (void)prepareForExtension
+- (void)prepareForExtensionWithBackgroundColor:(UIColor *)backgroundColor
 {
     self.translucent = NO;
     
@@ -12,7 +12,7 @@
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
     CGContextFillRect(context, rect);
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();

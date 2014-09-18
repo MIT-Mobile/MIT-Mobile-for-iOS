@@ -63,7 +63,7 @@
 
 - (void)setupNavBar
 {
-    [self.navigationController.navigationBar prepareForExtension];
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor whiteColor]];
     
     self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
     [self.diningVenueTypeControl setSelectedSegmentIndex:0];

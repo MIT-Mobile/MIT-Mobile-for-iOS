@@ -149,7 +149,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 - (void)setupNavBar
 {
-    [self.navigationController.navigationBar prepareForExtension];
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor whiteColor]];
     
     self.navigationBarExtensionViewHeightConstraint.constant = kNavigationBarStopStateExtensionHeight;
 }
