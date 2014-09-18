@@ -128,7 +128,7 @@
 #pragma mark Story Downloading
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
 {
-    if (self.storyUpdateInProgress || self.loadingMoreStories) {
+    if (self.storyUpdateInProgress || self.loadingMoreStories || self.dataSource.isUpdating) {
         if (block) {
             block(nil);
         }
