@@ -11,12 +11,14 @@
 #import "MITTouchstoneController.h"
 #import "MITActionSheetHandler.h"
 
+#import "FacilitiesSubmitViewController.h"
 #import "FacilitiesCategoryViewController.h"
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesRoomViewController.h"
 
 #import "UIKit+MITAdditions.h"
 #import "UIImage+Metadata.h"
+#import "NSString+EmailValidation.h"
 #import <MessageUI/MFMailComposeViewController.h>
 
 typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
@@ -37,6 +39,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *contactFacilitiesButton;
+
+@property (nonatomic, strong) UIBarButtonItem *submitButton;
 
 @property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
 
@@ -61,17 +65,31 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
+
+    // setup reportForm as a shared object within the module
     self.reportForm = [MITBuildingServicesReportForm sharedServiceReport];
     [self.reportForm clearAll];
     
+    // initialize properties
     self.editingTextView = nil;
     self.editingIndexPath = nil;
     
+    // make sure tableView has no extra separator lines at the bottom
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
+    // set the target action for the main facilities button
     [self.contactFacilitiesButton addTarget:self action:@selector(contactFacilitiesAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    // initialize submit button
+    self.submitButton = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
+                                                         style:UIBarButtonItemStyleDone
+                                                        target:self
+                                                        action:@selector(submitReport)];
+    self.submitButton.enabled = NO;
+    self.navigationItem.rightBarButtonItem = self.submitButton;
+    
+    // view title
+    self.title = @"Building Services";
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -80,6 +98,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [self validateFields];
     
     [self.tableView reloadData];
 }
@@ -110,6 +130,15 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 }
 
 #pragma mark - actions
+
+- (void)submitReport
+{
+    [self.view endEditing:YES];
+    
+    FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.reportDictionary = self.reportData;
+    [self.navigationController pushViewController:vc animated:YES];
+}
 
 - (void)contactFacilitiesAction:(id)sender
 {
@@ -173,6 +202,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf.tableView reloadData];
+            
+            [weakSelf validateFields];
         });
     };
     
@@ -366,8 +397,16 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     cell.titleLabel.text = @"email";
-    cell.subtitleTextView.text = [[MITTouchstoneController sharedController] userEmailAddress];
+    
+    NSString *loggedInUserEmail = [[MITTouchstoneController sharedController] userEmailAddress];
+    if( loggedInUserEmail != nil && loggedInUserEmail.length > 0 )
+    {
+        self.reportForm.email = loggedInUserEmail;
+    }
+    
+    cell.subtitleTextView.text = self.reportForm.email;
     cell.subtitleTextView.delegate = self;
+    cell.subtitleTextView.keyboardType = UIKeyboardTypeEmailAddress;
     
     return cell;
 }
@@ -414,6 +453,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     cell.subtitleTextView.delegate = self;
     cell.subtitleTextView.text = self.reportForm.reportDescription;
+    cell.subtitleTextView.keyboardType = UIKeyboardTypeDefault;
     
     return cell;
 }
@@ -509,7 +549,14 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    self.reportForm.reportDescription = textView.text;
+    if( self.editingIndexPath.row == MITFacilitiesFormFieldEmail )
+    {
+        self.reportForm.email = textView.text;
+    }
+    else
+    {
+        self.reportForm.reportDescription = textView.text;
+    }
     
     CGFloat fixedWidth = textView.frame.size.width;
     CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, FLT_MAX)];
@@ -519,6 +566,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
+    
+    [self validateFields];
 }
 
 #pragma mark - UIImagePickerDelegate
@@ -560,10 +609,24 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];
+        
+        [self validateFields];
     });
 }
 
 #pragma mark - helpers
+
+- (void)validateFields
+{
+    BOOL enableSubmit = NO;
+    
+    if( [self.reportForm isValidForm] )
+    {
+        enableSubmit = YES;
+    }
+    
+    self.submitButton.enabled = enableSubmit;
+}
 
 - (NSInteger)numberOfFormFields
 {

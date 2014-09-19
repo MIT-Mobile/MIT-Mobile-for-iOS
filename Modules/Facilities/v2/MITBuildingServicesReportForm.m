@@ -5,6 +5,7 @@
 //
 
 #import "MITBuildingServicesReportForm.h"
+#import "NSString+EmailValidation.h"
 
 @implementation MITBuildingServicesReportForm
 
@@ -19,6 +20,41 @@
     return sharedReport;
 }
 
+- (BOOL)isValidForm
+{
+    if( self.reportImage == nil )
+    {
+        return NO;
+    }
+    
+    if( ![self isValidEmail] )
+    {
+        return NO;
+    }
+    
+    if( self.location == nil )
+    {
+        return nil;
+    }
+    
+    if( self.shouldSetRoom && self.room == nil && self.roomAltName == nil )
+    {
+        return nil;
+    }
+    
+    if( self.reportDescription == nil || [self.reportDescription length] == 0 )
+    {
+        return nil;
+    }
+    
+    if( self.problemType == nil )
+    {
+        return nil;
+    }
+    
+    return YES;
+}
+
 - (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom
 {
     self.location = location;
@@ -28,6 +64,7 @@
 
 - (void)clearAll
 {
+    self.email = nil;
     self.location = nil;
     self.reportDescription = nil;
     self.problemType = nil;
@@ -35,6 +72,11 @@
     self.roomAltName = nil;
     self.reportImage = nil;
     self.shouldSetRoom = NO;
+}
+
+- (BOOL)isValidEmail
+{
+    return [self.email isValidEmail];
 }
 
 @end
