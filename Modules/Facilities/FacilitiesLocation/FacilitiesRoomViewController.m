@@ -293,21 +293,6 @@
         }
     }
     
-//    FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
-//    
-//    if (room) {
-//        dict[FacilitiesRequestLocationRoomKey] = room;
-//    } else if (altName) {
-//        dict[FacilitiesRequestLocationUserRoomKey] = altName;
-//    }
-//    
-//    dict[FacilitiesRequestLocationBuildingKey] = self.location;
-//    
-//    vc.userData = dict;
-//    
-//    [self.navigationController pushViewController:vc
-//                                         animated:YES];
-    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     [MITBuildingServicesReportForm sharedServiceReport].room = room;

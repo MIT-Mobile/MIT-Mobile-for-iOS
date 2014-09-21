@@ -1,5 +1,7 @@
 #import "FacilitiesUserLocationViewController.h"
 
+#import "MITBuildingServicesReportForm.h"
+
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLeasedViewController.h"
@@ -203,10 +205,16 @@ static const NSUInteger kMaxResultCount = 10;
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:reuseIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
     FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
+    
+    if( [location.isLeased boolValue])
+    {
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    
     cell.textLabel.text = [location displayString];
     
     return cell;
@@ -216,25 +224,25 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     FacilitiesLocation *location = nil;
     
-    if (tableView == self.tableView) {
+    if (tableView == self.tableView)
+    {
         location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    if ([location.isLeased boolValue]) {
+    if ([location.isLeased boolValue])
+    {
         FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
-    } else {    
-        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-        controller.location = location;
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
+        [self.navigationController pushViewController:controller animated:YES];
+        return;
+    }
+    else
+    {
+        [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
     }
     
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 

@@ -4,6 +4,7 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
+#import "MITBuildingServicesReportForm.h"
 #import "MITUIConstants.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
@@ -114,11 +115,14 @@
         params[@"email"] = self.reportDictionary[FacilitiesRequestUserEmailKey];        
     }
     
-    FacilitiesLocation *location = self.reportDictionary[FacilitiesRequestLocationBuildingKey];
-    FacilitiesRoom *room = self.reportDictionary[FacilitiesRequestLocationRoomKey];
-    FacilitiesRepairType *type = self.reportDictionary[FacilitiesRequestRepairTypeKey];
-    NSString *customLocation = self.reportDictionary[FacilitiesRequestLocationUserBuildingKey];
-    NSString *customRoom = self.reportDictionary[FacilitiesRequestLocationUserRoomKey];
+    MITBuildingServicesReportForm *reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    
+    FacilitiesLocation *location = reportForm.location;
+    FacilitiesRoom *room = reportForm.room;
+    FacilitiesRepairType *type = reportForm.problemType;
+    NSString *description = reportForm.description;
+    NSString *customLocation = reportForm.customLocation;
+    NSString *customRoom = reportForm.roomAltName;
     
     if (location) {
         params[@"locationName"] = location.name;
@@ -138,12 +142,14 @@
         params[@"problemType"] = type.name;
     }
     
-    if( self.reportDictionary[FacilitiesRequestUserDescriptionKey] ) {
-        params[@"message"] = self.reportDictionary[FacilitiesRequestUserDescriptionKey];
+    if( description )
+    {
+        params[@"message"] = description;
     }
     
-    NSData *pictureData = self.reportDictionary[FacilitiesRequestImageDataKey];
-    if (pictureData) {
+    NSData *pictureData = reportForm.reportImageData;
+    if (pictureData)
+    {
         params[@"image"] = pictureData;
         params[@"imageFormat"] = @"image/jpeg";
     }

@@ -12,14 +12,26 @@
 
 @interface MITBuildingServicesReportForm : NSObject
 
+// user email (pre-filled or manually typed
 @property (nonatomic, strong) NSString *email;
-@property (nonatomic, assign) BOOL shouldSetRoom;
+
+// location properties
 @property (nonatomic, strong) FacilitiesLocation *location;
+@property (nonatomic, strong) NSString *customLocation;
+
 @property (nonatomic, strong) FacilitiesRepairType *problemType;
+
+// room properties
+@property (nonatomic, assign) BOOL shouldSetRoom;
 @property (nonatomic, strong) FacilitiesRoom *room;
 @property (nonatomic, strong) NSString *roomAltName;
+
+// description property
 @property (nonatomic, strong) NSString *reportDescription;
+
+// image properties
 @property (nonatomic, strong) UIImage *reportImage;
+@property (nonatomic, strong) NSData *reportImageData;
 
 + (MITBuildingServicesReportForm *)sharedServiceReport;
 

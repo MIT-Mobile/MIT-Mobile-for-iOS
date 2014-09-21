@@ -14,6 +14,9 @@
 #import "UIKit+MITAdditions.h"
 #import "FacilitiesLocationSearch.h"
 
+#import "MITBuildingServicesReportForm.h"
+#import "UINavigationController+MITAdditions.h"
+
 
 @interface FacilitiesCategoryViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -257,10 +260,10 @@
 - (void)configureSearchCell:(HighlightTableViewCell *)cell
                 forIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *loc = [self.filteredData objectAtIndex:indexPath.row];
+    NSDictionary *locDict = [self.filteredData objectAtIndex:indexPath.row];
     
     cell.highlightLabel.searchString = self.searchString;
-    cell.highlightLabel.text = [loc objectForKey:FacilitiesSearchResultDisplayStringKey];
+    cell.highlightLabel.text = [locDict objectForKey:FacilitiesSearchResultDisplayStringKey];
 }
 
 
@@ -288,11 +291,14 @@
 
 
 #pragma mark - UITableViewDelegate Methods
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIViewController *nextViewController = nil;
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (tableView == self.tableView)
     {
+        UIViewController *nextViewController = nil;
+        
         BOOL shouldShowLocationRow = [self shouldShowLocationRow];
         
         if ((indexPath.row == 0) && shouldShowLocationRow)
@@ -311,32 +317,34 @@
             controller.category = category;
             nextViewController = controller;
         }
-    } else {
-        if (indexPath.row == 0) {
-            FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
-            vc.userData = @{FacilitiesRequestLocationUserBuildingKey : self.searchString, FacilitiesRequestLocationUserRoomKey : @""};
+        
+        [self.navigationController pushViewController:nextViewController animated:YES];
+    }
+    else // search results
+    {
+        if (indexPath.row == 0) // custom search term
+        {
+            [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+        }
+        else // search results
+        {
+            NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row - 1];
+            FacilitiesLocation *location = (FacilitiesLocation *)[dict objectForKey:FacilitiesSearchResultLocationKey];
             
-            nextViewController = vc;
-        } else {
-            
-            NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row-1];
-            FacilitiesLocation *location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
-            
-            if ([location.isLeased boolValue]) {
+            if ([location.isLeased boolValue])
+            {
                 FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-                
-                nextViewController = controller;
-            } else {
-                FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-                controller.location = location;
-                nextViewController = controller;
+                [self.navigationController pushViewController:controller animated:YES];
+                return;
+            }
+            else
+            {
+                [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
             }
         }
+        
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     }
-    
-    [self.navigationController pushViewController:nextViewController animated:YES];
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -387,17 +395,15 @@
                                                     reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
-            hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            hlCell.accessoryType = UITableViewCellAccessoryNone;
         }
         
         if (indexPath.row == 0) {
             hlCell.highlightLabel.searchString = nil;
             hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
         } else {
-            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
-                                                   inSection:indexPath.section];
-            [self configureSearchCell:hlCell
-                         forIndexPath:path];
+            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1) inSection:indexPath.section];
+            [self configureSearchCell:hlCell forIndexPath:path];
         }
         
         

@@ -417,7 +417,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     cell.titleLabel.text = @"location";
-    cell.subtitleLabel.text = self.reportForm.location.name;
+    
+    NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+    
+    cell.subtitleLabel.text = locationName;
     
     return cell;
 }
@@ -606,6 +609,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (void)attachImage:(UIImage *)image withImageData:(NSData *)imageData
 {
     [[MITBuildingServicesReportForm sharedServiceReport] setReportImage:image];
+    [[MITBuildingServicesReportForm sharedServiceReport] setReportImageData:imageData];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];

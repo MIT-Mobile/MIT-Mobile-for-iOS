@@ -32,7 +32,7 @@
         return NO;
     }
     
-    if( self.location == nil )
+    if( self.location == nil && self.customLocation == nil )
     {
         return nil;
     }
@@ -66,11 +66,13 @@
 {
     self.email = nil;
     self.location = nil;
+    self.customLocation = nil;
     self.reportDescription = nil;
     self.problemType = nil;
     self.room = nil;
     self.roomAltName = nil;
     self.reportImage = nil;
+    self.reportImageData = nil;
     self.shouldSetRoom = NO;
 }
 
