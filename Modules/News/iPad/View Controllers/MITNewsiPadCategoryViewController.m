@@ -36,12 +36,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.showsFeaturedStories = NO;
     self.dataSources = @[self.dataSource];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
     self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
     if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
@@ -51,14 +48,16 @@
         self.gridViewController.isCategory = YES;
     }
     self.previousPresentationStyle = nil;
-    
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
 
     [self updateNavigationItem:YES];
     if (self.dataSource.isUpdating) {
         [self setupFinishedUpdateNotification];
     }
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
