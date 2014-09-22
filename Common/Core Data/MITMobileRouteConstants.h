@@ -21,6 +21,10 @@ FOUNDATION_EXTERN NSString* const MITCalendarEventPathPattern;
 FOUNDATION_EXTERN NSString* const MITDiningResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningPathPattern;
 
+#pragma mark libraries
+FOUNDATION_EXTERN NSString* const MITLibrariesResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesPathPattern;
+
 #pragma mark dining/venues/:type/:venue/icon
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconPathPattern;
