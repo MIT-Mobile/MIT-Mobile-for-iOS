@@ -14,27 +14,20 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
-@interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
-
-@end
-
-@interface MITNewsSearchController()
+@interface MITNewsSearchController() <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 @property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
-
 @property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *resignSearchTapGestureRecognizer;
-
 @end
 
 @implementation MITNewsSearchController {
     BOOL _storyUpdateInProgress;
 }
-
 @synthesize recentSearchController = _recentSearchController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -108,7 +101,6 @@
         self.view.alpha = 1;
     }
     self.messageActivityView.alpha = 1;
-
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -215,7 +207,6 @@
 
 - (void)getMoreStories:(void (^)(NSError *))completion
 {
-    
     if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
         if (completion) {
             completion(nil);
@@ -281,16 +272,13 @@
         return;
     }
     UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
-    
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
     recentSearchPopoverController.popoverBackgroundViewClass = [MITPopoverBackgroundView class];
-    
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
-    
 }
 
 - (void)hideSearchField
@@ -412,6 +400,7 @@
         }
     }
 }
+
 - (IBAction)tappedHideSearchFieldArea:(id)sender
 {
     [self hideSearchField];
@@ -422,7 +411,6 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         [self getMoreStories:^(NSError *error) {
-            
         }];
     }
     else {
@@ -481,33 +469,33 @@
         if (block) {
             block(self.dataSource.objects[currentIndex + 1], nil);
         }
-    } else {
-        __weak MITNewsSearchController *weakSelf = self;
-        
-        [self getMoreStories:^(NSError * error) {
-            MITNewsSearchController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (error) {
-                block(nil, error);
-                
-            } else {
-                NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
-                
-                if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
-                    if (block) {
-                        block(strongSelf.dataSource.objects[currentIndex + 1], nil);
-                    }
-                } else {
-                    if (block) {
-                        block(nil, error);
-                    }
-                }
-                [strongSelf.searchTableView reloadData];
-            }
-        }];
+        return;
     }
+    
+    __weak MITNewsSearchController *weakSelf = self;
+        
+    [self getMoreStories:^(NSError * error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        if (error) {
+            block(nil, error);
+            return;
+        }
+        NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
+        
+        if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
+            if (block) {
+                block(strongSelf.dataSource.objects[currentIndex + 1], nil);
+            }
+        } else {
+            if (block) {
+                block(nil, error);
+            }
+        }
+        [strongSelf.searchTableView reloadData];
+    }];
 }
 
 #pragma mark No Results / Loading More View
