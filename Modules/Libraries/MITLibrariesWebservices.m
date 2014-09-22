@@ -44,13 +44,13 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
                                                 }];
 }
 
-+ (void)getResultsForSearch:(NSString *)searchString startingIndex:(NSInteger)startingIndex comppletion:(void (^)(NSArray *items, NSInteger nextIndex, NSInteger totalResults,  NSError *error))completion
++ (void)getResultsForSearch:(NSString *)searchString startingIndex:(NSInteger)startingIndex completion:(void (^)(NSArray *items, NSInteger nextIndex, NSInteger totalResults,  NSError *error))completion
 {
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     if (startingIndex != 0) {
         [parameters setObject:[NSString stringWithFormat:@"%d", startingIndex] forKey:kMITLibraryWebservicesStartIndexKey];
     }
-    [parameters setObject:searchString forKey:kMITLibraryWebservicesSearchTermKey];
+    [parameters setObject:searchString ? searchString : @"" forKey:kMITLibraryWebservicesSearchTermKey];
     
     NSURLRequest *request = [NSURLRequest requestForModule:@"libraries" command:@"search" parameters:parameters];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
