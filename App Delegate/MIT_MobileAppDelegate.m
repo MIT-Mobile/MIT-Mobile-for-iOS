@@ -627,6 +627,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:diningResource];
     
+    MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
+    [remoteObjectManager addResource:librariesResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 

@@ -148,7 +148,9 @@ static CGFloat const kBottomButtonYPadding = 20;
     if (buttonIndex == 0)
     {
 #ifdef __IPHONE_8_0 // This allows us to compile with XCode 5/iOS 7 SDK
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString != NULL]];
+        if ((&UIApplicationOpenSettingsURLString != NULL)) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        }
 #endif
     }
 }
