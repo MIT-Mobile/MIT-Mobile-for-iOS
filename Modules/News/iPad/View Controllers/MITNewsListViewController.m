@@ -253,7 +253,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 
@@ -360,7 +360,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
@@ -385,7 +384,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     }
     return cell;
 }
-
 
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
@@ -494,8 +492,8 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
-        [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-        }];
+    [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
+    }];
 }
 
 - (void)setError:(NSString *)errorMessage

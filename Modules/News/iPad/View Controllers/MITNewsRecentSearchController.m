@@ -126,5 +126,4 @@
     [self.searchController getResultsForString:query.text];
     [self filterResultsUsingString:query.text];
 }
-
 @end

@@ -257,12 +257,9 @@
 #pragma mark - hide/show Recents
 - (void)hideSearchRecents
 {
-    if (self.recentSearchPopoverController != nil) {
-        if (self.recentSearchController.confirmSheet == nil) {
-            
-            [self.recentSearchPopoverController dismissPopoverAnimated:YES];
-            self.recentSearchPopoverController = nil;
-        }
+    if (self.recentSearchPopoverController != nil && self.recentSearchController.confirmSheet == nil) {
+        [self.recentSearchPopoverController dismissPopoverAnimated:YES];
+        self.recentSearchPopoverController = nil;
     }
 }
 
@@ -379,7 +376,6 @@
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (_storyUpdateInProgress == YES) {
             UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
