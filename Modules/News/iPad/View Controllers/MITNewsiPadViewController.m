@@ -499,21 +499,22 @@ CGFloat const refreshControlTextHeight = 19;
         if (!strongSelf) {
             return;
         }
+        if (!strongRefresh) {
+            return;
+        }
+        strongSelf.refreshControl = strongRefresh;
+
         if (error) {
-            if (!strongRefresh) {
-                return;
-            }
-            strongSelf.refreshControl = strongRefresh;
             DDLogWarn(@"update failed; %@",error);
             if (error.code == NSURLErrorNotConnectedToInternet) {
                 [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
             } else {
                 [strongSelf updateRefreshStatusWithText:@"Failed..."];
             }
-            if (![strongSelf.dataSources count]) {
+            if ([strongSelf.dataSources count] == 0) {
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
-            }
-            if ([strongSelf.dataSources count]) {
+                
+            } else {
                 if (strongRefresh.refreshing) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
@@ -523,10 +524,6 @@ CGFloat const refreshControlTextHeight = 19;
             }
             
         } else {
-            if (!strongRefresh) {
-                return;
-            }
-            strongSelf.refreshControl = strongRefresh;
             strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
             if (strongRefresh.refreshing) {
@@ -613,7 +610,6 @@ CGFloat const refreshControlTextHeight = 19;
                                      }
                                  }];
 }
-
 @end
 
 @implementation MITNewsiPadViewController (NewsDataSource)
@@ -814,23 +810,24 @@ CGFloat const refreshControlTextHeight = 19;
     self.currentDataSourceIndex = section;
  
     MITNewsStory *story = [self viewController:self storyAtIndex:index forCategoryInSection:section];
-    if (story) {
-        __block BOOL isExternalStory = NO;
-        __block NSURL *externalURL = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-                isExternalStory = YES;
-                externalURL = story.sourceURL;
-            }
-        }];
-        
-        if (isExternalStory) {
-            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
-            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
-            [willOpenInExternalBrowserAlertView show];
-        } else {
-            [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    if (!story) {
+        return nil;
+    }
+    __block BOOL isExternalStory = NO;
+    __block NSURL *externalURL = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+            isExternalStory = YES;
+            externalURL = story.sourceURL;
         }
+    }];
+    
+    if (isExternalStory) {
+        NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+        UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+        [willOpenInExternalBrowserAlertView show];
+    } else {
+        [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
     }
     return nil;
 }
@@ -854,7 +851,6 @@ CGFloat const refreshControlTextHeight = 19;
                 storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
@@ -862,14 +858,21 @@ CGFloat const refreshControlTextHeight = 19;
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else if ([segue.identifier isEqualToString:@"showCategory"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsiPadCategoryViewController class]]) {
+            
+            NSIndexPath *indexPath = sender;
+            
+            MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
+            iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
+            iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
+            iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+            self.weakiPadCategoryViewController = iPadCategoryViewController;
         
-        NSIndexPath *indexPath = sender;
-
-        MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
-        iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
-        iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
-        iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
-        self.weakiPadCategoryViewController = iPadCategoryViewController;
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
@@ -894,31 +897,30 @@ CGFloat const refreshControlTextHeight = 19;
             block(dataSource.objects[currentIndex +1], nil);
         }
     } else {
-        if ([dataSource hasNextPage]) {
-            [dataSource nextPage:^(NSError *error) {
-                if (error) {
-                    DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
-                    
-                    if (block) {
-                        block(nil, error);
-                    }
-                } else {
-                    DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                    
-                    if (currentIndex + 1 < [dataSource.objects count]) {
-                        if(block) {
-                            block(dataSource.objects[currentIndex + 1], nil);
-                        }
-                    }
-                }
-            }];
-            
-        } else {
+        if (![dataSource hasNextPage]) {
             if (block) {
                 block(nil, nil);
             }
+            return;
         }
+        [dataSource nextPage:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                
+                if (block) {
+                    block(nil, error);
+                }
+            } else {
+                DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
+                NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                
+                if (currentIndex + 1 < [dataSource.objects count]) {
+                    if(block) {
+                        block(dataSource.objects[currentIndex + 1], nil);
+                    }
+                }
+            }
+        }];
     }
 }
 
