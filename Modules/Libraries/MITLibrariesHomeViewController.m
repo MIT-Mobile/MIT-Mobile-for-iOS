@@ -27,7 +27,7 @@
         
     }];
     
-    [MITLibrariesWebservices getResultsForSearch:@"bananas" startingIndex:0 comppletion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
+    [MITLibrariesWebservices getResultsForSearch:@"zjjask jijdskj likjwff" startingIndex:0 completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
         
     }];
 }
