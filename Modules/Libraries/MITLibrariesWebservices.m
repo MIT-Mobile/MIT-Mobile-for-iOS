@@ -56,11 +56,17 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-        NSArray *items = [MITLibrariesWebservices parsedItems:responseObject[kMITLibraryWebservicesSearchResponseItemsKey]];
-        NSInteger nextIndex = [(NSNumber *)(responseObject[kMITLibraryWebservicesSearchResponseNextIndexKey]) integerValue];
-        NSInteger totalResults = [(NSNumber *)(responseObject[kMITLibraryWebservicesSearchResponseTotalResultsKey]) integerValue];
+        NSArray *items = nil;
+        NSInteger nextIndex = 0;
+        NSInteger totalResults = 0;
         
+        if ([responseObject isKindOfClass:[NSDictionary class]]) {
+            items = [MITLibrariesWebservices parsedItems:responseObject[kMITLibraryWebservicesSearchResponseItemsKey]];
+            nextIndex = [(NSNumber *)(responseObject[kMITLibraryWebservicesSearchResponseNextIndexKey]) integerValue];
+            totalResults = [(NSNumber *)(responseObject[kMITLibraryWebservicesSearchResponseTotalResultsKey]) integerValue];
+        }
         completion(items, nextIndex, totalResults, nil);
+        
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         completion(nil, 0, 0, error);
     }];
