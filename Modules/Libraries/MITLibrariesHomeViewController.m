@@ -26,6 +26,10 @@
     [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
         
     }];
+    
+    [MITLibrariesWebservices getResultsForSearch:@"bananas" startingIndex:0 comppletion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
+        
+    }];
 }
 
 @end
