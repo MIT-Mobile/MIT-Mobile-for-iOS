@@ -1,35 +1,32 @@
 #import "MITNewsiPadViewController.h"
-#import "MITNewsModelController.h"
-#import "MITNewsStory.h"
-#import "MITNewsCategory.h"
-#import "MITNewsStoryCollectionViewCell.h"
+
 #import "MITNewsConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "MITNewsStoryViewController.h"
-#import "MITNewsSearchController.h"
+#import "MITMobile.h"
+#import "MITCoreData.h"
+#import "MITAdditions.h"
+
+#import "MITNewsModelController.h"
+#import "MITNewsStory.h"
+#import "MITNewsCategory.h"
+#import "MITNewsStoriesDataSource.h"
+#import "MITNewsCategoryDataSource.h"
 
 #import "MITNewsListViewController.h"
 #import "MITNewsGridViewController.h"
-#import "MITMobile.h"
-#import "MITCoreData.h"
-
-#import "MITNewsStoriesDataSource.h"
-#import "MITAdditions.h"
-
+#import "MITNewsStoryViewController.h"
+#import "MITNewsSearchController.h"
 #import "MITNewsiPadCategoryViewController.h"
+
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
-#import "MITNewsCategoryDataSource.h"
-#import "MITMobileServerConfiguration.h"
 
 CGFloat const refreshControlTextHeight = 19;
 
 @interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource, MITNewsListDelegate, MITNewsGridDelegate>
-
 - (void)reloadItems:(void(^)(NSError *error))block;
 - (void)loadDataSources:(void(^)(NSError*))completion;
-
 @end
 
 @interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
@@ -37,11 +34,12 @@ CGFloat const refreshControlTextHeight = 19;
 
 @interface MITNewsiPadViewController ()
 @property (nonatomic, strong) MITNewsSearchController *searchController;
-
 @property (nonatomic, strong) UISearchBar *searchBar;
 
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic) Reachability *internetReachability;
+
+@property (nonatomic, weak) MITNewsiPadCategoryViewController *weakiPadCategoryViewController;
 
 #pragma mark Data Source
 @property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
@@ -51,7 +49,6 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) BOOL category;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @property (nonatomic) BOOL loadingMoreStories;
-
 @end
 
 @implementation MITNewsiPadViewController
@@ -106,8 +103,8 @@ CGFloat const refreshControlTextHeight = 19;
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    
-    if (!self.activeViewController) {
+     
+    if (!self.activeViewController || [ self isCategoryControllerDifferentThanHome]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && !self.isCurrentPresentationStyleAList) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
@@ -124,25 +121,37 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateNavigationItem:YES];
     }
     
-    if (self.storyUpdateInProgress) {
-        CGFloat textHeight = 0;
-        if (!self.refreshControl.attributedTitle.string) {
-            textHeight = refreshControlTextHeight;
-        }
-        if (_presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-        } else {
-            [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-        }
-        [self updateRefreshStatusWithText:@"Updating..."];
-
-        if (!self.refreshControl.refreshing) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl endRefreshing];
-                [self.refreshControl beginRefreshing];
-            }];
-        }
+    if (!self.storyUpdateInProgress) {
+        return;
     }
+    
+    CGFloat textHeight = 0;
+    if (!self.refreshControl.attributedTitle.string) {
+        textHeight = refreshControlTextHeight;
+    }
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    } else {
+        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    }
+    [self updateRefreshStatusWithText:@"Updating..."];
+    
+    if (!self.refreshControl.refreshing) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl endRefreshing];
+            [self.refreshControl beginRefreshing];
+        }];
+    }
+}
+
+- (BOOL)isCategoryControllerDifferentThanHome
+{
+    if (self.weakiPadCategoryViewController != NULL &&
+        self.weakiPadCategoryViewController.presentationStyle != self.presentationStyle) {
+        self.isCurrentPresentationStyleAList = self.weakiPadCategoryViewController.isCurrentPresentationStyleAList;
+        return YES;
+    }
+    return NO;
 }
 
 #pragma mark Dynamic Properties
@@ -258,9 +267,11 @@ CGFloat const refreshControlTextHeight = 19;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
             self.gridViewController.isCategory = self.category;
+            self.isCurrentPresentationStyleAList = NO;
         } else {
             toViewController = self.listViewController;
             self.listViewController.isCategory = self.category;
+            self.isCurrentPresentationStyleAList = YES;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {
@@ -858,6 +869,7 @@ CGFloat const refreshControlTextHeight = 19;
         iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
         iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
         iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+        self.weakiPadCategoryViewController = iPadCategoryViewController;
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
