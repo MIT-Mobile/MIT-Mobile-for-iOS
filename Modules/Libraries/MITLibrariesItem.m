@@ -53,4 +53,36 @@
     return citations;
 }
 
+- (NSString *)yearsString
+{
+    if (self.year.count <= 0) {
+        return nil;
+    }
+    
+    NSMutableString *yearsString = [NSMutableString stringWithString:self.year[0]];
+    
+    for (NSInteger i = 1; i < self.year.count; i++) {
+        [yearsString appendString:@", "];
+        [yearsString appendString:self.year[i]];
+    }
+    
+    return [NSString stringWithString:yearsString];
+}
+
+- (NSString *)authorsString
+{
+    if (self.author.count <= 0) {
+        return nil;
+    }
+    
+    NSMutableString *authorsString = [NSMutableString stringWithString:self.author[0]];
+    
+    for (NSInteger i = 1; i < self.author.count; i++) {
+        [authorsString appendString:@", "];
+        [authorsString appendString:self.author[i]];
+    }
+    
+    return [NSString stringWithString:authorsString];
+}
+
 @end

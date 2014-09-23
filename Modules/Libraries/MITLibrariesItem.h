@@ -22,4 +22,7 @@
 @property (nonatomic, strong) NSArray *citations;
 @property (nonatomic, strong) NSString *composedHTML;
 
+- (NSString *)yearsString;
+- (NSString *)authorsString;
+
 @end
