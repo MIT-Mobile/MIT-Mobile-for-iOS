@@ -110,14 +110,18 @@
     // -sharedTouchstoneController is a lazy method and it should create
     // a default controller here if needed.
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
+
+    // Needs to be set before the app continues on since there is the potential for
+    // the module setup process to make things visible (for example, if there is
+    //  an unread notification to process) and things will generally be very unhappy
+    //  if the app attempts to make a module visible before the root view controller
+    //  is told what it should care about
+    self.rootViewController.modules = self.modules;
     
     [self updateBasicServerInfo];
 
-
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
 
-    [self setupRootViewController];
-    
     // Register for push notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     // get deviceToken if it exists
@@ -135,7 +139,7 @@
 		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
 		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
-    
+
     [self.window makeKeyAndVisible];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
     
@@ -243,16 +247,6 @@
             self.networkActivityCounter = count;
         }
     });
-}
-
-#pragma mark - Private
-- (void)setupRootViewController
-{
-    if (self.rootViewController) {
-        MITSlidingViewController *rootViewController = self.rootViewController;
-        rootViewController.modules = self.modules;
-        [self.window addGestureRecognizer:rootViewController.panGesture];
-    }
 }
 
 #pragma mark - Class Extension Methods
