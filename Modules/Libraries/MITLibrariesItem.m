@@ -57,16 +57,9 @@
 {
     if (self.year.count <= 0) {
         return nil;
+    } else {
+        return self.year[0];
     }
-    
-    NSMutableString *yearsString = [NSMutableString stringWithString:self.year[0]];
-    
-    for (NSInteger i = 1; i < self.year.count; i++) {
-        [yearsString appendString:@", "];
-        [yearsString appendString:self.year[i]];
-    }
-    
-    return [NSString stringWithString:yearsString];
 }
 
 - (NSString *)authorsString
