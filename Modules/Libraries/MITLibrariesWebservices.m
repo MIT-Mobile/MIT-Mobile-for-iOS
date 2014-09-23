@@ -88,9 +88,6 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
     return items;
 }
 
-
-
-
 + (void)getItemDetailsForItem:(MITLibrariesItem *)item completion:(void (^)(MITLibrariesItem *item, NSError *error))completion
 {
     if (item.identifier) {
@@ -117,10 +114,5 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
         completion(nil, error);
     }
 }
-
-
-
-
-
 
 @end
