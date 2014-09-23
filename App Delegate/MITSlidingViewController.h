@@ -3,9 +3,10 @@
 @class MITModule;
 @class MITNotification;
 
-@interface MITSlidingViewController : ECSlidingViewController
-@property (nonatomic,copy) NSArray *modules;
-@property (nonatomic,weak) MITModule *visibleModule;
+@interface MITSlidingViewController : UIViewController
+@property(nonatomic,weak) ECSlidingViewController *slidingViewController;
+@property(nonatomic,copy) NSArray *modules;
+@property(nonatomic,weak) MITModule *visibleModule;
 
 - (instancetype)initWithModules:(NSArray*)modules;
 

@@ -5,7 +5,7 @@
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate>
 @property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
 @property(nonatomic,weak) id<UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout> animationController;
 @end
@@ -15,11 +15,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (instancetype)initWithModules:(NSArray *)modules
 {
-    NSAssert([modules count] > 0,@"there must be at least 1 module");
-
-    UIViewController *blankTopViewController = [[UIViewController alloc] init];
-    self = [super initWithTopViewController:blankTopViewController];
-
     if (self) {
         _modules = [modules copy];
     }
@@ -36,7 +31,11 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     [super viewWillAppear:animated];
 
     if (!([self.modules count] > 0)) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"drawer view controller must have at least 1 view controller added before being presented" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"there must be at least one module added before being presented" userInfo:nil];
+    }
+
+    if (![self isSlidingViewControllerLoaded]) {
+        [self loadSlidingViewController:animated];
     }
 
     [self _showInitialModuleIfNeeded];
@@ -46,15 +45,15 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 {
     [super viewDidAppear:animated];
 
-    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
-    self.customAnchoredGestures = @[];
+    self.slidingViewController.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
+    self.slidingViewController.customAnchoredGestures = @[];
 }
 
 #pragma mark Properties
 - (MITDrawerViewController*)drawerViewController
 {
-    if ([self.underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
-        return (MITDrawerViewController*)self.underLeftViewController;
+    if ([self.slidingViewController.underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
+        return (MITDrawerViewController*)self.slidingViewController.underLeftViewController;
     } else {
         return nil;
     }
@@ -159,39 +158,41 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 {
     if (!newTopViewController) {
         newTopViewController = [[UIViewController alloc] init];
-        newTopViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        newTopViewController.view.backgroundColor = [UIColor mit_backgroundColor];
+
+        UIView *view = [[UIView alloc] initWithFrame:self.view.frame];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        view.backgroundColor = [UIColor mit_backgroundColor];
+
+        newTopViewController.view = view;
     }
 
     _visibleModule = module;
     self.drawerViewController.selectedModule = module;
     
-    if (self.topViewController != newTopViewController) {
-        [self.topViewController.view removeGestureRecognizer:self.panGesture];
-        [self setTopViewController:newTopViewController];
+    if (self.slidingViewController.topViewController != newTopViewController) {
+        [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
+        [self.slidingViewController setTopViewController:newTopViewController];
     }
 
-    [newTopViewController.view addGestureRecognizer:self.panGesture];
+    [newTopViewController.view addGestureRecognizer:self.slidingViewController.panGesture];
 
     // If the top view is a UINavigationController, automatically add a button to toggle the state
     // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
     // controller must do something itself.
     if ([newTopViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController*)newTopViewController;
-        UIImage *image = [UIImage imageNamed:@"global/menu"];
-        UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(toggleAnchorRight:)];
-        navigationController.topViewController.navigationItem.leftBarButtonItem = leftBarButtonItem;
+        navigationController.delegate = self;
     }
 
-    [self resetTopViewAnimated:YES];
+    [self.slidingViewController resetTopViewAnimated:YES];
 }
 
 - (IBAction)toggleAnchorRight:(id)sender
 {
-    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
-        [self anchorTopViewToRightAnimated:YES];
+    if (self.slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
+        [self.slidingViewController anchorTopViewToRightAnimated:YES];
     } else {
-        [self resetTopViewAnimated:YES];
+        [self.slidingViewController resetTopViewAnimated:YES];
     }
 }
 
@@ -216,4 +217,43 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     return selectedModule;
 }
 
+- (BOOL)isSlidingViewControllerLoaded
+{
+    return (_slidingViewController != nil);
+}
+
+- (void)loadSlidingViewController:(BOOL)animated
+{
+    if (![self isSlidingViewControllerLoaded]) {
+        MITModule *topModule = self.visibleModule;
+        if (!_visibleModule) {
+            topModule = [self.modules firstObject];
+        }
+
+        ECSlidingViewController *slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:topModule.homeViewController];
+
+        [self addChildViewController:slidingViewController];
+
+        slidingViewController.view.frame = self.view.bounds;
+        [self.view addSubview:slidingViewController.view];
+
+        [UIView animateWithDuration:0.33
+                         animations:^{
+
+                         } completion:^(BOOL finished) {
+                             [slidingViewController didMoveToParentViewController:self];
+                         }];
+    }
+}
+
+#pragma mark Delegation
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if ([navigationController.viewControllers firstObject] == viewController) {
+        UIImage *image = [UIImage imageNamed:@"global/menu"];
+        UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(toggleAnchorRight:)];
+
+        [viewController.navigationItem setLeftBarButtonItem:leftBarButtonItem animated:animated];
+    }
+}
 @end
