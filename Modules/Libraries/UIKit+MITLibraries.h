@@ -26,6 +26,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesTextStyle) {
 
 @interface UIColor (MITLibraries)
 
++ (UIColor *)librariesNavBarTintColor;
+
 + (UIColor *)librariesFineStyleColor;
 + (UIColor *)librariesDefaultSubtitleStyleColor;
 + (UIColor *)librariesGreenSubtitleStyleColor;

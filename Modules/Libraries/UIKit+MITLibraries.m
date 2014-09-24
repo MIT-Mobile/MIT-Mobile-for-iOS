@@ -42,6 +42,11 @@
 
 @implementation UIColor (MITLibraries)
 
++ (UIColor *)librariesNavBarTintColor
+{
+    return [UIColor colorWithRed:(244.0/255.0) green:(245.0/255.0) blue:(248.0/255.0) alpha:1];
+}
+
 + (UIColor *)librariesFineStyleColor
 {
     return [UIColor colorWithRed:179.0/255.0 green:29.0/255.0 blue:16.0/255.0 alpha:1.0];
