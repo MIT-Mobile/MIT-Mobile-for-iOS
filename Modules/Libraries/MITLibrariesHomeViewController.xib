@@ -1,21 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5023" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesHomeViewController">
             <connections>
+                <outlet property="searchDisplayController" destination="uRC-02-fz7" id="rIf-Np-eCh"/>
+                <outlet property="tableView" destination="QqN-ep-1fz" id="RKR-kV-Ts3"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="Yyo-qc-Cne">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="ynr-ts-Vgb"/>
+                    </connections>
+                </searchBar>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QqN-ep-1fz">
+                    <rect key="frame" x="0.0" y="44" width="320" height="460"/>
+                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="ZMS-a0-BEy"/>
+                        <outlet property="delegate" destination="-1" id="M6C-TH-esc"/>
+                    </connections>
+                </tableView>
+            </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <constraints>
+                <constraint firstItem="Yyo-qc-Cne" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="5a9-FH-blS"/>
+                <constraint firstItem="QqN-ep-1fz" firstAttribute="top" secondItem="Yyo-qc-Cne" secondAttribute="bottom" id="M1r-Id-xbd"/>
+                <constraint firstItem="Yyo-qc-Cne" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="RxP-sg-sf3"/>
+                <constraint firstAttribute="trailing" secondItem="QqN-ep-1fz" secondAttribute="trailing" id="YJQ-fx-UhV"/>
+                <constraint firstItem="QqN-ep-1fz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="skI-B0-EQL"/>
+                <constraint firstAttribute="trailing" secondItem="Yyo-qc-Cne" secondAttribute="trailing" id="tft-5P-vPy"/>
+                <constraint firstAttribute="bottom" secondItem="QqN-ep-1fz" secondAttribute="bottom" id="xCu-IR-dn6"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <point key="canvasLocation" x="529" y="288"/>
         </view>
+        <searchDisplayController id="uRC-02-fz7">
+            <connections>
+                <outlet property="delegate" destination="-1" id="DCh-eS-TqL"/>
+                <outlet property="searchBar" destination="Yyo-qc-Cne" id="ppL-fS-pHH"/>
+                <outlet property="searchContentsController" destination="-1" id="BSE-92-CI4"/>
+                <outlet property="searchResultsDataSource" destination="-1" id="iB9-Pj-bne"/>
+                <outlet property="searchResultsDelegate" destination="-1" id="0NT-dB-JYv"/>
+            </connections>
+        </searchDisplayController>
     </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>
