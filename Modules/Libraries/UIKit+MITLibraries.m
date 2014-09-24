@@ -42,7 +42,7 @@
 
 @implementation UIColor (MITLibraries)
 
-+ (UIColor *)librariesNavBarTintColor
++ (UIColor *)librariesBackgroundColor
 {
     return [UIColor colorWithRed:(244.0/255.0) green:(245.0/255.0) blue:(248.0/255.0) alpha:1];
 }

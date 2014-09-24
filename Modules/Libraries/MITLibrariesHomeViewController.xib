@@ -7,7 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesHomeViewController">
             <connections>
-                <outlet property="searchDisplayController" destination="uRC-02-fz7" id="rIf-Np-eCh"/>
+                <outlet property="preSearchOverlay" destination="JxM-rL-DoB" id="Ozd-YM-X0V"/>
+                <outlet property="searchBar" destination="Yyo-qc-Cne" id="JK9-3n-8F1"/>
                 <outlet property="tableView" destination="QqN-ep-1fz" id="RKR-kV-Ts3"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -17,14 +18,14 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="Yyo-qc-Cne">
+                <searchBar contentMode="redraw" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yyo-qc-Cne">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                     <textInputTraits key="textInputTraits"/>
                     <connections>
-                        <outlet property="delegate" destination="-1" id="ynr-ts-Vgb"/>
+                        <outlet property="delegate" destination="-1" id="ec0-6P-n9r"/>
                     </connections>
                 </searchBar>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QqN-ep-1fz">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QqN-ep-1fz">
                     <rect key="frame" x="0.0" y="44" width="320" height="460"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                     <connections>
@@ -32,29 +33,27 @@
                         <outlet property="delegate" destination="-1" id="M6C-TH-esc"/>
                     </connections>
                 </tableView>
+                <view hidden="YES" alpha="0.29999999999999966" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JxM-rL-DoB">
+                    <rect key="frame" x="0.0" y="44" width="320" height="460"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Yyo-qc-Cne" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="5a9-FH-blS"/>
+                <constraint firstItem="JxM-rL-DoB" firstAttribute="top" secondItem="Yyo-qc-Cne" secondAttribute="bottom" id="CU4-52-wAW"/>
                 <constraint firstItem="QqN-ep-1fz" firstAttribute="top" secondItem="Yyo-qc-Cne" secondAttribute="bottom" id="M1r-Id-xbd"/>
-                <constraint firstItem="Yyo-qc-Cne" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="RxP-sg-sf3"/>
+                <constraint firstItem="JxM-rL-DoB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="WzO-Bb-ayY"/>
                 <constraint firstAttribute="trailing" secondItem="QqN-ep-1fz" secondAttribute="trailing" id="YJQ-fx-UhV"/>
+                <constraint firstAttribute="bottom" secondItem="JxM-rL-DoB" secondAttribute="bottom" id="juK-vf-4Fk"/>
                 <constraint firstItem="QqN-ep-1fz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="skI-B0-EQL"/>
                 <constraint firstAttribute="trailing" secondItem="Yyo-qc-Cne" secondAttribute="trailing" id="tft-5P-vPy"/>
                 <constraint firstAttribute="bottom" secondItem="QqN-ep-1fz" secondAttribute="bottom" id="xCu-IR-dn6"/>
+                <constraint firstAttribute="trailing" secondItem="JxM-rL-DoB" secondAttribute="trailing" id="xNs-fD-QYH"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <point key="canvasLocation" x="529" y="288"/>
         </view>
-        <searchDisplayController id="uRC-02-fz7">
-            <connections>
-                <outlet property="delegate" destination="-1" id="DCh-eS-TqL"/>
-                <outlet property="searchBar" destination="Yyo-qc-Cne" id="ppL-fS-pHH"/>
-                <outlet property="searchContentsController" destination="-1" id="BSE-92-CI4"/>
-                <outlet property="searchResultsDataSource" destination="-1" id="iB9-Pj-bne"/>
-                <outlet property="searchResultsDelegate" destination="-1" id="0NT-dB-JYv"/>
-            </connections>
-        </searchDisplayController>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
