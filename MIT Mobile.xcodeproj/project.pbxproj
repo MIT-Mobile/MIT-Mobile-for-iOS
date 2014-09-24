@@ -525,6 +525,7 @@
 		A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5BF260E1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib */; };
 		A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */; };
 		A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */; };
+		A5FA037019D3124C0063FF2C /* MITLibrariesSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA036F19D3124C0063FF2C /* MITLibrariesSearchController.m */; };
 		A5FD261E19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */; };
 		A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD262319C384FC0057CE9D /* MITDiningDietaryFlagListCell.m */; };
 		A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FD262419C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib */; };
@@ -1633,6 +1634,8 @@
 		A5DDEB95195CA88E00BEA0E7 /* MITMapHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapHomeViewController.h; sourceTree = "<group>"; };
 		A5DDEB96195CA88E00BEA0E7 /* MITMapHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapHomeViewController.m; sourceTree = "<group>"; };
 		A5DDEB97195CA88E00BEA0E7 /* MITMapHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapHomeViewController.xib; sourceTree = "<group>"; };
+		A5FA036E19D3124C0063FF2C /* MITLibrariesSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesSearchController.h; sourceTree = "<group>"; };
+		A5FA036F19D3124C0063FF2C /* MITLibrariesSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesSearchController.m; sourceTree = "<group>"; };
 		A5FD261C19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListViewController.h; path = Dining/MITDiningDietaryFlagListViewController.h; sourceTree = "<group>"; };
 		A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningDietaryFlagListViewController.m; path = Dining/MITDiningDietaryFlagListViewController.m; sourceTree = "<group>"; };
 		A5FD262219C384FC0057CE9D /* MITDiningDietaryFlagListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListCell.h; path = Dining/MITDiningDietaryFlagListCell.h; sourceTree = "<group>"; };
@@ -3451,6 +3454,8 @@
 				4B667066140330CD00714C6A /* LibrariesModule.m */,
 				A50884F019D1EA9C0047A21B /* UIKit+MITLibraries.h */,
 				A50884EE19D1EA820047A21B /* UIKit+MITLibraries.m */,
+				A5FA036E19D3124C0063FF2C /* MITLibrariesSearchController.h */,
+				A5FA036F19D3124C0063FF2C /* MITLibrariesSearchController.m */,
 			);
 			path = Libraries;
 			sourceTree = "<group>";
@@ -4901,6 +4906,7 @@
 				A59A25AB19A3E07B00AD7E3A /* TopAlignedStickyHeaderCollectionViewFlowLayout.m in Sources */,
 				5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */,
 				2CD1AE8319520E40003D7601 /* MITCollectionViewGridLayoutSection.m in Sources */,
+				A5FA037019D3124C0063FF2C /* MITLibrariesSearchController.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
 				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,

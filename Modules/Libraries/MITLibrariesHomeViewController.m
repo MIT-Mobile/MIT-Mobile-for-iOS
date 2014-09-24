@@ -3,6 +3,7 @@
 #import "MITLibrariesLink.h"
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
+#import "MITLibrariesSearchController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -23,11 +24,13 @@ typedef NS_ENUM(NSInteger, MITLibrariesHomeViewControllerLinksStatus) {
 
 static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @"kMITLibrariesHomeViewControllerDefaultCellIdentifier";
 
-@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate>
+@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) NSArray *links;
 @property (nonatomic, assign) MITLibrariesHomeViewControllerLinksStatus linksStatus;
-
+@property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
+@property (nonatomic, strong) MITLibrariesSearchController *librariesSearchController;
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 
 @end
@@ -42,10 +45,15 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [super viewDidLoad];
     
     self.title = @"Libraries";
+    self.view.backgroundColor = [UIColor librariesBackgroundColor];
+    self.edgesForExtendedLayout = UIRectEdgeLeft | UIRectEdgeBottom | UIRectEdgeRight;
+    
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.navigationBar.opaque = YES;
-    self.navigationController.navigationBar.barTintColor = [UIColor librariesNavBarTintColor];
-    self.edgesForExtendedLayout = UIRectEdgeLeft | UIRectEdgeBottom | UIRectEdgeRight;
+    self.navigationController.navigationBar.barTintColor = [UIColor librariesBackgroundColor];
+    
+    self.searchBar.placeholder = @"Search MIT's WorldCat";
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topLayoutGuide]-0-[searchBar]" options:0 metrics:nil views:@{@"topLayoutGuide": self.topLayoutGuide, @"searchBar": self.searchBar}]];
     
     [self registerCells];
 
@@ -249,23 +257,29 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     }
 }
 
-// TODO: Set these all up for the actual libraries search controller
-#pragma mark - UISearchDisplayDelegate Methods
+#pragma mark - UISearchBarDelegate Methods
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    return NO;
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    [searchBar setShowsCancelButton:YES animated:YES];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.preSearchOverlay.hidden = NO;
+    return YES;
 }
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption
+- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
 {
-    return NO;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [searchBar setShowsCancelButton:NO animated:YES];
+    self.searchBar.searchBarStyle = UISearchBarStyleDefault;
+    self.preSearchOverlay.hidden = YES;
+    return YES;
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    tableView.delegate = nil;
-    tableView.dataSource = nil;
+    [searchBar endEditing:NO];
 }
 
 @end
