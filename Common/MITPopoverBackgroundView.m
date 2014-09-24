@@ -140,6 +140,11 @@ static UIColor *popoverTintColor = nil;
         multiplier = 2;
     }
     
+    UIImage *popoverArrowBubbleImage = [UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"];
+    popoverArrowBubbleImage = [[UIImage alloc] initWithCGImage: popoverArrowBubbleImage.CGImage
+                                                         scale: 1
+                                                   orientation: UIImageOrientationUp];
+    
     switch (self.arrowDirection) {
         case UIPopoverArrowDirectionAny:
             break;
@@ -150,7 +155,7 @@ static UIColor *popoverTintColor = nil;
             if (self.frame.size.width/2 + self.arrowOffset < BUBBLE_ARROW_NUMBER|| self.frame.size.width/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.width) {
                 
                 _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
-                _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
+                _popoverArrowBubbleView.image = [popoverArrowBubbleImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
                 
                 NSInteger sign = 1;
                 if (self.frame.size.width/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.width) {
@@ -181,7 +186,7 @@ static UIColor *popoverTintColor = nil;
             if (self.frame.size.width/2 + self.arrowOffset < BUBBLE_ARROW_NUMBER|| self.frame.size.width/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.width) {
                 
                 _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
-                _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
+                _popoverArrowBubbleView.image = [popoverArrowBubbleImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
                 
                 NSInteger sign = -1;
                 if (self.frame.size.width/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.width) {
@@ -214,7 +219,7 @@ static UIColor *popoverTintColor = nil;
             if (self.frame.size.height/2 + self.arrowOffset < BUBBLE_ARROW_NUMBER|| self.frame.size.height/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.height) {
                 
                 _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
-                _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
+                _popoverArrowBubbleView.image = [popoverArrowBubbleImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
                 
                 NSInteger sign = -1;
                 if (self.frame.size.height/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.height) {
@@ -245,7 +250,7 @@ static UIColor *popoverTintColor = nil;
             
             if (self.frame.size.height/2 + self.arrowOffset < BUBBLE_ARROW_NUMBER|| self.frame.size.height/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.height) {
                 _popoverArrowBubbleView.frame =  CGRectMake(_left, _top, _width, _height);
-                _popoverArrowBubbleView.image = [[UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
+                _popoverArrowBubbleView.image = [popoverArrowBubbleImage resizableImageWithCapInsets:UIEdgeInsetsMake(25, 25, 56, 62)];
                 
                 NSInteger sign = 1;
                 if (self.frame.size.height/2 + self.arrowOffset + BUBBLE_ARROW_NUMBER > self.frame.size.height) {
