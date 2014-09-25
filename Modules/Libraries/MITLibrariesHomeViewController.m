@@ -3,7 +3,7 @@
 #import "MITLibrariesLink.h"
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
-#import "MITLibrariesSearchController.h"
+#import "MITLibrariesSearchResultsViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -30,8 +30,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 @property (nonatomic, assign) MITLibrariesHomeViewControllerLinksStatus linksStatus;
 @property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
-@property (nonatomic, strong) MITLibrariesSearchController *librariesSearchController;
-@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) MITLibrariesSearchResultsViewController *searchResultsViewController;
+@property (nonatomic, strong) IBOutlet UITableView *mainTableView;
 
 @end
 
@@ -55,6 +55,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     self.searchBar.placeholder = @"Search MIT's WorldCat";
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topLayoutGuide]-0-[searchBar]" options:0 metrics:nil views:@{@"topLayoutGuide": self.topLayoutGuide, @"searchBar": self.searchBar}]];
     
+    self.searchResultsViewController = [[MITLibrariesSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    
     [self registerCells];
 
     self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoading;
@@ -62,32 +64,20 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
         if (links) {
             self.links = links;
             self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoaded;
-            [self.tableView reloadData];
+            [self.mainTableView reloadData];
             NSLog(@"links: %@", links);
         }
         else {
             self.links = nil;
             self.linksStatus = MITLibrariesHomeViewControllerLinksStatusFailed;
-            [self.tableView reloadData];
-        }
-    }];
-    
-    [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
-        
-    }];
-    
-    [MITLibrariesWebservices getResultsForSearch:@"bananas" startingIndex:0 completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
-        if (items.count > 0) {
-            [MITLibrariesWebservices getItemDetailsForItem:items[0] completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
-                
-            }];
+            [self.mainTableView reloadData];
         }
     }];
 }
 
 - (void)registerCells
 {
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+    [self.mainTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
 }
 
 #pragma mark - TableView Methods
@@ -155,7 +145,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (UITableViewCell *)cellForMainSectionAtRow:(NSInteger)row
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+    UITableViewCell *cell = [self.mainTableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
     
     switch (row) {
         case kMITLibrariesHomeViewControllerMainSectionYourAccountRow: {
@@ -192,7 +182,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (UITableViewCell *)cellForLinksSectionAtRow:(NSInteger)row
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+    UITableViewCell *cell = [self.mainTableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
     
     switch (self.linksStatus) {
         case MITLibrariesHomeViewControllerLinksStatusLoaded: {
@@ -268,18 +258,42 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     return YES;
 }
 
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+    [searchBar endEditing:NO];
+    searchBar.text = nil;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [searchBar setShowsCancelButton:NO animated:YES];
     self.searchBar.searchBarStyle = UISearchBarStyleDefault;
     self.preSearchOverlay.hidden = YES;
-    return YES;
+    [self removeSearchResultsView];
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [searchBar endEditing:NO];
+    [self.searchResultsViewController search:searchBar.text];
+    [self addSearchResultsView];
+    [self.searchBar resignFirstResponder];
+}
+
+#pragma mark - Search Results View
+
+- (void)addSearchResultsView
+{
+    [self addChildViewController:self.searchResultsViewController];
+    [self.view addSubview:self.searchResultsViewController.view];
+    self.searchResultsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.searchResultsViewController didMoveToParentViewController:self];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchResultsView]-0-|" options:0 metrics:nil views:@{@"searchResultsView": self.searchResultsViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[searchBar]-0-[searchResultsView]-0-|" options:0 metrics:nil views:@{@"searchResultsView": self.searchResultsViewController.view,
+                                                                                                                                                       @"searchBar": self.searchBar}]];
+}
+
+- (void)removeSearchResultsView
+{
+    [self.searchResultsViewController.view removeFromSuperview];
+    [self.searchResultsViewController removeFromParentViewController];
 }
 
 @end

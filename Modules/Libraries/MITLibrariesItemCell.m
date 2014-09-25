@@ -3,6 +3,12 @@
 #import "UIKit+MITLibraries.h"
 #import "UIImageView+AFNetworking.h"
 
+//@interface MITLibrariesItemCell ()
+//
+//@property (nonatomic, weak) IBOutlet NSLayoutConstraint *itemTitleLabelHorizontalTrailingConstraint;
+//
+//@end
+
 @implementation MITLibrariesItemCell
 
 - (void)awakeFromNib
@@ -14,8 +20,8 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.itemTitleLabel.preferredMaxLayoutWidth = self.bounds.size.width - self.itemTitleLabel.bounds.size.width - self.itemTitleLabel.frame.origin.x - self.itemTitleLabelHorizontalTrailingConstraint.constant - self.layoutMargins.right;
-    self.yearAndAuthorLabel.preferredMaxLayoutWidth = self.bounds.size.width - self.yearAndAuthorLabel.bounds.size.width - self.yearAndAuthorLabel.frame.origin.x - self.yearAndAuthorLabelHorizontalTrailingConstraint.constant - self.layoutMargins.right;
+    self.itemTitleLabel.preferredMaxLayoutWidth = self.itemTitleLabel.bounds.size.width;
+    self.yearAndAuthorLabel.preferredMaxLayoutWidth = self.yearAndAuthorLabel.bounds.size.width;
 }
 
 - (void)setItem:(MITLibrariesWorldcatItem *)item
@@ -47,6 +53,9 @@
     frame.size.width = width;
     cell.frame = frame;
     
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+    
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
     ++height; // add pixel for cell separator
     return MAX(105, height);
@@ -57,8 +66,8 @@
     static MITLibrariesItemCell *sizingCell;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
-        sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+        UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
+        sizingCell = [cellNib instantiateWithOwner:nil options:nil][0];
     });
     return sizingCell;
 }

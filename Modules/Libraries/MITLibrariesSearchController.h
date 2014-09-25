@@ -1,18 +1,12 @@
 #import <Foundation/Foundation.h>
 
-@class MITLibrariesSearchController;
-@class MITLibrariesItem;
+@interface MITLibrariesSearchController : NSObject
 
-@protocol MITLibrariesSearchControllerDelegate <NSObject>
+@property (nonatomic, readonly) NSString *currentSearchTerm;
+@property (nonatomic, readonly) NSArray *results;
+@property (nonatomic, readonly) BOOL hasMoreResults;
 
-- (void)librariesSearchController:(MITLibrariesSearchController *)librariesSearchController didSelectItem:(MITLibrariesItem *)item;
-
-@end
-
-@interface MITLibrariesSearchController : NSObject <UITableViewDataSource, UITableViewDelegate>
-
-@property (nonatomic, weak) id<MITLibrariesSearchControllerDelegate> delegate;
-
-- (void)search:(NSString *)searchString;
+- (void)search:(NSString *)searchTerm completion:(void (^)(NSError *error))completion;
+- (void)getNextResults:(void (^)(NSError *error))completion;
 
 @end
