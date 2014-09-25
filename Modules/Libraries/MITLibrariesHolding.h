@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "MITLibrariesAvailability.h"
+#import "MITLibrariesWebservices.h"
 
-@interface MITLibrariesHolding : NSObject
+@interface MITLibrariesHolding : NSObject <MITInitializableWithDictionaryProtocol>
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 

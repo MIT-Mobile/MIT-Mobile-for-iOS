@@ -1,8 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "MITLibrariesHolding.h"
 #import "MITLibrariesCitation.h"
+#import "MITLibrariesWebservices.h"
 
-@interface MITLibrariesWorldcatItem : NSObject
+@interface MITLibrariesWorldcatItem : NSObject <MITInitializableWithDictionaryProtocol>
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
