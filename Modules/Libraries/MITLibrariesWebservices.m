@@ -1,9 +1,17 @@
 #import "MITLibrariesWebservices.h"
 #import "MITMobileResources.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
+#import "MITTouchstoneRequestOperation+MITMobileV3.h"
 #import "MITLibrariesLink.h"
 #import "MITMobileResources.h"
 #import "MITLibrariesWorldcatItem.h"
+#import "MITLibrariesUser.h"
+
+
+static NSString *const kMITLibrariesBaseEndpoint = @"libraries";
+static NSString *const kMITLibrariesAccountEndpoint = @"account";
+static NSString *const kMITLibrariesSecureEndpointPrefix = @"secure";
+static NSString *const kMITLibrariesSearchEndpoint = @"worldcat";
 
 static NSString *const kMITLibrariesErrorDomain = @"MITLibrariesErrorDomain";
 
@@ -113,6 +121,56 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
         NSError *error = [[NSError alloc] initWithDomain:kMITLibrariesErrorDomain code:NSURLErrorResourceUnavailable userInfo:@{NSLocalizedDescriptionKey : @"Item not found"}];
         completion(nil, error);
     }
+}
+
++ (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion
+{
+    NSString *requestEndpointString = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibrariesAccountEndpoint];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpointString parameters:nil];
+    
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
+        MITLibrariesUser *user = [[MITLibrariesUser alloc] initWithDictionary:responseObject];
+        completion(user, nil);
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        completion(nil, error);
+    }];
+    
+    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+}
+
++ (NSOperationQueue *)MITWebserviceOperationQueue
+{
+    static NSOperationQueue *operationQueue;
+    if (!operationQueue) {
+        operationQueue = [[NSOperationQueue alloc] init];
+    }
+    return operationQueue;
+}
+
++ (NSArray *)parseJSONArray:(NSArray *)JSONArray intoObjectsOfClass:(Class)initializableDictionaryClass
+{
+    if (!JSONArray || ![initializableDictionaryClass conformsToProtocol:@protocol(MITInitializableWithDictionaryProtocol)]) {
+        return nil;
+    }
+    
+    NSMutableArray *objects = [[NSMutableArray alloc] init];
+    for (NSDictionary *objectDictionary in JSONArray) {
+        id parsedObject = [[initializableDictionaryClass alloc] initWithDictionary:objectDictionary];
+        [objects addObject:parsedObject];
+    }
+    return objects;
+}
+
++ (RKISO8601DateFormatter *)librariesDateFormatter
+{
+    static RKISO8601DateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
+    }
+    
+    return dateFormatter;
 }
 
 @end
