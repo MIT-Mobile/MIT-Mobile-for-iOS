@@ -1,4 +1,4 @@
-#import "MITLibrariesItemCell.h"
+#import "MITLibrariesWorldcatItemCell.h"
 #import "MITLibrariesWorldcatItem.h"
 #import "UIKit+MITLibraries.h"
 #import "UIImageView+AFNetworking.h"
@@ -9,7 +9,7 @@
 //
 //@end
 
-@implementation MITLibrariesItemCell
+@implementation MITLibrariesWorldcatItemCell
 
 - (void)awakeFromNib
 {
@@ -47,7 +47,7 @@
     return [[self class] heightForCell:[[self class] sizingCell] tableWidth:width];
 }
 
-+ (CGFloat)heightForCell:(MITLibrariesItemCell *)cell tableWidth:(CGFloat)width
++ (CGFloat)heightForCell:(MITLibrariesWorldcatItemCell *)cell tableWidth:(CGFloat)width
 {
     CGRect frame = cell.frame;
     frame.size.width = width;
@@ -63,7 +63,7 @@
 
 + (instancetype)sizingCell
 {
-    static MITLibrariesItemCell *sizingCell;
+    static MITLibrariesWorldcatItemCell *sizingCell;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
