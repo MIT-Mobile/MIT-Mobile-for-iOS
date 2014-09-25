@@ -1,8 +1,8 @@
 #import "MITLibrariesSearchResultsViewController.h"
 #import "MITLibrariesSearchController.h"
-#import "MITLibrariesItemCell.h"
+#import "MITLibrariesWorldcatItemCell.h"
 #import "SVPullToRefresh.h"
-#import "MITLibrariesItem.h"
+#import "MITLibrariesWorldcatItem.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesSearchResultsViewControllerState) {
     MITLibrariesSearchResultsViewControllerStateLoading,
@@ -39,7 +39,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesItemCell class]) bundle:nil];
+    UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
     [self.resultsTableView registerNib:librariesItemCellNib forCellReuseIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier];
     
     self.loadingLabel.text = @"Loading...";
@@ -168,7 +168,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITLibrariesItemCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier forIndexPath:indexPath];
+    MITLibrariesWorldcatItemCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier forIndexPath:indexPath];
     
     [cell setItem:self.searchController.results[indexPath.row]];
     
@@ -180,15 +180,15 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if ([self.delegate respondsToSelector:@selector(librariesSearchResultsViewController:didSelectItem:)]) {
-        MITLibrariesItem *item = self.searchController.results[indexPath.row];
+        MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
         [self.delegate librariesSearchResultsViewController:self didSelectItem:item];
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITLibrariesItem *item = self.searchController.results[indexPath.row];
-    CGFloat height = [MITLibrariesItemCell heightForItem:item tableViewWidth:self.resultsTableView.bounds.size.width];
+    MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
+    CGFloat height = [MITLibrariesWorldcatItemCell heightForItem:item tableViewWidth:self.resultsTableView.bounds.size.width];
     return height;
 }
 

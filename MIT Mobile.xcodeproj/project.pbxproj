@@ -453,8 +453,8 @@
 		80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */; };
 		A50884D019D09C190047A21B /* MITLibrariesYourAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884CE19D09C190047A21B /* MITLibrariesYourAccountViewController.m */; };
 		A50884D119D09C190047A21B /* MITLibrariesYourAccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884CF19D09C190047A21B /* MITLibrariesYourAccountViewController.xib */; };
-		A50884DF19D1CB050047A21B /* MITLibrariesItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884DD19D1CB050047A21B /* MITLibrariesItemCell.m */; };
-		A50884E019D1CB050047A21B /* MITLibrariesItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884DE19D1CB050047A21B /* MITLibrariesItemCell.xib */; };
+		A50884DF19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */; };
+		A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */; };
 		A50884E419D1E7020047A21B /* MITLibrariesItemLoanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884E219D1E7020047A21B /* MITLibrariesItemLoanCell.m */; };
 		A50884E519D1E7020047A21B /* MITLibrariesItemLoanCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884E319D1E7020047A21B /* MITLibrariesItemLoanCell.xib */; };
 		A50884E919D1E7150047A21B /* MITLibrariesItemHoldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884E719D1E7150047A21B /* MITLibrariesItemHoldCell.m */; };
@@ -1540,9 +1540,9 @@
 		A50884CD19D09C190047A21B /* MITLibrariesYourAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountViewController.h; sourceTree = "<group>"; };
 		A50884CE19D09C190047A21B /* MITLibrariesYourAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountViewController.m; sourceTree = "<group>"; };
 		A50884CF19D09C190047A21B /* MITLibrariesYourAccountViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountViewController.xib; sourceTree = "<group>"; };
-		A50884DC19D1CB050047A21B /* MITLibrariesItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesItemCell.h; sourceTree = "<group>"; };
-		A50884DD19D1CB050047A21B /* MITLibrariesItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesItemCell.m; sourceTree = "<group>"; };
-		A50884DE19D1CB050047A21B /* MITLibrariesItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesItemCell.xib; sourceTree = "<group>"; };
+		A50884DC19D1CB050047A21B /* MITLibrariesWorldcatItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesWorldcatItemCell.h; sourceTree = "<group>"; };
+		A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesWorldcatItemCell.m; sourceTree = "<group>"; };
+		A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesWorldcatItemCell.xib; sourceTree = "<group>"; };
 		A50884E119D1E7020047A21B /* MITLibrariesItemLoanCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesItemLoanCell.h; sourceTree = "<group>"; };
 		A50884E219D1E7020047A21B /* MITLibrariesItemLoanCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesItemLoanCell.m; sourceTree = "<group>"; };
 		A50884E319D1E7020047A21B /* MITLibrariesItemLoanCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesItemLoanCell.xib; sourceTree = "<group>"; };
@@ -3795,9 +3795,9 @@
 		A50884DB19D1C7390047A21B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A50884DC19D1CB050047A21B /* MITLibrariesItemCell.h */,
-				A50884DD19D1CB050047A21B /* MITLibrariesItemCell.m */,
-				A50884DE19D1CB050047A21B /* MITLibrariesItemCell.xib */,
+				A50884DC19D1CB050047A21B /* MITLibrariesWorldcatItemCell.h */,
+				A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */,
+				A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */,
 				A50884E119D1E7020047A21B /* MITLibrariesItemLoanCell.h */,
 				A50884E219D1E7020047A21B /* MITLibrariesItemLoanCell.m */,
 				A50884E319D1E7020047A21B /* MITLibrariesItemLoanCell.xib */,
@@ -4476,7 +4476,7 @@
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				229FFABA198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
-				A50884E019D1CB050047A21B /* MITLibrariesItemCell.xib in Resources */,
+				A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				A5FA039019D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
@@ -4659,7 +4659,7 @@
 				0BE0C40E1975B42B00961025 /* MITViewWithCenterText.m in Sources */,
 				0B4F9D9119912A3F0047354E /* MITNewsiPadCategoryViewController.m in Sources */,
 				2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */,
-				A50884DF19D1CB050047A21B /* MITLibrariesItemCell.m in Sources */,
+				A50884DF19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m in Sources */,
 				5E8CE4091922B12E00703920 /* MITShuttleHomeViewController.m in Sources */,
 				EB4C2914127B224800058748 /* IconGrid.m in Sources */,
 				EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */,

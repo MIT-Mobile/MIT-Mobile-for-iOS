@@ -1,11 +1,11 @@
 #import <UIKit/UIKit.h>
 
 @class MITLibrariesSearchResultsViewController;
-@class MITLibrariesItem;
+@class MITLibrariesWorldcatItem;
 
 @protocol MITLibrariesSearchResultsViewControllerDelegate <NSObject>
 
-- (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesItem *)item;
+- (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item;
 
 @end
 
