@@ -159,4 +159,27 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     [self setNeedsLayout];
 }
 
+- (void)commonInit_MyCollectionViewCell
+{
+    if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending) {
+        [[self contentView] setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+    }
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        [self commonInit_MyCollectionViewCell];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        [self commonInit_MyCollectionViewCell];
+    }
+    return self;
+}
+
 @end
