@@ -94,7 +94,7 @@
 		2287A7D519BE2CAA008B0DF6 /* MITCalendarsSponsor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D419BE2CAA008B0DF6 /* MITCalendarsSponsor.m */; };
 		2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D719BE2CAA008B0DF6 /* MITCalendarsEvent.m */; };
 		2287A7DB19BE2CAA008B0DF6 /* MITCalendarsCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7DA19BE2CAA008B0DF6 /* MITCalendarsCalendar.m */; };
-		2289814A19D0761B0045BF91 /* MITLibrariesItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2289814919D0761B0045BF91 /* MITLibrariesItem.m */; };
+		2289814A19D0761B0045BF91 /* MITLibrariesWorldcatItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2289814919D0761B0045BF91 /* MITLibrariesWorldcatItem.m */; };
 		228D661E19B6612500C7B78B /* MITDiningFiltersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */; };
 		228D661F19B6612500C7B78B /* MITDiningFiltersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */; };
 		229FFAB9198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 229FFAB7198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m */; };
@@ -826,8 +826,8 @@
 		2287A7D719BE2CAA008B0DF6 /* MITCalendarsEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsEvent.m; sourceTree = "<group>"; };
 		2287A7D919BE2CAA008B0DF6 /* MITCalendarsCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsCalendar.h; sourceTree = "<group>"; };
 		2287A7DA19BE2CAA008B0DF6 /* MITCalendarsCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsCalendar.m; sourceTree = "<group>"; };
-		2289814819D0761B0045BF91 /* MITLibrariesItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesItem.h; sourceTree = "<group>"; };
-		2289814919D0761B0045BF91 /* MITLibrariesItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesItem.m; sourceTree = "<group>"; };
+		2289814819D0761B0045BF91 /* MITLibrariesWorldcatItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesWorldcatItem.h; sourceTree = "<group>"; };
+		2289814919D0761B0045BF91 /* MITLibrariesWorldcatItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesWorldcatItem.m; sourceTree = "<group>"; };
 		228D661B19B6612500C7B78B /* MITDiningFiltersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningFiltersCell.h; path = Dining/MITDiningFiltersCell.h; sourceTree = "<group>"; };
 		228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningFiltersCell.m; path = Dining/MITDiningFiltersCell.m; sourceTree = "<group>"; };
 		228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningFiltersCell.xib; path = Dining/MITDiningFiltersCell.xib; sourceTree = "<group>"; };
@@ -2245,8 +2245,8 @@
 				2258CBE919CB7E7D0067E35C /* MITLibrariesTerm.m */,
 				2258CBEB19CB7EDC0067E35C /* MITLibrariesDate.h */,
 				2258CBEC19CB7EDC0067E35C /* MITLibrariesDate.m */,
-				2289814819D0761B0045BF91 /* MITLibrariesItem.h */,
-				2289814919D0761B0045BF91 /* MITLibrariesItem.m */,
+				2289814819D0761B0045BF91 /* MITLibrariesWorldcatItem.h */,
+				2289814919D0761B0045BF91 /* MITLibrariesWorldcatItem.m */,
 				22D9BB9A19D1CC280065A2E7 /* MITLibrariesCitation.h */,
 				22D9BB9B19D1CC280065A2E7 /* MITLibrariesCitation.m */,
 				22D9BBA019D1CC380065A2E7 /* MITLibrariesHolding.h */,
@@ -4919,7 +4919,7 @@
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
-				2289814A19D0761B0045BF91 /* MITLibrariesItem.m in Sources */,
+				2289814A19D0761B0045BF91 /* MITLibrariesWorldcatItem.m in Sources */,
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
 				A59A25A519A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,

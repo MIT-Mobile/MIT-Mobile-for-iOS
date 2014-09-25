@@ -2,7 +2,7 @@
 #import "MITLibrariesHolding.h"
 #import "MITLibrariesCitation.h"
 
-@interface MITLibrariesItem : NSObject
+@interface MITLibrariesWorldcatItem : NSObject
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 

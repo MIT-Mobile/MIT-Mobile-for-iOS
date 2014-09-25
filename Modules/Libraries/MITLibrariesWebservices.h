@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@class MITLibrariesItem;
+@class MITLibrariesWorldcatItem;
 
 @interface MITLibrariesWebservices : NSObject
 
@@ -9,8 +9,8 @@
 + (void)getResultsForSearch:(NSString *)searchString
               startingIndex:(NSInteger)startingIndex
                 completion:(void (^)(NSArray *items, NSInteger nextIndex, NSInteger totalResults,  NSError *error))completion;
-+ (void)getItemDetailsForItem:(MITLibrariesItem *)item
-                   completion:(void (^)(MITLibrariesItem *item, NSError *error))completion;
++ (void)getItemDetailsForItem:(MITLibrariesWorldcatItem *)item
+                   completion:(void (^)(MITLibrariesWorldcatItem *item, NSError *error))completion;
 
 
 @end
