@@ -68,7 +68,7 @@ static UIColor *popoverTintColor = nil;
 - (id)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         
-        UIImage *popOverImage = [UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDown@2x"];
+        UIImage *popOverImage = [UIImage imageNamed:@"popover/_UIPopoverViewBlurMaskBackgroundArrowDown@2x"];
         popOverImage = [[UIImage alloc] initWithCGImage: popOverImage.CGImage
                                                   scale: 1
                                             orientation: UIImageOrientationUp];
@@ -122,7 +122,7 @@ static UIColor *popoverTintColor = nil;
     CGFloat _top = 0.0;
     CGFloat _coordinate = 0.0;
     
-    UIImage *popOverImage = [UIImage imageNamed:@"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x"];
+    UIImage *popOverImage = [UIImage imageNamed:@"popover/_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x"];
     popOverImage = [[UIImage alloc] initWithCGImage: popOverImage.CGImage
                                               scale: 1
                                         orientation: UIImageOrientationUp];
