@@ -3,7 +3,7 @@
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITLibrariesLink.h"
 #import "MITMobileResources.h"
-#import "MITLibrariesItem.h"
+#import "MITLibrariesWorldcatItem.h"
 
 static NSString *const kMITLibrariesErrorDomain = @"MITLibrariesErrorDomain";
 
@@ -81,14 +81,14 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
 {
     NSMutableArray *items = [[NSMutableArray alloc] initWithCapacity:responseItems.count];
     for (NSDictionary *dictionaryItem in responseItems) {
-        MITLibrariesItem *item = [[MITLibrariesItem alloc] initWithDictionary:dictionaryItem];
+        MITLibrariesWorldcatItem *item = [[MITLibrariesWorldcatItem alloc] initWithDictionary:dictionaryItem];
         [items addObject:item];
     }
     
     return items;
 }
 
-+ (void)getItemDetailsForItem:(MITLibrariesItem *)item completion:(void (^)(MITLibrariesItem *item, NSError *error))completion
++ (void)getItemDetailsForItem:(MITLibrariesWorldcatItem *)item completion:(void (^)(MITLibrariesWorldcatItem *item, NSError *error))completion
 {
     if (item.identifier) {
         NSDictionary *paramters = @{kMITLibraryWebservicesIDKey : item.identifier};
@@ -97,9 +97,9 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
         MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
         [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-            MITLibrariesItem *newItem = nil;
+            MITLibrariesWorldcatItem *newItem = nil;
             if ([responseObject isKindOfClass:[NSDictionary class]]) {
-                newItem = [[MITLibrariesItem alloc] initWithDictionary:responseObject];
+                newItem = [[MITLibrariesWorldcatItem alloc] initWithDictionary:responseObject];
             }
             completion(newItem, nil);
         } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {

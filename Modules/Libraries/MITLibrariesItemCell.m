@@ -1,5 +1,5 @@
 #import "MITLibrariesItemCell.h"
-#import "MITLibrariesItem.h"
+#import "MITLibrariesWorldcatItem.h"
 #import "UIKit+MITLibraries.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -18,7 +18,7 @@
     self.yearAndAuthorLabel.preferredMaxLayoutWidth = self.bounds.size.width - self.yearAndAuthorLabel.bounds.size.width - self.yearAndAuthorLabel.frame.origin.x - self.yearAndAuthorLabelHorizontalTrailingConstraint.constant - self.layoutMargins.right;
 }
 
-- (void)setItem:(MITLibrariesItem *)item
+- (void)setItem:(MITLibrariesWorldcatItem *)item
 {
     if ([_item isEqual:item]) {
         return;
@@ -35,7 +35,7 @@
 
 #pragma mark - Cell Sizing
 
-+ (CGFloat)heightForItem:(MITLibrariesItem *)item tableViewWidth:(CGFloat)width
++ (CGFloat)heightForItem:(MITLibrariesWorldcatItem *)item tableViewWidth:(CGFloat)width
 {
     [[[self class] sizingCell] setItem:item];
     return [[self class] heightForCell:[[self class] sizingCell] tableWidth:width];

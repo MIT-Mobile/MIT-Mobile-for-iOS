@@ -70,7 +70,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     
     [MITLibrariesWebservices getResultsForSearch:@"bananas" startingIndex:0 completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
         if (items.count > 0) {
-            [MITLibrariesWebservices getItemDetailsForItem:items[0] completion:^(MITLibrariesItem *item, NSError *error) {
+            [MITLibrariesWebservices getItemDetailsForItem:items[0] completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
                 
             }];
         }

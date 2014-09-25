@@ -1,6 +1,6 @@
-#import "MITLibrariesItem.h"
+#import "MITLibrariesWorldcatItem.h"
 
-@implementation MITLibrariesItem
+@implementation MITLibrariesWorldcatItem
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary
 {
