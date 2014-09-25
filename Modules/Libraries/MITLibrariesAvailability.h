@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "MITInitializableWithDictionaryProtocol.h"
 
-@interface MITLibrariesAvailability : NSObject
+@interface MITLibrariesAvailability : NSObject <MITInitializableWithDictionaryProtocol>
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 

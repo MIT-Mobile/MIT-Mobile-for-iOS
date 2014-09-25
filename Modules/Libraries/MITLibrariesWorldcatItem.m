@@ -18,25 +18,11 @@
         self.language = dictionary[@"lang"];
         self.extent = dictionary[@"extent"];
         self.address = dictionary[@"address"];
-        self.holdings = [self parseHoldings:dictionary[@"holdings"]];
+        self.holdings = [MITLibrariesWebservices parseJSONArray:dictionary[@"holdings"] intoObjectsOfClass:[MITLibrariesHolding class]];
         self.citations = [self parseCitations:dictionary[@"citations"]];
         self.composedHTML = dictionary[@"composed-html"];
     }
     return self;
-}
-
-- (NSArray *)parseHoldings:(NSArray *)JSONHoldings
-{
-    if (!JSONHoldings) {
-        return nil;
-    }
-    
-    NSMutableArray *holdings = [[NSMutableArray alloc] init];
-    for (NSDictionary *holdingDictionary in JSONHoldings) {
-        MITLibrariesHolding *holding = [[MITLibrariesHolding alloc] initWithDictionary:holdingDictionary];
-        [holdings addObject:holding];
-    }
-    return holdings;
 }
 
 - (NSArray *)parseCitations:(NSDictionary *)JSONCitations
