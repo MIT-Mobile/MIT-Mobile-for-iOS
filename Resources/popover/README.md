@@ -1,3 +1,3 @@
-These images were obtained using the iOS Artwork Extractor found here https://github.com/0xced/iOS-Artwork-Extractor.
+These images are the property of Apple Inc. and are not covered by this project's license.
 
-These images are Apple's property and are not covered by our MIT License.
+They were obtained using the iOS Artwork Extractor, https://github.com/0xced/iOS-Artwork-Extractor.
