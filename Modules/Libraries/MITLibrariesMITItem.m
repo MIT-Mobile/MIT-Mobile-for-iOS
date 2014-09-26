@@ -1,12 +1,5 @@
 #import "MITLibrariesMITItem.h"
 
-
-@protocol MITInitableWithDictionary <NSObject>
-
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
-
-@end
-
 @implementation MITLibrariesMITItem
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary

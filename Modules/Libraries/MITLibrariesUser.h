@@ -3,9 +3,7 @@
 #import "MITLibrariesMITHoldItem.h"
 #import "MITLibrariesMITLoanItem.h"
 
-@interface MITLibrariesUser : NSObject
-
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
+@interface MITLibrariesUser : NSObject <MITInitializableWithDictionaryProtocol>
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSArray *loans;
