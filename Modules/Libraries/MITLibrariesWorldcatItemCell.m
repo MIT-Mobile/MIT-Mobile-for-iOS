@@ -25,10 +25,14 @@
     }
     
     self.itemImageView.image = nil;
-    [self.itemImageView sd_setImageWithURL:[NSURL URLWithString:item.imageUrl]];
+    if (item.coverImages.count > 0) {
+        MITLibrariesCoverImage *coverImage = item.coverImages[0];
+        [self.itemImageView sd_setImageWithURL:[NSURL URLWithString:coverImage.url]];
+    }
     
     self.itemTitleLabel.text = item.title;
-    self.yearAndAuthorLabel.text = [NSString stringWithFormat:@"%@; %@", [item yearsString], [item authorsString]];
+    NSString *authorString = [item authorsString];
+    self.yearAndAuthorLabel.text = authorString ? [NSString stringWithFormat:@"%@; %@", [item yearsString], [item authorsString]] : [item yearsString];
     
     _item = item;
 }

@@ -15,14 +15,16 @@
 
 - (void)search:(NSString *)searchTerm completion:(void (^)(NSError *error))completion
 {
+    self.offsetForNextSearch = 0;
     self.currentSearchTerm = searchTerm;
-    [MITLibrariesWebservices getResultsForSearch:searchTerm startingIndex:0 completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
+    
+    [MITLibrariesWebservices getResultsForSearch:searchTerm startingIndex:0 completion:^(NSArray *items, NSError *error) {
         if (error) {
             completion(error);
         } else {
             self.results = [NSArray arrayWithArray:items];
-            self.hasMoreResults = nextIndex > 0;
-            self.offsetForNextSearch = nextIndex;
+            self.hasMoreResults = (self.results.count >= kMITLibrariesSearchResultsLimit);
+            self.offsetForNextSearch = self.results.count;
             completion(nil);
         }
     }];
@@ -34,16 +36,15 @@
         return;
     }
     
-    [MITLibrariesWebservices getResultsForSearch:self.currentSearchTerm startingIndex:self.offsetForNextSearch completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
-        NSLog(@"error: %@, total: %i, next: %i", error, totalResults, nextIndex);
+    [MITLibrariesWebservices getResultsForSearch:self.currentSearchTerm startingIndex:self.offsetForNextSearch completion:^(NSArray *items, NSError *error) {
         if (error) {
             completion(error);
         } else {
             NSMutableArray *newTotalResults = [NSMutableArray arrayWithArray:self.results];
             [newTotalResults addObjectsFromArray:items];
             self.results = [NSArray arrayWithArray:newTotalResults];
-            self.hasMoreResults = nextIndex > 0;
-            self.offsetForNextSearch = nextIndex;
+            self.hasMoreResults = (items.count >= kMITLibrariesSearchResultsLimit);
+            self.offsetForNextSearch += items.count;
             completion(nil);
         }
     }];

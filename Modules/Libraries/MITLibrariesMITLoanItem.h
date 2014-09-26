@@ -3,8 +3,6 @@
 
 @interface MITLibrariesMITLoanItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol>
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
-
 @property (nonatomic, strong) NSDate *loanedAt;
 @property (nonatomic, strong) NSDate *dueAt;
 @property (nonatomic) BOOL overdue;

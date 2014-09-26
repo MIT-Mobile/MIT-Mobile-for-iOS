@@ -630,6 +630,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
     [remoteObjectManager addResource:librariesResource];
     
+    MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
+    [remoteObjectManager addResource:librariesLinksResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 

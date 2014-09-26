@@ -8,15 +8,19 @@
     if (self) {
         self.identifier = dictionary[@"id"];
         self.url = dictionary[@"url"];
+        self.worldCatUrl = dictionary[@"worldcat_url"];
         self.title = dictionary[@"title"];
-        self.imageUrl = dictionary[@"image"];
-        self.author = dictionary[@"author"];
-        self.year = dictionary[@"year"];
-        self.publisher = dictionary[@"publisher"];
-        self.format = dictionary[@"format"];
-        self.subject = dictionary[@"subject"];
-        self.language = dictionary[@"lang"];
-        self.extent = dictionary[@"extent"];
+        self.coverImages = [MITLibrariesWebservices parseJSONArray:dictionary[@"cover_images"] intoObjectsOfClass:[MITLibrariesCoverImage class]];
+        self.author = dictionary[@"authors"];
+        self.year = dictionary[@"years"];
+        self.publisher = dictionary[@"publishers"];
+        self.format = dictionary[@"formats"];
+        self.isbns = dictionary[@"isbns"];
+        self.subject = dictionary[@"subjects"];
+        self.language = dictionary[@"langs"];
+        self.extent = dictionary[@"extents"];
+        self.summaries = dictionary[@"summaries"];
+        self.editions = dictionary[@"editions"];
         self.address = dictionary[@"address"];
         self.holdings = [MITLibrariesWebservices parseJSONArray:dictionary[@"holdings"] intoObjectsOfClass:[MITLibrariesHolding class]];
         self.citations = [self parseCitations:dictionary[@"citations"]];
