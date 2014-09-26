@@ -2,15 +2,13 @@
 
 @implementation MITLibrariesLink
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping*)objectMapping
 {
-    self = [super init];
-    if (self)
-    {
-        self.title = dictionary[@"title"];
-        self.url = dictionary[@"url"];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesLink class]];
+   
+    [mapping addAttributeMappingsFromArray:@[@"title", @"url"]];
+    
+    return mapping;
 }
 
 @end

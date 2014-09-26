@@ -11,23 +11,9 @@
         self.address = dictionary[@"address"];
         self.count = [dictionary[@"count"] integerValue];
         self.url = dictionary[@"url"];
-        self.availability = [self parseAvailability:dictionary[@"availability"]];
+        self.availability = [MITLibrariesWebservices parseJSONArray:dictionary[@"availability"] intoObjectsOfClass:[MITLibrariesAvailability class]];
     }
     return self;
-}
-
-- (NSArray *)parseAvailability:(NSArray *)JSONAvailability
-{
-    if (!JSONAvailability) {
-        return nil;
-    }
-    
-    NSMutableArray *availabilities = [[NSMutableArray alloc] init];
-    for (NSDictionary *availableDictionary in JSONAvailability) {
-        MITLibrariesAvailability *availability = [[MITLibrariesAvailability alloc] initWithDictionary:availableDictionary];
-        [availabilities addObject:availability];
-    }
-    return availabilities;
 }
 
 @end
