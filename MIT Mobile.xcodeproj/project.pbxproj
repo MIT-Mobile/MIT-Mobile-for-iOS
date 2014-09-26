@@ -528,6 +528,12 @@
 		A5FA037019D3124C0063FF2C /* MITLibrariesSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA036F19D3124C0063FF2C /* MITLibrariesSearchController.m */; };
 		A5FA038F19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA038D19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m */; };
 		A5FA039019D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */; };
+		A5FA03A719D5D6940063FF2C /* NSData+ImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA039C19D5D6940063FF2C /* NSData+ImageContentType.m */; };
+		A5FA03A819D5D6940063FF2C /* UIImage+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA039E19D5D6940063FF2C /* UIImage+GIF.m */; };
+		A5FA03A919D5D6940063FF2C /* UIImage+MultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA03A019D5D6940063FF2C /* UIImage+MultiFormat.m */; };
+		A5FA03AA19D5D6940063FF2C /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA03A219D5D6940063FF2C /* UIImage+WebP.m */; };
+		A5FA03AB19D5D6940063FF2C /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA03A419D5D6940063FF2C /* UIImageView+HighlightedWebCache.m */; };
+		A5FA03AC19D5D6940063FF2C /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FA03A619D5D6940063FF2C /* UIView+WebCacheOperation.m */; };
 		A5FD261E19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */; };
 		A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FD262319C384FC0057CE9D /* MITDiningDietaryFlagListCell.m */; };
 		A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FD262419C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib */; };
@@ -1641,6 +1647,18 @@
 		A5FA038C19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesSearchResultsViewController.h; sourceTree = "<group>"; };
 		A5FA038D19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesSearchResultsViewController.m; sourceTree = "<group>"; };
 		A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesSearchResultsViewController.xib; sourceTree = "<group>"; };
+		A5FA039B19D5D6940063FF2C /* NSData+ImageContentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+ImageContentType.h"; sourceTree = "<group>"; };
+		A5FA039C19D5D6940063FF2C /* NSData+ImageContentType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+ImageContentType.m"; sourceTree = "<group>"; };
+		A5FA039D19D5D6940063FF2C /* UIImage+GIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+GIF.h"; sourceTree = "<group>"; };
+		A5FA039E19D5D6940063FF2C /* UIImage+GIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+GIF.m"; sourceTree = "<group>"; };
+		A5FA039F19D5D6940063FF2C /* UIImage+MultiFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+MultiFormat.h"; sourceTree = "<group>"; };
+		A5FA03A019D5D6940063FF2C /* UIImage+MultiFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+MultiFormat.m"; sourceTree = "<group>"; };
+		A5FA03A119D5D6940063FF2C /* UIImage+WebP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+WebP.h"; sourceTree = "<group>"; };
+		A5FA03A219D5D6940063FF2C /* UIImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+WebP.m"; sourceTree = "<group>"; };
+		A5FA03A319D5D6940063FF2C /* UIImageView+HighlightedWebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+HighlightedWebCache.h"; sourceTree = "<group>"; };
+		A5FA03A419D5D6940063FF2C /* UIImageView+HighlightedWebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+HighlightedWebCache.m"; sourceTree = "<group>"; };
+		A5FA03A519D5D6940063FF2C /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
+		A5FA03A619D5D6940063FF2C /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
 		A5FD261C19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListViewController.h; path = Dining/MITDiningDietaryFlagListViewController.h; sourceTree = "<group>"; };
 		A5FD261D19C359DB0057CE9D /* MITDiningDietaryFlagListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningDietaryFlagListViewController.m; path = Dining/MITDiningDietaryFlagListViewController.m; sourceTree = "<group>"; };
 		A5FD262219C384FC0057CE9D /* MITDiningDietaryFlagListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningDietaryFlagListCell.h; path = Dining/MITDiningDietaryFlagListCell.h; sourceTree = "<group>"; };
@@ -3897,6 +3915,47 @@
 			path = "Table Section Explanatory Label";
 			sourceTree = "<group>";
 		};
+		DE654505173D90A900562C20 /* SDWebImage */ = {
+			isa = PBXGroup;
+			children = (
+				A5FA039B19D5D6940063FF2C /* NSData+ImageContentType.h */,
+				A5FA039C19D5D6940063FF2C /* NSData+ImageContentType.m */,
+				A5FA039D19D5D6940063FF2C /* UIImage+GIF.h */,
+				A5FA039E19D5D6940063FF2C /* UIImage+GIF.m */,
+				A5FA039F19D5D6940063FF2C /* UIImage+MultiFormat.h */,
+				A5FA03A019D5D6940063FF2C /* UIImage+MultiFormat.m */,
+				A5FA03A119D5D6940063FF2C /* UIImage+WebP.h */,
+				A5FA03A219D5D6940063FF2C /* UIImage+WebP.m */,
+				A5FA03A319D5D6940063FF2C /* UIImageView+HighlightedWebCache.h */,
+				A5FA03A419D5D6940063FF2C /* UIImageView+HighlightedWebCache.m */,
+				A5FA03A519D5D6940063FF2C /* UIView+WebCacheOperation.h */,
+				A5FA03A619D5D6940063FF2C /* UIView+WebCacheOperation.m */,
+				DE654506173D90A900562C20 /* MKAnnotationView+WebCache.h */,
+				DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */,
+				DE654508173D90A900562C20 /* SDImageCache.h */,
+				DE654509173D90A900562C20 /* SDImageCache.m */,
+				DE65450A173D90A900562C20 /* SDWebImageCompat.h */,
+				DE65450B173D90A900562C20 /* SDWebImageCompat.m */,
+				DE65450C173D90A900562C20 /* SDWebImageDecoder.h */,
+				DE65450D173D90A900562C20 /* SDWebImageDecoder.m */,
+				DE65450E173D90A900562C20 /* SDWebImageDownloader.h */,
+				DE65450F173D90A900562C20 /* SDWebImageDownloader.m */,
+				DE654510173D90A900562C20 /* SDWebImageDownloaderOperation.h */,
+				DE654511173D90A900562C20 /* SDWebImageDownloaderOperation.m */,
+				DE654512173D90A900562C20 /* SDWebImageManager.h */,
+				DE654513173D90A900562C20 /* SDWebImageManager.m */,
+				DE654514173D90A900562C20 /* SDWebImageOperation.h */,
+				DE654515173D90A900562C20 /* SDWebImagePrefetcher.h */,
+				DE654516173D90A900562C20 /* SDWebImagePrefetcher.m */,
+				DE654517173D90A900562C20 /* UIButton+WebCache.h */,
+				DE654518173D90A900562C20 /* UIButton+WebCache.m */,
+				DE654519173D90A900562C20 /* UIImageView+WebCache.h */,
+				DE65451A173D90A900562C20 /* UIImageView+WebCache.m */,
+			);
+			name = SDWebImage;
+			path = External/SDWebImage/SDWebImage;
+			sourceTree = "<group>";
+		};
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -4768,6 +4827,7 @@
 				A51E20A0196C68D9005608C3 /* MITMapTypeAheadTableViewController.m in Sources */,
 				EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */,
 				EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */,
+				A5FA03AA19D5D6940063FF2C /* UIImage+WebP.m in Sources */,
 				274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */,
 				EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */,
 				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,
@@ -4783,6 +4843,7 @@
 				2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */,
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
+				A5FA03AC19D5D6940063FF2C /* UIView+WebCacheOperation.m in Sources */,
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
 				22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
@@ -4833,6 +4894,7 @@
 				2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */,
 				2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
+				A5FA03A719D5D6940063FF2C /* NSData+ImageContentType.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				0B394CE419E3355D00B48F17 /* UIImageView+WebCache.m in Sources */,
@@ -4970,11 +5032,14 @@
 				5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */,
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
+				A5FA03A919D5D6940063FF2C /* UIImage+MultiFormat.m in Sources */,
 				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
+				A5FA03AB19D5D6940063FF2C /* UIImageView+HighlightedWebCache.m in Sources */,
 				2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */,
 				22D902FC199BA90D00AEBC7D /* MITDiningVenues.m in Sources */,
 				2287A7DB19BE2CAA008B0DF6 /* MITCalendarsCalendar.m in Sources */,
 				48B4ADE41713572300EF426F /* MITDiningHallMenuComparisonView.m in Sources */,
+				A5FA03A819D5D6940063FF2C /* UIImage+GIF.m in Sources */,
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
 				A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
