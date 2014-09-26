@@ -217,8 +217,7 @@
                                                                                             applicationActivities:nil];
         
         sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
-                                                        UIActivityTypeAssignToContact,
-                                                        UIActivityTypeSaveToCameraRoll];
+                                                        UIActivityTypeAssignToContact];
         
         [sharingViewController setValue:[NSString stringWithFormat:@"MIT News: %@",self.storyTitle] forKeyPath:@"subject"];
         
