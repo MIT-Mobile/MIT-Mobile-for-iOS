@@ -222,6 +222,9 @@
         
         [sharingViewController setValue:[NSString stringWithFormat:@"MIT News: %@",self.storyTitle] forKeyPath:@"subject"];
         
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+            sharingViewController.popoverPresentationController.barButtonItem = sender;
+        }
         [self presentViewController:sharingViewController animated:YES completion:nil];
     } else {
         DDLogWarn(@"attempting to share an image with an index of NSNotFound");
