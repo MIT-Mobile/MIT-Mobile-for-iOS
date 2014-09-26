@@ -8,7 +8,7 @@
             <connections>
                 <outlet property="mainTableView" destination="QqN-ep-1fz" id="5fl-r7-xQc"/>
                 <outlet property="preSearchOverlay" destination="JxM-rL-DoB" id="Ozd-YM-X0V"/>
-                <outlet property="searchBar" destination="Yyo-qc-Cne" id="JK9-3n-8F1"/>
+                <outlet property="searchContainerView" destination="MVC-TA-LZK" id="BSp-LI-Roe"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -17,6 +17,10 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MVC-TA-LZK" userLabel="Search Container">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QqN-ep-1fz">
                     <rect key="frame" x="0.0" y="44" width="320" height="460"/>
                     <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -29,29 +33,22 @@
                     <rect key="frame" x="0.0" y="44" width="320" height="460"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <searchBar contentMode="redraw" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yyo-qc-Cne">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="ec0-6P-n9r"/>
-                    </connections>
-                </searchBar>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="Yyo-qc-Cne" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="5a9-FH-blS"/>
-                <constraint firstItem="JxM-rL-DoB" firstAttribute="top" secondItem="Yyo-qc-Cne" secondAttribute="bottom" id="CU4-52-wAW"/>
-                <constraint firstItem="QqN-ep-1fz" firstAttribute="top" secondItem="Yyo-qc-Cne" secondAttribute="bottom" id="M1r-Id-xbd"/>
-                <constraint firstItem="JxM-rL-DoB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="WzO-Bb-ayY"/>
-                <constraint firstAttribute="trailing" secondItem="QqN-ep-1fz" secondAttribute="trailing" id="YJQ-fx-UhV"/>
-                <constraint firstAttribute="bottom" secondItem="JxM-rL-DoB" secondAttribute="bottom" id="juK-vf-4Fk"/>
-                <constraint firstItem="QqN-ep-1fz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="skI-B0-EQL"/>
-                <constraint firstAttribute="trailing" secondItem="Yyo-qc-Cne" secondAttribute="trailing" id="tft-5P-vPy"/>
-                <constraint firstAttribute="bottom" secondItem="QqN-ep-1fz" secondAttribute="bottom" id="xCu-IR-dn6"/>
-                <constraint firstAttribute="trailing" secondItem="JxM-rL-DoB" secondAttribute="trailing" id="xNs-fD-QYH"/>
+                <constraint firstAttribute="trailing" secondItem="QqN-ep-1fz" secondAttribute="trailing" id="Bq3-f4-znO"/>
+                <constraint firstItem="QqN-ep-1fz" firstAttribute="top" secondItem="MVC-TA-LZK" secondAttribute="bottom" id="CEO-Qh-Ktk"/>
+                <constraint firstItem="JxM-rL-DoB" firstAttribute="top" secondItem="MVC-TA-LZK" secondAttribute="bottom" id="DAJ-d2-z9m"/>
+                <constraint firstItem="QqN-ep-1fz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="JGU-tB-eb2"/>
+                <constraint firstAttribute="bottom" secondItem="JxM-rL-DoB" secondAttribute="bottom" id="gmN-Cb-v9M"/>
+                <constraint firstItem="MVC-TA-LZK" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lQp-i0-jck"/>
+                <constraint firstItem="JxM-rL-DoB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lYM-An-pUT"/>
+                <constraint firstAttribute="trailing" secondItem="MVC-TA-LZK" secondAttribute="trailing" id="pOO-Uf-Xbe"/>
+                <constraint firstAttribute="bottom" secondItem="QqN-ep-1fz" secondAttribute="bottom" id="qQe-jP-LfC"/>
+                <constraint firstAttribute="trailing" secondItem="JxM-rL-DoB" secondAttribute="trailing" id="trW-4v-dKV"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
-            <point key="canvasLocation" x="529" y="288"/>
+            <point key="canvasLocation" x="977" y="397"/>
         </view>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
