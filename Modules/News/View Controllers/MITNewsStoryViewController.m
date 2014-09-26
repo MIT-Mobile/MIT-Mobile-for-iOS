@@ -151,9 +151,11 @@
         UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                                             applicationActivities:nil];
         sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
-                                                        UIActivityTypeAssignToContact,
-                                                        UIActivityTypeSaveToCameraRoll];
+                                                        UIActivityTypeAssignToContact];
 
+        if ([sharingViewController respondsToSelector:@selector(popoverPresentationController)]) {
+            sharingViewController.popoverPresentationController.barButtonItem = sender;
+        }
         [self presentViewController:sharingViewController animated:YES completion:nil];
     }
 }

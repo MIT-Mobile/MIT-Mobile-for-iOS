@@ -2,18 +2,22 @@
 #import "MITCollectionViewGridLayout.h"
 
 @class MITNewsStory;
+@class MITCollectionViewCellSizer;
+
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
 @protocol MITNewsGridDelegate;
 
 @interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
-@property (nonatomic) NSUInteger numberOfStoriesPerCategory;
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property (nonatomic,weak) id<MITNewsStoryDelegate, MITNewsGridDelegate> delegate;
+@property(nonatomic) NSUInteger numberOfStoriesPerCategory;
+@property(nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property(nonatomic,readonly) MITCollectionViewCellSizer *collectionViewCellSizer;
 
-@property (nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
-@property (nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
+@property(nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
+@property(nonatomic,weak) id<MITNewsStoryDelegate, MITNewsGridDelegate> delegate;
+
+@property(nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
+@property(nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
 
 - (instancetype)init;
 

@@ -11,9 +11,10 @@
 #import "MITNewsGridHeaderView.h"
 #import "MITAdditions.h"
 #import "MITNewsStoryCollectionViewCell.h"
+#import "MITCollectionViewCellSizer.h"
 #import "MITNewsLoadMoreCollectionViewCell.h"
 
-@interface MITNewsGridViewController ()
+@interface MITNewsGridViewController () <MITCollectionViewCellAutosizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 
@@ -22,10 +23,7 @@
 
 @end
 
-@implementation MITNewsGridViewController {
-    NSMutableDictionary *_layoutCellsByIdentifier;
-}
-
+@implementation MITNewsGridViewController
 #pragma mark UI Element text attributes
 - (instancetype)init
 {
@@ -55,18 +53,26 @@
 {
     UICollectionView *collectionView = self.collectionView;
 
-    self.collectionView.dataSource = self;
-    self.collectionView.delegate = self;
-    self.collectionView.backgroundColor = [UIColor clearColor];
-    self.collectionView.backgroundView = nil;
+    collectionView.dataSource = self;
+    collectionView.delegate = self;
+    collectionView.backgroundColor = [UIColor clearColor];
+    collectionView.backgroundView = nil;
     
-    [self registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forDynamicCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
-
-    [self registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forDynamicCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
-    [self registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forDynamicCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
-
-    [self registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forDynamicCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
-    [self registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forDynamicCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
+    MITCollectionViewCellSizer *sizer = [[MITCollectionViewCellSizer alloc] init];
+    sizer.delegate = self;
+    
+    [sizer registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forLayoutCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    [sizer registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forLayoutCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    [sizer registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forLayoutCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    [sizer registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forLayoutCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+    [sizer registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forLayoutCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
+    _collectionViewCellSizer = sizer;
+    
+    [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryJumbo bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryJumbo];
+    [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryDek bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryDek];
+    [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryClip bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryClip];
+    [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryWithImage bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryWithImage];
+    [collectionView registerNib:[UINib nibWithNibName:MITNewsCellIdentifierStoryLoadMore bundle:nil] forCellWithReuseIdentifier:MITNewsCellIdentifierStoryLoadMore];
 
     [collectionView registerNib:[UINib nibWithNibName:MITNewsReusableViewIdentifierSectionHeader bundle:nil] forSupplementaryViewOfKind:MITNewsReusableViewIdentifierSectionHeader withReuseIdentifier:MITNewsReusableViewIdentifierSectionHeader];
 }
@@ -229,13 +235,9 @@
     return nil;
 }
 
-- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier
+- (void)collectionViewCellSizer:(MITCollectionViewCellSizer*)collectionViewCellSizer configureContentForLayoutCell:(UICollectionViewCell*)cell withReuseIdentifier:(NSString*)reuseIdentifier atIndexPath:(NSIndexPath*)indexPath
 {
-    [self.collectionView registerNib:nib forCellWithReuseIdentifier:reuseIdentifier];
-    
-    UICollectionViewCell *layoutCell = [[nib instantiateWithOwner:nil options:nil] firstObject];
-    [self _setCollectionViewLayoutCell:layoutCell];
-    
+    [self configureCell:cell atIndexPath:indexPath];
 }
 
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath
@@ -268,25 +270,14 @@
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
-- (void)_setCollectionViewLayoutCell:(UICollectionViewCell*)cell
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
-    if (!_layoutCellsByIdentifier) {
-        _layoutCellsByIdentifier = [[NSMutableDictionary alloc] init];
-    }
+    NSString *reuseIdentifier = [self identifierForCellAtIndexPath:indexPath];
     
-    _layoutCellsByIdentifier[cell.reuseIdentifier] = cell;
-}
-
-- (UICollectionViewCell*)_dequeueLayoutCellForItemAtIndexPath:(NSIndexPath*)indexPath
-{
-    if (!_layoutCellsByIdentifier) {
-        return nil;
-    }
+    CGSize maximumSize = CGSizeMake(width, 0.);
+    CGSize cellSize = [_collectionViewCellSizer sizeForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath withSize:maximumSize flexibleAxis:MITFlexibleAxisVertical];
     
-    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
-    UICollectionViewCell *cell = _layoutCellsByIdentifier[identifier];
-    
-    return cell;
+    return cellSize.height;
 }
 
 #pragma mark MITCollectionViewDelegateNewsGrid
