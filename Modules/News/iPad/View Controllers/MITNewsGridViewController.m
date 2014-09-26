@@ -280,64 +280,12 @@
     return cellSize.height;
 }
 
-#pragma mark MITCollectionViewDelegateNewsGrid
-- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
-{
-    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
-    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
-        return 175.;
-    }
-    
-    UICollectionViewCell *cell = [self _dequeueLayoutCellForItemAtIndexPath:indexPath];
-
-    [self configureCell:cell atIndexPath:indexPath];
-
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:cell
-                                                                  attribute:NSLayoutAttributeWidth
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:nil
-                                                                  attribute:NSLayoutAttributeNotAnAttribute
-                                                                 multiplier:1
-                                                                   constant:width];
-
-    [cell addConstraint:constraint];
-
-    // Make sure the cell's frame matched the width we were given
-    CGRect frame = cell.frame;
-    frame.size.width = width;
-    cell.frame = frame;
-
-    // Let this re-layout to account for the updated width
-    // (such as re-positioning the content view)
-    [cell setNeedsLayout];
-    [cell layoutIfNeeded];
-
-    // Now that the view has been laid out for the proper width
-    // give it a chance to update any constraints which need tweaking
-    [cell setNeedsUpdateConstraints];
-
-    // ...and then relayout again!
-    [cell setNeedsLayout];
-    [cell layoutIfNeeded];
-
-    CGSize cellSize = [cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-
-    [cell removeConstraint:constraint];
-
-    return ceil(cellSize.height);
-}
-
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
 {
     if (self.isCategory) {
         return 0;
     }
     return 44;
-}
-
-- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
-{
-    return [self heightForItemAtIndexPath:indexPath withWidth:width];
 }
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
