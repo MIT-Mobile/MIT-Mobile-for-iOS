@@ -217,11 +217,13 @@
                                                                                             applicationActivities:nil];
         
         sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
-                                                        UIActivityTypeAssignToContact,
-                                                        UIActivityTypeSaveToCameraRoll];
+                                                        UIActivityTypeAssignToContact];
         
         [sharingViewController setValue:[NSString stringWithFormat:@"MIT News: %@",self.storyTitle] forKeyPath:@"subject"];
         
+        if ([sharingViewController respondsToSelector:@selector(popoverPresentationController)]) {
+            sharingViewController.popoverPresentationController.barButtonItem = sender;
+        }
         [self presentViewController:sharingViewController animated:YES completion:nil];
     } else {
         DDLogWarn(@"attempting to share an image with an index of NSNotFound");
