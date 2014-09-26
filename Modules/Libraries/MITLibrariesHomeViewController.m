@@ -136,6 +136,10 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             [self.mainTableView reloadData];
         }
     }];
+    
+    [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
+        
+    }];
 }
 
 #pragma mark - TableView Methods
