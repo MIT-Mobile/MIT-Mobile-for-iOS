@@ -128,17 +128,12 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [MITLibrariesWebservices getLinksWithCompletion:^(NSArray *links, NSError *error) {
         if (links) {
             self.links = links;
-            self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoaded;
-            [self.mainTableView reloadData];
+            self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoaded;            
         } else {
             self.links = nil;
             self.linksStatus = MITLibrariesHomeViewControllerLinksStatusFailed;
-            [self.mainTableView reloadData];
         }
-    }];
-    
-    [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
-        
+        [self.mainTableView reloadData];
     }];
 }
 

@@ -4,8 +4,6 @@
 
 @interface MITLibrariesHolding : NSObject <MITInitializableWithDictionaryProtocol>
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
-
 @property (nonatomic, strong) NSString *code;
 @property (nonatomic, strong) NSString *library;
 @property (nonatomic, strong) NSString *address;

@@ -3,8 +3,6 @@
 
 @interface MITLibrariesAvailability : NSObject <MITInitializableWithDictionaryProtocol>
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
-
 @property (nonatomic, strong) NSString *location;
 @property (nonatomic, strong) NSString *collection;
 @property (nonatomic, strong) NSString *callNumber;
