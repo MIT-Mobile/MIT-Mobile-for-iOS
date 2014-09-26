@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "MITInitializableWithDictionaryProtocol.h"
 
-@interface MITLibrariesAvailability : NSObject
-
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
+@interface MITLibrariesAvailability : NSObject <MITInitializableWithDictionaryProtocol>
 
 @property (nonatomic, strong) NSString *location;
 @property (nonatomic, strong) NSString *collection;
