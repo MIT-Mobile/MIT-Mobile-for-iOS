@@ -35,7 +35,6 @@
 #import "MITTouchstoneController.h"
 
 #import "MITLauncher.h"
-#import "MITLauncherGridViewController.h"
 #import "MITLauncherListViewController.h"
 
 #import "MITShuttleStopNotificationManager.h"
@@ -48,7 +47,6 @@
 @end
 
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,MITLauncherDataSource,MITLauncherDelegate>
-@property (nonatomic,strong) MITLauncherGridViewController *launcherViewController;
 
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
@@ -724,6 +722,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     navigationController.delegate = self;
     
     _topNavigationController = navigationController;
+    _launcherViewController = launcherViewController;
+    
     return navigationController;
 }
 

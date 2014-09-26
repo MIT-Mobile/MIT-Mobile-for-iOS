@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "MITLauncherGridViewController.h"
 
 @class MITModule;
 @class MIT_MobileAppDelegate;
@@ -23,6 +24,7 @@
 @property (nonatomic,readonly,weak) UINavigationController *topNavigationController;
 @property (nonatomic,readonly,weak) ECSlidingViewController *slidingViewController;
 
+@property (nonatomic,strong) MITLauncherGridViewController *launcherViewController;
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
 
