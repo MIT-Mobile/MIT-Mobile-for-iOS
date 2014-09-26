@@ -148,7 +148,7 @@
                                                         UIActivityTypeAssignToContact,
                                                         UIActivityTypeSaveToCameraRoll];
 
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+        if ([sharingViewController respondsToSelector:@selector(popoverPresentationController)]) {
             sharingViewController.popoverPresentationController.barButtonItem = sender;
         }
         [self presentViewController:sharingViewController animated:YES completion:nil];
