@@ -3,12 +3,6 @@
 #import "UIKit+MITLibraries.h"
 #import "UIImageView+AFNetworking.h"
 
-//@interface MITLibrariesItemCell ()
-//
-//@property (nonatomic, weak) IBOutlet NSLayoutConstraint *itemTitleLabelHorizontalTrailingConstraint;
-//
-//@end
-
 @implementation MITLibrariesWorldcatItemCell
 
 - (void)awakeFromNib
