@@ -453,10 +453,10 @@ CGFloat const refreshControlTextHeight = 19;
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
     
-    UIViewController *parentViewController = self.parentViewController.childViewControllers[0];
-    UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
-    [parentViewController.navigationItem setBackBarButtonItem:nil];
-    [parentViewController.navigationItem setBackBarButtonItem:item];
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    UIBarButtonItem *backBarButton = appDelegate.launcherViewController.navigationItem.backBarButtonItem;
+    [appDelegate.launcherViewController.navigationItem setBackBarButtonItem:nil];
+    [appDelegate.launcherViewController.navigationItem setBackBarButtonItem:backBarButton];
 }
 
 #pragma mark Story Refreshing
