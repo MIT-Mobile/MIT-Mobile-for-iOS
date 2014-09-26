@@ -2,17 +2,21 @@
 #import "MITCollectionViewGridLayout.h"
 
 @class MITNewsStory;
+@class MITCollectionViewCellSizer;
+
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
 
 @interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
-@property (nonatomic) NSUInteger numberOfStoriesPerCategory;
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property (nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+@property(nonatomic) NSUInteger numberOfStoriesPerCategory;
+@property(nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property(nonatomic,readonly) MITCollectionViewCellSizer *collectionViewCellSizer;
 
-@property (nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
-@property (nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
+@property(nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
+@property(nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+
+@property(nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
+@property(nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
 
 - (instancetype)init;
 
@@ -24,6 +28,4 @@
 
 #pragma mark Subclass methods
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
-- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
-- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 @end
