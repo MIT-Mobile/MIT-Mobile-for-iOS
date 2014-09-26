@@ -1,7 +1,7 @@
 #import "MITLibrariesWorldcatItemCell.h"
 #import "MITLibrariesWorldcatItem.h"
 #import "UIKit+MITLibraries.h"
-#import "UIImageView+AFNetworking.h"
+#import "UIImageView+WebCache.h"
 
 @implementation MITLibrariesWorldcatItemCell
 
@@ -25,7 +25,7 @@
     }
     
     self.itemImageView.image = nil;
-    [self.itemImageView setImageWithURL:[NSURL URLWithString:item.imageUrl]];
+    [self.itemImageView sd_setImageWithURL:[NSURL URLWithString:item.imageUrl]];
     
     self.itemTitleLabel.text = item.title;
     self.yearAndAuthorLabel.text = [NSString stringWithFormat:@"%@; %@", [item yearsString], [item authorsString]];
