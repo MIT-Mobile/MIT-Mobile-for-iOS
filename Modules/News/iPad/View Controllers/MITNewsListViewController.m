@@ -492,8 +492,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
-    [self.delegate getMoreStoriesForSection:section completion:^(NSError * error) {
-    }];
+    [self.delegate getMoreStoriesForSection:section completion:nil];
 }
 
 - (void)setError:(NSString *)errorMessage
