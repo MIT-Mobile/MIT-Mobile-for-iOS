@@ -2,7 +2,7 @@
 
 @class MITLibrariesWorldcatItem;
 
-@interface MITLibrariesItemCell : UITableViewCell
+@interface MITLibrariesWorldcatItemCell : UITableViewCell
 
 // Set this to effect UI changes (label texts, image, etc)
 @property (nonatomic, strong) MITLibrariesWorldcatItem *item;

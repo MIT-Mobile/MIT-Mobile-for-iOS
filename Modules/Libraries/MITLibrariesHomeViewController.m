@@ -3,6 +3,7 @@
 #import "MITLibrariesLink.h"
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
+#import "MITLibrariesSearchResultsViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -23,12 +24,17 @@ typedef NS_ENUM(NSInteger, MITLibrariesHomeViewControllerLinksStatus) {
 
 static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @"kMITLibrariesHomeViewControllerDefaultCellIdentifier";
 
-@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate>
+@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) NSArray *links;
 @property (nonatomic, assign) MITLibrariesHomeViewControllerLinksStatus linksStatus;
-
-@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, weak) IBOutlet UIView *searchContainerView;
+@property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) NSLayoutConstraint *cancelButtonTrailingSpaceConstraint;
+@property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
+@property (nonatomic, strong) MITLibrariesSearchResultsViewController *searchResultsViewController;
+@property (nonatomic, strong) IBOutlet UITableView *mainTableView;
 
 @end
 
@@ -42,44 +48,94 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [super viewDidLoad];
     
     self.title = @"Libraries";
-    self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.navigationBar.opaque = YES;
-    self.navigationController.navigationBar.barTintColor = [UIColor librariesNavBarTintColor];
+    self.view.backgroundColor = [UIColor librariesBackgroundColor];
     self.edgesForExtendedLayout = UIRectEdgeLeft | UIRectEdgeBottom | UIRectEdgeRight;
     
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.opaque = YES;
+    self.navigationController.navigationBar.barTintColor = [UIColor librariesBackgroundColor];
+    
+    [self setupSearchBar];
+    [self setupCancelButton];
+    [self setupSearchContainer];
+    [self setupSearchResultsViewController];
     [self registerCells];
 
+    [self loadLinks];
+}
+
+- (void)registerCells
+{
+    [self.mainTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+}
+
+- (void)setupSearchBar
+{
+    self.searchBar = [[UISearchBar alloc] initWithFrame:self.searchContainerView.bounds];
+    self.searchBar.showsCancelButton = NO;
+    self.searchBar.delegate = self;
+    self.searchBar.placeholder = @"Search MIT's WorldCat";
+    self.searchBar.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.searchContainerView addSubview:self.searchBar];
+}
+
+- (void)setupCancelButton
+{
+    self.cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    self.cancelButton.titleLabel.font = [UIFont systemFontOfSize:17];
+    [self.cancelButton addTarget:self action:@selector(cancelButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    self.cancelButton.frame = CGRectMake(self.searchContainerView.bounds.size.width + 67, 0, 67, self.searchContainerView.bounds.size.height);
+    [self.searchContainerView addSubview:self.cancelButton];
+    self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.cancelButton addConstraint:[NSLayoutConstraint constraintWithItem:self.cancelButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:67]];
+}
+
+- (void)setupSearchContainer
+{
+    self.searchContainerView.backgroundColor = [UIColor librariesBackgroundColor];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topLayoutGuide]-0-[searchContainerView]" options:0 metrics:nil views:@{@"topLayoutGuide": self.topLayoutGuide, @"searchContainerView": self.searchContainerView}]];
+    [self setupSearchContainerConstraints];
+}
+
+- (void)setupSearchContainerConstraints
+{
+    [self.searchContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchBar]-0-[cancelButton]" options:0 metrics:nil views:@{@"searchBar": self.searchBar, @"cancelButton": self.cancelButton}]];
+    [self.searchContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[searchBar]-0-|" options:0 metrics:nil views:@{@"searchBar": self.searchBar}]];
+    [self.searchContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[cancelButton]-0-|" options:0 metrics:nil views:@{@"cancelButton": self.cancelButton}]];
+    
+    self.cancelButtonTrailingSpaceConstraint = [NSLayoutConstraint constraintWithItem:self.searchContainerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.cancelButton attribute:NSLayoutAttributeTrailing multiplier:1 constant:-self.cancelButton.bounds.size.width];
+    [self.searchContainerView addConstraint:self.cancelButtonTrailingSpaceConstraint];
+}
+
+- (void)setupSearchResultsViewController
+{
+    self.searchResultsViewController = [[MITLibrariesSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    [self addChildViewController:self.searchResultsViewController];
+    self.searchResultsViewController.view.hidden = YES;
+    [self.view addSubview:self.searchResultsViewController.view];
+    self.searchResultsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.searchResultsViewController didMoveToParentViewController:self];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchResultsView]-0-|" options:0 metrics:nil views:@{@"searchResultsView": self.searchResultsViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[searchBar]-0-[searchResultsView]-0-|" options:0 metrics:nil views:@{@"searchResultsView": self.searchResultsViewController.view,
+                                                                                                                                                       @"searchBar": self.searchBar}]];
+}
+
+- (void)loadLinks
+{
     self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoading;
     [MITLibrariesWebservices getLinksWithCompletion:^(NSArray *links, NSError *error) {
         if (links) {
             self.links = links;
             self.linksStatus = MITLibrariesHomeViewControllerLinksStatusLoaded;
-            [self.tableView reloadData];
-            NSLog(@"links: %@", links);
-        }
-        else {
+            [self.mainTableView reloadData];
+        } else {
             self.links = nil;
             self.linksStatus = MITLibrariesHomeViewControllerLinksStatusFailed;
-            [self.tableView reloadData];
+            [self.mainTableView reloadData];
         }
     }];
-    
-    [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
-        
-    }];
-    
-    [MITLibrariesWebservices getResultsForSearch:@"bananas" startingIndex:0 completion:^(NSArray *items, NSInteger nextIndex, NSInteger totalResults, NSError *error) {
-        if (items.count > 0) {
-            [MITLibrariesWebservices getItemDetailsForItem:items[0] completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
-                
-            }];
-        }
-    }];
-}
-
-- (void)registerCells
-{
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
 }
 
 #pragma mark - TableView Methods
@@ -147,7 +203,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (UITableViewCell *)cellForMainSectionAtRow:(NSInteger)row
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+    UITableViewCell *cell = [self.mainTableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
     
     switch (row) {
         case kMITLibrariesHomeViewControllerMainSectionYourAccountRow: {
@@ -184,7 +240,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (UITableViewCell *)cellForLinksSectionAtRow:(NSInteger)row
 {
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
+    UITableViewCell *cell = [self.mainTableView dequeueReusableCellWithIdentifier:kMITLibrariesHomeViewControllerDefaultCellIdentifier];
     
     switch (self.linksStatus) {
         case MITLibrariesHomeViewControllerLinksStatusLoaded: {
@@ -249,23 +305,53 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     }
 }
 
-// TODO: Set these all up for the actual libraries search controller
-#pragma mark - UISearchDisplayDelegate Methods
+#pragma mark - UISearchBarDelegate Methods
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    return NO;
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.preSearchOverlay.hidden = NO;
+    
+    [self setShowingCancelButton:YES animated:YES];
+    
+    return YES;
 }
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    return NO;
+    [self.searchResultsViewController search:searchBar.text];
+    self.searchResultsViewController.view.hidden = NO;
+    [self.searchBar resignFirstResponder];
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+#pragma mark - Other SearchBar Methods
+
+- (void)cancelButtonPressed
 {
-    tableView.delegate = nil;
-    tableView.dataSource = nil;
+    [self.searchBar endEditing:YES];
+    
+    self.searchBar.text = nil;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    self.searchBar.searchBarStyle = UISearchBarStyleDefault;
+    self.preSearchOverlay.hidden = YES;
+    self.searchResultsViewController.view.hidden = YES;
+    
+    [self setShowingCancelButton:NO animated:YES];
+}
+
+- (void)setShowingCancelButton:(BOOL)showCancelButton animated:(BOOL)animated
+{
+    self.cancelButtonTrailingSpaceConstraint.constant = showCancelButton ? 0 : -self.cancelButton.bounds.size.width;
+    [self.searchContainerView setNeedsUpdateConstraints];
+    
+    if (animated) {
+        [UIView animateWithDuration:0.25 animations:^{
+            [self.searchContainerView layoutIfNeeded];
+        }];
+    } else {
+        [self.searchContainerView layoutIfNeeded];
+    }
 }
 
 @end
