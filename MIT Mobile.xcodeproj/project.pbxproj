@@ -70,6 +70,7 @@
 		225819D519D9A05C00BE42E4 /* MITAutoSizingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819D419D9A05C00BE42E4 /* MITAutoSizingCell.m */; };
 		225819DE19D9C95800BE42E4 /* MITLibrariesLibraryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */; };
 		225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */; };
+		225819E219D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819E119D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m */; };
 		22589D7F19AFC0040007966A /* MITDiningHouseMealSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */; };
 		22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */; };
 		2258CBDA19CA1E450067E35C /* MITLibrariesHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */; };
@@ -804,6 +805,8 @@
 		225819DB19D9C95800BE42E4 /* MITLibrariesLibraryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLibraryCell.h; sourceTree = "<group>"; };
 		225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLibraryCell.m; sourceTree = "<group>"; };
 		225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesLibraryCell.xib; sourceTree = "<group>"; };
+		225819E019D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLibraryDetailViewController.h; sourceTree = "<group>"; };
+		225819E119D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLibraryDetailViewController.m; sourceTree = "<group>"; };
 		22589D7D19AFC0040007966A /* MITDiningHouseMealSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectionView.h; path = Dining/MITDiningHouseMealSelectionView.h; sourceTree = "<group>"; };
 		22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseMealSelectionView.m; path = Dining/MITDiningHouseMealSelectionView.m; sourceTree = "<group>"; };
 		22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHouseMealSelectionView.xib; path = Dining/MITDiningHouseMealSelectionView.xib; sourceTree = "<group>"; };
@@ -2343,6 +2346,8 @@
 				A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */,
 				225819BE19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.h */,
 				225819BF19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m */,
+				225819E019D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.h */,
+				225819E119D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -5006,6 +5011,7 @@
 				5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */,
 				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
 				226A887F19C8C4EC00DB96B6 /* MITLibrariesWebservices.m in Sources */,
+				225819E219D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m in Sources */,
 				5EC89F621926517200E06204 /* MITShuttlePrediction.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,

@@ -15,4 +15,14 @@
     return mapping;
 }
 
+- (NSString *)hoursStringForDate:(NSDate *)date
+{
+    return @"8:00am - 10:00pm";
+}
+
+- (BOOL)isOpenAtDate:(NSDate *)date
+{
+    return YES;
+}
+
 @end

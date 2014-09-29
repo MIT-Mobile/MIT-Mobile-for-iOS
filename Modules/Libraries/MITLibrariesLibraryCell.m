@@ -12,17 +12,25 @@
 
 @implementation MITLibrariesLibraryCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
+    self.libraryHoursLabel.textColor = [UIColor mit_greyTextColor];
 }
 
 - (void)setContent:(id)content
 {
     MITLibrariesLibrary *library = (MITLibrariesLibrary *)content;
     self.libraryNameLabel.text = library.name;
-    self.libraryHoursLabel.text = @"Always Open!";
-    self.openClosedLabel.text = @"Open";
-    self.openClosedLabel.textColor = [UIColor mit_openGreenColor];
+    self.libraryHoursLabel.text = [library hoursStringForDate:[NSDate date]];
+    if ([library isOpenAtDate:[NSDate date]]) {
+        self.openClosedLabel.text = @"Open";
+        self.openClosedLabel.textColor = [UIColor mit_openGreenColor];
+    }
+    else {
+        self.openClosedLabel.text = @"Closed";
+        self.openClosedLabel.textColor = [UIColor mit_closedRedColor];
+    }
     
     [self layoutIfNeeded];
 }
