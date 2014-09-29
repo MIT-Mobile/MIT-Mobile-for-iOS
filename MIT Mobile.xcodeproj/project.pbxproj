@@ -71,6 +71,9 @@
 		225819DE19D9C95800BE42E4 /* MITLibrariesLibraryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */; };
 		225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */; };
 		225819E219D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819E119D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m */; };
+		225819E519D9F71F00BE42E4 /* MITLibrariesRegularTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819E419D9F71F00BE42E4 /* MITLibrariesRegularTerm.m */; };
+		225819E819D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819E719D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m */; };
+		225819EB19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819EA19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m */; };
 		22589D7F19AFC0040007966A /* MITDiningHouseMealSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */; };
 		22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */; };
 		2258CBDA19CA1E450067E35C /* MITLibrariesHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */; };
@@ -807,6 +810,12 @@
 		225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesLibraryCell.xib; sourceTree = "<group>"; };
 		225819E019D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLibraryDetailViewController.h; sourceTree = "<group>"; };
 		225819E119D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLibraryDetailViewController.m; sourceTree = "<group>"; };
+		225819E319D9F71F00BE42E4 /* MITLibrariesRegularTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesRegularTerm.h; sourceTree = "<group>"; };
+		225819E419D9F71F00BE42E4 /* MITLibrariesRegularTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesRegularTerm.m; sourceTree = "<group>"; };
+		225819E619D9F73700BE42E4 /* MITLibrariesExceptionsTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesExceptionsTerm.h; sourceTree = "<group>"; };
+		225819E719D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesExceptionsTerm.m; sourceTree = "<group>"; };
+		225819E919D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesClosingsTerm.h; sourceTree = "<group>"; };
+		225819EA19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesClosingsTerm.m; sourceTree = "<group>"; };
 		22589D7D19AFC0040007966A /* MITDiningHouseMealSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectionView.h; path = Dining/MITDiningHouseMealSelectionView.h; sourceTree = "<group>"; };
 		22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseMealSelectionView.m; path = Dining/MITDiningHouseMealSelectionView.m; sourceTree = "<group>"; };
 		22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHouseMealSelectionView.xib; path = Dining/MITDiningHouseMealSelectionView.xib; sourceTree = "<group>"; };
@@ -2306,6 +2315,12 @@
 				2258CBE619CB69800067E35C /* MITLibrariesLibrary.m */,
 				2258CBE819CB7E7D0067E35C /* MITLibrariesTerm.h */,
 				2258CBE919CB7E7D0067E35C /* MITLibrariesTerm.m */,
+				225819E319D9F71F00BE42E4 /* MITLibrariesRegularTerm.h */,
+				225819E419D9F71F00BE42E4 /* MITLibrariesRegularTerm.m */,
+				225819E619D9F73700BE42E4 /* MITLibrariesExceptionsTerm.h */,
+				225819E719D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m */,
+				225819E919D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.h */,
+				225819EA19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m */,
 				2258CBEB19CB7EDC0067E35C /* MITLibrariesDate.h */,
 				2258CBEC19CB7EDC0067E35C /* MITLibrariesDate.m */,
 				2289814819D0761B0045BF91 /* MITLibrariesWorldcatItem.h */,
@@ -4900,6 +4915,7 @@
 				EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */,
 				223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */,
 				8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */,
+				225819E519D9F71F00BE42E4 /* MITLibrariesRegularTerm.m in Sources */,
 				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
 				2CD1AE8419520E40003D7601 /* MITCollectionViewGridLayout.m in Sources */,
 				EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */,
@@ -4997,6 +5013,7 @@
 				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
+				225819EB19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */,
 				225819D519D9A05C00BE42E4 /* MITAutoSizingCell.m in Sources */,
@@ -5156,6 +5173,8 @@
 				DE654523173D90A900562C20 /* UIButton+WebCache.m in Sources */,
 				224B337C19B10A000031817B /* MITDiningMenuItemCell.m in Sources */,
 				0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */,
+				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
+				225819E819D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m in Sources */,
 				27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */,
 				279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */,
 				27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */,
