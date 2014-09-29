@@ -66,6 +66,10 @@
 		224F6B2019D480F10062D340 /* MITLibrariesMITItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 224F6B1F19D480F10062D340 /* MITLibrariesMITItem.m */; };
 		224F6B2619D484EC0062D340 /* MITLibrariesCoverImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 224F6B2519D484EC0062D340 /* MITLibrariesCoverImage.m */; };
 		2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */; };
+		225819C019D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819BF19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m */; };
+		225819D519D9A05C00BE42E4 /* MITAutoSizingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819D419D9A05C00BE42E4 /* MITAutoSizingCell.m */; };
+		225819DE19D9C95800BE42E4 /* MITLibrariesLibraryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */; };
+		225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */; };
 		22589D7F19AFC0040007966A /* MITDiningHouseMealSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */; };
 		22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */; };
 		2258CBDA19CA1E450067E35C /* MITLibrariesHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */; };
@@ -793,6 +797,13 @@
 		224F6B2519D484EC0062D340 /* MITLibrariesCoverImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesCoverImage.m; sourceTree = "<group>"; };
 		2253E46A196DCD8800D04069 /* MITMapDefaultCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapDefaultCategoryViewController.h; sourceTree = "<group>"; };
 		2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapDefaultCategoryViewController.m; sourceTree = "<group>"; };
+		225819BE19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLocationsHoursViewController.h; sourceTree = "<group>"; };
+		225819BF19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLocationsHoursViewController.m; sourceTree = "<group>"; };
+		225819D319D9A05C00BE42E4 /* MITAutoSizingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAutoSizingCell.h; sourceTree = "<group>"; };
+		225819D419D9A05C00BE42E4 /* MITAutoSizingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAutoSizingCell.m; sourceTree = "<group>"; };
+		225819DB19D9C95800BE42E4 /* MITLibrariesLibraryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLibraryCell.h; sourceTree = "<group>"; };
+		225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLibraryCell.m; sourceTree = "<group>"; };
+		225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesLibraryCell.xib; sourceTree = "<group>"; };
 		22589D7D19AFC0040007966A /* MITDiningHouseMealSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHouseMealSelectionView.h; path = Dining/MITDiningHouseMealSelectionView.h; sourceTree = "<group>"; };
 		22589D7E19AFC0040007966A /* MITDiningHouseMealSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHouseMealSelectionView.m; path = Dining/MITDiningHouseMealSelectionView.m; sourceTree = "<group>"; };
 		22589D8519AFC04B0007966A /* MITDiningHouseMealSelectionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningHouseMealSelectionView.xib; path = Dining/MITDiningHouseMealSelectionView.xib; sourceTree = "<group>"; };
@@ -2330,6 +2341,8 @@
 				A5FA038C19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.h */,
 				A5FA038D19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m */,
 				A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */,
+				225819BE19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.h */,
+				225819BF19D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3859,6 +3872,9 @@
 				A50884E619D1E7150047A21B /* MITLibrariesItemHoldCell.h */,
 				A50884E719D1E7150047A21B /* MITLibrariesItemHoldCell.m */,
 				A50884E819D1E7150047A21B /* MITLibrariesItemHoldCell.xib */,
+				225819DB19D9C95800BE42E4 /* MITLibrariesLibraryCell.h */,
+				225819DC19D9C95800BE42E4 /* MITLibrariesLibraryCell.m */,
+				225819DD19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3872,6 +3888,8 @@
 				2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */,
 				A5A9A98819CA14CB0090BE4F /* MITExtendedNavBarView.h */,
 				A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */,
+				225819D319D9A05C00BE42E4 /* MITAutoSizingCell.h */,
+				225819D419D9A05C00BE42E4 /* MITAutoSizingCell.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4574,6 +4592,7 @@
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
+				225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */,
 				A5FA039019D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
 				A50884D119D09C190047A21B /* MITLibrariesYourAccountViewController.xib in Resources */,
@@ -4724,6 +4743,7 @@
 				2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */,
 				2209CC3019929BE300E17100 /* MITEventsTableViewController.m in Sources */,
 				A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */,
+				225819DE19D9C95800BE42E4 /* MITLibrariesLibraryCell.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
 				0B5D71241A08261B00F60120 /* UIImage+WebP.m in Sources */,
 				DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */,
@@ -4974,6 +4994,7 @@
 				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */,
+				225819D519D9A05C00BE42E4 /* MITAutoSizingCell.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
 				A59A259919A142EB00AD7E3A /* MITDiningHouseHomeViewControllerPad.m in Sources */,
@@ -5037,6 +5058,7 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				2289814A19D0761B0045BF91 /* MITLibrariesWorldcatItem.m in Sources */,
+				225819C019D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m in Sources */,
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
 				A59A25A519A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,

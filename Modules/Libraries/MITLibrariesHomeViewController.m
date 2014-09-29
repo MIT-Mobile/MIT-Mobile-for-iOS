@@ -4,6 +4,7 @@
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 #import "MITLibrariesSearchResultsViewController.h"
+#import "MITLibrariesLocationsHoursViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -278,7 +279,10 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
-            // TODO: Go to "Locations & Hours" VC
+            {
+                MITLibrariesLocationsHoursViewController *locationsVC = [[MITLibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStylePlain];
+                [self.navigationController pushViewController:locationsVC animated:YES];
+            }
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
