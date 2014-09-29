@@ -273,6 +273,10 @@
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
     NSString *reuseIdentifier = [self identifierForCellAtIndexPath:indexPath];
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        return 175.;
+    }
     
     CGSize maximumSize = CGSizeMake(width, 0.);
     CGSize cellSize = [_collectionViewCellSizer sizeForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath withSize:maximumSize flexibleAxis:MITFlexibleAxisVertical];
