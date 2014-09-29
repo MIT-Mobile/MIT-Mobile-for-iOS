@@ -2,6 +2,7 @@
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesLibraryCell.h"
 #import "MITLibrariesWebservices.h"
+#import "MITLibrariesLibraryDetailViewController.h"
 
 static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
 
@@ -17,11 +18,14 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
 {
     [super viewDidLoad];
     
+    self.title = @"Locations & Hours";
+    
     [self setupTableView];
     
     [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
         if (libraries) {
             self.libraries = libraries;
+            //[self.refreshControl endRefreshing];
             [self.tableView reloadData];
         }
     }];
@@ -31,6 +35,9 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
 {
     UINib *cellNib = [UINib nibWithNibName:kMITLibraryCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITLibraryCell];
+    
+//    self.refreshControl = [[UIRefreshControl alloc] init];
+//    [self.refreshControl beginRefreshing];
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,6 +70,16 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
     [cell setContent:self.libraries[indexPath.row]];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+    detailVC.library = self.libraries[indexPath.row];
+    
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 @end

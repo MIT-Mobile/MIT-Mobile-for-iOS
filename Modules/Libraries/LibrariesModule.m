@@ -42,6 +42,4 @@
     return [[MITLibrariesHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
-
-
 @end

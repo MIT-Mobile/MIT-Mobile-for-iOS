@@ -28,7 +28,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zB2-SZ-y8N">
-                        <rect key="frame" x="277" y="27" width="36" height="17"/>
+                        <rect key="frame" x="274" y="27" width="36" height="17"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
@@ -37,10 +37,11 @@
                 <constraints>
                     <constraint firstItem="9hh-Ji-FY7" firstAttribute="top" secondItem="sD0-mL-hVt" secondAttribute="bottom" constant="6" id="6KW-1J-iMp"/>
                     <constraint firstAttribute="trailingMargin" secondItem="9hh-Ji-FY7" secondAttribute="trailing" constant="55" id="BWJ-AK-36b"/>
-                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="trailing" constant="20" id="QJt-2U-2Tp"/>
+                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="trailing" constant="17" id="QJt-2U-2Tp"/>
                     <constraint firstItem="zB2-SZ-y8N" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="19" id="SOf-Z3-U8E"/>
                     <constraint firstItem="9hh-Ji-FY7" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" id="Svj-NL-2Ek"/>
                     <constraint firstItem="sD0-mL-hVt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="i5O-O0-dJI"/>
+                    <constraint firstItem="sD0-mL-hVt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="rjc-Zs-JJC"/>
                     <constraint firstItem="sD0-mL-hVt" firstAttribute="trailing" secondItem="9hh-Ji-FY7" secondAttribute="trailing" id="rmT-PS-coy"/>
                     <constraint firstItem="9hh-Ji-FY7" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="leading" id="wKH-mC-f6Z"/>
                 </constraints>

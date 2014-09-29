@@ -10,4 +10,7 @@
 @property (nonatomic, strong) NSString *phoneNumber;
 @property (nonatomic, strong) NSArray *terms;
 
+- (NSString *)hoursStringForDate:(NSDate *)date;
+- (BOOL)isOpenAtDate:(NSDate *)date;
+
 @end
