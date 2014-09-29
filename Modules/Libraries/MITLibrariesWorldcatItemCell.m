@@ -7,6 +7,7 @@
 
 - (void)awakeFromNib
 {
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
     [self.yearAndAuthorLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
 }

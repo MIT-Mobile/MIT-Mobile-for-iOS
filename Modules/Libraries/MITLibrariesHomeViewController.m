@@ -5,6 +5,7 @@
 #import "UIKit+MITLibraries.h"
 #import "MITLibrariesSearchResultsViewController.h"
 #import "MITLibrariesLocationsHoursViewController.h"
+#import "MITLibrariesSearchResultDetailViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -25,10 +26,11 @@ typedef NS_ENUM(NSInteger, MITLibrariesHomeViewControllerLinksStatus) {
 
 static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @"kMITLibrariesHomeViewControllerDefaultCellIdentifier";
 
-@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate, UISearchBarDelegate>
+@interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate, UISearchBarDelegate, MITLibrariesSearchResultsViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *links;
 @property (nonatomic, assign) MITLibrariesHomeViewControllerLinksStatus linksStatus;
+@property (nonatomic, assign) BOOL inSearchMode;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, weak) IBOutlet UIView *searchContainerView;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -56,6 +58,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     self.navigationController.navigationBar.opaque = YES;
     self.navigationController.navigationBar.barTintColor = [UIColor librariesBackgroundColor];
     
+    self.inSearchMode = NO;
+    
     [self setupSearchBar];
     [self setupCancelButton];
     [self setupSearchContainer];
@@ -63,6 +67,15 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [self registerCells];
 
     [self loadLinks];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (self.inSearchMode) {
+        [self.navigationController setNavigationBarHidden:YES animated:NO];
+    }
 }
 
 - (void)registerCells
@@ -112,6 +125,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 - (void)setupSearchResultsViewController
 {
     self.searchResultsViewController = [[MITLibrariesSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    self.searchResultsViewController.delegate = self;
     [self addChildViewController:self.searchResultsViewController];
     self.searchResultsViewController.view.hidden = YES;
     [self.view addSubview:self.searchResultsViewController.view];
@@ -312,6 +326,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
+    self.inSearchMode = YES;
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.preSearchOverlay.hidden = NO;
@@ -335,6 +350,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [self.searchBar endEditing:YES];
     
     self.searchBar.text = nil;
+    self.inSearchMode = NO;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     self.searchBar.searchBarStyle = UISearchBarStyleDefault;
     self.preSearchOverlay.hidden = YES;
@@ -355,6 +371,16 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     } else {
         [self.searchContainerView layoutIfNeeded];
     }
+}
+
+#pragma mark - MITLibrariesSearchResultsViewControllerDelegate Methods
+
+- (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item
+{
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    MITLibrariesSearchResultDetailViewController *detailVC = [[MITLibrariesSearchResultDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.worldcatItem = item;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 @end

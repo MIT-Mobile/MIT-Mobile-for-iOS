@@ -68,4 +68,45 @@
     return [NSString stringWithString:authorsString];
 }
 
+- (NSString *)formatsString
+{
+    if (self.format.count <= 0) {
+        return nil;
+    }
+    
+    NSMutableString *formatsString = [NSMutableString stringWithString:self.format[0]];
+    
+    for (NSInteger i = 1; i < self.format.count; i++) {
+        [formatsString appendString:@", "];
+        [formatsString appendString:self.format[i]];
+    }
+    
+    return [NSString stringWithString:formatsString];
+}
+
+- (NSString *)publishersString
+{
+    if (self.publisher.count <= 0) {
+        return nil;
+    }
+    
+    NSMutableString *publishersString = [NSMutableString stringWithString:self.publisher[0]];
+    
+    for (NSInteger i = 1; i < self.publisher.count; i++) {
+        [publishersString appendString:@", "];
+        [publishersString appendString:self.publisher[i]];
+    }
+    
+    return [NSString stringWithString:publishersString];
+}
+
+- (NSString *)firstSummaryString
+{
+    if (self.summaries.count <= 0) {
+        return nil;
+    } else {
+        return self.summaries[0];
+    }
+}
+
 @end
