@@ -28,5 +28,8 @@
 
 - (NSString *)yearsString;
 - (NSString *)authorsString;
+- (NSString *)formatsString;
+- (NSString *)publishersString;
+- (NSString *)firstSummaryString;
 
 @end
