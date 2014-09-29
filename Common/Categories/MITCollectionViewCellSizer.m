@@ -117,8 +117,9 @@
         frame.size.width = size.width;
     }
     
-    [targetView addConstraints:cellConstraints];
     layoutCell.frame = frame;
+    layoutCell.contentView.frame = layoutCell.bounds;
+    [targetView addConstraints:cellConstraints];
     
     // Let this re-layout to account for the updated width
     // (such as re-positioning the content view)
@@ -132,6 +133,7 @@
     // Now that the view has been laid out for the proper width
     // give it a chance to update any constraints which need tweaking
     [layoutCell setNeedsUpdateConstraints];
+    [layoutCell updateConstraintsIfNeeded];
     
     // ...and then relayout again!
     [layoutCell setNeedsLayout];
