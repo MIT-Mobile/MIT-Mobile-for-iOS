@@ -105,6 +105,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
 - (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
 - (NSString *)ISO8601String;
+- (NSString *)MITDateCode;
 
 @end
 
