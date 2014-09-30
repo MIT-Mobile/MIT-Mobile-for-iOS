@@ -1,5 +1,6 @@
 #import "MITLibrariesClosingsTerm.h"
 #import "MITLibrariesDate.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITLibrariesClosingsTerm
 
@@ -11,6 +12,20 @@
     [mapping addRelationshipMappingWithSourceKeyPath:@"dates" mapping:[MITLibrariesDate objectMapping]];
     
     return mapping;
+}
+
+- (BOOL)isClosedAtDate:(NSDate *)date
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    }
+    
+    NSDate *startDate = [dateFormatter dateFromString:self.dates.start];
+    NSDate *endDate = [dateFormatter dateFromString:self.dates.end];
+    
+    return ([date dateFallsBetweenStartDate:startDate endDate:endDate]);
 }
 
 @end

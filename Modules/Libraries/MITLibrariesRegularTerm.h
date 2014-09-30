@@ -8,4 +8,6 @@
 @property (nonatomic, strong) NSString *days;
 @property (nonatomic, strong) MITLibrariesDate *hours;
 
+- (BOOL)isOpenAtDate:(NSDate *)date;
+
 @end

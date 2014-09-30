@@ -980,6 +980,41 @@ typedef struct {
 	return [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
 }
 
+- (NSString *)MITDateCode
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"EE"];
+    }
+    
+    NSString *shortDateString = [dateFormatter stringFromDate:self];
+    
+    if ([shortDateString isEqualToString:@"Mon"]) {
+        return @"M";
+    }
+    else if ([shortDateString isEqualToString:@"Tue"]) {
+        return @"T";
+    }
+    else if ([shortDateString isEqualToString:@"Wed"]) {
+        return @"W";
+    }
+    else if ([shortDateString isEqualToString:@"Thu"]) {
+        return @"R";
+    }
+    else if ([shortDateString isEqualToString:@"Fri"]) {
+        return @"F";
+    }
+    else if ([shortDateString isEqualToString:@"Sat"]) {
+        return @"S";
+    }
+    else if ([shortDateString isEqualToString:@"Sun"]) {
+        return @"U";
+    }
+    
+    return @"";
+}
+
 @end
 
 @implementation NSCalendar (MITAdditions)

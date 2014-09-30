@@ -22,7 +22,12 @@
 
 - (BOOL)isOpenAtDate:(NSDate *)date
 {
-    return YES;
+    for (MITLibrariesTerm *term in self.terms) {
+        if ([term isOpenAtDate:date]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

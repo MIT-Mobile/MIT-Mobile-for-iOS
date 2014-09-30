@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
@@ -16,34 +16,39 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Library Name" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sD0-mL-hVt">
-                        <rect key="frame" x="15" y="14" width="242" height="21"/>
+                        <rect key="frame" x="15" y="14" width="241" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="241" id="Vn7-bu-lNj"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hours" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hh-Ji-FY7">
-                        <rect key="frame" x="15" y="41" width="242" height="17"/>
+                        <rect key="frame" x="15" y="42" width="241" height="17"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Open" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zB2-SZ-y8N">
-                        <rect key="frame" x="274" y="27" width="36" height="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Closed" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zB2-SZ-y8N">
+                        <rect key="frame" x="261" y="25" width="51" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="51" id="LTM-xy-BPb"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="top" secondItem="sD0-mL-hVt" secondAttribute="bottom" constant="6" id="6KW-1J-iMp"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="9hh-Ji-FY7" secondAttribute="trailing" constant="55" id="BWJ-AK-36b"/>
-                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="trailing" constant="17" id="QJt-2U-2Tp"/>
-                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="19" id="SOf-Z3-U8E"/>
-                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" id="Svj-NL-2Ek"/>
-                    <constraint firstItem="sD0-mL-hVt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="i5O-O0-dJI"/>
-                    <constraint firstItem="sD0-mL-hVt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="rjc-Zs-JJC"/>
-                    <constraint firstItem="sD0-mL-hVt" firstAttribute="trailing" secondItem="9hh-Ji-FY7" secondAttribute="trailing" id="rmT-PS-coy"/>
-                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="leading" id="wKH-mC-f6Z"/>
+                    <constraint firstItem="sD0-mL-hVt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="665-tf-LMv"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="trailing" secondItem="sD0-mL-hVt" secondAttribute="trailing" id="7dq-GR-Rhb"/>
+                    <constraint firstAttribute="centerY" secondItem="zB2-SZ-y8N" secondAttribute="centerY" constant="-0.5" id="fec-JY-4bf"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="leading" id="lTe-WT-agv"/>
+                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="nT7-3M-9mm"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="top" secondItem="sD0-mL-hVt" secondAttribute="bottom" constant="7" id="pc5-QH-FtI"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="9hh-Ji-FY7" secondAttribute="bottom" constant="-1" id="utA-qh-axu"/>
+                    <constraint firstItem="sD0-mL-hVt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="ykb-NB-RGE"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -51,7 +56,7 @@
                 <outlet property="libraryNameLabel" destination="sD0-mL-hVt" id="62y-HI-N2Z"/>
                 <outlet property="openClosedLabel" destination="zB2-SZ-y8N" id="q9U-fp-ncA"/>
             </connections>
-            <point key="canvasLocation" x="354" y="239.5"/>
+            <point key="canvasLocation" x="464" y="729.5"/>
         </tableViewCell>
     </objects>
 </document>
