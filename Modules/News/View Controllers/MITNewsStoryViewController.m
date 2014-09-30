@@ -152,6 +152,8 @@
                                                                                             applicationActivities:nil];
         sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
                                                         UIActivityTypeAssignToContact];
+        
+        [sharingViewController setValue:[NSString stringWithFormat:@"MIT News: %@",self.story.title] forKeyPath:@"subject"];
 
         if ([sharingViewController respondsToSelector:@selector(popoverPresentationController)]) {
             sharingViewController.popoverPresentationController.barButtonItem = sender;
