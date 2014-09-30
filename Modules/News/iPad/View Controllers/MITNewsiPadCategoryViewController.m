@@ -55,7 +55,7 @@
     [super viewWillAppear:animated];
 
     [self updateNavigationItem:YES];
-    if (self.dataSource.isUpdating) {
+    if (self.dataSource.isUpdating || !self.lastUpdated) {
         [self setupFinishedUpdateNotification];
     }
 }
@@ -67,10 +67,12 @@
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.refreshControl beginRefreshing];
-        [self.refreshControl endRefreshing];
-    }];
+    if (!self.refreshControl.refreshing) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+            [self.refreshControl endRefreshing];
+        }];
+    }
 }
 
 - (void)updateLoadingCell
