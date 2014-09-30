@@ -195,6 +195,7 @@
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
         }];
+        [self updateRefreshStatusWithText:@"Updating..."];
         [self reloadViewItems:self.refreshControl];
     }
 }
