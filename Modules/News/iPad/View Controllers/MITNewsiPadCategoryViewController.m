@@ -63,10 +63,12 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if (!self.movingBackFromStory && self.dataSource.refreshedAt) {
+    
+    if (!self.movingBackFromStory) {
         [self intervalUpdate];
         self.movingBackFromStory = YES;
     }
+    
     if (!self.refreshControl.refreshing) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
@@ -183,7 +185,7 @@
 
 - (void)intervalUpdate
 {
-    if (!self.dataSource.refreshedAt) {
+    if (!self.dataSource.refreshedAt || self.dataSource.isUpdating || self.storyUpdateInProgress || self.loadingMoreStories) {
         return;
     }
     NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
