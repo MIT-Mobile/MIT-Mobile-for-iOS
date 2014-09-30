@@ -474,6 +474,7 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.loadingMoreStories) {
         [self.refreshControl endRefreshing];
+        [refreshControl endRefreshing];
         return;
     }
     
