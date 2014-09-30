@@ -1,5 +1,9 @@
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesTerm.h"
+#import "MITLibrariesDate.h"
+#import "Foundation+MITAdditions.h"
+
+NSString *const kMITLibraryClosedMessageString = @"Closed Today";
 
 @implementation MITLibrariesLibrary
 
@@ -17,7 +21,12 @@
 
 - (NSString *)hoursStringForDate:(NSDate *)date
 {
-    return @"8:00am - 10:00pm";
+    for (MITLibrariesTerm *term in self.terms) {
+        if ([term dateFallsInTerm:date]) {
+            return [term hoursStringForDate:date];
+        }
+    }
+    return kMITLibraryClosedMessageString;
 }
 
 - (BOOL)isOpenAtDate:(NSDate *)date

@@ -12,6 +12,7 @@
 @property (nonatomic, strong) NSArray *closingsTerm;
 @property (nonatomic, strong) NSArray *exceptionsTerm;
 
+- (BOOL)dateFallsInTerm:(NSDate *)date;
 - (NSString *)hoursStringForDate:(NSDate *)date;
 - (BOOL)isOpenAtDate:(NSDate *)date;
 
