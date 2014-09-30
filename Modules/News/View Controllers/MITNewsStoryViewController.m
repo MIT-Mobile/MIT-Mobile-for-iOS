@@ -22,6 +22,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
+@property (nonatomic) float scrollPosition;
+@property (nonatomic) float pageHeight;
 
 @end
 
@@ -100,6 +102,13 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidLayoutSubviews
+{
+    if (self.pageHeight != 0 ) {
+        self.scrollView.contentOffset = CGPointMake(0, self.scrollView.contentSize.height * (self.scrollPosition / self.pageHeight));
+    }
 }
 
 - (void)updateViewConstraints
@@ -315,6 +324,11 @@
     } else {
         return targetSize;
     }
+}
+
+- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration {
+    self.scrollPosition = self.scrollView.contentOffset.y;
+    self.pageHeight = self.scrollView.contentSize.height;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
