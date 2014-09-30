@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "MITMappedObject.h"
 
+extern NSString *const kMITLibraryClosedMessageString;
+
 @interface MITLibrariesLibrary : NSObject <MITMappedObject>
 
 @property (nonatomic, strong) NSString *identifier;

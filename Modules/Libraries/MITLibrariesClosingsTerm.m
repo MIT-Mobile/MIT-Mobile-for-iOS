@@ -14,7 +14,7 @@
     return mapping;
 }
 
-- (BOOL)isClosedAtDate:(NSDate *)date
+- (BOOL)isClosedOnDate:(NSDate *)date
 {
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {
