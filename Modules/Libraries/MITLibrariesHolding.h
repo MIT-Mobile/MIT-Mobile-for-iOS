@@ -8,7 +8,7 @@
 @property (nonatomic, strong) NSString *library;
 @property (nonatomic, strong) NSString *address;
 @property (nonatomic) NSInteger count;
-@property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) NSString *requestUrl;
 @property (nonatomic, strong) NSArray *availability;
 
 @end
