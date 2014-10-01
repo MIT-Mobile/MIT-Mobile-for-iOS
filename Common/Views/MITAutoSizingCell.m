@@ -4,25 +4,21 @@
 
 - (void)awakeFromNib
 {
-    [self recursivelyRefreshLabelLayoutWidthsInView:self];
+    [self refreshLabelLayoutWidths];
 }
 
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
     [self layoutIfNeeded];
-    [self recursivelyRefreshLabelLayoutWidthsInView:self];
+    [self refreshLabelLayoutWidths];
 }
 
-- (void)recursivelyRefreshLabelLayoutWidthsInView:(UIView *)view
+- (void)refreshLabelLayoutWidths
 {
-    if ([view isKindOfClass:[UILabel class]]) {
-        ((UILabel *)view).preferredMaxLayoutWidth = view.frame.size.width;
-    }
-    
-    if (view.subviews.count > 0) {
-        for (UIView *subview in view.subviews) {
-            [self recursivelyRefreshLabelLayoutWidthsInView:subview];
+    for (UIView *view in self.contentView.subviews) {
+        if ([view isKindOfClass:[UILabel class]]) {
+            ((UILabel *)view).preferredMaxLayoutWidth = view.frame.size.width;
         }
     }
 }

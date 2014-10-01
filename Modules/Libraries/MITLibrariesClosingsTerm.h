@@ -8,6 +8,7 @@
 @property (nonatomic, strong) MITLibrariesDate *dates;
 @property (nonatomic, strong) NSString *reason;
 
+- (NSString *)termHoursDescription;
 - (BOOL)isClosedOnDate:(NSDate *)date;
 
 @end
