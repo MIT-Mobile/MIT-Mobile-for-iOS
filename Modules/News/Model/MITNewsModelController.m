@@ -140,12 +140,15 @@
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
     MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
     NSArray *recentSearchItems = [[recentSearchList.recentQueries reversedOrderedSet] array];
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
+    
     if (filterString && ![filterString isEqualToString:@""]) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
-        return [recentSearchItems filteredArrayUsingPredicate:predicate];
+        return [[recentSearchItems filteredArrayUsingPredicate:predicate] sortedArrayUsingDescriptors:@[sortDescriptor]];
     }
     
-    return [[recentSearchList.recentQueries reversedOrderedSet] array];
+    return [[recentSearchList.recentQueries array] sortedArrayUsingDescriptors:@[sortDescriptor]];
 }
 
 - (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *)error
@@ -153,27 +156,25 @@
     [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
         
         MITNewsRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        NSArray *recentSearchItems = [recentSearchList.recentQueries array];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchTerm ];
+        NSArray *searchTermAlreadyExists = [recentSearchItems filteredArrayUsingPredicate:predicate];
         
-        MITNewsRecentSearchQuery *searchItem = [[MITNewsRecentSearchQuery alloc] initWithEntity:[MITNewsRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
-
-        if (searchItem) {
-            searchItem.text = searchTerm;
-            
-            NSArray *recentSearchItems = [recentSearchList.recentQueries array];
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchItem.text ];
-            NSArray *previous = [recentSearchItems filteredArrayUsingPredicate:predicate];
-            
-            if ([previous count]) {
-                [recentSearchList removeRecentQueriesObject:[previous firstObject]];
-            }
-            
-            [recentSearchList addRecentQueriesObject:searchItem];
-            
+        if ([searchTermAlreadyExists count]) {
+            MITNewsRecentSearchQuery *searchItem = [searchTermAlreadyExists firstObject];
+            searchItem.date = [NSDate date];
             return YES;
         } else {
-            return NO;
+            MITNewsRecentSearchQuery *searchItem = [[MITNewsRecentSearchQuery alloc] initWithEntity:[MITNewsRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+            if (searchItem) {
+                searchItem.text = searchTerm;
+                searchItem.date = [NSDate date];
+                [recentSearchList addRecentQueriesObject:searchItem];
+                return YES;
+            } else {
+                return NO;
+            }
         }
-
     } error:&error];
 }
 
