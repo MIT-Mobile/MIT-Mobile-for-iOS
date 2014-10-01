@@ -19,7 +19,8 @@ static NSString * const kHoldingLibraryViewAllCellIdentifier = @"kHoldingLibrary
 
 static NSInteger const kBookInfoSection = 0;
 static NSInteger const kCitationsSection = 1;
-static NSInteger const kHoldingLibrariesSection = 2;
+static NSInteger const kLoadingCellSection = 1;
+static NSInteger const kLibraryHoldingsSection = 2;
 static NSInteger const kBLCHoldingsSection = 3;
 
 static NSString * const kItemLineTitleKey = @"kItemLineTitleKey";
@@ -36,6 +37,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 @property (nonatomic, strong) NSArray *itemDetailLines;
 @property (nonatomic, strong) MITLibrariesHolding *mitHolding;
 @property (nonatomic, strong) NSArray *availabilitiesByLibrary;
+@property (nonatomic, assign) BOOL isLoading;
 
 @end
 
@@ -58,6 +60,15 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    for (UITableViewCell *cell in self.tableView.visibleCells) {
+        if (![cell isMemberOfClass:[UITableViewCell class]]) {
+            cell.separatorInset = UIEdgeInsetsMake(0, cell.bounds.size.width, 0, 0);
+        }
+    }
 }
 
 - (void)registerCells
@@ -84,21 +95,18 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     _worldcatItem = worldcatItem;
     [self.tableView reloadData];
     
+    self.isLoading = YES;
+    
     [MITLibrariesWebservices getItemDetailsForItem:worldcatItem completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
         if (error) {
-            // Show something?
+            self.isLoading = NO;
+            [self.tableView reloadData];
         } else {
             _worldcatItem = item;
             [self recreateItemDetailLines];
             [self recreateMITAvailability];
+            self.isLoading = NO;
             [self.tableView reloadData];
-            
-//            for (MITLibrariesHolding *holding in item.holdings) {
-//                NSLog(@"\ncode: %@\nlibrary: %@\naddress: %@count: %i\nurl: %@\n\n", holding.code, holding.library, holding.address, holding.count, holding.url);
-//                for (MITLibrariesAvailability *availability in holding.availability) {
-//                    NSLog(@"location: %@, collection: %@, callnum: %@, status: %@, available: %@", availability.location, availability.collection, availability.callNumber, availability.status, availability.available ? @"YES" : @"NO");
-//                }
-//            }
         }
     }];
 }
@@ -173,95 +181,136 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    if (self.isLoading) {
+        return 2;
+    } else {
+        return 4;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (section) {
-        case kBookInfoSection: {
-            return 1 + self.itemDetailLines.count;
-            break;
+    if (self.isLoading) {
+        switch (section) {
+            case kBookInfoSection: {
+                return 1 + self.itemDetailLines.count;
+                break;
+            }
+            case kLoadingCellSection: {
+                return 1;
+                break;
+            }
+            default: {
+                return 0;
+            }
         }
-        case kCitationsSection: {
-            return 1;
-            break;
-        }
-        case kHoldingLibrariesSection: {
-            return 1 + [self totalHoldingLibrariesRowCount];
-            break;
-        }
-        case kBLCHoldingsSection: {
-            return 1;
-            break;
-        }
-        default: {
-            return 0;
+    } else {
+        switch (section) {
+            case kBookInfoSection: {
+                return 1 + self.itemDetailLines.count;
+                break;
+            }
+            case kCitationsSection: {
+                return self.worldcatItem.citations.count > 0 ? 1 : 0;
+                break;
+            }
+            case kLibraryHoldingsSection: {
+                return [self totalHoldingLibrariesRowCount];
+                break;
+            }
+            case kBLCHoldingsSection: {
+                return 1;
+                break;
+            }
+            default: {
+                return 0;
+            }
         }
     }
-}
-
-- (NSInteger)totalHoldingLibrariesRowCount
-{
-    NSInteger totalRows = 0;
-    for (NSDictionary *availabilityInfo in self.availabilitiesByLibrary) {
-        totalRows++; // Account for header cell
-        
-        NSArray *availableCopiesToDisplay = [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey];
-        totalRows += availableCopiesToDisplay.count;
-        
-        totalRows++; // Account for "View all" cell
-    }
-    
-    return totalRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.section) {
-        case kBookInfoSection: {
-            return [self bookInfoSectionCellForRow:indexPath.row];
-            break;
+    if (self.isLoading) {
+        switch (indexPath.section) {
+            case kBookInfoSection: {
+                return [self bookInfoSectionCellForRow:indexPath.row];
+                break;
+            }
+            case kLoadingCellSection: {
+                UITableViewCell *loadingCell = [self.tableView dequeueReusableCellWithIdentifier:kDefaultCellIdentifier];
+                loadingCell.accessoryView = nil;
+                loadingCell.accessoryType = UITableViewCellAccessoryNone;
+                loadingCell.textLabel.text = @"Loading...";
+                return loadingCell;
+                break;
+            }
+            default: {
+                return [UITableViewCell new];
+            }
         }
-        case kCitationsSection: {
-            return [self citationsSectionCellForRow:indexPath.row];
-            break;
-        }
-        case kHoldingLibrariesSection: {
-            return [self holdingLibrariesSectionCellForRow:indexPath.row];
-            break;
-        }
-        case kBLCHoldingsSection: {
-            return [self blcHoldingsSectionCellForRow:indexPath.row];
-            break;
-        }
-        default: {
-            return [UITableViewCell new];
+    } else {
+        switch (indexPath.section) {
+            case kBookInfoSection: {
+                return [self bookInfoSectionCellForRow:indexPath.row];
+                break;
+            }
+            case kCitationsSection: {
+                return [self citationsSectionCellForRow:indexPath.row];
+                break;
+            }
+            case kLibraryHoldingsSection: {
+                return [self libraryHoldingsSectionCellForLibraryHoldingsIndexPath:[self holdingsIndexPathForLibraryHoldingsRow:indexPath.row]];
+                break;
+            }
+            case kBLCHoldingsSection: {
+                return [self blcHoldingsSectionCellForRow:indexPath.row];
+                break;
+            }
+            default: {
+                return [UITableViewCell new];
+            }
         }
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.section) {
-        case kBookInfoSection: {
-            return [self bookInfoSectionHeightForRow:indexPath.row];
-            break;
+    if (self.isLoading) {
+        switch (indexPath.section) {
+            case kBookInfoSection: {
+                return [self bookInfoSectionHeightForRow:indexPath.row];
+                break;
+            }
+            case kLoadingCellSection: {
+                return 44;
+                break;
+            }
+            default: {
+                return 0;
+            }
         }
-        case kCitationsSection: {
-            return 44;
-            break;
-        }
-        case kHoldingLibrariesSection: {
-            return [self holdingLibrariesSectionHeightForRow:indexPath.row];
-            break;
-        }
-        case kBLCHoldingsSection: {
-            return 44;
-            break;
-        }
-        default: {
-            return 0;
+    } else {
+        switch (indexPath.section) {
+            case kBookInfoSection: {
+                return [self bookInfoSectionHeightForRow:indexPath.row];
+                break;
+            }
+            case kCitationsSection: {
+                return 44;
+                break;
+            }
+            case kLibraryHoldingsSection: {
+                return [self libraryHoldingsSectionHeightForLibraryHoldingsIndexPath:[self holdingsIndexPathForLibraryHoldingsRow:indexPath.row]];
+                break;
+            }
+            case kBLCHoldingsSection: {
+                return 44;
+                break;
+            }
+            default: {
+                return 0;
+            }
         }
     }
 }
@@ -270,7 +319,50 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    // TODO
+    if (self.isLoading) {
+        return;
+    }
+    
+    switch (indexPath.section) {
+        case kBookInfoSection: {
+            // Nothing to do here
+            return;
+            break;
+        }
+        case kCitationsSection: {
+            // TODO: Push citations screen
+            break;
+        }
+        case kLibraryHoldingsSection: {
+            [self libraryHoldingsSectionRowTapped:indexPath.row];
+            break;
+        }
+        case kBLCHoldingsSection: {
+            // TODO: Push BLC Holdings screen
+            break;
+        }
+        default: {
+            return;
+        }
+    }
+}
+
+- (void)libraryHoldingsSectionRowTapped:(NSInteger)row
+{
+    if (row == 0) {
+        NSURL *requestURL = [NSURL URLWithString:self.mitHolding.requestUrl];
+        
+        if ([[UIApplication sharedApplication] canOpenURL:requestURL]) {
+            [[UIApplication sharedApplication] openURL:requestURL];
+        }
+    } else {
+        UITableViewCell *selectedCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:kLibraryHoldingsSection]];
+        if ([selectedCell.reuseIdentifier isEqualToString:kHoldingLibraryViewAllCellIdentifier]) {
+            NSIndexPath *libraryHoldingsIndexPath = [self holdingsIndexPathForLibraryHoldingsRow:row];
+            NSDictionary *availabilityInfo = self.availabilitiesByLibrary[libraryHoldingsIndexPath.section - 1];
+            // TODO: push holdings VC here
+        }
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -284,7 +376,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             return nil;
             break;
         }
-        case kHoldingLibrariesSection: {
+        case kLibraryHoldingsSection: {
             return @"MIT Libraries";
             break;
         }
@@ -298,6 +390,17 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (section == kBookInfoSection) {
+        return 0.0001f;
+    } else if (section == kCitationsSection) {
+        return 25;
+    } else {
+        return 35;
+    }
+}
+
 #pragma mark - Custom Cell Creation
 
 - (UITableViewCell *)bookInfoSectionCellForRow:(NSInteger)row
@@ -305,12 +408,14 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     if (row == 0) {
         MITLibrariesWorldcatItemCell *itemHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kItemHeaderCellIdentifier];
         itemHeaderCell.item = self.worldcatItem;
+        itemHeaderCell.separatorInset = UIEdgeInsetsMake(0, itemHeaderCell.bounds.size.width, 0, 0);
         return itemHeaderCell;
     } else {
         MITLibrariesItemDetailLineCell *detailLineCell = [self.tableView dequeueReusableCellWithIdentifier:kItemDetailLineCellIdentifier];
         NSDictionary *itemLineDictionary = self.itemDetailLines[row - 1];
         detailLineCell.lineTitleLabel.text = [itemLineDictionary objectForKey:kItemLineTitleKey];
         detailLineCell.lineDetailLabel.text = [itemLineDictionary objectForKey:kItemLineDetailKey];
+        detailLineCell.separatorInset = UIEdgeInsetsMake(0, detailLineCell.bounds.size.width, 0, 0);
         return detailLineCell;
     }
 }
@@ -322,61 +427,6 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     citationsCell.accessoryView = nil;
     citationsCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return citationsCell;
-}
-
-- (UITableViewCell *)holdingLibrariesSectionCellForRow:(NSInteger)row
-{
-    if (row == 0) {
-        UITableViewCell *requestCell = [self.tableView dequeueReusableCellWithIdentifier:kDefaultCellIdentifier];
-        requestCell.textLabel.text = @"Request Item";
-        requestCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-        return requestCell;
-    } else {
-        NSInteger adjustedRow = row - 1; // Adjust for the first "request item" cell in the section
-        NSInteger totalRowsAccountedFor = 0;
-        for (NSDictionary *availabilityInfo in self.availabilitiesByLibrary) {
-            
-            if (adjustedRow == totalRowsAccountedFor) {
-                // return header for this availability info
-                
-                NSString *locationName = [availabilityInfo objectForKey:kAvailabilityLocationKey];
-                NSArray *availabilities = [availabilityInfo objectForKey:kAvailabilitiesKey];
-                NSInteger totalCopiesNumber = availabilities.count;
-                NSInteger availableCopiesNumber = [[availabilityInfo objectForKey:kAvailableCopiesNumberKey] integerValue];
-                
-                MITLibrariesHoldingLibraryHeaderCell *holdingHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryHeaderCellIdentifier];
-                holdingHeaderCell.libraryNameLabel.text = locationName;
-                holdingHeaderCell.libraryHoursLabel.text = @"Put hours here";
-                holdingHeaderCell.availableCopiesLabel.text = [NSString stringWithFormat:@"%i of %i available", availableCopiesNumber, totalCopiesNumber];
-                return holdingHeaderCell;
-            }
-            totalRowsAccountedFor++; // Account for header cell
-            
-            for (MITLibrariesAvailability *availability in [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey]) {
-                if (adjustedRow == totalRowsAccountedFor) {
-                    // return detail for this availability
-                    
-                    MITLibrariesHoldingLibraryHeaderCopyInfoCell *copyInfoCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryCopyCellIdentifier];
-                    [copyInfoCell setAvailability:availability];
-                    return copyInfoCell;
-                }
-                totalRowsAccountedFor++;
-            }
-            
-            if (adjustedRow == totalRowsAccountedFor) {
-                // return view all button cell for this availability info
-                
-                UITableViewCell *viewAllCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryViewAllCellIdentifier];
-                viewAllCell.textLabel.text = @"View all";
-                viewAllCell.textLabel.textColor = [UIColor mit_tintColor];
-                return viewAllCell;
-            }
-            totalRowsAccountedFor++; // Account for "View all" cell
-        }
-    }
-    
-    // Should not get here, return blank cell to prevent crash if something went wrong!
-    return [UITableViewCell new];
 }
 
 - (UITableViewCell *)blcHoldingsSectionCellForRow:(NSInteger)row
@@ -402,40 +452,127 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     }
 }
 
-- (CGFloat)holdingLibrariesSectionHeightForRow:(NSInteger)row
+#pragma mark - Library Holdings Section Methods
+
+// We create each library's holdings info from multiple cells, but it makes sense to think about each library as its own section
+// This should be more efficient and have less weird behavior than actually using another tableview inside the main tableview, I think
+
+- (UITableViewCell *)libraryHoldingsSectionCellForLibraryHoldingsIndexPath:(NSIndexPath *)indexPath
 {
-    if (row == 0) {
-        return 44;
+    if (indexPath.section == 0) {
+        UITableViewCell *requestCell = [self.tableView dequeueReusableCellWithIdentifier:kDefaultCellIdentifier];
+        requestCell.textLabel.text = @"Request Item";
+        requestCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        return requestCell;
     } else {
-        NSInteger adjustedRow = row - 1; // Adjust for the first "request item" cell in the section
-        NSInteger totalRowsAccountedFor = 0;
-        for (NSDictionary *availabilityInfo in self.availabilitiesByLibrary) {
+        NSDictionary *availabilityInfo = self.availabilitiesByLibrary[indexPath.section - 1];
+        
+        if (indexPath.row == 0) {
+            // Header cell
+            NSString *locationName = [availabilityInfo objectForKey:kAvailabilityLocationKey];
+            NSArray *availabilities = [availabilityInfo objectForKey:kAvailabilitiesKey];
+            NSInteger totalCopiesNumber = availabilities.count;
+            NSInteger availableCopiesNumber = [[availabilityInfo objectForKey:kAvailableCopiesNumberKey] integerValue];
             
-            if (adjustedRow == totalRowsAccountedFor) {
-                // return header for this availability info
-                return 75;
-            }
-            totalRowsAccountedFor++; // Account for header cell
+            MITLibrariesHoldingLibraryHeaderCell *holdingHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryHeaderCellIdentifier];
+            holdingHeaderCell.libraryNameLabel.text = locationName;
+            holdingHeaderCell.libraryHoursLabel.text = @"Put hours here";
+            holdingHeaderCell.availableCopiesLabel.text = [NSString stringWithFormat:@"%i of %i available", availableCopiesNumber, totalCopiesNumber];
+            holdingHeaderCell.separatorInset = UIEdgeInsetsMake(0, holdingHeaderCell.bounds.size.width, 0, 0);
+            return holdingHeaderCell;
+        }
+        
+        NSArray *availableCopiesToDisplay = [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey];
+        
+        if (indexPath.row - 1 < availableCopiesToDisplay.count) {
+            // Holding availability detail cell
+            MITLibrariesAvailability *availability = availableCopiesToDisplay[indexPath.row - 1];
             
-            
-            for (MITLibrariesAvailability *availability in [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey]) {
-                if (adjustedRow == totalRowsAccountedFor) {
-                    // return detail for this availability
-                    
-                    return [MITLibrariesHoldingLibraryHeaderCopyInfoCell heightForItem:availability tableViewWidth:self.tableView.bounds.size.width];
-                }
-                totalRowsAccountedFor++;
-            }
-            
-            if (adjustedRow == totalRowsAccountedFor) {
-                // return view all button cell for this availability info
-                return 44;
-            }
-            totalRowsAccountedFor++; // Account for "View all" cell
+            MITLibrariesHoldingLibraryHeaderCopyInfoCell *copyInfoCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryCopyCellIdentifier];
+            [copyInfoCell setAvailability:availability];
+            copyInfoCell.separatorInset = UIEdgeInsetsMake(0, copyInfoCell.bounds.size.width, 0, 0);
+            return copyInfoCell;
+        }
+        
+        // If we get here, this is the last cell: "view all"
+        UITableViewCell *viewAllCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryViewAllCellIdentifier];
+        viewAllCell.textLabel.text = @"View all";
+        viewAllCell.textLabel.textColor = [UIColor mit_tintColor];
+        return viewAllCell;
+    }
+}
+
+- (NSIndexPath *)holdingsIndexPathForLibraryHoldingsRow:(NSInteger)row
+{
+    NSInteger numberOfRowsInPreviousSections = 0;
+    
+    for (NSInteger section = 0; section < [self numberOfSectionsInLibraryHoldingsSection]; section++) {
+        NSInteger numberOfRowsInCurrentSection = [self numberOfRowsInLibraryHoldingsSection:section];
+        
+        if (row < numberOfRowsInPreviousSections + numberOfRowsInCurrentSection) {
+            return [NSIndexPath indexPathForRow:(row - numberOfRowsInPreviousSections) inSection:section];
+        } else {
+            numberOfRowsInPreviousSections += numberOfRowsInCurrentSection;
         }
     }
     
-    return 0;
+    // If we get here, then the row is too high
+    return [NSIndexPath indexPathForRow:0 inSection:0];
+}
+
+- (NSInteger)numberOfSectionsInLibraryHoldingsSection
+{
+    return 1 + self.availabilitiesByLibrary.count;
+}
+
+- (NSInteger)numberOfRowsInLibraryHoldingsSection:(NSInteger)section
+{
+    if (section == 0) {
+        return 1;
+    } else {
+        NSInteger rowsInSection = 2; // One for the header, one for the "view all" cell
+        NSDictionary *availabilityInfo = self.availabilitiesByLibrary[section - 1];
+        NSArray *availableCopiesToDisplay = [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey];
+        rowsInSection += availableCopiesToDisplay.count;
+        return rowsInSection;
+    }
+}
+
+- (NSInteger)totalHoldingLibrariesRowCount
+{
+    NSInteger totalRows = 0;
+    
+    for (NSInteger section = 0; section < [self numberOfSectionsInLibraryHoldingsSection]; section++) {
+        totalRows += [self numberOfRowsInLibraryHoldingsSection:section];
+    }
+    
+    return totalRows;
+}
+
+- (CGFloat)libraryHoldingsSectionHeightForLibraryHoldingsIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        return 44;
+    } else {
+        NSDictionary *availabilityInfo = self.availabilitiesByLibrary[indexPath.section - 1];
+        
+        if (indexPath.row == 0) {
+            // Header cell
+            return 75;
+        }
+        
+        NSArray *availableCopiesToDisplay = [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey];
+        
+        if (indexPath.row - 1 < availableCopiesToDisplay.count) {
+            // Holding availability detail cell
+            MITLibrariesAvailability *availability = availableCopiesToDisplay[indexPath.row - 1];
+            
+            return [MITLibrariesHoldingLibraryHeaderCopyInfoCell heightForItem:availability tableViewWidth:self.tableView.bounds.size.width];
+        }
+        
+        // If we get here, this is the last cell: "view all"
+        return 44;
+    }
 }
 
 @end
