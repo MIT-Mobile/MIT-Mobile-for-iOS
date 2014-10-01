@@ -400,6 +400,9 @@
     [self storyAfterStory:self.story completion:^(MITNewsStory *nextStory, NSError *error) {
         if (nextStory) {
             
+            self.pageHeight = 0;
+            self.scrollPosition = 0;
+            
             [self setStory:nextStory];
             
             [self setupNextStory];
