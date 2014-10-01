@@ -5,5 +5,6 @@
 @interface MITNewsRecentSearchQuery : MITManagedObject
 
 @property (nonatomic, retain) NSString * text;
+@property (nonatomic, retain) NSDate * date;
 
 @end

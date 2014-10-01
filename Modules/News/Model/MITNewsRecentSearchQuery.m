@@ -3,5 +3,5 @@
 @implementation MITNewsRecentSearchQuery
 
 @dynamic text;
-
+@dynamic date;
 @end
