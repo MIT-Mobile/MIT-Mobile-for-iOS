@@ -57,11 +57,38 @@
 #pragma mark - Recent Add/Remove methods
 - (IBAction)clearRecentsButtonClicked:(id)sender
 {
-    NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button title");
-    NSString *clearAllRecentsButtonTitle = NSLocalizedString(@"Clear All Recents", @"Clear All Recents button title");
-    
-    self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:clearAllRecentsButtonTitle otherButtonTitles:nil];
-    [self.confirmSheet showInView:self.view];
+    if ([UIAlertController class]) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                                 message:nil
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        UIAlertAction *clearAction = [UIAlertAction actionWithTitle:@"Clear All Recents"
+                                                              style:UIAlertActionStyleDestructive
+                                                            handler:^(UIAlertAction *action) {
+                                                                [self clearRecents];
+                                                            }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                               style:UIAlertActionStyleDefault
+                                                             handler:nil];
+        [alertController addAction:clearAction];
+        [alertController addAction:cancelAction];
+        [alertController setModalPresentationStyle:UIModalPresentationPopover];
+        
+        UIPopoverPresentationController *popPresenter = [alertController
+                                                         popoverPresentationController];
+        
+        UIBarButtonItem * clearButton = (UIBarButtonItem *)sender;
+        
+        popPresenter.barButtonItem = clearButton;
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+    } else {
+        
+        self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear All Recents" otherButtonTitles:nil];
+        [self.confirmSheet showInView:self.view];
+    }
 }
 
 - (void)addRecentSearchItem:(NSString *)searchTerm
@@ -84,15 +111,20 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     if (buttonIndex == 0) {
-        NSError *error = nil;
-        [self.modelController clearRecentSearchesWithError:error];
-        self.recentResults = nil;
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadData];
-        }];
-        self.clearButtonItem.enabled = NO;
+        [self clearRecents];
     }
     self.confirmSheet = nil;
+}
+
+- (void)clearRecents
+{
+    NSError *error = nil;
+    [self.modelController clearRecentSearchesWithError:error];
+    self.recentResults = nil;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+    self.clearButtonItem.enabled = NO;
 }
 
 #pragma mark - Table View methods
