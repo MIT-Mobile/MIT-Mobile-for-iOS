@@ -42,9 +42,10 @@
     self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
     if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
-        self.isCurrentPresentationStyleAList = YES;
+        self.presentationStyle = MITNewsPresentationStyleList;
         self.listViewController.isCategory = YES;
     } else {
+        self.presentationStyle = MITNewsPresentationStyleGrid;
         self.gridViewController.isCategory = YES;
     }
     self.previousPresentationStyle = nil;
@@ -80,9 +81,9 @@
 - (void)updateLoadingCell
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (self.activeViewController == self.gridViewController) {
+        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
             [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
-        } else if (self.activeViewController == self.listViewController) {
+        } else if (self.presentationStyle == MITNewsPresentationStyleList) {
             [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
         }
     }];
@@ -205,18 +206,18 @@
 #pragma mark setters
 - (void)setError:(NSString *)message
 {
-    if (self.activeViewController == self.gridViewController) {
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         [self.gridViewController setError:message];
-    } else if (self.activeViewController == self.listViewController) {
+    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         [self.listViewController setError:message];
     }
 }
 
 - (void)setProgress:(BOOL)progress
 {
-    if (self.activeViewController == self.gridViewController) {
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         [self.gridViewController setProgress:progress];
-    } else if (self.activeViewController == self.listViewController) {
+    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         [self.listViewController setProgress:progress];
     }
 }
