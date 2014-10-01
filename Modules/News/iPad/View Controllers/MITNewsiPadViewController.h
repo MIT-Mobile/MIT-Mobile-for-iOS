@@ -1,4 +1,6 @@
 #import <UIKit/UIKit.h>
+#import "MITNewsGridViewController.H"
+#import "MITNewsListViewController.h"
 
 @class MITNewsStory;
 @class MITNewsCategory;
@@ -9,15 +11,29 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 };
 
 @interface MITNewsiPadViewController : UIViewController
+
+@property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
+@property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
+@property (nonatomic, weak) IBOutlet UIView *containerView;
+@property (nonatomic, readonly, weak) UIViewController *activeViewController;
+@property (nonatomic, getter=isSearching) BOOL searching;
+@property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+
 @property (nonatomic,readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic) MITNewsPresentationStyle presentationStyle;
 @property (nonatomic) BOOL showsFeaturedStories;
 
-- (IBAction)searchButtonWasTriggered:(UIBarButtonItem*)sender;
-- (IBAction)showStoriesAsGrid:(UIBarButtonItem*)sender;
-- (IBAction)showStoriesAsList:(UIBarButtonItem*)sender;
 - (void)reloadData;
 - (void)updateNavigationItem:(BOOL)animated;
+- (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated;
+- (BOOL)supportsPresentationStyle:(MITNewsPresentationStyle)style;
+- (void)updateRefreshStatusWithLastUpdatedTime;
+- (void)updateRefreshStatusWithText:(NSString *)refreshText;
+- (void)reloadViewItems:(UIRefreshControl *)refreshControl;
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block;
+@property (nonatomic) BOOL isCurrentPresentationStyleAList;
+
 @end
 
 @protocol MITNewsStoryDataSource <NSObject>

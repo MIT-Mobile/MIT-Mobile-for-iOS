@@ -2,6 +2,7 @@
 
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
+@protocol MITNewsListDelegate;
 
 @class MITNewsCategory;
 @class MITNewsStory;
@@ -12,7 +13,7 @@
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
 @property (nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property (nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+@property (nonatomic,weak) id<MITNewsStoryDelegate, MITNewsListDelegate> delegate;
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 - (void)reloadData;
@@ -25,4 +26,12 @@
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
 
+@property (nonatomic) BOOL isCategory;
+- (void)setError:(NSString *)errorMessage;
+- (void)setProgress:(BOOL)progress;
+
+@end
+
+@protocol MITNewsListDelegate <NSObject>
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError * error))block;
 @end

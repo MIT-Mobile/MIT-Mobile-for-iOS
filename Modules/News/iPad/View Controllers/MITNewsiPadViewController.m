@@ -1,67 +1,57 @@
 #import "MITNewsiPadViewController.h"
-#import "MITNewsModelController.h"
-#import "MITNewsStory.h"
-#import "MITNewsCategory.h"
-#import "MITNewsStoryCollectionViewCell.h"
+
 #import "MITNewsConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "MITNewsStoryViewController.h"
-#import "MITNewsSearchController.h"
+#import "MITMobile.h"
+#import "MITCoreData.h"
+#import "MITAdditions.h"
+
+#import "MITNewsModelController.h"
+#import "MITNewsStory.h"
+#import "MITNewsCategory.h"
+#import "MITNewsStoriesDataSource.h"
+#import "MITNewsCategoryDataSource.h"
 
 #import "MITNewsListViewController.h"
 #import "MITNewsGridViewController.h"
-#import "MITMobile.h"
-#import "MITCoreData.h"
-
-#import "MITNewsStoriesDataSource.h"
-#import "MITAdditions.h"
-
+#import "MITNewsStoryViewController.h"
+#import "MITNewsSearchController.h"
 #import "MITNewsiPadCategoryViewController.h"
+
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
-#import "MITNewsCategoryDataSource.h"
-#import "MITMobileServerConfiguration.h"
 
 CGFloat const refreshControlTextHeight = 19;
 
-@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource>
-
+@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource, MITNewsListDelegate, MITNewsGridDelegate>
 - (void)reloadItems:(void(^)(NSError *error))block;
 - (void)loadDataSources:(void(^)(NSError*))completion;
-
 @end
 
 @interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
 @end
 
 @interface MITNewsiPadViewController ()
-@property (nonatomic, weak) IBOutlet UIView *containerView;
-@property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
-@property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;
 @property (nonatomic, strong) MITNewsSearchController *searchController;
-@property (nonatomic, readonly, weak) UIViewController *activeViewController;
-
-@property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) UISearchBar *searchBar;
-
-@property (nonatomic, strong) NSDate *lastUpdated;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic) Reachability *internetReachability;
+
+@property (nonatomic, weak) MITNewsiPadCategoryViewController *weakiPadCategoryViewController;
 
 #pragma mark Data Source
 @property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 
+@property (nonatomic) BOOL category;
+@property (nonatomic) BOOL storyUpdateInProgress;
+@property (nonatomic) BOOL loadingMoreStories;
 @end
 
-@implementation MITNewsiPadViewController {
-    BOOL _isTransitioningToPresentationStyle;
-    BOOL _storyUpdateInProgress;
-}
+@implementation MITNewsiPadViewController
 
 @synthesize activeViewController = _activeViewController;
 @synthesize gridViewController = _gridViewController;
@@ -113,16 +103,16 @@ CGFloat const refreshControlTextHeight = 19;
     [super viewWillAppear:animated];
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    
-    if (!self.activeViewController) {
-        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
+     
+    if (!self.activeViewController || [ self isCategoryControllerDifferentThanHome]) {
+        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && !self.isCurrentPresentationStyleAList) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
         }
     }
     
-    if (!self.isSearching && !_storyUpdateInProgress) {
+    if (!self.isSearching && !self.storyUpdateInProgress) {
         if (!self.lastUpdated) {
             [self reloadViewItems:self.refreshControl];
         } else {
@@ -131,25 +121,37 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateNavigationItem:YES];
     }
     
-    if (_storyUpdateInProgress) {
-        CGFloat textHeight = 0;
-        if (!self.refreshControl.attributedTitle.string) {
-            textHeight = refreshControlTextHeight;
-        }
-        if (_presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-        } else {
-            [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-        }
-        [self updateRefreshStatusWithText:@"Updating..."];
-
-        if (!self.refreshControl.refreshing) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl endRefreshing];
-                [self.refreshControl beginRefreshing];
-            }];
-        }
+    if (!self.storyUpdateInProgress) {
+        return;
     }
+    
+    CGFloat textHeight = 0;
+    if (!self.refreshControl.attributedTitle.string) {
+        textHeight = refreshControlTextHeight;
+    }
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    } else {
+        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    }
+    [self updateRefreshStatusWithText:@"Updating..."];
+    
+    if (!self.refreshControl.refreshing) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl endRefreshing];
+            [self.refreshControl beginRefreshing];
+        }];
+    }
+}
+
+- (BOOL)isCategoryControllerDifferentThanHome
+{
+    if (self.weakiPadCategoryViewController != NULL &&
+        self.weakiPadCategoryViewController.presentationStyle != self.presentationStyle) {
+        self.isCurrentPresentationStyleAList = self.weakiPadCategoryViewController.isCurrentPresentationStyleAList;
+        return YES;
+    }
+    return NO;
 }
 
 #pragma mark Dynamic Properties
@@ -214,7 +216,14 @@ CGFloat const refreshControlTextHeight = 19;
 - (MITNewsSearchController *)searchController
 {
     if(!_searchController) {
-        MITNewsSearchController *searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+        MITNewsSearchController *searchController = nil;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            searchController = [[UIStoryboard storyboardWithName:@"News_iPad" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+        } else {
+            searchController = [[UIStoryboard storyboardWithName:@"News_iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"searchView"];
+
+        }
+        
         searchController.view.frame = self.containerView.bounds;
         searchController.delegate = self;
         _searchController = searchController;
@@ -257,8 +266,12 @@ CGFloat const refreshControlTextHeight = 19;
         
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
+            self.gridViewController.isCategory = self.category;
+            self.isCurrentPresentationStyleAList = NO;
         } else {
             toViewController = self.listViewController;
+            self.listViewController.isCategory = self.category;
+            self.isCurrentPresentationStyleAList = YES;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {
@@ -274,7 +287,6 @@ CGFloat const refreshControlTextHeight = 19;
         toViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
 
         const NSTimeInterval animationDuration = (animated ? 0.25 : 0);
-        _isTransitioningToPresentationStyle = YES;
         _activeViewController = toViewController;
         if (!fromViewController) {
             [self addChildViewController:toViewController];
@@ -285,7 +297,6 @@ CGFloat const refreshControlTextHeight = 19;
                             animations:^{
                                 [self.containerView addSubview:toViewController.view];
                             } completion:^(BOOL finished) {
-                                _isTransitioningToPresentationStyle = NO;
                                 [toViewController didMoveToParentViewController:self];
                                 //In landscape mode we need this to show the refresh when first starting module
                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -304,7 +315,6 @@ CGFloat const refreshControlTextHeight = 19;
                                        options:0
                                     animations:nil
                                     completion:^(BOOL finished) {
-                                        _isTransitioningToPresentationStyle = NO;
                                         [toViewController didMoveToParentViewController:self];
                                         [fromViewController removeFromParentViewController];
                                     }];
@@ -314,8 +324,8 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)startAndShowRefreshControl
 {
-    if (_storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
-        if (_presentationStyle == MITNewsPresentationStyleGrid) {
+    if (self.storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
+        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
             [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
         } else {
             [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
@@ -350,7 +360,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress && !self.messageView) {
+    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
         [self updateNavigationItem:YES];
     }
@@ -358,7 +368,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    if (!_storyUpdateInProgress && !self.messageView) {
+    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleList;
         [self updateNavigationItem:YES];
     }
@@ -462,11 +472,16 @@ CGFloat const refreshControlTextHeight = 19;
 #pragma mark Story Refreshing
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
-    if (_storyUpdateInProgress) {
+    if (self.loadingMoreStories) {
+        [self.refreshControl endRefreshing];
         return;
     }
     
-    _storyUpdateInProgress = YES;
+    if (self.storyUpdateInProgress) {
+        return;
+    }
+    
+    self.storyUpdateInProgress = YES;
     if (self.messageView) {
         [self removeNoResultsView];
     }
@@ -477,28 +492,29 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateRefreshStatusWithText:@"Updating..."];
     }
     [self reloadItems:^(NSError *error) {
-        _storyUpdateInProgress = NO;
+        self.storyUpdateInProgress = NO;
         MITNewsiPadViewController *strongSelf = weakSelf;
         UIRefreshControl *strongRefresh = weakRefresh;
         
         if (!strongSelf) {
             return;
         }
+        if (!strongRefresh) {
+            return;
+        }
+        strongSelf.refreshControl = strongRefresh;
+
         if (error) {
-            if (!strongRefresh) {
-                return;
-            }
-            strongSelf.refreshControl = strongRefresh;
             DDLogWarn(@"update failed; %@",error);
             if (error.code == NSURLErrorNotConnectedToInternet) {
                 [strongSelf updateRefreshStatusWithText:@"No Internet Connection"];
             } else {
                 [strongSelf updateRefreshStatusWithText:@"Failed..."];
             }
-            if (![strongSelf.categoriesDataSource.objects count]) {
+            if ([strongSelf.dataSources count] == 0) {
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
-            }
-            if ([strongSelf.categoriesDataSource.objects count]) {
+                
+            } else {
                 if (strongRefresh.refreshing) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
@@ -508,10 +524,6 @@ CGFloat const refreshControlTextHeight = 19;
             }
             
         } else {
-            if (!strongRefresh) {
-                return;
-            }
-            strongSelf.refreshControl = strongRefresh;
             strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
             if (strongRefresh.refreshing) {
@@ -565,6 +577,38 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)updateRefreshStatusWithText:(NSString *)refreshText
 {
     [self.refreshControl setAttributedTitle:[[NSAttributedString alloc] initWithString:refreshText]];
+}
+
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
+{
+    if (![self canLoadMoreItemsForCategoryInSection:section] || self.storyUpdateInProgress) {
+        if (block) {
+            block(nil);
+        }
+        return;
+    }
+    self.loadingMoreStories = YES;
+    
+    __weak MITNewsiPadViewController *weakSelf = self;
+    [self loadMoreItemsForCategoryInSection:section
+                                 completion:^(NSError *error) {
+
+                                     self.loadingMoreStories = NO;
+                                     
+                                     MITNewsiPadViewController *strongSelf = weakSelf;
+                                     if (!strongSelf) {
+                                         return;
+                                     }
+                                     
+                                     if (error) {
+                                         DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSources[section]);
+                                     } else {
+                                         DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSources[section]);
+                                     }
+                                     if (block) {
+                                         block(error);
+                                     }
+                                 }];
 }
 @end
 
@@ -687,7 +731,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    if ([_dataSources count]) {
+    if ([self.dataSources count]) {
         [self refreshDataSources:block];
     } else {
         [self loadDataSources:block];
@@ -720,7 +764,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if ([viewController class] == [MITNewsiPadCategoryViewController class]) {
+    if (self.category) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -735,6 +779,9 @@ CGFloat const refreshControlTextHeight = 19;
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    if ([dataSource.objects count] <= index) {
+        return nil;
+    }
     return dataSource.objects[index];
 }
 
@@ -763,23 +810,24 @@ CGFloat const refreshControlTextHeight = 19;
     self.currentDataSourceIndex = section;
  
     MITNewsStory *story = [self viewController:self storyAtIndex:index forCategoryInSection:section];
-    if (story) {
-        __block BOOL isExternalStory = NO;
-        __block NSURL *externalURL = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            if ([story.type isEqualToString:MITNewsStoryExternalType]) {
-                isExternalStory = YES;
-                externalURL = story.sourceURL;
-            }
-        }];
-        
-        if (isExternalStory) {
-            NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
-            UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
-            [willOpenInExternalBrowserAlertView show];
-        } else {
-            [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
+    if (!story) {
+        return nil;
+    }
+    __block BOOL isExternalStory = NO;
+    __block NSURL *externalURL = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        if ([story.type isEqualToString:MITNewsStoryExternalType]) {
+            isExternalStory = YES;
+            externalURL = story.sourceURL;
         }
+    }];
+    
+    if (isExternalStory) {
+        NSString *message = [NSString stringWithFormat:@"Open in Safari?"];
+        UIAlertView *willOpenInExternalBrowserAlertView = [[UIAlertView alloc] initWithTitle:message message:[externalURL absoluteString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+        [willOpenInExternalBrowserAlertView show];
+    } else {
+        [self performSegueWithIdentifier:@"showStoryDetail" sender:[NSIndexPath indexPathForItem:index inSection:section]];
     }
     return nil;
 }
@@ -795,15 +843,14 @@ CGFloat const refreshControlTextHeight = 19;
 
             NSIndexPath *indexPath = sender;
 
-            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-            storyDetailViewController.delegate = self;
             MITNewsStory *story = [self viewController:self storyAtIndex:indexPath.row forCategoryInSection:indexPath.section];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
+                MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+                storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
@@ -811,13 +858,21 @@ CGFloat const refreshControlTextHeight = 19;
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else if ([segue.identifier isEqualToString:@"showCategory"]) {
+        if ([destinationViewController isKindOfClass:[MITNewsiPadCategoryViewController class]]) {
+            
+            NSIndexPath *indexPath = sender;
+            
+            MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
+            iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
+            iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
+            iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+            self.weakiPadCategoryViewController = iPadCategoryViewController;
         
-        NSIndexPath *indexPath = sender;
-
-        MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
-        iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
-        iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
-        iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
     } else {
         DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
@@ -842,37 +897,37 @@ CGFloat const refreshControlTextHeight = 19;
             block(dataSource.objects[currentIndex +1], nil);
         }
     } else {
-        if ([dataSource hasNextPage]) {
-            [dataSource nextPage:^(NSError *error) {
-                if (error) {
-                    DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
-                    
-                    if (block) {
-                        block(nil, error);
-                    }
-                } else {
-                    DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
-                    NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
-                    
-                    if (currentIndex + 1 < [dataSource.objects count]) {
-                        if(block) {
-                            block(dataSource.objects[currentIndex + 1], nil);
-                        }
-                    }
-                }
-            }];
-            
-        } else {
+        if (![dataSource hasNextPage]) {
             if (block) {
                 block(nil, nil);
             }
+            return;
         }
+        [dataSource nextPage:^(NSError *error) {
+            if (error) {
+                DDLogWarn(@"failed to get more stories from datasource %@",dataSource);
+                
+                if (block) {
+                    block(nil, error);
+                }
+            } else {
+                DDLogVerbose(@"retrieved more stores from datasource %@",dataSource);
+                NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
+                
+                if (currentIndex + 1 < [dataSource.objects count]) {
+                    if(block) {
+                        block(dataSource.objects[currentIndex + 1], nil);
+                    }
+                }
+            }
+        }];
     }
 }
 
 - (void)hideSearchField
 {
     self.searchBar = nil;
+    [self.searchController willMoveToParentViewController:nil];
     [self.searchController.view removeFromSuperview];
     [self.searchController removeFromParentViewController];
     self.searchController = nil;

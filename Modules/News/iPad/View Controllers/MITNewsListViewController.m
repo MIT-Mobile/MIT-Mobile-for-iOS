@@ -28,6 +28,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @property (nonatomic, strong) NSMutableArray *storyHeightsArray;
 
 
+@property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
+
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
@@ -251,13 +254,16 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        return MITNewsLoadMoreTableViewCellHeight;
+    }
     CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
     if ([self.storyHeightsArray count] > indexPath.section) {
         
@@ -326,7 +332,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self didSelectStoryAtIndexPath:indexPath];
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        [self getMoreStoriesForSection:indexPath.section];
+    } else {
+        [self didSelectStoryAtIndexPath:indexPath];
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark UITableViewDataSource
@@ -347,6 +360,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
+    
+    if (self.isCategory) {
+        NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+        if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+            return numberOfRows + 1;
+        }
+        return numberOfRows;
+    }
  
     if ([self.storyHeightsArray count] > section) {
         NSMutableDictionary *storyHeights = self.storyHeightsArray[section];
@@ -372,10 +393,26 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            
+            if (self.errorMessage) {
+                cell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
+            } else if (_storyUpdateInProgress) {
+                cell.textLabel.text = @"Loading More...";
+            } else {
+                cell.textLabel.text = @"Load More...";
+            }
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+            
+            return cell;
+        }
+    }
     return cell;
 }
 
@@ -385,6 +422,14 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
+    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if (_storyUpdateInProgress) {
+            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [view startAnimating];
+            cell.accessoryView = view;
+        } else {
+            cell.accessoryView = nil;
+        }
     }
 }
 
@@ -409,6 +454,9 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         return identifier;
     } else {
+        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isCategory == YES) {
+            return MITNewsLoadMoreCellIdentifier;
+        }
         return nil;
     }
 }
@@ -473,4 +521,18 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     }
 }
 
+- (void)getMoreStoriesForSection:(NSInteger)section
+{
+    [self.delegate getMoreStoriesForSection:section completion:nil];
+}
+
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
+}
 @end

@@ -66,7 +66,6 @@
 
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    [self setupNextStory];
 
     if (!UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 
@@ -87,6 +86,13 @@
                                            [self.view setNeedsUpdateConstraints];
                                        }];
         }
+        self.nextStoryImageView.image = nil;
+        self.nextStoryTitleLabel.text = nil;
+        self.nextStoryDekLabel.text = nil;
+        self.nextStoryDateLabel.text = nil;
+        self.nextStoryNextStoryLabel.text = nil;
+    } else {
+        [self setupNextStory];
     }
 }
 

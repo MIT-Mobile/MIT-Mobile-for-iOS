@@ -6,6 +6,7 @@
 
 @protocol MITNewsStoryDataSource;
 @protocol MITNewsStoryDelegate;
+@protocol MITNewsGridDelegate;
 
 @interface MITNewsGridViewController : UICollectionViewController <MITCollectionViewDelegateNewsGrid>
 @property(nonatomic) NSUInteger numberOfStoriesPerCategory;
@@ -13,7 +14,7 @@
 @property(nonatomic,readonly) MITCollectionViewCellSizer *collectionViewCellSizer;
 
 @property(nonatomic,weak) id<MITNewsStoryDataSource> dataSource;
-@property(nonatomic,weak) id<MITNewsStoryDelegate> delegate;
+@property(nonatomic,weak) id<MITNewsStoryDelegate, MITNewsGridDelegate> delegate;
 
 @property(nonatomic) NSUInteger numberOfColumnsForPortraitOrientation;
 @property(nonatomic) NSUInteger numberOfColumnsForLandscapeOrientation;
@@ -28,4 +29,15 @@
 
 #pragma mark Subclass methods
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
+- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
+- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
+
+@property (nonatomic) BOOL isCategory;
+- (void)setError:(NSString *)errorMessage;
+- (void)setProgress:(BOOL)progress;
+
+@end
+
+@protocol MITNewsGridDelegate <NSObject>
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError * error))block;
 @end

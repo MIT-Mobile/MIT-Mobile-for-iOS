@@ -12,10 +12,15 @@
 #import "MITAdditions.h"
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITCollectionViewCellSizer.h"
+#import "MITNewsLoadMoreCollectionViewCell.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewCellAutosizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
+
+@property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
+
 @end
 
 @implementation MITNewsGridViewController
@@ -147,6 +152,11 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
+    
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        [self getMoreStoriesForSection:indexPath.section];
+    }
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     if (story) {
         [self didSelectStoryAtIndexPath:indexPath];
@@ -160,6 +170,29 @@
     
     [self configureCell:collectionViewCell atIndexPath:indexPath];
     
+    if ([collectionViewCell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
+            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;;
+            
+            if(self.errorMessage) {
+                loadMoreCell.textLabel.text = self.errorMessage;
+                self.errorMessage = nil;
+                loadMoreCell.loadingIndicator.hidden = YES;
+            } else if (_storyUpdateInProgress) {
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
+            } else {
+                loadMoreCell.textLabel.text = @"Load More...";
+                loadMoreCell.loadingIndicator.hidden = YES;
+            }
+            
+            return loadMoreCell;
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,collectionViewCell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]),NSStringFromClass([collectionViewCell class]));
+            
+            return collectionViewCell;
+        }
+    }
     return collectionViewCell;
 }
 
@@ -209,6 +242,11 @@
 
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath
 {
+    if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row &&
+        [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
+         self.isCategory == YES) {
+        return MITNewsCellIdentifierStoryLoadMore;
+    }
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     BOOL featuredStory = [self isFeaturedCategoryInSection:indexPath.section];
     
@@ -235,11 +273,23 @@
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width
 {
     NSString *reuseIdentifier = [self identifierForCellAtIndexPath:indexPath];
+    NSString *identifier = [self identifierForCellAtIndexPath:indexPath];
+    if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        return 175.;
+    }
     
     CGSize maximumSize = CGSizeMake(width, 0.);
     CGSize cellSize = [_collectionViewCellSizer sizeForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath withSize:maximumSize flexibleAxis:MITFlexibleAxisVertical];
     
     return cellSize.height;
+}
+
+- (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
+{
+    if (self.isCategory) {
+        return 0;
+    }
+    return 44;
 }
 
 - (NSUInteger)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout featuredStoryVerticalSpanInSection:(NSInteger)section
@@ -291,7 +341,19 @@
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
     if ([self.dataSource respondsToSelector:@selector(viewController:numberOfStoriesForCategoryInSection:)]) {
-        return [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+        
+        NSUInteger numberOfStories = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
+        
+        if (!self.isCategory) {
+            return numberOfStories;
+        } else {
+            if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
+                return numberOfStories + 1;
+            } else {
+                return numberOfStories;
+            }
+        }
+    
     } else {
         return 0;
     }
@@ -319,5 +381,22 @@
         [self.delegate viewController:self didSelectCategoryInSection:section];
     }
 }
+
+#pragma mark More Stories
+- (void)getMoreStoriesForSection:(NSInteger)section
+{
+    [self.delegate getMoreStoriesForSection:section completion:nil];
+}
+
+- (void)setError:(NSString *)errorMessage
+{
+    self.errorMessage = errorMessage;
+}
+
+- (void)setProgress:(BOOL)progress
+{
+    self.storyUpdateInProgress = progress;
+}
+
 
 @end

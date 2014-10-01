@@ -14,26 +14,20 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
-@interface MITNewsSearchController (NewsDataSource) <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
-
-@end
-
-@interface MITNewsSearchController()
+@interface MITNewsSearchController() <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
 @property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
 @property (nonatomic) MITNewsDataSource *dataSource;
-
 @property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic, strong) NSString *errorMessage;
-
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *resignSearchTapGestureRecognizer;
 @end
 
 @implementation MITNewsSearchController {
     BOOL _storyUpdateInProgress;
 }
-
 @synthesize recentSearchController = _recentSearchController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -107,7 +101,6 @@
         self.view.alpha = 1;
     }
     self.messageActivityView.alpha = 1;
-
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -143,10 +136,12 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
+        [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
         self.searchTableView.alpha = 0;
         self.view.alpha = .5;
         [self clearTable];
     } else {
+        [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
         self.searchTableView.alpha = .5;
         self.view.alpha = 1;
     }
@@ -164,6 +159,7 @@
 #pragma mark - search
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
     [self clearTable];
@@ -211,7 +207,6 @@
 
 - (void)getMoreStories:(void (^)(NSError *))completion
 {
-    
     if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
         if (completion) {
             completion(nil);
@@ -262,12 +257,9 @@
 #pragma mark - hide/show Recents
 - (void)hideSearchRecents
 {
-    if (self.recentSearchPopoverController != nil) {
-        if (self.recentSearchController.confirmSheet == nil) {
-            
-            [self.recentSearchPopoverController dismissPopoverAnimated:YES];
-            self.recentSearchPopoverController = nil;
-        }
+    if (self.recentSearchPopoverController != nil && self.recentSearchController.confirmSheet == nil) {
+        [self.recentSearchPopoverController dismissPopoverAnimated:YES];
+        self.recentSearchPopoverController = nil;
     }
 }
 
@@ -277,16 +269,13 @@
         return;
     }
     UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
-    
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
     recentSearchPopoverController.popoverBackgroundViewClass = [MITPopoverBackgroundView class];
-    
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
-    
 }
 
 - (void)hideSearchField
@@ -387,14 +376,11 @@
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if (_storyUpdateInProgress == YES) {
-            if (!cell.accessoryView) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-            }
+            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [view startAnimating];
+            cell.accessoryView = view;
         } else {
             cell.accessoryView = nil;
         }
@@ -411,12 +397,16 @@
     }
 }
 
+- (IBAction)tappedHideSearchFieldArea:(id)sender
+{
+    [self hideSearchField];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         [self getMoreStories:^(NSError *error) {
-            
         }];
     }
     else {
@@ -438,11 +428,11 @@
         if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
             
             NSIndexPath *indexPath = sender;
+            
             MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
             if (story) {
                 NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
                 managedObjectContext.parentContext = self.managedObjectContext;
-                
                 MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
                 storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
@@ -475,33 +465,33 @@
         if (block) {
             block(self.dataSource.objects[currentIndex + 1], nil);
         }
-    } else {
-        __weak MITNewsSearchController *weakSelf = self;
-        
-        [self getMoreStories:^(NSError * error) {
-            MITNewsSearchController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (error) {
-                block(nil, error);
-                
-            } else {
-                NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
-                
-                if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
-                    if (block) {
-                        block(strongSelf.dataSource.objects[currentIndex + 1], nil);
-                    }
-                } else {
-                    if (block) {
-                        block(nil, error);
-                    }
-                }
-                [strongSelf.searchTableView reloadData];
-            }
-        }];
+        return;
     }
+    
+    __weak MITNewsSearchController *weakSelf = self;
+        
+    [self getMoreStories:^(NSError * error) {
+        MITNewsSearchController *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        if (error) {
+            block(nil, error);
+            return;
+        }
+        NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
+        
+        if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
+            if (block) {
+                block(strongSelf.dataSource.objects[currentIndex + 1], nil);
+            }
+        } else {
+            if (block) {
+                block(nil, error);
+            }
+        }
+        [strongSelf.searchTableView reloadData];
+    }];
 }
 
 #pragma mark No Results / Loading More View

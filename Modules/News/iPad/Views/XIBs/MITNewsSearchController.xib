@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITNewsSearchController">
             <connections>
+                <outlet property="resignSearchTapGestureRecognizer" destination="kiP-cL-K1c" id="LH4-Tu-26P"/>
                 <outlet property="searchTableView" destination="7yj-ya-VE7" id="VJH-90-yat"/>
                 <outlet property="view" destination="iN0-l3-epB" id="Tcx-yv-ZOu"/>
             </connections>
@@ -34,6 +35,15 @@
                 <constraint firstItem="7yj-ya-VE7" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Y8L-Jx-gmE"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="kiP-cL-K1c" appends="YES" id="LHW-ya-Jfu"/>
+            </connections>
         </view>
+        <tapGestureRecognizer id="kiP-cL-K1c">
+            <connections>
+                <action selector="tappedHideSearchFieldArea:" destination="-1" id="EBR-3f-g1O"/>
+                <outlet property="delegate" destination="iN0-l3-epB" id="DTQ-LA-ebh"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
 </document>

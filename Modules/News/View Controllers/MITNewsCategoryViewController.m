@@ -690,11 +690,9 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         }
 
         if (needsActivityIndicatorAccessory) {
-            if (!cell.accessoryView) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-            }
+            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [view startAnimating];
+            cell.accessoryView = view;
         } else {
             cell.accessoryView = nil;
         }
