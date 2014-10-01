@@ -289,7 +289,7 @@
                                     <navigationItem title="x of y" id="7uS-RY-Oux">
                                         <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="GGG-QQ-LK1">
                                             <connections>
-                                                <action selector="goBackward:" destination="jao-yi-cxX" id="QRL-iR-zpY"/>
+                                                <action selector="unwindToStoryDetail:" destination="jao-yi-cxX" id="GkQ-Mx-9bZ"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="action" id="Ue7-Nv-7Rg">

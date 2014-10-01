@@ -37,7 +37,7 @@
 }
 
 
-- (IBAction)goBackward:(id)sender {
+- (IBAction)unwindToStoryDetail:(id)sender {
     [self dismissViewControllerAnimated:YES completion:^() {
         [self performSegueWithIdentifier:@"unwindFromImageGallery" sender:self];
     }];
