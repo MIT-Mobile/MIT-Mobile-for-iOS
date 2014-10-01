@@ -25,7 +25,7 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
     [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
         if (libraries) {
             self.libraries = libraries;
-            //[self.refreshControl endRefreshing];
+            [self.refreshControl endRefreshing];
             [self.tableView reloadData];
         }
     }];
@@ -36,8 +36,8 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
     UINib *cellNib = [UINib nibWithNibName:kMITLibraryCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITLibraryCell];
     
-//    self.refreshControl = [[UIRefreshControl alloc] init];
-//    [self.refreshControl beginRefreshing];
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl beginRefreshing];
 }
 
 - (void)didReceiveMemoryWarning

@@ -2,6 +2,12 @@
 #import "MITLibrariesDate.h"
 #import "Foundation+MITAdditions.h"
 
+@interface MITLibrariesRegularTerm ()
+
+@property (nonatomic, strong) NSArray *sortedDateCodesArray;
+
+@end
+
 @implementation MITLibrariesRegularTerm
 
 + (RKMapping *)objectMapping
@@ -63,7 +69,66 @@
     NSString *openString = [self.dateFormatter stringFromDate:startDate];
     NSString *closeString = [endDate isEqualToDate:[endDate startOfDay]] ? @"midnight" : [self.dateFormatter stringFromDate:endDate];
     
-    return [NSString stringWithFormat:@"%@-%@", openString, closeString];
+    return [[NSString stringWithFormat:@"%@-%@", openString, closeString] lowercaseString];
+}
+
+- (NSString *)termHoursDescription
+{
+    return [NSString stringWithFormat:@"%@ %@", [self termsDayRangeString], [self hoursString]];
+}
+
+- (NSString *)termsDayRangeString
+{
+    NSString *dayRangesString = @"";
+    NSNumber *startOfRange = nil;
+    NSNumber *endOfRange = nil;
+    for (NSNumber *dateCodeNumber in self.sortedDateCodesArray) {
+        if (!endOfRange) {
+            startOfRange = endOfRange = dateCodeNumber;
+        }
+        else if ([dateCodeNumber integerValue] == [endOfRange integerValue] + 1) {
+            endOfRange = dateCodeNumber;
+        }
+        else {
+            dayRangesString = [self dayRangeStringWithBaseString:dayRangesString startOfRange:startOfRange endOfRange:endOfRange];
+            startOfRange = endOfRange = dateCodeNumber;
+        }
+    }
+    if (startOfRange && endOfRange) {
+        dayRangesString = [self dayRangeStringWithBaseString:dayRangesString startOfRange:startOfRange endOfRange:endOfRange];
+    }
+    return dayRangesString;
+
+}
+
+- (NSString *)dayRangeStringWithBaseString:(NSString *)baseString startOfRange:(NSNumber *)startOfRange endOfRange:(NSNumber *)endOfRange
+{
+    if (baseString.length > 0) {
+        baseString = [baseString stringByAppendingString:@", "];
+    }
+    
+    NSString *startingString = self.dateFormatter.weekdaySymbols[[startOfRange integerValue]];
+    NSString *endingString = self.dateFormatter.weekdaySymbols[[endOfRange integerValue]];
+    
+    NSString *rangesString = [startOfRange isEqualToNumber:endOfRange] ? startingString : [NSString stringWithFormat:@"%@-%@", startingString, endingString];
+    baseString = [baseString stringByAppendingString:rangesString];
+    
+    return baseString;
+}
+
+- (NSArray *)sortedDateCodesArray
+{
+    if (!_sortedDateCodesArray) {
+        NSMutableArray *dateCodes = [[NSMutableArray alloc] init];
+        for (int i = 0; i < self.days.length; i++) {
+            NSString *dateCode = [self.days substringWithRange:NSMakeRange(i, 1)];
+            [dateCodes addObject:[NSDate numberForDateCode:dateCode]];
+        }
+        
+        [dateCodes sortUsingSelector:@selector(compare:)];
+        _sortedDateCodesArray = dateCodes;
+    }
+    return _sortedDateCodesArray;
 }
 
 - (NSDateFormatter *)dateFormatter

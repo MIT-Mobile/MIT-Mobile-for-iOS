@@ -1,5 +1,18 @@
 #import "MITLibrariesLibraryDetailViewController.h"
 #import "MITLibrariesLibrary.h"
+#import "MITLibrariesHoursCell.h"
+#import "MITLibrariesTerm.h"
+#import "UIKit+MITAdditions.h"
+
+static NSString *const kMITDefaultCell = @"kMITDefaultCell";
+static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
+
+typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
+    MITLibraryDetailCellPhone,
+    MITLibraryDetailCellLocation,
+    MITLibraryDetailCellHoursToday,
+    MITLibraryDetailCellOther
+};
 
 @interface MITLibrariesLibraryDetailViewController ()
 
@@ -11,6 +24,8 @@
     [super viewDidLoad];
     
     self.title = self.library.name;
+
+    [self setupTableView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -18,72 +33,103 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)setupTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:kMITHoursCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITHoursCell];
+}
+
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 3 + self.library.terms.count;
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row < MITLibraryDetailCellOther) {
+        return 54.0;
+    }
+    return [MITLibrariesHoursCell heightForContent:[self termForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.row) {
+        case MITLibraryDetailCellPhone:
+            return [self phoneNumberCell];
+            break;
+        case MITLibraryDetailCellLocation:
+            return [self locationCell];
+            break;
+        case MITLibraryDetailCellHoursToday:
+            return [self hoursTodayCell];
+            break;
+        case MITLibraryDetailCellOther:
+        default:
+            return [self termHoursCellForIndexPath:indexPath];
+            break;
+    }
+}
+
+- (UITableViewCell *)phoneNumberCell
+{
+    UITableViewCell *cell = [self defaultCell];
+    cell.textLabel.text = @"phone";
+    cell.detailTextLabel.text = self.library.phoneNumber;
+    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+    return cell;
+}
+
+- (UITableViewCell *)locationCell
+{
+    UITableViewCell *cell = [self defaultCell];
+    cell.textLabel.text = @"location";
+    cell.detailTextLabel.text = self.library.location;
+    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+    return cell;
+}
+
+- (UITableViewCell *)hoursTodayCell
+{
+    UITableViewCell *cell = [self defaultCell];
+    cell.textLabel.text = @"today's hours";
+    cell.detailTextLabel.text = [[self.library hoursStringForDate:[NSDate date]] lowercaseString];
+    cell.accessoryView = nil;
+    return cell;
+}
+
+- (UITableViewCell *)termHoursCellForIndexPath:(NSIndexPath *)indexPath
+{
+    MITLibrariesHoursCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITHoursCell forIndexPath:indexPath];
     
-    // Configure the cell...
+    [cell setContent:[self termForIndexPath:indexPath]];
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+- (UITableViewCell *)defaultCell
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITDefaultCell];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITDefaultCell];
+        cell.textLabel.textColor = [UIColor mit_tintColor];
+        cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:17.0];
+    }
+    return cell;
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+- (MITLibrariesTerm *)termForIndexPath:(NSIndexPath *)indexPath
+{
+    NSInteger index = indexPath.row - 3;
+    return self.library.terms[index];
 }
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

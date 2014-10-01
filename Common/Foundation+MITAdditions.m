@@ -982,37 +982,66 @@ typedef struct {
 
 - (NSString *)MITDateCode
 {
-    static NSDateFormatter *dateFormatter;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"EE"];
+    static NSDateComponents *dateComponents;
+    if (!dateComponents) {
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        dateComponents = [calendar components:(NSDayCalendarUnit |
+                                               NSWeekdayCalendarUnit)
+                                      fromDate:self];
     }
-    
-    NSString *shortDateString = [dateFormatter stringFromDate:self];
-    
-    if ([shortDateString isEqualToString:@"Mon"]) {
-        return @"M";
+ 
+    switch (dateComponents.weekday) {
+        case 0:
+            return @"U";
+            break;
+        case 1:
+            return @"M";
+            break;
+        case 2:
+            return @"T";
+            break;
+        case 3:
+            return @"W";
+            break;
+        case 4:
+            return @"R";
+            break;
+        case 5:
+            return @"F";
+            break;
+        case 6:
+            return @"S";
+            break;
+        default:
+            return @"";
+            break;
     }
-    else if ([shortDateString isEqualToString:@"Tue"]) {
-        return @"T";
+}
+
++ (NSNumber *)numberForDateCode:(NSString *)dateCode
+{
+    if ([dateCode isEqualToString:@"U"]) {
+        return @0;
     }
-    else if ([shortDateString isEqualToString:@"Wed"]) {
-        return @"W";
+    else if ([dateCode isEqualToString:@"M"]) {
+        return @1;
     }
-    else if ([shortDateString isEqualToString:@"Thu"]) {
-        return @"R";
+    else if ([dateCode isEqualToString:@"T"]) {
+        return @2;
     }
-    else if ([shortDateString isEqualToString:@"Fri"]) {
-        return @"F";
+    else if ([dateCode isEqualToString:@"W"]) {
+        return @3;
     }
-    else if ([shortDateString isEqualToString:@"Sat"]) {
-        return @"S";
+    else if ([dateCode isEqualToString:@"R"]) {
+        return @4;
     }
-    else if ([shortDateString isEqualToString:@"Sun"]) {
-        return @"U";
+    else if ([dateCode isEqualToString:@"F"]) {
+        return @5;
     }
-    
-    return @"";
+    else if ([dateCode isEqualToString:@"S"]) {
+        return @6;
+    }
+    return @0;
 }
 
 @end

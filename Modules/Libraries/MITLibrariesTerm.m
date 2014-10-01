@@ -22,6 +22,35 @@
     return mapping;
 }
 
+- (NSString *)termDescription
+{
+    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
+ 
+    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
+    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+ 
+    [self.dateFormatter setDateFormat:@"MMM d, yyyy"];
+ 
+    NSString *startDateString = [self.dateFormatter stringFromDate:startDate];
+    NSString *endDateString = [self.dateFormatter stringFromDate:endDate];
+    
+    return [NSString stringWithFormat:@"%@ (%@-%@)", self.name, startDateString, endDateString];
+}
+
+- (NSString *)termHoursDescription
+{
+    NSString *hoursDescription = @"";
+    for (MITLibrariesRegularTerm *term in self.regularTerm) {
+        hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
+    }
+    
+    for (MITLibrariesClosingsTerm *term in self.closingsTerm) {
+        hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
+    }
+    
+    return [hoursDescription stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 - (NSString *)hoursStringForDate:(NSDate *)date
 {
     if (![self dateFallsInTerm:date]) {
@@ -51,6 +80,8 @@
 
 - (BOOL)dateFallsInTerm:(NSDate *)date
 {
+    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
+
     NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
     NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
     
@@ -59,6 +90,8 @@
 
 - (BOOL)isOpenAtDate:(NSDate *)date
 {
+    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
+
     NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
     NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
     
@@ -97,7 +130,6 @@
     static NSDateFormatter *dateFormatter;
     if (!dateFormatter) {
         dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     }
     return dateFormatter;
 }
