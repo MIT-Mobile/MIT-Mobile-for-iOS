@@ -8,7 +8,7 @@
     if (self) {
         self.location = dictionary[@"location"];
         self.collection = dictionary[@"collection"];
-        self.callNumber = dictionary[@"call-no"];
+        self.callNumber = dictionary[@"call_number"];
         self.status = dictionary[@"status"];
         self.available = [dictionary[@"available"] boolValue];
     }
