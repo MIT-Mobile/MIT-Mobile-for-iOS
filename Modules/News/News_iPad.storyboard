@@ -92,10 +92,10 @@
                                             <constraint firstAttribute="height" constant="800" id="EtD-ah-Jgu"/>
                                         </constraints>
                                     </webView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
+                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
                                         <rect key="frame" x="60" y="800" width="648" height="101.5"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
                                                 <constraints>
                                                     <constraint firstAttribute="width" id="3nw-pn-3yB"/>
                                                     <constraint firstAttribute="height" id="nX8-sr-rAA"/>
@@ -113,7 +113,7 @@
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" misplaced="YES" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
                                                 <rect key="frame" x="0.0" y="74" width="633" height="17.5"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <nil key="highlightedColor"/>
@@ -147,8 +147,6 @@
                                         </connections>
                                     </view>
                                     <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G6e-Mr-MOn">
-                                        <rect key="frame" x="0.0" y="0.0" width="768" height="0.0"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" id="Vir-tV-3Cz"/>
                                         </constraints>
@@ -201,7 +199,6 @@
                         <outlet property="nextStoryTitleLabel" destination="Zwj-9s-ZzK" id="YRP-fW-GWn"/>
                         <outlet property="nextStoryView" destination="lyu-sR-MC2" id="wzy-KX-x6z"/>
                         <outlet property="scrollView" destination="lbw-PH-uJi" id="kfC-xj-bjf"/>
-                        <segue destination="jao-yi-cxX" kind="modal" identifier="showMediaGallery" modalPresentationStyle="currentContext" id="Ibl-38-yet"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57i-Pa-t19" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -292,7 +289,7 @@
                                     <navigationItem title="x of y" id="7uS-RY-Oux">
                                         <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="GGG-QQ-LK1">
                                             <connections>
-                                                <segue destination="Wfp-h0-ywM" kind="unwind" unwindAction="unwindFromImageGallery:" id="3It-bO-6hA"/>
+                                                <action selector="unwindToStoryDetail:" destination="jao-yi-cxX" id="GkQ-Mx-9bZ"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="action" id="Ue7-Nv-7Rg">
@@ -334,6 +331,7 @@
                         <outlet property="resetZoomGesture" destination="gAb-H4-EN6" id="jOc-9e-VwD"/>
                         <outlet property="thumbnailPickerView" destination="ew8-Ox-al8" id="bcg-YF-Z9V"/>
                         <outlet property="toggleUIGesture" destination="SvE-Ge-YmL" id="F1z-tS-CAW"/>
+                        <segue destination="Wfp-h0-ywM" kind="unwind" identifier="unwindFromImageGallery" unwindAction="unwindFromImageGallery:" id="4Y5-Nd-S0u"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MB1-Uc-826" userLabel="First Responder" sceneMemberID="firstResponder"/>

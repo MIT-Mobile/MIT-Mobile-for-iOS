@@ -36,6 +36,13 @@
     return self;
 }
 
+
+- (IBAction)unwindToStoryDetail:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:^() {
+        [self performSegueWithIdentifier:@"unwindFromImageGallery" sender:self];
+    }];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

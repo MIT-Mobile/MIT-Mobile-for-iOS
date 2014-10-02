@@ -105,7 +105,7 @@ CGFloat const refreshControlTextHeight = 19;
     [self.navigationController setNavigationBarHidden:NO animated:animated];
      
     if (!self.activeViewController || [ self isCategoryControllerDifferentThanHome]) {
-        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && !self.isCurrentPresentationStyleAList) {
+        if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.presentationStyle == MITNewsPresentationStyleGrid) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
             [self setPresentationStyle:MITNewsPresentationStyleList animated:animated];
@@ -148,7 +148,7 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.weakiPadCategoryViewController != NULL &&
         self.weakiPadCategoryViewController.presentationStyle != self.presentationStyle) {
-        self.isCurrentPresentationStyleAList = self.weakiPadCategoryViewController.isCurrentPresentationStyleAList;
+        self.presentationStyle = self.weakiPadCategoryViewController.presentationStyle;
         return YES;
     }
     return NO;
@@ -267,11 +267,9 @@ CGFloat const refreshControlTextHeight = 19;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
             self.gridViewController.isCategory = self.category;
-            self.isCurrentPresentationStyleAList = NO;
         } else {
             toViewController = self.listViewController;
             self.listViewController.isCategory = self.category;
-            self.isCurrentPresentationStyleAList = YES;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {
@@ -473,7 +471,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl
 {
     if (self.loadingMoreStories) {
-        [self.refreshControl endRefreshing];
+        [refreshControl endRefreshing];
         return;
     }
     

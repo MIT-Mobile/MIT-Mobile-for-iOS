@@ -1,6 +1,6 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 
-static NSUInteger maximumWidthOfTable = 648;
+static CGFloat maximumWidthOfTable = 648;
 
 @implementation MITNewsCustomWidthTableViewCell
 
@@ -25,11 +25,19 @@ static NSUInteger maximumWidthOfTable = 648;
     // Configure the view for the selected state
 }
 
-- (void)setFrame:(CGRect)frame {
-    if (frame.size.width > maximumWidthOfTable) {
-        frame.origin.x += (frame.size.width - maximumWidthOfTable) / 2;
+- (void)setFrame:(CGRect)frame
+{
+    CGFloat width = self.superview.frame.size.width;
+    if (width > maximumWidthOfTable) {
+        CGFloat padding = (width - maximumWidthOfTable) / 2;
+        if (padding != frame.origin.x) {
+            frame.origin.x += padding;
+        } else {
+            frame.origin.x = padding;
+        }
         frame.size.width = maximumWidthOfTable;
     }
+    
     [super setFrame:frame];
 }
 
