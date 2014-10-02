@@ -26,7 +26,7 @@
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
 
-@property (nonatomic) BOOL isCategory;
+@property (nonatomic) BOOL isACategoryView;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @end

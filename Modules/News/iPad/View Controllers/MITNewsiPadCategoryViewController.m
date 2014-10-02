@@ -10,7 +10,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
-@property (nonatomic) BOOL category;
+@property (nonatomic) BOOL isACategoryView;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
@@ -35,18 +35,18 @@
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
+    self.isACategoryView = YES;
     [super viewDidLoad];
     
     self.showsFeaturedStories = NO;
     self.dataSources = @[self.dataSource];
-    self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
     if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
         self.presentationStyle = MITNewsPresentationStyleList;
-        self.listViewController.isCategory = YES;
+        self.listViewController.isACategoryViewController = YES;
     } else {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        self.gridViewController.isCategory = YES;
+        self.gridViewController.isACategoryViewController = YES;
     }
     self.previousPresentationStyle = nil;
 }
@@ -106,8 +106,10 @@
         dispatch_after(popTime, dispatch_get_main_queue(), ^{
             [strongSelf.refreshControl endRefreshing];
         });
-        self.lastUpdated = [NSDate date];
-        [strongSelf updateRefreshStatusWithLastUpdatedTime];
+        if (self.dataSource.refreshedAt) {
+            self.lastUpdated = [NSDate date];
+            [strongSelf updateRefreshStatusWithLastUpdatedTime];
+        }
     };
     
     

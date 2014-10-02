@@ -357,7 +357,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
     
-    if (self.isCategory) {
+    if (self.isACategoryView) {
         NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
         if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
             return numberOfRows + 1;
@@ -450,7 +450,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         return identifier;
     } else {
-        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isCategory == YES) {
+        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isACategoryView == YES) {
             return MITNewsLoadMoreCellIdentifier;
         }
         return nil;
