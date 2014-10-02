@@ -5,6 +5,7 @@
 #import "MITLibrariesClosingsTerm.h"
 #import "MITLibrariesExceptionsTerm.h"
 #import "Foundation+MITAdditions.h"
+#import "MITLibrariesTermProtocol.h"
 
 @implementation MITLibrariesTerm
 
@@ -44,10 +45,20 @@
         hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
     }
     
-    for (MITLibrariesClosingsTerm *term in self.closingsTerm) {
+    NSMutableArray *exceptionsAndClosings = [[NSMutableArray alloc] initWithCapacity:self.closingsTerm.count + self.exceptionsTerm.count];
+    [exceptionsAndClosings addObjectsFromArray:self.closingsTerm];
+    [exceptionsAndClosings addObjectsFromArray:self.exceptionsTerm];
+    
+    [exceptionsAndClosings sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        id<MITLibrariesTermProtocol> firstTerm = obj1;
+        id<MITLibrariesTermProtocol> secondTerm = obj2;
+        return [firstTerm.dates.startDate compare:secondTerm.dates.startDate];
+    }];
+    
+    for (id<MITLibrariesTermProtocol> term in exceptionsAndClosings) {
         hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
     }
-    
+        
     return [hoursDescription stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
@@ -65,13 +76,13 @@
     
     for (MITLibrariesExceptionsTerm *term in self.exceptionsTerm) {
         if ([term isOpenOnDayOfDate:date]) {
-            return [term hoursString];
+            return [term.hours hoursRangesString];
         }
     }
     
     for (MITLibrariesRegularTerm *term in self.regularTerm) {
         if ([term isOpenOnDayOfDate:date]) {
-            return [term hoursString];
+            return [term.hours hoursRangesString];
         }
     }
     

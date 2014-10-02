@@ -6,4 +6,10 @@
 @property (nonatomic, strong) NSString *start;
 @property (nonatomic, strong) NSString *end;
 
+@property (nonatomic, readonly) NSDate *startDate;
+@property (nonatomic, readonly) NSDate *endDate;
+
+- (NSString *)hoursRangesString;
+- (NSString *)dayRangesString;
+
 @end
