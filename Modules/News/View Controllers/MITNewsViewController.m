@@ -663,7 +663,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 

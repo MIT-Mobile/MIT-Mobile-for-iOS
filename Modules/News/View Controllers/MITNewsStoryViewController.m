@@ -83,8 +83,8 @@
         }];
         
         if (imageURL) {
-            [self.coverImageView setImageWithURL:imageURL
-                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [self.coverImageView sd_setImageWithURL:imageURL
+                                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                            [self.view setNeedsUpdateConstraints];
                                        }];
         }
@@ -476,7 +476,7 @@
             if (imageURL) {
                 MITNewsStory *currentStory = nextStory;
                 __weak MITNewsStoryViewController *weakSelf = self;
-                [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                [self.nextStoryImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                     [self.view setNeedsUpdateConstraints];
 
                     MITNewsStoryViewController *blockSelf = weakSelf;
@@ -510,7 +510,7 @@
             self.nextStoryDateLabel.text = postDate;
             self.nextStoryNextStoryLabel.text = @"NEXT STORY";
         } else {
-            [self.nextStoryImageView cancelCurrentImageLoad];
+            [self.nextStoryImageView sd_cancelCurrentImageLoad];
             self.nextStoryImageView.image = nil;
             self.nextStoryTitleLabel.text = nil;
             self.nextStoryDekLabel.text = nil;
