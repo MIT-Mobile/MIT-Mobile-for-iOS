@@ -43,10 +43,10 @@
     self.lastUpdated = self.dataSource.refreshedAt;
     if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
         self.presentationStyle = MITNewsPresentationStyleList;
-        self.listViewController.isACategoryViewController = YES;
+        self.listViewController.isACategoryView = YES;
     } else {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        self.gridViewController.isACategoryViewController = YES;
+        self.gridViewController.isACategoryView = YES;
     }
     self.previousPresentationStyle = nil;
 }
