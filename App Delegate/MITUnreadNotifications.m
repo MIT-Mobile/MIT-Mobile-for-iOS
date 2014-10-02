@@ -53,11 +53,14 @@
 	}
 	
 
-	// update the badge values for each tab item
+    /*  Commented out by bskinner on 2014.10.02, Needs to be replaced with an updated version
+     taking into account the updated view controller hierarchy.
+     
+     // update the badge values for each tab item
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	for(MITModule *module in appDelegate.modules) {
 		[module setBadgeValue:[modulesBadgeString[module.tag] stringValue]];
-	}
+	}*/
 	
 	// update the total badge value for the application
 	[UIApplication sharedApplication].applicationIconBadgeNumber = [notifications count];
@@ -81,6 +84,9 @@
         [MITUnreadNotifications saveUnreadNotifications:notifications];
         [MITUnreadNotifications updateUI];
 
+        /* Commented out by bskinner on 2014.10.02, Needs to be replaced with an updated version
+            taking into account the updated view controller hierarchy.
+         
         // since receiving the unread notices from the server is asynchrous event
         // we want all the modules to know that this data may have changed
         // so we pass of the new version of the data to each module
@@ -93,8 +99,7 @@
                     [moduleNotifications addObject:notification];
                 }
             }
-        }
-
+        }*/
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
     }];
