@@ -15,6 +15,11 @@
 {
     [super awakeFromNib];
     self.termNameLabel.textColor = [UIColor mit_tintColor];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
     self.separatorInset = UIEdgeInsetsMake(0, self.frame.size.width + 1, 0, 0);
 }
 
