@@ -10,7 +10,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
-@property (nonatomic) BOOL isACategoryView;
+@property (nonatomic) BOOL isViewACategory;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
@@ -35,7 +35,7 @@
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
-    self.isACategoryView = YES;
+    self.isViewACategory = YES;
     [super viewDidLoad];
     
     self.showsFeaturedStories = NO;
