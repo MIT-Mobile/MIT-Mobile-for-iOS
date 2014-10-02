@@ -1,18 +1,19 @@
 #import "ECSlidingViewController.h"
+#import "MITModuleViewController.h"
 
-@class MITModule;
 @class MITNotification;
+@class MITModuleViewController;
 
 @interface MITSlidingViewController : UIViewController
-@property(nonatomic,weak) ECSlidingViewController *slidingViewController;
-@property(nonatomic,copy) NSArray *modules;
-@property(nonatomic,weak) MITModule *visibleModule;
+@property(nonatomic,weak) IBOutlet ECSlidingViewController *slidingViewController;
+@property(nonatomic,copy) NSString *slidingViewControllerStoryboardId;
 
-- (instancetype)initWithModules:(NSArray*)modules;
+@property(nonatomic,copy) NSArray *viewControllers;
+@property(nonatomic,weak) UIViewController<MITModuleViewControllerProtocol> *visibleViewController;
 
-- (void)setVisibleModuleWithTag:(NSString*)moduleTag;
-- (BOOL)setVisibleModuleWithNotification:(MITNotification*)notification;
-- (BOOL)setVisibleModuleWithURL:(NSURL*)url;
+- (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 
-- (IBAction)toggleAnchorRight:(id)sender;
+- (IBAction)toggleViewControllerPicker:(id)sender;
+- (void)setVisibleModuleWithTag:(NSString *)moduleTag;
+- (BOOL)setVisibleModuleWithNotification:(NSDictionary*)notification;
 @end

@@ -5,18 +5,19 @@
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
+
 @property(nonatomic,weak) id<UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout> animationController;
 @end
 
 @implementation MITSlidingViewController
 @dynamic drawerViewController;
 
-- (instancetype)initWithModules:(NSArray *)modules
+- (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {
     if (self) {
-        _modules = [modules copy];
+        _viewControllers = [viewControllers copy];
     }
 
     return self;
@@ -30,14 +31,13 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 {
     [super viewWillAppear:animated];
 
-    if (!([self.modules count] > 0)) {
+    if (!([self.viewControllers count] > 0)) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"there must be at least one module added before being presented" userInfo:nil];
     }
-
-    if (![self isSlidingViewControllerLoaded]) {
-        [self loadSlidingViewController:animated];
-    }
-
+    
+    self.slidingViewController.delegate = self;
+    self.drawerViewController.delegate = self;
+    
     [self _showInitialModuleIfNeeded];
 }
 
@@ -59,72 +59,142 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
 }
 
-- (void)setModules:(NSArray *)modules
+- (ECSlidingViewController*)slidingViewController
 {
-    [self setModules:modules animated:NO];
+    if (![self isSlidingViewControllerLoaded]) {
+        [self loadSlidingViewController];
+        NSAssert(_slidingViewController,@"failed to load slidingViewController");
+    }
+    
+    return _slidingViewController;
 }
 
-- (void)setModules:(NSArray *)modules animated:(BOOL)animated
+- (void)setViewControllers:(NSArray *)viewControllers
 {
-    if (![_modules isEqualToArray:modules]) {
-        NSArray *previousModules = _modules;
-        _modules = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(MITModule *module, NSDictionary *bindings) {
-            UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-            if ([module supportsUserInterfaceIdiom:interfaceIdiom]) {
+    [self setViewControllers:viewControllers animated:NO];
+}
+
+- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
+{
+    if (![_viewControllers isEqualToArray:viewControllers]) {
+        NSArray *oldViewControllers = _viewControllers;
+        
+        _viewControllers = [viewControllers filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UIViewController *viewController, NSDictionary *bindings) {
+            if (![viewController isKindOfClass:[MITModuleViewController class]]) {
+                DDLogWarn(@"View Controller %@ is not a subclass of %@",viewController,NSStringFromClass([MITModuleViewController class]));
+                return NO;
+            }
+            
+            MITModuleViewController *moduleViewController = (MITModuleViewController*)viewController;
+            
+            if ([moduleViewController isCurrentUserInterfaceIdiomSupported]) {
                 return YES;
             } else {
                 return NO;
             }
         }]];
-
-        if (![previousModules containsObject:self.visibleModule]) {
-            NSUInteger selectedIndex = [previousModules indexOfObject:self.visibleModule];
-            NSRange indexRange = NSMakeRange(0, [_modules count]);
-
-            if (NSLocationInRange(selectedIndex, indexRange)) {
-                self.visibleModule = _modules[selectedIndex];
-            } else {
-                self.visibleModule = [_modules firstObject];
+        
+        NSMutableArray *newModuleItems = [[NSMutableArray alloc] init];
+        [_viewControllers enumerateObjectsUsingBlock:^(MITModuleViewController *moduleViewController, NSUInteger idx, BOOL *stop) {
+            MITModuleItem *moduleItem = moduleViewController.moduleItem;
+            if (!moduleItem) {
+                NSString *tag = [[moduleViewController.title lowercaseString] stringByReplacingOccurrencesOfString:@"_" withString:@""];
+                moduleItem = [[MITModuleItem alloc] initWithTag:tag title:moduleViewController.title image:nil];
+                moduleViewController.moduleItem = moduleItem;
             }
-        }
+            
+            [newModuleItems addObject:moduleItem];
+        }];
+        
+        [self.drawerViewController setModuleItems:newModuleItems animated:animated];
+        [self.drawerViewController setSelectedModuleItem:self.visibleViewController.moduleItem animated:animated];
 
-        self.drawerViewController.modules = _modules;
+        if (!self.isViewLoaded) {
+            return;
+        }
+        
+        if (oldViewControllers) {
+            if (![oldViewControllers containsObject:self.visibleViewController]) {
+                NSUInteger selectedIndex = [oldViewControllers indexOfObject:self.visibleViewController];
+                NSRange indexRange = NSMakeRange(0, [_viewControllers count]);
+                
+                if (NSLocationInRange(selectedIndex, indexRange)) {
+                    self.visibleViewController = _viewControllers[selectedIndex];
+                } else {
+                    self.visibleViewController = [_viewControllers firstObject];
+                }
+            }
+        } else {
+            self.visibleViewController = [_viewControllers firstObject];
+        }
     }
 }
 
-- (void)setVisibleModule:(MITModule*)module
+- (void)setVisibleViewController:(UIViewController<MITModuleViewControllerProtocol> *)visibleViewController
 {
-    if (![self.modules containsObject:module]) {
-        NSString *reason = [NSString stringWithFormat:@"view controller does not have a module with tag '%@'",module.tag];
+    [self setVisibleViewController:visibleViewController animated:NO];
+}
+
+- (void)setVisibleViewController:(UIViewController<MITModuleViewControllerProtocol> *)newVisibleViewController animated:(BOOL)animated
+{
+    if (![self.viewControllers containsObject:newVisibleViewController]) {
+        MITModuleItem *moduleItem = newVisibleViewController.moduleItem;
+        NSString *reason = [NSString stringWithFormat:@"view controller does not have a module with tag '%@'",moduleItem.tag];
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
-
-    [self setVisibleModule:module withViewController:module.homeViewController];
+    
+    UIViewController *newTopViewController = newVisibleViewController;
+    if (!newTopViewController) {
+        newTopViewController = [[UIViewController alloc] init];
+        
+        UIView *view = [[UIView alloc] initWithFrame:self.slidingViewController.view.frame];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        view.backgroundColor = [UIColor mit_backgroundColor];
+        
+        newTopViewController.view = view;
+        _visibleViewController = nil;
+    } else {
+        _visibleViewController = newVisibleViewController;
+    }
+    
+    self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
+    
+    if (self.slidingViewController.topViewController != newTopViewController) {
+        [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
+        [self.slidingViewController setTopViewController:newTopViewController];
+    }
+    
+    [newTopViewController.view addGestureRecognizer:self.slidingViewController.panGesture];
+    
+    // If the top view is a UINavigationController, automatically add a button to toggle the state
+    // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+    // controller must do something itself.
+    if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController*)newTopViewController;
+        navigationController.delegate = self;
+    }
+    
+    [self.slidingViewController resetTopViewAnimated:YES];
 }
 
 - (void)setVisibleModuleWithTag:(NSString *)moduleTag
 {
-    MITModule *module = [self _moduleWithTag:moduleTag];
-    [self setVisibleModule:module];
+    UIViewController<MITModuleViewControllerProtocol> *module = [self _moduleViewControllerWithTag:moduleTag];
+    [self setVisibleViewController:module];
 }
 
-- (BOOL)setVisibleModuleWithNotification:(MITNotification *)notification
+- (BOOL)setVisibleModuleWithNotification:(NSDictionary*)notification
 {
     NSAssert(NO, @"Not implemented yet");
     
-    MITModule *module = [self _moduleWithTag:notification.tag];
-    if (!module) {
-        DDLogWarn(@"failed to find module with tag '%@'", notification.tag);
+    NSString *tag = notification[@"tag"];
+    UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [self _moduleViewControllerWithTag:tag];
+    if (!moduleViewController) {
+        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", tag);
         return NO;
     }
-
-    UIViewController *viewController = nil;
-    if (!viewController) {
-        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", module.tag);
-        return NO;
-    }
-
-    [self setVisibleModule:module withViewController:viewController];
+    
+    [self setVisibleViewController:moduleViewController animated:YES];
     return YES;
 }
 
@@ -138,56 +208,17 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
     
     NSString *tag = url.host;
-    MITModule *module = [self _moduleWithTag:tag];
-    if (!module) {
-        DDLogWarn(@"failed to find module with tag '%@'",tag);
-        return NO;
-    }
-    
-    UIViewController *viewController = nil;
+    UIViewController<MITModuleViewControllerProtocol> *viewController = [self _moduleViewControllerWithTag:tag];
     if (!viewController) {
-        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", module.tag);
+        DDLogInfo(@"module '%@' received a notification but failed to return a valid view controller", tag);
         return NO;
     }
     
-    [self setVisibleModule:module withViewController:viewController];
+    [self setVisibleViewController:viewController animated:YES];
     return YES;
 }
 
-- (void)setVisibleModule:(MITModule*)module withViewController:(UIViewController*)newTopViewController
-{
-    if (!newTopViewController) {
-        newTopViewController = [[UIViewController alloc] init];
-
-        UIView *view = [[UIView alloc] initWithFrame:self.view.frame];
-        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        view.backgroundColor = [UIColor mit_backgroundColor];
-
-        newTopViewController.view = view;
-    }
-
-    _visibleModule = module;
-    self.drawerViewController.selectedModule = module;
-    
-    if (self.slidingViewController.topViewController != newTopViewController) {
-        [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
-        [self.slidingViewController setTopViewController:newTopViewController];
-    }
-
-    [newTopViewController.view addGestureRecognizer:self.slidingViewController.panGesture];
-
-    // If the top view is a UINavigationController, automatically add a button to toggle the state
-    // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
-    // controller must do something itself.
-    if ([newTopViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController*)newTopViewController;
-        navigationController.delegate = self;
-    }
-
-    [self.slidingViewController resetTopViewAnimated:YES];
-}
-
-- (IBAction)toggleAnchorRight:(id)sender
+- (IBAction)toggleViewControllerPicker:(id)sender
 {
     if (self.slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
         [self.slidingViewController anchorTopViewToRightAnimated:YES];
@@ -199,22 +230,24 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 #pragma mark Private
 - (void)_showInitialModuleIfNeeded
 {
-    if (!self.visibleModule) {
-        self.visibleModule = [self.modules firstObject];
+    if (!self.visibleViewController) {
+        self.visibleViewController = [self.viewControllers firstObject];
     }
 }
 
-- (MITModule*)_moduleWithTag:(NSString*)tag
+- (UIViewController<MITModuleViewControllerProtocol>*)_moduleViewControllerWithTag:(NSString*)tag
 {
-    __block MITModule *selectedModule = nil;
-    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-        if ([module.tag isEqualToString:tag]) {
-            selectedModule = module;
+    __block UIViewController<MITModuleViewControllerProtocol> *selectedModuleViewController = nil;
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController<MITModuleViewControllerProtocol> *moduleViewController, NSUInteger idx, BOOL *stop) {
+        MITModuleItem *moduleItem = moduleViewController.moduleItem;
+        
+        if ([moduleItem.tag isEqualToString:tag]) {
+            selectedModuleViewController = moduleViewController;
             (*stop) = YES;
         }
     }];
 
-    return selectedModule;
+    return selectedModuleViewController;
 }
 
 - (BOOL)isSlidingViewControllerLoaded
@@ -222,38 +255,43 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     return (_slidingViewController != nil);
 }
 
-- (void)loadSlidingViewController:(BOOL)animated
+- (void)loadSlidingViewController
 {
     if (![self isSlidingViewControllerLoaded]) {
-        MITModule *topModule = self.visibleModule;
-        if (!_visibleModule) {
-            topModule = [self.modules firstObject];
+        UIViewController *visibleViewController = self.visibleViewController;
+        if (!visibleViewController) {
+            visibleViewController = [[UIViewController alloc] init];
+            
+            UIView *emptyView = [[UIView alloc] initWithFrame:self.view.bounds];
+            emptyView.backgroundColor = [UIColor mit_backgroundColor];
+            visibleViewController.view = emptyView;
         }
 
-        ECSlidingViewController *slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:topModule.homeViewController];
+        ECSlidingViewController *slidingViewController = nil;
+        
+        if (self.slidingViewControllerStoryboardId) {
+            slidingViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.slidingViewControllerStoryboardId];
+        } else {
+            slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:visibleViewController];
+        }
 
         [self addChildViewController:slidingViewController];
 
         slidingViewController.view.frame = self.view.bounds;
         [self.view addSubview:slidingViewController.view];
-
-        [UIView animateWithDuration:0.33
-                         animations:^{
-
-                         } completion:^(BOOL finished) {
-                             [slidingViewController didMoveToParentViewController:self];
-                         }];
+        [slidingViewController didMoveToParentViewController:self];
+        
+        _slidingViewController = slidingViewController;
     }
 }
 
 #pragma mark Delegation
-- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+- (void)drawerViewController:(MITDrawerViewController *)drawerViewController didSelectModuleItem:(MITModuleItem *)moduleItem
 {
-    if ([navigationController.viewControllers firstObject] == viewController) {
-        UIImage *image = [UIImage imageNamed:@"global/menu"];
-        UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(toggleAnchorRight:)];
-
-        [viewController.navigationItem setLeftBarButtonItem:leftBarButtonItem animated:animated];
+    UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [self _moduleViewControllerWithTag:moduleItem.tag];
+    
+    if (moduleViewController) {
+        self.visibleViewController = moduleViewController;
     }
 }
 @end
