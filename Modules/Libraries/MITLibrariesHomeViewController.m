@@ -380,6 +380,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     MITLibrariesSearchResultDetailViewController *detailVC = [[MITLibrariesSearchResultDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.worldcatItem = item;
+    [detailVC hydrateCurrentItem];
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 

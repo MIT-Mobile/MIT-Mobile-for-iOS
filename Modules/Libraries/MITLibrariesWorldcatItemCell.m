@@ -3,10 +3,17 @@
 #import "UIKit+MITLibraries.h"
 #import "UIImageView+WebCache.h"
 
+@interface MITLibrariesWorldcatItemCell ()
+
+@property (nonatomic, assign) UIEdgeInsets separatorInsetsBeforeHiding;
+
+@end
+
 @implementation MITLibrariesWorldcatItemCell
 
 - (void)awakeFromNib
 {
+    _showsSeparator = YES;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
     [self.yearAndAuthorLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
@@ -17,6 +24,10 @@
     [super layoutSubviews];
     self.itemTitleLabel.preferredMaxLayoutWidth = self.itemTitleLabel.bounds.size.width;
     self.yearAndAuthorLabel.preferredMaxLayoutWidth = self.yearAndAuthorLabel.bounds.size.width;
+    
+    if (!self.showsSeparator) {
+        self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
+    }
 }
 
 - (void)setItem:(MITLibrariesWorldcatItem *)item
@@ -36,6 +47,22 @@
     self.yearAndAuthorLabel.text = authorString ? [NSString stringWithFormat:@"%@; %@", [item yearsString], [item authorsString]] : [item yearsString];
     
     _item = item;
+}
+
+- (void)setShowsSeparator:(BOOL)showsSeparator
+{
+    if (_showsSeparator == showsSeparator) {
+        return;
+    }
+    
+    _showsSeparator = showsSeparator;
+    
+    if (_showsSeparator) {
+        self.separatorInset = self.separatorInsetsBeforeHiding;
+    } else {
+        self.separatorInsetsBeforeHiding = self.separatorInset;
+        self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
+    }
 }
 
 #pragma mark - Cell Sizing

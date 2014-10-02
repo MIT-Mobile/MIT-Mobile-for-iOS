@@ -22,6 +22,7 @@
     [super layoutSubviews];
     self.callNumberLabel.preferredMaxLayoutWidth = self.callNumberLabel.bounds.size.width;
     self.extraInfoLabel.preferredMaxLayoutWidth = self.extraInfoLabel.bounds.size.width;
+    self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

@@ -6,4 +6,6 @@
 
 @property (nonatomic, strong) MITLibrariesWorldcatItem *worldcatItem;
 
+- (void)hydrateCurrentItem;
+
 @end

@@ -62,15 +62,6 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     // Dispose of any resources that can be recreated.
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    for (UITableViewCell *cell in self.tableView.visibleCells) {
-        if (![cell isMemberOfClass:[UITableViewCell class]]) {
-            cell.separatorInset = UIEdgeInsetsMake(0, cell.bounds.size.width, 0, 0);
-        }
-    }
-}
-
 - (void)registerCells
 {
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kDefaultCellIdentifier];
@@ -90,14 +81,12 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kHoldingLibraryViewAllCellIdentifier];
 }
 
-- (void)setWorldcatItem:(MITLibrariesWorldcatItem *)worldcatItem
+- (void)hydrateCurrentItem
 {
-    _worldcatItem = worldcatItem;
+    self.isLoading = YES;
     [self.tableView reloadData];
     
-    self.isLoading = YES;
-    
-    [MITLibrariesWebservices getItemDetailsForItem:worldcatItem completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
+    [MITLibrariesWebservices getItemDetailsForItem:self.worldcatItem completion:^(MITLibrariesWorldcatItem *item, NSError *error) {
         if (error) {
             self.isLoading = NO;
             [self.tableView reloadData];
@@ -408,14 +397,13 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     if (row == 0) {
         MITLibrariesWorldcatItemCell *itemHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kItemHeaderCellIdentifier];
         itemHeaderCell.item = self.worldcatItem;
-        itemHeaderCell.separatorInset = UIEdgeInsetsMake(0, itemHeaderCell.bounds.size.width, 0, 0);
+        itemHeaderCell.showsSeparator = NO;
         return itemHeaderCell;
     } else {
         MITLibrariesItemDetailLineCell *detailLineCell = [self.tableView dequeueReusableCellWithIdentifier:kItemDetailLineCellIdentifier];
         NSDictionary *itemLineDictionary = self.itemDetailLines[row - 1];
         detailLineCell.lineTitleLabel.text = [itemLineDictionary objectForKey:kItemLineTitleKey];
         detailLineCell.lineDetailLabel.text = [itemLineDictionary objectForKey:kItemLineDetailKey];
-        detailLineCell.separatorInset = UIEdgeInsetsMake(0, detailLineCell.bounds.size.width, 0, 0);
         return detailLineCell;
     }
 }
@@ -478,7 +466,6 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             holdingHeaderCell.libraryNameLabel.text = locationName;
             holdingHeaderCell.libraryHoursLabel.text = @"Put hours here";
             holdingHeaderCell.availableCopiesLabel.text = [NSString stringWithFormat:@"%i of %i available", availableCopiesNumber, totalCopiesNumber];
-            holdingHeaderCell.separatorInset = UIEdgeInsetsMake(0, holdingHeaderCell.bounds.size.width, 0, 0);
             return holdingHeaderCell;
         }
         
@@ -490,7 +477,6 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             
             MITLibrariesHoldingLibraryHeaderCopyInfoCell *copyInfoCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryCopyCellIdentifier];
             [copyInfoCell setAvailability:availability];
-            copyInfoCell.separatorInset = UIEdgeInsetsMake(0, copyInfoCell.bounds.size.width, 0, 0);
             return copyInfoCell;
         }
         

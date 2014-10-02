@@ -7,8 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesSearchResultsViewController">
             <connections>
-                <outlet property="errorLabel" destination="m5G-LL-PcY" id="QL7-0E-yWo"/>
-                <outlet property="loadingLabel" destination="Gax-yd-v7Y" id="683-4s-uID"/>
+                <outlet property="messageLabel" destination="Gax-yd-v7Y" id="Qsx-d2-E0s"/>
                 <outlet property="resultsTableView" destination="oPa-AU-TI9" id="kvG-q8-IdO"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -35,26 +34,14 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m5G-LL-PcY">
-                    <rect key="frame" x="8" y="280" width="584" height="40"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="40" id="k6W-Ps-OZ2"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="oPa-AU-TI9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4To-pT-eDB"/>
                 <constraint firstAttribute="trailing" secondItem="oPa-AU-TI9" secondAttribute="trailing" id="AXB-W3-25J"/>
-                <constraint firstItem="m5G-LL-PcY" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leadingMargin" id="G5Q-aW-9Rv"/>
-                <constraint firstItem="m5G-LL-PcY" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailingMargin" id="J2a-gU-Ihq"/>
                 <constraint firstItem="oPa-AU-TI9" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="QCr-au-CfM"/>
                 <constraint firstAttribute="trailingMargin" secondItem="Gax-yd-v7Y" secondAttribute="trailing" id="c9O-C5-ZQc"/>
                 <constraint firstAttribute="centerY" secondItem="Gax-yd-v7Y" secondAttribute="centerY" id="dFB-FV-eHx"/>
-                <constraint firstAttribute="centerY" secondItem="m5G-LL-PcY" secondAttribute="centerY" id="r8n-J1-v7P"/>
                 <constraint firstItem="Gax-yd-v7Y" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leadingMargin" id="y1q-EI-2Q6"/>
                 <constraint firstAttribute="bottom" secondItem="oPa-AU-TI9" secondAttribute="bottom" id="zI8-0H-BjP"/>
             </constraints>
