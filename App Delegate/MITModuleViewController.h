@@ -31,6 +31,8 @@
 
 @interface MITModuleItem : NSObject
 @property(nonatomic,copy) NSString *tag;
+
+@property(nonatomic,copy) NSString *badgeValue;
 @property(nonatomic,copy) NSString *title;
 @property(nonatomic,copy) NSString *longTitle;
 
