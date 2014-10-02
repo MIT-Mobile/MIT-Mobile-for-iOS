@@ -971,6 +971,7 @@
 		22E1809119DC49EA0017AC9A /* MITLibrariesHoursCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesHoursCell.h; sourceTree = "<group>"; };
 		22E1809219DC49EA0017AC9A /* MITLibrariesHoursCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesHoursCell.m; sourceTree = "<group>"; };
 		22E1809319DC49EA0017AC9A /* MITLibrariesHoursCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesHoursCell.xib; sourceTree = "<group>"; };
+		22E1809619DD9A210017AC9A /* MITLibrariesTermProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITLibrariesTermProtocol.h; sourceTree = "<group>"; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
 		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
@@ -2346,6 +2347,7 @@
 				225819E719D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m */,
 				225819E919D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.h */,
 				225819EA19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m */,
+				22E1809619DD9A210017AC9A /* MITLibrariesTermProtocol.h */,
 				2258CBEB19CB7EDC0067E35C /* MITLibrariesDate.h */,
 				2258CBEC19CB7EDC0067E35C /* MITLibrariesDate.m */,
 				2289814819D0761B0045BF91 /* MITLibrariesWorldcatItem.h */,

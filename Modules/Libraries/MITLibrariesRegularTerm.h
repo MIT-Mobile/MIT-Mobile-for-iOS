@@ -10,7 +10,6 @@
 
 - (BOOL)isOpenOnDate:(NSDate *)date;
 - (BOOL)isOpenOnDayOfDate:(NSDate *)date;
-- (NSString *)hoursString;
 - (NSString *)termHoursDescription;
 
 @end

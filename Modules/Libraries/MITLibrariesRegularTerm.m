@@ -51,30 +51,9 @@
     return [self.days containsString:dayOfWeekAbbreviation];
 }
 
-- (NSString *)hoursString
-{
-    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
-
-    NSString *dateDayString = [self.dateFormatter stringFromDate:[NSDate date]];
-    
-    NSString *startDateString = [NSString stringWithFormat:@"%@ %@", dateDayString, self.hours.start];
-    NSString *endDateString = [NSString stringWithFormat:@"%@ %@", dateDayString, self.hours.end];
-    
-    [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSDate *startDate = [self.dateFormatter dateFromString:startDateString];
-    NSDate *endDate = [self.dateFormatter dateFromString:endDateString];
-    
-    [self.dateFormatter setDateFormat:@"h:mma"];
-    
-    NSString *openString = [self.dateFormatter stringFromDate:startDate];
-    NSString *closeString = [endDate isEqualToDate:[endDate startOfDay]] ? @"midnight" : [self.dateFormatter stringFromDate:endDate];
-    
-    return [[NSString stringWithFormat:@"%@-%@", openString, closeString] lowercaseString];
-}
-
 - (NSString *)termHoursDescription
 {
-    return [NSString stringWithFormat:@"%@ %@", [self termsDayRangeString], [self hoursString]];
+    return [NSString stringWithFormat:@"%@ %@", [self termsDayRangeString], [self.hours hoursRangesString]];
 }
 
 - (NSString *)termsDayRangeString
