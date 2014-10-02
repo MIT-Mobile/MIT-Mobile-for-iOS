@@ -22,8 +22,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *nextStoryImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nextStoryNextStoryLabel;
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
-@property (nonatomic) float scrollPosition;
-@property (nonatomic) float pageHeight;
+@property (nonatomic) CGFloat scrollPosition;
+@property (nonatomic) CGFloat pageHeight;
 
 @end
 
