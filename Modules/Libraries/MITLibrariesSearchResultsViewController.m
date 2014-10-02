@@ -16,8 +16,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 
 @property (nonatomic, weak) IBOutlet UITableView *resultsTableView;
 @property (nonatomic, strong) MITLibrariesSearchController *searchController;
-@property (nonatomic, weak) IBOutlet UILabel *loadingLabel;
-@property (nonatomic, weak) IBOutlet UILabel *errorLabel;
+@property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 @property (nonatomic, assign) MITLibrariesSearchResultsViewControllerState state;
 
 @end
@@ -41,9 +40,6 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     
     UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
     [self.resultsTableView registerNib:librariesItemCellNib forCellReuseIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier];
-    
-    self.loadingLabel.text = @"Loading...";
-    self.errorLabel.text = @"There was an error loading your search.";
     
     self.resultsTableView.showsInfiniteScrolling = NO;
     [self.resultsTableView addInfiniteScrollingWithActionHandler:^{
@@ -96,6 +92,8 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     [self.searchController search:searchTerm completion:^(NSError *error) {
         if (error) {
             self.state = MITLibrariesSearchResultsViewControllerStateError;
+        } else if (self.searchController.results.count < 1) {
+            [self showNoResultsView];
         } else {
             self.state = MITLibrariesSearchResultsViewControllerStateResults;
             [self.resultsTableView reloadData];
@@ -106,23 +104,29 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 
 - (void)showLoadingView
 {
-    self.errorLabel.hidden = YES;
+    self.messageLabel.text = @"Loading...";
     self.resultsTableView.hidden = YES;
-    self.loadingLabel.hidden = NO;
+    self.messageLabel.hidden = NO;
     self.resultsTableView.contentOffset = CGPointMake(0, 0);
 }
 
 - (void)showErrorView
 {
+    self.messageLabel.text = @"There was an error loading your search.";
     self.resultsTableView.hidden = YES;
-    self.loadingLabel.hidden = YES;
-    self.errorLabel.hidden = NO;
+    self.messageLabel.hidden = NO;
+}
+
+- (void)showNoResultsView
+{
+    self.messageLabel.text = @"No results found.";
+    self.resultsTableView.hidden = YES;
+    self.messageLabel.hidden = NO;
 }
 
 - (void)showResultsView
 {
-    self.errorLabel.hidden = YES;
-    self.loadingLabel.hidden = YES;
+    self.messageLabel.hidden = YES;
     self.resultsTableView.hidden = NO;
 }
 

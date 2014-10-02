@@ -7,7 +7,8 @@
 
 @implementation MITLibrariesItemDetailLineCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.lineTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
     [self.lineDetailLabel setLibrariesTextStyle:MITLibrariesTextStyleDetail];
@@ -18,6 +19,7 @@
     [super layoutSubviews];
     self.lineTitleLabel.preferredMaxLayoutWidth = self.lineTitleLabel.bounds.size.width;
     self.lineDetailLabel.preferredMaxLayoutWidth = self.lineDetailLabel.bounds.size.width;
+    self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
 }
 
 #pragma mark - Cell Sizing

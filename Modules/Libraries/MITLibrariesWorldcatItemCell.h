@@ -13,7 +13,7 @@
 @property (nonatomic, weak) IBOutlet UIImageView *itemImageView;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *itemTitleLabelHorizontalTrailingConstraint;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *yearAndAuthorLabelHorizontalTrailingConstraint;
-
+@property (nonatomic, assign) BOOL showsSeparator;
 
 + (CGFloat)heightForItem:(MITLibrariesWorldcatItem *)item tableViewWidth:(CGFloat)width;
 
