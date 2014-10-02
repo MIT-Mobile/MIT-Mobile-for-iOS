@@ -48,6 +48,10 @@
         hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
     }
     
+    for (MITLibrariesClosingsTerm *term in self.exceptionsTerm) {
+        hoursDescription = [NSString stringWithFormat:@"%@%@\n", hoursDescription, [term termHoursDescription]];
+    }
+    
     return [hoursDescription stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
@@ -65,13 +69,13 @@
     
     for (MITLibrariesExceptionsTerm *term in self.exceptionsTerm) {
         if ([term isOpenOnDayOfDate:date]) {
-            return [term hoursString];
+            return [term.hours hoursRangesString];
         }
     }
     
     for (MITLibrariesRegularTerm *term in self.regularTerm) {
         if ([term isOpenOnDayOfDate:date]) {
-            return [term hoursString];
+            return [term.hours hoursRangesString];
         }
     }
     

@@ -41,21 +41,9 @@
     return [date isEqualToDateIgnoringTime:startDate];
 }
 
-- (NSString *)hoursString
+- (NSString *)termHoursDescription
 {
-    NSString *startDateString = [NSString stringWithFormat:@"%@ %@", self.dates.start, self.hours.start];
-    NSString *endDateString = [NSString stringWithFormat:@"%@ %@", self.dates.end, self.hours.end];
-
-    [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSDate *startDate = [self.dateFormatter dateFromString:startDateString];
-    NSDate *endDate = [self.dateFormatter dateFromString:endDateString];
-    
-    [self.dateFormatter setDateFormat:@"h:mma"];
-    
-    NSString *openString = [self.dateFormatter stringFromDate:startDate];
-    NSString *closeString = [endDate isEqualToDate:[endDate startOfDay]] ? @"midnight" : [self.dateFormatter stringFromDate:endDate];
-    
-    return [NSString stringWithFormat:@"%@-%@", openString, closeString];
+    return [NSString stringWithFormat:@"%@ %@ (%@)", [self.dates dayRangesString], [self.hours hoursRangesString], self.reason];
 }
 
 - (NSDateFormatter *)dateFormatter
