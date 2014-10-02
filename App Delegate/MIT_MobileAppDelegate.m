@@ -1,3 +1,4 @@
+
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
@@ -33,6 +34,7 @@
 
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
+#import "MITLegacyModuleViewController.h"
 #import "MITShuttleStopNotificationManager.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
@@ -48,7 +50,7 @@
 @property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
 @property (nonatomic,weak) MITModule *activeModule;
-@property (nonatomic,strong) NSMutableArray *mutableModules;
+@property (nonatomic,readwrite,copy) NSArray *moduleViewControllers;
 @property (nonatomic,strong) NSMutableDictionary *viewControllersByTag;
 
 @property (nonatomic,strong) NSRecursiveLock *lock;
@@ -82,11 +84,6 @@
     }
 }
 
-+ (MITModule*)moduleForTag:(NSString *)aTag
-{
-    return [[self applicationDelegate] moduleForTag:aTag];
-}
-
 #warning Ross: I added this because the header declares it, but it wasn't implemented, and was causing crashes.
 - (UINavigationController*)rootNavigationController {
     return nil;
@@ -116,7 +113,7 @@
     //  an unread notification to process) and things will generally be very unhappy
     //  if the app attempts to make a module visible before the root view controller
     //  is told what it should care about
-    self.rootViewController.modules = self.modules;
+    self.rootViewController.viewControllers = self.moduleViewControllers;
     
     [self updateBasicServerInfo];
 
@@ -194,13 +191,6 @@
 }
 
 - (void)applicationShouldSaveState:(UIApplication *)application {
-    // Let each module perform clean up as necessary
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationWillTerminate];
-    }
-    
-	[self saveModulesState];
-    
     // Save preferences
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -439,14 +429,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
-- (NSArray*)modules
+- (NSArray*)moduleViewControllers
 {
-    if (!_mutableModules) {
-        [self loadModules];
-        NSAssert(_mutableModules,@"failed to load application modules");
+    if (!_moduleViewControllers) {
+        [self loadModuleViewControllers];
+        NSAssert(_moduleViewControllers,@"failed to load application modules");
     }
     
-    return [NSArray arrayWithArray:_mutableModules];
+    return _moduleViewControllers;
 }
 
 - (NSMutableSet*)pendingNotifications
@@ -499,54 +489,74 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     _managedObjectModel = [NSManagedObjectModel modelByMergingModels:managedObjectModels];
 }
 
-- (void)loadModules {
+- (void)loadModuleViewControllers {
     // add your MITModule subclass here by adding it to the below
-    // Modules are listed in the order they are added here. If two modules are
-    // added with the same tag, the first module will be removed and then the
-    // second module will be added.
-    _mutableModules = [[NSMutableArray alloc] init];
+    // Modules are listed in the order they are added here.
+    NSMutableArray *moduleViewControllers  = [[NSMutableArray alloc] init];
+    
+    void (^addViewControllerWithStoryboard)(UIStoryboard*) = ^(UIStoryboard *storyboard) {
+        NSParameterAssert(storyboard);
+        
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+        NSAssert(viewController,@"root view controller must not be nil");
+        NSAssert([viewController conformsToProtocol:@protocol(MITModuleViewControllerProtocol)], @"%@ does not conform to %@",viewController,NSStringFromProtocol(@protocol(MITModuleViewControllerProtocol)));
+        
+        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = (UIViewController<MITModuleViewControllerProtocol>*)viewController;
+        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
+        [moduleViewControllers addObject:moduleViewController];
+    };
+    
+    void (^addViewControllerWithModule)(MITModule*) = ^(MITModule *module) {
+        NSParameterAssert(module);
+        
+        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [[MITLegacyModuleViewController alloc] initWithModule:module];
+        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
+        [moduleViewControllers addObject:moduleViewController];
+    };
     
     NewsModule *newsModule = [[NewsModule alloc] init];
-    [self registerModule:newsModule];
+    addViewControllerWithModule(newsModule);
     
     ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
-    [self registerModule:shuttlesModule];
+    addViewControllerWithModule(shuttlesModule);
     
     CMModule *campusMapModule = [[CMModule alloc] init];
-    [self registerModule:campusMapModule];
+    addViewControllerWithModule(campusMapModule);
     
     CalendarModule *calendarModule = [[CalendarModule alloc] init];
-    [self registerModule:calendarModule];
+    addViewControllerWithModule(calendarModule);
     
     PeopleModule *peopleModule = [[PeopleModule alloc] init];
-    [self registerModule:peopleModule];
+    addViewControllerWithModule(peopleModule);
     
     ToursModule *toursModule = [[ToursModule alloc] init];
-    [self registerModule:toursModule];
+    addViewControllerWithModule(toursModule);
     
     EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
-    [self registerModule:emergencyModule];
+    addViewControllerWithModule(emergencyModule);
     
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
-    [self registerModule:librariesModule];
+    addViewControllerWithModule(librariesModule);
     
     FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
-    [self registerModule:facilitiesModule];
+    addViewControllerWithModule(facilitiesModule);
     
     DiningModule *diningModule = [[DiningModule alloc] init];
-    [self registerModule:diningModule];
+    addViewControllerWithModule(diningModule);
     
     QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
-    [self registerModule:qrReaderModule];
+    addViewControllerWithModule(qrReaderModule);
     
     LinksModule *linksModule = [[LinksModule alloc] init];
-    [self registerModule:linksModule];
+    addViewControllerWithModule(linksModule);
     
     SettingsModule *settingsModule = [[SettingsModule alloc] init];
-    [self registerModule:settingsModule];
+    addViewControllerWithModule(settingsModule);
     
     AboutModule *aboutModule = [[AboutModule alloc] init];
-    [self registerModule:aboutModule];
+    addViewControllerWithModule(aboutModule);
+    
+    _moduleViewControllers = moduleViewControllers;
 }
 
 - (void)loadRemoteObjectManager
@@ -592,35 +602,18 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 
 #pragma mark Application modules helper methods
-- (void)registerModule:(MITModule*)module
+- (UIViewController<MITModuleViewControllerProtocol>*)viewControllerForModuleWithTag:(NSString *)tag
 {
-    NSString *tag = module.tag;
-    
-    if (!tag) {
-        return;
-    } else if ([module supportsUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]]) {
-        MITModule *oldModule = [self moduleForTag:tag];
-        if (oldModule) {
-            [self.mutableModules removeObject:oldModule];
-        }
-        
-        if (module) {
-            [self.mutableModules addObject:module];
-        }
-    }
-}
-
-- (MITModule *)moduleForTag:(NSString *)tag
-{
-    __block MITModule *moduleForTag = nil;
-    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-        if ([module.tag isEqualToString:tag]) {
-            moduleForTag = module;
+    __block UIViewController<MITModuleViewControllerProtocol> *viewControllerForTag = nil;
+    [self.moduleViewControllers enumerateObjectsUsingBlock:^(UIViewController<MITModuleViewControllerProtocol> *viewController, NSUInteger idx, BOOL *stop) {
+        MITModuleItem *moduleItem = viewController.moduleItem;
+        if ([moduleItem.tag isEqualToString:tag]) {
+            viewControllerForTag = viewController;
             (*stop) = YES;
         }
     }];
     
-    return moduleForTag;
+    return viewControllerForTag;
 }
 
 - (void)showModuleForTag:(NSString *)tag
@@ -636,14 +629,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 #pragma mark Preferences
 - (void)saveModulesState {
     NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
-    for (MITModule *aModule in self.modules) {
+    /*for (MITModule *aModule in self.modules) {
         if (aModule.currentPath && aModule.currentQuery) {
             NSDictionary *moduleState = @{@"path" : aModule.currentPath,
                                           @"query" : aModule.currentQuery};
             [modulesSavedState setObject:moduleState
                                   forKey:aModule.tag];
         }
-    }
+    }*/
     
     [[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
