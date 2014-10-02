@@ -27,9 +27,8 @@
 - (void)didSelectStoryAtIndexPath:(NSIndexPath*)indexPath;
 
 @property (nonatomic) BOOL isCategory;
-- (void)setError:(NSString *)errorMessage;
-- (void)setProgress:(BOOL)progress;
-
+@property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 @end
 
 @protocol MITNewsListDelegate <NSObject>

@@ -33,8 +33,8 @@
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 
 @property (nonatomic) BOOL isCategory;
-- (void)setError:(NSString *)errorMessage;
-- (void)setProgress:(BOOL)progress;
+@property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic) BOOL storyUpdateInProgress;
 
 @end
 

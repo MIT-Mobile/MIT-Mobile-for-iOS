@@ -80,13 +80,11 @@
 
 - (void)updateLoadingCell
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
-        } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-    }];
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
+    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
+        [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 #pragma mark Datasource Notification
@@ -207,18 +205,18 @@
 - (void)setError:(NSString *)message
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController setError:message];
+        self.gridViewController.errorMessage = message;
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController setError:message];
+        self.listViewController.errorMessage = message;
     }
 }
 
 - (void)setProgress:(BOOL)progress
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController setProgress:progress];
+        self.gridViewController.storyUpdateInProgress = progress;
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController setProgress:progress];
+        self.listViewController.storyUpdateInProgress = progress;
     }
 }
 

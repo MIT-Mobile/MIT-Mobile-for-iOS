@@ -27,10 +27,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic, strong) NSMutableArray *storyHeightsArray;
 
-
-@property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic) BOOL storyUpdateInProgress;
-
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
@@ -526,13 +522,4 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     [self.delegate getMoreStoriesForSection:section completion:nil];
 }
 
-- (void)setError:(NSString *)errorMessage
-{
-    self.errorMessage = errorMessage;
-}
-
-- (void)setProgress:(BOOL)progress
-{
-    self.storyUpdateInProgress = progress;
-}
 @end

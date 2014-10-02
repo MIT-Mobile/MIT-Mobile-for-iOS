@@ -18,9 +18,6 @@
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 
-@property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic) BOOL storyUpdateInProgress;
-
 @end
 
 @implementation MITNewsGridViewController
@@ -387,16 +384,5 @@
 {
     [self.delegate getMoreStoriesForSection:section completion:nil];
 }
-
-- (void)setError:(NSString *)errorMessage
-{
-    self.errorMessage = errorMessage;
-}
-
-- (void)setProgress:(BOOL)progress
-{
-    self.storyUpdateInProgress = progress;
-}
-
 
 @end
