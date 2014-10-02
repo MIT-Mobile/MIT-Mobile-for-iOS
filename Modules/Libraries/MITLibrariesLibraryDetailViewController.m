@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 {
     UINib *cellNib = [UINib nibWithNibName:kMITHoursCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITHoursCell];
+    
+    self.tableView.allowsSelection = NO;
 }
 
 #pragma mark - Table view data source
