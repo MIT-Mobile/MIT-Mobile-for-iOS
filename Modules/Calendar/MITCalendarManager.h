@@ -16,8 +16,4 @@ typedef void(^MITCachedEventsCompletionBlock)(NSArray *events,
 
 - (void)getCalendarsCompletion:(MITMasterCalendarCompletionBlock)completion;
 
-- (void)getEventsForCalendar:(MITCalendarsCalendar *)calendar
-                    category:(MITCalendarsCalendar *)category
-                        date:(NSDate *)date
-                  completion:(MITCachedEventsCompletionBlock)completion;
 @end
