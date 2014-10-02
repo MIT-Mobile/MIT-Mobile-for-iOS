@@ -100,7 +100,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 {
     UITableViewCell *cell = [self defaultCell];
     cell.textLabel.text = @"today's hours";
-    cell.detailTextLabel.text = [[self.library hoursStringForDate:[NSDate date]] lowercaseString];
+    cell.detailTextLabel.text = [self.library hoursStringForDate:[NSDate date]];
     cell.accessoryView = nil;
     return cell;
 }

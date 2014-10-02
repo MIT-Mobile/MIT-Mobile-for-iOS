@@ -66,7 +66,7 @@
     NSDate *startDate = [dateFormatter dateFromString:startDateString];
     NSDate *endDate = [dateFormatter dateFromString:endDateString];
     
-    return [NSString stringWithFormat:@"%@-%@", [self smartStringForDate:startDate], [self smartStringForDate:endDate]];
+    return [[NSString stringWithFormat:@"%@-%@", [self smartStringForDate:startDate], [self smartStringForDate:endDate]] lowercaseString];
 }
 
 - (NSString *)smartStringForDate:(NSDate *)date
