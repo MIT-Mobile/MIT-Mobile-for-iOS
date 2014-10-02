@@ -22,6 +22,12 @@
     return self;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.moduleItem.badgeValue = self.module.badgeValue;
+}
+
 - (void)loadRootViewController
 {
     UIViewController *homeViewController = self.module.homeViewController;
