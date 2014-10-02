@@ -9,8 +9,6 @@ static NSUInteger const MITModuleSectionIndex = 0;
 @property(nonatomic,weak) IBOutlet UIView *logoContainer;
 @property(nonatomic,weak) IBOutlet UIImageView *logoView;
 @property(nonatomic,weak) IBOutlet UITableView *tableView;
-@property(nonatomic,weak) IBOutlet MITGradientView *topGradientView;
-@property(nonatomic,weak) IBOutlet MITGradientView *bottomGradientView;
 
 @property (nonatomic,strong) NSIndexPath *selectedIndexPath;
 @end
@@ -35,50 +33,103 @@ static NSUInteger const MITModuleSectionIndex = 0;
 }
 
 #pragma mark Properties
-- (void)setModules:(NSArray *)modules
+- (void)setModuleItems:(NSArray *)moduleItems
 {
-    if (![_modules isEqualToArray:modules]) {
-        _modules = [modules copy];
-        [self.tableView reloadData];
+    [self setModuleItems:moduleItems animated:NO];
+}
+
+- (void)setModuleItems:(NSArray *)moduleItems animated:(BOOL)animated
+{
+    if (![_moduleItems isEqualToArray:moduleItems]) {
+        
+        [self willSetModuleItems:moduleItems animated:animated];
+        
+        _moduleItems = [moduleItems copy];
+        
+        [self didSetModuleItems:animated];
     }
 }
 
-- (void)setSelectedModule:(MITModule *)module
+- (void)willSetModuleItems:(NSArray*)newModuleItems animated:(BOOL)animated
 {
-    NSIndexPath *selectedIndexPath = [self _indexPathForModule:module];
-    if (selectedIndexPath) {
-        _selectedModule = module;
-        self.selectedIndexPath = selectedIndexPath;
+    NSArray *oldModuleItems = _moduleItems;
+    
+    NSMutableSet *deletedModuleItems = [NSMutableSet setWithArray:oldModuleItems];
+    [deletedModuleItems minusSet:[NSSet setWithArray:newModuleItems]];
+    
+    NSMutableArray *deletedIndexPaths = [[NSMutableArray alloc] init];
+    [deletedModuleItems enumerateObjectsUsingBlock:^(MITModuleItem *moduleItem, BOOL *stop) {
+        NSIndexPath *indexPath = [self _indexPathForModuleItem:moduleItem withModuleItems:oldModuleItems];
+        [deletedIndexPaths addObject:indexPath];
+    }];
+    
+    NSMutableSet *insertedModuleItems = [NSMutableSet setWithArray:newModuleItems];
+    [insertedModuleItems minusSet:[NSSet setWithArray:oldModuleItems]];
+    
+    NSMutableArray *insertedIndexPaths = [[NSMutableArray alloc] init];
+    [insertedModuleItems enumerateObjectsUsingBlock:^(MITModuleItem *moduleItem, BOOL *stop) {
+        NSIndexPath *indexPath = [self _indexPathForModuleItem:moduleItem withModuleItems:oldModuleItems];
+        [insertedIndexPaths addObject:indexPath];
+    }];
+    
+    [self.tableView beginUpdates];
+    [self.tableView deleteRowsAtIndexPaths:deletedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView deleteRowsAtIndexPaths:insertedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+- (void)didSetModuleItems:(BOOL)animated
+{
+    [self.tableView endUpdates];
+}
+
+- (void)setSelectedModuleItems:(MITModuleItem*)selectedModuleItem
+{
+    [self setSelectedModuleItem:selectedModuleItem animated:NO];
+}
+
+- (void)setSelectedModuleItem:(MITModuleItem*)selectedModuleItem animated:(BOOL)animated
+{
+    if (![_selectedModuleItem isEqual:selectedModuleItem]) {
+        [self willSetSelectedModuleItem:selectedModuleItem animated:animated];
+        
+        _selectedModuleItem = selectedModuleItem;
+        
+        [self didSetSelectedModuleItem:animated];
     }
 }
 
-- (void)setSelectedIndexPath:(NSIndexPath *)selectedIndexPath
+- (void)willSetSelectedModuleItem:(MITModuleItem*)newSelectedModuleItem animated:(BOOL)animated
 {
-    [self setSelectedIndexPath:selectedIndexPath animated:NO];
+    NSIndexPath *oldSelectedIndexPath = [self _indexPathForModuleItem:_selectedModuleItem withModuleItems:_moduleItems];
+    
+    [self.tableView beginUpdates];
+    [self.tableView deselectRowAtIndexPath:oldSelectedIndexPath animated:animated];
 }
 
-- (void)setSelectedIndexPath:(NSIndexPath *)selectedIndexPath animated:(BOOL)animated
+- (void)didSetSelectedModuleItem:(BOOL)animated
 {
-    if (![_selectedIndexPath isEqual:selectedIndexPath]) {
-        NSIndexPath *previousIndexPath = _selectedIndexPath;
-        _selectedIndexPath = selectedIndexPath;
+    NSIndexPath *newSelectedIndexPath = [self _indexPathForModuleItem:_selectedModuleItem withModuleItems:_moduleItems];
+    
+    if (newSelectedIndexPath) {
+        [self.tableView selectRowAtIndexPath:newSelectedIndexPath animated:animated scrollPosition:UITableViewScrollPositionNone];
     }
+    
+    [self.tableView endUpdates];
 }
 
 #pragma mark Private
-
-- (MITModule*)_moduleForIndexPath:(NSIndexPath*)indexPath
+- (MITModuleItem*)_moduleItemForIndexPath:(NSIndexPath*)indexPath withModuleItems:(NSArray*)moduleItems
 {
     if (indexPath.section == MITModuleSectionIndex) {
-        return self.modules[indexPath.row];
+        return moduleItems[indexPath.row];
     } else {
         return nil;
     }
 }
 
-- (NSIndexPath*)_indexPathForModule:(MITModule*)module
+- (NSIndexPath*)_indexPathForModuleItem:(MITModuleItem*)moduleItem withModuleItems:(NSArray*)moduleItems
 {
-    NSUInteger index = [self.modules indexOfObject:module];
+    NSUInteger index = [moduleItems indexOfObject:moduleItem];
 
     if (index == NSNotFound) {
         return nil;
@@ -96,7 +147,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.modules count];
+    return [self.moduleItems count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -111,18 +162,18 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-#warning replace with +[NSIndexPath indexPathForIndexPath:]
     indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
+    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITDrawerReuseIdentifierItemCell forIndexPath:indexPath];
-
     if ([cell isKindOfClass:[UITableViewCell class]]) {
-        MITModule *module = [self _moduleForIndexPath:indexPath];
+        MITModuleItem *moduleItem = [self _moduleItemForIndexPath:indexPath withModuleItems:_moduleItems];
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.imageView.image = module.springboardIcon;
-        cell.textLabel.text = module.shortName;
+        
+        cell.imageView.image = moduleItem.image;
+        cell.textLabel.text = moduleItem.title;
 
-        if ([self.selectedIndexPath isEqual:indexPath]) {
+        if ([moduleItem isEqual:_selectedModuleItem]) {
             cell.selected = YES;
             cell.contentView.backgroundColor = self.view.tintColor;
         } else {
@@ -142,17 +193,14 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-#warning replace with +[NSIndexPath indexPathForIndexPath:]
     indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
-
-    if (![self.selectedIndexPath isEqual:indexPath]) {
-        NSIndexPath *previousIndexPath = self.selectedIndexPath;
-        self.selectedIndexPath = indexPath;
-        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath,previousIndexPath] withRowAnimation:UITableViewScrollPositionNone];
-    }
     
-    MITModule *module = [self _moduleForIndexPath:indexPath];
-    [MIT_MobileAppDelegate applicationDelegate].rootViewController.visibleModule = module;
+    MITModuleItem *selectedModuleItem = [self _moduleItemForIndexPath:indexPath withModuleItems:_moduleItems];
+    self.selectedModuleItem = selectedModuleItem;
+    
+    if ([self.delegate respondsToSelector:@selector(drawerViewController:didSelectModuleItem:)]) {
+        [self.delegate drawerViewController:self didSelectModuleItem:selectedModuleItem];
+    }
 }
 
 @end
