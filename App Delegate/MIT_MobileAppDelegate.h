@@ -6,6 +6,8 @@
 @class MITCoreDataController;
 @class MITMobile;
 
+@protocol MITModuleViewControllerProtocol;
+
 #define MITAppDelegate() ((MIT_MobileAppDelegate*)[[UIApplication sharedApplication] delegate])
 
 @interface UIApplication (MITMobileAppDelegate)
@@ -17,7 +19,7 @@
 @property(nonatomic,strong) NSData *deviceToken;
 
 @property(nonatomic,readonly) IBOutlet MITSlidingViewController *rootViewController;
-@property(nonatomic,readonly,copy) NSArray *moduleViewControllers;
+@property(nonatomic,readonly,copy) NSArray *modules;
 
 @property(nonatomic,readonly,strong) NSManagedObjectModel *managedObjectModel;
 @property(nonatomic,readonly,strong) MITCoreDataController *coreDataController;
@@ -38,7 +40,7 @@
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated;
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated;
 
-//- (MITModule *)moduleForTag:(NSString *)aTag;
+- (MITModule*)moduleWithTag:(NSString *)aTag;
 - (void)showModuleForTag:(NSString *)tag;
 - (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated;
 

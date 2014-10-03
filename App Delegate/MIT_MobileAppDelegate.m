@@ -47,11 +47,9 @@
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
-@property (nonatomic,strong) NSMutableSet *pendingNotifications;
 
-@property (nonatomic,weak) MITModule *activeModule;
-@property (nonatomic,readwrite,copy) NSArray *moduleViewControllers;
-@property (nonatomic,strong) NSMutableDictionary *viewControllersByTag;
+@property (nonatomic,strong) NSMutableSet *pendingNotifications;
+@property(nonatomic,copy) NSArray *modules;
 
 @property (nonatomic,strong) NSRecursiveLock *lock;
 
@@ -113,7 +111,14 @@
     //  an unread notification to process) and things will generally be very unhappy
     //  if the app attempts to make a module visible before the root view controller
     //  is told what it should care about
-    self.rootViewController.viewControllers = self.moduleViewControllers;
+    NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [[MITLegacyModuleViewController alloc] initWithModule:module];
+        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
+        [moduleViewControllers addObject:moduleViewController];
+    }];
+    
+    self.rootViewController.viewControllers = moduleViewControllers;
     
     [self updateBasicServerInfo];
 
@@ -429,14 +434,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
-- (NSArray*)moduleViewControllers
+- (NSArray*)modules
 {
-    if (!_moduleViewControllers) {
-        [self loadModuleViewControllers];
-        NSAssert(_moduleViewControllers,@"failed to load application modules");
+    if (!_modules) {
+        [self loadModules];
+        NSAssert(_modules,@"failed to load application modules");
     }
     
-    return _moduleViewControllers;
+    return _modules;
 }
 
 - (NSMutableSet*)pendingNotifications
@@ -489,74 +494,54 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     _managedObjectModel = [NSManagedObjectModel modelByMergingModels:managedObjectModels];
 }
 
-- (void)loadModuleViewControllers {
+- (void)loadModules {
     // add your MITModule subclass here by adding it to the below
     // Modules are listed in the order they are added here.
-    NSMutableArray *moduleViewControllers  = [[NSMutableArray alloc] init];
-    
-    void (^addViewControllerWithStoryboard)(UIStoryboard*) = ^(UIStoryboard *storyboard) {
-        NSParameterAssert(storyboard);
-        
-        UIViewController *viewController = [storyboard instantiateInitialViewController];
-        NSAssert(viewController,@"root view controller must not be nil");
-        NSAssert([viewController conformsToProtocol:@protocol(MITModuleViewControllerProtocol)], @"%@ does not conform to %@",viewController,NSStringFromProtocol(@protocol(MITModuleViewControllerProtocol)));
-        
-        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = (UIViewController<MITModuleViewControllerProtocol>*)viewController;
-        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
-        [moduleViewControllers addObject:moduleViewController];
-    };
-    
-    void (^addViewControllerWithModule)(MITModule*) = ^(MITModule *module) {
-        NSParameterAssert(module);
-        
-        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [[MITLegacyModuleViewController alloc] initWithModule:module];
-        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
-        [moduleViewControllers addObject:moduleViewController];
-    };
+    NSMutableArray *modules = [[NSMutableArray alloc] init];
     
     NewsModule *newsModule = [[NewsModule alloc] init];
-    addViewControllerWithModule(newsModule);
+    [modules addObject:newsModule];
     
     ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
-    addViewControllerWithModule(shuttlesModule);
+    [modules addObject:shuttlesModule];
     
     CMModule *campusMapModule = [[CMModule alloc] init];
-    addViewControllerWithModule(campusMapModule);
+    [modules addObject:campusMapModule];
     
     CalendarModule *calendarModule = [[CalendarModule alloc] init];
-    addViewControllerWithModule(calendarModule);
+    [modules addObject:calendarModule];
     
     PeopleModule *peopleModule = [[PeopleModule alloc] init];
-    addViewControllerWithModule(peopleModule);
+    [modules addObject:peopleModule];
     
     ToursModule *toursModule = [[ToursModule alloc] init];
-    addViewControllerWithModule(toursModule);
+    [modules addObject:toursModule];
     
     EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
-    addViewControllerWithModule(emergencyModule);
+    [modules addObject:emergencyModule];
     
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
-    addViewControllerWithModule(librariesModule);
+    [modules addObject:librariesModule];
     
     FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
-    addViewControllerWithModule(facilitiesModule);
+    [modules addObject:facilitiesModule];
     
     DiningModule *diningModule = [[DiningModule alloc] init];
-    addViewControllerWithModule(diningModule);
+    [modules addObject:diningModule];
     
     QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
-    addViewControllerWithModule(qrReaderModule);
+    [modules addObject:qrReaderModule];
     
     LinksModule *linksModule = [[LinksModule alloc] init];
-    addViewControllerWithModule(linksModule);
+    [modules addObject:linksModule];
     
     SettingsModule *settingsModule = [[SettingsModule alloc] init];
-    addViewControllerWithModule(settingsModule);
+    [modules addObject:settingsModule];
     
     AboutModule *aboutModule = [[AboutModule alloc] init];
-    addViewControllerWithModule(aboutModule);
+    [modules addObject:aboutModule];
     
-    _moduleViewControllers = moduleViewControllers;
+    _modules = modules;
 }
 
 - (void)loadRemoteObjectManager
