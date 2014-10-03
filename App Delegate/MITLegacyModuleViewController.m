@@ -25,7 +25,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.moduleItem.badgeValue = self.module.badgeValue;
+}
+
+- (MITModuleItem*)moduleItem
+{
+    MITModuleItem *moduleItem = self.moduleItem;
+    moduleItem.badgeValue = self.module.badgeValue;
+    return moduleItem;
 }
 
 - (void)loadRootViewController
