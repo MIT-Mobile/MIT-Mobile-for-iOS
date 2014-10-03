@@ -5,7 +5,7 @@
 
 @protocol MITModuleViewControllerProtocol <NSObject>
 @property(nonatomic,readonly,strong) MITModuleItem *moduleItem;
-@property(nonatomic,readonly) BOOL isPushNotificationsEnabled;
+@property(nonatomic,getter=isPushNotificationsEnabled) BOOL pushNotificationsEnabled;
 
 - (BOOL)isCurrentUserInterfaceIdiomSupported;
 - (BOOL)canReceivePushNotifications;
