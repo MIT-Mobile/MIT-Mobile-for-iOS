@@ -31,6 +31,14 @@
     return [storyboard instantiateInitialViewController];
 }
 
+- (UIViewController*)createHomeViewControllerForPadIdiom
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_ipad" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    
+    return [storyboard instantiateInitialViewController];
+}
+
 /*
 - (void)loadModuleHomeController
 {

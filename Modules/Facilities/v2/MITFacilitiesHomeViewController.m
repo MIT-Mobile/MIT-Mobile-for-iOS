@@ -10,6 +10,7 @@
 #import "MITBuildingServicesReportForm.h"
 #import "MITTouchstoneController.h"
 #import "MITActionSheetHandler.h"
+#import "MITNavigationController.h"
 
 #import "FacilitiesSubmitViewController.h"
 #import "FacilitiesCategoryViewController.h"
@@ -33,14 +34,16 @@ typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
-@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *contactFacilitiesButton;
+@property (weak, nonatomic) IBOutlet UILabel *emailLabel;
 
 @property (nonatomic, strong) UIBarButtonItem *submitButton;
+@property (nonatomic, strong) UIPopoverController *facilitiesPopoverController;
 
 @property (nonatomic, strong) MITBuildingServicesReportForm *reportForm;
 
@@ -90,6 +93,13 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     // view title
     self.title = @"Building Services";
+    
+    // this is nil for iPhone
+    if( self.emailLabel != nil )
+    {
+        [self.emailLabel setFont:[UIFont systemFontOfSize:14]];
+        [self.emailLabel setTextColor:[UIColor mit_tintColor]];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -98,6 +108,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChooseLocation:) name:MITBuildingServicesLocationChosenNoticiation object:nil];
     
     [self validateFields];
     
@@ -275,6 +286,16 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)didChooseLocation:(NSNotification *)notification
+{
+    if( self.facilitiesPopoverController != nil )
+    {
+        [self.facilitiesPopoverController dismissPopoverAnimated:YES];
+        
+        [self.tableView reloadData];
+    }
+}
+
 #pragma mark - tableview stuff
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -285,7 +306,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
-    if( self.editingTextView != nil && isEditingRow && row != MITFacilitiesFormFieldEmail )
+    if( self.editingTextView != nil && isEditingRow && row != MITFacilitiesFormFieldEmail && row != MITFacilitiesFormFieldLocation )
     {
         CGSize size = [self.editingTextView sizeThatFits:CGSizeMake(self.editingTextView.frame.size.width, FLT_MAX)];
         
@@ -411,18 +432,39 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     return cell;
 }
 
-- (MITFacilitiesNonEditableFieldCell *)locationFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)locationFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    UITableViewCell *locationCell = nil;
     
-    cell.titleLabel.text = @"location";
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        MITFacilitiesEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.titleLabel.text = @"location";
+        
+        NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+        cell.subtitleTextView.text = locationName;
+
+        cell.subtitleTextView.delegate = self;
+        cell.subtitleTextView.userInteractionEnabled = NO;
+        
+        locationCell = cell;
+    }
+    else
+    {
+        MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell"
+                                                                                       forIndexPath:indexPath];
+        cell.titleLabel.text = @"location";
+        
+        NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+        cell.subtitleLabel.text = locationName;
+        
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        locationCell = cell;
+    }
     
-    NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
-    
-    cell.subtitleLabel.text = locationName;
-    
-    return cell;
+    return locationCell;
 }
 
 - (MITFacilitiesNonEditableFieldCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
@@ -465,6 +507,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    
     UIViewController *vc = nil;
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
@@ -477,6 +521,12 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     if( row == MITFacilitiesFormFieldLocation )
     {
         vc = [[FacilitiesCategoryViewController alloc] init];
+        
+        if( [cell isKindOfClass:[MITFacilitiesEditableFieldCell class]] )
+        {
+            MITFacilitiesEditableFieldCell *locationCell = (MITFacilitiesEditableFieldCell *)cell;
+            [locationCell.subtitleTextView becomeFirstResponder];
+        }
     }
     else if( row == MITFacilitiesFormFieldProblemType )
     {
@@ -490,10 +540,50 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         vc = fvc;
     }
     
-    if( vc != nil )
+    if( vc == nil )
+    {
+        return;
+    }
+    
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        if( [self.facilitiesPopoverController isPopoverVisible] )
+        {
+            return;
+        }
+        
+        MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:vc];
+        
+        navController.delegate = self;
+        
+        self.facilitiesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+        self.facilitiesPopoverController.delegate = self;
+        self.facilitiesPopoverController.backgroundColor = [UIColor whiteColor];
+        CGRect aFrame = [tableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
+        [self.facilitiesPopoverController presentPopoverFromRect:[tableView convertRect:aFrame toView:self.view] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        self.facilitiesPopoverController.passthroughViews = @[cell];
+    }
+    else
     {
         [self.navigationController pushViewController:vc animated:YES];
     }
+}
+
+#pragma mark - navigation controller and popover controller delegates
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if( [viewController isKindOfClass:[FacilitiesCategoryViewController class]] )
+    {
+        return;
+    }
+    
+    [self.view endEditing:YES];
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    [self.view endEditing:YES];
 }
 
 #pragma mark - keyboard related
@@ -555,6 +645,13 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     if( self.editingIndexPath.row == MITFacilitiesFormFieldEmail )
     {
         self.reportForm.email = textView.text;
+    }
+    else if( self.editingIndexPath.row == MITFacilitiesFormFieldLocation )
+    {
+        NSDictionary *notifUserInfo = @{@"customText" : (textView.text == nil ? @"" : textView.text)};
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationCustomTextNotification
+                                                            object:self
+                                                          userInfo:notifUserInfo];
     }
     else
     {

@@ -7,6 +7,9 @@
 #import "MITBuildingServicesReportForm.h"
 #import "NSString+EmailValidation.h"
 
+NSString * const MITBuildingServicesLocationChosenNoticiation = @"MITBuildingServicesLocationChosenNoticiation";
+NSString * const MITBuildingServicesLocationCustomTextNotification = @"MITBuildingServicesLocationCustomTextNotification";
+
 @implementation MITBuildingServicesReportForm
 
 + (MITBuildingServicesReportForm *)sharedServiceReport

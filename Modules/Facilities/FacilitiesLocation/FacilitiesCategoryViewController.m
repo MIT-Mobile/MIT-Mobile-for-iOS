@@ -75,6 +75,12 @@
 
         tableView.backgroundView = nil;
         tableView.backgroundColor = [UIColor clearColor];
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            tableView.backgroundColor = [UIColor whiteColor];
+        }
+        
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
@@ -87,12 +93,10 @@
         [mainView addSubview:tableView];
     }
     
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            searchBar.barStyle = UIBarStyleBlackOpaque;
-        }
         
         UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
                                                                                         contentsController:self];
@@ -105,7 +109,6 @@
         searchBarFrame = searchBar.frame;
         self.tableView.tableHeaderView = searchBar;
     }
-
     
     {
         CGRect loadingFrame = screenFrame;
@@ -291,6 +294,12 @@
 
 
 #pragma mark - UITableViewDelegate Methods
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

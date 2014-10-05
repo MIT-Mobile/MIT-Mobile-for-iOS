@@ -10,6 +10,9 @@
 #import "FacilitiesRepairType.h"
 #import "FacilitiesRoom.h"
 
+extern NSString * const MITBuildingServicesLocationChosenNoticiation;
+extern NSString * const MITBuildingServicesLocationCustomTextNotification;
+
 @interface MITBuildingServicesReportForm : NSObject
 
 // user email (pre-filled or manually typed

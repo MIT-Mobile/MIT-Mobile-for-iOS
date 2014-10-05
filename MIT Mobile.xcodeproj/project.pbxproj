@@ -18,6 +18,7 @@
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
 		27724CFB19CCBA7800C27D78 /* NSString+EmailValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 27724CFA19CCBA7800C27D78 /* NSString+EmailValidation.m */; };
+		27724D0819CF742B00C27D78 /* MITFacilities_ipad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27724D0719CF742B00C27D78 /* MITFacilities_ipad.storyboard */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
 		279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CCA0E197A1ABB0002209F /* MITPeopleModelController.m */; };
@@ -549,6 +550,7 @@
 		274887331933ABCC00414552 /* MITPeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchHandler.m; sourceTree = "<group>"; };
 		27724CF919CCBA7800C27D78 /* NSString+EmailValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+EmailValidation.h"; path = "Categories/NSString+EmailValidation.h"; sourceTree = "<group>"; };
 		27724CFA19CCBA7800C27D78 /* NSString+EmailValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EmailValidation.m"; path = "Categories/NSString+EmailValidation.m"; sourceTree = "<group>"; };
+		27724D0719CF742B00C27D78 /* MITFacilities_ipad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = MITFacilities_ipad.storyboard; path = v2/MITFacilities_ipad.storyboard; sourceTree = "<group>"; };
 		277493C81971C88100EB7904 /* MITPeopleSearchRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchRootViewController.h; sourceTree = "<group>"; };
 		277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchRootViewController.m; sourceTree = "<group>"; };
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
@@ -1603,6 +1605,17 @@
 			name = Subclasses;
 			sourceTree = "<group>";
 		};
+		27724CFF19CE849E00C27D78 /* FacilitiesHomeViewController */ = {
+			isa = PBXGroup;
+			children = (
+				27724D0719CF742B00C27D78 /* MITFacilities_ipad.storyboard */,
+				27C5B4B619B564CD006DD95A /* MITFacilitiesHomeViewController.h */,
+				27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */,
+				27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */,
+			);
+			name = FacilitiesHomeViewController;
+			sourceTree = "<group>";
+		};
 		277B3DCD194DC7610032229E /* iPad */ = {
 			isa = PBXGroup;
 			children = (
@@ -1623,13 +1636,8 @@
 		27C5B4B219B56462006DD95A /* Old */ = {
 			isa = PBXGroup;
 			children = (
-				2C40A0F01367362600C83847 /* FacilitiesLocation */,
-				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
-				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
-				2C1807391382C2DA000CCB6F /* FacilitiesType */,
-				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
 			);
 			name = Old;
 			sourceTree = "<group>";
@@ -1842,14 +1850,17 @@
 			isa = PBXGroup;
 			children = (
 				27C5B4B219B56462006DD95A /* Old */,
+				27724CFF19CE849E00C27D78 /* FacilitiesHomeViewController */,
+				2C40A0F01367362600C83847 /* FacilitiesLocation */,
+				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
+				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
+				2C1807391382C2DA000CCB6F /* FacilitiesType */,
+				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
 				2CCB85F61361D9790024E474 /* Model */,
 				2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */,
 				2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */,
 				2C2E95411382F00200FA5557 /* FacilitiesConstants.h */,
 				2C2E95401382F00200FA5557 /* FacilitiesConstants.m */,
-				27C5B4B619B564CD006DD95A /* MITFacilitiesHomeViewController.h */,
-				27C5B4B719B564CD006DD95A /* MITFacilitiesHomeViewController.m */,
-				27C5B4B919B56644006DD95A /* MITFacilities_iphone.storyboard */,
 				273B0D0019BC10830092BC46 /* MITBuildingServicesReportForm.h */,
 				273B0D0119BC10830092BC46 /* MITBuildingServicesReportForm.m */,
 			);
@@ -3506,6 +3517,7 @@
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
+				27724D0819CF742B00C27D78 /* MITFacilities_ipad.storyboard in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,

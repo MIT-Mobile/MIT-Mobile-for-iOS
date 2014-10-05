@@ -221,6 +221,12 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 #pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     FacilitiesLocation *location = nil;
     
@@ -240,7 +246,14 @@ static const NSUInteger kMaxResultCount = 10;
         [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
     }
     
-    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
+    }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
