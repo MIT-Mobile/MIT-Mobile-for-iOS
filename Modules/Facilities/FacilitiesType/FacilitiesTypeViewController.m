@@ -48,8 +48,7 @@
 
     {
         CGRect tableRect = screenFrame;
-        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableRect style:UITableViewStylePlain];
         [tableView applyStandardColors];
 
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -59,6 +58,8 @@
         tableView.hidden = YES;
         tableView.scrollEnabled = YES;
         tableView.autoresizesSubviews = YES;
+        [tableView setBackgroundColor:[UIColor whiteColor]];
+        [tableView setTableFooterView:[UIView new]];
 
         self.tableView = tableView;
         [mainView addSubview:tableView];
@@ -130,10 +131,9 @@
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
 
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:reuseIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    if (cell == nil)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     }
 
     FacilitiesRepairType *type = (FacilitiesRepairType *)[[self repairTypes] objectAtIndex:indexPath.row];
@@ -143,21 +143,20 @@
 }
 
 #pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.userData];
-//    [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
-//             forKey:FacilitiesRequestRepairTypeKey];
-    
-//    FacilitiesSummaryViewController *vc = [[FacilitiesSummaryViewController alloc] init];
-//    vc.reportData = dict;
-//    [self.navigationController pushViewController:vc
-//                                         animated:YES];
-    
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     FacilitiesRepairType *problemType = [self repairTypes][indexPath.row];
     [[MITBuildingServicesReportForm sharedServiceReport] setProblemType:problemType];
-    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 @end

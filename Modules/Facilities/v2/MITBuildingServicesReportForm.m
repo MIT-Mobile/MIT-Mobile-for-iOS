@@ -62,7 +62,7 @@ NSString * const MITBuildingServicesLocationCustomTextNotification = @"MITBuildi
 {
     self.location = location;
     
-    self.shouldSetRoom = shouldSetRoom;
+    self.shouldSetRoom = (location == nil ? NO : shouldSetRoom);
 }
 
 - (void)clearAll

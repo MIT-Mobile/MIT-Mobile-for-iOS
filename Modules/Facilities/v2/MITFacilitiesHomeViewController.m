@@ -306,7 +306,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
     
-    if( self.editingTextView != nil && isEditingRow && row != MITFacilitiesFormFieldEmail && row != MITFacilitiesFormFieldLocation )
+    if( self.editingTextView != nil && isEditingRow && row == MITFacilitiesFormFieldDescription )
     {
         CGSize size = [self.editingTextView sizeThatFits:CGSizeMake(self.editingTextView.frame.size.width, FLT_MAX)];
         
@@ -436,13 +436,14 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *locationCell = nil;
     
+    NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+    
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
     {
         MITFacilitiesEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
         cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.titleLabel.text = @"location";
         
-        NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+        cell.titleLabel.text = @"location";
         cell.subtitleTextView.text = locationName;
 
         cell.subtitleTextView.delegate = self;
@@ -454,12 +455,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     {
         MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell"
                                                                                        forIndexPath:indexPath];
-        cell.titleLabel.text = @"location";
-        
-        NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
-        cell.subtitleLabel.text = locationName;
-        
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        cell.titleLabel.text = @"location";
+        cell.subtitleLabel.text = locationName;
         
         locationCell = cell;
     }
@@ -467,15 +466,37 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     return locationCell;
 }
 
-- (MITFacilitiesNonEditableFieldCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)roomFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
-    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    UITableViewCell *roomCell = nil;
     
-    cell.titleLabel.text = @"room";
-    cell.subtitleLabel.text = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
+    NSString *roomName = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
     
-    return cell;
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        MITFacilitiesEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeEditableCell" forIndexPath:indexPath];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+
+        cell.titleLabel.text = @"room";
+        cell.subtitleTextView.text = roomName;
+        
+        cell.subtitleTextView.delegate = self;
+        cell.subtitleTextView.userInteractionEnabled = NO;
+        
+        roomCell = cell;
+    }
+    else
+    {
+        MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        cell.titleLabel.text = @"room";
+        cell.subtitleLabel.text = roomName;
+        
+        roomCell = cell;
+    }
+    
+    return roomCell;
 }
 
 - (MITFacilitiesNonEditableFieldCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
@@ -538,6 +559,12 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         fvc.location = self.reportForm.location;
         
         vc = fvc;
+        
+        if( [cell isKindOfClass:[MITFacilitiesEditableFieldCell class]] )
+        {
+            MITFacilitiesEditableFieldCell *roomCell = (MITFacilitiesEditableFieldCell *)cell;
+            [roomCell.subtitleTextView becomeFirstResponder];
+        }
     }
     
     if( vc == nil )
@@ -573,7 +600,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
-    if( [viewController isKindOfClass:[FacilitiesCategoryViewController class]] )
+    if( [viewController isKindOfClass:[FacilitiesCategoryViewController class]] ||
+        [viewController isKindOfClass:[FacilitiesRoomViewController class]] )
     {
         return;
     }
@@ -646,7 +674,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     {
         self.reportForm.email = textView.text;
     }
-    else if( self.editingIndexPath.row == MITFacilitiesFormFieldLocation )
+    else if( self.editingIndexPath.row == MITFacilitiesFormFieldLocation || self.editingIndexPath.row == MITFacilitiesFormFieldRoom )
     {
         NSDictionary *notifUserInfo = @{@"customText" : (textView.text == nil ? @"" : textView.text)};
         [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationCustomTextNotification

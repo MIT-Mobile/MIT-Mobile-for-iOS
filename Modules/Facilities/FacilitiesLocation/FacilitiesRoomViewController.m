@@ -60,18 +60,17 @@
         tableRect.origin = CGPointMake(0, searchBarFrame.size.height);
         tableRect.size.height -= searchBarFrame.size.height;
         
-        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped];
+        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect style:UITableViewStylePlain];
         tableView.backgroundView = nil;
         tableView.backgroundColor = [UIColor clearColor];
         
-        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                           UIViewAutoresizingFlexibleWidth);
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
         tableView.dataSource = self;
         tableView.hidden = YES;
         tableView.scrollEnabled = YES;
         tableView.autoresizesSubviews = YES;
+        [tableView setBackgroundColor:[UIColor whiteColor]];
         
         self.tableView = tableView;
         [mainView addSubview:tableView];
@@ -80,9 +79,6 @@
     {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            searchBar.barStyle = UIBarStyleBlackOpaque;
-        }
         
         UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
                                                                                         contentsController:self];
@@ -91,9 +87,14 @@
         searchController.searchResultsDelegate = self;
         self.strongSearchDisplayController = searchController;
         
-        [searchBar sizeToFit];
-        searchBarFrame = searchBar.frame;
-        self.tableView.tableHeaderView = searchBar;
+        // while we still need to initialize searchController for both iPhone and iPad,
+        // we only need add search bar to the view for the iPhone case
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+        {
+            [searchBar sizeToFit];
+            searchBarFrame = searchBar.frame;
+            self.tableView.tableHeaderView = searchBar;
+        }
     }
     
     {
@@ -129,6 +130,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(customRoomTextDidChange:)
+                                                 name:MITBuildingServicesLocationCustomTextNotification
+                                               object:nil];
+    
     if (self.observerToken == nil) {
         __weak FacilitiesRoomViewController *weakSelf = self;
         self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
@@ -156,6 +162,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     if (self.observerToken) {
         [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
@@ -272,6 +280,12 @@
 
 
 #pragma mark - UITableViewDelegate Methods
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     FacilitiesRoom *room = nil;
@@ -298,7 +312,14 @@
     [MITBuildingServicesReportForm sharedServiceReport].room = room;
     [MITBuildingServicesReportForm sharedServiceReport].roomAltName = altName;
     
-    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
+    }
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -327,52 +348,101 @@
     static NSString *facilitiesIdentifier = @"facilitiesCell";
     static NSString *searchIdentifier = @"searchCell";
     
-    if (tableView == self.tableView) {
-        UITableViewCell *cell = nil;
-        cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
+    if (tableView == self.tableView)
+    {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                          reuseIdentifier:facilitiesIdentifier];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        if (cell == nil)
+        {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:facilitiesIdentifier];
         }
         
-        [self configureMainTableCell:cell 
-                        forIndexPath:indexPath];
-        return cell;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        HighlightTableViewCell *hlCell = nil;
-        hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
+        [self configureMainTableCell:cell forIndexPath:indexPath];
         
-        if (hlCell == nil) {
-            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                    reuseIdentifier:searchIdentifier];
+        return cell;
+    }
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
+        HighlightTableViewCell *hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
+        
+        if (hlCell == nil)
+        {
+            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
-            hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
-        if (indexPath.row == 0) {
+        if (indexPath.row == 0)
+        {
             hlCell.highlightLabel.searchString = nil;
             hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
-        } else {
-            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
-                                                   inSection:indexPath.section];
-            [self configureSearchCell:hlCell
-                         forIndexPath:path];
+        }
+        else
+        {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1) inSection:indexPath.section];
+            [self configureSearchCell:hlCell forIndexPath:path];
         }
         
-        
         return hlCell;
-    } else {
+    }
+    else
+    {
         return nil;
     }
 }
 
+#pragma mark - notifications
+
+// on iPad manually set searchText and add searchResultsTableView to the view hierarchy
+// in order to show the filtered list.
+- (void)customRoomTextDidChange:(NSNotification *)senderNotification
+{
+    // make sure this logic only occurs for the iPad.
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    NSDictionary *userInfo = senderNotification.userInfo;
+    
+    if( userInfo == nil || userInfo[@"customText"] == nil )
+    {
+        return;
+    }
+    
+    NSString *customLocationText = userInfo[@"customText"];
+    
+    [self handleUpdatedSearchText:customLocationText];
+    
+    if( customLocationText.length == 0 )
+    {
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+        [self.strongSearchDisplayController.searchResultsTableView removeFromSuperview];
+    }
+    else
+    {
+        if( [self.strongSearchDisplayController.searchResultsTableView superview] == nil )
+        {
+            [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
+            [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
+        }
+        
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+    }
+}
+
 #pragma mark - UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self handleUpdatedSearchText:searchText];
+}
+
+
+- (void)handleUpdatedSearchText:(NSString *)searchText
+{
     self.trimmedString = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![self.searchString isEqualToString:self.trimmedString]) {
+    if (![self.searchString isEqualToString:self.trimmedString])
+    {
         self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }
