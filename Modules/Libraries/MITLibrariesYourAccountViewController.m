@@ -43,7 +43,6 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 {
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
         self.user = user;
-        
         [self refreshViewControllers];
     }];
 }
@@ -136,6 +135,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     self.loansViewController.items = self.user.loans;
     self.holdsViewController.items = self.user.holds;
     self.finesViewController.items = self.user.fines;
+    self.finesViewController.finesBalance = self.user.formattedBalance;
     
     [self showSelectedViewController];
 }

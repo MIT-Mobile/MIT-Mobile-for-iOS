@@ -5,6 +5,8 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
 @interface MITLibrariesHoldsViewController ()
 
+@property (nonatomic, strong) UILabel *tableHeaderLabel;
+
 @end
 
 @implementation MITLibrariesHoldsViewController
@@ -22,6 +24,12 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 {
     UINib *cellNib = [UINib nibWithNibName:kMITLibrariesItemHoldCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITLibrariesItemHoldCell];
+    
+    UIView *tableHeaderContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 34)];
+    self.tableHeaderLabel = [[UILabel alloc] initWithFrame:CGRectInset(tableHeaderContainer.frame, 8, 5)];
+    [tableHeaderContainer addSubview:self.tableHeaderLabel];
+    
+    self.tableView.tableHeaderView = tableHeaderContainer;
 }
 
 #pragma mark - Table view data source
@@ -33,6 +41,17 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
     [cell setContent:self.items[indexPath.row]];
     
     return cell;
+}
+
+- (void)setItems:(NSArray *)items
+{
+    [super setItems:items];
+    [self updateHeaderLabel];
+}
+
+- (void)updateHeaderLabel
+{
+    // TODO: Pending confirmation on holds webservice
 }
 
 @end

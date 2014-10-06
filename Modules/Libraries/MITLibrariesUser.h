@@ -9,5 +9,7 @@
 @property (nonatomic, strong) NSArray *loans;
 @property (nonatomic, strong) NSArray *holds;
 @property (nonatomic, strong) NSArray *fines;
+@property (nonatomic, strong) NSString *formattedBalance;
+@property (nonatomic) NSInteger balance;
 
 @end
