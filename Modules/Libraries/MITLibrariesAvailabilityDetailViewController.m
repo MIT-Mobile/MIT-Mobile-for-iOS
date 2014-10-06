@@ -129,7 +129,7 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
     switch (indexPath.section) {
         case kItemHeaderSection: {
             MITLibrariesWorldcatItemCell *itemHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kItemHeaderCellIdentifier];
-            [itemHeaderCell setItem:self.worldcatItem];
+            [itemHeaderCell setContent:self.worldcatItem];
             return itemHeaderCell;
         }
         case kAvailabilitiesSection: {
@@ -137,11 +137,11 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
             
             switch (self.segmentedControl.selectedSegmentIndex) {
                 case MITAvailabilitiesDetailSectionAll: {
-                    [cell setAvailability:self.availabilitiesInLibrary[indexPath.row]];
+                    [cell setContent:self.availabilitiesInLibrary[indexPath.row]];
                     break;
                 }
                 case MITAvailabilitiesDetailSectionAvailable: {
-                    [cell setAvailability:self.availableCopyAvailabilities[indexPath.row]];
+                    [cell setContent:self.availableCopyAvailabilities[indexPath.row]];
                     break;
                 }
                 default: {
@@ -161,15 +161,15 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
 {
     switch (indexPath.section) {
         case kItemHeaderSection: {
-            return [MITLibrariesWorldcatItemCell heightForItem:self.worldcatItem tableViewWidth:self.tableView.bounds.size.width];
+            return [MITLibrariesWorldcatItemCell heightForContent:self.worldcatItem tableViewWidth:self.tableView.bounds.size.width];
         }
         case kAvailabilitiesSection: {
             switch (self.segmentedControl.selectedSegmentIndex) {
                 case MITAvailabilitiesDetailSectionAll: {
-                    return [MITLibrariesAvailabilityDetailCell heightForAvailability:self.availabilitiesInLibrary[indexPath.row] tableViewWidth:self.tableView.bounds.size.width];
+                    return [MITLibrariesAvailabilityDetailCell heightForContent:self.availabilitiesInLibrary[indexPath.row] tableViewWidth:self.tableView.bounds.size.width];
                 }
                 case MITAvailabilitiesDetailSectionAvailable: {
-                    return [MITLibrariesAvailabilityDetailCell heightForAvailability:self.availableCopyAvailabilities[indexPath.row] tableViewWidth:self.tableView.bounds.size.width];
+                    return [MITLibrariesAvailabilityDetailCell heightForContent:self.availableCopyAvailabilities[indexPath.row] tableViewWidth:self.tableView.bounds.size.width];
                 }
                 default: {
                     return 0;

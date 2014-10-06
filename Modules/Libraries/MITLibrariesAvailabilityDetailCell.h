@@ -1,11 +1,10 @@
 #import <UIKit/UIKit.h>
+#import "MITAutoSizingCell.h"
 
 @class MITLibrariesAvailability;
 
-@interface MITLibrariesAvailabilityDetailCell : UITableViewCell
+@interface MITLibrariesAvailabilityDetailCell : MITAutoSizingCell
 
-@property (nonatomic, strong) MITLibrariesAvailability *availability;
-
-+ (CGFloat)heightForAvailability:(MITLibrariesAvailability *)availability tableViewWidth:(CGFloat)width;
+- (void)setContent:(MITLibrariesAvailability *)availability;
 
 @end

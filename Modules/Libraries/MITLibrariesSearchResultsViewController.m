@@ -174,7 +174,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 {
     MITLibrariesWorldcatItemCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier forIndexPath:indexPath];
     
-    [cell setItem:self.searchController.results[indexPath.row]];
+    [cell setContent:self.searchController.results[indexPath.row]];
     
     return cell;
 }
@@ -192,7 +192,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
-    CGFloat height = [MITLibrariesWorldcatItemCell heightForItem:item tableViewWidth:self.resultsTableView.bounds.size.width];
+    CGFloat height = [MITLibrariesWorldcatItemCell heightForContent:item tableViewWidth:self.resultsTableView.bounds.size.width];
     return height;
 }
 
