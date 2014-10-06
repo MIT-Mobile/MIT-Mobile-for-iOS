@@ -403,7 +403,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 {
     if (row == 0) {
         MITLibrariesWorldcatItemCell *itemHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kItemHeaderCellIdentifier];
-        itemHeaderCell.item = self.worldcatItem;
+        [itemHeaderCell setContent:self.worldcatItem];
         itemHeaderCell.showsSeparator = NO;
         return itemHeaderCell;
     } else {
@@ -438,7 +438,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 - (CGFloat)bookInfoSectionHeightForRow:(NSInteger)row
 {
     if (row == 0) {
-        CGFloat height = [MITLibrariesWorldcatItemCell heightForItem:self.worldcatItem tableViewWidth:self.tableView.bounds.size.width];
+        CGFloat height = [MITLibrariesWorldcatItemCell heightForContent:self.worldcatItem tableViewWidth:self.tableView.bounds.size.width];
         return height;
     } else {
         NSDictionary *itemLineDictionary = self.itemDetailLines[row - 1];

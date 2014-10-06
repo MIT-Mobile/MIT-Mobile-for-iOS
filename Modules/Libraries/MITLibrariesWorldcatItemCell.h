@@ -1,11 +1,9 @@
 #import <UIKit/UIKit.h>
+#import "MITAutoSizingCell.h"
 
 @class MITLibrariesWorldcatItem;
 
-@interface MITLibrariesWorldcatItemCell : UITableViewCell
-
-// Set this to effect UI changes (label texts, image, etc)
-@property (nonatomic, strong) MITLibrariesWorldcatItem *item;
+@interface MITLibrariesWorldcatItemCell : MITAutoSizingCell
 
 // For subclasses
 @property (nonatomic, weak) IBOutlet UILabel *itemTitleLabel;
@@ -15,6 +13,6 @@
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *yearAndAuthorLabelHorizontalTrailingConstraint;
 @property (nonatomic, assign) BOOL showsSeparator;
 
-+ (CGFloat)heightForItem:(MITLibrariesWorldcatItem *)item tableViewWidth:(CGFloat)width;
+- (void)setContent:(MITLibrariesWorldcatItem *)item;
 
 @end

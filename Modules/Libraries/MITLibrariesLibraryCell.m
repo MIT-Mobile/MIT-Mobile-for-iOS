@@ -18,9 +18,8 @@
     self.libraryHoursLabel.textColor = [UIColor mit_greyTextColor];
 }
 
-- (void)setContent:(id)content
+- (void)setContent:(MITLibrariesLibrary *)library
 {
-    MITLibrariesLibrary *library = (MITLibrariesLibrary *)content;
     self.libraryNameLabel.text = library.name;
     self.libraryHoursLabel.text = [library hoursStringForDate:[NSDate date]];
     if ([library isOpenAtDate:[NSDate date]]) {
@@ -33,17 +32,6 @@
     }
     
     [self layoutIfNeeded];
-}
-
-+ (MITAutoSizingCell *)sizingCell
-{
-    static MITLibrariesLibraryCell *sizingCell;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
-        sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
-    });
-    return sizingCell;
 }
 
 + (CGFloat)estimatedCellHeight

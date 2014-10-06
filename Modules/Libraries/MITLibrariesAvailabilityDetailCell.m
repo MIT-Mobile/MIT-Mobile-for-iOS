@@ -4,6 +4,7 @@
 
 @interface MITLibrariesAvailabilityDetailCell ()
 
+@property (nonatomic, strong) MITLibrariesAvailability *availability;
 @property (nonatomic, weak) IBOutlet UILabel *callNumberLabel;
 @property (nonatomic, weak) IBOutlet UILabel *collectionLabel;
 @property (nonatomic, weak) IBOutlet UILabel *statusLabel;
@@ -20,21 +21,7 @@
     [self.statusLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    self.callNumberLabel.preferredMaxLayoutWidth = self.callNumberLabel.bounds.size.width;
-    self.collectionLabel.preferredMaxLayoutWidth = self.collectionLabel.bounds.size.width;
-    self.statusLabel.preferredMaxLayoutWidth = self.statusLabel.bounds.size.width;
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
-- (void)setAvailability:(MITLibrariesAvailability *)availability
+- (void)setContent:(MITLibrariesAvailability *)availability
 {
     if ([_availability isEqual:availability]) {
         return;
@@ -49,35 +36,9 @@
 
 #pragma mark - Cell Sizing
 
-+ (CGFloat)heightForAvailability:(MITLibrariesAvailability *)availability tableViewWidth:(CGFloat)width
++ (CGFloat)estimatedCellHeight
 {
-    [[[self class] sizingCell] setAvailability:availability];
-    return [[self class] heightForCell:[[self class] sizingCell] tableWidth:width];
-}
-
-+ (CGFloat)heightForCell:(MITLibrariesAvailabilityDetailCell *)cell tableWidth:(CGFloat)width
-{
-    CGRect frame = cell.frame;
-    frame.size.width = width;
-    cell.frame = frame;
-    
-    [cell setNeedsLayout];
-    [cell layoutIfNeeded];
-    
-    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    ++height; // add pixel for cell separator
-    return MAX(69, height);
-}
-
-+ (instancetype)sizingCell
-{
-    static MITLibrariesAvailabilityDetailCell *sizingCell;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
-        sizingCell = [cellNib instantiateWithOwner:nil options:nil][0];
-    });
-    return sizingCell;
+    return 69.0;
 }
 
 @end

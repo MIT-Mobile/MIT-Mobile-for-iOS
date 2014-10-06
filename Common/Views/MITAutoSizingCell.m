@@ -35,10 +35,10 @@
              tableViewWidth:(CGFloat)width
 {
     [[self sizingCell] setContent:content];
-    return [self heightForCell:[self sizingCell] TableWidth:width];
+    return [self heightForCell:[self sizingCell] tableWidth:width];
 }
 
-+ (CGFloat)heightForCell:(MITAutoSizingCell *)cell TableWidth:(CGFloat)width
++ (CGFloat)heightForCell:(MITAutoSizingCell *)cell tableWidth:(CGFloat)width
 {
     CGRect frame = cell.frame;
     frame.size.width = width;
@@ -51,18 +51,21 @@
 
 + (MITAutoSizingCell *)sizingCell
 {
-//    This function must be subclassed, your subclass will usually have something like this in it:
-//    
-//    static MITAutoSizingCell *sizingCell;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
-//        sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
-//    });
-//    return sizingCell;
-
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
+    static NSMutableDictionary *sizingCellDictionary;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sizingCellDictionary = [NSMutableDictionary dictionary];
+    });
+    
+    NSString *classCellKey = NSStringFromClass([self class]);
+    MITAutoSizingCell *sizingCell = [sizingCellDictionary objectForKey:classCellKey];
+    if (!sizingCell) {
+        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
+        sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
+        [sizingCellDictionary setObject:sizingCell forKey:classCellKey];
+    }
+    
+    return sizingCell;
 }
 
 // This should be subclassed if you want a different default height
