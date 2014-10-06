@@ -60,7 +60,7 @@
     NSString *classCellKey = NSStringFromClass([self class]);
     MITAutoSizingCell *sizingCell = [sizingCellDictionary objectForKey:classCellKey];
     if (!sizingCell) {
-        UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
+        UINib *numberedResultCellNib = [UINib nibWithNibName:classCellKey bundle:nil];
         sizingCell = [numberedResultCellNib instantiateWithOwner:nil options:nil][0];
         [sizingCellDictionary setObject:sizingCell forKey:classCellKey];
     }
