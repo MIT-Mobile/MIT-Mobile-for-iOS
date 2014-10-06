@@ -11,6 +11,7 @@
         self.overdue = [dictionary[@"overdue"] boolValue];
         self.longOverdue = [dictionary[@"long_overdue"] boolValue];
         self.pendingFine = [dictionary[@"pending_fine"] integerValue];
+        self.formattedPendingFine = dictionary[@"formatted_pending_fine"];
         self.dueText = dictionary[@"due_text"];
         self.hasHold = [dictionary[@"has_hold"] boolValue];
     }

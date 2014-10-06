@@ -30,6 +30,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 {
     [super viewDidLoad];
 
+    self.title = @"My Account";
+    
     [self refreshUserData];
     
     [self setupViewControllers];
@@ -80,21 +82,21 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     [self addChildViewController:self.holdsViewController];
     [self addChildViewController:self.finesViewController];
     
-    [self.view addSubview:self.loansViewController.view];
-    [self.view addSubview:self.holdsViewController.view];
     [self.view addSubview:self.finesViewController.view];
+    [self.view addSubview:self.holdsViewController.view];
+    [self.view addSubview:self.loansViewController.view];
 }
 
 - (void)showSelectedViewController
 {
     switch (self.loansHoldsFinesSegmentedControl.selectedSegmentIndex) {
-        case 0:
+        case MITLibrariesYourAccountSectionLoans:
             [self showLoansViewController];
             break;
-        case 1:
+        case MITLibrariesYourAccountSectionFines:
             [self showFinesViewController];
             break;
-        case 2:
+        case MITLibrariesYourAccountSectionHolds:
             [self showHoldsViewController];
             break;
         default:
@@ -107,6 +109,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     self.holdsViewController.view.hidden =
     self.finesViewController.view.hidden = YES;
     
+    self.title = self.loansViewController.title;
     self.loansViewController.view.hidden = NO;
 }
 
@@ -115,6 +118,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     self.loansViewController.view.hidden =
     self.finesViewController.view.hidden = YES;
     
+    self.title = self.holdsViewController.title;
     self.holdsViewController.view.hidden = NO;
 }
 
@@ -123,6 +127,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     self.holdsViewController.view.hidden =
     self.loansViewController.view.hidden = YES;
     
+    self.title = self.finesViewController.title;
     self.finesViewController.view.hidden = NO;
 }
 

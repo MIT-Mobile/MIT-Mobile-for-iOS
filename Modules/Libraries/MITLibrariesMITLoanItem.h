@@ -8,6 +8,7 @@
 @property (nonatomic) BOOL overdue;
 @property (nonatomic) BOOL longOverdue;
 @property (nonatomic) NSInteger pendingFine;
+@property (nonatomic, strong) NSString *formattedPendingFine;
 @property (nonatomic, strong) NSString *dueText;
 @property (nonatomic) BOOL hasHold;
 

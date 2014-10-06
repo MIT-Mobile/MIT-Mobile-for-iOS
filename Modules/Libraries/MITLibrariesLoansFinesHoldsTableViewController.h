@@ -11,6 +11,4 @@
 @property (nonatomic, weak) id<MITLibrariesUserRefreshDelegate> refreshDelegate;
 @property (nonatomic, strong) NSArray *items;
 
-- (void)setupTableView;
-
 @end
