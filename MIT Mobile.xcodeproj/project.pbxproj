@@ -154,6 +154,12 @@
 		22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */; };
 		22E1809419DC49EA0017AC9A /* MITLibrariesHoursCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E1809219DC49EA0017AC9A /* MITLibrariesHoursCell.m */; };
 		22E1809519DC49EA0017AC9A /* MITLibrariesHoursCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E1809319DC49EA0017AC9A /* MITLibrariesHoursCell.xib */; };
+		22E180A819DDE6770017AC9A /* MITLibrariesYourAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180A619DDE6770017AC9A /* MITLibrariesYourAccountViewController.m */; };
+		22E180A919DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E180A719DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib */; };
+		22E180AC19DDF1980017AC9A /* MITLibrariesLoansViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180AB19DDF1980017AC9A /* MITLibrariesLoansViewController.m */; };
+		22E180AF19DDF1AA0017AC9A /* MITLibrariesFinesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180AE19DDF1AA0017AC9A /* MITLibrariesFinesViewController.m */; };
+		22E180B219DDF1C50017AC9A /* MITLibrariesHoldsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180B119DDF1C50017AC9A /* MITLibrariesHoldsViewController.m */; };
+		22E6BC9619E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
@@ -468,8 +474,6 @@
 		80F021B1199272C50056CA06 /* MITEventsMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F021AF199272C50056CA06 /* MITEventsMapViewController.xib */; };
 		80F021B519927E470056CA06 /* MITEventPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F021B419927E470056CA06 /* MITEventPlace.m */; };
 		80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */; };
-		A50884D019D09C190047A21B /* MITLibrariesYourAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884CE19D09C190047A21B /* MITLibrariesYourAccountViewController.m */; };
-		A50884D119D09C190047A21B /* MITLibrariesYourAccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884CF19D09C190047A21B /* MITLibrariesYourAccountViewController.xib */; };
 		A50884DF19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */; };
 		A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */; };
 		A50884E419D1E7020047A21B /* MITLibrariesItemLoanCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884E219D1E7020047A21B /* MITLibrariesItemLoanCell.m */; };
@@ -976,6 +980,17 @@
 		22E1809219DC49EA0017AC9A /* MITLibrariesHoursCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesHoursCell.m; sourceTree = "<group>"; };
 		22E1809319DC49EA0017AC9A /* MITLibrariesHoursCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesHoursCell.xib; sourceTree = "<group>"; };
 		22E1809619DD9A210017AC9A /* MITLibrariesTermProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITLibrariesTermProtocol.h; sourceTree = "<group>"; };
+		22E180A519DDE6770017AC9A /* MITLibrariesYourAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountViewController.h; sourceTree = "<group>"; };
+		22E180A619DDE6770017AC9A /* MITLibrariesYourAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountViewController.m; sourceTree = "<group>"; };
+		22E180A719DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountViewController.xib; sourceTree = "<group>"; };
+		22E180AA19DDF1980017AC9A /* MITLibrariesLoansViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLoansViewController.h; sourceTree = "<group>"; };
+		22E180AB19DDF1980017AC9A /* MITLibrariesLoansViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLoansViewController.m; sourceTree = "<group>"; };
+		22E180AD19DDF1AA0017AC9A /* MITLibrariesFinesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesFinesViewController.h; sourceTree = "<group>"; };
+		22E180AE19DDF1AA0017AC9A /* MITLibrariesFinesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesFinesViewController.m; sourceTree = "<group>"; };
+		22E180B019DDF1C50017AC9A /* MITLibrariesHoldsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesHoldsViewController.h; sourceTree = "<group>"; };
+		22E180B119DDF1C50017AC9A /* MITLibrariesHoldsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesHoldsViewController.m; sourceTree = "<group>"; };
+		22E6BC9419E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLoansFinesHoldsTableViewController.h; sourceTree = "<group>"; };
+		22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLoansFinesHoldsTableViewController.m; sourceTree = "<group>"; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
 		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
@@ -1606,9 +1621,6 @@
 		80F6E2B7199A932A0060C971 /* MITDiningCustomSeparatorCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningCustomSeparatorCell.h; path = Dining/MITDiningCustomSeparatorCell.h; sourceTree = "<group>"; };
 		80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningCustomSeparatorCell.m; path = Dining/MITDiningCustomSeparatorCell.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		A50884CD19D09C190047A21B /* MITLibrariesYourAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountViewController.h; sourceTree = "<group>"; };
-		A50884CE19D09C190047A21B /* MITLibrariesYourAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountViewController.m; sourceTree = "<group>"; };
-		A50884CF19D09C190047A21B /* MITLibrariesYourAccountViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountViewController.xib; sourceTree = "<group>"; };
 		A50884DC19D1CB050047A21B /* MITLibrariesWorldcatItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesWorldcatItemCell.h; sourceTree = "<group>"; };
 		A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesWorldcatItemCell.m; sourceTree = "<group>"; };
 		A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesWorldcatItemCell.xib; sourceTree = "<group>"; };
@@ -2387,13 +2399,11 @@
 		226A887C19C8856F00DB96B6 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				22E180A119DDE6460017AC9A /* Your Account */,
 				22E1808F19DC42C20017AC9A /* Library List/Details */,
 				2258CBD719CA1E450067E35C /* MITLibrariesHomeViewController.h */,
 				2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */,
 				2258CBD919CA1E450067E35C /* MITLibrariesHomeViewController.xib */,
-				A50884CD19D09C190047A21B /* MITLibrariesYourAccountViewController.h */,
-				A50884CE19D09C190047A21B /* MITLibrariesYourAccountViewController.m */,
-				A50884CF19D09C190047A21B /* MITLibrariesYourAccountViewController.xib */,
 				A5FA038C19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.h */,
 				A5FA038D19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m */,
 				A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */,
@@ -2577,6 +2587,32 @@
 				22E1809119DC49EA0017AC9A /* MITLibrariesHoursCell.h */,
 				22E1809219DC49EA0017AC9A /* MITLibrariesHoursCell.m */,
 				22E1809319DC49EA0017AC9A /* MITLibrariesHoursCell.xib */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		22E180A119DDE6460017AC9A /* Your Account */ = {
+			isa = PBXGroup;
+			children = (
+				22E6BC9A19E2E8D2003E278C /* Cells */,
+				22E180A519DDE6770017AC9A /* MITLibrariesYourAccountViewController.h */,
+				22E180A619DDE6770017AC9A /* MITLibrariesYourAccountViewController.m */,
+				22E180A719DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib */,
+				22E180AA19DDF1980017AC9A /* MITLibrariesLoansViewController.h */,
+				22E180AB19DDF1980017AC9A /* MITLibrariesLoansViewController.m */,
+				22E180AD19DDF1AA0017AC9A /* MITLibrariesFinesViewController.h */,
+				22E180AE19DDF1AA0017AC9A /* MITLibrariesFinesViewController.m */,
+				22E180B019DDF1C50017AC9A /* MITLibrariesHoldsViewController.h */,
+				22E180B119DDF1C50017AC9A /* MITLibrariesHoldsViewController.m */,
+				22E6BC9419E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.h */,
+				22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */,
+			);
+			name = "Your Account";
+			sourceTree = "<group>";
+		};
+		22E6BC9A19E2E8D2003E278C /* Cells */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -4639,6 +4675,7 @@
 				2CC710DD1986EA2C006C339C /* GridDividerView.xib in Resources */,
 				0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */,
 				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
+				22E180A919DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib in Resources */,
 				2258CBDB19CA1E450067E35C /* MITLibrariesHomeViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
@@ -4695,7 +4732,6 @@
 				225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */,
 				A5FA039019D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
-				A50884D119D09C190047A21B /* MITLibrariesYourAccountViewController.xib in Resources */,
 				A5A24B7119946EC400AA1CFC /* MITEventSearchResultsViewController.xib in Resources */,
 				A563905519D9C0C4001DE763 /* MITLibrariesItemDetailLineCell.xib in Resources */,
 				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
@@ -4886,6 +4922,7 @@
 				EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
 				228F26B719D4B6BE0049F1B7 /* MITLibrariesMITHoldItem.m in Sources */,
+				22E180B219DDF1C50017AC9A /* MITLibrariesHoldsViewController.m in Sources */,
 				2287A7D519BE2CAA008B0DF6 /* MITCalendarsSponsor.m in Sources */,
 				22D902FF199BA90D00AEBC7D /* MITDiningDining.m in Sources */,
 				2CF9F90A181ABC3800EDB359 /* MITFetchedResultsTableViewController.m in Sources */,
@@ -4917,6 +4954,7 @@
 				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
+				22E180AF19DDF1AA0017AC9A /* MITLibrariesFinesViewController.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
@@ -4940,6 +4978,7 @@
 				2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */,
 				2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */,
 				2C18090518F33B95008F9775 /* MITECPResponseMessage.m in Sources */,
+				22E180A819DDE6770017AC9A /* MITLibrariesYourAccountViewController.m in Sources */,
 				2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */,
 				A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */,
 				2258CBEA19CB7E7D0067E35C /* MITLibrariesTerm.m in Sources */,
@@ -5174,7 +5213,6 @@
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				22D9032E199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
-				A50884D019D09C190047A21B /* MITLibrariesYourAccountViewController.m in Sources */,
 				22D90308199BA90E00AEBC7D /* MITDiningHouseVenue.m in Sources */,
 				0BCC90C71963188A00440544 /* MITNewsRecentSearchQuery.m in Sources */,
 				A5960A121940B98D0028E86C /* MITShuttleMapBusAnnotationView.m in Sources */,
@@ -5222,9 +5260,11 @@
 				0B5D71261A08263800F60120 /* SDWebImageDecoder.m in Sources */,
 				5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */,
 				2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */,
+				22E6BC9619E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m in Sources */,
 				22D9BBA519D1CD170065A2E7 /* MITLibrariesAvailability.m in Sources */,
 				A51E20B2196F1B36005608C3 /* MITMapRecentsTableViewController.m in Sources */,
 				27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */,
+				22E180AC19DDF1980017AC9A /* MITLibrariesLoansViewController.m in Sources */,
 				A5A24B7019946EC400AA1CFC /* MITEventSearchResultsViewController.m in Sources */,
 				22D9032B199BF54D00AEBC7D /* MITDiningRetailVenue.m in Sources */,
 				0B04015F1A140E47004C224B /* MITHighlightOnTouchView.m in Sources */,

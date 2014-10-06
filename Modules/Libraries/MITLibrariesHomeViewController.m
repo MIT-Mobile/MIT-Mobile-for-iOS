@@ -6,6 +6,7 @@
 #import "MITLibrariesSearchResultsViewController.h"
 #import "MITLibrariesLocationsHoursViewController.h"
 #import "MITLibrariesSearchResultDetailViewController.h"
+#import "MITLibrariesYourAccountViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -289,7 +290,10 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     switch (row) {
         case kMITLibrariesHomeViewControllerMainSectionYourAccountRow: {
-            // TODO: Go to "My Account" VC
+            {
+                MITLibrariesYourAccountViewController *accountVC = [[MITLibrariesYourAccountViewController alloc] init];
+                [self.navigationController pushViewController:accountVC animated:YES];
+            }
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
