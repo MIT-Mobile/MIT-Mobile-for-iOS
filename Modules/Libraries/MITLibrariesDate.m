@@ -90,7 +90,6 @@
         }
         return [dateFormatter stringFromDate:date];
     }
-    
 }
 
 - (NSString *)dayRangesString
