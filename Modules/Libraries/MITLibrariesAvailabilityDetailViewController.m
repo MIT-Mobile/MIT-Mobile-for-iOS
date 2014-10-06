@@ -31,10 +31,20 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
     
     self.title = @"Availability";
     
-    self.navigationController.toolbarHidden = NO;
-    
     [self registerCells];
     [self setupSegmentedControl];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.toolbarHidden = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)didReceiveMemoryWarning {
