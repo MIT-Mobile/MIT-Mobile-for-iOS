@@ -10,7 +10,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
-@property (nonatomic) BOOL category;
+@property (nonatomic) BOOL isViewACategory;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
@@ -35,18 +35,18 @@
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
+    self.isViewACategory = YES;
     [super viewDidLoad];
     
     self.showsFeaturedStories = NO;
     self.dataSources = @[self.dataSource];
-    self.category = YES;
     self.lastUpdated = self.dataSource.refreshedAt;
     if (self.previousPresentationStyle == MITNewsPresentationStyleList) {
         self.presentationStyle = MITNewsPresentationStyleList;
-        self.listViewController.isCategory = YES;
+        self.listViewController.isACategoryView = YES;
     } else {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        self.gridViewController.isCategory = YES;
+        self.gridViewController.isACategoryView = YES;
     }
     self.previousPresentationStyle = nil;
 }
@@ -80,13 +80,11 @@
 
 - (void)updateLoadingCell
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
-        } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-    }];
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
+    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
+        [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 #pragma mark Datasource Notification
@@ -108,8 +106,10 @@
         dispatch_after(popTime, dispatch_get_main_queue(), ^{
             [strongSelf.refreshControl endRefreshing];
         });
-        self.lastUpdated = [NSDate date];
-        [strongSelf updateRefreshStatusWithLastUpdatedTime];
+        if (self.dataSource.refreshedAt) {
+            self.lastUpdated = [NSDate date];
+            [strongSelf updateRefreshStatusWithLastUpdatedTime];
+        }
     };
     
     
@@ -207,18 +207,18 @@
 - (void)setError:(NSString *)message
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController setError:message];
+        self.gridViewController.errorMessage = message;
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController setError:message];
+        self.listViewController.errorMessage = message;
     }
 }
 
 - (void)setProgress:(BOOL)progress
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController setProgress:progress];
+        self.gridViewController.storyUpdateInProgress = progress;
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController setProgress:progress];
+        self.listViewController.storyUpdateInProgress = progress;
     }
 }
 

@@ -27,10 +27,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic, strong) NSMutableArray *storyHeightsArray;
 
-
-@property (nonatomic, strong) NSString *errorMessage;
-@property (nonatomic) BOOL storyUpdateInProgress;
-
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
 @end
@@ -361,7 +357,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     // May want to just use numberOfItemsInCategoryAtIndex: here and let the data source
     // figure out how many stories it wants to meter out to us
     
-    if (self.isCategory) {
+    if (self.isACategoryView) {
         NSInteger numberOfRows = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
         if([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {
             return numberOfRows + 1;
@@ -454,7 +450,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         return identifier;
     } else {
-        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isCategory == YES) {
+        if ([self numberOfStoriesForCategoryInSection:indexPath.section] && self.isACategoryView == YES) {
             return MITNewsLoadMoreCellIdentifier;
         }
         return nil;
@@ -526,13 +522,4 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     [self.delegate getMoreStoriesForSection:section completion:nil];
 }
 
-- (void)setError:(NSString *)errorMessage
-{
-    self.errorMessage = errorMessage;
-}
-
-- (void)setProgress:(BOOL)progress
-{
-    self.storyUpdateInProgress = progress;
-}
 @end

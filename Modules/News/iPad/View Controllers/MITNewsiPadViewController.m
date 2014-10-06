@@ -40,13 +40,14 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) Reachability *internetReachability;
 
 @property (nonatomic, weak) MITNewsiPadCategoryViewController *weakiPadCategoryViewController;
+@property (nonatomic, weak) MITNewsStoryViewController *weakStoryDetailViewController;
 
 #pragma mark Data Source
 @property (nonatomic,strong) MITNewsCategoryDataSource *categoriesDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 
-@property (nonatomic) BOOL category;
+@property (nonatomic) BOOL isViewACategory;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @property (nonatomic) BOOL loadingMoreStories;
 @end
@@ -86,8 +87,9 @@ CGFloat const refreshControlTextHeight = 19;
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
-    
-    [self beginReachability];
+    if (!self.isViewACategory) {
+        [self beginReachability];
+    }
 }
 
 - (void)beginReachability
@@ -104,7 +106,7 @@ CGFloat const refreshControlTextHeight = 19;
     
     [self.navigationController setNavigationBarHidden:NO animated:animated];
      
-    if (!self.activeViewController || [ self isCategoryControllerDifferentThanHome]) {
+    if (!self.activeViewController || [self isCategoryControllerDifferentThanHome]) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid] && self.presentationStyle == MITNewsPresentationStyleGrid) {
             [self setPresentationStyle:MITNewsPresentationStyleGrid animated:animated];
         } else {
@@ -121,7 +123,7 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateNavigationItem:YES];
     }
     
-    if (!self.storyUpdateInProgress) {
+    if (!self.storyUpdateInProgress || self.weakStoryDetailViewController) {
         return;
     }
     
@@ -266,10 +268,10 @@ CGFloat const refreshControlTextHeight = 19;
         
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
-            self.gridViewController.isCategory = self.category;
+            self.gridViewController.isACategoryView = self.isViewACategory;
         } else {
             toViewController = self.listViewController;
-            self.listViewController.isCategory = self.category;
+            self.listViewController.isACategoryView = self.isViewACategory;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {
@@ -762,7 +764,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if (self.category) {
+    if (self.isViewACategory) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -849,6 +851,7 @@ CGFloat const refreshControlTextHeight = 19;
                 storyDetailViewController.delegate = self;
                 storyDetailViewController.managedObjectContext = managedObjectContext;
                 storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
+                self.weakStoryDetailViewController = storyDetailViewController;
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,

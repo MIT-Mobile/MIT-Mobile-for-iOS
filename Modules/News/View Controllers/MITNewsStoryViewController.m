@@ -24,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIView *nextStoryView;
 @property (nonatomic) CGFloat scrollPosition;
 @property (nonatomic) CGFloat pageHeight;
+@property (nonatomic) CGFloat beforeRotateBodyViewHeightConstraint;
 
 @end
 
@@ -83,8 +84,8 @@
         }];
         
         if (imageURL) {
-            [self.coverImageView setImageWithURL:imageURL
-                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [self.coverImageView sd_setImageWithURL:imageURL
+                                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                                            [self.view setNeedsUpdateConstraints];
                                        }];
         }
@@ -104,13 +105,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidLayoutSubviews
-{
-    if (self.pageHeight != 0 ) {
-        self.scrollView.contentOffset = CGPointMake(0, self.scrollView.contentSize.height * (self.scrollPosition / self.pageHeight));
-    }
-}
-
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
@@ -118,6 +112,14 @@
     if ([self.bodyView isLoading]) {
         self.bodyViewHeightConstraint.constant = CGRectGetHeight(self.scrollView.frame);
     } else {
+        
+        CGRect frame = self.bodyView.frame;
+        frame.size.height = 1;
+        self.bodyView.frame = frame;
+        CGSize fittingSize = [self.bodyView sizeThatFits:CGSizeZero];
+        frame.size = fittingSize;
+        self.bodyView.frame = frame;
+        
         CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
         self.bodyViewHeightConstraint.constant = size.height;
     }
@@ -326,17 +328,22 @@
     }
 }
 
-- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration {
+- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
+{
     self.scrollPosition = self.scrollView.contentOffset.y;
     self.pageHeight = self.scrollView.contentSize.height;
+    self.beforeRotateBodyViewHeightConstraint = self.bodyViewHeightConstraint.constant;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self.bodyView loadHTMLString:[self htmlBody]
-                          baseURL:nil];
+    [self.view setNeedsUpdateConstraints];
+    [self.view updateConstraintsIfNeeded];
+    CGFloat changeInScrollViewHeight = self.bodyViewHeightConstraint.constant - self.beforeRotateBodyViewHeightConstraint;
+    if (self.pageHeight != 0 ) {
+        self.scrollView.contentOffset = CGPointMake(0, (self.pageHeight + changeInScrollViewHeight) * (self.scrollPosition / self.pageHeight));
+    }
 }
-
 
 #pragma mark UIWebViewDelegate
 - (void)webViewDidStartLoad:(UIWebView *)webView
@@ -476,7 +483,7 @@
             if (imageURL) {
                 MITNewsStory *currentStory = nextStory;
                 __weak MITNewsStoryViewController *weakSelf = self;
-                [self.nextStoryImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                [self.nextStoryImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                     [self.view setNeedsUpdateConstraints];
 
                     MITNewsStoryViewController *blockSelf = weakSelf;
@@ -510,7 +517,7 @@
             self.nextStoryDateLabel.text = postDate;
             self.nextStoryNextStoryLabel.text = @"NEXT STORY";
         } else {
-            [self.nextStoryImageView cancelCurrentImageLoad];
+            [self.nextStoryImageView sd_cancelCurrentImageLoad];
             self.nextStoryImageView.image = nil;
             self.nextStoryTitleLabel.text = nil;
             self.nextStoryDekLabel.text = nil;

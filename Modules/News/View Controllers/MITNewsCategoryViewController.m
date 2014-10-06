@@ -506,7 +506,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 

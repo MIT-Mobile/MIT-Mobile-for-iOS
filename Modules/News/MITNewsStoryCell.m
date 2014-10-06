@@ -24,7 +24,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 {
     [super prepareForReuse];
     
-    [self.storyImageView cancelCurrentImageLoad];
+    [self.storyImageView sd_cancelCurrentImageLoad];
 }
 
 - (void)updateConstraints
@@ -114,7 +114,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
         if (imageURL) {
             MITNewsStory *currentStory = self.story;
             __weak MITNewsStoryCell *weakSelf = self;
-            [self.storyImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [self.storyImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 MITNewsStoryCell *blockSelf = weakSelf;
                 if (blockSelf && (blockSelf->_story == currentStory)) {
                     if (error) {
@@ -126,7 +126,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
             self.storyImageView.image = nil;
         }
     } else {
-        [self.storyImageView cancelCurrentImageLoad];
+        [self.storyImageView sd_cancelCurrentImageLoad];
         self.storyImageView.image = nil;
         self.titleLabel.text = nil;
         self.dekLabel.text = nil;
