@@ -16,7 +16,6 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
                                                 parameters:@{@"q" : queryString}
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[MITMapModelController sharedController] addRecentSearch:queryString];
 
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
@@ -138,11 +137,22 @@
                                                        @"street" : @"streetAddress",
                                                        @"city" : @"city",
                                                        @"lat_wgs84" : @"latitude",
-                                                       @"long_wgs84" : @"longitude"}];
-
+                                                       @"long_wgs84" : @"longitude",
+                                                       @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *categoriesRelationship = [placeEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *categoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:categoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [placeMapping addConnection:categoriesConnection];
+    
     RKEntityMapping *contentsMapping = [[RKEntityMapping alloc] initWithEntity:placeContentEntity];
     [contentsMapping addAttributeMappingsFromDictionary:@{@"name" : @"name",
-                                                          @"url" : @"url"}];
+                                                          @"url" : @"url",
+                                                          @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *contentCategoriesRelationship = [placeContentEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *contentCategoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:contentCategoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [contentsMapping addConnection:contentCategoriesConnection];
+
     [placeMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contents" withMapping:contentsMapping]];
 
     [self addMapping:placeMapping atKeyPath:nil forRequestMethod:RKRequestMethodAny];

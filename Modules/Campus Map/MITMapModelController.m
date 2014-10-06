@@ -42,27 +42,53 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 #pragma mark - Search, Create, Read methods
 #pragma mark Synchronous
-- (NSManagedObjectID*)addRecentSearch:(NSString*)queryString
+- (NSManagedObjectID *)addRecentSearch:(id)query
 {
+    if (![query isKindOfClass:[NSString class]] && ![query isKindOfClass:[MITMapPlace class]] && ![query isKindOfClass:[MITMapCategory class]]) {
+        return nil;
+    }
+    
     __block NSManagedObjectID *searchObjectID = nil;
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
     [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
-
+        if ([query isKindOfClass:[NSString class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", query];
+        } else if ([query isKindOfClass:[MITMapPlace class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"place == %@", query];
+        } else if ([query isKindOfClass:[MITMapCategory class]]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@", query];
+        }
+        
         MITMapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
         if (!mapSearch) {
             mapSearch = [NSEntityDescription insertNewObjectForEntityForName:[MITMapSearch entityName]
                                                       inManagedObjectContext:context];
         }
+        
+        id localQuery = query;
+        if ([query isKindOfClass:[NSManagedObject class]]) {
+            localQuery = [[context transferManagedObjects:@[query]] firstObject];
+        }
 
-        mapSearch.searchTerm = queryString;
+        if ([localQuery isKindOfClass:[NSString class]]) {
+            mapSearch.searchTerm = localQuery;
+        } else if ([localQuery isKindOfClass:[MITMapPlace class]]) {
+            mapSearch.place = localQuery;
+        } else if ([localQuery isKindOfClass:[MITMapCategory class]]) {
+            mapSearch.category = localQuery;
+        }
+
         mapSearch.date = [NSDate date];
+        
+        [context save:error];
+        
+        if (!*error) {
+            [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
 
-        [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
-
-        if (!error) {
-            searchObjectID = [mapSearch objectID];
+            if (!*error) {
+                searchObjectID = [mapSearch objectID];
+            }
         }
     } error:nil];
 
@@ -79,7 +105,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"searchTerm" ascending:YES]];
+                                     [NSSortDescriptor sortDescriptorWithKey:@"token" ascending:YES]];
     if (string) {
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
     }
@@ -88,7 +114,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         NSArray *searches = [context executeFetchRequest:fetchRequest
                                                    error:error];
 
-        if (!error) {
+        if (!*error) {
             [searches enumerateObjectsUsingBlock:^(MITMapSearch *search, NSUInteger idx, BOOL *stop) {
                 NSTimeInterval searchInterval = fabs([search.date timeIntervalSinceNow]);
                 if (searchInterval > self.searchExpiryInterval) {
@@ -115,6 +141,30 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     return fetchRequest;
 }
 
+- (void)clearRecentSearchesWithCompletion:(void (^)(NSError* error))block
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
+        NSArray *searches = [context executeFetchRequest:fetchRequest
+                                                   error:error];
+        
+        if (!*error) {
+            [searches enumerateObjectsUsingBlock:^(MITMapSearch *search, NSUInteger idx, BOOL *stop) {
+                [context deleteObject:search];
+            }];
+            
+            [context save:error];
+            
+            if (error && (*error)) {
+                DDLogWarn(@"Failed to save search results: %@", *error);
+            }
+        }
+    } completion:^(NSError *error) {
+        if (block) {
+            block(error);
+        }
+    }];
+}
 
 - (void)searchMapWithQuery:(NSString*)queryString loaded:(MITMobileResult)block
 {
@@ -170,6 +220,39 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     [sortDescriptors insertObject:bookmarkSortDescriptors atIndex:0];
     fetchRequest.sortDescriptors = sortDescriptors;
     return fetchRequest;
+}
+
+// This takes an array, and returns a keyed dictionary, because otherwise we'd
+// have to fetch request for each individual name desired, rather than just
+// making one fetch.
+- (void)buildingNamesForBuildingNumbers:(NSArray *)buildingNumbers completion:(void (^)(NSArray *, NSError *))completion
+{
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        NSArray *buildingNames = [self buildingNamesFromResults:result.array buildingNumbers:buildingNumbers];
+                                                        completion(buildingNames, nil);
+                                                    } else {
+                                                        completion(nil, error);
+                                                    }
+                                                }];
+}
+
+- (NSArray *)buildingNamesFromResults:(NSArray *)resultsArray buildingNumbers:(NSArray *)buildingNumbers
+{
+    NSMutableArray *buildingNames = [[NSMutableArray alloc] init];
+    for (NSString *buildingNumber in buildingNumbers) {
+        NSString *buildingName = buildingNumber;
+        for (MITMapPlace *place in resultsArray) {
+            if ([place.buildingNumber isEqualToString:buildingNumber]) {
+                buildingName = [NSString stringWithFormat:@"%@ - %@", buildingName, [place.name uppercaseString]];
+                break;
+            }
+        }
+        [buildingNames addObject:buildingName];
+    }
+    return buildingNames.count > 0 ? buildingNames : nil;
 }
 
 - (NSUInteger)numberOfBookmarks

@@ -1,8 +1,6 @@
 #import "DiningModule.h"
-#import "DiningMapListViewController.h"
-#import "DiningData.h"
-#import "DiningDietaryFlag.h"
-
+#import "MITDiningHomeViewController.h"
+#import "MITDiningHomeContainerViewControllerPad.h"
 
 
 @implementation DiningModule
@@ -18,10 +16,19 @@
     return self;
 }
 
-- (void) loadModuleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    DiningMapListViewController *controller = [[DiningMapListViewController alloc] init];
-    self.moduleHomeController = controller;
+    return YES;
+}
+
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
+{
+    return [[MITDiningHomeViewController alloc] initWithNibName:nil bundle:nil];
+}
+
+- (UIViewController*)createHomeViewControllerForPadIdiom
+{
+    return [[MITDiningHomeContainerViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end
