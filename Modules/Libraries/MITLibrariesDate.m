@@ -73,17 +73,16 @@
 {
     NSDateFormatter *dateFormatter = [MITLibrariesDate dateFormatter];
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    NSInteger hours = [calendar component:NSHourCalendarUnit fromDate:date];
+    NSDateComponents *dateComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:date];
     
-    if (hours == 0) {
+    if (dateComponents.hour == 0) {
         return @"midnight";
     }
-    else if (hours == 12) {
+    else if (dateComponents.hour == 12) {
         return @"noon";
     }
     else {
-        NSInteger startMinutes = [calendar component:NSMinuteCalendarUnit fromDate:date];
-        if (startMinutes == 0) {
+        if (dateComponents.minute == 0) {
             [dateFormatter setDateFormat:@"ha"];
         }
         else {
