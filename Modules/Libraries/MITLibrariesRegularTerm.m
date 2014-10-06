@@ -48,7 +48,7 @@
 {
     NSString *dayOfWeekAbbreviation = [date MITDateCode];
     
-    return [self.days containsString:dayOfWeekAbbreviation];
+    return ([self.days rangeOfString:dayOfWeekAbbreviation].location != NSNotFound);
 }
 
 - (NSString *)termHoursDescription
