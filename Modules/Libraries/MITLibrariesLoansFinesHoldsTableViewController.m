@@ -9,13 +9,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setupTableView];
+    [self setupRefreshControl];
 }
 
-- (void)setupTableView
+- (void)setupRefreshControl
 {
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshLoans:) forControlEvents:UIControlEventValueChanged];
+    [self.refreshControl beginRefreshing];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -1,4 +1,7 @@
 #import "MITLibrariesLoansViewController.h"
+#import "MITLibrariesItemLoanFineCell.h"
+
+static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
 
 @interface MITLibrariesLoansViewController ()
 
@@ -6,32 +9,30 @@
 
 @implementation MITLibrariesLoansViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
-    [self setupTableView];
+    self.title = @"Loans";
     
-    self.view.backgroundColor = [UIColor redColor];
+    [self setupTableView];
 }
 
 - (void)setupTableView
-{
-    [super setupTableView];
-    
+{   
+    UINib *cellNib = [UINib nibWithNibName:kMITLibrariesItemLoanFineCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITLibrariesItemLoanFineCell];
 }
 
 #pragma mark - Table view data source
 
-
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITLibrariesItemLoanFineCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemLoanFineCell];
     
-    // Configure the cell...
+    [cell setContent:self.items[indexPath.row]];
     
     return cell;
 }
-*/
-
 
 @end

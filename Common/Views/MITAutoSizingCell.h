@@ -7,7 +7,6 @@
 
 // The following must be implemented in a subclass:
 + (CGFloat)estimatedCellHeight;
-+ (MITAutoSizingCell *)sizingCell;
 - (void)setContent:(id)content;
 
 @end

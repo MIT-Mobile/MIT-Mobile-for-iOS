@@ -1,4 +1,7 @@
 #import "MITLibrariesHoldsViewController.h"
+#import "MITLibrariesItemHoldCell.h"
+
+static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
 @interface MITLibrariesHoldsViewController ()
 
@@ -6,29 +9,30 @@
 
 @implementation MITLibrariesHoldsViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
-    [self setupTableView];
+    self.title = @"Holds";
     
-    self.view.backgroundColor = [UIColor blueColor];
+    [self setupTableView];
 }
 
 - (void)setupTableView
 {
-    [super setupTableView];
+    UINib *cellNib = [UINib nibWithNibName:kMITLibrariesItemHoldCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITLibrariesItemHoldCell];
 }
 
 #pragma mark - Table view data source
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITLibrariesItemHoldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemHoldCell];
     
-    // Configure the cell...
+    [cell setContent:self.items[indexPath.row]];
     
     return cell;
 }
-*/
 
 @end

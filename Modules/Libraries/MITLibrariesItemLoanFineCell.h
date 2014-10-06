@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "MITAutoSizingCell.h"
 
-@interface MITLibrariesItemHoldCell : MITAutoSizingCell
+@interface MITLibrariesItemLoanFineCell : MITAutoSizingCell
 
 @end
