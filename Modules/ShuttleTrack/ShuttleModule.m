@@ -1,9 +1,4 @@
 #import "ShuttleModule.h"
-#import "ShuttleRoute.h"
-#import "ShuttleRoutes.h"
-#import "ShuttleRouteViewController.h"
-#import "ShuttleSubscriptionManager.h"
-#import "ShuttleStopMapAnnotation.h"
 #import "MITShuttleHomeViewController.h"
 #import "MITShuttleRootViewController.h"
 

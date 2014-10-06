@@ -1,12 +1,8 @@
 #import "CMModule.h"
-
-#import "MITMapDetailViewController.h"
-#import "MITCampusMapViewController.h"
-
 #import "MITMapPlace.h"
+#import "MITMapHomeViewController.h"
 
 @implementation CMModule
-@dynamic campusMapVC;
 
 - (id) init {
     self = [super init];
@@ -20,14 +16,19 @@
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    self.moduleHomeController = [[MITCampusMapViewController alloc] init];
+    return YES;
 }
 
-- (MITCampusMapViewController*)campusMapVC
+- (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return nil;
+    return [[MITMapHomeViewController alloc] initWithNibName:nil bundle:nil];
+}
+
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
+{
+    return [[MITMapHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
 /*
@@ -79,13 +80,13 @@
 
 		return YES;
 	} else {
-        if ([localPath hasPrefix:@"search"]) {
-            MITCampusMapViewController *campusMapController = [[MITCampusMapViewController alloc] init];
-            [campusMapController setPendingSearch:query];
-            [[MIT_MobileAppDelegate applicationDelegate].rootNavigationController pushViewController:campusMapController animated:YES];
-        } else {
-            DDLogWarn(@"Ignoring URL request for %@", localPath);
-        }
+//        if ([localPath hasPrefix:@"search"]) {
+//            MITCampusMapViewController *campusMapController = [[MITCampusMapViewController alloc] init];
+//            [campusMapController setPendingSearch:query];
+//            [[MIT_MobileAppDelegate applicationDelegate].rootNavigationController pushViewController:campusMapController animated:YES];
+//        } else {
+//            DDLogWarn(@"Ignoring URL request for %@", localPath);
+//        }
         
         /*
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];

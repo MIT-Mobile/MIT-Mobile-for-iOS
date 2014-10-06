@@ -93,17 +93,29 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
 + (NSDate *)fakeDateForDining;
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time;
 - (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
+- (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date;
 - (BOOL) isToday;
 - (BOOL) isTomorrow;
 - (BOOL) isYesterday;
-- (NSDate *) startOfDay;
-- (NSDate *) endOfDay;
-- (NSDate *) dayBefore;
-- (NSDate *) dayAfter;
+- (NSDate *)dateWithoutTime;
+- (NSDate *)startOfDay;
+- (NSDate *)endOfDay;
+- (NSDate *)startOfWeek;
+- (NSDate *)dayBefore;
+- (NSDate *)dayAfter;
+- (NSDate *)dateByAddingDay;
+- (NSDate *)dateBySubtractingDay;
+- (NSDate *)dateByAddingWeek;
+- (NSDate *)dateBySubtractingWeek;
+- (NSDate *)dateByAddingYear;
+- (NSArray *)datesInWeek;
 - (NSString *) MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
+- (NSString *)todayTomorrowYesterdayString;
 - (NSDateComponents *) dayComponents;
 - (NSDateComponents *) timeComponents;
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
+- (NSString *)ISO8601String;
 
 @end
 

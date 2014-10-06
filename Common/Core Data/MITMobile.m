@@ -83,28 +83,33 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 
 - (void)getObjectsForResourceNamed:(NSString *)routeName parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block
 {
+    [self getObjectsForResourceNamed:routeName object:nil parameters:parameters completion:block];
+}
+
+- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block
+{
     // Trim off any additional paths. Right now, the API prefix (for the Mobile v3, '/apis')
     // is included in the route name but the current server URL defaults to a path of '/api'.
     // Passing the current server URL directly into the routing subsystem confuses it.
     NSURL *serverURL = [[NSURL URLWithString:@"/"
-                              relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
-
+                               relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
+    
     RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
     NSString *uniquedRouteName = [NSString stringWithFormat:@"%@ %@",RKStringFromRequestMethod(RKRequestMethodGET),routeName];
-
+    
     [objectManager getObjectsAtPathForRouteNamed:uniquedRouteName
-                                               object:nil
-                                           parameters:parameters
-                                              success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                                  if (block) {
-                                                      block(mappingResult,operation.HTTPRequestOperation.response,nil);
-                                                  }
-                                              }
-                                              failure:^(RKObjectRequestOperation *operation, NSError *error) {
-                                                  if (block) {
-                                                      block(nil,operation.HTTPRequestOperation.response,error);
-                                                  }
-                                              }];
+                                          object:object
+                                      parameters:parameters
+                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                                             if (block) {
+                                                 block(mappingResult,operation.HTTPRequestOperation.response,nil);
+                                             }
+                                         }
+                                         failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                                             if (block) {
+                                                 block(nil,operation.HTTPRequestOperation.response,error);
+                                             }
+                                         }];
 }
 
 - (void)getObjectsForURL:(NSURL*)url completion:(MITResourceLoadedBlock)block
