@@ -9,6 +9,7 @@
 #import "MITLibrariesAvailability.h"
 #import "MITLibrariesHoldingLibraryHeaderCopyInfoCell.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLibrariesAvailabilityDetailViewController.h"
 
 static NSString * const kDefaultCellIdentifier = @"kDefaultCellIdentifier";
 static NSString * const kItemHeaderCellIdentifier = @"kItemHeaderCellIdentifier";
@@ -349,7 +350,13 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
         if ([selectedCell.reuseIdentifier isEqualToString:kHoldingLibraryViewAllCellIdentifier]) {
             NSIndexPath *libraryHoldingsIndexPath = [self holdingsIndexPathForLibraryHoldingsRow:row];
             NSDictionary *availabilityInfo = self.availabilitiesByLibrary[libraryHoldingsIndexPath.section - 1];
-            // TODO: push holdings VC here
+            
+            MITLibrariesAvailabilityDetailViewController *availabilityVC = [[MITLibrariesAvailabilityDetailViewController alloc] initWithNibName:nil bundle:nil];
+            availabilityVC.worldcatItem = self.worldcatItem;
+            availabilityVC.libraryName = availabilityInfo[kAvailabilityLocationKey];
+            availabilityVC.availabilitiesInLibrary = availabilityInfo[kAvailabilitiesKey];
+            
+            [self.navigationController pushViewController:availabilityVC animated:YES];
         }
     }
 }
