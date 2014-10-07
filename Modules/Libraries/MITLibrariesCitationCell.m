@@ -13,7 +13,8 @@
 
 @implementation MITLibrariesCitationCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     self.citationWebView.scrollView.scrollsToTop = NO;
     self.citationWebView.scrollView.scrollEnabled = NO;
     
@@ -80,6 +81,13 @@
 
 + (void)heightWithCitation:(MITLibrariesCitation *)citation tableWidth:(CGFloat)width completion:(void (^)(CGFloat height))completion
 {
+    /*
+     We want to run all the sizing cell operations successively (since there is only one sizing cell), so we create our own dispatch queue.
+     We also have to wait for the webview to load before determining the height, which is notified via a delegate method. So we
+     use a semaphore to block the next operation from continuing before the previous one has been notified. We can't just run it
+     synchronously or anything because we have to wait for the delegate call.
+    */
+    
     static dispatch_queue_t heightCalculationQueue;
     static dispatch_semaphore_t sizingCellSemaphore;
     
@@ -102,7 +110,7 @@
         
         [[self sizingCell] setCitation:citation webViewLoadCompletion:^{
             NSString *result = [[self sizingCell].citationWebView stringByEvaluatingJavaScriptFromString:@"Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"];
-            CGFloat height = [result floatValue] + 8 + 1;
+            CGFloat height = [result floatValue] + 8 /* 4px top and bottom padding in constraints in nib */ + 1 /* 1px for separator */;
             NSLog(@"citation: %@, height: %f", citation.name, height);
             completion(height);
             dispatch_semaphore_signal(sizingCellSemaphore);
