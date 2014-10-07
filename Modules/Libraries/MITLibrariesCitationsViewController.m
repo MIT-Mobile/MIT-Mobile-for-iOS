@@ -20,7 +20,6 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
     self.tableView.delaysContentTouches = NO;
     self.previousTableViewWidth = self.tableView.bounds.size.width;
