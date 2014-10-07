@@ -54,7 +54,7 @@
 
 + (UIColor *)librariesDefaultSubtitleStyleColor
 {
-    return [UIColor colorWithWhite:0.7 alpha:1];
+    return [UIColor colorWithWhite:0.3 alpha:1];
 }
 
 + (UIColor *)librariesGreenSubtitleStyleColor
