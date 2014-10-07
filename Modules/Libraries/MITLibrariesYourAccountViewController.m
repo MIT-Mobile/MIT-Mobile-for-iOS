@@ -42,8 +42,13 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 - (void)refreshUserData
 {
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
-        self.user = user;
-        [self refreshViewControllers];
+        if (!error) {
+            self.user = user;
+            [self refreshViewControllers];
+        }
+        else {
+            [self.navigationController popViewControllerAnimated:NO];
+        }
     }];
 }
 
