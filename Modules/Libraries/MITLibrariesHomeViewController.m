@@ -290,10 +290,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     switch (row) {
         case kMITLibrariesHomeViewControllerMainSectionYourAccountRow: {
-            {
-                MITLibrariesYourAccountViewController *accountVC = [[MITLibrariesYourAccountViewController alloc] init];
-                [self.navigationController pushViewController:accountVC animated:YES];
-            }
+            MITLibrariesYourAccountViewController *accountVC = [[MITLibrariesYourAccountViewController alloc] init];
+            [self.navigationController pushViewController:accountVC animated:YES];
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
