@@ -10,6 +10,7 @@
 #import "MITLibrariesHoldingLibraryHeaderCopyInfoCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITLibrariesAvailabilityDetailViewController.h"
+#import "MITLibrariesCitationsViewController.h"
 
 static NSString * const kDefaultCellIdentifier = @"kDefaultCellIdentifier";
 static NSString * const kItemHeaderCellIdentifier = @"kItemHeaderCellIdentifier";
@@ -320,7 +321,9 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             break;
         }
         case kCitationsSection: {
-            // TODO: Push citations screen
+            MITLibrariesCitationsViewController *citationsVC = [[MITLibrariesCitationsViewController alloc] initWithNibName:nil bundle:nil];
+            citationsVC.worldcatItem = self.worldcatItem;
+            [self.navigationController pushViewController:citationsVC animated:YES];
             break;
         }
         case kLibraryHoldingsSection: {
