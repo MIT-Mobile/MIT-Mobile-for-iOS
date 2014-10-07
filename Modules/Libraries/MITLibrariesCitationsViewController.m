@@ -21,6 +21,7 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"Citations";
     self.tableView.delaysContentTouches = NO;
     self.previousTableViewWidth = self.tableView.bounds.size.width;
     
