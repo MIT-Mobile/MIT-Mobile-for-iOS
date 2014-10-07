@@ -75,7 +75,7 @@
         __block NSURL *imageURL = nil;
         [self.managedObjectContext performBlockAndWait:^{
             if (self.story) {
-                CGSize imageSize = self.coverImageView.bounds.size;
+                CGSize imageSize = self.scrollView.bounds.size;
                 imageSize.height = 213.;
                 
                 MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
@@ -269,7 +269,7 @@
             
             MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:CGSizeMake(400, 400)];
             
-            CGSize resizedImage;
+            CGSize resizedImage = CGSizeZero;
             if (representation) {
                 resizedImage = [self scaledSizeForSize:CGSizeMake([representation.width doubleValue], [representation.height doubleValue]) withMaximumSize:CGSizeMake(368, 400)];
             }
