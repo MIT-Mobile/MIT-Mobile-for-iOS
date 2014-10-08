@@ -1,6 +1,7 @@
 #import "LibrariesModule.h"
 #import "LibrariesViewController.h"
 #import "MITLibrariesHomeViewController.h"
+#import "MITLibrariesHomeViewControllerPad.h"
 
 @implementation LibrariesModule
 @dynamic rootViewController;
@@ -38,7 +39,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITLibrariesHomeViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITLibrariesHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end
