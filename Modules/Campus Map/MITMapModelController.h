@@ -13,13 +13,16 @@
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block;
 
-- (NSManagedObjectID*)addRecentSearch:(NSString*)queryString;
+- (NSManagedObjectID*)addRecentSearch:(id)query;
 - (NSFetchRequest*)recentSearches:(MITMobileManagedResult)block;
 - (NSFetchRequest*)recentSearchesForPartialString:(NSString*)string loaded:(MITMobileManagedResult)block;
+- (void)clearRecentSearchesWithCompletion:(void (^)(NSError* error))block;
 
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMobileResult)block;
 - (NSFetchRequest*)places:(MITMobileManagedResult)block;
 - (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMobileManagedResult)block;
+
+- (void)buildingNamesForBuildingNumbers:(NSArray *)buildingNumbers completion:(void (^)(NSArray *buildingNames, NSError *error))completion;
 
 - (NSUInteger)numberOfBookmarks;
 - (NSFetchRequest*)bookmarkedPlaces:(MITMobileManagedResult)block;

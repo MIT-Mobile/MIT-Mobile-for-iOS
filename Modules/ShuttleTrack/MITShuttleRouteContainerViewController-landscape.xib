@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -11,6 +11,7 @@
                 <outlet property="mapContainerViewLandscapeWidthConstraint" destination="YHh-op-ZNH" id="xg9-U8-JwI"/>
                 <outlet property="navigationBarExtensionView" destination="3Eq-88-j5h" id="atF-yN-GcK"/>
                 <outlet property="navigationBarExtensionViewHeightConstraint" destination="C5I-Aa-K53" id="lX1-ck-e4e"/>
+                <outlet property="navigationBarExtensionViewTopSpaceConstraint" destination="a36-a2-TEf" id="N7T-B0-3C6"/>
                 <outlet property="routeContainerView" destination="6fA-Uj-MMs" id="Llh-m9-7jy"/>
                 <outlet property="routeContainerViewLandscapeTrailingSpaceConstraint" destination="cFo-P7-pcA" id="5bl-EF-tzK"/>
                 <outlet property="routeContainerViewLandscapeWidthConstraint" destination="991-Uf-bMS" id="kIy-cT-WWY"/>
@@ -29,10 +30,10 @@
             <rect key="frame" x="0.0" y="64" width="568" height="256"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3Eq-88-j5h">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3Eq-88-j5h" customClass="MITExtendedNavBarView">
                     <rect key="frame" x="0.0" y="0.0" width="568" height="0.0"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" red="0.94117647059999998" green="0.94117647059999998" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" id="C5I-Aa-K53"/>
                     </constraints>

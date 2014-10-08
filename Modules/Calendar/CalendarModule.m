@@ -1,11 +1,8 @@
 #import "CalendarModule.h"
-#import "CalendarEventsViewController.h"
-#import "CalendarDetailViewController.h"
-#import "CalendarDataManager.h"
 #import "MITModuleURL.h"
-#import "CalendarEventMapAnnotation.h"
-#import "MITEventList.h"
 
+#import "MITEventsHomeViewController.h"
+#import "MITEventsHomeViewControllerPad.h"
 
 @implementation CalendarModule
 @dynamic calendarVC;
@@ -18,33 +15,23 @@
         self.longName = @"Events Calendar";
         self.iconName = @"calendar";
         
-        [[CalendarDataManager sharedManager] requestEventLists];
     }
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
-    CalendarEventsViewController *controller = [[CalendarEventsViewController alloc] init];
-    controller.showList = YES;
-    controller.showScroller = YES;
-    
-    self.moduleHomeController = controller;
+    return YES;
 }
 
-
-- (CalendarEventsViewController*)calendarVC;
+- (UIViewController*)createHomeViewControllerForPhoneIdiom
 {
-    if ([self.moduleHomeController isKindOfClass:[CalendarEventsViewController class]]) {
-        return (CalendarEventsViewController*) self.moduleHomeController;
-    } else {
-        return nil;
-    }
+    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
 }
 
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
+- (UIViewController*)createHomeViewControllerForPadIdiom
 {
-	return NO;
+    return [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end
