@@ -11,6 +11,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITLibrariesAvailabilityDetailViewController.h"
 #import "MITLibrariesCitationsViewController.h"
+#import "MITLibrariesBLCHoldingsViewController.h"
 
 static NSString * const kDefaultCellIdentifier = @"kDefaultCellIdentifier";
 static NSString * const kItemHeaderCellIdentifier = @"kItemHeaderCellIdentifier";
@@ -39,6 +40,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 @property (nonatomic, strong) NSArray *itemDetailLines;
 @property (nonatomic, strong) MITLibrariesHolding *mitHolding;
 @property (nonatomic, strong) NSArray *availabilitiesByLibrary;
+@property (nonatomic, strong) NSArray *nonMITHoldingLibraryNames;
 @property (nonatomic, assign) BOOL isLoading;
 
 @end
@@ -126,12 +128,17 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 
 - (void)recreateMITAvailability
 {
+    NSMutableArray *newNonMITHoldingLibraryNames = [NSMutableArray array];
+    
     for (MITLibrariesHolding *holding in self.worldcatItem.holdings) {
         if ([holding.code isEqualToString:@"MYG"]) {
             self.mitHolding = holding;
-            break;
+        } else {
+            [newNonMITHoldingLibraryNames addObject:holding.library];
         }
     }
+    
+    self.nonMITHoldingLibraryNames = [NSArray arrayWithArray:newNonMITHoldingLibraryNames];
     
     NSMutableDictionary *availabilitiesInLibraries = [NSMutableDictionary dictionary];
     for (MITLibrariesAvailability *availability in self.mitHolding.availability) {
@@ -331,7 +338,10 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             break;
         }
         case kBLCHoldingsSection: {
-            // TODO: Push BLC Holdings screen
+            MITLibrariesBLCHoldingsViewController *blcHoldingsVC = [[MITLibrariesBLCHoldingsViewController alloc] initWithNibName:nil bundle:nil];
+            blcHoldingsVC.worldcatItem = self.worldcatItem;
+            blcHoldingsVC.holdingLibraryNames = self.nonMITHoldingLibraryNames;
+            [self.navigationController pushViewController:blcHoldingsVC animated:YES];
             break;
         }
         default: {
