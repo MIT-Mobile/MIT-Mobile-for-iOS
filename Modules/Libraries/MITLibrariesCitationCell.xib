@@ -13,13 +13,6 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <webView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="Kqn-cy-qej">
-                        <rect key="frame" x="8" y="4" width="242" height="36"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="delegate" destination="KGk-i7-Jjw" id="ZbO-gs-0gq"/>
-                        </connections>
-                    </webView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Map-OF-LAE">
                         <rect key="frame" x="258" y="7" width="54" height="30"/>
                         <constraints>
@@ -34,18 +27,24 @@
                             <action selector="shareButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="egV-uU-0H5"/>
                         </connections>
                     </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XVs-cV-wdY">
+                        <rect key="frame" x="16" y="4" width="226" height="36"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="Map-OF-LAE" firstAttribute="leading" secondItem="Kqn-cy-qej" secondAttribute="trailing" constant="8" id="CnZ-yu-zeD"/>
                     <constraint firstAttribute="centerY" secondItem="Map-OF-LAE" secondAttribute="centerY" id="IKr-tc-HNC"/>
-                    <constraint firstAttribute="bottom" secondItem="Kqn-cy-qej" secondAttribute="bottom" constant="4" id="Jif-77-wqx"/>
+                    <constraint firstItem="XVs-cV-wdY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="4" id="J5G-t4-f99"/>
                     <constraint firstAttribute="trailing" secondItem="Map-OF-LAE" secondAttribute="trailing" constant="8" id="Kmg-kI-8fe"/>
-                    <constraint firstItem="Kqn-cy-qej" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="dE6-io-2do"/>
-                    <constraint firstItem="Kqn-cy-qej" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" priority="999" constant="4" id="f7d-Nt-MHT"/>
+                    <constraint firstItem="XVs-cV-wdY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="U2N-DT-XEW"/>
+                    <constraint firstAttribute="bottom" secondItem="XVs-cV-wdY" secondAttribute="bottom" constant="4" id="pvm-P4-Qi2"/>
+                    <constraint firstItem="Map-OF-LAE" firstAttribute="leading" secondItem="XVs-cV-wdY" secondAttribute="trailing" constant="16" id="sUu-3d-yZ1"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="citationWebView" destination="Kqn-cy-qej" id="iXX-qe-lRW"/>
+                <outlet property="citationLabel" destination="XVs-cV-wdY" id="5ap-Or-jjp"/>
                 <outlet property="shareButton" destination="Map-OF-LAE" id="Xbc-pR-qHi"/>
             </connections>
             <point key="canvasLocation" x="496" y="272"/>
