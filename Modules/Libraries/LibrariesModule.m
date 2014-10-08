@@ -2,6 +2,7 @@
 #import "LibrariesViewController.h"
 
 #import "MITLibrariesHomeViewController.h"
+#import "MITLibrariesHomeViewControllerPad.h"
 
 @implementation LibrariesModule
 - (id) init
@@ -39,7 +40,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITLibrariesHomeViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITLibrariesHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end
