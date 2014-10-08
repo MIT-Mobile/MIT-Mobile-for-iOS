@@ -17,8 +17,10 @@
 {
     [super viewDidLoad];
     
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+
     [self setupViewControllers];
-    
+
     [self setupNavBar];
     [self setupToolbar];
     
