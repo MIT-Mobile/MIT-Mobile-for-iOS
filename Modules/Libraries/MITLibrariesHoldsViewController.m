@@ -43,6 +43,11 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [MITLibrariesItemHoldCell heightForContent:self.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+}
+
 - (void)setItems:(NSArray *)items
 {
     [super setItems:items];
