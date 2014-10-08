@@ -93,7 +93,7 @@
                                         </constraints>
                                     </webView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
-                                        <rect key="frame" x="60" y="800" width="648" height="103"/>
+                                        <rect key="frame" x="60" y="800" width="648" height="123"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
                                                 <constraints>
@@ -132,14 +132,14 @@
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="leading" secondItem="aRd-O6-eP4" secondAttribute="leading" id="NN8-Un-6CQ"/>
                                             <constraint firstAttribute="trailing" secondItem="aRd-O6-eP4" secondAttribute="trailing" constant="15" id="R7E-xP-Td0"/>
                                             <constraint firstItem="NuZ-d7-c35" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="Rr9-Z1-nlw"/>
-                                            <constraint firstAttribute="bottom" secondItem="MsR-he-jtK" secondAttribute="bottom" priority="749" constant="10" id="Y6d-IG-jsD"/>
+                                            <constraint firstAttribute="bottom" secondItem="MsR-he-jtK" secondAttribute="bottom" priority="749" constant="30" id="Y6d-IG-jsD"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="YUj-Xb-CFe"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="NuZ-d7-c35" secondAttribute="bottom" constant="5" id="ntY-pc-g7k"/>
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="bottom" constant="2" id="qs3-wr-fa9"/>
                                             <constraint firstAttribute="trailing" secondItem="DJg-5Q-Y2i" secondAttribute="trailing" constant="15" id="r8G-20-tDG"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="DJg-5Q-Y2i" secondAttribute="leading" id="rTK-Tf-Bgt"/>
                                             <constraint firstItem="aRd-O6-eP4" firstAttribute="top" secondItem="DJg-5Q-Y2i" secondAttribute="bottom" constant="2" id="txr-LR-ona"/>
-                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="30" id="vCr-Ar-v6y"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" id="w2e-dE-rk9"/>
                                         </constraints>
                                         <connections>
@@ -301,7 +301,7 @@
                                 </items>
                             </navigationBar>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.1148945524" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
