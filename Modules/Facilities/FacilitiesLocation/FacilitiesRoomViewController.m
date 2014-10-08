@@ -24,6 +24,8 @@
 @property (nonatomic,copy) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
 
+@property (nonatomic, strong) NSMutableDictionary *floors;
+
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
 - (void)configureSearchCell:(HighlightTableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -194,7 +196,25 @@
         return [s1 caseInsensitiveCompare:s2];
     }];
     
+    [self populateFloorsWithRooms:data];
+    
     return data;
+}
+
+- (void)populateFloorsWithRooms:(NSArray *)data
+{
+    self.floors = [NSMutableDictionary new];
+    for( FacilitiesRoom *room in data )
+    {
+        NSMutableArray *rooms = self.floors[room.floor];
+        if( rooms == nil )
+        {
+            rooms = [NSMutableArray new];
+        }
+        
+        [rooms addObject:room];
+        [self.floors setObject:rooms forKey:room.floor];
+    }
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
@@ -239,8 +259,7 @@
         if ([self.cachedData count] == 0) {
             cell.textLabel.text = @"Inside";
         } else {
-            FacilitiesRoom *room = [self.cachedData objectAtIndex:indexPath.row];
-            cell.textLabel.text = [room displayString];
+            cell.textLabel.text = [[self roomAtIndexPath:indexPath] displayString];
         }
     }
 }
@@ -281,11 +300,6 @@
 
 #pragma mark - UITableViewDelegate Methods
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 0.1f;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     FacilitiesRoom *room = nil;
@@ -323,22 +337,81 @@
 }
 
 #pragma mark - UITableViewDataSource Methods
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    NSArray *allKeys = [self.floors allKeys];
+    
+    NSArray *sortedFloors = [allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSString *room1 = (NSString *)obj1;
+        NSString *room2 = (NSString *)obj2;
+        
+        return [room1 caseInsensitiveCompare:room2];
+    }];
+    
+    int counter = 0;
+    
+    NSMutableArray *mSortedFloors = [NSMutableArray array];
+    for( NSString *floor in sortedFloors )
+    {
+        [mSortedFloors addObject:floor];
+        
+        if( counter < [sortedFloors count] - 1 )
+        {
+            [mSortedFloors addObject:@"•"];
+        }
+        
+        counter++;
+    }
+    
+    return mSortedFloors;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    return 1 + index/2;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if( section == 0 )
+    {
+        return nil;
+    }
+    
+    return [NSString stringWithFormat:@"FLOOR %d", (section - 1)];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView) {
-        return 2;
-    } else {
+    if (tableView == self.tableView)
+    {
+        if( self.cachedData == nil )
+        {
+            return 1;
+        }
+        
+        return 1 + [self.floors count];
+    }
+    else
+    {
         return 1;
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView) {
-        if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
+    if (tableView == self.tableView)
+    {
+        if ((self.cachedData == nil) || ([self.cachedData count] == 0))
+        {
             return 1;
-        } else {
-            return (section == 0) ? 1 : [self.cachedData count];
+        }
+        else
+        {
+            return (section == 0) ? 1 : [[self roomsOnFloor:section] count];
         } 
-    } else {
+    }
+    else
+    {
         return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;
     }
 }
@@ -425,6 +498,7 @@
         {
             [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
             [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
+            [self.strongSearchDisplayController.searchResultsTableView setBackgroundColor:[UIColor whiteColor]];
         }
         
         [self.strongSearchDisplayController.searchResultsTableView reloadData];
@@ -463,6 +537,24 @@
     // using willUnload because willHide strangely doesn't get called when the "Cancel" button is clicked
     tableView.scrollsToTop = NO;
     self.tableView.scrollsToTop = YES;
+}
+
+#pragma mark - utils
+
+- (FacilitiesRoom *)roomAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *floorStr = [NSString stringWithFormat:@"%d", (indexPath.section - 1)];
+    
+    NSArray *rooms = self.floors[floorStr];
+    
+    return rooms[indexPath.row];
+}
+
+- (NSArray *)roomsOnFloor:(NSInteger)floor
+{
+    NSString *floorStr = [NSString stringWithFormat:@"%d", (floor - 1)];
+    
+    return self.floors[floorStr];
 }
 
 @end

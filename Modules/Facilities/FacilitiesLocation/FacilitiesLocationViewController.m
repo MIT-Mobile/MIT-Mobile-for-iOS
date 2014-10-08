@@ -83,6 +83,7 @@
         tableView.hidden = YES;
         tableView.scrollEnabled = YES;
         tableView.autoresizesSubviews = YES;
+        [tableView setBackgroundColor:[UIColor whiteColor]];
         
         self.tableView = tableView;
         [mainView addSubview:tableView];
@@ -331,6 +332,7 @@
         {
             [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
             [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
+            [self.strongSearchDisplayController.searchResultsTableView setBackgroundColor:[UIColor whiteColor]];
         }
 
         [self.strongSearchDisplayController.searchResultsTableView reloadData];
