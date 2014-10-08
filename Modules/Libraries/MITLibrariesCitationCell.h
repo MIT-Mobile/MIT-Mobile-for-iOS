@@ -1,11 +1,19 @@
 #import <UIKit/UIKit.h>
+#import "MITAutoSizingCell.h"
 
+@class MITLibrariesCitationCell;
 @class MITLibrariesCitation;
 
-@interface MITLibrariesCitationCell : UITableViewCell
+@protocol MITLibrariesCitationCellDelegate <NSObject>
 
-@property (nonatomic, strong) MITLibrariesCitation *citation;
+- (void)citationCellShareButtonPressed:(NSAttributedString *)shareString;
 
-+ (void)heightWithCitation:(MITLibrariesCitation *)citation tableWidth:(CGFloat)width completion:(void (^)(CGFloat height))completion;
+@end
+
+@interface MITLibrariesCitationCell : MITAutoSizingCell
+
+@property (nonatomic, weak) id<MITLibrariesCitationCellDelegate> delegate;
+
+- (void)setContent:(MITLibrariesCitation *)citation;
 
 @end
