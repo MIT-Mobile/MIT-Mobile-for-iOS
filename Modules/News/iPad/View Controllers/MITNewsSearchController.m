@@ -7,7 +7,6 @@
 #import "MITNewsStoryViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
-#import "MITNewsStoriesDataSource.h"
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
@@ -18,7 +17,6 @@
 @property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
-@property (nonatomic) MITNewsDataSource *dataSource;
 @property (nonatomic, weak) MITViewWithCenterTextAndIndicator *messageActivityView;
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic, strong) NSString *errorMessage;
@@ -293,207 +291,15 @@
     self.recentSearchPopoverController = nil;
 }
 
-#pragma mark - TableView
-#pragma mark UITableViewDataSource
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    
-    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
-    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
-    if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
-        cell.textLabel.text = self.errorMessage;
-    } else if (identifier == MITNewsLoadMoreCellIdentifier && _storyUpdateInProgress) {
-        cell.textLabel.text = @"Loading More...";
-    } else if (identifier == MITNewsLoadMoreCellIdentifier) {
-        cell.textLabel.text = @"Load More...";
-    }
-    return cell;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    if ([self.dataSource.objects count]) {
-        if (self.dataSource.hasNextPage) {
-            return [self.dataSource.objects count] + 1;
-        }
-        return [self.dataSource.objects count];
-    }
-    return 0;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    
-    if ([reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        return MITNewsLoadMoreTableViewCellHeight;
-    } else {
-        return [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
-    }
-}
-
-#pragma mark UITableView Data Source/Delegate Helper Methods
-- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    MITNewsStory *story = nil;
-    if ([self.dataSource.objects count] > indexPath.row) {
-        story = self.dataSource.objects[indexPath.row];
-    }
-    if (story) {
-        __block NSString *identifier = nil;
-        [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *newsStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
-            
-            if ([newsStory.type isEqualToString:MITNewsStoryExternalType]) {
-                if (newsStory.coverImage) {
-                    identifier = MITNewsStoryExternalCellIdentifier;
-                } else {
-                    identifier = MITNewsStoryExternalNoImageCellIdentifier;
-                }
-            } else if ([newsStory.dek length])  {
-                identifier = MITNewsStoryCellIdentifier;
-            } else {
-                identifier = MITNewsStoryNoDekCellIdentifier;
-            }
-        }];
-        
-        return identifier;
-    } else if ([self.dataSource.objects count]) {
-        return MITNewsLoadMoreCellIdentifier;
-    } else {
-        return nil;
-    }
-}
-
-#pragma mark UITableViewDataSourceDynamicSizing
-- (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
-{
-    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgress == YES) {
-            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            [view startAnimating];
-            cell.accessoryView = view;
-        } else {
-            cell.accessoryView = nil;
-        }
-    } else {
-        MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-        
-        if (story && [cell isKindOfClass:[MITNewsStoryCell class]]) {
-            MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-            [self.managedObjectContext performBlockAndWait:^{
-                MITNewsStory *contextStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                storyCell.story = contextStory;
-            }];
-        }
-    }
-}
-
 - (IBAction)tappedHideSearchFieldArea:(id)sender
 {
     [self hideSearchField];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        //[self getMoreStories:^(NSError *error) {
-        //}];
-    }
-    else {
-        MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-        if (story) {
-            [self performSegueWithIdentifier:@"showStoryDetail" sender:indexPath];
-        }
-    }
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    UIViewController *destinationViewController = [segue destinationViewController];
-    
-    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
-    
-    if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
-            
-            NSIndexPath *indexPath = sender;
-            
-            MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
-            if (story) {
-                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-                managedObjectContext.parentContext = self.managedObjectContext;
-                MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
-                storyDetailViewController.delegate = self;
-                storyDetailViewController.managedObjectContext = managedObjectContext;
-                storyDetailViewController.story = (MITNewsStory*)[managedObjectContext existingObjectWithID:[story objectID] error:nil];
-                self.unwindFromStoryDetail = YES;
-            }
-        } else {
-            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITNewsStoryViewController class]),
-                      NSStringFromClass([[segue destinationViewController] class]));
-        }
-    } else {
-        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
-    }
-}
-
-#pragma mark MITNewsStoryDetailPagingDelegate
-- (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
-{
-    MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    NSInteger currentIndex = [self.dataSource.objects indexOfObject:currentStory];
-    if (currentIndex == NSNotFound) {
-        if (block) {
-            block(nil, nil);
-        }
-        return;
-    }
-    
-    if (currentIndex + 1 < [self.dataSource.objects count]) {
-        if (block) {
-            block(self.dataSource.objects[currentIndex + 1], nil);
-        }
-        return;
-    }
-    
-    __weak MITNewsSearchController *weakSelf = self;
-        [self getMoreStoriesForSection:0 completion:^(NSError *error) {
-            
-        MITNewsSearchController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        if (error) {
-            block(nil, error);
-            return;
-        }
-        NSInteger currentIndex = [strongSelf.dataSource.objects indexOfObject:currentStory];
-        
-        if (currentIndex + 1 < [strongSelf.dataSource.objects count]) {
-            if (block) {
-                block(strongSelf.dataSource.objects[currentIndex + 1], nil);
-            }
-        } else {
-            if (block) {
-                block(nil, error);
-            }
-        }
-            
-            [self hideStories];
-    }];
 }
 
 #pragma mark No Results / Loading More View
 - (void)addNoResultsView
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
-#warning check frame
     noResultsView.frame = self.view.frame;
     if (self.errorMessage) {
         noResultsView.overviewText.text = self.errorMessage;
@@ -512,7 +318,6 @@
 - (void)addLoadingView
 {
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
-#warning check frame
     loadingActivityView.frame = self.view.frame;
     [self.view addSubview:loadingActivityView];
     self.messageActivityView = loadingActivityView;
@@ -522,12 +327,6 @@
 {
     [self.messageActivityView removeFromSuperview];
     self.messageActivityView = nil;
-}
-
-#pragma mark More Stories
-- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
-{
-    [self.delegate getMoreStoriesForSection:section completion:block];
 }
 
 - (void)hideStories

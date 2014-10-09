@@ -145,43 +145,7 @@
         }
         return;
     }
-
-    [self setProgress:YES];
-    [self updateLoadingCell];
-    self.loadingMoreStories = YES;
-    
-    __weak MITNewsiPadCategoryViewController *weakSelf = self;
-    [super getMoreStoriesForSection:section completion:^(NSError *error) {
-        
-        [self setProgress:NO];
-        self.loadingMoreStories = NO;
-        
-        MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        
-        if (error) {
-            if (error.code == NSURLErrorNotConnectedToInternet) {
-                [self setError:@"No Internet Connection"];
-            } else {
-                [self setError:@"Failed..."];
-            }
-            [strongSelf updateLoadingCell];
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                [strongSelf updateLoadingCell];
-            });
-        } else {
-            //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [strongSelf reloadData];
-            }];
-        }
-        if (block) {
-            block(error);
-        }
-    }];
+    [super getMoreStoriesForSection:section completion:nil];
 }
 
 - (void)intervalUpdate

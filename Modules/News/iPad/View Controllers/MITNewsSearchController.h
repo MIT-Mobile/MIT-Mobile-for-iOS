@@ -1,21 +1,22 @@
 #import <UIKit/UIKit.h>
-#import "UITableView+DynamicSizing.h"
+#import "MITNewsStoriesDataSource.h"
 
 @protocol MITNewsSearchDelegate;
 
-@interface MITNewsSearchController : UIViewController <UISearchBarDelegate, UITableViewDataSourceDynamicSizing>
+@interface MITNewsSearchController : UIViewController <UISearchBarDelegate>
 
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (weak, nonatomic) UISearchBar *searchBar;
 - (void)showSearchRecents;
 - (void)getResultsForString:(NSString *)searchTerm;
+@property (nonatomic, strong) MITNewsDataSource *dataSource;
+
 @end
 
 @protocol MITNewsSearchDelegate <NSObject>
 
 - (void)hideSearchField;
-- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError * error))block;
 - (void)bringBackStories;
 - (void)hideStories;
 - (void)reloadData;
