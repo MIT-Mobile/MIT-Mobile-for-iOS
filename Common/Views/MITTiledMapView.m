@@ -100,6 +100,13 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
+- (void)centerMapOnUserLocation
+{
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    }
+}
+
 - (void)toggleUserTrackingMode
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {

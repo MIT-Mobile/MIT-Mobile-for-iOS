@@ -44,6 +44,11 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [MITLibrariesItemLoanFineCell heightForContent:self.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+}
+
 - (void)setFinesBalance:(NSString *)finesBalance
 {
     _finesBalance = finesBalance;

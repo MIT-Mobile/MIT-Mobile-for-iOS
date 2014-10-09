@@ -6,4 +6,6 @@
 
 @property (nonatomic, strong) MITLibrariesLibrary *library;
 
+- (void)dismiss;
+
 @end
