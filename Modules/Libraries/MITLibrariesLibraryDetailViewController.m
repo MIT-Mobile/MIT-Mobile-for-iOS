@@ -23,7 +23,8 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 
 @implementation MITLibrariesLibraryDetailViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     self.title = self.library.name;
@@ -35,7 +36,8 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     }
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
