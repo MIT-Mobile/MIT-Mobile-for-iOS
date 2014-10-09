@@ -147,6 +147,7 @@
 		2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */; };
 		2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */; };
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
+		2CB4861A19E6D6AE00FAE102 /* MITModuleItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB4861919E6D6AE00FAE102 /* MITModuleItem.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -793,6 +794,8 @@
 		2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesResource.m; sourceTree = "<group>"; };
 		2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesHoldingsDetailViewController.h; path = WorldCatSearch/LibrariesHoldingsDetailViewController.h; sourceTree = "<group>"; };
 		2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesHoldingsDetailViewController.m; path = WorldCatSearch/LibrariesHoldingsDetailViewController.m; sourceTree = "<group>"; };
+		2CB4861819E6D6AE00FAE102 /* MITModuleItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITModuleItem.h; sourceTree = "<group>"; };
+		2CB4861919E6D6AE00FAE102 /* MITModuleItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleItem.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB90045176B5DC3006C3C3A /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
@@ -1980,6 +1983,8 @@
 				2CDA629B19C23D2500EF7C5F /* MITModuleViewController.m */,
 				2CF305CF19DC231000CDA0A7 /* MITLegacyModuleViewController.h */,
 				2CF305D019DC231000CDA0A7 /* MITLegacyModuleViewController.m */,
+				2CB4861819E6D6AE00FAE102 /* MITModuleItem.h */,
+				2CB4861919E6D6AE00FAE102 /* MITModuleItem.m */,
 			);
 			name = "Module Launcher";
 			sourceTree = "<group>";
@@ -3551,6 +3556,7 @@
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
+				2CB4861A19E6D6AE00FAE102 /* MITModuleItem.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
 				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
