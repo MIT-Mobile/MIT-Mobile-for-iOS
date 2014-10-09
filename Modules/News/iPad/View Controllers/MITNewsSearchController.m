@@ -331,12 +331,12 @@
 
 - (void)hideStories
 {
-    [self.delegate hideStories];
+    [self.delegate changeToSearchStories];
 }
 
 - (void)bringBackStories
 {
-    [self.delegate bringBackStories];
+    [self.delegate changeToMainStories];
 }
 
 - (void)reloadData

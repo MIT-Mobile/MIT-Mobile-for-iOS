@@ -1036,10 +1036,10 @@ CGFloat const refreshControlTextHeight = 19;
     self.searchController = nil;
     self.searching = NO;
     [self updateNavigationItem:YES];
-    [self bringBackStories];
+    [self changeToMainStories];
 }
 
-- (void)bringBackStories
+- (void)changeToMainStories
 {
     self.showMainStories = NO;
     self.isViewACategory = NO;
@@ -1056,7 +1056,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
 }
 
-- (void)hideStories
+- (void)changeToSearchStories
 {
     self.showMainStories = YES;
     self.isViewACategory = YES;

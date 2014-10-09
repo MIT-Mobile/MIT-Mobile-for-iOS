@@ -17,8 +17,8 @@
 @protocol MITNewsSearchDelegate <NSObject>
 
 - (void)hideSearchField;
-- (void)bringBackStories;
-- (void)hideStories;
+- (void)changeToMainStories;
+- (void)changeToSearchStories;
 - (void)reloadData;
 
 @end
