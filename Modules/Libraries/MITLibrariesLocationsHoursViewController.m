@@ -76,10 +76,16 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] initWithStyle:UITableViewStylePlain];
-    detailVC.library = self.libraries[indexPath.row];
-    
-    [self.navigationController pushViewController:detailVC animated:YES];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self.delegate showLibraryDetailForLibrary:self.libraries[indexPath.row]];
+    }
+    else {
+        
+        MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] initWithStyle:UITableViewStylePlain];
+        detailVC.library = self.libraries[indexPath.row];
+        
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
 }
 
 @end

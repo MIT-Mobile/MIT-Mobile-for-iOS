@@ -1,13 +1,18 @@
 #import "MITLibrariesHomeViewControllerPad.h"
 #import "MITLibrariesYourAccountViewControllerPad.h"
+#import "MITLibrariesLocationsHoursViewController.h"
+#import "MITLibrariesLibraryDetailViewController.h"
+#import "MITLibrariesLibrary.h"
 
-@interface MITLibrariesHomeViewControllerPad ()
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 
 @property (nonatomic, strong) UIBarButtonItem *locationsAndHoursButton;
 @property (nonatomic, strong) UIBarButtonItem *askUsTellUsButton;
 @property (nonatomic, strong) UIBarButtonItem *quickLinksButton;
+
+@property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 
 @end
 
@@ -60,7 +65,27 @@
 
 - (void)locationsAndHoursPressed:(id)sender
 {
-    NSLog(@"Locations");
+    MITLibrariesLocationsHoursViewController *vc = [[MITLibrariesLocationsHoursViewController alloc] init];
+    vc.delegate = self;
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
+    
+    self.locationsAndHoursPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.locationsAndHoursPopoverController setPopoverContentSize:CGSizeMake(320, 568)];
+    [self.locationsAndHoursPopoverController presentPopoverFromBarButtonItem:self.locationsAndHoursButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+}
+
+- (void)showLibraryDetailForLibrary:(MITLibrariesLibrary *)library
+{
+    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] init];
+    detailVC.library = library;
+    detailVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:detailVC action:@selector(dismiss)];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self.locationsAndHoursPopoverController dismissPopoverAnimated:YES];
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)askUsTellUsPressed:(id)sender
