@@ -166,7 +166,6 @@
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
-		2CDA629C19C23D2500EF7C5F /* MITModuleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA629B19C23D2500EF7C5F /* MITModuleViewController.m */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CDA8CFE18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib */; };
@@ -189,7 +188,6 @@
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */; };
-		2CF305D119DC231000CDA0A7 /* MITLegacyModuleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF305D019DC231000CDA0A7 /* MITLegacyModuleViewController.m */; };
 		2CF61DCA18898C7E00D43381 /* MITNewsModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF61DC918898C7E00D43381 /* MITNewsModelController.m */; };
 		2CF61DD11889C9DE00D43381 /* MITNewsCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF61DD01889C9DE00D43381 /* MITNewsCategory.m */; };
 		2CF61DD71889C9DF00D43381 /* MITNewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF61DD61889C9DF00D43381 /* MITNewsStory.m */; };
@@ -835,8 +833,6 @@
 		2CD4F69B188ED4EB003F2C46 /* MITManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITManagedObject.h; sourceTree = "<group>"; };
 		2CD4F69C188ED4EB003F2C46 /* MITManagedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITManagedObject.m; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
-		2CDA629A19C23D2500EF7C5F /* MITModuleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITModuleViewController.h; path = "App Delegate/MITModuleViewController.h"; sourceTree = "<group>"; };
-		2CDA629B19C23D2500EF7C5F /* MITModuleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITModuleViewController.m; path = "App Delegate/MITModuleViewController.m"; sourceTree = "<group>"; };
 		2CDA8AB71762445F001F011F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		2CDA8AB91762445F001F011F /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -877,8 +873,6 @@
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
 		2CED98F913537DEC0034F6F1 /* MITScannerOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerOverlayView.h; sourceTree = "<group>"; };
 		2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerOverlayView.m; sourceTree = "<group>"; };
-		2CF305CF19DC231000CDA0A7 /* MITLegacyModuleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLegacyModuleViewController.h; path = "App Delegate/MITLegacyModuleViewController.h"; sourceTree = "<group>"; };
-		2CF305D019DC231000CDA0A7 /* MITLegacyModuleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLegacyModuleViewController.m; path = "App Delegate/MITLegacyModuleViewController.m"; sourceTree = "<group>"; };
 		2CF61DC818898C7E00D43381 /* MITNewsModelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsModelController.h; path = Model/MITNewsModelController.h; sourceTree = "<group>"; };
 		2CF61DC918898C7E00D43381 /* MITNewsModelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsModelController.m; path = Model/MITNewsModelController.m; sourceTree = "<group>"; };
 		2CF61DCF1889C9DE00D43381 /* MITNewsCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsCategory.h; path = Model/MITNewsCategory.h; sourceTree = "<group>"; };
@@ -1976,20 +1970,16 @@
 		2C5D78791918191E00ECB388 /* Module Launcher */ = {
 			isa = PBXGroup;
 			children = (
-				2C5CA5C319AE3B6B004C6FC6 /* MITSlidingViewController.h */,
-				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 				2C44DA9D19B79F09001AA874 /* MITDrawerViewController.h */,
 				2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */,
-				2CDA629A19C23D2500EF7C5F /* MITModuleViewController.h */,
-				2CDA629B19C23D2500EF7C5F /* MITModuleViewController.m */,
-				2CF305CF19DC231000CDA0A7 /* MITLegacyModuleViewController.h */,
-				2CF305D019DC231000CDA0A7 /* MITLegacyModuleViewController.m */,
 				2CB4861E19E6D9D300FAE102 /* MITModule.h */,
 				2CB4861F19E6D9D300FAE102 /* MITModule.m */,
 				2CB4862119E6E54700FAE102 /* MITNavigationModule.h */,
 				2CB4862219E6E54700FAE102 /* MITNavigationModule.m */,
 				2CB4861819E6D6AE00FAE102 /* MITModuleItem.h */,
 				2CB4861919E6D6AE00FAE102 /* MITModuleItem.m */,
+				2C5CA5C319AE3B6B004C6FC6 /* MITSlidingViewController.h */,
+				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 			);
 			name = "Module Launcher";
 			sourceTree = "<group>";
@@ -3577,7 +3567,6 @@
 				44ACF76D1187884300F1F4B2 /* MITMapBookmarksViewController.m in Sources */,
 				2C9BAFBF189FD78B003B9AD0 /* MITResultsPager.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
-				2CDA629C19C23D2500EF7C5F /* MITModuleViewController.m in Sources */,
 				2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */,
 				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
 				EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */,
@@ -3666,7 +3655,6 @@
 				2C44DAA019B79F09001AA874 /* MITDrawerViewController.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */,
-				2CF305D119DC231000CDA0A7 /* MITLegacyModuleViewController.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,
