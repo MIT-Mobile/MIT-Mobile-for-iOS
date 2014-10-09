@@ -196,56 +196,6 @@
                          
                      }];
 }
-/*
-- (void)getMoreStories:(void (^)(NSError *))completion
-{
-    if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
-        if (completion) {
-            completion(nil);
-        }
-        return;
-    }
-    
-    __weak MITNewsSearchController *weakSelf = self;
-    _storyUpdateInProgress = YES;
-    [self.dataSource nextPage:^(NSError *error) {
-        _storyUpdateInProgress = NO;
-
-        MITNewsSearchController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        
-        if (error) {
-            DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSource);
-            if (error.code == NSURLErrorNotConnectedToInternet) {
-                strongSelf.errorMessage = @"No Internet Connection";
-            } else {
-                strongSelf.errorMessage = @"Failed...";
-            }
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                strongSelf.errorMessage = nil;
-                [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-            });
-            [strongSelf.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[strongSelf.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-            
-        } else {
-            strongSelf.errorMessage = nil;
-            DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSource);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [strongSelf.searchTableView reloadData];
-            }];
-        }
-        if (completion) {
-            completion(error);
-        }
-    }];
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }];
-}
- */
 
 #pragma mark - hide/show Recents
 - (void)hideSearchRecents
@@ -329,6 +279,7 @@
     self.messageActivityView = nil;
 }
 
+#pragma mark delegate methods
 - (void)hideStories
 {
     [self.delegate changeToSearchStories];

@@ -47,11 +47,11 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (nonatomic) NSUInteger currentDataSourceIndex;
 
-@property (nonatomic) BOOL isViewACategory;
+@property (nonatomic) BOOL isSingleDataSource;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @property (nonatomic) BOOL loadingMoreStories;
 @property (nonatomic, weak) MITNewsDataSource *searchDataSource;
-@property (nonatomic) BOOL showMainStories;
+@property (nonatomic) BOOL showSearchStories;
 @property (nonatomic) CGPoint lastPositionOfMainView;
 @end
 
@@ -90,7 +90,7 @@ CGFloat const refreshControlTextHeight = 19;
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
-    if (!self.isViewACategory) {
+    if (!self.isSingleDataSource) {
         [self beginReachability];
     }
 }
@@ -271,10 +271,10 @@ CGFloat const refreshControlTextHeight = 19;
         
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
             toViewController = self.gridViewController;
-            self.gridViewController.isACategoryView = self.isViewACategory;
+            self.gridViewController.showSingleCategory = self.isSingleDataSource;
         } else {
             toViewController = self.listViewController;
-            self.listViewController.isACategoryView = self.isViewACategory;
+            self.listViewController.isACategoryView = self.isSingleDataSource;
         }
         // Needed to fix alignment of refreshcontrol text
         if (fromViewController) {
@@ -427,18 +427,12 @@ CGFloat const refreshControlTextHeight = 19;
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             UIImage *gridImage = [UIImage imageNamed:@"news/gridViewIcon"];
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
-            //if (self.searching) {
-            //    gridItem.enabled = NO;
-            //}
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleList]) {
             UIImage *listImage = [UIImage imageNamed:@"map/item_list"];
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
-            //if (self.searching) {
-            //    listItem.enabled = NO;
-            //}
             [rightBarItems addObject:listItem];
         }
     }
@@ -657,7 +651,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)updateLoadingCell
 {
     MITNewsDataSource *dataSource = nil;
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         dataSource = self.searchDataSource;
     } else {
         dataSource = self.dataSources[0];
@@ -766,7 +760,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         return self.searchDataSource;
     } else {
         return self.dataSources[section];
@@ -776,7 +770,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section
 {
     MITNewsDataSource *dataSource = nil;
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         dataSource = self.searchDataSource;
     } else {
         dataSource = [self dataSourceForCategoryInSection:section];
@@ -799,7 +793,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)reloadItems:(void(^)(NSError *error))block
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         [self.searchController.dataSource refresh:^(NSError *error) {
             if (error) {
                 DDLogWarn(@"failed to refresh data source %@",self.searchDataSource);
@@ -820,7 +814,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         return 1;
     }
     return [self.dataSources count];
@@ -828,7 +822,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSString*)viewController:(UIViewController*)viewController titleForCategoryInSection:(NSUInteger)section
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         return nil;
     }
     if (self.showsFeaturedStories && (section == 0)) {
@@ -850,10 +844,10 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         return [self.searchDataSource.objects count];
     }
-    if (self.isViewACategory) {
+    if (self.isSingleDataSource) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
     }
@@ -867,7 +861,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         if ([self.searchDataSource.objects count] <= index) {
             return nil;
         }
@@ -981,7 +975,7 @@ CGFloat const refreshControlTextHeight = 19;
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
     
     MITNewsDataSource *dataSource = nil;
-    if (self.showMainStories) {
+    if (self.showSearchStories) {
         dataSource = self.searchDataSource;
     } else {
         dataSource = self.dataSources[self.currentDataSourceIndex];
@@ -1041,12 +1035,12 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)changeToMainStories
 {
-    self.showMainStories = NO;
-    self.isViewACategory = NO;
+    self.showSearchStories = NO;
+    self.isSingleDataSource = NO;
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        self.gridViewController.isACategoryView = self.isViewACategory;
+        self.gridViewController.showSingleCategory = self.isSingleDataSource;
     } else {
-        self.listViewController.isACategoryView = self.isViewACategory;
+        self.listViewController.isACategoryView = self.isSingleDataSource;
     }
     [self reloadData];
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
@@ -1058,12 +1052,12 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)changeToSearchStories
 {
-    self.showMainStories = YES;
-    self.isViewACategory = YES;
+    self.showSearchStories = YES;
+    self.isSingleDataSource = YES;
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        self.gridViewController.isACategoryView = self.isViewACategory;
+        self.gridViewController.showSingleCategory = self.isSingleDataSource;
     } else {
-        self.listViewController.isACategoryView = self.isViewACategory;
+        self.listViewController.isACategoryView = self.isSingleDataSource;
     }
     self.searchDataSource = self.searchController.dataSource;
     [self reloadData];

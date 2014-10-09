@@ -10,7 +10,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
-@property (nonatomic) BOOL isViewACategory;
+@property (nonatomic) BOOL isSingleDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
@@ -35,7 +35,7 @@
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
-    self.isViewACategory = YES;
+    self.isSingleDataSource = YES;
     [super viewDidLoad];
     
     self.showsFeaturedStories = NO;
@@ -46,7 +46,7 @@
         self.listViewController.isACategoryView = YES;
     } else {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        self.gridViewController.isACategoryView = YES;
+        self.gridViewController.showSingleCategory = YES;
     }
     self.previousPresentationStyle = nil;
 }
