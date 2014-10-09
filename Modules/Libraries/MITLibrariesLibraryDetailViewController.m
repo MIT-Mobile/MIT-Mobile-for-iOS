@@ -3,6 +3,7 @@
 #import "MITLibrariesHoursCell.h"
 #import "MITLibrariesTerm.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTiledMapView.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
@@ -16,6 +17,8 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 
 @interface MITLibrariesLibraryDetailViewController ()
 
+@property (nonatomic, strong) MITTiledMapView *mapView;
+
 @end
 
 @implementation MITLibrariesLibraryDetailViewController
@@ -26,6 +29,10 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     self.title = self.library.name;
 
     [self setupTableView];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self setupTableHeader];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -39,6 +46,15 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITHoursCell];
     
     self.tableView.allowsSelection = NO;
+}
+
+- (void)setupTableHeader
+{
+    self.mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
+    [self.mapView setButtonsHidden:YES animated:NO];
+    self.mapView.mapView.showsUserLocation = YES;
+    self.mapView.userInteractionEnabled = NO;
+    self.tableView.tableHeaderView = self.mapView;
 }
 
 #pragma mark - Table view data source
@@ -132,6 +148,11 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 {
     NSInteger index = indexPath.row - 3;
     return self.library.terms[index];
+}
+
+- (void)dismiss
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -2442,6 +2442,9 @@
 				2258CBD719CA1E450067E35C /* MITLibrariesHomeViewController.h */,
 				2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */,
 				2258CBD919CA1E450067E35C /* MITLibrariesHomeViewController.xib */,
+				22E6BCB819E46949003E278C /* MITLibrariesHomeViewControllerPad.h */,
+				22E6BCB919E46949003E278C /* MITLibrariesHomeViewControllerPad.m */,
+				22E6BCBA19E46949003E278C /* MITLibrariesHomeViewControllerPad.xib */,
 				A5FA038C19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.h */,
 				A5FA038D19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.m */,
 				A5FA038E19D362FE0063FF2C /* MITLibrariesSearchResultsViewController.xib */,
@@ -2457,9 +2460,6 @@
 				A563911019E45B91001DE763 /* MITLibrariesBLCHoldingsViewController.h */,
 				A563911119E45B91001DE763 /* MITLibrariesBLCHoldingsViewController.m */,
 				A563911219E45B91001DE763 /* MITLibrariesBLCHoldingsViewController.xib */,
-				22E6BCB819E46949003E278C /* MITLibrariesHomeViewControllerPad.h */,
-				22E6BCB919E46949003E278C /* MITLibrariesHomeViewControllerPad.m */,
-				22E6BCBA19E46949003E278C /* MITLibrariesHomeViewControllerPad.xib */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
