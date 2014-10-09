@@ -1,29 +1,29 @@
 #import "LibrariesModule.h"
 #import "LibrariesViewController.h"
 
-
 @implementation LibrariesModule
-- (id) init
+@dynamic rootViewController;
+
+- (instancetype)init
 {
-    self = [super init];
-    if (self != nil) {
-        self.tag = LibrariesTag;
-        self.shortName = @"Libraries";
-        self.longName = @"Libraries";
-        self.iconName = @"libraries";
+    self = [super initWithName:MITModuleTagLibraries title:@"Libraries"];
+    if (self) {
+        self.imageName = @"libraries";
         self.requestQueue = [[NSOperationQueue alloc] init];
     }
+    
     return self;
 }
 
-- (void) dealloc
+- (void)loadRootViewController
 {
-    [self.requestQueue cancelAllOperations];
+    LibrariesViewController *rootViewController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
+    self.rootViewController = rootViewController;
 }
 
-- (void)loadModuleHomeController
+- (void)dealloc
 {
-    self.moduleHomeController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
+    [self.requestQueue cancelAllOperations];
 }
 
 @end
