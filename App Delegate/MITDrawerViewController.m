@@ -1,6 +1,6 @@
 #import "MITDrawerViewController.h"
-#import "MITModule.h"
 #import "MITSlidingViewController.h"
+#import "MITModuleItem.h"
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
 static NSUInteger const MITModuleSectionIndex = 0;
