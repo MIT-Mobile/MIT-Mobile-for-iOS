@@ -52,7 +52,7 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) BOOL loadingMoreStories;
 @property (nonatomic, weak) MITNewsDataSource *searchDataSource;
 @property (nonatomic) BOOL showMainStories;
-
+@property (nonatomic) CGPoint lastPositionOfMainView;
 @end
 
 @implementation MITNewsiPadViewController
@@ -346,6 +346,11 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        self.lastPositionOfMainView = self.gridViewController.collectionView.contentOffset;
+    } else {
+        self.lastPositionOfMainView = self.listViewController.tableView.contentOffset;
+    }
     self.searching = YES;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
@@ -1044,6 +1049,11 @@ CGFloat const refreshControlTextHeight = 19;
         self.listViewController.isACategoryView = self.isViewACategory;
     }
     [self reloadData];
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView setContentOffset:self.lastPositionOfMainView];
+    } else {
+        [self.listViewController.tableView setContentOffset:self.lastPositionOfMainView];
+    }
 }
 
 - (void)hideStories
