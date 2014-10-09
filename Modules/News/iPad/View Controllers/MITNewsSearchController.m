@@ -64,14 +64,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsStoryExternalNoImageCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryExternalNoImageCellIdentifier];
-    [self.searchTableView registerNib:[UINib nibWithNibName:MITNewsLoadMoreCellNibName bundle:nil] forCellReuseIdentifier:MITNewsLoadMoreCellIdentifier];
 
-    self.searchTableView.alpha = 0;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -94,11 +87,11 @@
 {
     [self hideSearchRecents];
     if ([searchBar.text isEqualToString:@""]) {
-        self.searchTableView.alpha = 0;
+        [self bringBackStories];
         self.view.alpha = .5;
     } else {
-        self.searchTableView.alpha = 1;
-        self.view.alpha = 1;
+        [self hideStories];
+        self.view.alpha = 0;
     }
     self.messageActivityView.alpha = 1;
 }
@@ -121,10 +114,11 @@
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.messageActivityView.alpha = .5;
+    self.view.alpha = .5;
     if ([searchBar.text isEqualToString:@""]) {
-        self.searchTableView.alpha = 0;
+        [self bringBackStories];
     } else {
-        self.searchTableView.alpha = .5;
+        [self hideStories];
     }
     [self removeNoResultsView];
     
@@ -137,13 +131,13 @@
 {
     if ([searchText isEqualToString:@""]) {
         [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        self.searchTableView.alpha = 0;
+        [self bringBackStories];
         self.view.alpha = .5;
         [self clearTable];
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        self.searchTableView.alpha = .5;
-        self.view.alpha = 1;
+        [self hideStories];
+        self.view.alpha = .5;
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -152,7 +146,7 @@
 {
     self.dataSource = nil;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.searchTableView reloadData];
+        [self reloadData];
     }];
 }
 
@@ -162,7 +156,7 @@
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
-    [self clearTable];
+    [self reloadData];
     self.searchBar.text = searchTerm;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
     
@@ -189,7 +183,7 @@
             if ([strongSelf.dataSource.objects count] == 0) {
                 [strongSelf addNoResultsView];
             }
-            [strongSelf.searchTableView reloadData];
+            [self hideStories];
         }
     }];
     [self.searchBar resignFirstResponder];
@@ -198,13 +192,13 @@
                           delay:0.
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
-                         self.searchTableView.alpha = 1;
-                         self.view.alpha = 1;
+                         [self hideStories];
+                         self.view.alpha = 0;
                      } completion:^(BOOL finished) {
                          
                      }];
 }
-
+/*
 - (void)getMoreStories:(void (^)(NSError *))completion
 {
     if (![self.dataSource hasNextPage] || self.dataSource.isUpdating) {
@@ -253,6 +247,7 @@
         [self.searchTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
 }
+ */
 
 #pragma mark - hide/show Recents
 - (void)hideSearchRecents
@@ -287,8 +282,7 @@
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
-
-    if (self.searchTableView.alpha == 0) {
+    if (self.view.alpha == .5) {
         [self hideSearchField];
     }
     return YES;
@@ -406,8 +400,8 @@
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     if ([identifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        [self getMoreStories:^(NSError *error) {
-        }];
+        //[self getMoreStories:^(NSError *error) {
+        //}];
     }
     else {
         MITNewsStory *story = [self.dataSource.objects objectAtIndex:indexPath.row];
@@ -469,8 +463,8 @@
     }
     
     __weak MITNewsSearchController *weakSelf = self;
-        
-    [self getMoreStories:^(NSError * error) {
+        [self getMoreStoriesForSection:0 completion:^(NSError *error) {
+            
         MITNewsSearchController *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
@@ -490,7 +484,8 @@
                 block(nil, error);
             }
         }
-        [strongSelf.searchTableView reloadData];
+            
+            [self hideStories];
     }];
 }
 
@@ -498,7 +493,8 @@
 - (void)addNoResultsView
 {
     MITViewWithCenterText *noResultsView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterText" owner:self options:nil] objectAtIndex:0];
-    noResultsView.frame = self.searchTableView.frame;
+#warning check frame
+    noResultsView.frame = self.view.frame;
     if (self.errorMessage) {
         noResultsView.overviewText.text = self.errorMessage;
         self.errorMessage = nil;
@@ -516,7 +512,8 @@
 - (void)addLoadingView
 {
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
-    loadingActivityView.frame = self.searchTableView.frame;
+#warning check frame
+    loadingActivityView.frame = self.view.frame;
     [self.view addSubview:loadingActivityView];
     self.messageActivityView = loadingActivityView;
 }
@@ -526,4 +523,26 @@
     [self.messageActivityView removeFromSuperview];
     self.messageActivityView = nil;
 }
+
+#pragma mark More Stories
+- (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block
+{
+    [self.delegate getMoreStoriesForSection:section completion:block];
+}
+
+- (void)hideStories
+{
+    [self.delegate hideStories];
+}
+
+- (void)bringBackStories
+{
+    [self.delegate bringBackStories];
+}
+
+- (void)reloadData
+{
+    [self.delegate reloadData];
+}
+
 @end

@@ -50,6 +50,9 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) BOOL isViewACategory;
 @property (nonatomic) BOOL storyUpdateInProgress;
 @property (nonatomic) BOOL loadingMoreStories;
+@property (nonatomic, weak) MITNewsStoriesDataSource *searchDataSource;
+@property (nonatomic) BOOL showMainStories;
+
 @end
 
 @implementation MITNewsiPadViewController
@@ -419,18 +422,18 @@ CGFloat const refreshControlTextHeight = 19;
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             UIImage *gridImage = [UIImage imageNamed:@"news/gridViewIcon"];
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
-            if (self.searching) {
-                gridItem.enabled = NO;
-            }
+            //if (self.searching) {
+            //    gridItem.enabled = NO;
+            //}
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleList]) {
             UIImage *listImage = [UIImage imageNamed:@"map/item_list"];
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
-            if (self.searching) {
-                listItem.enabled = NO;
-            }
+            //if (self.searching) {
+            //    listItem.enabled = NO;
+            //}
             [rightBarItems addObject:listItem];
         }
     }
@@ -707,12 +710,21 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (MITNewsDataSource*)dataSourceForCategoryInSection:(NSUInteger)section
 {
-    return self.dataSources[section];
+    if (self.showMainStories) {
+        return self.searchDataSource;
+    } else {
+        return self.dataSources[section];
+    }
 }
 
 - (BOOL)canLoadMoreItemsForCategoryInSection:(NSUInteger)section
 {
-    MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
+    MITNewsDataSource *dataSource = nil;
+    if (self.showMainStories) {
+        dataSource = self.searchDataSource;
+    } else {
+        dataSource = [self dataSourceForCategoryInSection:section];
+    }
     return [dataSource hasNextPage];
 }
 
@@ -740,6 +752,9 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)numberOfCategoriesInViewController:(UIViewController*)viewController
 {
+    if (self.showMainStories) {
+        return 1;
+    }
     return [self.dataSources count];
 }
 
@@ -764,6 +779,9 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (NSUInteger)viewController:(UIViewController*)viewController numberOfStoriesForCategoryInSection:(NSUInteger)section
 {
+    if (self.showMainStories) {
+        return [self.searchDataSource.objects count];
+    }
     if (self.isViewACategory) {
         MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
         return [dataSource.objects count];
@@ -778,6 +796,13 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (MITNewsStory*)viewController:(UIViewController*)viewController storyAtIndex:(NSUInteger)index forCategoryInSection:(NSUInteger)section
 {
+    if (self.showMainStories) {
+        if ([self.searchDataSource.objects count] <= index) {
+            return nil;
+        }
+        return self.searchDataSource.objects[index];
+    }
+    
     MITNewsDataSource *dataSource = [self dataSourceForCategoryInSection:section];
     if ([dataSource.objects count] <= index) {
         return nil;
@@ -883,7 +908,13 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)storyAfterStory:(MITNewsStory *)story completion:(void (^)(MITNewsStory *, NSError *))block
 {
     MITNewsStory *currentStory = (MITNewsStory*)[self.managedObjectContext existingObjectWithID:[story objectID] error:nil];
-    MITNewsDataSource *dataSource = self.dataSources[self.currentDataSourceIndex];
+    
+    MITNewsDataSource *dataSource = nil;
+    if (self.showMainStories) {
+        dataSource = self.searchDataSource;
+    } else {
+        dataSource = self.dataSources[self.currentDataSourceIndex];
+    }
     
     NSInteger currentIndex = [dataSource.objects indexOfObject:currentStory];
     if (currentIndex == NSNotFound) {
@@ -934,6 +965,29 @@ CGFloat const refreshControlTextHeight = 19;
     self.searchController = nil;
     self.searching = NO;
     [self updateNavigationItem:YES];
+    [self bringBackStories];
+}
+
+- (void)bringBackStories
+{
+    self.showMainStories = NO;
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        self.gridViewController.isACategoryView = self.showMainStories;
+    } else {
+        self.listViewController.isACategoryView = self.showMainStories;
+    }
+    [self reloadData];
+}
+
+- (void)hideStories
+{
+    self.showMainStories = YES;
+    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+        self.gridViewController.isACategoryView = self.showMainStories;
+    } else {
+        self.listViewController.isACategoryView = self.showMainStories;
+    }
+    [self reloadData];
 }
 
 @end
