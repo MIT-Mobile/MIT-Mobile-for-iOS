@@ -5,12 +5,20 @@
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesUser.h"
 
+typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
+    MITLibrariesAccountsViewControllerList,
+    MITLibrariesAccountsViewControllerGrid
+};
+
 @interface MITLibrariesYourAccountViewControllerPad ()
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (weak, nonatomic) IBOutlet UIButton *logInButton;
 @property (weak, nonatomic) IBOutlet UIView *loginView;
 
 @property (nonatomic, strong) MITLibrariesYourAccountListViewControllerPad *listViewController;
+
+@property (nonatomic) MITLibrariesAccountsViewController currentlySelectedViewController;
 
 @end
 
@@ -65,12 +73,36 @@
     }
 }
 
+- (void)hideViewControllers
+{
+    self.listViewController.view.hidden = YES;
+}
+
+- (void)showCurrentlySelectedViewController
+{
+    switch (self.currentlySelectedViewController) {
+        case MITLibrariesAccountsViewControllerList:
+            self.listViewController.view.hidden = NO;
+            break;
+            
+        default:
+            break;
+    }
+}
+
 - (void)refreshUserData
 {
+    [self hideViewControllers];
+    self.loadingIndicator.hidden = NO;
+    [self.loadingIndicator startAnimating];
+    
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
         if (!error) {
             self.listViewController.user = user;
+            [self showCurrentlySelectedViewController];
         }
+        [self.loadingIndicator stopAnimating];
+        self.loadingIndicator.hidden = YES;
     }];
 }
 

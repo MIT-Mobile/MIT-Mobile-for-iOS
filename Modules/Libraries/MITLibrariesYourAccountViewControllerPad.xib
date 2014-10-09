@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesYourAccountViewControllerPad">
             <connections>
+                <outlet property="loadingIndicator" destination="MEd-Th-5bJ" id="Y3V-HD-Gz4"/>
                 <outlet property="logInButton" destination="YfI-QF-4sW" id="LGM-Kx-clJ"/>
                 <outlet property="loginView" destination="i33-Ug-gjY" id="8o8-yU-hro"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -17,6 +18,9 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="MEd-Th-5bJ">
+                    <rect key="frame" x="374" y="502" width="20" height="20"/>
+                </activityIndicatorView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i33-Ug-gjY">
                     <rect key="frame" x="249" y="452" width="271" height="120"/>
                     <subviews>
@@ -46,6 +50,8 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="centerX" secondItem="i33-Ug-gjY" secondAttribute="centerX" constant="-0.5" id="1Eg-8X-0j5"/>
+                <constraint firstAttribute="centerX" secondItem="MEd-Th-5bJ" secondAttribute="centerX" id="Gc6-WE-D8m"/>
+                <constraint firstAttribute="centerY" secondItem="MEd-Th-5bJ" secondAttribute="centerY" id="dUV-af-bog"/>
                 <constraint firstAttribute="centerY" secondItem="i33-Ug-gjY" secondAttribute="centerY" id="ylm-AH-Bbr"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
