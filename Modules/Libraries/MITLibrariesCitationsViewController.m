@@ -8,11 +8,9 @@ static NSInteger const kItemHeaderSection = 0;
 static NSString * const kItemHeaderCellIdentifier = @"kItemHeaderCellIdentifier";
 static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
 
-@interface MITLibrariesCitationsViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MITLibrariesCitationsViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesCitationCellDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) NSArray *citationCellHeights;
-@property (nonatomic, assign) CGFloat previousTableViewWidth;
 
 @end
 
@@ -23,13 +21,8 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     
     self.title = @"Citations";
     self.tableView.delaysContentTouches = NO;
-    self.previousTableViewWidth = self.tableView.bounds.size.width;
     
     [self registerCells];
-    
-    if (self.worldcatItem) {
-        [self refreshCitationCellHeights];
-    }
 }
 
 - (void)registerCells
@@ -39,54 +32,6 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     
     UINib *citationCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesCitationCell class]) bundle:nil];
     [self.tableView registerNib:citationCellNib forCellReuseIdentifier:kCitationCellIdentifier];
-}
-
-- (void)setWorldcatItem:(MITLibrariesWorldcatItem *)worldcatItem
-{
-    if ([_worldcatItem isEqual:worldcatItem]) {
-        return;
-    }
-    
-    _worldcatItem = worldcatItem;
-    
-    if (self.tableView) {
-        [self refreshCitationCellHeights];
-    }
-}
-
-- (void)refreshCitationCellHeights
-{
-    // Load all the cell heights before showing, since they're all webviews and we'd rather not change the cell height on-screen like 5 times as the didLoad calls come in
-    dispatch_group_t heightCalculationGroup = dispatch_group_create();
-    NSMutableArray *newCitationCellHeights = [NSMutableArray arrayWithCapacity:self.worldcatItem.citations.count];
-    for (NSInteger i = 0; i < self.worldcatItem.citations.count; i++) {
-        [newCitationCellHeights addObject:[NSNumber numberWithFloat:44.0]];
-    }
-    
-    for (MITLibrariesCitation *citation in self.worldcatItem.citations) {
-        dispatch_group_enter(heightCalculationGroup);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [MITLibrariesCitationCell heightWithCitation:citation tableWidth:self.tableView.bounds.size.width completion:^(CGFloat height) {
-                [newCitationCellHeights replaceObjectAtIndex:[self.worldcatItem.citations indexOfObject:citation] withObject:[NSNumber numberWithFloat:height]];
-                dispatch_group_leave(heightCalculationGroup);
-            }];
-        });
-    }
-
-    dispatch_group_notify(heightCalculationGroup, dispatch_get_main_queue(), ^{
-        self.citationCellHeights = [NSArray arrayWithArray:newCitationCellHeights];
-        [self.tableView reloadData];
-    });
-}
-
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    
-    if (self.tableView.bounds.size.width != self.previousTableViewWidth) {
-        self.previousTableViewWidth = self.tableView.bounds.size.width;
-        [self refreshCitationCellHeights];
-    }
 }
 
 #pragma mark - UITableView Methods
@@ -109,7 +54,8 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
         return itemHeaderCell;
     } else {
         MITLibrariesCitationCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kCitationCellIdentifier];
-        [cell setCitation:self.worldcatItem.citations[indexPath.section - 1]];
+        [cell setContent:self.worldcatItem.citations[indexPath.section - 1]];
+        cell.delegate = self;
         return cell;
     }
 }
@@ -119,11 +65,7 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     if (indexPath.section == kItemHeaderSection) {
         return [MITLibrariesWorldcatItemCell heightForContent:self.worldcatItem tableViewWidth:self.tableView.bounds.size.width];
     } else {
-        if (self.citationCellHeights.count > indexPath.row) {
-            return [self.citationCellHeights[indexPath.section - 1] floatValue];
-        } else {
-            return 0;
-        }
+        return [MITLibrariesCitationCell heightForContent:self.worldcatItem.citations[indexPath.section - 1] tableViewWidth:self.tableView.bounds.size.width];
     }
 }
 
@@ -144,6 +86,16 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     } else {
         return 35;
     }
+}
+
+#pragma mark - MITLibrariesCitationCellDelegate
+
+- (void)citationCellShareButtonPressed:(NSAttributedString *)shareString
+{
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareString] applicationActivities:nil];
+    [self.navigationController presentViewController:activityVC animated:YES completion:^{
+        // Nothing necessary
+    }];
 }
 
 @end
