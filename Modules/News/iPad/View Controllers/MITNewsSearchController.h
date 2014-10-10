@@ -6,7 +6,6 @@
 @interface MITNewsSearchController : UIViewController <UISearchBarDelegate>
 
 @property (nonatomic, weak) id<MITNewsSearchDelegate> delegate;
-@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (weak, nonatomic) UISearchBar *searchBar;
 - (void)showSearchRecents;
 - (void)getResultsForString:(NSString *)searchTerm;

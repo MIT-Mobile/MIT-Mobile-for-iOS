@@ -47,17 +47,6 @@
     return _recentSearchController;
 }
 
-- (NSManagedObjectContext*)managedObjectContext
-{
-    if (!_managedObjectContext) {
-        DDLogWarn(@"[%@] A managed object context was not set before being added to the view hierarchy. The default main queue NSManaged object context will be used but this will be a fatal error in the future.",self);
-        _managedObjectContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
-    }
-    
-    NSAssert(_managedObjectContext, @"[%@] failed to load a valid NSManagedObjectContext", NSStringFromClass([self class]));
-    return _managedObjectContext;
-}
-
 #pragma mark - View lifecyle
 - (void)viewDidLoad
 {
