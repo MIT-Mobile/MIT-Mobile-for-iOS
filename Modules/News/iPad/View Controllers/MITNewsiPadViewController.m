@@ -1055,15 +1055,17 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)changeToSearchStories
 {
-    self.showSearchStories = YES;
-    self.isSingleDataSource = YES;
-    if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        self.gridViewController.showSingleCategory = self.isSingleDataSource;
-    } else {
-        self.listViewController.isACategoryView = self.isSingleDataSource;
-    }
     self.searchDataSource = self.searchController.dataSource;
-    [self reloadData];
+    if (!self.showSearchStories && !self.isSingleDataSource) {
+        self.showSearchStories = YES;
+        self.isSingleDataSource = YES;
+        if (_presentationStyle == MITNewsPresentationStyleGrid) {
+            self.gridViewController.showSingleCategory = self.isSingleDataSource;
+        } else {
+            self.listViewController.isACategoryView = self.isSingleDataSource;
+        }
+        [self reloadData];
+    }
 }
 
 @end

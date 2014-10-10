@@ -13,7 +13,7 @@
 #import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
-@interface MITNewsSearchController() <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsSearchController() <UIPopoverControllerDelegate>
 @property (nonatomic, strong) MITNewsRecentSearchController *recentSearchController;
 @property (nonatomic, strong) UIPopoverController *recentSearchPopoverController;
 @property (nonatomic) BOOL unwindFromStoryDetail;
@@ -85,11 +85,9 @@
 {
     [self hideSearchRecents];
     if ([searchBar.text isEqualToString:@""]) {
-        [self bringBackStories];
-        self.view.alpha = .5;
+        [self changeToMainStories];
     } else {
-        [self hideStories];
-        self.view.alpha = 0;
+        [self changeToSearchStories];
     }
     self.messageActivityView.alpha = 1;
 }
@@ -111,13 +109,7 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    self.messageActivityView.alpha = .5;
     self.view.alpha = .5;
-    if ([searchBar.text isEqualToString:@""]) {
-        [self bringBackStories];
-    } else {
-        [self hideStories];
-    }
     [self removeNoResultsView];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -129,13 +121,13 @@
 {
     if ([searchText isEqualToString:@""]) {
         [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self bringBackStories];
-        self.view.alpha = .5;
+        [self changeToMainStories];
         [self clearTable];
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self hideStories];
-        self.view.alpha = .5;
+        
+        [self changeToSearchStories];
+        
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -151,6 +143,7 @@
 #pragma mark - search
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self changeToSearchStories];
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
@@ -177,24 +170,16 @@
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [strongSelf removeLoadingView];
-            
+            strongSelf.view.alpha = 0;
             if ([strongSelf.dataSource.objects count] == 0) {
                 [strongSelf addNoResultsView];
+                strongSelf.view.alpha = 1;
             }
-            [self hideStories];
+            [strongSelf reloadData];
         }
     }];
     [self.searchBar resignFirstResponder];
     [self.recentSearchPopoverController dismissPopoverAnimated:YES];
-    [UIView animateWithDuration:0.33
-                          delay:0.
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                         [self hideStories];
-                         self.view.alpha = 0;
-                     } completion:^(BOOL finished) {
-                         
-                     }];
 }
 
 #pragma mark - hide/show Recents
@@ -280,12 +265,12 @@
 }
 
 #pragma mark delegate methods
-- (void)hideStories
+- (void)changeToSearchStories
 {
     [self.delegate changeToSearchStories];
 }
 
-- (void)bringBackStories
+- (void)changeToMainStories
 {
     [self.delegate changeToMainStories];
 }
