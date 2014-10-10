@@ -52,7 +52,9 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) BOOL loadingMoreStories;
 @property (nonatomic, weak) MITNewsDataSource *searchDataSource;
 @property (nonatomic) BOOL showSearchStories;
-@property (nonatomic) CGPoint lastPositionOfMainView;
+@property (nonatomic) CGPoint previousPositionOfMainView;
+@property (nonatomic) BOOL isPreviousStateASingleDataSource;
+
 @end
 
 @implementation MITNewsiPadViewController
@@ -347,10 +349,11 @@ CGFloat const refreshControlTextHeight = 19;
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        self.lastPositionOfMainView = self.gridViewController.collectionView.contentOffset;
+        self.previousPositionOfMainView = self.gridViewController.collectionView.contentOffset;
     } else {
-        self.lastPositionOfMainView = self.listViewController.tableView.contentOffset;
+        self.previousPositionOfMainView = self.listViewController.tableView.contentOffset;
     }
+    self.isPreviousStateASingleDataSource = self.isSingleDataSource;
     self.searching = YES;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
@@ -1036,7 +1039,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)changeToMainStories
 {
     self.showSearchStories = NO;
-    self.isSingleDataSource = NO;
+    self.isSingleDataSource = self.isPreviousStateASingleDataSource;
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.showSingleCategory = self.isSingleDataSource;
     } else {
@@ -1044,9 +1047,9 @@ CGFloat const refreshControlTextHeight = 19;
     }
     [self reloadData];
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView setContentOffset:self.lastPositionOfMainView];
+        [self.gridViewController.collectionView setContentOffset:self.previousPositionOfMainView];
     } else {
-        [self.listViewController.tableView setContentOffset:self.lastPositionOfMainView];
+        [self.listViewController.tableView setContentOffset:self.previousPositionOfMainView];
     }
 }
 
