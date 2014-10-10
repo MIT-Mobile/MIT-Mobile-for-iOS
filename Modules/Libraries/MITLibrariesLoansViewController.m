@@ -2,6 +2,7 @@
 #import "MITLibrariesItemLoanFineCell.h"
 #import "MITLibrariesMITLoanItem.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLibrariesYourAccountItemDetailViewController.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
 
@@ -48,6 +49,14 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return [MITLibrariesItemLoanFineCell heightForContent:self.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    MITLibrariesYourAccountItemDetailViewController *detailVC = [[MITLibrariesYourAccountItemDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.item = self.items[indexPath.row];
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (void)setItems:(NSArray *)items

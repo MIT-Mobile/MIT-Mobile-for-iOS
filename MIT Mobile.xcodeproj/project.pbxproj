@@ -495,6 +495,8 @@
 		A52E0CF119B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52E0CEF19B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib */; };
 		A52E0CF519B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A52E0CF319B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m */; };
 		A52E0CF619B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */; };
+		A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */; };
+		A53856CD19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
 		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
@@ -1668,6 +1670,9 @@
 		A52E0CF219B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailHomeViewControllerPad.h; path = Dining/MITDiningRetailHomeViewControllerPad.h; sourceTree = "<group>"; };
 		A52E0CF319B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailHomeViewControllerPad.m; path = Dining/MITDiningRetailHomeViewControllerPad.m; sourceTree = "<group>"; };
 		A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningRetailHomeViewControllerPad.xib; path = Dining/MITDiningRetailHomeViewControllerPad.xib; sourceTree = "<group>"; };
+		A53856C919E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountItemDetailViewController.h; sourceTree = "<group>"; };
+		A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountItemDetailViewController.m; sourceTree = "<group>"; };
+		A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountItemDetailViewController.xib; sourceTree = "<group>"; };
 		A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopAlarmCell.h; sourceTree = "<group>"; };
 		A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopAlarmCell.m; sourceTree = "<group>"; };
 		A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopAlarmCell.xib; sourceTree = "<group>"; };
@@ -2654,6 +2659,9 @@
 				22E6BCA219E321A2003E278C /* MITLibrariesFinesViewController.m */,
 				22E6BC9419E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.h */,
 				22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */,
+				A53856C919E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.h */,
+				A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */,
+				A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */,
 			);
 			name = "Your Account";
 			sourceTree = "<group>";
@@ -4699,6 +4707,7 @@
 				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
 				A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */,
 				A563905019D992CD001DE763 /* MITLibrariesHoldingLibraryHeaderCell.xib in Resources */,
+				A53856CD19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				0BCC90D519631C2C00440544 /* MITNewsRecentSearchController.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
@@ -5177,6 +5186,7 @@
 				2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				22E6BCA319E321A2003E278C /* MITLibrariesFinesViewController.m in Sources */,
+				A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */,
 				A5FA03A719D5D6940063FF2C /* NSData+ImageContentType.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
