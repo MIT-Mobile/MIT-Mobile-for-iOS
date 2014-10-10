@@ -114,9 +114,7 @@
         [self clearTable];
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        
         [self changeToSearchStories];
-        
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -204,8 +202,10 @@
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     [self.searchBar resignFirstResponder];
-    if (self.view.alpha == .5) {
+    if (self.dataSource == nil) {
         [self hideSearchField];
+    } else {
+        self.view.alpha = 0;
     }
     return YES;
 }
