@@ -1,5 +1,6 @@
 #import "MITLibrariesHoldsViewController.h"
 #import "MITLibrariesItemHoldCell.h"
+#import "MITLibrariesYourAccountItemDetailViewController.h"
 
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
@@ -46,6 +47,14 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return [MITLibrariesItemHoldCell heightForContent:self.items[indexPath.row] tableViewWidth:self.tableView.frame.size.width];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    MITLibrariesYourAccountItemDetailViewController *detailVC = [[MITLibrariesYourAccountItemDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.item = self.items[indexPath.row];
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (void)setItems:(NSArray *)items
