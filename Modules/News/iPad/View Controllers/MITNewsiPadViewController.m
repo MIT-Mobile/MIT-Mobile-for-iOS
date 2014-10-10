@@ -1056,7 +1056,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)changeToSearchStories
 {
     self.searchDataSource = self.searchController.dataSource;
-    if (!self.showSearchStories && !self.isSingleDataSource) {
+    if (!self.showSearchStories || !self.isSingleDataSource) {
         self.showSearchStories = YES;
         self.isSingleDataSource = YES;
         if (_presentationStyle == MITNewsPresentationStyleGrid) {
