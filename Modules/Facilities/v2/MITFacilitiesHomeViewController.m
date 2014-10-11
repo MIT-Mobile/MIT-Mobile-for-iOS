@@ -208,7 +208,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [actionSheet showInView:self.view];
 }
 
-- (void)removePhotoAction
+- (void)removePhotoAction:(UIButton *)senderButton
 {
     __weak MITFacilitiesHomeViewController *weakSelf = self;
     
@@ -235,10 +235,19 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:@"Remove Photo"
                                                     otherButtonTitles:nil];
-    [actionSheet showInView:self.view];
+
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [actionSheet showInView:self.view];
+    }
+    else
+    {
+        CGRect senderFrame = [senderButton convertRect:senderButton.bounds toView:self.view];
+        [actionSheet showFromRect:senderFrame inView:self.view animated:YES];
+    }
 }
 
-- (void)attachPhotoAction
+- (void)attachPhotoAction:(UIButton *)senderButton
 {
     __weak MITFacilitiesHomeViewController *weakSelf = self;
     
@@ -288,7 +297,16 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:@"Take Photo"
                                                     otherButtonTitles:@"Choose Photo", nil];
-    [actionSheet showInView:self.view];
+
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [actionSheet showInView:self.view];
+    }
+    else
+    {
+        CGRect senderFrame = [senderButton convertRect:senderButton.bounds toView:self.view];
+        [actionSheet showFromRect:senderFrame inView:self.view animated:YES];
+    }
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
@@ -326,7 +344,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     }
     else if( row == MITFacilitiesFormFieldAttachPhoto && self.reportForm.reportImage != nil )
     {
-        return 386;
+        return 553;
     }
     
     return defaultHeight;
@@ -374,12 +392,12 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     if( self.reportForm.reportImage != nil )
     {
         [attachPhotoBtn setTitle:@"Remove Photo" forState:UIControlStateNormal];
-        [attachPhotoBtn addTarget:self action:@selector(removePhotoAction) forControlEvents:UIControlEventTouchUpInside];
+        [attachPhotoBtn addTarget:self action:@selector(removePhotoAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     else
     {
         [attachPhotoBtn setTitle:@"Attach Photo" forState:UIControlStateNormal];
-        [attachPhotoBtn addTarget:self action:@selector(attachPhotoAction) forControlEvents:UIControlEventTouchUpInside];
+        [attachPhotoBtn addTarget:self action:@selector(attachPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
     }
 
     // image attachment
