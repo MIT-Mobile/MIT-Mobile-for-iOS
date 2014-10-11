@@ -16,6 +16,7 @@
 #import "FacilitiesCategoryViewController.h"
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesRoomViewController.h"
+#import "FacilitiesPropertyOwner.h"
 
 #import "UIKit+MITAdditions.h"
 #import "UIImage+Metadata.h"
@@ -28,7 +29,19 @@ typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
     MITFacilitiesFormFieldRoom,
     MITFacilitiesFormFieldProblemType,
     MITFacilitiesFormFieldDescription,
-    MITFacilitiesFormFieldAttachPhoto
+    MITFacilitiesFormFieldAttachPhoto,
+    MITFacilitiesFormFieldLeasedMessage,
+    MITFacilitiesFormFieldMaintainer,
+    MITFacilitiesFormFieldMaintainerPhone
+};
+
+typedef NS_ENUM(NSUInteger, MITLeasedFacilitiesFormFieldType) {
+    MITLeasedFacilitiesFormFieldEmail = 0,
+    MITLeasedFacilitiesFormFieldLocation,
+    MITLeasedFacilitiesFormFieldLeasedMessage,
+    MITLeasedFacilitiesFormFieldMaintainer,
+    MITLeasedFacilitiesFormFieldMaintainerPhone,
+    MITLeasedFacilitiesFormFieldMaintainerEmail
 };
 
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
@@ -334,7 +347,11 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *cell;
     
-    if( indexPath.row == [self lastRowIndex] )
+    if( self.reportForm.location.isLeased )
+    {
+        cell = [self tableView:tableView leasedFacilitiesAttributeCellForRowAtIndexPath:indexPath];
+    }
+    else if( indexPath.row == [self lastRowIndex] )
     {
         // action cell
         cell = [self tableView:tableView actionCellForRowAtIndexPath:indexPath];
@@ -403,6 +420,33 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
         case MITFacilitiesFormFieldDescription:
             cell = [self descriptionFieldCellWithIndexPath:indexPath];
+            break;
+    }
+    
+    cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
+    
+    return cell;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView leasedFacilitiesAttributeCellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = nil;
+    
+    switch (indexPath.row) {
+        case MITLeasedFacilitiesFormFieldEmail:
+            cell = [self emailFieldCellWithIndexPath:indexPath];
+            break;
+        case MITLeasedFacilitiesFormFieldLocation:
+            cell = [self locationFieldCellWithIndexPath:indexPath];
+            break;
+        case MITLeasedFacilitiesFormFieldLeasedMessage:
+            cell = [self leasedMessageCellWithIndexPath:indexPath];
+            break;
+        case MITLeasedFacilitiesFormFieldMaintainer:
+            cell = [self leasedMaintainerCellWithIndexPath:indexPath];
+            break;
+        case MITLeasedFacilitiesFormFieldMaintainerPhone:
+            cell = [self leasedMaintainerPhoneCellWithIndexPath:indexPath];
             break;
     }
     
@@ -520,6 +564,49 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.subtitleTextView.delegate = self;
     cell.subtitleTextView.text = self.reportForm.reportDescription;
     cell.subtitleTextView.keyboardType = UIKeyboardTypeDefault;
+    
+    return cell;
+}
+
+- (MITFacilitiesLeasedMessageCell *)leasedMessageCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    MITFacilitiesLeasedMessageCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"MITFacilitiesLeasedMessageCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    cell.subtitleLabel.text = [NSString stringWithFormat:@"The Department of Facilities is not responsible for the maintenance of %@. Please contact %@ to report any issues.", [self.reportForm.location displayString], self.reportForm.location.propertyOwner.name];
+    
+    
+    return cell;
+}
+
+- (MITFacilitiesNonEditableFieldCell *)leasedMaintainerCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    cell.titleLabel.text = @"maintainer";
+    cell.subtitleLabel.text = self.reportForm.location.propertyOwner.name;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    return cell;
+}
+
+- (MITFacilitiesNonEditableFieldCell *)leasedMaintainerPhoneCellWithIndexPath:(NSIndexPath *)indexPath
+{
+    MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if( self.reportForm.location.propertyOwner.phone.length > 0 )
+    {
+        cell.titleLabel.text = @"phone";
+        cell.subtitleLabel.text = self.reportForm.location.propertyOwner.phone;
+    }
+    else if( self.reportForm.location.propertyOwner.email.length > 0 )
+    {
+        cell.titleLabel.text = @"email";
+        cell.subtitleLabel.text = self.reportForm.location.propertyOwner.email;
+    }
     
     return cell;
 }
@@ -817,6 +904,15 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [self.subtitleLabel setFont:[UIFont systemFontOfSize:16]];
     
     self.titleLabel.textColor = [UIColor mit_tintColor];
+}
+
+@end
+
+@implementation MITFacilitiesLeasedMessageCell
+
+- (void)awakeFromNib
+{
+    [self.subtitleLabel setFont:[UIFont systemFontOfSize:14]];
 }
 
 @end

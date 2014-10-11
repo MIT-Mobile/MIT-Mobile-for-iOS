@@ -64,7 +64,6 @@ NSString * const MITBuildingServicesLocationCustomTextNotification = @"MITBuildi
     
     self.shouldSetRoom = (location == nil ? NO : shouldSetRoom);
 }
-
 - (void)clearAll
 {
     self.email = nil;

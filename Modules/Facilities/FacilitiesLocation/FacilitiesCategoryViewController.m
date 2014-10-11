@@ -392,16 +392,7 @@
             NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row - 1];
             FacilitiesLocation *location = (FacilitiesLocation *)[dict objectForKey:FacilitiesSearchResultLocationKey];
             
-            if ([location.isLeased boolValue])
-            {
-                FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-                [self.navigationController pushViewController:controller animated:YES];
-                return;
-            }
-            else
-            {
-                [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
-            }
+            [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:!location.isLeased];
         }
         
         if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )

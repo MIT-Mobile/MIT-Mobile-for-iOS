@@ -24,3 +24,9 @@
 @property (nonatomic, strong) IBOutlet UILabel *subtitleLabel;
 
 @end
+
+@interface MITFacilitiesLeasedMessageCell : UITableViewCell
+
+@property (nonatomic, strong) IBOutlet UILabel *subtitleLabel;
+
+@end

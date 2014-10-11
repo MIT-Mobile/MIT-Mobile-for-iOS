@@ -210,11 +210,6 @@ static const NSUInteger kMaxResultCount = 10;
     
     FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
     
-    if( [location.isLeased boolValue])
-    {
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
-    
     cell.textLabel.text = [location displayString];
     
     return cell;
@@ -235,16 +230,7 @@ static const NSUInteger kMaxResultCount = 10;
         location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    if ([location.isLeased boolValue])
-    {
-        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-        [self.navigationController pushViewController:controller animated:YES];
-        return;
-    }
-    else
-    {
-        [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
-    }
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {

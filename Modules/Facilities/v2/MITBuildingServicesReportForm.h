@@ -40,6 +40,7 @@ extern NSString * const MITBuildingServicesLocationCustomTextNotification;
 
 - (BOOL)isValidForm;
 - (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom;
+
 - (void)clearAll;
 
 @end
