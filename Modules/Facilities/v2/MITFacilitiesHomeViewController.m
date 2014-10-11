@@ -347,7 +347,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *cell;
     
-    if( self.reportForm.location.isLeased )
+    if( [self.reportForm.location.isLeased boolValue] )
     {
         cell = [self tableView:tableView leasedFacilitiesAttributeCellForRowAtIndexPath:indexPath];
     }
@@ -450,7 +450,15 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
     }
     
-    cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
+    if( indexPath.row == [self lastRowIndex] )
+    {
+        cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, self.view.frame.size.height);
+    }
+    else
+    {
+        cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
+
+    }
     
     return cell;
 }

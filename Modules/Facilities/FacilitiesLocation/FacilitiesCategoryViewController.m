@@ -392,7 +392,7 @@
             NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row - 1];
             FacilitiesLocation *location = (FacilitiesLocation *)[dict objectForKey:FacilitiesSearchResultLocationKey];
             
-            [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:!location.isLeased];
+            [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:![location.isLeased boolValue]];
         }
         
         if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
