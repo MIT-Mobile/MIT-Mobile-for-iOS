@@ -8,7 +8,6 @@
 
 #import "MITFacilitiesHomeViewController.h"
 #import "MITBuildingServicesReportForm.h"
-#import "MITTouchstoneController.h"
 #import "MITActionSheetHandler.h"
 #import "MITNavigationController.h"
 
@@ -17,6 +16,7 @@
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesRoomViewController.h"
 #import "FacilitiesPropertyOwner.h"
+#import "FacilitiesConstants.h"
 
 #import "UIKit+MITAdditions.h"
 #import "UIImage+Metadata.h"
@@ -159,8 +159,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     [self.view endEditing:YES];
     
-    FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
-//    vc.reportDictionary = self.reportData;
+    FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];   
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -471,15 +470,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     cell.titleLabel.text = @"email";
     
-    NSString *loggedInUserEmail = [[MITTouchstoneController sharedController] userEmailAddress];
-    if( loggedInUserEmail != nil && loggedInUserEmail.length > 0 )
-    {
-        self.reportForm.email = loggedInUserEmail;
-    }
-    
     cell.subtitleTextView.text = self.reportForm.email;
     cell.subtitleTextView.delegate = self;
     cell.subtitleTextView.keyboardType = UIKeyboardTypeEmailAddress;
+    cell.subtitleTextView.autocapitalizationType = UITextAutocapitalizationTypeNone;
     
     return cell;
 }
@@ -554,7 +548,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (MITFacilitiesNonEditableFieldCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
     MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
     cell.titleLabel.text = @"problem type";
     cell.subtitleLabel.text = self.reportForm.problemType.name;

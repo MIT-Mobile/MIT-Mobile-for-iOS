@@ -325,9 +325,7 @@
     [self dismissKeyboard:self];
     
     FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
-    vc.reportDictionary = self.reportData;
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (IBAction)dismissKeyboard:(id)sender {

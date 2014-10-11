@@ -38,6 +38,7 @@ extern NSString * const MITBuildingServicesLocationCustomTextNotification;
 
 + (MITBuildingServicesReportForm *)sharedServiceReport;
 
+- (void)persistEmail;
 - (BOOL)isValidForm;
 - (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom;
 

@@ -7,6 +7,7 @@
 #import "MITBuildingServicesReportForm.h"
 #import "MITUIConstants.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
+#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesSubmitViewController ()
 - (void)setStatusText:(NSString *)string;
@@ -104,23 +105,21 @@
     [self setStatusText:@"Preparing report..."];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
 
+    MITBuildingServicesReportForm *reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
     params[@"name"] = @"";
     
-    if( self.reportDictionary[FacilitiesRequestUserEmailKey] )
-    {
-        params[@"email"] = self.reportDictionary[FacilitiesRequestUserEmailKey];        
-    }
-    
-    MITBuildingServicesReportForm *reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    params[@"email"] = reportForm.email;
     
     FacilitiesLocation *location = reportForm.location;
     FacilitiesRoom *room = reportForm.room;
     FacilitiesRepairType *type = reportForm.problemType;
-    NSString *description = reportForm.description;
+    NSString *description = reportForm.reportDescription;
     NSString *customLocation = reportForm.customLocation;
     NSString *customRoom = reportForm.roomAltName;
     
@@ -202,14 +201,24 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (IBAction)reportCompleted:(id)sender {
-    for (UIViewController *controller in self.navigationController.viewControllers) {
-        if ([controller isKindOfClass:[FacilitiesRootViewController class]]) {
-            [self.navigationController popToViewController:controller
-                                                  animated:YES];
-            break;
-        }
-    }
+- (IBAction)reportCompleted:(id)sender
+{
+//    for (UIViewController *controller in self.navigationController.viewControllers)
+//    {
+//        if ([controller isKindOfClass:[FacilitiesRootViewController class]])
+//        {
+//            [self.navigationController popToViewController:controller animated:YES];
+//            break;
+//        }
+//    }
+    
+    MITBuildingServicesReportForm *reportForm = [MITBuildingServicesReportForm sharedServiceReport];
+    // persist email before clearing the form, so that email can be re-used
+    [reportForm persistEmail];
+    // clear the form after succesful submition
+    [reportForm clearAll];
+    
+    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
 }
 
 - (void)setStatusText:(NSString *)string {

@@ -4,11 +4,14 @@
 //
 //
 
+#import "MITTouchstoneController.h"
 #import "MITBuildingServicesReportForm.h"
 #import "NSString+EmailValidation.h"
 
 NSString * const MITBuildingServicesLocationChosenNoticiation = @"MITBuildingServicesLocationChosenNoticiation";
 NSString * const MITBuildingServicesLocationCustomTextNotification = @"MITBuildingServicesLocationCustomTextNotification";
+
+NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 
 @implementation MITBuildingServicesReportForm
 
@@ -78,9 +81,47 @@ NSString * const MITBuildingServicesLocationCustomTextNotification = @"MITBuildi
     self.shouldSetRoom = NO;
 }
 
+- (NSString *)email
+{
+    if( _email != nil && _email.length > 0 )
+    {
+        return _email;
+    }
+    
+    // email is still not set -> check if user is signed in
+    NSString *loggedInUserEmail = [[MITTouchstoneController sharedController] userEmailAddress];
+    if( loggedInUserEmail != nil && loggedInUserEmail.length > 0 )
+    {
+        return loggedInUserEmail;
+    }
+    
+    // if user is not logged in and email wasn't typed in manually -> check UserDefaults
+    NSString *persistedEmail = [[NSUserDefaults standardUserDefaults] objectForKey:MITBuildingServicesEmailKey];
+    if( persistedEmail != nil && persistedEmail.length > 0 )
+    {
+        return persistedEmail;
+    }
+    
+    // _email must be nil at this point
+    return _email;
+}
+
 - (BOOL)isValidEmail
 {
     return [self.email isValidEmail];
+}
+
+// persist email when user submits a form, so that email can be reused next time.
+- (void)persistEmail
+{
+    if( self.email == nil )
+    {
+        return;
+    }
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:self.email forKey:MITBuildingServicesEmailKey];
+    [userDefaults synchronize];
 }
 
 @end
