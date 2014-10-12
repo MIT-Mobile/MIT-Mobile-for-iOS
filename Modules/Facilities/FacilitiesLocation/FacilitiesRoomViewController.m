@@ -26,6 +26,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *floors;
 
+@property (nonatomic, assign) BOOL hasZeroFloor;
+
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
 - (void)configureSearchCell:(HighlightTableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -206,6 +208,11 @@
     self.floors = [NSMutableDictionary new];
     for( FacilitiesRoom *room in data )
     {
+        if( !self.hasZeroFloor && [room.floor isEqualToString:@"0"] )
+        {
+            self.hasZeroFloor = YES;
+        }
+        
         NSMutableArray *rooms = self.floors[room.floor];
         if( rooms == nil )
         {
@@ -253,14 +260,17 @@
 - (void)configureMainTableCell:(UITableViewCell *)cell
                   forIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
+    if( indexPath.section == 0 && indexPath.row == 0 )
+    {
         cell.textLabel.text = @"Outside";
-    } else {
-        if ([self.cachedData count] == 0) {
-            cell.textLabel.text = @"Inside";
-        } else {
-            cell.textLabel.text = [[self roomAtIndexPath:indexPath] displayString];
-        }
+    }
+    else if( indexPath.section == 0 && indexPath.row == 1 )
+    {
+        cell.textLabel.text = @"Inside";
+    }
+    else
+    {
+        cell.textLabel.text = [[self roomAtIndexPath:indexPath] displayString];
     }
 }
 
@@ -300,20 +310,28 @@
 
 #pragma mark - UITableViewDelegate Methods
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     FacilitiesRoom *room = nil;
     NSString *altName = nil;
     
-    if (tableView == self.tableView) {
-        if (indexPath.section == 0) {
+    if (tableView == self.tableView)
+    {
+        if( indexPath.section == 0 && indexPath.row == 0 )
+        {
             altName = @"Outside";
-        } else if ([self.cachedData count] == 0) {
+        }
+        else if( indexPath.section == 0 && indexPath.row == 1 )
+        {
             altName = @"Inside";
-        } else {
+        }
+        else
+        {
             room = [self.cachedData objectAtIndex:indexPath.row];
         }
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+    }
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
         if (indexPath.row == 0) {
             altName = self.searchString;
         } else {
@@ -379,7 +397,7 @@
         return nil;
     }
     
-    return [NSString stringWithFormat:@"FLOOR %d", (section - 1)];
+    return [NSString stringWithFormat:@"FLOOR %d", [self floorBasedOnSection:section]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -403,11 +421,11 @@
     {
         if ((self.cachedData == nil) || ([self.cachedData count] == 0))
         {
-            return 1;
+            return 2;
         }
         else
         {
-            return (section == 0) ? 1 : [[self roomsOnFloor:section] count];
+            return (section == 0) ? 2 : [[self roomsOnFloor:section] count];
         } 
     }
     else
@@ -543,7 +561,7 @@
 
 - (FacilitiesRoom *)roomAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *floorStr = [NSString stringWithFormat:@"%d", (indexPath.section - 1)];
+    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:indexPath.section]];
     
     NSArray *rooms = self.floors[floorStr];
     
@@ -552,9 +570,14 @@
 
 - (NSArray *)roomsOnFloor:(NSInteger)floor
 {
-    NSString *floorStr = [NSString stringWithFormat:@"%d", (floor - 1)];
+    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:floor]];
     
     return self.floors[floorStr];
+}
+
+- (NSInteger)floorBasedOnSection:(NSInteger)section
+{
+    return self.hasZeroFloor ? (section - 1) : section;
 }
 
 @end

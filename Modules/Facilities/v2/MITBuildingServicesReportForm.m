@@ -61,11 +61,23 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
     return YES;
 }
 
+- (void)setCustomLocation:(NSString *)customLocation
+{
+    self.location = nil;
+    self.shouldSetRoom = NO;
+    
+    _customLocation = customLocation;
+}
+
 - (void)setLocation:(FacilitiesLocation *)location shouldSetRoom:(BOOL)shouldSetRoom
 {
     self.location = location;
     
     self.shouldSetRoom = (location == nil ? NO : shouldSetRoom);
+    
+    // reset the room names when location is changed.
+    self.room = nil;
+    self.roomAltName = nil;
 }
 - (void)clearAll
 {
