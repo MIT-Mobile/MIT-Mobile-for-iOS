@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, MITLeasedFacilitiesFormFieldType) {
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
-@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate>
+@interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -62,6 +62,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 @property (nonatomic, strong) UITextView *editingTextView;
 @property (nonatomic, strong) NSIndexPath *editingIndexPath;
+@property (nonatomic, assign) BOOL isKeyboardUp;
 
 @property (nonatomic, strong) MITActionSheetHandler *actionSheetHandler;
 
@@ -122,6 +123,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChooseLocation:) name:MITBuildingServicesLocationChosenNoticiation object:nil];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doneEditing)];
+    tap.delegate = self;
+    [self.view addGestureRecognizer:tap];
     
     [self validateFields];
     
@@ -646,6 +651,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         return;
     }
     
+    self.editingIndexPath = indexPath;
+    
     if( row == MITFacilitiesFormFieldLocation )
     {
         vc = [[FacilitiesCategoryViewController alloc] init];
@@ -683,6 +690,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     {
         if( [self.facilitiesPopoverController isPopoverVisible] )
         {
+            [self presentFacilitiesPopoverAtIndexPath:indexPath];
             return;
         }
         
@@ -693,9 +701,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         self.facilitiesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
         self.facilitiesPopoverController.delegate = self;
         self.facilitiesPopoverController.backgroundColor = [UIColor whiteColor];
-        CGRect aFrame = [tableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
-        [self.facilitiesPopoverController presentPopoverFromRect:[tableView convertRect:aFrame toView:self.view] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         self.facilitiesPopoverController.passthroughViews = @[cell];
+        [self presentFacilitiesPopoverAtIndexPath:indexPath];
     }
     else
     {
@@ -714,11 +721,52 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     }
     
     [self.view endEditing:YES];
+    
+    if( [self.facilitiesPopoverController isPopoverVisible] )
+    {
+        [self presentFacilitiesPopoverAtIndexPath:self.editingIndexPath];
+    }
+}
+
+- (void)presentFacilitiesPopoverAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGRect aFrame = [self.tableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
+    [self.facilitiesPopoverController presentPopoverFromRect:[self.tableView convertRect:aFrame toView:self.view]
+                                                      inView:self.view
+                                    permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                    animated:YES];
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     [self.view endEditing:YES];
+}
+
+- (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view
+{
+    [self presentFacilitiesPopoverAtIndexPath:self.editingIndexPath];
+}
+
+#pragma mark - gesture recognizer delegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if( self.isKeyboardUp )
+    {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void)doneEditing
+{
+    [self dismissKeyboard];
+    
+    if( self.facilitiesPopoverController != nil )
+    {
+        [self.facilitiesPopoverController dismissPopoverAnimated:YES];
+    }
 }
 
 #pragma mark - keyboard related
@@ -734,15 +782,24 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     CGRect keyboardRect = [self.view convertRect:[keyboard CGRectValue] fromView:nil];
     CGSize keyboardSize = keyboardRect.size;
     
-    CGRect tableViewRect = self.tableView.frame;
-    tableViewRect.size.height -= keyboardSize.height;
-    self.tableView.frame = tableViewRect;
+    UIEdgeInsets contentInset = self.tableView.contentInset;
+    contentInset.bottom = keyboardSize.height;
+    
+    UIEdgeInsets scrollIndicatorInsets = self.tableView.scrollIndicatorInsets;
+    scrollIndicatorInsets.bottom = keyboardSize.height;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self.tableView.contentInset = contentInset;
+        self.tableView.scrollIndicatorInsets = scrollIndicatorInsets;
+    }];
     
     if( [self adjustedFieldRow:self.editingIndexPath.row] == MITFacilitiesFormFieldDescription )
     {
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingIndexPath.row inSection:0]
                               atScrollPosition:UITableViewRowAnimationTop animated:YES];
     }
+    
+    self.isKeyboardUp = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification
@@ -752,13 +809,23 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         return;
     }
     
-    NSValue *keyboardValue = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
-    CGRect keyboardRect = [keyboardValue CGRectValue];
-    CGSize keyboardSize = keyboardRect.size;
+    UIEdgeInsets contentInset = self.tableView.contentInset;
+    contentInset.bottom = 0.0f;
     
-    CGRect tableViewRect = self.tableView.frame;
-    tableViewRect.size.height += keyboardSize.height;
-    self.tableView.frame = tableViewRect;
+    UIEdgeInsets scrollIndicatorInsets = self.tableView.scrollIndicatorInsets;
+    scrollIndicatorInsets.bottom = 0.0f;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self.tableView.contentInset = contentInset;
+        self.tableView.scrollIndicatorInsets = scrollIndicatorInsets;
+    }];
+    
+    self.isKeyboardUp = NO;
+}
+
+- (void)dismissKeyboard
+{
+    [self.view endEditing:YES];
 }
 
 #pragma mark - textViewDelegate
