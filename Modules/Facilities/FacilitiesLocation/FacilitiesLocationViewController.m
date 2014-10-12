@@ -366,7 +366,7 @@
         }
     }
     
-    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:![location.isLeased boolValue]];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     

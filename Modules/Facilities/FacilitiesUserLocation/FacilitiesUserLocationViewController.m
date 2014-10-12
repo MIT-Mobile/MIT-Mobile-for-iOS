@@ -230,7 +230,7 @@ static const NSUInteger kMaxResultCount = 10;
         location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:YES];
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:![location.isLeased boolValue]];
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {
