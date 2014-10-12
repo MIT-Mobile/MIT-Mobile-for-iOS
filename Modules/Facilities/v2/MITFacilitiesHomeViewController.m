@@ -625,7 +625,13 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     if( self.reportForm.location.propertyOwner.phone.length > 0 )
     {
         cell.titleLabel.text = @"phone";
-        cell.subtitleLabel.text = self.reportForm.location.propertyOwner.phone;
+        
+        NSString *phoneString = self.reportForm.location.propertyOwner.phone;
+        phoneString = [NSString stringWithFormat:@"%@-%@-%@",
+                       [phoneString substringToIndex:3],
+                       [phoneString substringWithRange:NSMakeRange(3, 3)],
+                       [phoneString substringFromIndex:6]];
+        cell.subtitleLabel.text = phoneString;
     }
     else if( self.reportForm.location.propertyOwner.email.length > 0 )
     {
