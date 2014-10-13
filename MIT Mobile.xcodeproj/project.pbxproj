@@ -17,6 +17,8 @@
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
+		274D661E19EB77350044FE32 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 274D661B19EB77350044FE32 /* SVProgressHUD.bundle */; };
+		274D661F19EB77350044FE32 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 274D661D19EB77350044FE32 /* SVProgressHUD.m */; };
 		27724CFB19CCBA7800C27D78 /* NSString+EmailValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 27724CFA19CCBA7800C27D78 /* NSString+EmailValidation.m */; };
 		27724D0819CF742B00C27D78 /* MITFacilities_ipad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27724D0719CF742B00C27D78 /* MITFacilities_ipad.storyboard */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
@@ -548,6 +550,9 @@
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
 		274887321933ABCC00414552 /* MITPeopleSearchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchHandler.h; sourceTree = "<group>"; };
 		274887331933ABCC00414552 /* MITPeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchHandler.m; sourceTree = "<group>"; };
+		274D661B19EB77350044FE32 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
+		274D661C19EB77350044FE32 /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		274D661D19EB77350044FE32 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
 		27724CF919CCBA7800C27D78 /* NSString+EmailValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+EmailValidation.h"; path = "Categories/NSString+EmailValidation.h"; sourceTree = "<group>"; };
 		27724CFA19CCBA7800C27D78 /* NSString+EmailValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EmailValidation.m"; path = "Categories/NSString+EmailValidation.m"; sourceTree = "<group>"; };
 		27724D0719CF742B00C27D78 /* MITFacilities_ipad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = MITFacilities_ipad.storyboard; path = v2/MITFacilities_ipad.storyboard; sourceTree = "<group>"; };
@@ -1605,6 +1610,17 @@
 			name = Subclasses;
 			sourceTree = "<group>";
 		};
+		274D661919EB77350044FE32 /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				274D661B19EB77350044FE32 /* SVProgressHUD.bundle */,
+				274D661C19EB77350044FE32 /* SVProgressHUD.h */,
+				274D661D19EB77350044FE32 /* SVProgressHUD.m */,
+			);
+			name = SVProgressHUD;
+			path = External/SVProgressHUD/SVProgressHUD;
+			sourceTree = "<group>";
+		};
 		27724CFF19CE849E00C27D78 /* FacilitiesHomeViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1636,6 +1652,7 @@
 		27C5B4B219B56462006DD95A /* Old */ = {
 			isa = PBXGroup;
 			children = (
+				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
 				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
 			);
@@ -1853,7 +1870,6 @@
 				27724CFF19CE849E00C27D78 /* FacilitiesHomeViewController */,
 				2C40A0F01367362600C83847 /* FacilitiesLocation */,
 				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
-				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C1807391382C2DA000CCB6F /* FacilitiesType */,
 				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
 				2CCB85F61361D9790024E474 /* Model */,
@@ -2661,6 +2677,7 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				274D661919EB77350044FE32 /* SVProgressHUD */,
 				2C0454C218F33D8A0018073D /* AFNetworking */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C3C5D81191F076800D59D33 /* ECSlidingViewController */,
@@ -3563,6 +3580,7 @@
 				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
+				274D661E19EB77350044FE32 /* SVProgressHUD.bundle in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
 				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
@@ -3972,6 +3990,7 @@
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
 				2C276713184CC90E00E53E9F /* MITMobileResource.m in Sources */,
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
+				274D661F19EB77350044FE32 /* SVProgressHUD.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				5E70E39C192F87CA00165B41 /* MITShuttleMapViewController.m in Sources */,
