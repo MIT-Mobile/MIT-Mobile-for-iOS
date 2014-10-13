@@ -5,6 +5,9 @@
 //
 
 #import "MITTouchstoneController.h"
+#import "MITTouchstoneRequestOperation.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
+
 #import "MITBuildingServicesReportForm.h"
 #import "NSString+EmailValidation.h"
 
@@ -24,6 +27,74 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
     });
     
     return sharedReport;
+}
+
+- (void)submitFormWithCompletionBlock:(void (^)(NSDictionary *, NSError *))completionBlock
+                  progressUpdateBlock:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))progressUpdateBlock
+{
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
+    params[@"name"] = @"";
+    
+    params[@"email"] = self.email;
+    
+    FacilitiesLocation *location = self.location;
+    FacilitiesRoom *room = self.room;
+    FacilitiesRepairType *type = self.problemType;
+    NSString *description = self.reportDescription;
+    NSString *customLocation = self.customLocation;
+    NSString *customRoom = self.roomAltName;
+    
+    if (location) {
+        params[@"locationName"] = location.name;
+        params[@"buildingNumber"] = location.number;
+        params[@"location"] = location.uid;
+    } else if( customLocation ) {
+        params[@"locationNameByUser"] = customLocation;
+    }
+    
+    if (room) {
+        params[@"roomName"] = room.number;
+    } else if( customRoom ) {
+        params[@"roomNameByUser"] = customRoom;
+    }
+    
+    if( type.name ) {
+        params[@"problemType"] = type.name;
+    }
+    
+    if( description )
+    {
+        params[@"message"] = description;
+    }
+    
+    NSData *pictureData = self.reportImageData;
+    if (pictureData)
+    {
+        params[@"image"] = pictureData;
+        params[@"imageFormat"] = @"image/jpeg";
+    }
+    
+    NSURLRequest *request = [NSURLRequest requestForModule:@"facilities" command:@"upload" parameters:params method:@"POST"];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *responseObject) {
+        if ([responseObject[@"success"] boolValue])
+        {
+            if( completionBlock ) completionBlock( responseObject, nil );
+        }
+        else
+        {
+            if( completionBlock ) completionBlock( responseObject, [NSError errorWithDomain:@"Unknown Error" code:-1 userInfo:nil] );
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        if( completionBlock ) completionBlock( nil, error );
+    }];
+    
+    [requestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        if( progressUpdateBlock ) progressUpdateBlock( bytesWritten, totalBytesWritten, totalBytesExpectedToWrite );
+    }];
+    
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (BOOL)isValidForm
@@ -81,7 +152,6 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 }
 - (void)clearAll
 {
-    self.email = nil;
     self.location = nil;
     self.customLocation = nil;
     self.reportDescription = nil;

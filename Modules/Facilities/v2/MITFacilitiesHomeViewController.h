@@ -11,6 +11,7 @@
 
 @end
 
+// Editable Cell
 @interface MITFacilitiesEditableFieldCell : UITableViewCell
 
 @property (nonatomic, strong) IBOutlet UILabel *titleLabel;
@@ -18,6 +19,7 @@
 
 @end
 
+// Non-Editable Cell
 @interface MITFacilitiesNonEditableFieldCell : UITableViewCell
 
 @property (nonatomic, strong) IBOutlet UILabel *titleLabel;
@@ -25,6 +27,7 @@
 
 @end
 
+// Non-Editable Leased Message Cell
 @interface MITFacilitiesLeasedMessageCell : UITableViewCell
 
 @property (nonatomic, strong) IBOutlet UILabel *subtitleLabel;

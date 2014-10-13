@@ -22,6 +22,9 @@
 #import "UIImage+Metadata.h"
 #import "NSString+EmailValidation.h"
 #import <MessageUI/MFMailComposeViewController.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+
+#import "SVProgressHUD.h"
 
 typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
     MITFacilitiesFormFieldEmail = 0,
@@ -163,9 +166,43 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (void)submitReport
 {
     [self.view endEditing:YES];
-    
-    FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];   
-    [self.navigationController pushViewController:vc animated:YES];
+        
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeGradient];
+    });
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        [self.reportForm submitFormWithCompletionBlock:^(NSDictionary *responseObject, NSError *error) {
+            if( error == nil )
+            {
+                [SVProgressHUD showSuccessWithStatus:@"Report submitted successfully."];
+                
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC);
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                {
+                    [self.reportForm clearAll];
+                    [self.tableView reloadData];
+                    
+                    [SVProgressHUD dismiss];
+                });
+            }
+            else
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD dismiss];
+                    UIAlertView *failureAlert = [[UIAlertView alloc] initWithTitle:@"Submission Failed"
+                                                                           message:@"Unable to submit report. Please try again later."
+                                                                          delegate:nil
+                                                                 cancelButtonTitle:@"OK"
+                                                                 otherButtonTitles:nil];
+                    [failureAlert show];
+                });
+            }
+        } progressUpdateBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+            [SVProgressHUD showProgress:(totalBytesWritten / totalBytesExpectedToWrite) status:nil maskType:SVProgressHUDMaskTypeGradient];
+        }];
+    });
 }
 
 - (void)contactFacilitiesAction:(id)sender
@@ -907,7 +944,24 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             }];
         });
     }
-    
+    else if ([picker sourceType] == UIImagePickerControllerSourceTypePhotoLibrary)
+    {
+        NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+        if (assetURL)
+        {
+            ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+            [assetLibrary assetForURL:assetURL
+                          resultBlock:^(ALAsset *asset) {
+                              [image updateMetadata:[asset.defaultRepresentation.metadata mutableCopy] withCompletionHandler:^(NSData *imageData) {
+                                  [self attachImage:image withImageData:imageData];
+                              }];
+                          }
+                         failureBlock:^(NSError *error) {
+                             DDLogWarn(@"Failed to load image metadata: %@", [error localizedDescription]);
+                         }];
+        }
+    }
+
     [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 }
 
