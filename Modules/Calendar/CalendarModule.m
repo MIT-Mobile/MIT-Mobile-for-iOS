@@ -5,33 +5,28 @@
 #import "MITEventsHomeViewControllerPad.h"
 
 @implementation CalendarModule
-@dynamic calendarVC;
-
 - (id) init {
-    self = [super init];
+    self = [super initWithName:MITModuleTagCalendar title:@"Events"];
     if (self != nil) {
-        self.tag = CalendarTag;
-        self.shortName = @"Events";
-        self.longName = @"Events Calendar";
-        self.iconName = @"calendar";
-        
+        self.longTitle = @"Events Calendar";
+        self.imageName = @"calendar";
     }
+
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (void)loadRootViewController
 {
-    return YES;
-}
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
-{
-    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
-}
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    return [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    self.rootViewController = rootViewController;
 }
 
 @end
