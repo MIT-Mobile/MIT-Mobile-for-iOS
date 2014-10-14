@@ -601,28 +601,27 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 
 #pragma mark Application modules helper methods
-- (UIViewController<MITModuleViewControllerProtocol>*)viewControllerForModuleWithTag:(NSString *)tag
+- (MITModule*)moduleWithTag:(NSString *)tag
 {
-    __block UIViewController<MITModuleViewControllerProtocol> *viewControllerForTag = nil;
-    [self.moduleViewControllers enumerateObjectsUsingBlock:^(UIViewController<MITModuleViewControllerProtocol> *viewController, NSUInteger idx, BOOL *stop) {
-        MITModuleItem *moduleItem = viewController.moduleItem;
-        if ([moduleItem.tag isEqualToString:tag]) {
-            viewControllerForTag = viewController;
+    __block MITModule *selectedModule = nil;
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module.name isEqualToString:tag]) {
+            selectedModule = module;
             (*stop) = YES;
         }
     }];
     
-    return viewControllerForTag;
+    return selectedModule;
 }
 
 - (void)showModuleWithTag:(NSString *)tag
 {
-    [self showModuleWithTag:tag animated:YES];
+    [self showModuleWithTag:tag animated:NO];
 }
 
 - (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated
 {
-    [self.rootViewController setVisibleModuleWithTag:tag];
+    [self.rootViewController setVisibleViewControllerWithModuleName:tag];
 }
 
 #pragma mark Preferences
