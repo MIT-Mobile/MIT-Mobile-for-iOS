@@ -6,9 +6,16 @@
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesQuickLinksViewController.h"
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate>
+typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
+    MITLibrariesLayoutModeList,
+    MITLibrariesLayoutModeGrid
+};
+
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
+
+@property (nonatomic, strong) UISearchBar *searchBar;
 
 @property (nonatomic, strong) UIBarButtonItem *locationsAndHoursButton;
 @property (nonatomic, strong) UIBarButtonItem *askUsTellUsButton;
@@ -21,6 +28,9 @@
 
 @property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
 
+@property (nonatomic) MITLibrariesLayoutMode layoutMode;
+@property (nonatomic, strong) UIBarButtonItem *gridLayoutButton;
+@property (nonatomic, strong) UIBarButtonItem *listLayoutButton;
 
 @end
 
@@ -47,7 +57,21 @@
 
 - (void)setupNavBar
 {
-
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.searchBar.placeholder = @"Search MIT's WorldCat";
+        
+    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    searchBarView.autoresizingMask = UIViewAutoresizingNone;
+    self.searchBar.delegate = self;
+    [searchBarView addSubview:self.searchBar];
+    self.navigationItem.titleView = searchBarView;
+    
+    
+    self.listLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
+    self.gridLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"Grid" style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
+    self.layoutMode = MITLibrariesLayoutModeList;
 }
 
 - (void)setupToolbar
@@ -147,6 +171,30 @@
     if (self.quickLinksViewController) {
         self.quickLinksViewController.links = links;
     }
+}
+
+- (void)setLayoutMode:(MITLibrariesLayoutMode)layoutMode
+{
+    _layoutMode = layoutMode;
+    
+    if (layoutMode == MITLibrariesLayoutModeList) {
+        self.navigationItem.rightBarButtonItem = self.gridLayoutButton;
+    }
+    else {
+        self.navigationItem.rightBarButtonItem = self.listLayoutButton;
+    }
+    
+    // TODO: Swap view controllers
+}
+
+- (void)listViewPressed
+{
+    self.layoutMode = MITLibrariesLayoutModeList;
+}
+
+- (void)gridViewPressed
+{
+    self.layoutMode = MITLibrariesLayoutModeGrid;
 }
 
 @end
