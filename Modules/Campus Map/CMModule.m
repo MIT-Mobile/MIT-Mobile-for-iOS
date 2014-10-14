@@ -6,10 +6,15 @@
     self = [super initWithName:MITModuleTagCampusMap title:@"Map"];
     if (self != nil) {
         self.longTitle = @"Campus Map";
-        self.imageName = @"map";
+        self.imageName = @"icons/home-map";
     }
 
     return self;
+}
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
 }
 
 - (void)loadRootViewController

@@ -5,10 +5,15 @@
 - (instancetype) init {
     self = [super initWithName:MITModuleTagAbout title:@"About"];
     if (self) {
-        self.imageName = @"about";
+        self.imageName = @"icons/home-about";
     }
     
     return self;
+}
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
 }
 
 - (void)loadRootViewController

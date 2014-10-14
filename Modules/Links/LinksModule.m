@@ -5,10 +5,16 @@
 - (instancetype)init {
     self = [super initWithName:MITModuleTagLinks title:@"Links"];
     if (self) {
-        self.imageName = @"webmitedu";
+        self.imageName = @"icons/home-webmitedu";
     }
     
     return self;
+}
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    return (UIUserInterfaceIdiomPhone == currentUserInterfaceIdiom);
 }
 
 - (void)loadRootViewController

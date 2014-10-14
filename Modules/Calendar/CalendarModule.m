@@ -9,10 +9,15 @@
     self = [super initWithName:MITModuleTagCalendar title:@"Events"];
     if (self != nil) {
         self.longTitle = @"Events Calendar";
-        self.imageName = @"calendar";
+        self.imageName = @"icons/home-calendar";
     }
 
     return self;
+}
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
 }
 
 - (void)loadRootViewController

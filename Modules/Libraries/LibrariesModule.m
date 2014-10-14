@@ -8,11 +8,17 @@
 {
     self = [super initWithName:MITModuleTagLibraries title:@"Libraries"];
     if (self) {
-        self.imageName = @"libraries";
+        self.imageName = @"icons/home-libraries";
         self.requestQueue = [[NSOperationQueue alloc] init];
     }
     
     return self;
+}
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    return (UIUserInterfaceIdiomPhone == currentUserInterfaceIdiom);
 }
 
 - (void)loadRootViewController
