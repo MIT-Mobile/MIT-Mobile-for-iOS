@@ -57,38 +57,8 @@
 #pragma mark - Recent Add/Remove methods
 - (IBAction)clearRecentsButtonClicked:(id)sender
 {
-    if ([UIAlertController class]) {
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                                 message:nil
-                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
-        
-        UIAlertAction *clearAction = [UIAlertAction actionWithTitle:@"Clear All Recents"
-                                                              style:UIAlertActionStyleDestructive
-                                                            handler:^(UIAlertAction *action) {
-                                                                [self clearRecents];
-                                                            }];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                               style:UIAlertActionStyleDefault
-                                                             handler:nil];
-        [alertController addAction:clearAction];
-        [alertController addAction:cancelAction];
-        [alertController setModalPresentationStyle:UIModalPresentationPopover];
-        
-        UIPopoverPresentationController *popPresenter = [alertController
-                                                         popoverPresentationController];
-        
-        UIBarButtonItem * clearButton = (UIBarButtonItem *)sender;
-        
-        popPresenter.barButtonItem = clearButton;
-        [self presentViewController:alertController animated:YES completion:nil];
-        
-    } else {
-        
-        self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear All Recents" otherButtonTitles:nil];
-        [self.confirmSheet showInView:self.view];
-    }
+    self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear All Recents" otherButtonTitles:nil];
+    [self.confirmSheet showInView:self.view];
 }
 
 - (void)addRecentSearchItem:(NSString *)searchTerm
