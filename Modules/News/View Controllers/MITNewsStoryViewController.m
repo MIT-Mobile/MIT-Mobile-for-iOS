@@ -26,6 +26,8 @@
 @property (nonatomic) CGFloat pageHeight;
 @property (nonatomic) CGFloat beforeRotateBodyViewHeightConstraint;
 
+@property (weak, nonatomic) MITNewsMediaGalleryViewController *weakMITNewsMediaGalleryViewController;
+
 @end
 
 @implementation MITNewsStoryViewController {
@@ -196,7 +198,7 @@
 {
     if ([segue.identifier isEqualToString:@"showMediaGallery"]) {
         MITNewsMediaGalleryViewController *viewController = (MITNewsMediaGalleryViewController*)[segue destinationViewController];
-
+        self.weakMITNewsMediaGalleryViewController = viewController;
         NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         managedObjectContext.parentContext = self.managedObjectContext;
         viewController.managedObjectContext = managedObjectContext;
@@ -543,6 +545,10 @@
     } else {
         return self.story.title;
     }
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden {
+    return self.weakMITNewsMediaGalleryViewController;
 }
 
 @end

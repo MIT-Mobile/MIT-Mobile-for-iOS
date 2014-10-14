@@ -260,7 +260,7 @@
         
         if (!_interfaceHidden) {
             if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                //[self setNeedsStatusBarAppearanceUpdate];
+                [self setNeedsStatusBarAppearanceUpdate];
             }
         }
         
@@ -274,7 +274,7 @@
                          } completion:^(BOOL finished) {
                              if (_interfaceHidden) {
                                  if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                                     //[self setNeedsStatusBarAppearanceUpdate];
+                                     [self setNeedsStatusBarAppearanceUpdate];
                                  }
                              }
                          }];
