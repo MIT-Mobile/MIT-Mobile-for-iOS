@@ -137,7 +137,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 }
 
 #pragma mark - Responding to UI events
-
 - (void)highlightCell:(UITapGestureRecognizer *)gestureRecognizer
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
