@@ -19,7 +19,7 @@
 
 - (void)loadRootViewController
 {
-    MITCampusMapViewController *rootViewController = [[MITCampusMapViewController alloc] init];
+    MITMapHomeViewController *rootViewController = [[MITMapHomeViewController alloc] init];
     self.rootViewController = rootViewController;
 }
 
