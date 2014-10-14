@@ -64,6 +64,10 @@
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleDefault;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -99,6 +103,10 @@
     } else {
         [self setupNextStory];
     }
+    self.weakMITNewsMediaGalleryViewController = nil;
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    };
 }
 
 - (void)didReceiveMemoryWarning
@@ -199,6 +207,9 @@
     if ([segue.identifier isEqualToString:@"showMediaGallery"]) {
         MITNewsMediaGalleryViewController *viewController = (MITNewsMediaGalleryViewController*)[segue destinationViewController];
         self.weakMITNewsMediaGalleryViewController = viewController;
+        if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+            [self setNeedsStatusBarAppearanceUpdate];
+        }
         NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         managedObjectContext.parentContext = self.managedObjectContext;
         viewController.managedObjectContext = managedObjectContext;
@@ -547,7 +558,13 @@
     }
 }
 
-- (UIViewController *)childViewControllerForStatusBarHidden {
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+    return self.weakMITNewsMediaGalleryViewController;
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
     return self.weakMITNewsMediaGalleryViewController;
 }
 

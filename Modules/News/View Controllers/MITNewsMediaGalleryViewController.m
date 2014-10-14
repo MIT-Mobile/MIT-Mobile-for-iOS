@@ -58,6 +58,9 @@
     self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.view.backgroundColor = [UIColor blackColor];
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
