@@ -3,6 +3,8 @@
 #import "MITLibrariesLocationsHoursViewController.h"
 #import "MITLibrariesLibraryDetailViewController.h"
 #import "MITLibrariesLibrary.h"
+#import "MITLibrariesWebservices.h"
+#import "MITLibrariesQuickLinksViewController.h"
 
 @interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate>
 
@@ -12,7 +14,13 @@
 @property (nonatomic, strong) UIBarButtonItem *askUsTellUsButton;
 @property (nonatomic, strong) UIBarButtonItem *quickLinksButton;
 
+@property (nonatomic, strong) NSArray *links;
+
 @property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
+@property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
+
+@property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
+
 
 @end
 
@@ -28,7 +36,7 @@
 
     [self setupNavBar];
     [self setupToolbar];
-    
+    [self loadLinks];
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,6 +71,15 @@
                           self.quickLinksButton];
 }
 
+- (void)loadLinks
+{
+    [MITLibrariesWebservices getLinksWithCompletion:^(NSArray *links, NSError *error) {
+        if (links) {
+            self.links = links;
+        }
+    }];
+}
+
 - (void)locationsAndHoursPressed:(id)sender
 {
     MITLibrariesLocationsHoursViewController *vc = [[MITLibrariesLocationsHoursViewController alloc] init];
@@ -95,7 +112,7 @@
 
 - (void)quickLinksPressed:(id)sender
 {
-    NSLog(@"Quick Links");
+    [self.quickLinksPopoverController presentPopoverFromBarButtonItem:self.quickLinksButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
 - (void)setupViewControllers
@@ -111,6 +128,25 @@
     
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
+    
+    [self setupQuickLinksPopover];
+}
+
+- (void)setupQuickLinksPopover
+{
+    self.quickLinksViewController = [[MITLibrariesQuickLinksViewController alloc] initWithStyle:UITableViewStylePlain];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.quickLinksViewController];
+    
+    self.quickLinksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.quickLinksPopoverController setPopoverContentSize:CGSizeMake(320, 132 + navController.navigationBar.frame.size.height)];
+}
+
+- (void)setLinks:(NSArray *)links
+{
+    _links = links;
+    if (self.quickLinksViewController) {
+        self.quickLinksViewController.links = links;
+    }
 }
 
 @end

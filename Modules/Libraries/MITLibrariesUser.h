@@ -11,5 +11,7 @@
 @property (nonatomic, strong) NSArray *fines;
 @property (nonatomic, strong) NSString *formattedBalance;
 @property (nonatomic) NSInteger balance;
+@property (nonatomic) NSInteger overdueItemsCount;
+@property (nonatomic) NSInteger readyForPickupCount;
 
 @end

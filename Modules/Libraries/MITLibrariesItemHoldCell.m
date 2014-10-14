@@ -20,6 +20,7 @@
     [super awakeFromNib];
     self.holdDateLabel.textColor =
     self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
+    self.readyForPickupLabel.text = nil;
 }
 
 - (void)setContent:(id)content
@@ -33,14 +34,16 @@
     }
     
     self.itemTitleLabel.text = item.title;
-    
+
     self.holdDateLabel.text = item.status;
-    
-    if ([[item.status lowercaseString] isEqualToString:@"in process"]) {
-        self.readyForPickupLabel.text = nil;
+
+    if (item.readyForPickup) {
+        NSMutableAttributedString *readyString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"Ready at %@", item.pickupLocation] attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor]}];
+        [readyString insertAttributedString:[self readyIconString] atIndex:0];
+        self.readyForPickupLabel.attributedText = readyString;
     }
     else {
-        self.readyForPickupLabel.text = item.pickupLocation;
+        self.readyForPickupLabel.attributedText = nil;
     }
     
     self.authorAndPublicationDateLabel.text = item.author ? [NSString stringWithFormat:@"%@; %@", item.year, item.author] : item.year;
@@ -49,6 +52,21 @@
 + (CGFloat)estimatedCellHeight
 {
     return 105.0;
+}
+
+- (NSMutableAttributedString *)readyIconString
+{
+    static NSMutableAttributedString *readyIconString;
+    if (!readyIconString) {
+        UIImage *readyIcon = [UIImage imageNamed:@"libraries/status-ready"];
+        NSTextAttachment *readyIconAttachment = [[NSTextAttachment alloc] init];
+        readyIconAttachment.image = readyIcon;
+        readyIconAttachment.bounds = CGRectMake(0, -2, readyIcon.size.width, readyIcon.size.height);
+        
+        readyIconString = [[NSAttributedString attributedStringWithAttachment:readyIconAttachment] mutableCopy];
+        [readyIconString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+    }
+    return readyIconString;
 }
 
 @end
