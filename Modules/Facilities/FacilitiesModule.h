@@ -1,6 +1,10 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
 
-@interface FacilitiesModule : MITModule
+#import "MITNavigationModule.h"
+#import "FacilitiesRootViewController.h"
 
+@interface FacilitiesModule : MITNavigationModule
+@property(nonatomic,weak) FacilitiesRootViewController *rootViewController;
+
+- (instancetype)init;
 @end
