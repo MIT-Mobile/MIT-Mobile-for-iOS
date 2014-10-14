@@ -137,7 +137,7 @@
     
 	// check if application was opened in response to a notofication
 	if(apnsDict) {
-		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
+        MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleWithTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
 		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
@@ -150,46 +150,32 @@
 
 // Because we implement -application:didFinishLaunchingWithOptions: this only gets called when an mitmobile:// URL is opened from within this app
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    BOOL canHandle = NO;
-    
-    if (canHandle == NO)
-    {
-        NSString *scheme = [url scheme];
-        NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-        NSArray *urlTypes = infoDict[@"CFBundleURLTypes"];
-        for (NSDictionary *type in urlTypes) {
-            NSArray *schemes = type[@"CFBundleURLSchemes"];
-            for (NSString *supportedScheme in schemes) {
-                if ([supportedScheme isEqualToString:scheme]) {
-                    canHandle = YES;
-                    break;
-                }
+    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSArray *urlTypes = infoDict[@"CFBundleURLTypes"];
+
+    __block BOOL canHandle = NO;
+    [urlTypes enumerateObjectsUsingBlock:^(NSDictionary *type, NSUInteger idx, BOOL *stop) {
+        NSArray *supportedSchemes = type[@"CFBundleURLSchemes"];
+        [supportedSchemes enumerateObjectsUsingBlock:^(NSString *scheme, NSUInteger idx, BOOL *stop) {
+            if ([scheme isEqualToString:url.scheme]) {
+                canHandle = YES;
+                (*stop) = YES;
             }
-            if (canHandle) {
-                break;
-            }
-        }
-        
-        if (canHandle) {
-            NSString *path = [url path];
-            NSString *moduleTag = [url host];
-            MITModule *module = [self moduleWithTag:moduleTag];
-            if ([path rangeOfString:@"/"].location == 0) {
-                path = [path substringFromIndex:1];
-            }
-            
-            // right now expecting URLs like mitmobile://people/search?Some%20Guy
-            NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            
-            if (!module.hasLaunchedBegun) {
-                module.hasLaunchedBegun = YES;
-            }
-            
-            DDLogVerbose(@"handling internal url: %@", url);
-            canHandle = [module handleLocalPath:path query:query];
-        } else {
-            DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
-        }
+        }];
+
+        (*stop) = canHandle;
+    }];
+
+    if (canHandle) {
+        NSString *moduleName = url.host;
+        DDLogVerbose(@"handling internal url for module %@: %@",moduleName,url);
+
+        MITModule *module = [self moduleWithTag:moduleName];
+        [module didReceiveRequestWithURL:url];
+
+        [self.rootViewController setVisibleViewControllerWithModuleName:moduleName];
+    } else {
+        DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
     
     return canHandle;
@@ -204,18 +190,13 @@
 	[self applicationShouldSaveState:application];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     [MITUnreadNotifications updateUI];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // (https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate - 2013.07.17)
-    // We need to properly handle activation of the application with regards to Facebook Login
-    // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
+    // Do Nothing
 }
 
 #pragma mark - Shared resources
