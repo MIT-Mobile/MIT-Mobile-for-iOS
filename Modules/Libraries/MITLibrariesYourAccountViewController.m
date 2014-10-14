@@ -39,6 +39,18 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     [self setupToolbar];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.navigationController setToolbarHidden:YES];
+}
+
 - (void)refreshUserData
 {
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
