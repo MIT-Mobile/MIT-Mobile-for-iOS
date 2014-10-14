@@ -3,7 +3,7 @@
 #pragma mark - Route Definitions
 #pragma mark calendars
 NSString* const MITCalendarsResourceName = @"MITCalendarsResourceName";
-NSString* const MITCalendarsPathPattern = @"apis/calendars";
+NSString* const MITCalendarsPathPattern = @"apis/calendars/";
 
 #pragma mark calendars/:calendar
 NSString* const MITCalendarResourceName = @"MITCalendarResourceName";
@@ -19,7 +19,7 @@ NSString* const MITCalendarEventPathPattern = @"apis/calendars/:calendar/events/
 
 #pragma mark dining
 NSString* const MITDiningResourceName = @"MITDiningResourceName";
-NSString* const MITDiningPathPattern = @"apis/dining";
+NSString* const MITDiningPathPattern = @"apis/dining/";
 
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";
