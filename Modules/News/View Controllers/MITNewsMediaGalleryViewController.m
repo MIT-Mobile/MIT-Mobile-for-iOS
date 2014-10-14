@@ -58,9 +58,7 @@
     self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.view.backgroundColor = [UIColor blackColor];
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        [self setNeedsStatusBarAppearanceUpdate];
-    }
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -262,9 +260,7 @@
         _interfaceHidden = interfaceHidden;
         
         if (!_interfaceHidden) {
-            if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                [self setNeedsStatusBarAppearanceUpdate];
-            }
+            [self setNeedsStatusBarAppearanceUpdate];
         }
         
         CGFloat alpha = (_interfaceHidden ? 0. : 1);
@@ -276,9 +272,7 @@
                              self.navigationBar.alpha = alpha;
                          } completion:^(BOOL finished) {
                              if (_interfaceHidden) {
-                                 if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                                     [self setNeedsStatusBarAppearanceUpdate];
-                                 }
+                                 [self setNeedsStatusBarAppearanceUpdate];
                              }
                          }];
     }

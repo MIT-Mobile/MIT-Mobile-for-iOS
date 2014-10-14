@@ -104,9 +104,7 @@
         [self setupNextStory];
     }
     self.weakMITNewsMediaGalleryViewController = nil;
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        [self setNeedsStatusBarAppearanceUpdate];
-    };
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -207,9 +205,7 @@
     if ([segue.identifier isEqualToString:@"showMediaGallery"]) {
         MITNewsMediaGalleryViewController *viewController = (MITNewsMediaGalleryViewController*)[segue destinationViewController];
         self.weakMITNewsMediaGalleryViewController = viewController;
-        if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-            [self setNeedsStatusBarAppearanceUpdate];
-        }
+        [self setNeedsStatusBarAppearanceUpdate];
         NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         managedObjectContext.parentContext = self.managedObjectContext;
         viewController.managedObjectContext = managedObjectContext;
