@@ -18,6 +18,11 @@
     return self;
 }
 
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return NO;
+}
+
 - (BOOL)isViewControllerLoaded
 {
     return (_viewController != nil);

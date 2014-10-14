@@ -15,6 +15,7 @@
 
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title;
 
+- (BOOL)supportsCurrentUserInterfaceIdiom;
 - (BOOL)isViewControllerLoaded;
 
 /*! Called when the module's view controller needs to be loaded.
