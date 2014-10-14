@@ -71,7 +71,7 @@ typedef enum {
 }
 
 - (void) doSearch {
-    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:LibrariesTag];
+    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:LibrariesTag];
     
     NSDictionary *parameters = nil;
     if (self.nextIndex) {

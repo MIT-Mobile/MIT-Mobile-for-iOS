@@ -354,7 +354,7 @@ enum {
 
         return;
     } else {
-        MITModule *module = [MITAppDelegate() moduleForTag:tag];
+        MITModule *module = [MITAppDelegate() moduleWithTag:tag];
         NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
         parameters[@"module_name"] = tag;
         parameters[@"enabled"] = (enabled ? @"1" : @"0");

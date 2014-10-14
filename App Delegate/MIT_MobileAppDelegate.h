@@ -41,8 +41,8 @@
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated;
 
 - (MITModule*)moduleWithTag:(NSString *)aTag;
-- (void)showModuleForTag:(NSString *)tag;
-- (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated;
+- (void)showModuleWithTag:(NSString *)tag;
+- (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated;
 
 - (UINavigationController*)rootNavigationController;
 @end

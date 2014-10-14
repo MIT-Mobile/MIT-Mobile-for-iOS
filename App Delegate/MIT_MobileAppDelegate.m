@@ -54,8 +54,8 @@
 @property (nonatomic,strong) NSRecursiveLock *lock;
 
 - (void)updateBasicServerInfo;
-- (void)showModuleForTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated;
-- (void)showModuleForTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated;
+- (void)showModuleWithTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated;
+- (void)showModuleWithTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated;
 @end
 
 @implementation MIT_MobileAppDelegate {
@@ -138,7 +138,7 @@
 	// check if application was opened in response to a notofication
 	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
-		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
+		[[self moduleWithTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
 		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
 
@@ -173,7 +173,7 @@
         if (canHandle) {
             NSString *path = [url path];
             NSString *moduleTag = [url host];
-            MITModule *module = [self moduleForTag:moduleTag];
+            MITModule *module = [self moduleWithTag:moduleTag];
             if ([path rangeOfString:@"/"].location == 0) {
                 path = [path substringFromIndex:1];
             }
@@ -615,12 +615,12 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return viewControllerForTag;
 }
 
-- (void)showModuleForTag:(NSString *)tag
+- (void)showModuleWithTag:(NSString *)tag
 {
-    [self showModuleForTag:tag animated:YES];
+    [self showModuleWithTag:tag animated:YES];
 }
 
-- (void)showModuleForTag:(NSString *)tag animated:(BOOL)animated
+- (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated
 {
     [self.rootViewController setVisibleModuleWithTag:tag];
 }
@@ -677,7 +677,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         [self.appDelegate dismissAppModalViewControllerAnimated:YES];
     }
     
-    [[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
+    [[self.appDelegate moduleWithTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
