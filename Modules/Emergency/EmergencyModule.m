@@ -1,5 +1,6 @@
 #import "EmergencyModule.h"
 
+#import "MITUnreadNotifications.h"
 #import "EmergencyData.h"
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
@@ -15,7 +16,7 @@
     self = [super initWithName:MITModuleTagEmergency title:@"Emergency"];
     if (self) {
         self.longTitle = @"Emergency Info";
-        self.imageName = @"emergency";
+        self.imageName = @"icons/home-emergency";
     }
     
     return self;
@@ -77,41 +78,13 @@
     [self.rootViewController refreshInfo:nil];
 }
 
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    BOOL didHandle = NO;
-    if ([localPath isEqualToString:@"contacts"]) {
-        UINavigationController *controller = [MITAppDelegate() rootNavigationController];
-        
-        if (![controller.visibleViewController isKindOfClass:[EmergencyContactsViewController class]]) {
-            
-            // show More Emergency Contact drilldown
-            // init its view controller
-        }
-        
-        didHandle = YES;
-    }
-    return didHandle;
-}
-
-- (BOOL)handleNotification:(MITNotification *)notification
-                shouldOpen:(BOOL)shouldOpen {
-	if(shouldOpen) {
-		[self.mainViewController refreshInfo:nil];
-		self.currentPath = @"";
-        
-        [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:self.tag];
-	}
-    
-	return YES;
-}
-
 - (void) syncUnreadNotifications {
 	// if emergency module on the screen
 	// and the emergency module has received data from the server (does not have to be new data)
 	// since the last time it was on screen, we tell the server to clear the emergency badge
 	
 	if(self.emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
-		[MITUnreadNotifications removeNotificationsForModuleTag:self.tag];
+		[MITUnreadNotifications removeNotificationsForModuleTag:self.name];
 	}
 }
 
