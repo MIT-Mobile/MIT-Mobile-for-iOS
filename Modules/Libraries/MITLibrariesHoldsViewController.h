@@ -3,4 +3,6 @@
 
 @interface MITLibrariesHoldsViewController : MITLibrariesLoansFinesHoldsTableViewController
 
+@property (nonatomic) NSInteger readyForPickupCount;
+
 @end

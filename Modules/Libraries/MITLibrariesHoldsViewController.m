@@ -1,6 +1,7 @@
 #import "MITLibrariesHoldsViewController.h"
 #import "MITLibrariesItemHoldCell.h"
 #import "MITLibrariesYourAccountItemDetailViewController.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
@@ -65,7 +66,16 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
 - (void)updateHeaderLabel
 {
-    // TODO: Pending confirmation on holds webservice
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.items.count]
+                                                                                   attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                                NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.readyForPickupCount]
+                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
+                                                                                     NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:readyForPickupString];
+    
+    self.tableHeaderLabel.attributedText = baseString;
 }
 
 @end

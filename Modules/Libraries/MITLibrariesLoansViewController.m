@@ -67,17 +67,10 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
 
 - (void)updateHeaderLabel
 {
-    NSInteger overdueItems = 0;
-    for (MITLibrariesMITLoanItem *item in self.items) {
-        if (item.overdue) {
-            overdueItems++;
-        }
-    }
-    
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.items.count]
                                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                                               NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
-    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", overdueItems]
+    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.overdueItemsCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                                 NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     

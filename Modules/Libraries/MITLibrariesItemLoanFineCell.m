@@ -11,8 +11,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *itemTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *authorAndPublicationDateLabel;
 
-@property (strong, nonatomic) NSMutableAttributedString *warningSignString;
-
 @end
 
 @implementation MITLibrariesItemLoanFineCell
@@ -71,16 +69,17 @@
 
 - (NSMutableAttributedString *)warningSignString
 {
-    if (!_warningSignString) {
+    static NSMutableAttributedString *warningSignString;
+    if (!warningSignString) {
         UIImage *warningSign = [UIImage imageNamed:@"libraries/status-alert"];
         NSTextAttachment *warningSignAttachment = [[NSTextAttachment alloc] init];
         warningSignAttachment.image = warningSign;
         warningSignAttachment.bounds = CGRectMake(0, -2, warningSign.size.width, warningSign.size.height);
         
-        _warningSignString = [[NSAttributedString attributedStringWithAttachment:warningSignAttachment] mutableCopy];
-        [_warningSignString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+        warningSignString = [[NSAttributedString attributedStringWithAttachment:warningSignAttachment] mutableCopy];
+        [warningSignString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
     }
-    return _warningSignString;
+    return warningSignString;
 }
 
 + (CGFloat)estimatedCellHeight

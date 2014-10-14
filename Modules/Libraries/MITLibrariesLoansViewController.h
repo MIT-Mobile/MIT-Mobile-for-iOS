@@ -3,4 +3,6 @@
 
 @interface MITLibrariesLoansViewController : MITLibrariesLoansFinesHoldsTableViewController
 
+@property (nonatomic) NSInteger overdueItemsCount;
+
 @end

@@ -149,10 +149,14 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 
 - (void)refreshViewControllers
 {
+    self.loansViewController.overdueItemsCount = self.user.overdueItemsCount;
     self.loansViewController.items = self.user.loans;
+    
+    self.holdsViewController.readyForPickupCount = self.user.readyForPickupCount;
     self.holdsViewController.items = self.user.holds;
-    self.finesViewController.items = self.user.fines;
+    
     self.finesViewController.finesBalance = self.user.formattedBalance;
+    self.finesViewController.items = self.user.fines;
     
     [self showSelectedViewController];
 }
