@@ -2,14 +2,15 @@
 #import "MITLibrariesItemLoanFineCell.h"
 #import "MITLibrariesItemHoldCell.h"
 #import "MITLibrariesUser.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
-typedef NS_ENUM(NSInteger, kMITAccountListSection) {
-    kMITAccountListSectionLoans,
-    kMITAccountListSectionFines,
-    kMITAccountListSectionHolds
+typedef NS_ENUM(NSInteger, MITAccountListSection) {
+    MITAccountListSectionLoans,
+    MITAccountListSectionFines,
+    MITAccountListSectionHolds
 };
 
 @interface MITLibrariesYourAccountListViewControllerPad ()
@@ -53,36 +54,17 @@ typedef NS_ENUM(NSInteger, kMITAccountListSection) {
     }
     
     switch (section) {
-        case kMITAccountListSectionLoans:
+        case MITAccountListSectionLoans:
             return self.user.loans.count;
             break;
-        case kMITAccountListSectionFines:
+        case MITAccountListSectionFines:
             return self.user.fines.count;
             break;
-        case kMITAccountListSectionHolds:
+        case MITAccountListSectionHolds:
             return self.user.holds.count;
             break;
         default:
             return 0;
-            break;
-    }
-}
-
-// TODO: Real headers
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    switch (section) {
-        case kMITAccountListSectionLoans:
-            return @"Loans";
-            break;
-        case kMITAccountListSectionFines:
-            return @"Fines";
-            break;
-        case kMITAccountListSectionHolds:
-            return @"Holds";
-            break;
-        default:
-            return @"";
             break;
     }
 }
@@ -93,17 +75,51 @@ typedef NS_ENUM(NSInteger, kMITAccountListSection) {
     CGFloat width = self.tableView.frame.size.width;
     
     switch (indexPath.section) {
-        case kMITAccountListSectionLoans:
+        case MITAccountListSectionLoans:
             return [MITLibrariesItemLoanFineCell heightForContent:self.user.loans[row]
                                                    tableViewWidth:width];
             break;
-        case kMITAccountListSectionFines:
+        case MITAccountListSectionFines:
             return [MITLibrariesItemLoanFineCell heightForContent:self.user.fines[row]
                                                    tableViewWidth:width];
             break;
-        case kMITAccountListSectionHolds:
+        case MITAccountListSectionHolds:
             return [MITLibrariesItemHoldCell heightForContent:self.user.holds[row]
                                                    tableViewWidth:width];
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case MITAccountListSectionLoans:
+            return [self loansHeaderView];
+            break;
+        case MITAccountListSectionHolds:
+            return [self holdsHeaderView];
+            break;
+        case MITAccountListSectionFines:
+            return [self finesHeaderView];
+            break;
+        default:
+            return [UIView new];
+            break;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case MITAccountListSectionLoans:
+        case MITAccountListSectionHolds:
+            return 34.0;
+            break;
+        case MITAccountListSectionFines:
+            return 67.0;
             break;
         default:
             return 0;
@@ -114,19 +130,19 @@ typedef NS_ENUM(NSInteger, kMITAccountListSection) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.section) {
-        case kMITAccountListSectionLoans: {
+        case MITAccountListSectionLoans: {
             MITLibrariesItemLoanFineCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemLoanFineCell forIndexPath:indexPath];
             [cell setContent:self.user.loans[indexPath.row]];
             return cell;
             break;
         }
-        case kMITAccountListSectionFines: {
+        case MITAccountListSectionFines: {
             MITLibrariesItemLoanFineCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemLoanFineCell forIndexPath:indexPath];
             [cell setContent:self.user.fines[indexPath.row]];
             return cell;
             break;
         }
-        case kMITAccountListSectionHolds: {
+        case MITAccountListSectionHolds: {
             MITLibrariesItemHoldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemHoldCell forIndexPath:indexPath];
             [cell setContent:self.user.holds[indexPath.row]];
             return cell;
@@ -136,6 +152,79 @@ typedef NS_ENUM(NSInteger, kMITAccountListSection) {
             return 0;
             break;
     }
+}
+
+- (UIView *)loansHeaderView
+{
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+    
+    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
+                                                                              attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                           NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+    
+    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
+                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                     NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:overdueString];
+    
+    return [self embeddedLabelWithAttributedText:baseString height:34.0];
+    
+}
+
+- (UIView *)finesHeaderView
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"M/d/yyyy"];
+    }
+    
+    
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Fines " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+    
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:self.user.formattedBalance
+                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                    NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+    
+    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
+                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                     NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:detailsString];
+    
+    return [self embeddedLabelWithAttributedText:baseString height:67.0];
+}
+
+- (UIView *)holdsHeaderView
+{
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+    
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
+                                                                                   attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                                NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
+    
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
+                                                                               attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
+                                                                                            NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:readyForPickupString];
+    
+    return [self embeddedLabelWithAttributedText:baseString height:34.0];
+}
+
+- (UIView *)embeddedLabelWithAttributedText:(NSAttributedString *)attributedText height:(CGFloat)height
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, height)];
+    view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectInset(view.frame, 8, 5)];
+    label.numberOfLines = 0;
+    
+    label.attributedText = attributedText;
+    
+    [view addSubview:label];
+    
+    return view;
 }
 
 - (void)setUser:(MITLibrariesUser *)user
