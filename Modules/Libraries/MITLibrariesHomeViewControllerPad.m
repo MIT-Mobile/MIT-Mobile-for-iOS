@@ -5,6 +5,7 @@
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesQuickLinksViewController.h"
+#import "MITLibrariesRecentSearchesViewController.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     MITLibrariesLayoutModeList,
@@ -25,8 +26,10 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
 
 @property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 @property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
+@property (nonatomic, strong) UIPopoverController *recentSearchesPopoverController;
 
 @property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
+@property (nonatomic, strong) MITLibrariesRecentSearchesViewController *recentSearchesViewController;
 
 @property (nonatomic) MITLibrariesLayoutMode layoutMode;
 @property (nonatomic, strong) UIBarButtonItem *gridLayoutButton;
@@ -45,6 +48,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     [self setupViewControllers];
 
     [self setupNavBar];
+    [self setupRecentSearchesController];
     [self setupToolbar];
     [self loadLinks];
 }
@@ -68,10 +72,16 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     [searchBarView addSubview:self.searchBar];
     self.navigationItem.titleView = searchBarView;
     
-    
     self.listLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
     self.gridLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"Grid" style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
     self.layoutMode = MITLibrariesLayoutModeList;
+}
+
+- (void)setupRecentSearchesController
+{
+    self.recentSearchesViewController = [[MITLibrariesRecentSearchesViewController alloc] init];
+    UINavigationController *navContainer = [[UINavigationController alloc] initWithRootViewController:self.recentSearchesViewController];
+    self.recentSearchesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainer];
 }
 
 - (void)setupToolbar
@@ -195,6 +205,25 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
 - (void)gridViewPressed
 {
     self.layoutMode = MITLibrariesLayoutModeGrid;
+}
+
+#pragma mark - Search Bar Delegate
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
+    
+    // TODO: This should be handled by a results controller most likely, but for now this will cache the search term in recents
+    NSString *searchString = searchBar.text;
+    [MITLibrariesWebservices getResultsForSearch:searchString startingIndex:0 completion:^(NSArray *items, NSError *error) {
+
+    }];
 }
 
 @end

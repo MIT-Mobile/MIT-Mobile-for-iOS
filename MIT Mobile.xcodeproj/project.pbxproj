@@ -166,6 +166,7 @@
 		22E6BCC019E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCBE19E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.m */; };
 		22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E6BCBF19E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib */; };
 		22E6BCC519E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCC419E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m */; };
+		22F2D5AF19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
@@ -1019,6 +1020,8 @@
 		22E6BCBF19E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountViewControllerPad.xib; sourceTree = "<group>"; };
 		22E6BCC319E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountListViewControllerPad.h; sourceTree = "<group>"; };
 		22E6BCC419E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountListViewControllerPad.m; sourceTree = "<group>"; };
+		22F2D5AD19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesRecentSearchesViewController.h; sourceTree = "<group>"; };
+		22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesRecentSearchesViewController.m; sourceTree = "<group>"; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
 		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
@@ -2312,6 +2315,8 @@
 				2258CBD719CA1E450067E35C /* MITLibrariesHomeViewController.h */,
 				2258CBD819CA1E450067E35C /* MITLibrariesHomeViewController.m */,
 				2258CBD919CA1E450067E35C /* MITLibrariesHomeViewController.xib */,
+				22F2D5AD19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.h */,
+				22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */,
 				2240183019E71E300005BB6D /* iPad */,
 			);
 			name = Home;
@@ -5273,6 +5278,7 @@
 				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
 				22D90327199BF0E000AEBC7D /* MITDiningHomeViewController.m in Sources */,
 				22E6BCC019E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.m in Sources */,
+				22F2D5AF19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m in Sources */,
 				22D90341199D497100AEBC7D /* MITDiningVenueCell.m in Sources */,
 				22D902F9199BA90C00AEBC7D /* MITDiningHouseDay.m in Sources */,
 				DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */,
