@@ -19,10 +19,12 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITNewsiPadViewController.h"
 
+#import "MITTapGestureRecognizer.h"
+
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
-@interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
+@interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing, MITTapGestureRecognizerDelegate>
 @property (nonatomic, strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic, strong) NSMutableArray *storyHeightsArray;
@@ -123,7 +125,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     return UIInterfaceOrientationMaskPortrait;
 }
 
-
 #pragma mark - Property Setters & Getters
 - (NSManagedObjectContext*)managedObjectContext
 {
@@ -136,11 +137,41 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 }
 
 #pragma mark - Responding to UI events
-- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
+- (void)highlightCell:(UITapGestureRecognizer *)gestureRecognizer
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
+        UIView *headerView = gestureRecognizer.view;
+        if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
+            MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
+            disclosureHeaderView.containerView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
+        }
+    }
+}
+
+- (void)unHighlightCell:(UITapGestureRecognizer *)gestureRecognizer
+{
+    NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+    if (categoryIndexPath) {
+        UIView *headerView = gestureRecognizer.view;
+        if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
+            MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
+            disclosureHeaderView.containerView.backgroundColor = [UIColor whiteColor];
+        }
+    }
+}
+
+- (void)cellSelected:(UITapGestureRecognizer *)gestureRecognizer
+{
+        NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+        if (categoryIndexPath) {
+            [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
+            
+            UIView *headerView = [self.tableView headerViewForSection:categoryIndexPath];
+            if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
+                MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
+                disclosureHeaderView.containerView.backgroundColor = [UIColor whiteColor];
+        }
     }
 }
 
@@ -226,9 +257,11 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
             disclosureHeaderView.accessoryView.hidden = YES;
         } else {
-            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+            
+            MITTapGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
             if (!recognizer) {
-                recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+                recognizer = [[MITTapGestureRecognizer alloc] init];
+                recognizer.delegate = self;
                 [headerView addGestureRecognizer:recognizer];
             }
 

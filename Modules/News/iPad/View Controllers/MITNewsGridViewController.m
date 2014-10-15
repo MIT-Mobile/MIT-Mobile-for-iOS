@@ -13,6 +13,7 @@
 #import "MITNewsStoryCollectionViewCell.h"
 #import "MITCollectionViewCellSizer.h"
 #import "MITNewsLoadMoreCollectionViewCell.h"
+#import "MITTapGestureRecognizer.h"
 
 @interface MITNewsGridViewController () <MITCollectionViewCellAutosizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
@@ -112,12 +113,41 @@
 }
 
 #pragma mark - Responding to UI events
-- (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
+- (void)highlightCell:(UITapGestureRecognizer *)gestureRecognizer
+{
+    NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+    if (categoryIndexPath) {
+        UIView *headerView = gestureRecognizer.view;
+        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
+            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView*)headerView;
+            newsHeaderView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
+        }
+    }
+}
+
+- (void)unHighlightCell:(UITapGestureRecognizer *)gestureRecognizer
+{
+    NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+    if (categoryIndexPath) {
+        UIView *headerView = gestureRecognizer.view;
+        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
+            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView*)headerView;
+            newsHeaderView.backgroundColor = [UIColor whiteColor];
+        }
+    }
+}
+
+- (void)cellSelected:(UITapGestureRecognizer *)gestureRecognizer
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     
     if (categoryIndexPath && ![self isFeaturedCategoryInSection:categoryIndexPath.section]) {
         [self didSelectCategoryInSection:[categoryIndexPath indexAtPosition:0]];
+        UICollectionReusableView *headerView = [self collectionView:self.collectionView viewForSupplementaryElementOfKind:MITNewsReusableViewIdentifierSectionHeader atIndexPath:categoryIndexPath];
+        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
+            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView *)headerView;
+            newsHeaderView.backgroundColor = [UIColor whiteColor];
+        }
     }
 }
 
@@ -202,10 +232,11 @@
         if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
             MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView*)headerView;
             newsHeaderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
-            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-            
-        	if (!recognizer) {
-            	recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+            MITTapGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+         
+            if (!recognizer) {
+                recognizer = [[MITTapGestureRecognizer alloc] init];
+                recognizer.delegate = self;
             	[headerView addGestureRecognizer:recognizer];
 			}
             
@@ -225,10 +256,8 @@
                 newsHeaderView.accessoryView.hidden = NO;
             }
         }
-        
         return headerView;
     }
-    
     return nil;
 }
 
@@ -305,6 +334,18 @@
     } else {
         return 0;
     }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
+    cell.contentView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
+    cell.contentView.backgroundColor = nil;
 }
 
 #pragma mark MITNewsStory delegate/datasource passthru methods
