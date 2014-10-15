@@ -17,6 +17,9 @@ extern NSInteger const kMITLibrariesSearchResultsLimit;
                    completion:(void (^)(MITLibrariesWorldcatItem *item, NSError *error))completion;
 + (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion;
 
++ (NSArray *)recentSearchStrings;
++ (void)clearRecentSearches;
+
 + (NSArray *)parseJSONArray:(NSArray *)JSONArray intoObjectsOfClass:(Class)initializableDictionaryClass;
 + (RKISO8601DateFormatter *)librariesDateFormatter;
 

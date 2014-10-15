@@ -5,10 +5,18 @@
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesQuickLinksViewController.h"
+#import "MITLibrariesRecentSearchesViewController.h"
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate>
+typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
+    MITLibrariesLayoutModeList,
+    MITLibrariesLayoutModeGrid
+};
+
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
+
+@property (nonatomic, strong) UISearchBar *searchBar;
 
 @property (nonatomic, strong) UIBarButtonItem *locationsAndHoursButton;
 @property (nonatomic, strong) UIBarButtonItem *askUsTellUsButton;
@@ -18,9 +26,14 @@
 
 @property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 @property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
+@property (nonatomic, strong) UIPopoverController *recentSearchesPopoverController;
 
 @property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
+@property (nonatomic, strong) MITLibrariesRecentSearchesViewController *recentSearchesViewController;
 
+@property (nonatomic) MITLibrariesLayoutMode layoutMode;
+@property (nonatomic, strong) UIBarButtonItem *gridLayoutButton;
+@property (nonatomic, strong) UIBarButtonItem *listLayoutButton;
 
 @end
 
@@ -35,6 +48,7 @@
     [self setupViewControllers];
 
     [self setupNavBar];
+    [self setupRecentSearchesController];
     [self setupToolbar];
     [self loadLinks];
 }
@@ -47,7 +61,27 @@
 
 - (void)setupNavBar
 {
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.searchBar.placeholder = @"Search MIT's WorldCat";
+        
+    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    searchBarView.autoresizingMask = UIViewAutoresizingNone;
+    self.searchBar.delegate = self;
+    [searchBarView addSubview:self.searchBar];
+    self.navigationItem.titleView = searchBarView;
+    
+    self.listLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
+    self.gridLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"Grid" style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
+    self.layoutMode = MITLibrariesLayoutModeList;
+}
 
+- (void)setupRecentSearchesController
+{
+    self.recentSearchesViewController = [[MITLibrariesRecentSearchesViewController alloc] init];
+    UINavigationController *navContainer = [[UINavigationController alloc] initWithRootViewController:self.recentSearchesViewController];
+    self.recentSearchesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainer];
 }
 
 - (void)setupToolbar
@@ -147,6 +181,49 @@
     if (self.quickLinksViewController) {
         self.quickLinksViewController.links = links;
     }
+}
+
+- (void)setLayoutMode:(MITLibrariesLayoutMode)layoutMode
+{
+    _layoutMode = layoutMode;
+    
+    if (layoutMode == MITLibrariesLayoutModeList) {
+        self.navigationItem.rightBarButtonItem = self.gridLayoutButton;
+    }
+    else {
+        self.navigationItem.rightBarButtonItem = self.listLayoutButton;
+    }
+    
+    // TODO: Swap view controllers
+}
+
+- (void)listViewPressed
+{
+    self.layoutMode = MITLibrariesLayoutModeList;
+}
+
+- (void)gridViewPressed
+{
+    self.layoutMode = MITLibrariesLayoutModeGrid;
+}
+
+#pragma mark - Search Bar Delegate
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
+    
+    // TODO: This should be handled by a results controller most likely, but for now this will cache the search term in recents
+    NSString *searchString = searchBar.text;
+    [MITLibrariesWebservices getResultsForSearch:searchString startingIndex:0 completion:^(NSArray *items, NSError *error) {
+
+    }];
 }
 
 @end
