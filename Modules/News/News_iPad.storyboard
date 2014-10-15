@@ -92,34 +92,34 @@
                                             <constraint firstAttribute="height" constant="800" id="EtD-ah-Jgu"/>
                                         </constraints>
                                     </webView>
-                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
-                                        <rect key="frame" x="60" y="800" width="648" height="101.5"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2">
+                                        <rect key="frame" x="60" y="800" width="648" height="123"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
                                                 <constraints>
                                                     <constraint firstAttribute="width" id="3nw-pn-3yB"/>
                                                     <constraint firstAttribute="height" id="nX8-sr-rAA"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="Zwj-9s-ZzK" customClass="MultiLineLabel">
-                                                <rect key="frame" x="0.0" y="31" width="633" height="21.5"/>
+                                                <rect key="frame" x="0.0" y="31" width="633" height="22"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                                                 <nil key="highlightedColor"/>
                                                 <size key="shadowOffset" width="1" height="-1"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dek" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="DJg-5Q-Y2i" customClass="MultiLineLabel">
-                                                <rect key="frame" x="0.0" y="54.5" width="633" height="17.5"/>
+                                                <rect key="frame" x="0.0" y="55" width="633" height="18"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" misplaced="YES" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
-                                                <rect key="frame" x="0.0" y="74" width="633" height="17.5"/>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="633" translatesAutoresizingMaskIntoConstraints="NO" id="aRd-O6-eP4">
+                                                <rect key="frame" x="0.0" y="75" width="633" height="18"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NEXT STORY" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NuZ-d7-c35">
-                                                <rect key="frame" x="0.0" y="10" width="103.5" height="20"/>
+                                                <rect key="frame" x="0.0" y="10" width="104" height="20"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -132,14 +132,14 @@
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="leading" secondItem="aRd-O6-eP4" secondAttribute="leading" id="NN8-Un-6CQ"/>
                                             <constraint firstAttribute="trailing" secondItem="aRd-O6-eP4" secondAttribute="trailing" constant="15" id="R7E-xP-Td0"/>
                                             <constraint firstItem="NuZ-d7-c35" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="Rr9-Z1-nlw"/>
-                                            <constraint firstAttribute="bottom" secondItem="MsR-he-jtK" secondAttribute="bottom" priority="749" constant="10" id="Y6d-IG-jsD"/>
+                                            <constraint firstAttribute="bottom" secondItem="MsR-he-jtK" secondAttribute="bottom" priority="749" constant="30" id="Y6d-IG-jsD"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="leading" secondItem="lyu-sR-MC2" secondAttribute="leading" id="YUj-Xb-CFe"/>
                                             <constraint firstItem="MsR-he-jtK" firstAttribute="top" secondItem="NuZ-d7-c35" secondAttribute="bottom" constant="5" id="ntY-pc-g7k"/>
                                             <constraint firstItem="DJg-5Q-Y2i" firstAttribute="top" secondItem="Zwj-9s-ZzK" secondAttribute="bottom" constant="2" id="qs3-wr-fa9"/>
                                             <constraint firstAttribute="trailing" secondItem="DJg-5Q-Y2i" secondAttribute="trailing" constant="15" id="r8G-20-tDG"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="DJg-5Q-Y2i" secondAttribute="leading" id="rTK-Tf-Bgt"/>
                                             <constraint firstItem="aRd-O6-eP4" firstAttribute="top" secondItem="DJg-5Q-Y2i" secondAttribute="bottom" constant="2" id="txr-LR-ona"/>
-                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="10" id="vCr-Ar-v6y"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="aRd-O6-eP4" secondAttribute="bottom" constant="30" id="vCr-Ar-v6y"/>
                                             <constraint firstItem="Zwj-9s-ZzK" firstAttribute="leading" secondItem="MsR-he-jtK" secondAttribute="trailing" id="w2e-dE-rk9"/>
                                         </constraints>
                                         <connections>
