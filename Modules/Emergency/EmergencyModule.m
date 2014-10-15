@@ -77,9 +77,9 @@
     }
 }
 
-- (void)didReceiveNotification:(NSDictionary *)notification
+- (void)didReceiveNotification:(NSDictionary *)userInfo
 {
-    [super didReceiveNotification:notification];
+    [super didReceiveNotification:userInfo];
     [self.rootViewController refreshInfo:nil];
 }
 

@@ -27,6 +27,6 @@
 - (void)loadViewController;
 - (void)viewControllerDidLoad;
 
-- (void)didReceiveNotification:(NSDictionary*)notification;
+- (void)didReceiveNotification:(NSDictionary*)userInfo;
 - (void)didReceiveRequestWithURL:(NSURL*)url;
 @end

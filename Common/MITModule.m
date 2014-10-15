@@ -56,7 +56,8 @@
     self.viewController.moduleItem = [[MITModuleItem alloc] initWithName:self.name title:self.title image:self.image];
 }
 
-- (void)didReceiveNotification:(NSDictionary*)notification
+
+- (void)didReceiveNotification:(NSDictionary*)userInfo
 {
     // Do Nothing
 }
