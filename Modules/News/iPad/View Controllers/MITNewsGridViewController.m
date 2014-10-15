@@ -338,6 +338,18 @@
     }
 }
 
+- (void)collectionView:(UICollectionView *)colView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell* cell = [colView cellForItemAtIndexPath:indexPath];
+    cell.contentView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
+}
+
+- (void)collectionView:(UICollectionView *)colView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell* cell = [colView cellForItemAtIndexPath:indexPath];
+    cell.contentView.backgroundColor = nil;
+}
+
 #pragma mark MITNewsStory delegate/datasource passthru methods
 - (NSUInteger)numberOfCategories
 {
