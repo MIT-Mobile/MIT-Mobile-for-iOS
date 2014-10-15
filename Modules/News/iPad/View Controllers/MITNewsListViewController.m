@@ -141,7 +141,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        UIView *headerView = [self.tableView headerViewForSection:categoryIndexPath.section];
+        UIView *headerView = gestureRecognizer.view;
         if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
             MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
             disclosureHeaderView.containerView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
@@ -153,7 +153,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        UIView *headerView = [self.tableView headerViewForSection:categoryIndexPath.section];
+        UIView *headerView = gestureRecognizer.view;
         if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
             MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
             disclosureHeaderView.containerView.backgroundColor = [UIColor whiteColor];
