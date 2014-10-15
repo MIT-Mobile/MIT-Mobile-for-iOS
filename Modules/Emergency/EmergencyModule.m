@@ -31,14 +31,19 @@
 {
     [super viewControllerDidLoad];
     
-    // TODO: Find a better spot for this?
+    // TODO: Find a better spot for this
     if (!self.infoDidLoadToken) {
+        __weak EmergencyModule *weakSelf = self;
         self.infoDidLoadToken = [[NSNotificationCenter defaultCenter] addObserverForName:EmergencyInfoDidLoadNotification
                                                                                   object:nil
                                                                                    queue:nil
                                                                               usingBlock:^(NSNotification *note) {
-                                                                                  self.emergencyMessageLoaded = YES;
-                                                                                  [self syncUnreadNotifications];
+                                                                                  EmergencyModule *blockSelf = weakSelf;
+
+                                                                                  if (blockSelf) {
+                                                                                      blockSelf.emergencyMessageLoaded = YES;
+                                                                                      [blockSelf syncUnreadNotifications];
+                                                                                  }
                                                                               }];
         // check for new emergency info on app launch
         [[EmergencyData sharedData] checkForEmergencies];
