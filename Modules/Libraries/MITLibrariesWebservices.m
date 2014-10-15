@@ -128,7 +128,7 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
     NSMutableArray *recents = [[MITLibrariesWebservices recentSearchStrings] mutableCopy];
     
     if (![recents containsObject:searchTerm]) {
-        [recents addObject:searchTerm];
+        [recents insertObject:searchTerm atIndex:0];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:[recents copy] forKey:kMITLibrariesRecentSearchResultsKey];
         [defaults synchronize];
