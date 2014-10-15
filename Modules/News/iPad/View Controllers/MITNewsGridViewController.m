@@ -18,6 +18,7 @@
 @interface MITNewsGridViewController () <MITCollectionViewCellAutosizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
+@property (nonatomic,strong) NSMapTable *headersByIndexPath;
 
 @end
 
@@ -45,6 +46,7 @@
     [self didLoadCollectionView];
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
+    self.headersByIndexPath = [NSMapTable weakToStrongObjectsMapTable];
 }
 
 - (void)didLoadCollectionView
@@ -117,11 +119,8 @@
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        UICollectionReusableView *headerView = [self collectionView:self.collectionView viewForSupplementaryElementOfKind:MITNewsReusableViewIdentifierSectionHeader atIndexPath:categoryIndexPath];
-        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
-            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView *)headerView;
-            newsHeaderView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
-        }
+        MITNewsGridHeaderView *newsHeaderView = [self.headersByIndexPath objectForKey:categoryIndexPath];
+        newsHeaderView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
     }
 }
 
@@ -129,11 +128,8 @@
 {
     NSIndexPath *categoryIndexPath = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
     if (categoryIndexPath) {
-        UICollectionReusableView *headerView = [self collectionView:self.collectionView viewForSupplementaryElementOfKind:MITNewsReusableViewIdentifierSectionHeader atIndexPath:categoryIndexPath];
-        if ([headerView isKindOfClass:[MITNewsGridHeaderView class]]) {
-            MITNewsGridHeaderView *newsHeaderView = (MITNewsGridHeaderView *)headerView;
-            newsHeaderView.backgroundColor = [UIColor whiteColor];
-        }
+        MITNewsGridHeaderView *newsHeaderView = [self.headersByIndexPath objectForKey:categoryIndexPath];
+        newsHeaderView.backgroundColor = [UIColor whiteColor];
     }
 }
 
@@ -255,6 +251,8 @@
             } else {
                 newsHeaderView.accessoryView.hidden = NO;
             }
+            [self.headersByIndexPath setObject:newsHeaderView forKey:indexPath];
+
         }
         
         return headerView;
