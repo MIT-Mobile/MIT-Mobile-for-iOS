@@ -18,6 +18,7 @@
 #import "MITAdditions.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITNewsiPadViewController.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
@@ -394,14 +395,18 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
-            
+            MITNewsLoadMoreTableViewCell *loadMoreCell = (MITNewsLoadMoreTableViewCell*)cell;
+
             if (self.errorMessage) {
-                cell.textLabel.text = self.errorMessage;
+                loadMoreCell.textLabel.text = self.errorMessage;
                 self.errorMessage = nil;
+                loadMoreCell.loadingIndicator.hidden = YES;
             } else if (_storyUpdateInProgress) {
-                cell.textLabel.text = @"Loading More...";
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
             } else {
-                cell.textLabel.text = @"Load More...";
+                loadMoreCell.textLabel.text = @"Load More...";
+                loadMoreCell.loadingIndicator.hidden = YES;
             }
         } else {
             DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
@@ -418,14 +423,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
-    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgress) {
-            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            [view startAnimating];
-            cell.accessoryView = view;
-        } else {
-            cell.accessoryView = nil;
-        }
     }
 }
 

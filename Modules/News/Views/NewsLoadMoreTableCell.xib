@@ -27,6 +27,9 @@
                                         <color key="textColor" red="0.66274509800000003" green="0.023529411760000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="2uk-rl-khK">
+                                        <rect key="frame" x="273" y="54" width="20" height="20"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="Uj3-Se-cjq" secondAttribute="bottom" id="D6G-31-2Oj"/>
@@ -34,7 +37,9 @@
                                     <constraint firstItem="Uj3-Se-cjq" firstAttribute="leading" secondItem="wXQ-GQ-zdI" secondAttribute="leading" constant="20" id="Nlo-A6-1Ax"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="648" id="Pwk-Tb-slR"/>
                                     <constraint firstAttribute="width" secondItem="Uj3-Se-cjq" secondAttribute="width" priority="999" id="TTf-oF-62W"/>
+                                    <constraint firstAttribute="trailing" secondItem="2uk-rl-khK" secondAttribute="trailing" constant="20" symbolic="YES" id="Zk4-mw-rZh"/>
                                     <constraint firstItem="Uj3-Se-cjq" firstAttribute="top" secondItem="wXQ-GQ-zdI" secondAttribute="top" id="izr-2g-Q4B"/>
+                                    <constraint firstItem="2uk-rl-khK" firstAttribute="centerY" secondItem="Uj3-Se-cjq" secondAttribute="centerY" id="psJ-Me-edr"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -56,6 +61,7 @@
             </tableViewCellContentView>
             <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
+                <outlet property="loadingIndicator" destination="2uk-rl-khK" id="D9S-BZ-CrC"/>
                 <outlet property="textLabel" destination="Uj3-Se-cjq" id="TAS-NS-CQh"/>
             </connections>
             <point key="canvasLocation" x="144.5" y="204.5"/>
