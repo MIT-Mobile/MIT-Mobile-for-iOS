@@ -1,8 +1,7 @@
 #import <UIKit/UIKit.h>
-#import "MITNewsCustomWidthTableViewCell.h"
 @class MITNewsStory;
 
-@interface MITNewsStoryCell : MITNewsCustomWidthTableViewCell
+@interface MITNewsStoryCell : UITableViewCell
 @property (strong, nonatomic) MITNewsStory *story;
 
 @property (weak, nonatomic) IBOutlet UIView *contentContainerView; // Can't call this 'contentView' because that conflicts with UITableViewCell
