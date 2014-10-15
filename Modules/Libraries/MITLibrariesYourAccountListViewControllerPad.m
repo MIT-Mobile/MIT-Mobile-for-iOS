@@ -15,6 +15,10 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 
 @interface MITLibrariesYourAccountListViewControllerPad ()
 
+@property (nonatomic, strong) UIView *loansHeaderView;
+@property (nonatomic, strong) UIView *finesHeaderView;
+@property (nonatomic, strong) UIView *holdsHeaderView;
+
 @end
 
 @implementation MITLibrariesYourAccountListViewControllerPad
@@ -97,13 +101,13 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 {
     switch (section) {
         case MITAccountListSectionLoans:
-            return [self loansHeaderView];
+            return self.loansHeaderView;
             break;
         case MITAccountListSectionHolds:
-            return [self holdsHeaderView];
+            return self.holdsHeaderView;
             break;
         case MITAccountListSectionFines:
-            return [self finesHeaderView];
+            return self.finesHeaderView;
             break;
         default:
             return [UIView new];
@@ -156,20 +160,22 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 
 - (UIView *)loansHeaderView
 {
-    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
-    
-    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
-                                                                              attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
-                                                                                           NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
-    
-    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
-                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
-                                                                                     NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
-    
-    [baseString appendAttributedString:overdueString];
-    
-    return [self embeddedLabelWithAttributedText:baseString height:34.0];
-    
+    if (!_loansHeaderView) {
+        NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+        
+        [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
+                                                                                  attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                               NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+        
+        NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
+                                                                            attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                         NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+        
+        [baseString appendAttributedString:overdueString];
+        
+        _loansHeaderView = [self embeddedLabelWithAttributedText:baseString height:34.0];
+    }
+    return _loansHeaderView;
 }
 
 - (UIView *)finesHeaderView
@@ -180,37 +186,49 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
         [dateFormatter setDateFormat:@"M/d/yyyy"];
     }
     
-    
-    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Fines " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
-    
-    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:self.user.formattedBalance
-                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
-                                                                                    NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
-    
-    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
-                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
-                                                                                     NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
-    
-    [baseString appendAttributedString:detailsString];
-    
-    return [self embeddedLabelWithAttributedText:baseString height:67.0];
+    if (!_finesHeaderView) {
+        NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Fines " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+        
+        [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:self.user.formattedBalance
+                                                                           attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                        NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+        
+        NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
+                                                                            attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                         NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+        
+        [baseString appendAttributedString:detailsString];
+        
+        _finesHeaderView = [self embeddedLabelWithAttributedText:baseString height:67.0];
+    }
+    return _finesHeaderView;
 }
 
 - (UIView *)holdsHeaderView
 {
-    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
-    
-    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
-                                                                                   attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
-                                                                                                NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
-    
-    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
-                                                                               attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
-                                                                                            NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
-    
-    [baseString appendAttributedString:readyForPickupString];
-    
-    return [self embeddedLabelWithAttributedText:baseString height:34.0];
+    if (!_holdsHeaderView) {
+        NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+        
+        [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
+                                                                           attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                        NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
+        
+        NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
+                                                                                   attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
+                                                                                                NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+        
+        [baseString appendAttributedString:readyForPickupString];
+        
+        _holdsHeaderView = [self embeddedLabelWithAttributedText:baseString height:34.0];
+    }
+    return _holdsHeaderView;
+}
+
+- (void)resetTableHeaders
+{
+    self.finesHeaderView = nil;
+    self.loansHeaderView = nil;
+    self.holdsHeaderView = nil;
 }
 
 - (UIView *)embeddedLabelWithAttributedText:(NSAttributedString *)attributedText height:(CGFloat)height
@@ -230,6 +248,7 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 - (void)setUser:(MITLibrariesUser *)user
 {
     _user = user;
+    [self resetTableHeaders];
     [self.tableView reloadData];
 }
 
