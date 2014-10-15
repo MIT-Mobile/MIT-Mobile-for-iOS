@@ -26,6 +26,8 @@ static NSString *const kMITLibraryWebservicesSearchResponseItemsKey = @"items";
 static NSString *const kMITLibraryWebservicesSearchResponseNextIndexKey = @"nextIndex";
 static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"totalResultsCount";
 
+static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRecentSearchResultsKey";
+
 @implementation MITLibrariesWebservices
 
 #pragma mark - Libraries Webservice Calls
@@ -50,6 +52,8 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
 
 + (void)getResultsForSearch:(NSString *)searchString startingIndex:(NSInteger)startingIndex completion:(void (^)(NSArray *items, NSError *error))completion
 {
+    [MITLibrariesWebservices addSearchTermToRecents:searchString];
+    
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [parameters setObject:[NSString stringWithFormat:@"%d", startingIndex] forKey:kMITLibraryWebservicesStartIndexKey];
     [parameters setObject:searchString ? searchString : @"" forKey:kMITLibraryWebservicesSearchTermKey];
@@ -106,6 +110,36 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
     }];
     
     [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+}
+
++ (NSArray *)recentSearchStrings
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *recents = [defaults objectForKey:kMITLibrariesRecentSearchResultsKey];
+    
+    if (!recents) {
+        recents = @[];
+    }
+    return recents;
+}
+
++ (void)addSearchTermToRecents:(NSString *)searchTerm
+{
+    NSMutableArray *recents = [[MITLibrariesWebservices recentSearchStrings] mutableCopy];
+    
+    if (![recents containsObject:searchTerm]) {
+        [recents addObject:searchTerm];
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:[recents copy] forKey:kMITLibrariesRecentSearchResultsKey];
+        [defaults synchronize];
+    }
+}
+
++ (void)clearRecentSearches
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:kMITLibrariesRecentSearchResultsKey];
+    [defaults synchronize];
 }
 
 #pragma mark - Helper Methods
