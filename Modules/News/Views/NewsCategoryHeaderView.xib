@@ -18,7 +18,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="268" height="48"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                                    <rect key="frame" x="15" y="-10" width="79" height="68"/>
+                                    <rect key="frame" x="15" y="2" width="79" height="44"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                                     </constraints>
@@ -40,7 +40,7 @@
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9Sr-oA-zdz" secondAttribute="trailing" constant="20" symbolic="YES" id="1SU-oL-ANf"/>
-                                <constraint firstItem="09T-ah-XvT" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="-12" id="1hz-Z0-e3T"/>
+                                <constraint firstItem="09T-ah-XvT" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" id="1hz-Z0-e3T"/>
                                 <constraint firstAttribute="centerY" secondItem="9Sr-oA-zdz" secondAttribute="centerY" id="EJs-bO-757"/>
                                 <constraint firstAttribute="bottom" secondItem="09T-ah-XvT" secondAttribute="bottom" id="HfW-tS-JXD"/>
                                 <constraint firstItem="9Sr-oA-zdz" firstAttribute="leading" secondItem="las-NX-67L" secondAttribute="trailing" constant="8" symbolic="YES" id="IeF-Pj-r5i"/>
