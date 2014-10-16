@@ -37,6 +37,7 @@
 {
     [super awakeFromNib];
     self.mealTitleLabel.delegate = self;
+    self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 }
 
 - (void)fixHangingFlags
