@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryNoDekCell" rowHeight="134" id="C4l-dM-lje" customClass="MITNewsStoryCell">
-            <rect key="frame" x="0.0" y="0.0" width="300" height="120"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryNoDekCell" rowHeight="236" id="C4l-dM-lje" customClass="MITNewsStoryCell">
+            <rect key="frame" x="0.0" y="0.0" width="408" height="236"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="C4l-dM-lje" id="1e9-nm-HuS" userLabel="Super View">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="83"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q1W-69-KfL" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="119"/>
+                        <rect key="frame" x="0.0" y="0.0" width="408" height="235"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Fr-Ai-gyv" userLabel="Container View">
-                                <rect key="frame" x="0.0" y="0.0" width="300" height="119"/>
+                                <rect key="frame" x="0.0" y="0.0" width="408" height="235"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="196" translatesAutoresizingMaskIntoConstraints="NO" id="QvW-Ij-XcH" customClass="MultiLineLabel">
-                                        <rect key="frame" x="109" y="15" width="176" height="20"/>
+                                        <rect key="frame" x="109" y="15" width="284" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" id="Dkp-X6-8Um"/>
                                         </constraints>
@@ -35,27 +36,17 @@
                                             <constraint firstAttribute="width" constant="86" id="q3J-0s-Ajk"/>
                                         </constraints>
                                     </imageView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ff5-6d-ORa" userLabel="Separator">
-                                        <rect key="frame" x="109" y="118" width="191" height="1"/>
-                                        <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="1" id="qtZ-h9-swu"/>
-                                        </constraints>
-                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="QvW-Ij-XcH" secondAttribute="trailing" constant="15" id="2rt-Yt-yPD"/>
-                                    <constraint firstItem="ff5-6d-ORa" firstAttribute="top" relation="greaterThanOrEqual" secondItem="QvW-Ij-XcH" secondAttribute="bottom" constant="11" id="9z8-eY-tXQ"/>
                                     <constraint firstItem="11t-eW-aaz" firstAttribute="top" secondItem="8Fr-Ai-gyv" secondAttribute="top" constant="15" id="ID0-cq-WQE"/>
-                                    <constraint firstAttribute="trailing" secondItem="ff5-6d-ORa" secondAttribute="trailing" id="O61-yw-k9w"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="648" id="Z13-z1-2Cn"/>
                                     <constraint firstItem="11t-eW-aaz" firstAttribute="top" secondItem="QvW-Ij-XcH" secondAttribute="top" id="aIR-wu-a82"/>
-                                    <constraint firstItem="ff5-6d-ORa" firstAttribute="leading" secondItem="QvW-Ij-XcH" secondAttribute="leading" id="afq-FI-PCu"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="QvW-Ij-XcH" secondAttribute="bottom" constant="11" id="ate-A5-o6X"/>
                                     <constraint firstItem="11t-eW-aaz" firstAttribute="leading" secondItem="8Fr-Ai-gyv" secondAttribute="leading" constant="15" id="mGX-mf-klc"/>
                                     <constraint firstItem="QvW-Ij-XcH" firstAttribute="leading" secondItem="11t-eW-aaz" secondAttribute="trailing" constant="8" id="qye-NL-iSV"/>
-                                    <constraint firstAttribute="bottom" secondItem="ff5-6d-ORa" secondAttribute="bottom" id="ru5-af-1T9"/>
-                                    <constraint firstItem="ff5-6d-ORa" firstAttribute="top" relation="greaterThanOrEqual" secondItem="11t-eW-aaz" secondAttribute="bottom" constant="11" id="zWm-SZ-MgQ"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="11t-eW-aaz" secondAttribute="bottom" constant="11" id="v6O-ta-Ge1"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -81,7 +72,7 @@
                 <outlet property="storyImageView" destination="11t-eW-aaz" id="TV5-RI-Ycs"/>
                 <outlet property="titleLabel" destination="QvW-Ij-XcH" id="HPb-0D-cAd"/>
             </connections>
-            <point key="canvasLocation" x="410.5" y="59"/>
+            <point key="canvasLocation" x="377" y="110"/>
         </tableViewCell>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

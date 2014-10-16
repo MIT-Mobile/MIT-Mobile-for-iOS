@@ -69,7 +69,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     self.maximumNumberOfStoriesPerCategory = MITNewsDefaultNumberOfFeaturedStories;
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
     [self didLoadTableView:self.tableView];
 }
 
