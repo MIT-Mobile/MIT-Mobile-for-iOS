@@ -17,16 +17,4 @@
     }
 }
 
-- (void)willPresentActionSheet:(UIActionSheet *)actionSheet
-{
-    for (UIView *subview in actionSheet.subviews)
-    {
-        if ([subview isKindOfClass:[UIButton class]])
-        {
-            UIButton *button = (UIButton *)subview;
-            [button setTitleColor:self.actionSheetTintColor forState:UIControlStateNormal];
-        }
-    }
-}
-
 @end

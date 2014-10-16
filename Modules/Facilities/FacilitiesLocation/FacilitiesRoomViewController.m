@@ -327,7 +327,7 @@
         }
         else
         {
-            room = [self.cachedData objectAtIndex:indexPath.row];
+            room = [self roomAtIndexPath:indexPath];
         }
     }
     else if (tableView == self.searchDisplayController.searchResultsTableView)

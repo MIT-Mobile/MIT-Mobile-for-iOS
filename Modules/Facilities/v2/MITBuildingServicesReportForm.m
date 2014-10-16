@@ -98,12 +98,7 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 }
 
 - (BOOL)isValidForm
-{
-    if( self.reportImage == nil )
-    {
-        return NO;
-    }
-    
+{    
     if( ![self isValidEmail] )
     {
         return NO;

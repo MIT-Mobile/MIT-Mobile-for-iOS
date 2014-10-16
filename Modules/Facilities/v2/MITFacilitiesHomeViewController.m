@@ -168,7 +168,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     [self.view endEditing:YES];
         
     dispatch_async(dispatch_get_main_queue(), ^{
-        [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeGradient];
+        [SVProgressHUD showWithStatus:@"Submitting..." maskType:SVProgressHUDMaskTypeGradient];
     });
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -176,7 +176,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         [self.reportForm submitFormWithCompletionBlock:^(NSDictionary *responseObject, NSError *error) {
             if( error == nil )
             {
-                [SVProgressHUD showSuccessWithStatus:@"Report submitted successfully."];
+                [SVProgressHUD showSuccessWithStatus:@"Report submitted successfully"];
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC);
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
@@ -200,7 +200,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
                 });
             }
         } progressUpdateBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-            [SVProgressHUD showProgress:(totalBytesWritten / totalBytesExpectedToWrite) status:nil maskType:SVProgressHUDMaskTypeGradient];
+            [SVProgressHUD showProgress:(totalBytesWritten / totalBytesExpectedToWrite) status:@"Submitting..." maskType:SVProgressHUDMaskTypeGradient];
         }];
     });
 }
@@ -245,8 +245,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self.actionSheetHandler
                                                     cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:[NSString stringWithFormat:@"Call %@", kFacilitiesPhoneNumber]
-                                                    otherButtonTitles:[NSString stringWithFormat:@"Email %@", kFacilitiesEmailAddress], nil];
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:[NSString stringWithFormat:@"Call %@", kFacilitiesPhoneNumber], [NSString stringWithFormat:@"Email %@", kFacilitiesEmailAddress], nil];
     [actionSheet showInView:self.view];
 }
 
@@ -337,8 +337,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self.actionSheetHandler
                                                     cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:@"Take Photo"
-                                                    otherButtonTitles:@"Choose Photo", nil];
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"Take Photo", @"Choose Photo", nil];
 
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {
@@ -372,7 +372,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSInteger defaultHeight = 62;
+    static NSInteger defaultHeight = 72;
     
     BOOL isEditingRow = indexPath.row == self.editingIndexPath.row;
     
@@ -387,6 +387,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     else if( row == MITFacilitiesFormFieldAttachPhoto && self.reportForm.reportImage != nil )
     {
         return 553;
+    }
+    else if( (row == MITLeasedFacilitiesFormFieldLeasedMessage) && (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) )
+    {
+        return defaultHeight + 20;
     }
     
     return defaultHeight;
@@ -453,7 +457,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         imageView.image = nil;
     }
     
-    cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
+    cell.separatorInset = UIEdgeInsetsMake(0, 1000.0, 0, 0);
     
     return cell;
 }
@@ -482,8 +486,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             break;
     }
     
-    cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
-    
     return cell;
 }
 
@@ -511,12 +513,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     if( indexPath.row == [self lastRowIndex] )
     {
-        cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, self.view.frame.size.height);
-    }
-    else
-    {
-        cell.separatorInset = UIEdgeInsetsMake(0, 7., 0, 0);
-
+        cell.separatorInset = UIEdgeInsetsMake(0.f, 1000.0, 0.f, 0.f);
     }
     
     return cell;
@@ -534,6 +531,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.subtitleTextView.delegate = self;
     cell.subtitleTextView.keyboardType = UIKeyboardTypeEmailAddress;
     cell.subtitleTextView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    cell.subtitleTextView.spellCheckingType = UITextSpellCheckingTypeNo;
     
     return cell;
 }
@@ -542,7 +540,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *locationCell = nil;
     
-    NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.name : self.reportForm.customLocation;
+    NSString *locationName = self.reportForm.location != nil ? self.reportForm.location.displayString : self.reportForm.customLocation;
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
     {
@@ -576,7 +574,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     UITableViewCell *roomCell = nil;
     
-    NSString *roomName = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.number;
+    NSString *roomName = self.reportForm.room == nil ? self.reportForm.roomAltName : self.reportForm.room.displayString;
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
     {
@@ -1006,6 +1004,12 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (NSInteger)adjustedFieldRow:(NSInteger)row
 {
+    // we're not skipping rows if it's "leased"
+    if( self.reportForm.location.isLeased )
+    {
+        return row;
+    }
+    
     if( !self.reportForm.shouldSetRoom && row >= MITFacilitiesFormFieldRoom )
     {
         row++;
