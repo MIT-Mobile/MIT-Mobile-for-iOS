@@ -408,11 +408,28 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
             }
+            
+            CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
+            CGFloat rightPadding = loadMoreCell.textLabel.frame.origin.x;
+            cell.separatorInset = UIEdgeInsetsMake(0, separatorPadding + rightPadding, 0, separatorPadding);
+            
         } else {
             DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
             
             return cell;
         }
+    }
+    
+    if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
+        MITNewsStoryCell *storyCell = (MITNewsStoryCell *)cell;
+        CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
+        CGFloat rightPadding = 0;
+        if (storyCell.titleLabel) {
+           rightPadding = storyCell.titleLabel.frame.origin.x;
+        } else if(storyCell.dekLabel) {
+            rightPadding = storyCell.dekLabel.frame.origin.x;
+        }
+        cell.separatorInset = UIEdgeInsetsMake(0, separatorPadding + rightPadding, 0, separatorPadding);
     }
     return cell;
 }

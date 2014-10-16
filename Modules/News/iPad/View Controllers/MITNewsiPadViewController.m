@@ -76,7 +76,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.gridViewController.collectionView reloadData];
+    [self reloadData];
 }
 
 - (void)viewDidLoad
