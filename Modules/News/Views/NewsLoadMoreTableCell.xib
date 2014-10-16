@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -16,19 +14,19 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Knj-ne-fAO" userLabel="Content View">
-                        <rect key="frame" x="8" y="8" width="313" height="128"/>
+                        <rect key="frame" x="0.0" y="0.0" width="329" height="144"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wXQ-GQ-zdI" userLabel="Container View">
-                                <rect key="frame" x="0.0" y="0.0" width="313" height="128"/>
+                                <rect key="frame" x="0.0" y="0.0" width="329" height="144"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Load More…" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uj3-Se-cjq">
-                                        <rect key="frame" x="20" y="0.0" width="273" height="128"/>
+                                        <rect key="frame" x="20" y="0.0" width="289" height="144"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
                                         <color key="textColor" red="0.66274509800000003" green="0.023529411760000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="2uk-rl-khK">
-                                        <rect key="frame" x="273" y="54" width="20" height="20"/>
+                                        <rect key="frame" x="289" y="62" width="20" height="20"/>
                                     </activityIndicatorView>
                                 </subviews>
                                 <constraints>
@@ -53,10 +51,10 @@
                     </view>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailingMargin" secondItem="Knj-ne-fAO" secondAttribute="trailing" id="Njm-5C-iFc"/>
-                    <constraint firstItem="Knj-ne-fAO" firstAttribute="top" secondItem="qyb-Rm-gJH" secondAttribute="topMargin" id="hCM-hm-ub0"/>
-                    <constraint firstItem="Knj-ne-fAO" firstAttribute="leading" secondItem="qyb-Rm-gJH" secondAttribute="leadingMargin" id="pzL-WL-Xma"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="Knj-ne-fAO" secondAttribute="bottom" id="r0w-bS-d26"/>
+                    <constraint firstAttribute="trailing" secondItem="Knj-ne-fAO" secondAttribute="trailing" id="Njm-5C-iFc"/>
+                    <constraint firstItem="Knj-ne-fAO" firstAttribute="top" secondItem="qyb-Rm-gJH" secondAttribute="top" id="hCM-hm-ub0"/>
+                    <constraint firstItem="Knj-ne-fAO" firstAttribute="leading" secondItem="qyb-Rm-gJH" secondAttribute="leading" id="pzL-WL-Xma"/>
+                    <constraint firstAttribute="bottom" secondItem="Knj-ne-fAO" secondAttribute="bottom" id="r0w-bS-d26"/>
                 </constraints>
             </tableViewCellContentView>
             <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
