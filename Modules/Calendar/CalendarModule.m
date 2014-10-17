@@ -1,5 +1,4 @@
 #import "CalendarModule.h"
-#import "MITModuleURL.h"
 
 #import "MITEventsHomeViewController.h"
 #import "MITEventsHomeViewControllerPad.h"
