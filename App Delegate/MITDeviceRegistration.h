@@ -18,3 +18,17 @@
 + (void)clearIdentity;
 @end
 
+@interface MITDeviceIdentity : NSObject <NSSecureCoding>
+@property(nonatomic,copy) NSData *deviceToken;
+@property(nonatomic,copy) NSString *deviceIdentifier;
+@property(nonatomic,copy) NSString *passcode;
+
+@property(nonatomic,readonly) BOOL isRegistered;
+@property(nonatomic,readonly) BOOL isEnabled;
+
+- (instancetype)init;
+- (instancetype)initWithCoder:(NSCoder *)aDecoder;
+
+- (void)setDeviceToken:(NSData *)deviceToken completion:(void(^)(NSError *error))block;
+- (void)registerDevice:(void(^)(NSError *error))completion;
+@end
