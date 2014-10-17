@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@class MITLibrariesSearchResultsViewController;
-@class MITLibrariesWorldcatItem;
+@class MITLibrariesSearchResultsViewController, MITLibrariesWorldcatItem, MITLibrariesSearchController;
 
 @protocol MITLibrariesSearchResultsViewControllerDelegate <NSObject>
 
@@ -12,6 +11,7 @@
 @interface MITLibrariesSearchResultsViewController : UIViewController
 
 @property (nonatomic, weak) id<MITLibrariesSearchResultsViewControllerDelegate> delegate;
+@property (nonatomic, strong) MITLibrariesSearchController *searchController;
 
 - (void)search:(NSString *)searchTerm;
 

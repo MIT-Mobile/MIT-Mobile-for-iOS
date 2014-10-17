@@ -6,17 +6,21 @@
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesQuickLinksViewController.h"
 #import "MITLibrariesRecentSearchesViewController.h"
+#import "MITLibrariesSearchResultsContainerViewControllerPad.h"
+#import "UIKit+MITAdditions.h"
 
-typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
-    MITLibrariesLayoutModeList,
-    MITLibrariesLayoutModeGrid
+typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
+    MITLibrariesPadDisplayModeAccount,
+    MITLibrariesPadDisplayModeSearch
 };
 
 @interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
+@property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) UIButton *cancelSearchButton;
 
 @property (nonatomic, strong) UIBarButtonItem *locationsAndHoursButton;
 @property (nonatomic, strong) UIBarButtonItem *askUsTellUsButton;
@@ -35,6 +39,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
 @property (nonatomic, strong) UIBarButtonItem *gridLayoutButton;
 @property (nonatomic, strong) UIBarButtonItem *listLayoutButton;
 
+@property (nonatomic) MITLibrariesPadDisplayMode displayMode;
+
 @end
 
 @implementation MITLibrariesHomeViewControllerPad
@@ -44,44 +50,74 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     [super viewDidLoad];
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
+    
+    [self setupNavBar];
+    
     [self setupViewControllers];
 
-    [self setupNavBar];
-    [self setupRecentSearchesController];
     [self setupToolbar];
     [self loadLinks];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)setupNavBar
 {
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
-    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.searchBar.placeholder = @"Search MIT's WorldCat";
-        
-    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    searchBarView.autoresizingMask = UIViewAutoresizingNone;
-    self.searchBar.delegate = self;
-    [searchBarView addSubview:self.searchBar];
-    self.navigationItem.titleView = searchBarView;
+    [self setupSearchBar];
     
     self.listLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
     self.gridLayoutButton = [[UIBarButtonItem alloc] initWithTitle:@"Grid" style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
     self.layoutMode = MITLibrariesLayoutModeList;
 }
 
-- (void)setupRecentSearchesController
+- (void)setupSearchBar
+{
+    self.searchBar = [[UISearchBar alloc] init];
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    self.searchBar.translatesAutoresizingMaskIntoConstraints = NO;
+    self.searchBar.placeholder = @"Search MIT's WorldCat";
+    self.searchBar.delegate = self;
+
+    self.cancelSearchButton = [[UIButton alloc] init];
+    [self.cancelSearchButton setTitle:@"" forState:UIControlStateNormal];
+    [self.cancelSearchButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
+    self.cancelSearchButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.cancelSearchButton addTarget:self action:@selector(searchBarCancelPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.cancelSearchButton.enabled = NO;
+    
+    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+
+    [searchBarView addSubview:self.searchBar];
+    [searchBarView addSubview:self.cancelSearchButton];
+    
+    self.navigationItem.titleView = searchBarView;
+    
+    NSDictionary *views = @{@"searchBar": self.searchBar,
+                            @"cancelButton" : self.cancelSearchButton};
+    
+    [searchBarView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchBar]-0-[cancelButton]-0-|"
+                                                                          options:0
+                                                                          metrics:nil
+                                                                            views:views]];
+    
+    [searchBarView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=0)-[searchBar]-5-|"
+                                                                          options:0
+                                                                          metrics:nil
+                                                                            views:views]];
+    
+    [searchBarView addConstraint:[NSLayoutConstraint constraintWithItem:self.searchBar
+                                                              attribute:NSLayoutAttributeCenterY
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.cancelSearchButton
+                                                              attribute:NSLayoutAttributeCenterY
+                                                             multiplier:1
+                                                               constant:0]];
+}
+
+- (void)setupRecentSearchesViewController
 {
     self.recentSearchesViewController = [[MITLibrariesRecentSearchesViewController alloc] init];
     UINavigationController *navContainer = [[UINavigationController alloc] initWithRootViewController:self.recentSearchesViewController];
     self.recentSearchesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainer];
+    self.recentSearchesPopoverController.passthroughViews = @[self.searchBar];
 }
 
 - (void)setupToolbar
@@ -151,6 +187,15 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
 
 - (void)setupViewControllers
 {
+    [self setupYourAccountViewController];
+    [self setupSearchResultsViewController];
+    [self setupRecentSearchesViewController];
+    [self setupQuickLinksPopover];
+    self.displayMode = MITLibrariesPadDisplayModeAccount;
+}
+
+- (void)setupYourAccountViewController
+{
     self.accountViewController = [[MITLibrariesYourAccountViewControllerPad alloc] init];
     self.accountViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -162,8 +207,21 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
+}
+
+- (void)setupSearchResultsViewController
+{
+    self.searchViewController = [[MITLibrariesSearchResultsContainerViewControllerPad alloc] init];
+    self.searchViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [self setupQuickLinksPopover];
+    self.searchViewController.view.frame = self.view.bounds;
+    
+    [self addChildViewController:self.searchViewController];
+    
+    [self.view addSubview:self.searchViewController.view];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
 }
 
 - (void)setupQuickLinksPopover
@@ -207,11 +265,37 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     self.layoutMode = MITLibrariesLayoutModeGrid;
 }
 
+- (void)setDisplayMode:(MITLibrariesPadDisplayMode)displayMode
+{
+    _displayMode = displayMode;
+    if (displayMode == MITLibrariesPadDisplayModeAccount) {
+        self.searchViewController.view.hidden = YES;
+        self.accountViewController.view.hidden = NO;
+    }
+    else {
+        self.accountViewController.view.hidden = YES;
+        self.searchViewController.view.hidden = NO;
+    }
+}
+
 #pragma mark - Search Bar Delegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    self.cancelSearchButton.enabled = YES;
+    [self.cancelSearchButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    self.displayMode = MITLibrariesPadDisplayModeSearch;
+    [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.navigationItem.titleView.bounds.size.width / 2, self.navigationItem.titleView.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (void)searchBarCancelPressed:(UIButton *)sender
+{
+    self.cancelSearchButton.enabled = YES;
+    [self.cancelSearchButton setTitle:@"" forState:UIControlStateNormal];
+
+    self.searchBar.text = nil;
+    [self.searchBar resignFirstResponder];
+    self.displayMode = MITLibrariesPadDisplayModeAccount;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -220,10 +304,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesLayoutMode) {
     [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
     
     // TODO: This should be handled by a results controller most likely, but for now this will cache the search term in recents
-    NSString *searchString = searchBar.text;
-    [MITLibrariesWebservices getResultsForSearch:searchString startingIndex:0 completion:^(NSArray *items, NSError *error) {
-
-    }];
+    NSString *searchTerm = searchBar.text;
+    self.searchViewController.searchTerm = searchTerm;
 }
 
 @end

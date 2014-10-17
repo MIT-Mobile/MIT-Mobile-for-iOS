@@ -21,6 +21,7 @@
     self.holdDateLabel.textColor =
     self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
     self.readyForPickupLabel.text = nil;
+    self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
 }
 
 - (void)setContent:(id)content

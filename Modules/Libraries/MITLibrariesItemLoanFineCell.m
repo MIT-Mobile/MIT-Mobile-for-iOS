@@ -20,6 +20,7 @@
     [super awakeFromNib];
     self.dueDateLabel.textColor =
     self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
+    self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
 }
 
 - (void)setContent:(id)content
