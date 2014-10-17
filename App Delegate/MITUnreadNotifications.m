@@ -259,7 +259,7 @@
 @end
 
 @implementation MITNotification (Legacy)
-+ (MITNotification*)fromString:(NSString*)noticeString\
++ (MITNotification*)fromString:(NSString*)noticeString
 {
     return [self notificationWithString:noticeString];
 }
