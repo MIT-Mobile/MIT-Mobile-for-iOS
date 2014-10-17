@@ -34,28 +34,20 @@
 
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
-#import "MITLegacyModuleViewController.h"
 #import "MITShuttleStopNotificationManager.h"
 
-@interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
-@property (nonatomic,strong) NSDictionary *apnsDictionary;
-@property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
+static NSString* const MITMobileButtonTitleView = @"View";
 
-- (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
-@end
-
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate>
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 
-@property (nonatomic,strong) NSMutableSet *pendingNotifications;
+@property(nonatomic,strong) NSMutableArray *pendingNotifications;
 @property(nonatomic,copy) NSArray *modules;
 
 @property (nonatomic,strong) NSRecursiveLock *lock;
 
 - (void)updateBasicServerInfo;
-- (void)showModuleWithTagUsingPadIdiom:(NSString*)tag animated:(BOOL)animated;
-- (void)showModuleWithTagUsingPhoneIdiom:(NSString*)tag animated:(BOOL)animated;
 @end
 
 @implementation MIT_MobileAppDelegate {
@@ -82,14 +74,9 @@
     }
 }
 
-#warning Ross: I added this because the header declares it, but it wasn't implemented, and was causing crashes.
-- (UINavigationController*)rootNavigationController {
-    return nil;
-}
-
 #pragma mark -
 #pragma mark Application lifecycle
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 #if defined(TESTFLIGHT)
     if ([MITApplicationTestFlightToken length]) {
         [TestFlight setOptions:@{@"logToConsole" : @NO,
@@ -106,20 +93,24 @@
     // a default controller here if needed.
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
 
-    // Needs to be set before the app continues on since there is the potential for
-    // the module setup process to make things visible (for example, if there is
-    //  an unread notification to process) and things will generally be very unhappy
-    //  if the app attempts to make a module visible before the root view controller
-    //  is told what it should care about
-    NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
-    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-        UIViewController<MITModuleViewControllerProtocol> *moduleViewController = [[MITLegacyModuleViewController alloc] initWithModule:module];
-        NSAssert(moduleViewController.moduleItem, @"%@ is does not have a valid moduleItem",moduleViewController);
-        [moduleViewControllers addObject:moduleViewController];
-    }];
-    
-    self.rootViewController.viewControllers = moduleViewControllers;
-    
+    if (!_window) {
+        // Needs to be set before the app continues on since there is the potential for
+        // the module setup process to make things visible (for example, if there is
+        //  an unread notification to process) and things will generally be very unhappy
+        //  if the app attempts to make a module visible before the root view controller
+        //  is told what it should care about
+        NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
+        [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+            if ([module supportsCurrentUserInterfaceIdiom]) {
+                UIViewController *viewController = module.viewController;
+                NSAssert(viewController, @"module %@ does not have a valid view controller",module.name);
+                [moduleViewControllers addObject:viewController];
+            }
+        }];
+        
+        self.rootViewController.viewControllers = moduleViewControllers;
+    }
+
     [self updateBasicServerInfo];
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
@@ -128,23 +119,24 @@
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
-	
-	[MITUnreadNotifications updateUI];
-	[MITUnreadNotifications synchronizeWithMIT];
-	
-	//APNS dictionary generated from the json of a push notificaton
-	NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    
-	// check if application was opened in response to a notofication
-	if(apnsDict) {
-        MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
-		[[self moduleWithTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
-		DDLogVerbose(@"Application opened in response to notification=%@", notification);
-	}
+    return YES;
+}
+
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [MITUnreadNotifications updateUI];
+    [MITUnreadNotifications synchronizeWithMIT];
+
+    //APNS dictionary generated from the json of a push notificaton
+    NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+
+    // check if application was opened in response to a notofication
+    if(apnsDict) {
+        [self handleNotification:apnsDict];
+    }
 
     [self.window makeKeyAndVisible];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
-    
     return YES;
 }
 
@@ -233,45 +225,58 @@
 }
 
 #pragma mark -
-#pragma mark App-modal view controllers
-
-// Call these instead of [appDelegate.tabbar presentModal...], because dismissing that crashes the app
-// Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
-- (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.rootViewController presentViewController:viewController animated:animated completion:NULL];
-}
-
-- (void)dismissAppModalViewControllerAnimated:(BOOL)animated {    
-    [self.rootViewController dismissViewControllerAnimated:animated completion:NULL];
-}
-
-#pragma mark -
 #pragma mark Push notifications
 - (BOOL)notificationsEnabled
 {
     return (BOOL)[[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-	[MITUnreadNotifications updateUI];
-	
-	// vibrate the phone
-	AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-	
-	// display the notification in an alert
-    APNSUIDelegate *notificationHelper = [[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self];
-    [self.pendingNotifications addObject:notificationHelper];
-    
-	UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                              message:userInfo[@"aps"][@"alert"]
-                                                             delegate:notificationHelper
-                                                    cancelButtonTitle:@"Close"
-                                                    otherButtonTitles:@"View", nil];
-	[notificationView show];
+- (void)handleNotification:(NSDictionary*)userInfo
+{
+    [self.pendingNotifications addObject:userInfo];
 }
 
-- (void)application:(UIApplication *)application
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [self handleNotification:notification.userInfo];
+
+    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    if (!applicationName) {
+        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
+    }
+
+    UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:applicationName
+                                                              message:notification.alertBody
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Close"
+                                                    otherButtonTitles:MITMobileButtonTitleView, nil];
+    [notificationView show];
+
+    if ([application.scheduledLocalNotifications count] == 0) {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+    }
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [self handleNotification:userInfo];
+    [MITUnreadNotifications updateUI];
+
+    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    if (!applicationName) {
+        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
+    }
+
+    NSString *message = userInfo[@"aps"][@"alert"];
+
+    UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:applicationName
+                                                              message:message
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Close"
+                                                    otherButtonTitles:MITMobileButtonTitleView, nil];
+    [notificationView show];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
     
@@ -287,8 +292,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	}
 }
 
-- (void)application:(UIApplication *)application
-didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogWarn(@"%@", [error localizedDescription]);
     
     if ([error code] == 3010) {
@@ -302,17 +306,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         if(!identity) {
             [MITDeviceRegistration registerNewDeviceWithToken:nil];
         }
-    }
-}
-
-#pragma mark - Local Notifications
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    [[[UIAlertView alloc] initWithTitle:@"Alert" message:notification.alertBody delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-
-    if ([application.scheduledLocalNotifications count] == 0) {
-        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
     }
 }
 
@@ -425,10 +418,10 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     return _modules;
 }
 
-- (NSMutableSet*)pendingNotifications
+- (NSMutableArray*)pendingNotifications
 {
     if (!_pendingNotifications) {
-        _pendingNotifications = [[NSMutableSet alloc] init];
+        _pendingNotifications = [[NSMutableArray alloc] init];
     }
     
     return _pendingNotifications;
@@ -602,22 +595,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated
 {
-    [self.rootViewController setVisibleViewControllerWithModuleName:tag];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@",MITInternalURLScheme,tag]];
+    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
 }
 
 #pragma mark Preferences
 - (void)saveModulesState {
-    NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
-    /*for (MITModule *aModule in self.modules) {
-        if (aModule.currentPath && aModule.currentQuery) {
-            NSDictionary *moduleState = @{@"path" : aModule.currentPath,
-                                          @"query" : aModule.currentQuery};
-            [modulesSavedState setObject:moduleState
-                                  forKey:aModule.tag];
-        }
-    }*/
-    
-    [[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
+    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:MITModulesSavedStateKey];
 }
 
 #pragma mark - Delegates
@@ -632,38 +618,20 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     [self.rootViewController dismissViewControllerAnimated:YES completion:completion];
 }
 
-@end
-
-
-@implementation APNSUIDelegate
-- (id)initWithApnsDictionary: (NSDictionary *)apns appDelegate: (MIT_MobileAppDelegate *)delegate;
-{
-    self = [super init];
-    if (self != nil) {
-        _apnsDictionary = apns;
-        _appDelegate = delegate;
-    }
-    
-    return self;
-}
-
-// this is the delegate method for responding to the push notification UIAlertView
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
-    MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
-    
-    BOOL shouldOpen = (buttonIndex == 1);
-    if (shouldOpen) {
-        [self.appDelegate dismissAppModalViewControllerAnimated:YES];
-    }
-    
-    [[self.appDelegate moduleWithTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
-}
-
+#pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    [self.appDelegate.pendingNotifications removeObject:self];
+    NSDictionary *remoteNotification = [self.pendingNotifications lastObject];
+    [self.pendingNotifications removeLastObject];
+
+    MITNotification *notification = [MITUnreadNotifications addNotification:remoteNotification];
+    MITModule *module = [self moduleWithTag:notification.moduleName];
+    [module didReceiveNotification:remoteNotification];
+
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
+        [self.rootViewController setVisibleViewControllerWithModuleName:module.name];
+    }
 }
 
 @end
-
