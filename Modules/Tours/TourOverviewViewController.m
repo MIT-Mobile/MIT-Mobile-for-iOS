@@ -120,11 +120,11 @@ enum {
 }
 
 - (void)dismiss:(id)sender {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)selectionDidComplete {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)orientationChanged:(NSNotification *)notification {

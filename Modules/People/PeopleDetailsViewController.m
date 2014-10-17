@@ -481,8 +481,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 #pragma mark Address book new person methods
 - (void)newPersonViewController:(ABNewPersonViewController *)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Address book person controller methods
@@ -602,10 +601,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     ABAddressBookSave(ab, &error);
 	CFRelease(newPerson);
     CFRelease(ab);
-	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
 
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 	return NO; // don't navigate to built-in view
 }
 
@@ -619,8 +616,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - App-switching actions
