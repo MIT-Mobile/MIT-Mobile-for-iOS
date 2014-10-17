@@ -304,7 +304,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         
         UIImagePickerController *controller = [[UIImagePickerController alloc] init];
         
-        if( buttonIndex == actionSheet.destructiveButtonIndex )
+        if( buttonIndex == 0 )
         {
             // take photo
             
@@ -386,7 +386,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     }
     else if( row == MITFacilitiesFormFieldAttachPhoto && self.reportForm.reportImage != nil )
     {
-        return 553;
+        return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 450 : 553;
     }
     else if( (row == MITLeasedFacilitiesFormFieldLeasedMessage) && (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) )
     {
