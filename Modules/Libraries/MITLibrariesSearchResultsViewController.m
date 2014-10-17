@@ -15,7 +15,6 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
 @interface MITLibrariesSearchResultsViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *resultsTableView;
-@property (nonatomic, strong) MITLibrariesSearchController *searchController;
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 @property (nonatomic, assign) MITLibrariesSearchResultsViewControllerState state;
 
@@ -28,14 +27,14 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if (self) {
-        self.searchController = [[MITLibrariesSearchController alloc] init];
         self.state = MITLibrariesSearchResultsViewControllerStateLoading;
     }
     
     return self;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
@@ -78,11 +77,6 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     if (self.state == MITLibrariesSearchResultsViewControllerStateResults) {
         [self.resultsTableView reloadData];
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)search:(NSString *)searchTerm
@@ -194,6 +188,15 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
     CGFloat height = [MITLibrariesWorldcatItemCell heightForContent:item tableViewWidth:self.resultsTableView.bounds.size.width];
     return height;
+}
+
+- (MITLibrariesSearchController *)searchController
+{
+    if (!_searchController)
+    {
+        _searchController = [[MITLibrariesSearchController alloc] init];
+    }
+    return _searchController;
 }
 
 @end
