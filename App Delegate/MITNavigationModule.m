@@ -1,6 +1,9 @@
 #import "MITNavigationModule.h"
 
 @implementation MITNavigationModule
+@dynamic rootViewController;
+@dynamic navigationController;
+
 - (instancetype)initWithName:(NSString *)name title:(NSString *)title
 {
     self = [super initWithName:name title:title];
@@ -31,14 +34,26 @@
     self.rootViewController = viewController;
 }
 
+- (UINavigationController*)navigationController
+{
+    if ([self.viewController isKindOfClass:[UINavigationController class]]) {
+        return (UINavigationController*)self.navigationController;
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"view controller must be kind of UINavigationController"
+                                     userInfo:nil];
+    }
+}
+
 - (void)setRootViewController:(UIViewController *)rootViewController
 {
     NSParameterAssert(rootViewController);
-    
-    if (_rootViewController != rootViewController) {
-        [_navigationController setViewControllers:@[rootViewController]];
-        _rootViewController = rootViewController;
-    }
+    [self.navigationController setViewControllers:@[rootViewController]];
+}
+
+- (UIViewController*)rootViewController
+{
+    return [self.navigationController.viewControllers firstObject];
 }
 
 @end
