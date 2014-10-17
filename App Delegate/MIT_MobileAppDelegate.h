@@ -43,6 +43,4 @@
 - (MITModule*)moduleWithTag:(NSString *)aTag;
 - (void)showModuleWithTag:(NSString *)tag;
 - (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated;
-
-- (UINavigationController*)rootNavigationController;
 @end
