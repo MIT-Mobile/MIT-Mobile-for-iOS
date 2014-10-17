@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeSearch
 };
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate>
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate,MITLibrariesRecentSearchesDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -115,9 +115,10 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 - (void)setupRecentSearchesViewController
 {
     self.recentSearchesViewController = [[MITLibrariesRecentSearchesViewController alloc] init];
+    self.recentSearchesViewController.delegate = self;
     UINavigationController *navContainer = [[UINavigationController alloc] initWithRootViewController:self.recentSearchesViewController];
     self.recentSearchesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainer];
-    self.recentSearchesPopoverController.passthroughViews = @[self.searchBar];
+    self.recentSearchesPopoverController.passthroughViews = @[self.cancelSearchButton];
 }
 
 - (void)setupToolbar
@@ -290,6 +291,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 - (void)searchBarCancelPressed:(UIButton *)sender
 {
+    [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
+    
     self.cancelSearchButton.enabled = YES;
     [self.cancelSearchButton setTitle:@"" forState:UIControlStateNormal];
 
@@ -306,6 +309,12 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     // TODO: This should be handled by a results controller most likely, but for now this will cache the search term in recents
     NSString *searchTerm = searchBar.text;
     self.searchViewController.searchTerm = searchTerm;
+}
+
+- (void)recentSearchesDidSelectSearchTerm:(NSString *)searchTerm
+{
+    self.searchBar.text = searchTerm;
+    [self searchBarSearchButtonClicked:self.searchBar];
 }
 
 @end
