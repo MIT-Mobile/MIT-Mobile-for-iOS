@@ -4,6 +4,7 @@
 #import "MITLibrariesUser.h"
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
+#import "MITLibrariesYourAccountItemDetailViewController.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
@@ -244,6 +245,36 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
     [view addSubview:label];
     
     return view;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    MITLibrariesMITItem *selectedItem = nil;
+    switch (indexPath.section) {
+        case kMITAccountListSectionLoans: {
+            selectedItem = self.user.loans[indexPath.row];
+            break;
+        }
+        case kMITAccountListSectionFines: {
+            selectedItem = self.user.fines[indexPath.row];
+            break;
+        }
+        case kMITAccountListSectionHolds: {
+            selectedItem = self.user.holds[indexPath.row];
+            break;
+        }
+        default:
+            return;
+            break;
+    }
+    
+    MITLibrariesYourAccountItemDetailViewController *detailVC = [[MITLibrariesYourAccountItemDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.item = selectedItem;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentViewController:navController animated:YES completion:^{}];
 }
 
 - (void)setUser:(MITLibrariesUser *)user
