@@ -255,7 +255,7 @@
     BOOL shouldShowLocationRow = [self shouldShowLocationRow];
     if( indexPath.row == 0 && shouldShowLocationRow )
     {
-        cell.textLabel.text = @"Use my location";
+        cell.textLabel.text = @"Nearby Locations";
         
         return;
     }

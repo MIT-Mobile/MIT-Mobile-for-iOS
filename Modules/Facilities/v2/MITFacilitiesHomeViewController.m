@@ -374,6 +374,24 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 {
     static NSInteger defaultHeight = 72;
     
+    CGFloat height = defaultHeight;
+    
+    if( [self.reportForm.location.isLeased boolValue] )
+    {
+        height = [self leasedFacilityTableView:tableView heightForRowAtIndexPath:indexPath defaultHeight:defaultHeight];
+    }
+    else
+    {
+        height = [self regularFacilityTableView:tableView heightForRowAtIndexPath:indexPath defaultHeight:defaultHeight];
+    }
+    
+    return height;
+}
+
+- (CGFloat)regularFacilityTableView:(UITableView *)tableView
+            heightForRowAtIndexPath:(NSIndexPath *)indexPath
+                      defaultHeight:(NSInteger)defaultHeight
+{
     BOOL isEditingRow = indexPath.row == self.editingIndexPath.row;
     
     NSInteger row = [self adjustedFieldRow:indexPath.row];
@@ -388,7 +406,15 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     {
         return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 450 : 553;
     }
-    else if( (row == MITLeasedFacilitiesFormFieldLeasedMessage) && (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) )
+    
+    return defaultHeight;
+}
+
+- (CGFloat)leasedFacilityTableView:(UITableView *)tableView
+           heightForRowAtIndexPath:(NSIndexPath *)indexPath
+                     defaultHeight:(NSInteger)defaultHeight
+{
+    if( (indexPath.row == MITLeasedFacilitiesFormFieldLeasedMessage) && (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) )
     {
         return defaultHeight + 20;
     }
@@ -606,7 +632,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (MITFacilitiesNonEditableFieldCell *)problemTypeFieldCellWithIndexPath:(NSIndexPath *)indexPath
 {
     MITFacilitiesNonEditableFieldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AttributeNonEditableCell" forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    cell.accessoryType = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
     
     cell.titleLabel.text = @"problem type";
     cell.subtitleLabel.text = self.reportForm.problemType.name;
@@ -1005,7 +1032,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 - (NSInteger)adjustedFieldRow:(NSInteger)row
 {
     // we're not skipping rows if it's "leased"
-    if( self.reportForm.location.isLeased )
+    if( [self.reportForm.location.isLeased boolValue] )
     {
         return row;
     }
