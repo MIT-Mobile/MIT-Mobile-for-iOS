@@ -34,6 +34,10 @@ typedef NS_ENUM(NSInteger, MITLibrariesItemType) {
     [super viewDidLoad];
     
     [self registerCells];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+    }
 }
 
 - (void)registerCells
@@ -84,6 +88,11 @@ typedef NS_ENUM(NSInteger, MITLibrariesItemType) {
     
     [self recreateItemDetailLines];
     [self.tableView reloadData];
+}
+
+- (void)doneButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
 #pragma mark - UITableView Methods
