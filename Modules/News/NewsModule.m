@@ -2,40 +2,37 @@
 
 #import "MITNewsViewController.h"
 
-
-
 @implementation NewsModule
-- (id) init {
-    self = [super initWithTag:MITModuleTagNewsOffice];
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagNewsOffice title:@"News"];
     if (self) {
-        self.shortName = @"News";
-        self.longName = @"News Office";
-        self.iconName = @"news";
+        self.longTitle = @"News Office";
+        self.imageName = @"news";
     }
     
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
+- (void)loadViewController
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
+
     UIViewController *controller = [storyboard instantiateInitialViewController];
-    return controller;
+
+    if ([controller isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController*)controller;
+        self.viewController = controller;
+        self.rootViewController = navigationController.viewControllers[0];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"view controller must be a kind of UINavigationController" userInfo:nil];
+    }
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
-    NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    UIViewController *controller = [storyboard instantiateInitialViewController];
-    return controller;
-}
 @end
