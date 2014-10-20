@@ -253,15 +253,15 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
     
     MITLibrariesMITItem *selectedItem = nil;
     switch (indexPath.section) {
-        case kMITAccountListSectionLoans: {
+        case MITAccountListSectionLoans: {
             selectedItem = self.user.loans[indexPath.row];
             break;
         }
-        case kMITAccountListSectionFines: {
+        case MITAccountListSectionFines: {
             selectedItem = self.user.fines[indexPath.row];
             break;
         }
-        case kMITAccountListSectionHolds: {
+        case MITAccountListSectionHolds: {
             selectedItem = self.user.holds[indexPath.row];
             break;
         }

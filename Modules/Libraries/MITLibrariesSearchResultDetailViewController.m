@@ -52,6 +52,11 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     // Do any additional setup after loading the view from its nib.
     
     [self registerCells];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+        self.title = @"Book Detail";
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -83,6 +88,11 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
     [self.tableView registerNib:librariesHoldingCopyInfoCellNib forCellReuseIdentifier:kHoldingLibraryCopyCellIdentifier];
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kHoldingLibraryViewAllCellIdentifier];
+}
+
+- (void)doneButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
 - (void)hydrateCurrentItem
