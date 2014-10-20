@@ -36,6 +36,21 @@ typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];  
+}
+
+- (void)applicationDidBecomeActive
+{
+    [self refreshUserData];
+}
+
 - (void)setupLoginView
 {
     self.logInButton.tintColor = [UIColor mit_tintColor];
