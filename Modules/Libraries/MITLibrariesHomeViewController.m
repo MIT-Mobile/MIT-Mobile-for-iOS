@@ -342,6 +342,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     [self.searchResultsViewController search:searchBar.text];
     self.searchResultsViewController.view.hidden = NO;
+    self.mainTableView.scrollsToTop = NO;
+    
     [self.searchBar resignFirstResponder];
 }
 
@@ -357,6 +359,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     self.searchBar.searchBarStyle = UISearchBarStyleDefault;
     self.preSearchOverlay.hidden = YES;
     self.searchResultsViewController.view.hidden = YES;
+    self.mainTableView.scrollsToTop = YES;
     
     [self setShowingCancelButton:NO animated:YES];
 }
