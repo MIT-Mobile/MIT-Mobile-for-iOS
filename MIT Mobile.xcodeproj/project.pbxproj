@@ -188,8 +188,6 @@
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C75D20A16C975D100DD5350 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C75D20916C975D100DD5350 /* libc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
-		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
@@ -953,8 +951,6 @@
 		2C75D20916C975D100DD5350 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
-		2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
-		2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2C7EEAFA1871B00E009ED73D /* MITNewsCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoriesResource.h; sourceTree = "<group>"; };
 		2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoriesResource.m; sourceTree = "<group>"; };
 		2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileRouteConstants.h; sourceTree = "<group>"; };
@@ -4412,8 +4408,6 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
-				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
-				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
 				A59A25A519A1434D00AD7E3A /* MITDiningHallMealCollectionCell.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				22D9032E199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m in Sources */,
