@@ -98,7 +98,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     self.cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-    self.cancelButton.titleLabel.font = [UIFont systemFontOfSize:17];
+    self.cancelButton.titleLabel.font = [UIFont librariesTitleStyleFont];
     [self.cancelButton addTarget:self action:@selector(cancelButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     self.cancelButton.frame = CGRectMake(self.searchContainerView.bounds.size.width + 67, 0, 67, self.searchContainerView.bounds.size.height);
     [self.searchContainerView addSubview:self.cancelButton];
@@ -342,6 +342,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     [self.searchResultsViewController search:searchBar.text];
     self.searchResultsViewController.view.hidden = NO;
+    self.mainTableView.scrollsToTop = NO;
+    
     [self.searchBar resignFirstResponder];
 }
 
@@ -357,6 +359,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     self.searchBar.searchBarStyle = UISearchBarStyleDefault;
     self.preSearchOverlay.hidden = YES;
     self.searchResultsViewController.view.hidden = YES;
+    self.mainTableView.scrollsToTop = YES;
     
     [self setShowingCancelButton:NO animated:YES];
 }

@@ -27,6 +27,9 @@
     if (!self.showsSeparator) {
         self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
     }
+    else {
+        self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
+    }
 }
 
 - (void)setContent:(MITLibrariesWorldcatItem *)item

@@ -43,12 +43,19 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)applicationDidBecomeActive
+{
+    [self refreshUserData];
 }
 
 - (void)refreshUserData

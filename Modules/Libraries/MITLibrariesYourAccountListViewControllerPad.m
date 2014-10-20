@@ -3,6 +3,7 @@
 #import "MITLibrariesItemHoldCell.h"
 #import "MITLibrariesUser.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
@@ -161,7 +162,7 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 - (UIView *)loansHeaderView
 {
     if (!_loansHeaderView) {
-        NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+        NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont librariesTitleStyleFont]}];
         
         [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
                                                                                   attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
