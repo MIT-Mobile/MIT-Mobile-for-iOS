@@ -5,5 +5,7 @@
 @property(nonatomic,strong) UIViewController *rootViewController;
 
 - (instancetype)initWithName:(NSString *)name title:(NSString *)title;
+
+- (BOOL)isRootViewControllerLoaded;
 - (void)loadRootViewController;
 @end

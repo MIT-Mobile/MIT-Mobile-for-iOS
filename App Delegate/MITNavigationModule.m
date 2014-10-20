@@ -1,6 +1,9 @@
 #import "MITNavigationModule.h"
 
-@implementation MITNavigationModule
+@implementation MITNavigationModule {
+    __weak UIViewController *_rootViewController;
+}
+
 @dynamic rootViewController;
 @dynamic navigationController;
 
@@ -18,8 +21,20 @@
 {
     UINavigationController *navigationController = [[UINavigationController alloc] init];
     self.viewController = navigationController;
-    
-    [self loadRootViewController];
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+
+    if (![self isRootViewControllerLoaded]) {
+        [self loadRootViewController];
+    }
+}
+
+- (BOOL)isRootViewControllerLoaded
+{
+    return (_rootViewController != nil);
 }
 
 - (void)loadRootViewController
@@ -37,7 +52,7 @@
 - (UINavigationController*)navigationController
 {
     if ([self.viewController isKindOfClass:[UINavigationController class]]) {
-        return (UINavigationController*)self.navigationController;
+        return (UINavigationController*)self.viewController;
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"view controller must be kind of UINavigationController"
@@ -48,7 +63,11 @@
 - (void)setRootViewController:(UIViewController *)rootViewController
 {
     NSParameterAssert(rootViewController);
-    [self.navigationController setViewControllers:@[rootViewController]];
+
+    if (_rootViewController != rootViewController) {
+        _rootViewController = rootViewController;
+        [self.navigationController setViewControllers:@[rootViewController]];
+    }
 }
 
 - (UIViewController*)rootViewController
