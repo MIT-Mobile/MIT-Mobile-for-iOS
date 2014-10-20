@@ -22,6 +22,10 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     self.title = @"Citations";
     self.tableView.delaysContentTouches = NO;
     
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+    }
+    
     [self registerCells];
 }
 
@@ -32,6 +36,11 @@ static NSString * const kCitationCellIdentifier = @"kCitationCellIdentifier";
     
     UINib *citationCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesCitationCell class]) bundle:nil];
     [self.tableView registerNib:citationCellNib forCellReuseIdentifier:kCitationCellIdentifier];
+}
+
+- (void)doneButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
 #pragma mark - UITableView Methods

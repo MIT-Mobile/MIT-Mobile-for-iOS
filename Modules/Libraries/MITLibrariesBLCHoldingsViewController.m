@@ -33,6 +33,10 @@ static NSString * const kHoldingLibraryCellIdentifier = @"kHoldingLibraryCellIde
     
     self.title = @"BLC Holdings";
     [self registerCells];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,6 +56,11 @@ static NSString * const kHoldingLibraryCellIdentifier = @"kHoldingLibraryCellIde
     
     UINib *holdingLibraryCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesSingleTitleLabelCell class]) bundle:nil];
     [self.tableView registerNib:holdingLibraryCellNib forCellReuseIdentifier:kHoldingLibraryCellIdentifier];
+}
+
+- (void)doneButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
 #pragma mark - UITableView Methods

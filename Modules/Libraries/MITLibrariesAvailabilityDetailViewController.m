@@ -33,18 +33,26 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
     
     [self registerCells];
     [self setupSegmentedControl];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.navigationController.toolbarHidden = NO;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        self.navigationController.toolbarHidden = NO;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    self.navigationController.toolbarHidden = YES;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        self.navigationController.toolbarHidden = YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -79,17 +87,29 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
 - (void)setupSegmentedControl
 {
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Available"]];
-    self.segmentedControl.bounds = CGRectMake(0, 0, self.navigationController.toolbar.bounds.size.width - 32, self.segmentedControl.bounds.size.height);
+    
     self.segmentedControl.selectedSegmentIndex = MITAvailabilitiesDetailSectionAll;
     [self.segmentedControl addTarget:self action:@selector(segmentedControlChanged) forControlEvents:UIControlEventValueChanged];
     
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[flexibleSpace, [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl], flexibleSpace];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        self.navigationItem.titleView = self.segmentedControl;
+    } else {
+        self.segmentedControl.bounds = CGRectMake(0, 0, self.navigationController.toolbar.bounds.size.width - 32, self.segmentedControl.bounds.size.height);
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        self.toolbarItems = @[flexibleSpace, [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl], flexibleSpace];
+    }
+    
+    
 }
 
 - (void)segmentedControlChanged
 {
     [self.tableView reloadData];
+}
+
+- (void)doneButtonPressed
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
 #pragma mark - UITableView Methods
