@@ -1,6 +1,7 @@
 #import "MITLibrariesFinesViewController.h"
 #import "MITLibrariesItemLoanFineCell.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 #import "MITLibrariesYourAccountItemDetailViewController.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
@@ -74,7 +75,7 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
     
     NSMutableAttributedString *fineAmountString = [[NSMutableAttributedString alloc] initWithString:self.finesBalance
                                                                      attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
-                                                                                  NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+                                                                                  NSFontAttributeName : [UIFont librariesHeaderFont]}];
     
     NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],

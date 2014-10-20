@@ -2,6 +2,7 @@
 #import "MITLibrariesMITHoldItem.h"
 #import "UIImageView+WebCache.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 
 @interface MITLibrariesItemHoldCell ()
 
@@ -18,9 +19,12 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    self.holdDateLabel.textColor =
-    self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
     self.readyForPickupLabel.text = nil;
+    
+    [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
+    [self.holdDateLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
+    [self.authorAndPublicationDateLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
+    
     self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
 }
 

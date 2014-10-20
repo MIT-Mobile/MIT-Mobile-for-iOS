@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesTextStyle) {
 + (UIFont *)librariesTitleStyleFont;
 + (UIFont *)librariesAccountStatusStyleFont;
 + (UIFont *)librariesLoginStyleFont;
++ (UIFont *)librariesHeaderFont;
 
 @end
 

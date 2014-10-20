@@ -3,6 +3,7 @@
 #import "MITLibrariesHoursCell.h"
 #import "MITLibrariesTerm.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 #import "MITTiledMapView.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
@@ -140,7 +141,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITDefaultCell];
         cell.textLabel.textColor = [UIColor mit_tintColor];
-        cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+        cell.textLabel.font = [UIFont librariesSubtitleStyleFont];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:17.0];
     }
     return cell;

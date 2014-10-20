@@ -2,6 +2,7 @@
 #import "MITLibrariesItemHoldCell.h"
 #import "MITLibrariesYourAccountItemDetailViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 
 static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
@@ -68,7 +69,7 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.items.count]
                                                                                    attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
-                                                                                                NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+                                                                                                NSFontAttributeName : [UIFont librariesSubtitleStyleFont]}];
     NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.readyForPickupCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
                                                                                      NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];

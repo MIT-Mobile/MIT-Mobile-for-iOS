@@ -98,7 +98,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 {
     self.cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-    self.cancelButton.titleLabel.font = [UIFont systemFontOfSize:17];
+    self.cancelButton.titleLabel.font = [UIFont librariesTitleStyleFont];
     [self.cancelButton addTarget:self action:@selector(cancelButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     self.cancelButton.frame = CGRectMake(self.searchContainerView.bounds.size.width + 67, 0, 67, self.searchContainerView.bounds.size.height);
     [self.searchContainerView addSubview:self.cancelButton];

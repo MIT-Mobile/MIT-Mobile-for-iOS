@@ -2,6 +2,7 @@
 #import "MITLibrariesItemLoanFineCell.h"
 #import "MITLibrariesMITLoanItem.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 #import "MITLibrariesYourAccountItemDetailViewController.h"
 
 static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFineCell";
@@ -69,7 +70,7 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.items.count]
                                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
-                                                                                                              NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+                                                                                                              NSFontAttributeName : [UIFont librariesHeaderFont]}];
     NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.overdueItemsCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                                 NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];

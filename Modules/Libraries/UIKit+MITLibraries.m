@@ -10,7 +10,7 @@
 
 + (UIFont *)librariesDetailStyleFont
 {
-    return [UIFont systemFontOfSize:14];
+    return [UIFont fontWithName:@"HelveticaNeue" size:14];
 }
 
 + (UIFont *)librariesFineStyleFont
@@ -20,22 +20,27 @@
 
 + (UIFont *)librariesSubtitleStyleFont
 {
-    return [UIFont systemFontOfSize:14];
+    return [UIFont fontWithName:@"HelveticaNeue" size:14];
 }
 
 + (UIFont *)librariesTitleStyleFont
 {
-    return [UIFont systemFontOfSize:17];
+    return [UIFont fontWithName:@"HelveticaNeue" size:17];
 }
 
 + (UIFont *)librariesAccountStatusStyleFont
 {
-    return [UIFont systemFontOfSize:24];
+    return [UIFont fontWithName:@"HelveticaNeue" size:24];
 }
 
 + (UIFont *)librariesLoginStyleFont
 {
-    return [UIFont systemFontOfSize:14];
+    return [UIFont fontWithName:@"HelveticaNeue" size:14];
+}
+
++ (UIFont *)librariesHeaderFont
+{
+    return [UIFont fontWithName:@"HelveticaNeue-Medium" size:14];
 }
 
 @end
