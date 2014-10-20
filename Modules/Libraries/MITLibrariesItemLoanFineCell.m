@@ -3,6 +3,7 @@
 #import "MITLibrariesMITLoanItem.h"
 #import "UIImageView+WebCache.h"
 #import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
 
 @interface MITLibrariesItemLoanFineCell ()
 
@@ -18,8 +19,11 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    self.dueDateLabel.textColor =
-    self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
+
+    [self.dueDateLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
+    [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
+    [self.authorAndPublicationDateLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
+    
     self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
 }
 
@@ -47,8 +51,8 @@
 
 - (void)setFineItem:(MITLibrariesMITFineItem *)fineItem
 {
-    NSMutableAttributedString *overdueText = [[NSMutableAttributedString alloc] initWithString:[@"Overdue, " stringByAppendingString:fineItem.formattedAmount]
-                                                                                    attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0],
+    NSMutableAttributedString *overdueText = [[NSMutableAttributedString alloc] initWithString:fineItem.formattedAmount
+                                                                                    attributes:@{NSFontAttributeName : [UIFont librariesDetailStyleFont],
                                                                                                  NSForegroundColorAttributeName : [UIColor mit_closedRedColor]}];
     [overdueText insertAttributedString:self.warningSignString atIndex:0];
     self.dueDateLabel.attributedText = overdueText;
@@ -56,7 +60,7 @@
 
 - (void)setLoanItem:(MITLibrariesMITLoanItem *)loanItem
 {
-    NSMutableAttributedString *dueDateText = [[NSMutableAttributedString alloc] initWithString:loanItem.dueText attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+    NSMutableAttributedString *dueDateText = [[NSMutableAttributedString alloc] initWithString:loanItem.dueText attributes:@{NSFontAttributeName : [UIFont librariesSubtitleStyleFont]}];
     if (loanItem.overdue) {
         [dueDateText addAttribute:NSForegroundColorAttributeName value:[UIColor mit_closedRedColor] range:NSMakeRange(0, dueDateText.length)];
         [dueDateText insertAttributedString:self.warningSignString atIndex:0];
