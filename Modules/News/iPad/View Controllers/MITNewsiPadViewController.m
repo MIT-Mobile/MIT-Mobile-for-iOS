@@ -555,11 +555,17 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)reachabilityChanged:(NSNotification *)note
 {
     if (!self.lastUpdated) {
-        Reachability* curReach = [note object];
-        NetworkStatus netStatus = [curReach currentReachabilityStatus];
-        if (netStatus != NotReachable) {
-            [self reloadViewItems:self.refreshControl];
-        }
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
+                if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+                    [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                } else {
+                    [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                }
+            } completion:nil];
+        }];
+        [self reloadViewItems:self.refreshControl];
     }
 }
 
