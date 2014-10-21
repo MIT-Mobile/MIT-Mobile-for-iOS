@@ -26,11 +26,6 @@
 
     UIViewController *controller = [storyboard instantiateInitialViewController];
     self.viewController = controller;
-    
-    if ([controller isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController*)controller;
-        self.rootViewController = navigationController.viewControllers[0];
-    }
 }
 
 @end

@@ -17,6 +17,17 @@
     return self;
 }
 
+- (UINavigationController*)navigationController
+{
+    if ([self.viewController isKindOfClass:[UINavigationController class]]) {
+        return (UINavigationController*)self.viewController;
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"view controller must be kind of UINavigationController"
+                                     userInfo:nil];
+    }
+}
+
 - (void)loadViewController
 {
     UINavigationController *navigationController = [[UINavigationController alloc] init];
@@ -48,24 +59,17 @@
 
 - (void)loadRootViewController
 {
-    UIView *view = [[UIView alloc] init];
-    view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-    view.backgroundColor = [UIColor whiteColor];
-    
-    UIViewController *viewController = [[UIViewController alloc] init];
-    viewController.view = view;
-    
-    self.rootViewController = viewController;
-}
-
-- (UINavigationController*)navigationController
-{
-    if ([self.viewController isKindOfClass:[UINavigationController class]]) {
-        return (UINavigationController*)self.viewController;
+    if ([self.navigationController.viewControllers count]) {
+        _rootViewController = [self.navigationController.viewControllers firstObject];
     } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"view controller must be kind of UINavigationController"
-                                     userInfo:nil];
+        UIView *view = [[UIView alloc] init];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        view.backgroundColor = [UIColor whiteColor];
+    
+        UIViewController *viewController = [[UIViewController alloc] init];
+        viewController.view = view;
+    
+        self.rootViewController = viewController;
     }
 }
 
@@ -81,7 +85,11 @@
 
 - (UIViewController*)rootViewController
 {
-    return [self.navigationController.viewControllers firstObject];
+    if (![self isRootViewControllerLoaded]) {
+        [self loadRootViewController];
+    }
+
+    return _rootViewController;
 }
 
 @end
