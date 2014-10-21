@@ -177,7 +177,9 @@ static NSString* const MITDeviceIdentityPasscodeKey = @"Passcode";
     self = [super init];
 
     if (self) {
-
+        _deviceToken = [[NSUserDefaults standardUserDefaults] dataForKey:DeviceTokenKey];
+        _deviceIdentifier = [[NSUserDefaults standardUserDefaults] stringForKey:MITDeviceIdKey];
+        _passcode = [[NSUserDefaults standardUserDefaults] stringForKey:MITPassCodeKey];
     }
 
     return self;
