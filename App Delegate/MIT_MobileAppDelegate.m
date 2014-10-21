@@ -93,23 +93,16 @@ static NSString* const MITMobileButtonTitleView = @"View";
     // a default controller here if needed.
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
 
-    if (!_window) {
-        // Needs to be set before the app continues on since there is the potential for
-        // the module setup process to make things visible (for example, if there is
-        //  an unread notification to process) and things will generally be very unhappy
-        //  if the app attempts to make a module visible before the root view controller
-        //  is told what it should care about
-        NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
-        [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-            if ([module supportsCurrentUserInterfaceIdiom]) {
-                UIViewController *viewController = module.viewController;
-                NSAssert(viewController, @"module %@ does not have a valid view controller",module.name);
-                [moduleViewControllers addObject:viewController];
-            }
-        }];
-        
-        self.rootViewController.viewControllers = moduleViewControllers;
-    }
+    NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module supportsCurrentUserInterfaceIdiom]) {
+            UIViewController *viewController = module.viewController;
+            NSAssert(viewController, @"module %@ does not have a valid view controller",module.name);
+            [moduleViewControllers addObject:viewController];
+        }
+    }];
+    
+    self.rootViewController.viewControllers = moduleViewControllers;
 
     [self updateBasicServerInfo];
 
