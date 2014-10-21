@@ -23,6 +23,15 @@
     self.viewController = navigationController;
 }
 
+- (void)setViewController:(UIViewController *)viewController
+{
+    if (![viewController isKindOfClass:[UINavigationController class]]) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"view controller must be a kind of UINavigationController" userInfo:nil];
+    } else {
+        [super setViewController:viewController];
+    }
+}
+
 - (void)viewControllerDidLoad
 {
     [super viewControllerDidLoad];

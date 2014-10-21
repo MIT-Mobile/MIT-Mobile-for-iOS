@@ -25,13 +25,11 @@
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
 
     UIViewController *controller = [storyboard instantiateInitialViewController];
-
+    self.viewController = controller;
+    
     if ([controller isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController*)controller;
-        self.viewController = controller;
         self.rootViewController = navigationController.viewControllers[0];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"view controller must be a kind of UINavigationController" userInfo:nil];
     }
 }
 
