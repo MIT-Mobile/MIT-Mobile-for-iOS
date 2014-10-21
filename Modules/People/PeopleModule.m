@@ -1,5 +1,4 @@
 #import "PeopleModule.h"
-#import "MITModuleURL.h"
 #import "PeopleSearchViewController.h"
 #import "PeopleDetailsViewController.h"
 #import "PeopleRecentsData.h"
