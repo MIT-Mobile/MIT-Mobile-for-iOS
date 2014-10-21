@@ -20,3 +20,5 @@
 #import "MITDiningResource.h"
 
 #import "MITLibrariesResource.h"
+
+#import "MITToursResource.h"

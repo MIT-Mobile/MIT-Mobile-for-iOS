@@ -8,6 +8,7 @@
 @interface MITToursTour : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * identifier;
+@property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * shortTourDescription;
 @property (nonatomic, retain) NSNumber * lengthInKM;

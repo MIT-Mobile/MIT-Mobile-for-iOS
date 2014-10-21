@@ -40,11 +40,12 @@
         <attribute name="lengthInKM" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="shortTourDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="links" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITToursLink" inverseName="tour" inverseEntity="MITToursLink" syncable="YES"/>
         <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITToursStop" inverseName="tour" inverseEntity="MITToursStop" syncable="YES"/>
     </entity>
     <elements>
-        <element name="MITToursTour" positionX="-63" positionY="-18" width="128" height="163"/>
+        <element name="MITToursTour" positionX="-63" positionY="-18" width="128" height="178"/>
         <element name="MITToursLink" positionX="-54" positionY="36" width="128" height="88"/>
         <element name="MITToursStop" positionX="-36" positionY="63" width="128" height="163"/>
         <element name="MITToursImage" positionX="-27" positionY="81" width="128" height="73"/>

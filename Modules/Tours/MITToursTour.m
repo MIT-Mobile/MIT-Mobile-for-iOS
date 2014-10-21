@@ -5,6 +5,7 @@
 @implementation MITToursTour
 
 @dynamic identifier;
+@dynamic url;
 @dynamic title;
 @dynamic shortTourDescription;
 @dynamic lengthInKM;
@@ -22,7 +23,7 @@
                                                   @"description_html" : @"descriptionHTML",
                                                   @"estimated_duration_in_minutes" : @"estimatedDurationInMinutes"}];
     
-    [mapping addAttributeMappingsFromArray:@[@"title"]];
+    [mapping addAttributeMappingsFromArray:@[@"title", @"url"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"links" toKeyPath:@"links" withMapping:[MITToursLink objectMapping]]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITToursStop objectMapping]]];
     
