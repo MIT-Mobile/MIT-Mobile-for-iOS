@@ -19,7 +19,7 @@
     self.rootViewController = rootViewController;
 }
 
-- (void)didReceiveRequestWithURL:(NSURL *)url
+- (void)didReceiveRequestWithURL:(NSURL*)url
 {
     [self.navigationController popToViewController:self.rootViewController animated:NO];
 }

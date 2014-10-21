@@ -24,7 +24,7 @@
 }
 
 #pragma mark URL Request handling
-- (void)didReceiveRequestWithURL:(NSURL *)url
+- (void)didReceiveRequestWithURL:(NSURL*)url
 {
     [super didReceiveRequestWithURL:url];
     [self.navigationController popToViewController:self.rootViewController animated:NO];

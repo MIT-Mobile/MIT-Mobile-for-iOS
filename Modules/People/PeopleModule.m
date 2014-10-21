@@ -50,7 +50,7 @@ static NSString * const PeopleStateDetail = @"detail";
     self.rootViewController = [storyboard instantiateInitialViewController];
 }
 
-- (void)didReceiveRequestWithURL:(NSURL *)url
+- (void)didReceiveRequestWithURL:(NSURL*)url
 {
     [super didReceiveRequestWithURL:url];
 

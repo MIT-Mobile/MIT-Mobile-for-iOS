@@ -57,7 +57,7 @@
     self.rootViewController = rootViewController;
 }
 
-- (void)didReceiveRequestWithURL:(NSURL *)url
+- (void)didReceiveRequestWithURL:(NSURL*)url
 {
     [super didReceiveRequestWithURL:url];
     
