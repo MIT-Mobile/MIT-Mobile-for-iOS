@@ -148,7 +148,9 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     // controller must do something itself.
     if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
-        navigationController.delegate = self;
+        UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleViewControllerPicker:)];
+        UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+        rootViewController.navigationItem.leftBarButtonItem = backButtonItem;
     }
     
     [self.slidingViewController resetTopViewAnimated:YES];
