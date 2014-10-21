@@ -15,18 +15,40 @@
 
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title;
 
+/*! Returns YES if the current user interface idiom is supported.
+ */
 - (BOOL)supportsCurrentUserInterfaceIdiom;
+
+/*! Returns YES if the view controller has been loaded.
+ * Calling this method does not invoke the autoloading.
+ */
 - (BOOL)isViewControllerLoaded;
 
-/*! Called when the module's view controller needs to be loaded.
- *  The subclass must create and assign a view controller to the 
- *  viewController property before returning from this method. By default,
- *  a UIViewController with an empty UIView will be created if the
- *  method is not overridded.
+/*! Creates the primary module's view controller.
+ *  This method should never be called directly. This method will be called
+ *  by the module when the primary view controller is requested but is currently
+ *  set to nil. This method creates or loads a UIViewController and assigns it
+ *  to the view controller property. By default, a UIViewController with an
+ *  empty UIView will be created.
  */
 - (void)loadViewController;
+
+/*! Called after the viewController is loaded.
+ *  This method should never be called directly.
+ */
 - (void)viewControllerDidLoad;
 
+/*! Called when the module receives a notification.
+ *  The module may not be visible or be made active after 
+ *  this method is called. Subclasses should call the
+ *  super implementation.
+ */
 - (void)didReceiveNotification:(NSDictionary*)userInfo;
+
+/*! Called when the module receives a URL request.
+ *  The module may not be visible or be made active after
+ *  this method is called. Subclasses should call the
+ *  super implementation.
+ */
 - (void)didReceiveRequestWithURL:(NSURL*)url;
 @end
