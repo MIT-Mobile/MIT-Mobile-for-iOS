@@ -401,12 +401,16 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
                 loadMoreCell.textLabel.text = self.errorMessage;
                 self.errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
+                [loadMoreCell.loadingIndicator stopAnimating];
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
+                [loadMoreCell.loadingIndicator startAnimating];
+
             } else {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
+                [loadMoreCell.loadingIndicator stopAnimating];
             }
             
             CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
