@@ -82,15 +82,6 @@
     }
 }
 
-- (void)updateLoadingCell
-{
-    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
-    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
-}
-
 #pragma mark Datasource Notification
 - (void)setupFinishedUpdateNotification
 {
