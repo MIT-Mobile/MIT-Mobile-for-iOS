@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="14A389" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="MITToursDirectionsToStop" representedClassName="MITToursDirectionsToStop" syncable="YES">
+        <attribute name="bodyHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="destinationID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="zoom" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="stop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursStop" inverseName="directionsToNextStop" inverseEntity="MITToursStop" syncable="YES"/>
+    </entity>
+    <entity name="MITToursImage" representedClassName="MITToursImage" syncable="YES">
+        <relationship name="representations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITToursImageRepresentation" inverseName="image" inverseEntity="MITToursImageRepresentation" syncable="YES"/>
+        <relationship name="stop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursStop" inverseName="images" inverseEntity="MITToursStop" syncable="YES"/>
+    </entity>
+    <entity name="MITToursImageRepresentation" representedClassName="MITToursImageRepresentation" syncable="YES">
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursImage" inverseName="representations" inverseEntity="MITToursImage" syncable="YES"/>
+    </entity>
+    <entity name="MITToursLink" representedClassName="MITToursLink" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="tour" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursTour" inverseName="links" inverseEntity="MITToursTour" syncable="YES"/>
+    </entity>
+    <entity name="MITToursStop" representedClassName="MITToursStop" syncable="YES">
+        <attribute name="bodyHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="coordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="stopType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="directionsToNextStop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursDirectionsToStop" inverseName="stop" inverseEntity="MITToursDirectionsToStop" syncable="YES"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITToursImage" inverseName="stop" inverseEntity="MITToursImage" syncable="YES"/>
+        <relationship name="tour" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITToursTour" inverseName="stops" inverseEntity="MITToursTour" syncable="YES"/>
+    </entity>
+    <entity name="MITToursTour" representedClassName="MITToursTour" syncable="YES">
+        <attribute name="descriptionHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="estimatedDurationInMinutes" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lengthInKM" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="shortTourDescription" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="links" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITToursLink" inverseName="tour" inverseEntity="MITToursLink" syncable="YES"/>
+        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITToursStop" inverseName="tour" inverseEntity="MITToursStop" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="MITToursTour" positionX="-63" positionY="-18" width="128" height="163"/>
+        <element name="MITToursLink" positionX="-54" positionY="36" width="128" height="88"/>
+        <element name="MITToursStop" positionX="-36" positionY="63" width="128" height="163"/>
+        <element name="MITToursImage" positionX="-27" positionY="81" width="128" height="73"/>
+        <element name="MITToursImageRepresentation" positionX="-18" positionY="90" width="128" height="103"/>
+        <element name="MITToursDirectionsToStop" positionX="0" positionY="117" width="128" height="133"/>
+    </elements>
+</model>
