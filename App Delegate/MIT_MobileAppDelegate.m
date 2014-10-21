@@ -115,8 +115,13 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
 
-    // Register for push notifications
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    if ([sharedApplication respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [sharedApplication registerForRemoteNotifications];
+    } else {
+        [sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    }
+
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
     return YES;
