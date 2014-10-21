@@ -266,7 +266,7 @@
 
 - (void)reloadData
 {
-    [self.delegate reloadData];
+    [self.delegate reloadSearchData];
 }
 
 @end

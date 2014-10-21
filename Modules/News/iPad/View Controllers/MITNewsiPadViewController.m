@@ -54,6 +54,7 @@ CGFloat const refreshControlTextHeight = 19;
 @property (nonatomic) BOOL showSearchStories;
 @property (nonatomic) CGPoint previousPositionOfMainView;
 @property (nonatomic) BOOL isPreviousStateASingleDataSource;
+@property (nonatomic, strong) NSDate *mainLastUpdated;
 
 @end
 
@@ -126,6 +127,8 @@ CGFloat const refreshControlTextHeight = 19;
             [self updateRefreshStatusWithLastUpdatedTime];
         }
         [self updateNavigationItem:YES];
+    } else {
+        [self updateRefreshStatusWithLastUpdatedTime];
     }
     
     if (!self.storyUpdateInProgress || self.weakStoryDetailViewController) {
@@ -355,6 +358,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
     self.isPreviousStateASingleDataSource = self.isSingleDataSource;
     self.searching = YES;
+    self.mainLastUpdated = self.lastUpdated;
     [self updateNavigationItem:YES];
     [self addChildViewController:self.searchController];
     [self.containerView addSubview:self.searchController.view];
@@ -383,6 +387,13 @@ CGFloat const refreshControlTextHeight = 19;
         self.presentationStyle = MITNewsPresentationStyleList;
         [self updateNavigationItem:YES];
     }
+}
+
+- (void)reloadSearchData
+{
+    self.lastUpdated = self.searchDataSource.refreshedAt;
+    [self updateRefreshStatusWithLastUpdatedTime];
+    [self reloadData];
 }
 
 - (void)reloadData
@@ -1040,6 +1051,8 @@ CGFloat const refreshControlTextHeight = 19;
 {
     self.showSearchStories = NO;
     self.isSingleDataSource = self.isPreviousStateASingleDataSource;
+    self.lastUpdated = self.mainLastUpdated;
+    [self updateRefreshStatusWithLastUpdatedTime];
     if (_presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.showSingleCategory = self.isSingleDataSource;
     } else {

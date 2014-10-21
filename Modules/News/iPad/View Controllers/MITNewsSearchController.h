@@ -18,6 +18,6 @@
 - (void)hideSearchField;
 - (void)changeToMainStories;
 - (void)changeToSearchStories;
-- (void)reloadData;
+- (void)reloadSearchData;
 
 @end
