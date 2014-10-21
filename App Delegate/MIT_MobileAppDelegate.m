@@ -431,7 +431,8 @@ static NSString* const MITMobileButtonTitleView = @"View";
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
                             @"Tours",
-                            @"PeopleDataModel"];
+                            @"PeopleDataModel",
+                            @"MITToursDataModel"];
     
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
@@ -553,6 +554,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
     
     MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
     [remoteObjectManager addResource:librariesLinksResource];
+    
+    MITMobileResource *toursTourResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursTourResource];
     
     _remoteObjectManager = remoteObjectManager;
 }
