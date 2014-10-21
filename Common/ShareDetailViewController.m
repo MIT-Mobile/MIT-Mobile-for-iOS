@@ -35,7 +35,7 @@ static NSString *kShareDetailTwitter = @"Twitter";
                               destructiveButtonTitle:nil
                                    otherButtonTitles:kShareDetailEmail, kShareDetailFacebook, kShareDetailTwitter,nil];
         
-        [sheet showFromAppDelegate];
+        [sheet showInView:self.view];
     }
 }
 
