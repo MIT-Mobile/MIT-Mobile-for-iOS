@@ -555,7 +555,10 @@ static NSString* const MITMobileButtonTitleView = @"View";
     MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
     [remoteObjectManager addResource:librariesLinksResource];
     
-    MITMobileResource *toursTourResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursToursResource];
+    
+    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursTourResource];
     
     _remoteObjectManager = remoteObjectManager;

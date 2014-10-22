@@ -11,10 +11,12 @@
 {
     [super viewDidLoad];
 
-    [MITToursWebservices getToursWithCompletion:^(NSArray *tours, NSError *error) {
-        
+    [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
+        MITToursTour *tour = object[0];
+        [MITToursWebservices getTourDetailForTour:tour completion:^(id object, NSError *error) {
+            
+        }];
     }];
-    
 }
 
 @end
