@@ -253,7 +253,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
         self.navigationItem.rightBarButtonItem = self.listLayoutButton;
     }
     
-    // TODO: Swap view controllers
+    self.searchViewController.layoutMode = layoutMode;
+    //TODO: set Your Account VC layout mode
 }
 
 - (void)listViewPressed
@@ -306,9 +307,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     [searchBar resignFirstResponder];
     [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
     
-    // TODO: This should be handled by a results controller most likely, but for now this will cache the search term in recents
     NSString *searchTerm = searchBar.text;
-    self.searchViewController.searchTerm = searchTerm;
+    [self.searchViewController search:searchTerm];
 }
 
 - (void)recentSearchesDidSelectSearchTerm:(NSString *)searchTerm

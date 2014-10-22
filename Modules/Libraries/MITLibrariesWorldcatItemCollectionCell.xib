@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MITLibrariesWorldcatItemCollectionCell">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="105"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="300" height="105"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Aa3-FG-BOR">
+                        <rect key="frame" x="8" y="10" width="55" height="85"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="85" id="8eq-h3-7DR"/>
+                            <constraint firstAttribute="width" constant="55" id="aZ1-kM-Dir"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="241" placeholderIntrinsicHeight="41" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4wX-f8-d7I" userLabel="Title Label">
+                        <rect key="frame" x="71" y="10" width="221" height="41"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="241" placeholderIntrinsicHeight="36" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PXW-B8-dmP" userLabel="YearAuthor Label">
+                        <rect key="frame" x="71" y="59" width="221" height="36"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <constraints>
+                <constraint firstItem="4wX-f8-d7I" firstAttribute="leading" secondItem="Aa3-FG-BOR" secondAttribute="trailing" constant="8" id="A8O-jS-fTB"/>
+                <constraint firstItem="PXW-B8-dmP" firstAttribute="leading" secondItem="Aa3-FG-BOR" secondAttribute="trailing" constant="8" id="C85-c1-ifi"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Aa3-FG-BOR" secondAttribute="bottom" constant="10" id="DhZ-Do-7aU"/>
+                <constraint firstItem="Aa3-FG-BOR" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="Eb2-xR-6CB"/>
+                <constraint firstItem="Aa3-FG-BOR" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="JZv-UW-dg9"/>
+                <constraint firstItem="PXW-B8-dmP" firstAttribute="top" secondItem="4wX-f8-d7I" secondAttribute="bottom" constant="8" id="T8u-v3-TcZ"/>
+                <constraint firstAttribute="trailing" secondItem="PXW-B8-dmP" secondAttribute="trailing" constant="8" id="TDj-oT-te5"/>
+                <constraint firstItem="4wX-f8-d7I" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="Yzm-u9-c0L"/>
+                <constraint firstAttribute="trailing" secondItem="4wX-f8-d7I" secondAttribute="trailing" constant="8" id="bc2-af-DdX"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="PXW-B8-dmP" secondAttribute="bottom" constant="10" id="d7F-Wd-fj5"/>
+            </constraints>
+            <size key="customSize" width="300" height="105"/>
+            <connections>
+                <outlet property="itemImageView" destination="Aa3-FG-BOR" id="idX-DD-dr3"/>
+                <outlet property="itemTitleLabel" destination="4wX-f8-d7I" id="AQq-jf-0dU"/>
+                <outlet property="yearAndAuthorLabel" destination="PXW-B8-dmP" id="pxN-U7-1Xp"/>
+            </connections>
+            <point key="canvasLocation" x="265" y="182.5"/>
+        </collectionViewCell>
+    </objects>
+</document>
