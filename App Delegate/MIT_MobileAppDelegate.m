@@ -510,7 +510,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
                             @"Tours",
-                            @"PeopleDataModel"];
+                            @"PeopleDataModel",
+                            @"MITToursDataModel"];
     
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
@@ -632,6 +633,12 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
     [remoteObjectManager addResource:librariesLinksResource];
+    
+    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursToursResource];
+    
+    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursTourResource];
     
     _remoteObjectManager = remoteObjectManager;
 }

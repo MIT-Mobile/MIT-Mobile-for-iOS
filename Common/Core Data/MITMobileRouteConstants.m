@@ -116,3 +116,10 @@ NSString* const MITTechcashAccountsPathPattern = @"apis/techcash/accounts";
 #pragma mark techcash/accounts/:account
 NSString* const MITTechcashAccountResourceName = @"MITTechcashAccountResourceName";
 NSString* const MITTechcashAccountPathPattern = @"apis/techcash/accounts/:account";
+
+#pragma mark tours
+NSString* const MITToursResourceName = @"MITToursResourceName";
+NSString* const MITToursPathPattern = @"apis/tours/";
+
+NSString* const MITToursTourResourceName = @"MITToursTourResourceName";
+NSString* const MITToursTourPathPattern = @"apis/tours/:tour";

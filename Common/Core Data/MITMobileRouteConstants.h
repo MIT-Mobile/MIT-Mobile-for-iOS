@@ -116,3 +116,10 @@ FOUNDATION_EXTERN NSString* const MITTechcashAccountsPathPattern;
 #pragma mark techcash/accounts/:account
 FOUNDATION_EXTERN NSString* const MITTechcashAccountResourceName;
 FOUNDATION_EXTERN NSString* const MITTechcashAccountPathPattern;
+
+#pragma mark tours
+FOUNDATION_EXTERN NSString* const MITToursResourceName;
+FOUNDATION_EXTERN NSString* const MITToursPathPattern;
+
+FOUNDATION_EXTERN NSString* const MITToursTourResourceName;
+FOUNDATION_EXTERN NSString* const MITToursTourPathPattern;
