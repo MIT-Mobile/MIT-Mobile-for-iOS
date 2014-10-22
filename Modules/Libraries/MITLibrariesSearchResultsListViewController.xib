@@ -5,7 +5,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesSearchResultsViewController">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesSearchResultsListViewController">
             <connections>
                 <outlet property="messageLabel" destination="Gax-yd-v7Y" id="Qsx-d2-E0s"/>
                 <outlet property="resultsTableView" destination="oPa-AU-TI9" id="kvG-q8-IdO"/>
