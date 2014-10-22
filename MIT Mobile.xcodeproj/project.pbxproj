@@ -1447,26 +1447,6 @@
 		DE0F6B3311109BC500F064D6 /* AboutMITVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutMITVC.m; sourceTree = "<group>"; };
 		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
 		DE129018134B748E00BEBDA2 /* MITLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogging.h; sourceTree = "<group>"; };
-		DE1348F910FFC2CC006FFF33 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
-		DE1348FA10FFC2CC006FFF33 /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
-		DE1348FB10FFC2CC006FFF33 /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
-		DE1348FC10FFC2CC006FFF33 /* 12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 12.png; sourceTree = "<group>"; };
-		DE1348FD10FFC2CC006FFF33 /* 13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 13.png; sourceTree = "<group>"; };
-		DE1348FE10FFC2CC006FFF33 /* 14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 14.png; sourceTree = "<group>"; };
-		DE1348FF10FFC2CC006FFF33 /* 15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 15.png; sourceTree = "<group>"; };
-		DE13490010FFC2CC006FFF33 /* 16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 16.png; sourceTree = "<group>"; };
-		DE13490110FFC2CC006FFF33 /* 17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 17.png; sourceTree = "<group>"; };
-		DE13490210FFC2CC006FFF33 /* 18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 18.png; sourceTree = "<group>"; };
-		DE13490310FFC2CC006FFF33 /* 19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 19.png; sourceTree = "<group>"; };
-		DE13490410FFC2CC006FFF33 /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
-		DE13490510FFC2CC006FFF33 /* 20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 20.png; sourceTree = "<group>"; };
-		DE13490610FFC2CC006FFF33 /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
-		DE13490710FFC2CC006FFF33 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
-		DE13490810FFC2CC006FFF33 /* 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 5.png; sourceTree = "<group>"; };
-		DE13490910FFC2CC006FFF33 /* 6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 6.png; sourceTree = "<group>"; };
-		DE13490A10FFC2CC006FFF33 /* 7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 7.png; sourceTree = "<group>"; };
-		DE13490B10FFC2CC006FFF33 /* 8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 8.png; sourceTree = "<group>"; };
-		DE13490C10FFC2CC006FFF33 /* 9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 9.png; sourceTree = "<group>"; };
 		DE18F9E910F19085009A69B9 /* News.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = News.xcdatamodel; sourceTree = "<group>"; };
 		DE1B4D7010CE17B30073BABC /* MITJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITJSON.h; sourceTree = "<group>"; };
 		DE1B4D7110CE17B30073BABC /* MITJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITJSON.m; sourceTree = "<group>"; };
@@ -2112,7 +2092,6 @@
 				EB5C62301201D93A00805EBE /* shuttle */,
 				EB5C61FC1201D92E00805EBE /* map */,
 				4BE4D3001416EB4D00E723F0 /* libraries */,
-				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
 				EB54947210DFF7E200B708B3 /* global */,
 				EB54942710DFF03600B708B3 /* icons */,
 				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
@@ -3359,34 +3338,6 @@
 				DE1B4D7110CE17B30073BABC /* MITJSON.m */,
 			);
 			path = JSON;
-			sourceTree = "<group>";
-		};
-		DE1348F810FFC2CC006FFF33 /* debug_tiles */ = {
-			isa = PBXGroup;
-			children = (
-				DE1348F910FFC2CC006FFF33 /* 1.png */,
-				DE1348FA10FFC2CC006FFF33 /* 10.png */,
-				DE1348FB10FFC2CC006FFF33 /* 11.png */,
-				DE1348FC10FFC2CC006FFF33 /* 12.png */,
-				DE1348FD10FFC2CC006FFF33 /* 13.png */,
-				DE1348FE10FFC2CC006FFF33 /* 14.png */,
-				DE1348FF10FFC2CC006FFF33 /* 15.png */,
-				DE13490010FFC2CC006FFF33 /* 16.png */,
-				DE13490110FFC2CC006FFF33 /* 17.png */,
-				DE13490210FFC2CC006FFF33 /* 18.png */,
-				DE13490310FFC2CC006FFF33 /* 19.png */,
-				DE13490410FFC2CC006FFF33 /* 2.png */,
-				DE13490510FFC2CC006FFF33 /* 20.png */,
-				DE13490610FFC2CC006FFF33 /* 3.png */,
-				DE13490710FFC2CC006FFF33 /* 4.png */,
-				DE13490810FFC2CC006FFF33 /* 5.png */,
-				DE13490910FFC2CC006FFF33 /* 6.png */,
-				DE13490A10FFC2CC006FFF33 /* 7.png */,
-				DE13490B10FFC2CC006FFF33 /* 8.png */,
-				DE13490C10FFC2CC006FFF33 /* 9.png */,
-			);
-			name = debug_tiles;
-			path = Resources/debug_tiles;
 			sourceTree = "<group>";
 		};
 		DE27768E177E7A3900CF46FF /* SVPullToRefresh */ = {
