@@ -509,7 +509,6 @@
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
-		EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07B06612B89440005D6A4C /* NavScrollerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; };
 		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; };
@@ -1573,8 +1572,6 @@
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
 		DEE6AF1F1117477E0037F03C /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Resources/credits.html; sourceTree = "<group>"; };
-		EB07B06512B89440005D6A4C /* NavScrollerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavScrollerView.h; sourceTree = "<group>"; };
-		EB07B06612B89440005D6A4C /* NavScrollerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavScrollerView.m; sourceTree = "<group>"; };
 		EB07B06912B8971D005D6A4C /* calendar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = calendar; path = Resources/calendar; sourceTree = "<group>"; };
 		EB4C1E98127723B700058748 /* ToursModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToursModule.h; sourceTree = "<group>"; };
 		EB4C1E99127723B700058748 /* ToursModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToursModule.m; sourceTree = "<group>"; };
@@ -1758,8 +1755,6 @@
 				2C5DECC813E9BABB00F9C089 /* Mobile Web API */,
 				2C09824A13A8F21D00778B53 /* ModuleVersions.h */,
 				2C09824B13A8F21D00778B53 /* ModuleVersions.m */,
-				EB07B06512B89440005D6A4C /* NavScrollerView.h */,
-				EB07B06612B89440005D6A4C /* NavScrollerView.m */,
 				2CFF6C2717E11AE500BAA8B2 /* Scrolling Navigation Bar */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
@@ -4220,7 +4215,6 @@
 				2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */,
 				A5A24B7419946FA400AA1CFC /* MITEventsRecentSearches.m in Sources */,
 				22CFC1A819AE623F003BD72A /* MITDiningVenueInfoCell.m in Sources */,
-				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */,

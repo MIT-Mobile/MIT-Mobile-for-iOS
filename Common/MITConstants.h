@@ -102,11 +102,6 @@ extern NSString * const MITImageNameSecureHighlight;
 extern NSString * const MITImageNameCalendar;
 extern NSString * const MITImageNameCalendarHighlight;
 
-extern NSString * const MITImageNameScrollTabBackgroundOpaque;
-extern NSString * const MITImageNameScrollTabBackgroundTranslucent;
-extern NSString * const MITImageNameScrollTabLeftEndCap;
-extern NSString * const MITImageNameScrollTabRightEndCap;
-extern NSString * const MITImageNameScrollTabSelectedTab;
 
 extern NSString * const MITImageNameLeftArrow;
 extern NSString * const MITImageNameRightArrow;

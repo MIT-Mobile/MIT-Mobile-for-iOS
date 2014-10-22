@@ -103,12 +103,6 @@ NSString * const MITImageNameSecureHighlight  = @"global/action-secure-highlight
 NSString * const MITImageNameCalendar       = @"global/action-calendar";
 NSString * const MITImageNameCalendarHighlight  = @"global/action-calendar-highlight";
 
-NSString * const MITImageNameScrollTabBackgroundOpaque = @"global/scrolltabs-background-opaque.png";
-NSString * const MITImageNameScrollTabBackgroundTranslucent = @"global/scrolltabs-background-transparent.png";
-NSString * const MITImageNameScrollTabLeftEndCap = @"global/scrolltabs-leftarrow.png";
-NSString * const MITImageNameScrollTabRightEndCap = @"global/scrolltabs-rightarrow.png";
-NSString * const MITImageNameScrollTabSelectedTab = @"global/scrolltabs-selected.png";
-
 NSString * const MITImageNameLeftArrow = @"global/arrow-white-left.png";
 NSString * const MITImageNameRightArrow = @"global/arrow-white-right.png";
 NSString * const MITImageNameUpArrow = @"global/arrow-white-up.png";
