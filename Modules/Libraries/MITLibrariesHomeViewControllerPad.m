@@ -254,7 +254,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     }
     
     self.searchViewController.layoutMode = layoutMode;
-    //TODO: set Your Account VC layout mode
+    self.accountViewController.layoutMode = layoutMode;
 }
 
 - (void)listViewPressed

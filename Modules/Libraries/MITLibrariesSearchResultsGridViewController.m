@@ -2,6 +2,7 @@
 #import "MITLibrariesSearchController.h"
 #import "MITLibrariesWorldcatItemCollectionCell.h"
 #import "SVPullToRefresh.h"
+#import "TopAlignedStickyHeaderCollectionViewFlowLayout.h"
 
 static NSString * const kWorldcatItemCollectionCellIdentifier = @"kWorldcatItemCollectionCellIdentifier";
 static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding = 20.0;
@@ -20,6 +21,7 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
     
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCollectionCell class]) bundle:nil] forCellWithReuseIdentifier:kWorldcatItemCollectionCellIdentifier];
     self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.collectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
     
     self.collectionView.showsInfiniteScrolling = NO;
     [self.collectionView addInfiniteScrollingWithActionHandler:^{
@@ -46,6 +48,7 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     [self.collectionView reloadData];
 }
 
