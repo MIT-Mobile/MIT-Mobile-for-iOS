@@ -58,7 +58,7 @@
                                 <constraint firstAttribute="width" constant="40" id="bXL-zA-Wqm"/>
                                 <constraint firstAttribute="height" constant="44" id="p6q-ph-AzL"/>
                             </constraints>
-                            <state key="normal" image="calendar/day_picker_button.png">
+                            <state key="normal" image="day_picker_button.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                         </button>
