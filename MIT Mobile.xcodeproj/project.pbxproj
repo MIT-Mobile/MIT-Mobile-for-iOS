@@ -3414,19 +3414,19 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				48B8129315E428DA00E791F9 /* Links */,
-				4B66705F1403304300714C6A /* Libraries */,
 				DE81CF5E10C6BC390085573D /* About */,
+				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
 				EB86CA6C115D273800C8F3D1 /* Calendar */,
 				DE715446102FE468005E6111 /* Campus Map */,
 				48327CDD16F74EA0003A2F23 /* Dining */,
 				DE715447102FE468005E6111 /* Emergency */,
-				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
+				4B66705F1403304300714C6A /* Libraries */,
+				48B8129315E428DA00E791F9 /* Links */,
 				DE81CF5F10C6BC390085573D /* News */,
-				EB7F326610CD6C5B00188BCD /* People */,
+				EB7F326610CD6C5B00188BCD /* People Directory */,
 				2CB6459C134CAF1A00E85E64 /* Scanner */,
 				DE9EFBCE10FE7D3200F5F07E /* Settings */,
-				DE715449102FE468005E6111 /* ShuttleTrack */,
+				DE715449102FE468005E6111 /* Shuttles */,
 				EB4C1E97127723B700058748 /* Tours */,
 			);
 			path = Modules;
@@ -3468,7 +3468,7 @@
 			path = Emergency;
 			sourceTree = "<group>";
 		};
-		DE715449102FE468005E6111 /* ShuttleTrack */ = {
+		DE715449102FE468005E6111 /* Shuttles */ = {
 			isa = PBXGroup;
 			children = (
 				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
@@ -3487,6 +3487,7 @@
 				5E70E398192F7FBF00165B41 /* Views */,
 				5E6DEDF41925646100BA54BE /* Old */,
 			);
+			name = Shuttles;
 			path = ShuttleTrack;
 			sourceTree = "<group>";
 		};
@@ -3681,7 +3682,7 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		EB7F326610CD6C5B00188BCD /* People */ = {
+		EB7F326610CD6C5B00188BCD /* People Directory */ = {
 			isa = PBXGroup;
 			children = (
 				481F764D188EBA470051F444 /* People.storyboard */,
@@ -3697,6 +3698,7 @@
 				274887321933ABCC00414552 /* MITPeopleSearchHandler.h */,
 				274887331933ABCC00414552 /* MITPeopleSearchHandler.m */,
 			);
+			name = "People Directory";
 			path = People;
 			sourceTree = "<group>";
 		};
