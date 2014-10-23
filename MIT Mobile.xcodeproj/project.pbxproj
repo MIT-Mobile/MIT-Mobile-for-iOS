@@ -217,6 +217,7 @@
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
+		2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1001,6 +1002,8 @@
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB90045176B5DC3006C3C3A /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
 		2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSCalloutView.m; sourceTree = "<group>"; };
+		2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITResourceConstants.m; sourceTree = "<group>"; };
+		2CBA739B19F7E512000258C9 /* MITResourceConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITResourceConstants.h; sourceTree = "<group>"; };
 		2CBD6A0216D3CE6D002B482F /* MGSMapView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Private.h"; sourceTree = "<group>"; };
 		2CBDBDE515CC1F1F0092F76F /* QRReaderResult v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "QRReaderResult v2.xcdatamodel"; sourceTree = "<group>"; };
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
@@ -1699,6 +1702,8 @@
 				DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */,
 				DEA3B6F610CB126200BDA774 /* MITConstants.h */,
 				DEA3B6F710CB126200BDA774 /* MITConstants.m */,
+				2CBA739B19F7E512000258C9 /* MITResourceConstants.h */,
+				2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */,
 				EBA2867710E082010003BA01 /* MITLoadingActivityView.h */,
 				EBA2867810E082010003BA01 /* MITLoadingActivityView.m */,
 				5E6DEDED1924F45300BA54BE /* Location */,
@@ -4065,6 +4070,7 @@
 				2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
+				2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */,
 				2209CC3019929BE300E17100 /* MITEventsTableViewController.m in Sources */,
 				A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
