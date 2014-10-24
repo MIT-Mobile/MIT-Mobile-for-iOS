@@ -18,6 +18,7 @@
 #import "MITAdditions.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITNewsiPadViewController.h"
+#import "MITNewsLoadMoreTableViewCell.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
 static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
@@ -157,42 +158,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     [self.tableView reloadData];
 }
 
-#pragma mark - UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self refreshSectionHeaders];
-}
-
-- (void)refreshSectionHeaders
-{
-    NSInteger sectionNumber = 0;
-
-    /*
-     * Retriving number of sections in order to iterate through them and update bg color.
-     *
-     * Could be optimized by going through only those sections that belong to visibleCells
-     */
-    NSInteger numberOfSections = [self.tableView numberOfSections];
-
-    while ( sectionNumber < numberOfSections )
-    {
-        UIView *aView = [self.tableView headerViewForSection:sectionNumber];
-
-        // safety check in case a header could be a different class
-        if( ![aView isKindOfClass:[MITDisclosureHeaderView class]] )
-        {
-            sectionNumber++;
-            continue;
-        }
-
-        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
-
-        headerView.containerView.backgroundColor = [UIColor whiteColor];
-
-        sectionNumber++;
-    }
-}
-
 #pragma mark - UITableView
 #pragma mark UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -215,6 +180,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
         MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
         disclosureHeaderView.titleLabel.text = titleForSection;
+        disclosureHeaderView.highlightingView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
 
         if (isFeaturedSection) {
             UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:disclosureHeaderView];
@@ -351,20 +317,45 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
     if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
-            
+            MITNewsLoadMoreTableViewCell *loadMoreCell = (MITNewsLoadMoreTableViewCell*)cell;
+
             if (self.errorMessage) {
-                cell.textLabel.text = self.errorMessage;
+                loadMoreCell.textLabel.text = self.errorMessage;
                 self.errorMessage = nil;
+                loadMoreCell.loadingIndicator.hidden = YES;
+                [loadMoreCell.loadingIndicator stopAnimating];
             } else if (_storyUpdateInProgress) {
-                cell.textLabel.text = @"Loading More...";
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
+                [loadMoreCell.loadingIndicator startAnimating];
+
             } else {
-                cell.textLabel.text = @"Load More...";
+                loadMoreCell.textLabel.text = @"Load More...";
+                loadMoreCell.loadingIndicator.hidden = YES;
+                [loadMoreCell.loadingIndicator stopAnimating];
             }
+            
+            CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
+            CGFloat rightPadding = loadMoreCell.textLabel.frame.origin.x;
+            cell.separatorInset = UIEdgeInsetsMake(0, separatorPadding + rightPadding, 0, separatorPadding);
+            
         } else {
             DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
             
             return cell;
         }
+    }
+    
+    if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
+        MITNewsStoryCell *storyCell = (MITNewsStoryCell *)cell;
+        CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
+        CGFloat rightPadding = 0;
+        if (storyCell.titleLabel) {
+           rightPadding = storyCell.titleLabel.frame.origin.x;
+        } else if(storyCell.dekLabel) {
+            rightPadding = storyCell.dekLabel.frame.origin.x;
+        }
+        cell.separatorInset = UIEdgeInsetsMake(0, separatorPadding + rightPadding, 0, separatorPadding);
     }
     return cell;
 }
@@ -375,14 +366,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
-    } else if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if (_storyUpdateInProgress) {
-            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            [view startAnimating];
-            cell.accessoryView = view;
-        } else {
-            cell.accessoryView = nil;
-        }
     }
 }
 

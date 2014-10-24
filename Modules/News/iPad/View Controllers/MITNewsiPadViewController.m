@@ -82,7 +82,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.gridViewController.collectionView reloadData];
+    [self reloadData];
 }
 
 - (void)viewDidLoad
@@ -146,12 +146,13 @@ CGFloat const refreshControlTextHeight = 19;
     }
     [self updateRefreshStatusWithText:@"Updating..."];
     
-    if (!self.refreshControl.refreshing) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!self.refreshControl.refreshing) {
+            
             [self.refreshControl endRefreshing];
             [self.refreshControl beginRefreshing];
-        }];
-    }
+        }
+    }];
 }
 
 - (BOOL)isCategoryControllerDifferentThanHome
@@ -571,11 +572,17 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)reachabilityChanged:(NSNotification *)note
 {
     if (!self.lastUpdated) {
-        Reachability* curReach = [note object];
-        NetworkStatus netStatus = [curReach currentReachabilityStatus];
-        if (netStatus != NotReachable) {
-            [self reloadViewItems:self.refreshControl];
-        }
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.refreshControl beginRefreshing];
+            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
+                if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+                    [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                } else {
+                    [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                }
+            } completion:nil];
+        }];
+        [self reloadViewItems:self.refreshControl];
     }
 }
 

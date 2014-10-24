@@ -10,7 +10,6 @@
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
-#import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
 @interface MITNewsSearchController() <UIPopoverControllerDelegate>
