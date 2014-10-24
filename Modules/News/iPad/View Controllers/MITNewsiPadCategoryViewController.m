@@ -70,16 +70,12 @@
         self.movingBackFromStory = YES;
     }
     
-    if (!self.refreshControl.refreshing) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (!self.refreshControl.refreshing) {
-                if (!self.refreshControl.refreshing) {
-                    [self.refreshControl beginRefreshing];
-                    [self.refreshControl endRefreshing];
-                }
-            }
-        }];
-    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!self.refreshControl.refreshing) {
+            [self.refreshControl beginRefreshing];
+            [self.refreshControl endRefreshing];
+        }
+    }];
 }
 
 #pragma mark Datasource Notification

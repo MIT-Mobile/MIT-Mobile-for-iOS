@@ -138,12 +138,13 @@ CGFloat const refreshControlTextHeight = 19;
     }
     [self updateRefreshStatusWithText:@"Updating..."];
     
-    if (!self.refreshControl.refreshing) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!self.refreshControl.refreshing) {
+            
             [self.refreshControl endRefreshing];
             [self.refreshControl beginRefreshing];
-        }];
-    }
+        }
+    }];
 }
 
 - (BOOL)isCategoryControllerDifferentThanHome
