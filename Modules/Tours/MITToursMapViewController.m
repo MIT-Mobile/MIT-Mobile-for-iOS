@@ -1,6 +1,7 @@
 #import "MITToursMapViewController.h"
 #import "MITToursStop.h"
 #import "MITTiledMapView.h"
+#import "MITToursStopAnnotation.h"
 
 @interface MITToursMapViewController () <MKMapViewDelegate>
 
@@ -27,6 +28,12 @@
     [self setupTiledMapView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self setupMapBoundingBoxAnimated:YES];
+}
+
 - (void)setupTiledMapView
 {
     [self.tiledMapView setMapDelegate:self];
@@ -36,8 +43,34 @@
     mapView.showsUserLocation = YES;
     
     // Set up annotations from stops
+    NSMutableArray *annotations = [[NSMutableArray alloc] init];
     for (MITToursStop *stop in self.tour.stops) {
-        NSLog(@"stop ID %@", stop.identifier);
+        MITToursStopAnnotation *annotation = [[MITToursStopAnnotation alloc] initWithStop:stop];
+        [annotations addObject:annotation];
+    }
+    [mapView addAnnotations:annotations];
+}
+
+- (void)setupMapBoundingBoxAnimated:(BOOL)animated
+{
+    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+    
+    // TODO: This code was more-or-less copied from the dining module map setup. Consider sharing
+    // the code to DRY this out.
+    MKMapView *mapView = self.tiledMapView.mapView;
+    if ([mapView.annotations count] > 0) {
+        MKMapRect zoomRect = MKMapRectNull;
+        for (id <MKAnnotation> annotation in mapView.annotations)
+        {
+            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
+            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+            zoomRect = MKMapRectUnion(zoomRect, pointRect);
+        }
+        double inset = -zoomRect.size.width * 0.1;
+        [mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
+    } else {
+        // TODO: Figure out what the default region should be?
+        [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
 }
 
