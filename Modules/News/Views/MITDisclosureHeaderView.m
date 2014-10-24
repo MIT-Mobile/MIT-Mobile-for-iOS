@@ -53,9 +53,9 @@
     if (_highlighted != highlighted) {
         _highlighted = highlighted;
         if (_highlighted) {
-            self.containerView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
+            self.highlightingView.backgroundColor = [UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1];
         } else {
-            self.containerView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
+            self.highlightingView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
         }
     }
 }

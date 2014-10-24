@@ -70,6 +70,7 @@
             <connections>
                 <outlet property="accessoryView" destination="9Sr-oA-zdz" id="RUf-05-OxL"/>
                 <outlet property="containerView" destination="rq1-KP-oP6" id="91M-yx-Z6Q"/>
+                <outlet property="highlightingView" destination="O1F-Dz-gdC" id="G8o-JU-2uX"/>
                 <outlet property="titleLabel" destination="las-NX-67L" id="yIw-2u-QS0"/>
             </connections>
             <point key="canvasLocation" x="288" y="196"/>
