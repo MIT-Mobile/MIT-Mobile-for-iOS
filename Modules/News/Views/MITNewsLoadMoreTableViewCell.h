@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
-#import "MITNewsCustomWidthTableViewCell.h"
 
-@interface MITNewsLoadMoreTableViewCell : MITNewsCustomWidthTableViewCell
+@interface MITNewsLoadMoreTableViewCell : UITableViewCell
 @property (nonatomic,strong) IBOutlet UILabel *textLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @end

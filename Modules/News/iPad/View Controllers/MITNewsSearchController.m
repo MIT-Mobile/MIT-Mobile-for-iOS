@@ -11,7 +11,6 @@
 #import "MITLoadingActivityView.h"
 #import "MITViewWithCenterTextAndIndicator.h"
 #import "MITViewWithCenterText.h"
-#import "MITNewsCustomWidthTableViewCell.h"
 #import "MITPopoverBackgroundView.h"
 
 @interface MITNewsSearchController() <UIPopoverControllerDelegate, MITNewsStoryViewControllerDelegate>
@@ -306,7 +305,7 @@
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
-    MITNewsCustomWidthTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     if (identifier == MITNewsLoadMoreCellIdentifier && self.errorMessage) {
         cell.textLabel.text = self.errorMessage;
