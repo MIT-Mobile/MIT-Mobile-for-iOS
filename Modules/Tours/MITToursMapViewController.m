@@ -2,6 +2,9 @@
 #import "MITToursStop.h"
 #import "MITTiledMapView.h"
 #import "MITToursStopAnnotation.h"
+#import "MITMapPlaceAnnotationView.h"
+
+static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAnnotationView";
 
 @interface MITToursMapViewController () <MKMapViewDelegate>
 
@@ -75,6 +78,32 @@
 }
 
 #pragma mark - MKMapViewDelegate Methods
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if (![annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+        return nil;
+    }
+    
+    MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITToursStopAnnotationViewIdentifier];
+    if (!annotationView) {
+        annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITToursStopAnnotationViewIdentifier];
+    }
+    
+    MITToursStop *stop = ((MITToursStopAnnotation *)annotation).stop;
+    NSInteger number = [self.tour.stops indexOfObject:stop];
+    [annotationView setNumber:(number + 1)];
+    
+    if ([stop.stopType isEqualToString:@"Main Loop"]) {
+        annotationView.layer.borderColor = [UIColor clearColor].CGColor;
+        annotationView.layer.borderWidth = 0;
+    } else {
+        annotationView.layer.borderColor = [UIColor blueColor].CGColor;
+        annotationView.layer.borderWidth = 2;
+    }
+    
+    return annotationView;
+}
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
