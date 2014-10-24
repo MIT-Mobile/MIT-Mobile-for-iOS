@@ -188,7 +188,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
         MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
 
-        headerView.containerView.backgroundColor = [UIColor whiteColor];
+        //headerView.containerView.backgroundColor = [UIColor whiteColor];
 
         sectionNumber++;
     }
@@ -216,6 +216,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     if ([headerView isKindOfClass:[MITDisclosureHeaderView class]]) {
         MITDisclosureHeaderView *disclosureHeaderView = (MITDisclosureHeaderView*)headerView;
         disclosureHeaderView.titleLabel.text = titleForSection;
+        disclosureHeaderView.containerView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
 
         if (isFeaturedSection) {
             UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:disclosureHeaderView];
