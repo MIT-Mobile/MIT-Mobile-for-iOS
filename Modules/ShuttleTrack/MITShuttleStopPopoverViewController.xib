@@ -36,7 +36,7 @@
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="14" placeholderIntrinsicHeight="17" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="wE9-e5-Qa4">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="14" placeholderIntrinsicHeight="17" image="action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="wE9-e5-Qa4">
                             <rect key="frame" x="42" y="10" width="14" height="17"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
