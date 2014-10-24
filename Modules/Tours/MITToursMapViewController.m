@@ -76,4 +76,12 @@
 
 #pragma mark - MKMapViewDelegate Methods
 
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+    if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    }
+    return nil;
+}
+
 @end
