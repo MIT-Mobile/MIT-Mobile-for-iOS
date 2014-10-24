@@ -627,6 +627,8 @@
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
 		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
+		AF2F704C19FA991700EE6398 /* MITToursMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */; };
+		AF2F704D19FA991700EE6398 /* MITToursMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
@@ -1904,6 +1906,9 @@
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTextElementViewController.h; sourceTree = "<group>"; };
 		A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryTextElementViewController.m; sourceTree = "<group>"; };
+		AF2F704919FA991700EE6398 /* MITToursMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursMapViewController.h; sourceTree = "<group>"; };
+		AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursMapViewController.m; sourceTree = "<group>"; };
+		AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursMapViewController.xib; sourceTree = "<group>"; };
 		BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBuildInfo.h; sourceTree = "<group>"; };
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
@@ -2498,6 +2503,7 @@
 				224E1A9B1A000CA300913D99 /* Self Guided Tour */,
 				224E1A9119FFE08300913D99 /* About MIT */,
 				224E1A7F19FE87BE00913D99 /* Home */,
+				AF3BB6591A00565E009B3083 /* Map */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -4398,6 +4404,16 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		AF3BB6591A00565E009B3083 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				AF2F704919FA991700EE6398 /* MITToursMapViewController.h */,
+				AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */,
+				AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */,
+			);
+			name = Map;
+			sourceTree = "<group>";
+		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -5010,6 +5026,7 @@
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				224B337D19B10A000031817B /* MITDiningMenuItemCell.xib in Resources */,
+				AF2F704D19FA991700EE6398 /* MITToursMapViewController.xib in Resources */,
 				A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */,
 				8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */,
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
@@ -5686,6 +5703,7 @@
 				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
 				225819E819D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m in Sources */,
 				27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */,
+				AF2F704C19FA991700EE6398 /* MITToursMapViewController.m in Sources */,
 				279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */,
 				27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */,
 				2C3DD88E1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m in Sources */,
