@@ -21,7 +21,7 @@
     if (_highlighted != highlighted) {
         _highlighted = highlighted;
         
-        self.highlightedBackgroundView.hidden = !highlighted;
+        self.highlightedBackgroundView.hidden = !_highlighted;
         self.headerLabel.highlighted = _highlighted;
     }
 }

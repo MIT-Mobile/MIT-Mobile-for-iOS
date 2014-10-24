@@ -158,42 +158,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     [self.tableView reloadData];
 }
 
-#pragma mark - UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [self refreshSectionHeaders];
-}
-
-- (void)refreshSectionHeaders
-{
-    NSInteger sectionNumber = 0;
-
-    /*
-     * Retriving number of sections in order to iterate through them and update bg color.
-     *
-     * Could be optimized by going through only those sections that belong to visibleCells
-     */
-    NSInteger numberOfSections = [self.tableView numberOfSections];
-
-    while ( sectionNumber < numberOfSections )
-    {
-        UIView *aView = [self.tableView headerViewForSection:sectionNumber];
-
-        // safety check in case a header could be a different class
-        if( ![aView isKindOfClass:[MITDisclosureHeaderView class]] )
-        {
-            sectionNumber++;
-            continue;
-        }
-
-        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView *)aView;
-
-        //headerView.containerView.backgroundColor = [UIColor whiteColor];
-
-        sectionNumber++;
-    }
-}
-
 #pragma mark - UITableView
 #pragma mark UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
