@@ -70,21 +70,12 @@
         self.movingBackFromStory = YES;
     }
     
-    if (!self.refreshControl.refreshing) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (!self.refreshControl.refreshing) {
             [self.refreshControl beginRefreshing];
             [self.refreshControl endRefreshing];
-        }];
-    }
-}
-
-- (void)updateLoadingCell
-{
-    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]]];
-    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self.dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
+        }
+    }];
 }
 
 #pragma mark Datasource Notification
@@ -197,6 +188,13 @@
     if (minutes >= 5) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
+            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
+                if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+                    [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                } else {
+                    [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
+                }
+            } completion:nil];
         }];
         [self updateRefreshStatusWithText:@"Updating..."];
         [self reloadViewItems:self.refreshControl];
