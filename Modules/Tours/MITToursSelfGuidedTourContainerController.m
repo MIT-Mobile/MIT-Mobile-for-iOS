@@ -1,6 +1,7 @@
 #import "MITToursSelfGuidedTourContainerController.h"
 #import "MITToursSelfGuidedTourListViewController.h"
 #import "MITToursSelfGuidedTourInfoViewController.h"
+#import "MITToursMapViewController.h"
 
 typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     MITToursSelfGuidedTourMap,
@@ -34,7 +35,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)setupViewControllers
 {
     self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
-    self.mapViewController = [[UIViewController alloc] init];
+    self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
     self.mapViewController.view.backgroundColor = [UIColor blueColor];
     
     self.listViewController.view.frame =
