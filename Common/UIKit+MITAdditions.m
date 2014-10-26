@@ -70,14 +70,34 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @end
 
 @implementation UIColor (MITUIAdditions)
-+ (UIColor*)mit_backgroundColor
++ (UIColor* )mit_backgroundColor
 {
     return [UIColor colorWithHexString:@"d7dae0"];
+}
+
++ (UIColor *)mit_greyTextColor
+{
+    return [UIColor colorWithWhite:0.3 alpha:1.0];
 }
 
 + (UIColor *)mit_tintColor
 {
     return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
+}
+
++ (UIColor *)mit_openGreenColor
+{
+    return [UIColor colorWithRed:23.0/255.0 green:137.0/255.0 blue:27.0/255.0 alpha:1.0];
+}
+
++ (UIColor *)mit_closedRedColor
+{
+    return [UIColor colorWithRed:179.0/255.0 green:29.0/255.0 blue:16.0/255.0 alpha:1.0];
+}
+
++ (UIColor *)mit_cellSeparatorColor
+{
+    return [UIColor colorWithRed:227.0/255.0 green:227.0/255.0 blue:229.0/255.0 alpha:1.0];
 }
 
 + (UIColor *)mit_systemTintColor
@@ -435,7 +455,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 }
-
 @end
 
 @implementation UISearchBar (MITUIAdditions)
@@ -459,5 +478,18 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
         }
     }
 }
+@end
 
+@implementation UISearchBar (MITAdditions)
+- (UITextField *)textField
+{
+    for (UIView *subview in self.subviews) {
+        for (UIView *secondLevelSubview in subview.subviews){
+            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
+                return (UITextField *)secondLevelSubview;
+            }
+        }
+    }
+    return nil;
+}
 @end
