@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -13,11 +13,9 @@
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rq1-KP-oP6">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
                             <rect key="frame" x="15" y="11" width="77" height="22"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                             </constraints>
@@ -25,9 +23,8 @@
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
+                        <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="global-disclosure_right" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
                             <rect key="frame" x="100" y="16" width="11" height="11"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -38,7 +35,6 @@
                         <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="15" id="WEC-3o-98q"/>
                         <constraint firstAttribute="centerY" secondItem="las-NX-67L" secondAttribute="centerY" id="scE-l3-kPA"/>
                     </constraints>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                 </view>
             </subviews>
             <constraints>
@@ -47,6 +43,8 @@
                 <constraint firstAttribute="bottom" secondItem="rq1-KP-oP6" secondAttribute="bottom" id="Kxo-Ii-qgt"/>
                 <constraint firstItem="rq1-KP-oP6" firstAttribute="top" secondItem="w51-xu-vRG" secondAttribute="top" id="d7i-qC-ytQ"/>
             </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="accessoryView" destination="9Sr-oA-zdz" id="RUf-05-OxL"/>
                 <outlet property="containerView" destination="rq1-KP-oP6" id="91M-yx-Z6Q"/>
@@ -55,6 +53,11 @@
         </view>
     </objects>
     <resources>
-        <image name="global/action-arrow.png" width="11" height="11"/>
+        <image name="global-disclosure_right" width="14" height="17"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>
