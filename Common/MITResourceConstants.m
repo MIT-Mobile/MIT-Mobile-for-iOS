@@ -61,19 +61,23 @@ NSString * const MITImageMapAnnotationUserLocation = @"map-annotation-user-locat
 NSString * const MITImageMapAnnotationPin = @"map-annotation-pin";
 NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place-pin";
 
+
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"";
 
+
 #pragma mark - People Directory
-NSString * const MITImagePeopleDirectoryDestructiveButton = @"";
-NSString * const MITImagePeopleDirectoryDestructiveButtonHighlighted = @"";
+NSString * const MITImagePeopleDirectoryDestructiveButton = @"people-button-delete";
+NSString * const MITImagePeopleDirectoryDestructiveButtonHighlighted = @"people-button-delete-highlighted";
+
 
 #pragma mark - Scanner
-NSString * const MITImageScannerCameraUnsupported = @"";
-NSString * const MITImageScannerSampleBarcode = @"";
-NSString * const MITImageScannerSampleQRCode = @"";
-NSString * const MITImageScannerMissingImage = @"";
-NSString * const MITImageScannerScanBarButton = @"";
+NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";
+NSString * const MITImageScannerSampleBarcode = @"scanner-sample-barcode";
+NSString * const MITImageScannerSampleQRCode = @"scanner-sample-qr";
+NSString * const MITImageScannerMissingImage = @"scanner-missing-image";
+NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
+
 
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesShuttleRouteActive = @"shuttles-shuttle";
@@ -125,6 +129,7 @@ NSString * const MITImageToursButtonScanQRHighlighted = @"tours-button-qr-highli
 NSString * const MITImageToursButtonSidetrip = @"tours-button-sidetrip";
 NSString * const MITImageToursButtonSelectStart = @"tours-button-select_start";
 NSString * const MITImageToursButtonSelectStartMerged = @"tours-button-select_start-double";
+NSString * const MITImageToursButtonReturn = @"tours-button-return";
 
 NSString * const MITImageToursAnnotationStopInitial = @"tours-annotation-stop-initial";
 NSString * const MITImageToursAnnotationStopCurrent = @"tours-annotation-stop-current";
@@ -135,24 +140,25 @@ NSString * const MITImageToursAnnotationArrowStart = @"tours-annotation-arrow-st
 NSString * const MITImageToursMapLegendOverlay = @"tours-map-legend-overlay";
 
 
-NSString * const MITImageNameBackground      = @"global/body-background.png";
-
-NSString * const MITImageNameEmail           = @"global/action-email.png";
-NSString * const MITImageNameEmailHighlight  = @"global/action-email-highlight.png";
-NSString * const MITImageNameMap             = @"global/action-map.png";
-NSString * const MITImageNameMapHighlight    = @"global/action-map-highlight.png";
-NSString * const MITImageNamePeople          = @"global/action-people.png";
-NSString * const MITImageNamePeopleHighlight = @"global/action-people-highlight.png";
-NSString * const MITImageNamePhone           = @"global/action-phone.png";
-NSString * const MITImageNamePhoneHighlight  = @"global/action-phone-highlight.png";
-NSString * const MITImageNameExternal           = @"global/action-external.png";
-NSString * const MITImageNameExternalHighlight  = @"global/action-external-highlight.png";
-NSString * const MITImageNameEmergency          = @"global/action-emergency.png";
-NSString * const MITImageNameEmergencyHighlight = @"global/action-emergency-highlight.png";
-NSString * const MITImageNameSecure           = @"global/action-secure.png";
-NSString * const MITImageNameSecureHighlight  = @"global/action-secure-highlight.png";
-NSString * const MITImageNameCalendar       = @"global/action-calendar";
-NSString * const MITImageNameCalendarHighlight  = @"global/action-calendar-highlight";
+#pragma mark - Global Assets
+NSString * const MITImageNameBackground      = @"global-body-background.png";
+NSString * const MITImageNameEmail           = @"global-action-email.png";
+NSString * const MITImageNameEmailHighlight  = @"global-action-email-highlight.png";
+NSString * const MITImageNameMap             = @"global-action-map.png";
+NSString * const MITImageNameMapHighlight    = @"global-action-map-highlight.png";
+NSString * const MITImageNamePeople          = @"global-action-people.png";
+NSString * const MITImageNamePeopleHighlight = @"global-action-people-highlight.png";
+NSString * const MITImageNamePhone           = @"global-action-phone.png";
+NSString * const MITImageNamePhoneHighlight  = @"global-action-phone-highlight.png";
+NSString * const MITImageNameExternal           = @"global-action-external.png";
+NSString * const MITImageNameExternalHighlight  = @"global-action-external-highlight.png";
+NSString * const MITImageNameEmergency          = @"global-action-emergency.png";
+NSString * const MITImageNameEmergencyHighlight = @"global-action-emergency-highlight.png";
+NSString * const MITImageNameSecure           = @"global-action-secure.png";
+NSString * const MITImageNameSecureHighlight  = @"global-action-secure-highlight.png";
+NSString * const MITImageNameCalendar       = @"global-action-calendar";
+NSString * const MITImageNameCalendarHighlight  = @"global-action-calendar-highlight";
+NSString * const MITImageNameShare       = @"global-action-share";
 
 NSString * const MITImageNameLeftArrow = @"global/arrow-white-left.png";
 NSString * const MITImageNameRightArrow = @"global/arrow-white-right.png";
@@ -161,3 +167,24 @@ NSString * const MITImageNameDownArrow = @"global/arrow-white-down.png";
 
 NSString * const MITImageNameSearch = @"global/search.png";
 NSString * const MITImageNameBookmark = @"global/bookmark.png";
+NSString * const MITImageDisclosureRight = @"global-disclosure_right";
+NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
+
+NSString * const MITImageLogoDarkContent = @"global-mit-logo-light";
+NSString * const MITImageLogoLightContent = @"global-mit-logo-dark";
+
+#pragma mark UIBarButtonItem icons
+NSString * const MITImageBarButtonMenu = @"global-menu";
+NSString * const MITImageBarButtonLocation = @"global-location";
+
+// TODO: See if we really need both these icons
+NSString * const MITImageBarButtonSearch = @"global-search";
+NSString * const MITImageBarButtonSearchMagnifier = @"global-search-magnifier";
+
+#pragma mark MITTabView Assets
+NSString * const MITImageTabViewDivider = @"global-tab-divider";
+NSString * const MITImageTabViewHeader  = @"global-tab-header";
+NSString * const MITImageTabViewSummaryButton = @"global-tab-summary_button";
+NSString * const MITImageTabViewActive = @"global-tab-active";
+NSString * const MITImageTabViewInactive  = @"global-tab-inactive";
+NSString * const MITImageTabViewInactiveHighlighted = @"global-tab-inactive_highlighted";

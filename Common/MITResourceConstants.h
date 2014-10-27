@@ -1,5 +1,4 @@
-#ifndef MIT_Mobile_MITResourceConstants_h
-#define MIT_Mobile_MITResourceConstants_h
+#import <Foundation/Foundation.h>
 
 #pragma mark Module Icons
 extern NSString * const MITImageAboutModuleIcon;
@@ -21,7 +20,7 @@ extern NSString * const MITImageToursModuleIcon;
 extern NSString * const MITImageDiningBookmark;
 extern NSString * const MITImageDiningBookmarkSelected;
 extern NSString * const MITImageDiningInfo;
-extern NSString * const MITImageDiningInfoSelected;
+extern NSString * const MITImageDiningInfoHighlighted;
 extern NSString * const MITImageDiningRotateDevice;
 
 #pragma mark Meal Types
@@ -38,7 +37,7 @@ extern NSString * const MITImageDiningMealVegetarian;
 extern NSString * const MITImageDiningMealWellBeing;
 
 #pragma mark - Events (Calendar)
-extern NSString * const MITImageEventsDayPicker;
+extern NSString * const MITImageEventsDayPickerButton;
 extern NSString * const MITImageEventsPadChevronUp;
 extern NSString * const MITImageEventsPadChevronDown;
 
@@ -57,16 +56,20 @@ extern NSString * const MITImageMapBrowseBuildings;
 extern NSString * const MITImageMapBrowseFoodServices;
 extern NSString * const MITImageMapBrowseResidences;
 extern NSString * const MITImageMapLocation;
-extern NSString * const MITImageMapLocationSelected;
+extern NSString * const MITImageMapLocationHighlighted;
 extern NSString * const MITImageMapAnnotationUserLocation;
 extern NSString * const MITImageMapAnnotationPin;
+extern NSString * const MITImageMapAnnotationPlacePin;
+
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
 
+
 #pragma mark - People Directory
 extern NSString * const MITImagePeopleDirectoryDestructiveButton;
 extern NSString * const MITImagePeopleDirectoryDestructiveButtonHighlighted;
+
 
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;
@@ -75,18 +78,20 @@ extern NSString * const MITImageScannerSampleQRCode;
 extern NSString * const MITImageScannerMissingImage;
 extern NSString * const MITImageScannerScanBarButton;
 
+
 #pragma mark - Shuttles
 extern NSString * const MITImageShuttlesShuttleRouteActive;
 extern NSString * const MITImageShuttlesShuttleRouteInactive;
 extern NSString * const MITImageShuttlesShuttleRouteLocationUnavailable;
 extern NSString * const MITImageShuttlesBusBubble;
-extern NSString * const MITImageShuttlesAlertEnabled;
-extern NSString * const MITImageShuttlesAlertDisabled;
+extern NSString * const MITImageShuttlesAlertOn;
+extern NSString * const MITImageShuttlesAlertOff;
 extern NSString * const MITImageShuttlesAnnotationBus;
 extern NSString * const MITImageShuttlesAnnotationNextStop;
 extern NSString * const MITImageShuttlesAnnotationNextStopSelected;
 extern NSString * const MITImageShuttlesAnnotationCurrentStop;
 extern NSString * const MITImageShuttlesAnnotationCurrentStopSelected;
+
 
 #pragma mark - Tours
 extern NSString * const MITImageToursWBRogers;
@@ -100,6 +105,7 @@ extern NSString * const MITImageToursWallpaperKillian;
 extern NSString * const MITImageToursWallpaperStata;
 extern NSString * const MITImageToursWallpaperGreatSail;
 
+#pragma mark Current Tour Progress Bar
 extern NSString * const MITImageToursProgressBarBackground;
 extern NSString * const MITImageToursProgressBarCurrent;
 extern NSString * const MITImageToursProgressBarDivider;
@@ -123,6 +129,7 @@ extern NSString * const MITImageToursButtonScanQRHighlighted;
 extern NSString * const MITImageToursButtonSidetrip;
 extern NSString * const MITImageToursButtonSelectStart;
 extern NSString * const MITImageToursButtonSelectStartMerged;
+extern NSString * const MITImageToursButtonReturn;
 
 extern NSString * const MITImageToursAnnotationStopInitial;
 extern NSString * const MITImageToursAnnotationStopCurrent;
@@ -133,7 +140,8 @@ extern NSString * const MITImageToursAnnotationArrowStart;
 extern NSString * const MITImageToursMapLegendOverlay;
 
 
-
+#pragma mark - Global Assets
+extern NSString * const MITImageNameBackground;
 extern NSString * const MITImageNameEmail;
 extern NSString * const MITImageNameEmailHighlight;
 extern NSString * const MITImageNameMap;
@@ -150,6 +158,7 @@ extern NSString * const MITImageNameSecure;
 extern NSString * const MITImageNameSecureHighlight;
 extern NSString * const MITImageNameCalendar;
 extern NSString * const MITImageNameCalendarHighlight;
+extern NSString * const MITImageNameShare;
 
 extern NSString * const MITImageNameLeftArrow;
 extern NSString * const MITImageNameRightArrow;
@@ -158,5 +167,22 @@ extern NSString * const MITImageNameDownArrow;
 
 extern NSString * const MITImageNameSearch;
 extern NSString * const MITImageNameBookmark;
+extern NSString * const MITImageDisclosureRight;
+extern NSString * const MITImageTransparentPixel;
 
-#endif
+extern NSString * const MITImageLogoDarkContent;
+extern NSString * const MITImageLogoLightContent;
+
+#pragma mark UIBarButtonItem icons
+extern NSString * const MITImageBarButtonMenu;
+extern NSString * const MITImageBarButtonLocation;
+extern NSString * const MITImageBarButtonSearch;
+extern NSString * const MITImageBarButtonSearchMagnifier;
+
+#pragma mark MITTabView Assets
+extern NSString * const MITImageTabViewDivider;
+extern NSString * const MITImageTabViewHeader;
+extern NSString * const MITImageTabViewSummaryButton;
+extern NSString * const MITImageTabViewActive;
+extern NSString * const MITImageTabViewInactive;
+extern NSString * const MITImageTabViewInactiveHighlighted;
