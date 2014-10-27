@@ -3,6 +3,7 @@
 #import "MITTiledMapView.h"
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
+#import "MITToursDirectionsToStop.h"
 
 static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAnnotationView";
 
@@ -52,6 +53,8 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
         [annotations addObject:annotation];
     }
     [mapView addAnnotations:annotations];
+    
+    [self setupMapRoutes];
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -74,6 +77,24 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     } else {
         // TODO: Figure out what the default region should be?
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
+    }
+}
+
+- (void)setupMapRoutes
+{
+    for (MITToursStop *stop in self.tour.stops) {
+        MITToursDirectionsToStop *directionsToNextStop = stop.directionsToNextStop;
+        NSArray *routePoints = (NSArray *)directionsToNextStop.path;
+        CLLocationCoordinate2D segmentPoints[routePoints.count];
+        for (NSInteger i = 0; i < routePoints.count; i++) {
+            NSArray *point = [routePoints objectAtIndex:i];
+            // Convert to location coordinate
+            NSNumber *longitude = [point objectAtIndex:0];
+            NSNumber *latitude = [point objectAtIndex:1];
+            segmentPoints[i] = CLLocationCoordinate2DMake([latitude doubleValue],[longitude doubleValue]);
+        }
+        MKPolyline *polyline = [MKPolyline polylineWithCoordinates:segmentPoints count:routePoints.count];
+        [self.tiledMapView.mapView addOverlay:polyline];
     }
 }
 
@@ -107,10 +128,18 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
-    if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+        renderer.lineWidth = 2.5;
+        renderer.fillColor = [UIColor redColor];
+        renderer.strokeColor = [UIColor redColor];
+        renderer.alpha = 1.0;
+        return renderer;
+    } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
         return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    } else {
+        return nil;
     }
-    return nil;
 }
 
 @end
