@@ -16,6 +16,11 @@ static NSString *const kAboutMITText = @"The misson of MIT is to advance knowled
 
 static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/events/";
 
+typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
+    MITToursTableViewSectionInfo,
+    MITToursTableViewSectionLinks
+};
+
 @interface MITToursHomeViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 
 @property (nonatomic, strong) MITToursTour *selfGuidedTour;
@@ -36,7 +41,7 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
     [self setupTableView];
     
     [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
-        if (object) {
+        if ([object isKindOfClass:[NSArray class]]) {
             MITToursTour *tour = object[0];
             [MITToursWebservices getTourDetailForTour:tour completion:^(id object, NSError *error) {
                 if ([object isKindOfClass:[MITToursTour class]]) {
@@ -82,7 +87,7 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
+    if (indexPath.section == MITToursTableViewSectionInfo) {
         switch (indexPath.row) {
             case 0:
                 return 106.0;
@@ -111,10 +116,10 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.selfGuidedTour) {
-        if (section == 0) {
+        if (section == MITToursTableViewSectionInfo) {
             return 3;
         }
-        else if (section == 1) {
+        else if (section == MITToursTableViewSectionLinks) {
             return 3;
         }
     }
@@ -123,7 +128,7 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0){
+    if (indexPath.section == MITToursTableViewSectionInfo){
         switch (indexPath.row) {
             case 0:
                 return [self selfGuidedTourCell];
@@ -137,7 +142,7 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
                 break;
         }
     }
-    else if (indexPath.section == 1) {
+    else if (indexPath.section == MITToursTableViewSectionLinks) {
         UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLinkCell];
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITLinkCell];
@@ -212,7 +217,7 @@ static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/even
 
 - (void)moreAboutMITPressed:(UIButton *)sender
 {
-   UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:kAboutMITURL delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+    UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:kAboutMITURL delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
     [openOutsideWebsiteAlert show];
 }
 
