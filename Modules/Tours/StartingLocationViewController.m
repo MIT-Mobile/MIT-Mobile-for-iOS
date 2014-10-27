@@ -49,8 +49,10 @@
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.delegate = self;
     
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"tours/suggested.html" relativeToURL:baseURL];
+    NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"suggested" ofType:@"html" inDirectory:@"tours"];
+    NSAssert(templatePath,@"failed to locate resource 'tours/suggested.html'");
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:templatePath isDirectory:NO];
     
     NSError *error = nil;
     NSMutableString *htmlString = [[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];

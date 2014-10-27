@@ -17,16 +17,10 @@
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
-    // Drawing code
-    static UIImage *background;
-    static UIImage *passedImage;
-    static UIImage *currentImage;
-    static UIImage *dividerImage;
-    
-    background = [UIImage imageNamed:@"tours/progressbar_trench.png"];
-    passedImage = [UIImage imageNamed:@"tours/progressbar_past.png"];
-    currentImage = [UIImage imageNamed:@"tours/progressbar_current.png"];
-    dividerImage = [UIImage imageNamed:@"tours/progressbar_divider.png"];
+    UIImage *background = [UIImage imageNamed:MITImageToursProgressBarTrench];
+    UIImage *passedImage = [UIImage imageNamed:MITImageToursProgressBarPast];
+    UIImage *currentImage = [UIImage imageNamed:MITImageToursProgressBarCurrent];
+    UIImage *dividerImage = [UIImage imageNamed:MITImageToursProgressBarDivider];
     
     [background drawAsPatternInRect:rect];
     

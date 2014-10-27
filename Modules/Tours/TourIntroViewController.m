@@ -72,11 +72,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsLoadedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsFailedToLoadNotification object:nil];
     
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"tours/tour_intro_template.html" relativeToURL:baseURL];
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        fileURL = [NSURL URLWithString:@"tours/tour_intro_template_iOS_6.html" relativeToURL:baseURL];
-    }
+    NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"tour_intro_template" ofType:@"html" inDirectory:@"tours"];
+    NSAssert(templatePath,@"failed to load resource 'tours/tour_intro_template.html'");
+    NSURL *fileURL = [NSURL fileURLWithPath:templatePath];
+    
     NSError *error = nil;
     NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!html) {
@@ -99,9 +98,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsFailedToLoadNotification object:nil];
 
     [self hideLoadingView];
+    
+    NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"tour_intro_template" ofType:@"html" inDirectory:@"tours"];
+    NSAssert(templatePath,@"failed to load resource 'tours/tour_intro_template.html'");
+    NSURL *fileURL = [NSURL fileURLWithPath:templatePath];
 
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"tours/tour_intro_retry_template.html" relativeToURL:baseURL];
     NSError *error = nil;
     NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 

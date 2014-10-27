@@ -138,7 +138,7 @@
 }
 
 - (void)enablePlayButton {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageToursButtonAudio]
                                                                               style:UIBarButtonItemStyleBordered
                                                                              target:self action:@selector(playAudio)];
     self.navigationItem.rightBarButtonItem.enabled = YES;
@@ -164,7 +164,7 @@
     if (self.audioPlayer) {
         [self.audioPlayer play];
         
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio_pause.png"]
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageToursButtonAudioPause]
                                                                                   style:UIBarButtonItemStyleBordered
                                                                                  target:self action:@selector(pauseAudio)];
     } else {
@@ -250,7 +250,7 @@
 - (void)stopAudio {
     [self.audioPlayer stop];
     self.audioPlayer = nil;
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageToursButtonAudio]
                                                                                style:UIBarButtonItemStyleBordered
                                                                               target:self
                                                                               action:@selector(prepAudio)];
@@ -273,12 +273,12 @@
     
     [super viewDidLoad];
     
-    [self.overviewButton setImage:[UIImage imageNamed:@"tours/toolbar_map.png"] forState:UIControlStateNormal];
+    [self.overviewButton setImage:[UIImage imageNamed:MITImageToursButtonMap] forState:UIControlStateNormal];
     [self.overviewButton setTitle:nil forState:UIControlStateNormal];
     
-    [self.backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
+    [self.backArrow setImage:[UIImage imageNamed:MITImageToursToolbarArrowLeft] forState:UIControlStateNormal];
     [self.backArrow setTitle:nil forState:UIControlStateNormal];
-    [self.nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
+    [self.nextArrow setImage:[UIImage imageNamed:MITImageToursToolbarArrowRight] forState:UIControlStateNormal];
     [self.nextArrow setTitle:nil forState:UIControlStateNormal];
     
     self.fakeToolbarHeightFromNIB = self.fakeToolbar.frame.size.height;
@@ -304,7 +304,7 @@
 - (void)setupBottomToolBar {
     if (self.sideTrip == nil) {
         
-        self.fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"tours/progressbar_bkgrd.png"]];
+        self.fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageToursProgressBarBackground]];
         
         CGRect frame = self.fakeToolbar.frame;
         frame.origin.y += frame.size.height - self.fakeToolbarHeightFromNIB;
@@ -322,7 +322,7 @@
         self.navigationItem.title = @"Side Trip";
         
         // resize the fake toolbar since there's no progress bar
-        UIImage *toolbarImage = [UIImage imageNamed:@"tours/toolbar_bkgrd.png"];
+        UIImage *toolbarImage = [UIImage imageNamed:MITImageToursToolbarBackground];
         CGRect frame = self.fakeToolbar.frame;
         frame.origin.y += (frame.size.height - toolbarImage.size.height);
         frame.size.height = toolbarImage.size.height;
@@ -378,7 +378,7 @@
     {
         NSString *buttonTitle = @"Return to MIT Home Screen";
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *buttonBackground = [UIImage imageNamed:@"global/return_button.png"];
+        UIImage *buttonBackground = [UIImage imageNamed:MITImageToursButtonReturn];
         button.frame = CGRectMake(10, 0, buttonBackground.size.width, buttonBackground.size.height);
         [button setBackgroundImage:buttonBackground
                           forState:UIControlStateNormal];
@@ -456,8 +456,10 @@
     
     // prep strings
     if (!self.siteTemplate) {
-        NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-        NSURL *fileURL = [NSURL URLWithString:@"tours/site_template.html" relativeToURL:baseURL];
+        NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"site_template" ofType:"html" inDirectory:@"tours"];
+        NSAssert(templatePath,@"failed to load resource 'tours/site_template.html'");
+        
+        NSURL *fileURL = [NSURL fileURLWithPath:templatePath isDirectory:NO];
         
         NSError *error = nil;
         self.siteTemplate = [[NSString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
@@ -540,9 +542,10 @@
                 NSString *photoFile = component.photoFile;
                 NSInteger imageWidth = 160;
                 NSInteger imageHeight = 100;
+                
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                     photoFile = @"tours/tour_photo_loading_animation.gif";
-
+                    
                     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:component.photoURL]];
                     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
@@ -843,9 +846,9 @@
     TourSiteOrRoute *upcomingSite = self.siteOrRoute.nextComponent;
     UIImageView *markerView;
     if (upcomingSite == site) {
-        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_ending_arrow"]];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursAnnotationArrowEnd]];
     } else {
-        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_starting_arrow"]];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursAnnotationArrowStart]];
     }
     
     

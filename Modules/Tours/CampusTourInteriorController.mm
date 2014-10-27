@@ -19,12 +19,16 @@ static NSString * const QRAlertUserDefaultString = @"QRCodeAlertDidShow";
     QRCodeReader* qrcodeReader = [[[QRCodeReader alloc] init] autorelease];
     NSSet *readers = [NSSet setWithObjects:qrcodeReader, nil];
     widController.readers = readers;
-    widController.soundToPlay = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tours/beep-beep" ofType:@"aiff"] isDirectory:NO];
+    
+    NSString *audioFilePath = [[NSBundle mainBundle] pathForResource:@"beep-beep" ofType:@"aiff" inDirectory:@"tours"];
+    NSAssert(audioFilePath,@"failed to load audio file from 'tours/beep-beep.aiff'");
+    widController.soundToPlay = [NSURL fileURLWithPath:audioFilePath isDirectory:NO];
     
     [self.navigationController setNavigationBarHidden:YES];
     for (UIView *aView in self.view.subviews) {
         aView.hidden = YES;
     }
+    
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate presentAppModalViewController:widController animated:YES];
     
