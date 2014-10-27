@@ -660,9 +660,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     NSString *logoName;
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        logoName = @"global/navbar_mit_logo_light";
+        logoName = MITImageLogoDarkContent;
     } else {
-        logoName = @"global/navbar_mit_logo_dark";
+        logoName = MITImageLogoLightContent;
         launcherViewController.edgesForExtendedLayout = (UIRectEdgeLeft | UIRectEdgeRight | UIRectEdgeBottom);
     }
     
@@ -714,9 +714,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     NSString *logoName;
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        logoName = @"global/navbar_mit_logo_light";
+        logoName = MITImageLogoDarkContent;
     } else {
-        logoName = @"global/navbar_mit_logo_dark";
+        logoName = MITImageLogoLightContent;
     }
     
     UIImage *logoView = [UIImage imageNamed:logoName];
@@ -841,7 +841,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         if (self.topNavigationController) {
             UIViewController *homeViewController = [self homeViewControllerForModuleWithTag:tag];
             
-            UIImage *barButtonIcon = [UIImage imageNamed:@"global/menu"];
+            UIImage *barButtonIcon = [UIImage imageNamed:MITImageBarButtonMenu];
             UIBarButtonItem *anchorLeftButton = [[UIBarButtonItem alloc] initWithImage:barButtonIcon style:UIBarButtonItemStylePlain target:self action:@selector(anchorRight:)];
             homeViewController.navigationItem.leftBarButtonItem = anchorLeftButton;
             

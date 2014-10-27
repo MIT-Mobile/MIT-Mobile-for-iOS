@@ -1,4 +1,4 @@
-#import "MITShuttleRootViewController.h"
+ #import "MITShuttleRootViewController.h"
 #import "MITShuttleHomeViewController.h"
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
@@ -79,7 +79,7 @@
 {
     self.homeViewController = [[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil];
     self.homeViewController.delegate = self;
-    self.homeViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"]
+    self.homeViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu]
                                                                                                 style:UIBarButtonItemStylePlain
                                                                                                target:self.navigationItem.leftBarButtonItem.target
                                                                                                action:self.navigationItem.leftBarButtonItem.action];

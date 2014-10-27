@@ -23,7 +23,7 @@
 
 - (void)removeShadow
 {
-    [self setShadowImage:[UIImage imageNamed:@"global/TransparentPixel"]];
+    [self setShadowImage:[UIImage imageNamed:MITImageTransparentPixel]];
 }
 
 - (void)restoreShadow

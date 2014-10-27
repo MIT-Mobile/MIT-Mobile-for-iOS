@@ -16,7 +16,7 @@
         [self.contentView addSubview:label];
         self->_titleLabel = label;
 
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow"]];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
         imageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:imageView];
         self->_accessoryView = imageView;
