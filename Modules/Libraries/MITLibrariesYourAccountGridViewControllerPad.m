@@ -4,6 +4,9 @@
 #import "TopAlignedStickyHeaderCollectionViewFlowLayout.h"
 #import "MITLibrariesUser.h"
 #import "MITLibrariesYourAccountItemDetailViewController.h"
+#import "UIKit+MITAdditions.h"
+#import "UIKit+MITLibraries.h"
+#import "MITLibrariesYourAccountCollectionViewHeader.h"
 
 typedef NS_ENUM(NSInteger, MITAccountListSection) {
     MITAccountListSectionLoans = 0,
@@ -13,8 +16,9 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 
 static NSString * const kLoanFineCollectionCellIdentifier = @"kLoanFineCollectionCellIdentifier";
 static NSString * const kHoldCollectionCellIdentifier = @"kHoldCollectionCellIdentifier";
+static NSString * const kCollectionHeaderIdentifier = @"kCollectionHeaderIdentifier";
 
-static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding = 20.0;
+static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding = 30.0;
 
 @interface MITLibrariesYourAccountGridViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
@@ -29,6 +33,7 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
     
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesItemLoanFineCollectionCell class]) bundle:nil] forCellWithReuseIdentifier:kLoanFineCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesItemHoldCollectionCell class]) bundle:nil] forCellWithReuseIdentifier:kHoldCollectionCellIdentifier];
+    [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesYourAccountCollectionViewHeader class]) bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier];
     self.collectionView.backgroundColor = [UIColor clearColor];
     self.collectionView.collectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
 }
@@ -117,7 +122,7 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
         numberOfColumns = 3;
     }
     
-    cellWidth = (collectionView.bounds.size.width - (2 * kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding) - ((numberOfColumns - 1) * interItemSpacing)) / numberOfColumns;
+    cellWidth = (collectionView.bounds.size.width - (2 * kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding) - ((numberOfColumns - 1) * interItemSpacing)) / numberOfColumns;
     
     CGFloat cellHeight = 0;
     
@@ -141,7 +146,61 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    return UIEdgeInsetsMake(10, kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding, 10, kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding);
+    return UIEdgeInsetsMake(10, kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding, 10, kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding);
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+         MITLibrariesYourAccountCollectionViewHeader * header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier forIndexPath:indexPath];
+        
+        NSAttributedString *headerText = nil;
+        
+        switch (indexPath.section) {
+            case MITAccountListSectionLoans: {
+                headerText = [self loansHeaderString];
+                break;
+            }
+            case MITAccountListSectionFines: {
+                headerText = [self finesHeaderString];
+                break;
+            }
+            case MITAccountListSectionHolds: {
+                headerText = [self holdsHeaderString];
+                break;
+            }
+        }
+        
+        [header setAttributedString:headerText];
+        
+        return header;
+    } else {
+        return [UICollectionReusableView new];
+    }
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    NSAttributedString *headerText = nil;
+    
+    switch (section) {
+        case MITAccountListSectionLoans: {
+            headerText = [self loansHeaderString];
+            break;
+        }
+        case MITAccountListSectionFines: {
+            headerText = [self finesHeaderString];
+            break;
+        }
+        case MITAccountListSectionHolds: {
+            headerText = [self holdsHeaderString];
+            break;
+        }
+    }
+    
+    CGFloat headerWidth = collectionView.bounds.size.width;
+    CGFloat headerHeight = [MITLibrariesYourAccountCollectionViewHeader heightForAttributedString:headerText width:headerWidth];
+    return CGSizeMake(headerWidth, headerHeight);
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -172,6 +231,65 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
     navController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self presentViewController:navController animated:YES completion:^{}];
+}
+
+#pragma mark - Account Header Attributed Strings
+
+- (NSAttributedString *)loansHeaderString
+{
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont librariesTitleStyleFont]}];
+    
+    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
+                                                                              attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                           NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+    
+    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
+                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                     NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:overdueString];
+    
+    return [[NSAttributedString alloc] initWithAttributedString:baseString];
+}
+
+- (NSAttributedString *)finesHeaderString
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"M/d/yyyy"];
+    }
+    
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Fines " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+    
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:self.user.formattedBalance
+                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
+                                                                                    NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
+    
+    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk. TechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
+                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                     NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:detailsString];
+    
+    return [[NSAttributedString alloc] initWithAttributedString:baseString];
+}
+
+- (NSAttributedString *)holdsHeaderString
+{
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
+    
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
+                                                                       attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
+                                                                                    NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
+    
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
+                                                                               attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
+                                                                                            NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
+    
+    [baseString appendAttributedString:readyForPickupString];
+    
+    return [[NSAttributedString alloc] initWithAttributedString:baseString];
 }
 
 @end
