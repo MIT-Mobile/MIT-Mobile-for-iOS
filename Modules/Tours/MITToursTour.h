@@ -16,6 +16,10 @@
 @property (nonatomic, retain) NSNumber * estimatedDurationInMinutes;
 @property (nonatomic, retain) NSOrderedSet *links;
 @property (nonatomic, retain) NSOrderedSet *stops;
+
+- (NSString *)durationString;
+- (NSString *)localizedLengthString;
+
 @end
 
 @interface MITToursTour (CoreDataGeneratedAccessors)

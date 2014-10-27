@@ -2,6 +2,8 @@
 #import "MITToursLink.h"
 #import "MITToursStop.h"
 
+static const CGFloat kilometersPerMile = 1.60934;
+
 @implementation MITToursTour
 
 @dynamic identifier;
@@ -28,6 +30,34 @@
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITToursStop objectMapping]]];
     
     return mapping;
+}
+
+- (NSString *)durationString
+{
+    NSInteger hours = [self.estimatedDurationInMinutes integerValue] / 60;
+    NSInteger minutes = [self.estimatedDurationInMinutes integerValue] % 60;
+    
+    NSString *hoursString = (hours > 0) ? [NSString stringWithFormat:@"%d hour%@ ", hours, (hours != 1) ? @"s" : @""] : @"";
+    NSString *minutesString = (minutes > 0) ? [NSString stringWithFormat:@"%d minute%@", minutes, (minutes != 1) ? @"s" : @""] : @"";
+
+    return [hoursString stringByAppendingString:minutesString];
+}
+
+- (NSString *)localizedLengthString
+{
+    NSLocale *locale = [NSLocale currentLocale];
+    
+    CGFloat kilometers = [self.lengthInKM floatValue];
+    CGFloat miles = kilometers / kilometersPerMile;
+    
+    BOOL systemIsMetric = [[locale objectForKey:NSLocaleUsesMetricSystem] boolValue];
+    
+    if (systemIsMetric){
+        return [NSString stringWithFormat:@"%.2g km (%.2g miles)", kilometers, miles];
+    }
+    else {
+        return [NSString stringWithFormat:@"%.2g miles (%.2g km)", miles, kilometers];
+    }
 }
 
 @end
