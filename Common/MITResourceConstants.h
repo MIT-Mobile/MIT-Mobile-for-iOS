@@ -43,8 +43,8 @@ extern NSString * const MITImageEventsPadChevronUp;
 extern NSString * const MITImageEventsPadChevronDown;
 
 #pragma mark - Libraries
-extern NSString * const MITImageLibrariesRadioCheckbox;
-extern NSString * const MITImageLibrariesRadioCheckboxSelected;
+extern NSString * const MITImageLibrariesCheckmark;
+extern NSString * const MITImageLibrariesCheckmarkSelected;
 
 #pragma mark Status Types
 extern NSString * const MITImageLibrariesStatusAlert;

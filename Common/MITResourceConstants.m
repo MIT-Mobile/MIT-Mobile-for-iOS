@@ -42,7 +42,7 @@ NSString * const MITImageEventsPadChevronUp = @"events-pad-chevron_up";
 NSString * const MITImageEventsPadChevronDown = @"events-pad-chevron_down";
 
 #pragma mark - Libraries
-NSString * const MITImageLibrariesCheckmark = @"libraries-checkmark-unselected";
+NSString * const MITImageLibrariesCheckmark = @"libraries-cell-unselected";
 NSString * const MITImageLibrariesCheckmarkSelected = @"libraries-checkmark-selected";
 
 #pragma mark Status Types
