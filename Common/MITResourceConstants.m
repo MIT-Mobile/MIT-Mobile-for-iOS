@@ -76,17 +76,17 @@ NSString * const MITImageScannerMissingImage = @"";
 NSString * const MITImageScannerScanBarButton = @"";
 
 #pragma mark - Shuttles
-NSString * const MITImageShuttlesShuttleRouteActive = @"";
-NSString * const MITImageShuttlesShuttleRouteInactive = @"";
-NSString * const MITImageShuttlesShuttleRouteLocationUnavailable = @"";
-NSString * const MITImageShuttlesBusBubble = @"";
-NSString * const MITImageShuttlesAlertEnabled = @"";
-NSString * const MITImageShuttlesAlertDisabled = @"";
-NSString * const MITImageShuttlesAnnotationBus = @"";
-NSString * const MITImageShuttlesAnnotationNextStop = @"";
-NSString * const MITImageShuttlesAnnotationNextStopSelected = @"";
-NSString * const MITImageShuttlesAnnotationCurrentStop = @"";
-NSString * const MITImageShuttlesAnnotationCurrentStopSelected = @"";
+NSString * const MITImageShuttlesShuttleRouteActive = @"shuttles-shuttle";
+NSString * const MITImageShuttlesShuttleRouteInactive = @"shuttles-shuttle-off";
+NSString * const MITImageShuttlesShuttleRouteLocationUnavailable = @"shuttles-shuttle-location_unavailable";
+NSString * const MITImageShuttlesBusBubble = @"shuttles-bus-bubble";
+NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
+NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
+NSString * const MITImageShuttlesAnnotationBus = @"shuttles-bus-annotation";
+NSString * const MITImageShuttlesAnnotationNextStop = @"shuttles-stop-dot-next";
+NSString * const MITImageShuttlesAnnotationNextStopSelected = @"shuttles-stop-dot-next-selected";
+NSString * const MITImageShuttlesAnnotationCurrentStop = @"shuttles-stop-dot";
+NSString * const MITImageShuttlesAnnotationCurrentStopSelected = @"shuttles-stop-dot-selected";
 
 
 NSString * const MITImageNameBackground      = @"global/body-background.png";
