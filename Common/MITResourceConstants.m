@@ -37,9 +37,9 @@ NSString * const MITImageDiningMealVegetarian = @"dining-meal-vegetarian";
 NSString * const MITImageDiningMealWellBeing = @"dining-meal-well_being";
 
 #pragma mark - Events (Calendar)
-NSString * const MITImageEventsDayPickerButton = @"events-day-picker-button";
-NSString * const MITImageEventsPadChevronUp = @"events-pad-chevron-up";
-NSString * const MITImageEventsPadChevronDown = @"events-pad-chevron-down";
+NSString * const MITImageEventsDayPickerButton = @"events-day_picker_button";
+NSString * const MITImageEventsPadChevronUp = @"events-pad-chevron_up";
+NSString * const MITImageEventsPadChevronDown = @"events-pad-chevron_down";
 
 #pragma mark - Libraries
 NSString * const MITImageLibrariesCheckmark = @"libraries-checkmark-unselected";
