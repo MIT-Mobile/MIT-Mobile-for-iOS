@@ -24,20 +24,20 @@
 
 + (NSString *)pdfNameForDietaryFlag:(NSString *)flag
 {
-    static NSDictionary *flagPdfs;
+    static NSDictionary *flagPdfs = nil;
     if (!flagPdfs) {
         flagPdfs = @{
-                     @"farm to fork": @"dining/farm_to_fork.pdf",
-                     @"organic": @"dining/organic.pdf",
-                     @"seafood watch": @"dining/seafood_watch.pdf",
-                     @"vegan": @"dining/vegan.pdf",
-                     @"vegetarian": @"dining/vegetarian.pdf",
-                     @"for your well-being": @"dining/well_being.pdf",
-                     @"made without gluten": @"dining/gluten_free.pdf",
-                     @"halal": @"dining/halal.pdf",
-                     @"kosher": @"dining/kosher.pdf",
-                     @"humane": @"dining/humane.pdf",
-                     @"in balance": @"dining/in_balance.pdf"
+                     @"farm to fork": MITImageDiningMealFarmToFork,
+                     @"organic": MITImageDiningMealOrganic,
+                     @"seafood watch": MITImageDiningMealSeafoodWatch,
+                     @"vegan": MITImageDiningMealVegan,
+                     @"vegetarian": MITImageDiningMealVegetarian,
+                     @"for your well-being": MITImageDiningMealWellBeing,
+                     @"made without gluten": MITImageDiningMealGlutenFree,
+                     @"halal": MITImageDiningMealHalal,
+                     @"kosher": MITImageDiningMealKosher,
+                     @"humane": MITImageDiningMealHumane,
+                     @"in balance": MITImageDiningMealInBalance
                      };
     }
     

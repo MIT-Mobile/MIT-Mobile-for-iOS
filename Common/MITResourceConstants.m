@@ -24,17 +24,17 @@ NSString * const MITImageDiningInfoHighlighted = @"dining-info-pressed";
 NSString * const MITImageDiningRotateDevice = @"dining-rotate-device";
 
 #pragma mark Meal Types
-NSString * const MITImageDiningMealFarmToFork = @"dining-meal-farm-to-fork";
-NSString * const MITImageDiningMealGlutenFree = @"dining-meal-gluten-free";
+NSString * const MITImageDiningMealFarmToFork = @"dining-meal-farm_to_fork";
+NSString * const MITImageDiningMealGlutenFree = @"dining-meal-gluten_free";
 NSString * const MITImageDiningMealHalal = @"dining-meal-halal";
 NSString * const MITImageDiningMealHumane = @"dining-meal-humane";
-NSString * const MITImageDiningMealInBalance = @"dining-meal-in-balance";
+NSString * const MITImageDiningMealInBalance = @"dining-meal-in_balance";
 NSString * const MITImageDiningMealKosher = @"dining-meal-kosher";
 NSString * const MITImageDiningMealOrganic = @"dining-meal-organic";
-NSString * const MITImageDiningMealSeafoodWatch = @"dining-meal-seafood-watch";
+NSString * const MITImageDiningMealSeafoodWatch = @"dining-meal-seafood_watch";
 NSString * const MITImageDiningMealVegan = @"dining-meal-vegan";
 NSString * const MITImageDiningMealVegetarian = @"dining-meal-vegetarian";
-NSString * const MITImageDiningMealWellBeing = @"dining-meal-well-being";
+NSString * const MITImageDiningMealWellBeing = @"dining-meal-well_being";
 
 #pragma mark - Events (Calendar)
 NSString * const MITImageEventsDayPickerButton = @"events-day-picker-button";
