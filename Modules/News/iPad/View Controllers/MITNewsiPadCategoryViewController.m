@@ -165,25 +165,6 @@
     }
 }
 
-#pragma mark setters
-- (void)setError:(NSString *)message
-{
-    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        self.gridViewController.errorMessage = message;
-    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        self.listViewController.errorMessage = message;
-    }
-}
-
-- (void)setProgress:(BOOL)progress
-{
-    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        self.gridViewController.storyUpdateInProgress = progress;
-    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        self.listViewController.storyUpdateInProgress = progress;
-    }
-}
-
 - (void)dealloc
 {
     if (self.dataSourceDidEndUpdatingToken) {
