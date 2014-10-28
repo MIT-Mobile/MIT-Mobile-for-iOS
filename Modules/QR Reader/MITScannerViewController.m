@@ -126,7 +126,7 @@
         [scannerView addSubview:readerView];
         self.readerView = readerView;
     } else {
-        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]];
+        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageScannerCameraUnsupported]];
         unsupportedView.contentMode = UIViewContentModeCenter;
         [scannerView addSubview:unsupportedView];
         self.cameraUnavailableView = unsupportedView;

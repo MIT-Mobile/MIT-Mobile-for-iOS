@@ -286,8 +286,8 @@
         NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
         
         cell.textLabel.text = cellDetails[@"title"];
-        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameExternal]
-                                               highlightedImage:[UIImage imageNamed:MITImageNameExternalHighlight]];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
+                                               highlightedImage:[UIImage imageNamed:MITImageActionExternalHighlight]];
     } else {
         cell.textLabel.text = self.scanShareDetails[@"title"];
         cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameShare]];
