@@ -32,7 +32,8 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
 
 @implementation MITLibrariesYourAccountGridViewControllerPad
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     self.collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);

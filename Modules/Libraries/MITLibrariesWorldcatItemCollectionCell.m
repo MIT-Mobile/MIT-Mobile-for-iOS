@@ -14,7 +14,8 @@
 
 @implementation MITLibrariesWorldcatItemCollectionCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
     [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
     [self.yearAndAuthorLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
