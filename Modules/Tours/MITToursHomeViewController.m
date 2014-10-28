@@ -6,6 +6,7 @@
 #import "MITToursSelfGuidedTourCell.h"
 #import "MITToursInfoCell.h"
 #import "MITToursAboutMITViewController.h"
+#import "MITToursSelfGuidedTourContainerController.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITInfoCell = @"MITToursInfoCell";
@@ -233,7 +234,14 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
-    // TODO: push to detail views
+
+    if (indexPath.section == MITToursTableViewSectionInfo) {
+        if (indexPath.row == 0) {
+            MITToursSelfGuidedTourContainerController *tourVC = [[MITToursSelfGuidedTourContainerController alloc] init];
+            tourVC.selfGuidedTour = self.selfGuidedTour;
+            [self.navigationController pushViewController:tourVC animated:YES];
+        }
+    }
 }
 
 @end
