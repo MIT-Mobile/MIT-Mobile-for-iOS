@@ -129,6 +129,8 @@
     [htmlString replaceOccurrencesOfString:@"__ITEMS__" withString:items options:NSLiteralSearch range:NSMakeRange(0, [htmlString length])];
     
     [self.view addSubview:self.webView];
+
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
 }
 

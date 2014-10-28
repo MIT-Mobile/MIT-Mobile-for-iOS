@@ -21,6 +21,8 @@
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webview.backgroundColor = [UIColor clearColor];
     [self.view addSubview:webview];
+
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [webview loadHTMLString:htmlString baseURL:baseURL];
 }
 

@@ -85,6 +85,7 @@
     
     [self hideLoadingView];
 
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [html replaceOccurrencesOfString:@"__LOCAL_BASE_URL__" withString:[baseURL absoluteString] options:NSLiteralSearch range:NSMakeRange(0, [html length])];
 	[html replaceOccurrencesOfString:@"__BODY_BEFORE_BUTTON__" withString:[[ToursDataManager sharedManager] activeTour].summary options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     [html replaceOccurrencesOfString:@"__BODY_AFTER_BUTTON__" withString:[[ToursDataManager sharedManager] activeTour].moreInfo options:NSLiteralSearch range:NSMakeRange(0, [html length])];
@@ -105,7 +106,8 @@
 
     NSError *error = nil;
     NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
-
+    
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [html replaceOccurrencesOfString:@"__LOCAL_BASE_URL__" withString:[baseURL absoluteString] options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     
     [self.webView loadHTMLString:html baseURL:baseURL];
