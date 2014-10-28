@@ -114,7 +114,7 @@ enum {
     
     [self updateTourComponents];
     
-    self.locateUserButton.image = [UIImage imageNamed:MITImageLocation];
+    self.locateUserButton.image = [UIImage imageNamed:MITImageToursButtonLocation];
     
     [self showMap:YES];
 }
