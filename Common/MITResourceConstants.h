@@ -16,7 +16,7 @@ extern NSString * const MITImageSettingsModuleIcon;
 extern NSString * const MITImageShuttlesModuleIcon;
 extern NSString * const MITImageToursModuleIcon;
 
-#pragma - mark Dining
+#pragma mark - Dining
 extern NSString * const MITImageDiningBookmark;
 extern NSString * const MITImageDiningBookmarkSelected;
 extern NSString * const MITImageDiningInfo;
@@ -64,6 +64,13 @@ extern NSString * const MITImageMapAnnotationPlacePin;
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
+
+// Used by the News story HTML template. These may no longer be in
+// active use (although they are referenced).
+extern NSString * const MITImageNewsTemplateButtonBookmark;
+extern NSString * const MITImageNewsTemplateButtonShare;
+extern NSString * const MITImageNewsTemplateButtonShareHighlighted;
+extern NSString * const MITImageNewsTemplateButtonZoomIn;
 
 
 #pragma mark - People Directory
@@ -124,6 +131,7 @@ extern NSString * const MITImageToursButtonAudioPause;
 extern NSString * const MITImageToursButtonAudio;
 extern NSString * const MITImageToursButtonMap;
 extern NSString * const MITImageToursButtonMapHighlighted;
+extern NSString * const MITImageToursButtonLocation;
 extern NSString * const MITImageToursButtonScanQR;
 extern NSString * const MITImageToursButtonScanQRHighlighted;
 extern NSString * const MITImageToursButtonSidetrip;
@@ -139,6 +147,8 @@ extern NSString * const MITImageToursAnnotationArrowEnd;
 extern NSString * const MITImageToursAnnotationArrowStart;
 extern NSString * const MITImageToursMapLegendOverlay;
 
+extern NSString * const MITImageToursTemplateButtonExternalLink;
+
 
 #pragma mark - Global Assets
 extern NSString * const MITImageNameBackground;
@@ -150,8 +160,9 @@ extern NSString * const MITImageNamePeople;
 extern NSString * const MITImageNamePeopleHighlight;
 extern NSString * const MITImageNamePhone;
 extern NSString * const MITImageNamePhoneHighlight;
-extern NSString * const MITImageNameExternal;
-extern NSString * const MITImageNameExternalHighlight;
+extern NSString * const MITImageActionExternalWhite;
+extern NSString * const MITImageActionExternal;
+extern NSString * const MITImageActionExternalHighlight;
 extern NSString * const MITImageNameEmergency;
 extern NSString * const MITImageNameEmergencyHighlight;
 extern NSString * const MITImageNameSecure;
@@ -176,6 +187,8 @@ extern NSString * const MITImageLogoLightContent;
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
+
+// TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;
 extern NSString * const MITImageBarButtonSearchMagnifier;
 

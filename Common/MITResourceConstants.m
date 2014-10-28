@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+#import "MITResourceConstants.h"
 
 #pragma mark Module Icons
 NSString * const MITImageAboutModuleIcon = @"home-about";
@@ -16,7 +16,7 @@ NSString * const MITImageSettingsModuleIcon = @"home-settings";
 NSString * const MITImageShuttlesModuleIcon = @"home-shuttle";
 NSString * const MITImageToursModuleIcon = @"home-tours";
 
-#pragma - mark Dining
+#pragma mark - Dining
 NSString * const MITImageDiningBookmark = @"dining-bookmark";
 NSString * const MITImageDiningBookmarkSelected = @"dining-bookmark-selected";
 NSString * const MITImageDiningInfo = @"dining-info";
@@ -63,7 +63,14 @@ NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place-pin";
 
 
 #pragma mark - News
-NSString * const MITImageNewsImagePlaceholder = @"";
+NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
+
+// Used by the News story HTML template. These may no longer be in
+// active use (although they are referenced).
+NSString * const MITImageNewsTemplateButtonBookmark = @"news-template-bookmark_button";
+NSString * const MITImageNewsTemplateButtonShare = @"news-template-share";
+NSString * const MITImageNewsTemplateButtonShareHighlighted = @"news-template-share_pressed";
+NSString * const MITImageNewsTemplateButtonZoomIn = @"news-template-button-zoom_in";
 
 
 #pragma mark - People Directory
@@ -124,6 +131,7 @@ NSString * const MITImageToursButtonAudioPause = @"tours-button-pause";
 NSString * const MITImageToursButtonAudio = @"tours-button-audio";
 NSString * const MITImageToursButtonMap = @"tours-button-map";
 NSString * const MITImageToursButtonMapHighlighted = @"tours-button-map-highlighted";
+NSString * const MITImageToursButtonLocation = @"tours-button-location";
 NSString * const MITImageToursButtonScanQR = @"tours-button-qr";
 NSString * const MITImageToursButtonScanQRHighlighted = @"tours-button-qr-highlighted";
 NSString * const MITImageToursButtonSidetrip = @"tours-button-sidetrip";
@@ -139,34 +147,37 @@ NSString * const MITImageToursAnnotationArrowEnd = @"tours-annotation-arrow-end"
 NSString * const MITImageToursAnnotationArrowStart = @"tours-annotation-arrow-start";
 NSString * const MITImageToursMapLegendOverlay = @"tours-map-legend-overlay";
 
+NSString * const MITImageToursTemplateButtonExternalLink = @"tours-template-extlink";
+
 
 #pragma mark - Global Assets
-NSString * const MITImageNameBackground      = @"global-body-background.png";
-NSString * const MITImageNameEmail           = @"global-action-email.png";
-NSString * const MITImageNameEmailHighlight  = @"global-action-email-highlight.png";
-NSString * const MITImageNameMap             = @"global-action-map.png";
-NSString * const MITImageNameMapHighlight    = @"global-action-map-highlight.png";
-NSString * const MITImageNamePeople          = @"global-action-people.png";
-NSString * const MITImageNamePeopleHighlight = @"global-action-people-highlight.png";
-NSString * const MITImageNamePhone           = @"global-action-phone.png";
-NSString * const MITImageNamePhoneHighlight  = @"global-action-phone-highlight.png";
-NSString * const MITImageNameExternal           = @"global-action-external.png";
-NSString * const MITImageNameExternalHighlight  = @"global-action-external-highlight.png";
-NSString * const MITImageNameEmergency          = @"global-action-emergency.png";
-NSString * const MITImageNameEmergencyHighlight = @"global-action-emergency-highlight.png";
-NSString * const MITImageNameSecure           = @"global-action-secure.png";
-NSString * const MITImageNameSecureHighlight  = @"global-action-secure-highlight.png";
-NSString * const MITImageNameCalendar       = @"global-action-calendar";
-NSString * const MITImageNameCalendarHighlight  = @"global-action-calendar-highlight";
-NSString * const MITImageNameShare       = @"global-action-share";
+NSString * const MITImageNameBackground = @"global-body-background";
+NSString * const MITImageNameEmail = @"global-action-email";
+NSString * const MITImageNameEmailHighlight = @"global-action-email-highlight";
+NSString * const MITImageNameMap = @"global-action-map";
+NSString * const MITImageNameMapHighlight = @"global-action-map-highlight";
+NSString * const MITImageNamePeople = @"global-action-people";
+NSString * const MITImageNamePeopleHighlight = @"global-action-people-highlight";
+NSString * const MITImageNamePhone = @"global-action-phone";
+NSString * const MITImageNamePhoneHighlight = @"global-action-phone-highlight";
+NSString * const MITImageActionExternalWhite = @"global-action-external_white";
+NSString * const MITImageActionExternal = @"global-action-external";
+NSString * const MITImageActionExternalHighlight = @"global-action-external-highlight";
+NSString * const MITImageNameEmergency = @"global-action-emergency";
+NSString * const MITImageNameEmergencyHighlight = @"global-action-emergency-highlight";
+NSString * const MITImageNameSecure = @"global-action-secure";
+NSString * const MITImageNameSecureHighlight = @"global-action-secure-highlight";
+NSString * const MITImageNameCalendar = @"global-action-calendar";
+NSString * const MITImageNameCalendarHighlight = @"global-action-calendar-highlight";
+NSString * const MITImageNameShare = @"global-action-share";
 
-NSString * const MITImageNameLeftArrow = @"global/arrow-white-left.png";
-NSString * const MITImageNameRightArrow = @"global/arrow-white-right.png";
-NSString * const MITImageNameUpArrow = @"global/arrow-white-up.png";
-NSString * const MITImageNameDownArrow = @"global/arrow-white-down.png";
+NSString * const MITImageNameLeftArrow = @"global-arrow-white-left";
+NSString * const MITImageNameRightArrow = @"global-arrow-white-right";
+NSString * const MITImageNameUpArrow = @"global-arrow-white-up";
+NSString * const MITImageNameDownArrow = @"global-arrow-white-down";
 
-NSString * const MITImageNameSearch = @"global/search.png";
-NSString * const MITImageNameBookmark = @"global/bookmark.png";
+NSString * const MITImageNameSearch = @"global-search";
+NSString * const MITImageNameBookmark = @"global-bookmark";
 NSString * const MITImageDisclosureRight = @"global-disclosure_right";
 NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 
