@@ -10,6 +10,13 @@
 @implementation TopAlignedCollectionViewFlowLayoutRowAttributes
 @end
 
+
+@interface TopAlignedStickyHeaderCollectionViewFlowLayout ()
+
+@property (nonatomic, assign) CGFloat previousCollectionViewContentOffsetY;
+
+@end
+
 @implementation TopAlignedStickyHeaderCollectionViewFlowLayout
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
@@ -53,7 +60,7 @@
         if ([[attributes representedElementKind] isEqualToString:UICollectionElementKindSectionHeader]) {
             [headers setObject:attributes forKey:@(indexPath.section)];
         } else if ([[attributes representedElementKind] isEqualToString:UICollectionElementKindSectionFooter]) {
-            // Not implemeneted
+            // Not implemented
         } else {
             NSIndexPath *indexPath = [attributes indexPath];
             
@@ -70,21 +77,42 @@
     
     [maxYCellsBySection enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         NSIndexPath *indexPath = [obj indexPath];
-        NSNumber *indexPathKey = @(indexPath.section);
+        NSNumber *sectionKey = @(indexPath.section);
         
-        UICollectionViewLayoutAttributes *header = headers[indexPathKey];
+        UICollectionViewLayoutAttributes *headerAttributes = headers[sectionKey];
         // CollectionView automatically removes headers not in bounds
-        if (!header) {
-            header = [self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+        if (!headerAttributes) {
+            headerAttributes = [self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                                           atIndexPath:[NSIndexPath indexPathForItem:0 inSection:indexPath.section]];
             
-            if (header) {
-                [attributesArray addObject:header];
+            if (headerAttributes) {
+                [attributesArray addObject:headerAttributes];
+                [headers setObject:headerAttributes forKey:sectionKey];
             }
         }
         
-        [self updateHeaderAttributes:header lastCellAttributes:maxYCellsBySection[indexPathKey]];
+        [self updateHeaderAttributes:headerAttributes lastCellAttributes:maxYCellsBySection[sectionKey]];
     }];
+    
+    if (self.delegate) {
+        // For each header:
+        // Check if the header used to be below the top and is now at or above the top
+        // else check if the header used to be at or above the top and is now below the top
+        
+        for (NSInteger section = 0; section < self.collectionView.numberOfSections; section++) {
+            NSNumber *sectionKey = @(section);
+            
+            UICollectionViewLayoutAttributes *headerAttributes = headers[sectionKey];
+            
+            if (headerAttributes.frame.origin.y <= self.collectionView.contentOffset.y && headerAttributes.frame.origin.y > self.previousCollectionViewContentOffsetY) {
+                [self.delegate collectionView:self.collectionView headerScrolledUpToTopInSection:section];
+            } else if (headerAttributes.frame.origin.y > self.collectionView.contentOffset.y && headerAttributes.frame.origin.y <= self.previousCollectionViewContentOffsetY) {
+                [self.delegate collectionView:self.collectionView headerScrolledDownBelowTopInSection:section];
+            }
+        }
+    }
+    
+    self.previousCollectionViewContentOffsetY = self.collectionView.contentOffset.y;
 	
 	return attributesArray;
 }
@@ -105,16 +133,13 @@
     CGPoint origin = attributes.frame.origin;
     
     CGFloat sectionMaxY = CGRectGetMaxY(lastCellAttributes.frame) - attributes.frame.size.height;
-    CGFloat y = CGRectGetMaxY(currentBounds) - currentBounds.size.height + self.collectionView.contentInset.top;
+    CGFloat topLockY = currentBounds.origin.y;
 
-    CGFloat maxY = MIN(MAX(y, attributes.frame.origin.y), sectionMaxY);
+    CGFloat maxY = MIN(MAX(topLockY, attributes.frame.origin.y), sectionMaxY);
     
     origin.y = maxY;
     
-    attributes.frame = (CGRect){
-        origin,
-        attributes.frame.size
-    };
+    attributes.frame = CGRectMake(origin.x, origin.y, attributes.frame.size.width, attributes.frame.size.height);
 }
 
 @end

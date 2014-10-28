@@ -36,6 +36,7 @@
             </constraints>
             <connections>
                 <outlet property="attributedTextLabel" destination="Tee-qq-Wiq" id="Arb-Z4-ic3"/>
+                <outlet property="separatorView" destination="Tjm-TV-UK1" id="mFY-eo-xx1"/>
             </connections>
             <point key="canvasLocation" x="667" y="440"/>
         </collectionReusableView>

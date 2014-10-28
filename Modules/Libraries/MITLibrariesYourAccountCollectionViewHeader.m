@@ -1,8 +1,10 @@
 #import "MITLibrariesYourAccountCollectionViewHeader.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITLibrariesYourAccountCollectionViewHeader ()
 
 @property (nonatomic, weak) IBOutlet UILabel *attributedTextLabel;
+@property (nonatomic, weak) IBOutlet UIView *separatorView;
 
 @end
 
@@ -11,7 +13,7 @@
 - (void)setAttributedString:(NSAttributedString *)attributedString
 {
     self.attributedTextLabel.attributedText = attributedString;
-    self.backgroundColor = [UIColor whiteColor];
+    self.separatorView.backgroundColor = [UIColor mit_cellSeparatorColor];
 }
 
 #pragma mark - Dynamic Sizing
