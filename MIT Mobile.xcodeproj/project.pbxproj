@@ -632,6 +632,8 @@
 		AF2F705419FAB89400EE6398 /* MITToursStopAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2F705319FAB89400EE6398 /* MITToursStopAnnotation.m */; };
 		AF37E50E19FFDB4C00F72CD2 /* WYPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E50B19FFDB4C00F72CD2 /* WYPopoverController.m */; };
 		AF37E50F19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */; };
+		AF37E51319FFDFC800F72CD2 /* MITToursCalloutContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */; };
+		AF37E51419FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
@@ -1918,6 +1920,9 @@
 		AF37E50B19FFDB4C00F72CD2 /* WYPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYPopoverController.m; path = External/WYPopoverController/WYPopoverController/WYPopoverController.m; sourceTree = "<group>"; };
 		AF37E50C19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WYStoryboardPopoverSegue.h; path = External/WYPopoverController/WYPopoverController/WYStoryboardPopoverSegue.h; sourceTree = "<group>"; };
 		AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYStoryboardPopoverSegue.m; path = External/WYPopoverController/WYPopoverController/WYStoryboardPopoverSegue.m; sourceTree = "<group>"; };
+		AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursCalloutContentViewController.m; sourceTree = "<group>"; };
+		AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursCalloutContentViewController.xib; sourceTree = "<group>"; };
+		AF37E51519FFE20400F72CD2 /* MITToursCalloutContentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITToursCalloutContentViewController.h; sourceTree = "<group>"; };
 		BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBuildInfo.h; sourceTree = "<group>"; };
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
@@ -4416,16 +4421,6 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
-		AF3BB6591A00565E009B3083 /* Map */ = {
-			isa = PBXGroup;
-			children = (
-				AF2F704919FA991700EE6398 /* MITToursMapViewController.h */,
-				AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */,
-				AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */,
-			);
-			name = Map;
-			sourceTree = "<group>";
-		};
 		AF37E50619FFDB2200F72CD2 /* WYPopoverController */ = {
 			isa = PBXGroup;
 			children = (
@@ -4435,6 +4430,19 @@
 				AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */,
 			);
 			name = WYPopoverController;
+			sourceTree = "<group>";
+		};
+		AF3BB6591A00565E009B3083 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				AF2F704919FA991700EE6398 /* MITToursMapViewController.h */,
+				AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */,
+				AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */,
+				AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */,
+				AF37E51519FFE20400F72CD2 /* MITToursCalloutContentViewController.h */,
+				AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */,
+			);
+			name = Map;
 			sourceTree = "<group>";
 		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
@@ -5081,6 +5089,7 @@
 				2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */,
 				A56390DA19DDDD56001DE763 /* MITLibrariesAvailabilityDetailViewController.xib in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
+				AF37E51419FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib in Resources */,
 				225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
@@ -5500,6 +5509,7 @@
 				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
 				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
 				2209CC2C1992805500E17100 /* MITCalendarPageViewController.m in Sources */,
+				AF37E51319FFDFC800F72CD2 /* MITToursCalloutContentViewController.m in Sources */,
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
 				0B394CDD19E3355D00B48F17 /* SDWebImageManager.m in Sources */,
 				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,

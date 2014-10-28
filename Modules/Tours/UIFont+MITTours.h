@@ -5,4 +5,7 @@
 + (UIFont *)toursButtonTitle;
 + (UIFont *)toursButtonSubtitle;
 
++ (UIFont *)toursMapCalloutTitle;
++ (UIFont *)toursMapCalloutSubtitle;
+
 @end
