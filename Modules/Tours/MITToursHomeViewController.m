@@ -5,6 +5,7 @@
 #import "UIFont+MITTours.h"
 #import "MITToursSelfGuidedTourCell.h"
 #import "MITToursInfoCell.h"
+#import "MITToursAboutMITViewController.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITInfoCell = @"MITToursInfoCell";
@@ -212,13 +213,14 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 
 - (void)moreAboutToursPressed:(UIButton *)sender
 {
-    // TODO: Push to detail view
+    UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:kAboutMITURL delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+    [openOutsideWebsiteAlert show];
 }
 
 - (void)moreAboutMITPressed:(UIButton *)sender
 {
-    UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:kAboutMITURL delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
-    [openOutsideWebsiteAlert show];
+    MITToursAboutMITViewController *aboutVC = [[MITToursAboutMITViewController alloc] init];
+    [self.navigationController pushViewController:aboutVC animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
