@@ -82,6 +82,7 @@
 		224E1A9719FFE0A100913D99 /* MITToursAboutMITViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 224E1A9619FFE0A100913D99 /* MITToursAboutMITViewController.m */; };
 		224E1AA11A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 224E1AA01A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.m */; };
 		224E1AA71A00108900913D99 /* MITToursSelfGuidedTourListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 224E1AA61A00108900913D99 /* MITToursSelfGuidedTourListViewController.m */; };
+		224E1AAE1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 224E1AAD1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.m */; };
 		224F6B2019D480F10062D340 /* MITLibrariesMITItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 224F6B1F19D480F10062D340 /* MITLibrariesMITItem.m */; };
 		224F6B2619D484EC0062D340 /* MITLibrariesCoverImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 224F6B2519D484EC0062D340 /* MITLibrariesCoverImage.m */; };
 		2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2253E46B196DCD8800D04069 /* MITMapDefaultCategoryViewController.m */; };
@@ -900,6 +901,8 @@
 		224E1AA01A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursSelfGuidedTourContainerController.m; sourceTree = "<group>"; };
 		224E1AA51A00108900913D99 /* MITToursSelfGuidedTourListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursSelfGuidedTourListViewController.h; sourceTree = "<group>"; };
 		224E1AA61A00108900913D99 /* MITToursSelfGuidedTourListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursSelfGuidedTourListViewController.m; sourceTree = "<group>"; };
+		224E1AAC1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursSelfGuidedTourInfoViewController.h; sourceTree = "<group>"; };
+		224E1AAD1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursSelfGuidedTourInfoViewController.m; sourceTree = "<group>"; };
 		224F6B1E19D480F10062D340 /* MITLibrariesMITItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITItem.h; sourceTree = "<group>"; };
 		224F6B1F19D480F10062D340 /* MITLibrariesMITItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesMITItem.m; sourceTree = "<group>"; };
 		224F6B2419D484EC0062D340 /* MITLibrariesCoverImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesCoverImage.h; sourceTree = "<group>"; };
@@ -2567,6 +2570,8 @@
 				224E1AA01A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.m */,
 				224E1AA51A00108900913D99 /* MITToursSelfGuidedTourListViewController.h */,
 				224E1AA61A00108900913D99 /* MITToursSelfGuidedTourListViewController.m */,
+				224E1AAC1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.h */,
+				224E1AAD1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.m */,
 			);
 			name = "Self Guided Tour";
 			sourceTree = "<group>";
@@ -5690,6 +5695,7 @@
 				5E70E393192F7F7F00165B41 /* MITShuttleRouteViewController.m in Sources */,
 				DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */,
 				22D9030E199BA90E00AEBC7D /* MITDiningMenuItem.m in Sources */,
+				224E1AAE1A003D4100913D99 /* MITToursSelfGuidedTourInfoViewController.m in Sources */,
 				DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */,
 				A5A24B57198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m in Sources */,
 				2247B76319F6AC05000E1725 /* MITToursDirectionsToStop.m in Sources */,
