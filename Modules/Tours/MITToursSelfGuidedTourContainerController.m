@@ -1,5 +1,6 @@
 #import "MITToursSelfGuidedTourContainerController.h"
 #import "MITToursSelfGuidedTourListViewController.h"
+#import "MITToursSelfGuidedTourInfoViewController.h"
 
 typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     MITToursSelfGuidedTourMap,
@@ -25,7 +26,31 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     
     [self setupViewControllers];
     
+    [self setupNavBar];
+    
     [self setupToolbar];
+}
+
+- (void)setupViewControllers
+{
+    self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
+    self.mapViewController = [[UIViewController alloc] init];
+    self.mapViewController.view.backgroundColor = [UIColor blueColor];
+    
+    self.listViewController.view.frame =
+    self.mapViewController.view.frame = self.view.bounds;
+    
+    [self addChildViewController:self.listViewController];
+    [self addChildViewController:self.mapViewController];
+    
+    [self.view addSubview:self.listViewController.view];
+    [self.view addSubview:self.mapViewController.view];
+}
+
+- (void)setupNavBar
+{
+    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStylePlain target:self action:@selector(infoButtonPressed:)];
+    self.navigationItem.rightBarButtonItem = infoButton;
 }
 
 - (void)setupToolbar
@@ -43,21 +68,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.navigationController setToolbarHidden:NO];
 }
 
-- (void)setupViewControllers
-{
-    self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
-    self.mapViewController = [[UIViewController alloc] init];
-    self.mapViewController.view.backgroundColor = [UIColor blueColor];
 
-    self.listViewController.view.frame =
-    self.mapViewController.view.frame = self.view.bounds;
-    
-    [self addChildViewController:self.listViewController];
-    [self addChildViewController:self.mapViewController];
-    
-    [self.view addSubview:self.listViewController.view];
-    [self.view addSubview:self.mapViewController.view];
-}
 
 - (void)showSelectedViewController
 {
@@ -83,6 +94,13 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 {
     self.mapViewController.view.hidden = YES;
     self.listViewController.view.hidden = NO;
+}
+
+- (void)infoButtonPressed:(id)sender
+{
+    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    infoVC.tour = self.selfGuidedTour;
+    [self.navigationController pushViewController:infoVC animated:YES];
 }
 
 @end
