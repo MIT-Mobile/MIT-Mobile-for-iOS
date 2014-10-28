@@ -16,3 +16,6 @@
 [submodule "External/ECSlidingViewController"]
 	path = External/ECSlidingViewController
 	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
+[submodule "External/WYPopoverController"]
+	path = External/WYPopoverController
+	url = https://github.com/nicolaschengdev/WYPopoverController.git
