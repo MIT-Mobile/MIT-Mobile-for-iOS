@@ -1,127 +1,21 @@
 #import "MITLibrariesSearchResultsViewController.h"
 #import "MITLibrariesSearchController.h"
-#import "MITLibrariesWorldcatItemCell.h"
-#import "SVPullToRefresh.h"
-#import "MITLibrariesWorldcatItem.h"
 
-typedef NS_ENUM(NSInteger, MITLibrariesSearchResultsViewControllerState) {
-    MITLibrariesSearchResultsViewControllerStateLoading,
-    MITLibrariesSearchResultsViewControllerStateError,
-    MITLibrariesSearchResultsViewControllerStateResults
-};
-
-static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifier = @"kMITLibrariesSearchResultsViewControllerItemCellIdentifier";
-
-@interface MITLibrariesSearchResultsViewController () <UITableViewDataSource, UITableViewDelegate>
-
-@property (nonatomic, weak) IBOutlet UITableView *resultsTableView;
-@property (nonatomic, weak) IBOutlet UILabel *messageLabel;
-@property (nonatomic, assign) MITLibrariesSearchResultsViewControllerState state;
+@interface MITLibrariesSearchResultsViewController ()
 
 @end
 
 @implementation MITLibrariesSearchResultsViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        self.state = MITLibrariesSearchResultsViewControllerStateLoading;
-    }
-    
-    return self;
-}
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-    
-    UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
-    [self.resultsTableView registerNib:librariesItemCellNib forCellReuseIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier];
-    
-    self.resultsTableView.showsInfiniteScrolling = NO;
-    [self.resultsTableView addInfiniteScrollingWithActionHandler:^{
-        NSInteger startingResultCount = self.searchController.results.count;
-        
-        [self.searchController getNextResults:^(NSError *error) {
-            [self.resultsTableView.infiniteScrollingView stopAnimating];
-            if (error) {
-                self.resultsTableView.showsInfiniteScrolling = NO;
-            } else {
-                NSInteger addedResultCount = self.searchController.results.count - startingResultCount;
-                NSMutableArray *newIndexPaths = [NSMutableArray arrayWithCapacity:addedResultCount];
-                for (NSInteger i = 0; i < addedResultCount; i++) {
-                    [newIndexPaths addObject:[NSIndexPath indexPathForRow:(startingResultCount + i) inSection:0]];
-                }
-                
-                [self.resultsTableView beginUpdates];
-                [self.resultsTableView insertRowsAtIndexPaths:newIndexPaths withRowAnimation:UITableViewRowAnimationTop];
-                [self.resultsTableView endUpdates];
-                
-                self.resultsTableView.showsInfiniteScrolling = self.searchController.hasMoreResults;
-            }
-        }];
-    }];
+    // Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self updateViewsForCurrentState];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    if (self.state == MITLibrariesSearchResultsViewControllerStateResults) {
-        [self.resultsTableView reloadData];
-    }
-}
-
-- (void)search:(NSString *)searchTerm
-{
-    self.state = MITLibrariesSearchResultsViewControllerStateLoading;
-    
-    [self.searchController search:searchTerm completion:^(NSError *error) {
-        if (error) {
-            self.state = MITLibrariesSearchResultsViewControllerStateError;
-        } else if (self.searchController.results.count < 1) {
-            [self showNoResultsView];
-        } else {
-            self.state = MITLibrariesSearchResultsViewControllerStateResults;
-            [self.resultsTableView reloadData];
-            self.resultsTableView.showsInfiniteScrolling = self.searchController.hasMoreResults;
-        }
-    }];
-}
-
-- (void)showLoadingView
-{
-    self.messageLabel.text = @"Loading...";
-    self.resultsTableView.hidden = YES;
-    self.messageLabel.hidden = NO;
-    self.resultsTableView.contentOffset = CGPointMake(0, 0);
-}
-
-- (void)showErrorView
-{
-    self.messageLabel.text = @"There was an error loading your search.";
-    self.resultsTableView.hidden = YES;
-    self.messageLabel.hidden = NO;
-}
-
-- (void)showNoResultsView
-{
-    self.messageLabel.text = @"No results found.";
-    self.resultsTableView.hidden = YES;
-    self.messageLabel.hidden = NO;
-}
-
-- (void)showResultsView
-{
-    self.messageLabel.hidden = YES;
-    self.resultsTableView.hidden = NO;
 }
 
 - (void)setState:(MITLibrariesSearchResultsViewControllerState)state
@@ -146,48 +40,34 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
             break;
         }
         case MITLibrariesSearchResultsViewControllerStateResults: {
-            [self showResultsView];
+            if (self.searchController.results.count < 1) {
+                [self showNoResultsView];
+            } else {
+                [self showResultsView];
+            }
             break;
         }
     }
 }
 
-#pragma mark - TableView Delegate / DataSource
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (void)showLoadingView
 {
-    return 1;
+    // Should be overridden by subclasses
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (void)showErrorView
 {
-    return self.searchController.results.count;
+    // Should be overridden by subclasses
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)showNoResultsView
 {
-    MITLibrariesWorldcatItemCell *cell = [self.resultsTableView dequeueReusableCellWithIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier forIndexPath:indexPath];
-    
-    [cell setContent:self.searchController.results[indexPath.row]];
-    
-    return cell;
+    // Should be overridden by subclasses
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)showResultsView
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    if ([self.delegate respondsToSelector:@selector(librariesSearchResultsViewController:didSelectItem:)]) {
-        MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
-        [self.delegate librariesSearchResultsViewController:self didSelectItem:item];
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITLibrariesWorldcatItem *item = self.searchController.results[indexPath.row];
-    CGFloat height = [MITLibrariesWorldcatItemCell heightForContent:item tableViewWidth:self.resultsTableView.bounds.size.width];
-    return height;
+    // Should be overridden by subclasses
 }
 
 - (MITLibrariesSearchController *)searchController
@@ -197,6 +77,30 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
         _searchController = [[MITLibrariesSearchController alloc] init];
     }
     return _searchController;
+}
+
+- (void)search:(NSString *)searchTerm
+{
+    self.state = MITLibrariesSearchResultsViewControllerStateLoading;
+    
+    [self.searchController search:searchTerm completion:^(NSError *error) {
+        [self searchFinishedLoadingWithError:error];
+    }];
+}
+
+- (void)searchFinishedLoadingWithError:(NSError *)error
+{
+    if (error) {
+        self.state = MITLibrariesSearchResultsViewControllerStateError;
+    } else {
+        self.state = MITLibrariesSearchResultsViewControllerStateResults;
+        [self reloadResultsView];
+    }
+}
+
+- (void)reloadResultsView
+{
+    // Should be overridden by subclasses
 }
 
 @end

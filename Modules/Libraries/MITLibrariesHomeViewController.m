@@ -3,7 +3,7 @@
 #import "MITLibrariesLink.h"
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
-#import "MITLibrariesSearchResultsViewController.h"
+#import "MITLibrariesSearchResultsListViewController.h"
 #import "MITLibrariesLocationsHoursViewController.h"
 #import "MITLibrariesSearchResultDetailViewController.h"
 #import "MITLibrariesYourAccountViewController.h"
@@ -37,7 +37,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) NSLayoutConstraint *cancelButtonTrailingSpaceConstraint;
 @property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
-@property (nonatomic, strong) MITLibrariesSearchResultsViewController *searchResultsViewController;
+@property (nonatomic, strong) MITLibrariesSearchResultsListViewController *searchResultsViewController;
 @property (nonatomic, strong) IBOutlet UITableView *mainTableView;
 
 @end
@@ -125,7 +125,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (void)setupSearchResultsViewController
 {
-    self.searchResultsViewController = [[MITLibrariesSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    self.searchResultsViewController = [[MITLibrariesSearchResultsListViewController alloc] initWithNibName:nil bundle:nil];
     self.searchResultsViewController.delegate = self;
     [self addChildViewController:self.searchResultsViewController];
     self.searchResultsViewController.view.hidden = YES;

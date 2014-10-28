@@ -4,11 +4,7 @@
 #import "MITLibrariesYourAccountListViewControllerPad.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesUser.h"
-
-typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
-    MITLibrariesAccountsViewControllerList,
-    MITLibrariesAccountsViewControllerGrid
-};
+#import "MITLibrariesYourAccountGridViewControllerPad.h"
 
 @interface MITLibrariesYourAccountViewControllerPad ()
 
@@ -17,8 +13,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
 @property (weak, nonatomic) IBOutlet UIView *loginView;
 
 @property (nonatomic, strong) MITLibrariesYourAccountListViewControllerPad *listViewController;
-
-@property (nonatomic) MITLibrariesAccountsViewController currentlySelectedViewController;
+@property (nonatomic, strong) MITLibrariesYourAccountGridViewControllerPad *gridViewController;
 
 @end
 
@@ -61,11 +56,27 @@ typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
 {
     self.listViewController = [[MITLibrariesYourAccountListViewControllerPad alloc] initWithStyle:UITableViewStylePlain];
     self.listViewController.view.frame = self.view.bounds;
-    
     [self addChildViewController:self.listViewController];
     
-    [self.view addSubview:self.listViewController.view];
+    self.gridViewController = [[MITLibrariesYourAccountGridViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    self.gridViewController.view.frame = self.view.bounds;
+    [self addChildViewController:self.gridViewController];
     
+    [self showCurrentlySelectedViewController];
+    
+    [self.view addSubview:self.listViewController.view];
+    [self.view addSubview:self.gridViewController.view];
+}
+
+- (void)setLayoutMode:(MITLibrariesLayoutMode)layoutMode
+{
+    if (_layoutMode == layoutMode) {
+        return;
+    }
+    
+    _layoutMode = layoutMode;
+    
+    [self showCurrentlySelectedViewController];
 }
 
 - (IBAction)logInButtonPressed:(UIButton *)sender
@@ -80,28 +91,33 @@ typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
 {
     if ([MITTouchstoneController sharedController].isLoggedIn) {
         self.loginView.hidden = YES;
-        self.listViewController.view.hidden = NO;
+        [self showCurrentlySelectedViewController];
     }
     else {
         self.loginView.hidden = NO;
-        self.listViewController.view.hidden = YES;
+        [self hideViewControllers];
     }
 }
 
 - (void)hideViewControllers
 {
     self.listViewController.view.hidden = YES;
+    self.gridViewController.view.hidden = YES;
 }
 
 - (void)showCurrentlySelectedViewController
 {
-    switch (self.currentlySelectedViewController) {
-        case MITLibrariesAccountsViewControllerList:
+    switch (self.layoutMode) {
+        case MITLibrariesLayoutModeList: {
             self.listViewController.view.hidden = NO;
+            self.gridViewController.view.hidden = YES;
             break;
-            
-        default:
+        }
+        case MITLibrariesLayoutModeGrid: {
+            self.listViewController.view.hidden = YES;
+            self.gridViewController.view.hidden = NO;
             break;
+        }
     }
 }
 
@@ -114,6 +130,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesAccountsViewController) {
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
         if (!error) {
             self.listViewController.user = user;
+            self.gridViewController.user = user;
             [self showCurrentlySelectedViewController];
         }
         [self.loadingIndicator stopAnimating];
