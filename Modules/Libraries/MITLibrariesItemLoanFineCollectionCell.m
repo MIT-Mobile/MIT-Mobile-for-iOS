@@ -15,7 +15,8 @@
 
 @implementation MITLibrariesItemLoanFineCollectionCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
     self.dueDateLabel.textColor =
     self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];

@@ -15,7 +15,8 @@
 
 @implementation MITLibrariesItemHoldCollectionCell
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
     [super awakeFromNib];
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
     self.holdDateLabel.textColor =

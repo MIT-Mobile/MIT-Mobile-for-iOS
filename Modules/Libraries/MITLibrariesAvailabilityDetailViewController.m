@@ -98,8 +98,6 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[flexibleSpace, [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl], flexibleSpace];
     }
-    
-    
 }
 
 - (void)segmentedControlChanged
