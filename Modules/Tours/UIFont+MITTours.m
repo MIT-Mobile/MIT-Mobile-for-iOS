@@ -12,4 +12,14 @@
     return [UIFont fontWithName:@"HelveticaNeue" size:14];
 }
 
++ (UIFont *)toursMapCalloutTitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:17];
+}
+
++ (UIFont *)toursMapCalloutSubtitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:14];
+}
+
 @end
