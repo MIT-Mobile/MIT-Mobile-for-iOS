@@ -241,7 +241,7 @@
 {
     if ([self numberOfStoriesForCategoryInSection:indexPath.section] - 1 == indexPath.row &&
         [self.dataSource canLoadMoreItemsForCategoryInSection:indexPath.section] &&
-         self.isACategoryView == YES) {
+         self.showSingleCategory == YES) {
         return MITNewsCellIdentifierStoryLoadMore;
     }
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
@@ -283,7 +283,7 @@
 
 - (CGFloat)collectionView:(UICollectionView*)collectionView layout:(MITCollectionViewGridLayout*)layout heightForHeaderInSection:(NSInteger)section withWidth:(CGFloat)width;
 {
-    if (self.isACategoryView) {
+    if (self.showSingleCategory) {
         return 0;
     }
     return 44;
@@ -353,7 +353,7 @@
         
         NSUInteger numberOfStories = [self.dataSource viewController:self numberOfStoriesForCategoryInSection:section];
         
-        if (!self.isACategoryView) {
+        if (!self.showSingleCategory) {
             return numberOfStories;
         } else {
             if ([self.dataSource canLoadMoreItemsForCategoryInSection:section]) {

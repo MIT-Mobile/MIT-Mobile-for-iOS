@@ -10,7 +10,7 @@
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
-@property (nonatomic) BOOL isViewACategory;
+@property (nonatomic) BOOL isSingleDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
 @property (strong) id dataSourceDidEndUpdatingToken;
 @property (nonatomic) BOOL storyUpdateInProgress;
@@ -35,7 +35,7 @@
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
-    self.isViewACategory = YES;
+    self.isSingleDataSource = YES;
     [super viewDidLoad];
     
     self.showsFeaturedStories = NO;
@@ -46,7 +46,7 @@
         self.listViewController.isACategoryView = YES;
     } else {
         self.presentationStyle = MITNewsPresentationStyleGrid;
-        self.gridViewController.isACategoryView = YES;
+        self.gridViewController.showSingleCategory = YES;
     }
     self.previousPresentationStyle = nil;
 }
@@ -136,43 +136,7 @@
         }
         return;
     }
-
-    [self setProgress:YES];
-    [self updateLoadingCell];
-    self.loadingMoreStories = YES;
-    
-    __weak MITNewsiPadCategoryViewController *weakSelf = self;
-    [super getMoreStoriesForSection:section completion:^(NSError *error) {
-        
-        [self setProgress:NO];
-        self.loadingMoreStories = NO;
-        
-        MITNewsiPadCategoryViewController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        
-        if (error) {
-            if (error.code == NSURLErrorNotConnectedToInternet) {
-                [self setError:@"No Internet Connection"];
-            } else {
-                [self setError:@"Failed..."];
-            }
-            [strongSelf updateLoadingCell];
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                [strongSelf updateLoadingCell];
-            });
-        } else {
-            //If addOperationWithBlock not here it will not reload immediately ..it will take a few seconds
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [strongSelf reloadData];
-            }];
-        }
-        if (block) {
-            block(error);
-        }
-    }];
+    [super getMoreStoriesForSection:section completion:nil];
 }
 
 - (void)intervalUpdate

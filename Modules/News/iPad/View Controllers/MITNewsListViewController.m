@@ -26,7 +26,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @interface MITNewsListViewController () <UITableViewDataSourceDynamicSizing>
 @property (nonatomic, strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
-@property (nonatomic, strong) NSMutableArray *storyHeightsArray;
+@property (nonatomic, strong) NSMutableDictionary *storyHeightsDictionary;
 
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
@@ -36,13 +36,13 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 
 #pragma mark Dynamic Properties
-- (NSMutableArray*)storyHeightsArray
+- (NSMutableDictionary*)storyHeightsDictionary
 {
-    if (!_storyHeightsArray) {
-        NSMutableArray *storyHeightsArray = [[NSMutableArray alloc] init];
-        _storyHeightsArray = storyHeightsArray;
+    if (!_storyHeightsDictionary) {
+        NSMutableDictionary *storyHeightsDictionary = [[NSMutableDictionary alloc] init];
+        _storyHeightsDictionary = storyHeightsDictionary;
     }
-    return _storyHeightsArray;
+    return _storyHeightsDictionary;
 }
 
 
@@ -227,16 +227,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         return MITNewsLoadMoreTableViewCellHeight;
     }
     CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
-    if ([self.storyHeightsArray count] > indexPath.section) {
-        
-        NSMutableDictionary *storyHeights = self.storyHeightsArray[indexPath.section];
-        CGFloat estimatedHeight = [storyHeights[indexPath] doubleValue];
-        if (estimatedHeight != cellHeight) {
-            [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
-        }
-    } else {
-        [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
-    }
+    [self setCachedHeight:cellHeight forRowAtIndexPath:indexPath];
     return cellHeight;
 }
 
@@ -255,28 +246,20 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 
 - (CGFloat)cachedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    if ([self.storyHeightsArray count] > keyIndexPath.section) {
-      
-        NSMutableDictionary *storyHeights = self.storyHeightsArray[keyIndexPath.section];
-        return [storyHeights[keyIndexPath] doubleValue];
+    MITNewsStory *story = [self storyAtIndexPath:indexPath];
+    if (story && self.storyHeightsDictionary[story.identifier]) {
+        return [self.storyHeightsDictionary[story.identifier] floatValue];
     }
     return UITableViewAutomaticDimension;
 }
 
 - (void)setCachedHeight:(CGFloat)height forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    NSIndexPath *keyIndexPath = [NSIndexPath indexPathWithIndexPath:indexPath];
-    NSMutableDictionary *storyHeights = nil;
-    if ([self.storyHeightsArray count] > keyIndexPath.section) {
-        storyHeights = self.storyHeightsArray[keyIndexPath.section];
-    } else {
-        storyHeights = [[NSMutableDictionary alloc] init];
-        [self.storyHeightsArray addObject:storyHeights];
+    MITNewsStory *story = [self storyAtIndexPath:indexPath];
+    if (story) {
+        self.storyHeightsDictionary[story.identifier] = @(height);
     }
-    storyHeights[keyIndexPath] = @(height);
 }
-
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -307,14 +290,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger numberOfSections = [self numberOfCategories];
-    NSInteger numberOfCachedSections = [self.storyHeightsArray count];
-    
-    if (numberOfCachedSections > numberOfSections) {
-        NSRange deletionRange = NSMakeRange(numberOfSections, numberOfCachedSections - numberOfSections);
-        [self.storyHeightsArray removeObjectsInRange:deletionRange];
-    }
-    
     return [self numberOfCategories];
 }
 
@@ -330,24 +305,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         }
         return numberOfRows;
     }
- 
-    if ([self.storyHeightsArray count] > section) {
-        NSMutableDictionary *storyHeights = self.storyHeightsArray[section];
-        
-        NSInteger numberOfStoryHeights = [storyHeights count];
-        NSInteger numberOfRows = MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
-        if (numberOfStoryHeights > numberOfRows) {
-            NSArray *sortedIndexPaths = [[storyHeights allKeys] sortedArrayUsingSelector:@selector(compare:)];
-            
-            NSRange deletionRange = NSMakeRange(numberOfRows, numberOfStoryHeights - numberOfRows);
-            [sortedIndexPaths enumerateObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:deletionRange]
-                                                options:0
-                                             usingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
-                                                 [storyHeights removeObjectForKey:indexPath];
-                                             }];
-        }
-    }
-    
     return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
 }
 

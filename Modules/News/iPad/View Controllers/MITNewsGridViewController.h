@@ -32,7 +32,7 @@
 - (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
 - (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
 
-@property (nonatomic) BOOL isACategoryView;
+@property (nonatomic) BOOL showSingleCategory;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (nonatomic) BOOL storyUpdateInProgress;
 
