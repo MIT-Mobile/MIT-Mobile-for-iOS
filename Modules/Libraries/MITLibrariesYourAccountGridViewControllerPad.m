@@ -20,9 +20,13 @@ static NSString * const kCollectionHeaderIdentifier = @"kCollectionHeaderIdentif
 
 static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding = 30.0;
 
-@interface MITLibrariesYourAccountGridViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface MITLibrariesYourAccountGridViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, TopAlignedStickyHeaderCollectionViewFlowLayoutDelegate>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
+@property (nonatomic, strong) UICollectionReusableView *loansHeader;
+@property (nonatomic, strong) UICollectionReusableView *finesHeader;
+@property (nonatomic, strong) UICollectionReusableView *holdsHeader;
+@property (nonatomic, assign) CGFloat previousCollectionViewContentOffsetY;
 
 @end
 
@@ -31,11 +35,14 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesItemLoanFineCollectionCell class]) bundle:nil] forCellWithReuseIdentifier:kLoanFineCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesItemHoldCollectionCell class]) bundle:nil] forCellWithReuseIdentifier:kHoldCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesYourAccountCollectionViewHeader class]) bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier];
     self.collectionView.backgroundColor = [UIColor clearColor];
-    self.collectionView.collectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
+    TopAlignedStickyHeaderCollectionViewFlowLayout *customCollectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
+    customCollectionViewLayout.delegate = self;
+    self.collectionView.collectionViewLayout = customCollectionViewLayout;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -149,6 +156,38 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
     return UIEdgeInsetsMake(10, kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding, 10, kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding);
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    
+    MITLibrariesMITItem *selectedItem = nil;
+    switch (indexPath.section) {
+        case MITAccountListSectionLoans: {
+            selectedItem = self.user.loans[indexPath.row];
+            break;
+        }
+        case MITAccountListSectionFines: {
+            selectedItem = self.user.fines[indexPath.row];
+            break;
+        }
+        case MITAccountListSectionHolds: {
+            selectedItem = self.user.holds[indexPath.row];
+            break;
+        }
+        default:
+            return;
+            break;
+    }
+    
+    MITLibrariesYourAccountItemDetailViewController *detailVC = [[MITLibrariesYourAccountItemDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.item = selectedItem;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentViewController:navController animated:YES completion:^{}];
+}
+
+#pragma mark - CollectionView Header Methods
+
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
@@ -159,19 +198,29 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
         switch (indexPath.section) {
             case MITAccountListSectionLoans: {
                 headerText = [self loansHeaderString];
+                self.loansHeader = header;
                 break;
             }
             case MITAccountListSectionFines: {
                 headerText = [self finesHeaderString];
+                self.finesHeader = header;
                 break;
             }
             case MITAccountListSectionHolds: {
                 headerText = [self holdsHeaderString];
+                self.holdsHeader = header;
                 break;
             }
         }
         
         [header setAttributedString:headerText];
+        
+        UICollectionViewLayoutAttributes *headerLayoutAttributes = [collectionView.collectionViewLayout layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:indexPath.section]];
+        if (headerLayoutAttributes.frame.origin.y <= self.collectionView.contentOffset.y) {
+            header.backgroundColor = [UIColor mit_cellSeparatorColor];
+        } else {
+            header.backgroundColor = [UIColor whiteColor];
+        }
         
         return header;
     } else {
@@ -203,34 +252,42 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
     return CGSizeMake(headerWidth, headerHeight);
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - TopAlignedStickyHeaderCollectionViewFlowLayoutDelegate Methods
+
+- (void)collectionView:(UICollectionView *)collectionView headerScrolledUpToTopInSection:(NSInteger)section
 {
-    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    
-    MITLibrariesMITItem *selectedItem = nil;
-    switch (indexPath.section) {
+    switch (section) {
         case MITAccountListSectionLoans: {
-            selectedItem = self.user.loans[indexPath.row];
+            self.loansHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
             break;
         }
         case MITAccountListSectionFines: {
-            selectedItem = self.user.fines[indexPath.row];
+            self.finesHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
             break;
         }
         case MITAccountListSectionHolds: {
-            selectedItem = self.user.holds[indexPath.row];
+            self.holdsHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
             break;
         }
-        default:
-            return;
-            break;
     }
-    
-    MITLibrariesYourAccountItemDetailViewController *detailVC = [[MITLibrariesYourAccountItemDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.item = selectedItem;
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
-    navController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentViewController:navController animated:YES completion:^{}];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView headerScrolledDownBelowTopInSection:(NSInteger)section
+{
+    switch (section) {
+        case MITAccountListSectionLoans: {
+            self.loansHeader.backgroundColor = [UIColor whiteColor];
+            break;
+        }
+        case MITAccountListSectionFines: {
+            self.finesHeader.backgroundColor = [UIColor whiteColor];
+            break;
+        }
+        case MITAccountListSectionHolds: {
+            self.holdsHeader.backgroundColor = [UIColor whiteColor];
+            break;
+        }
+    }
 }
 
 #pragma mark - Account Header Attributed Strings
