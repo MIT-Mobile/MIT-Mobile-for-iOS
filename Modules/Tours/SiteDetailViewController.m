@@ -456,7 +456,7 @@
     
     // prep strings
     if (!self.siteTemplate) {
-        NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"site_template" ofType:"html" inDirectory:@"tours"];
+        NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"site_template" ofType:@"html" inDirectory:@"tours"];
         NSAssert(templatePath,@"failed to load resource 'tours/site_template.html'");
         
         NSURL *fileURL = [NSURL fileURLWithPath:templatePath isDirectory:NO];
