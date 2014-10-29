@@ -267,6 +267,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     if ([cellDate isEqualToDateIgnoringTime:[NSDate date]]){
         cell.state |= MITDayOfTheWeekStateToday;
     }
+    
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:cellDate];
+    cell.dayOfTheMonth = components.day;
 }
 
 - (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath
@@ -279,7 +282,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGFloat height = 44;
+    CGFloat height = CGRectGetHeight(collectionView.bounds);
     CGFloat width = CGRectGetWidth(collectionView.bounds) / 7.0;
     return CGSizeMake(width, height);
 }
@@ -507,7 +510,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     
     if (calendarForTitle.categories.count > 0) {
         self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
-    } else {
+    } else if (calendarForTitle) {
         self.title = calendarForTitle.name;
     }
     
