@@ -15,6 +15,7 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (strong, nonatomic) WYPopoverController *calloutPopoverController;
+@property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 
@@ -27,6 +28,7 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.tour = tour;
+        self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -151,6 +153,29 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+    [self presentCalloutForMapView:mapView annotationView:view];
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    [self dismissCurrentCallout];
+}
+
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
+{
+    [self dismissCurrentCallout];
+    if (mapView.selectedAnnotations.count) {
+        for (id<MKAnnotation> annotation in mapView.selectedAnnotations) {
+            [mapView deselectAnnotation:annotation animated:YES];
+        }
+    }
+}
+
+
+#pragma mark - Custom Callout
+
+- (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
+{
     MITToursStopAnnotation *annotation = view.annotation;
     
     MITToursCalloutContentViewController *contentController = [[MITToursCalloutContentViewController alloc] initWithNibName:nil bundle:nil];
@@ -178,13 +203,19 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     // Allow the user to interact with the map annotations even when the popover is displayed
     calloutPopover.passthroughViews = @[self.tiledMapView.mapView];
     [calloutPopover presentPopoverFromRect:view.frame inView:self.tiledMapView.mapView permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
+    
+    [self dismissCurrentCallout];
     self.calloutPopoverController = calloutPopover;
 }
 
-- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+- (void)dismissCurrentCallout
 {
-    if (self.calloutPopoverController) {
-        [self.calloutPopoverController dismissPopoverAnimated:YES];
+    WYPopoverController *popover = self.calloutPopoverController;
+    if (popover) {
+        [self.dismissingPopoverControllers addObject:popover];
+        [popover dismissPopoverAnimated:YES completion:^{
+            [self.dismissingPopoverControllers removeObject:popover];
+        }];
         self.calloutPopoverController = nil;
     }
 }
