@@ -70,8 +70,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.title = @"Events";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonSearchMagnifier] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
+    self.title = @"All MIT Events";
+    [self setupRightBarButtonItems];
     
     self.currentlyDisplayedDate = [[NSDate date] startOfDay];
     [self updateDatesArray];
@@ -124,6 +124,37 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.view bringSubviewToFront:self.dayPickerContainerView];
 }
 
+- (void)setupRightBarButtonItems
+{
+    UIButton *dayPickerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [dayPickerButton setImage:[UIImage imageNamed:@"calendar/day_picker_button"] forState:UIControlStateNormal];
+    [dayPickerButton setTintColor:self.navigationController.navigationBar.tintColor];
+    [dayPickerButton addTarget:self action:@selector(dayPickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [searchButton setImage:[UIImage imageNamed:MITImageBarButtonSearchMagnifier] forState:UIControlStateNormal];
+    [searchButton setTintColor:self.navigationController.navigationBar.tintColor];
+    [searchButton addTarget:self action:@selector(searchButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    CGFloat buttonWidth = 30.0;
+    CGFloat buttonHeight = 30.0;
+    CGFloat buttonSpacing = 10.0;
+    CGFloat totalWidth = buttonWidth + buttonSpacing + buttonWidth;
+    
+    
+    UIView *buttonHousingView = [UIView new];
+    buttonHousingView.bounds = CGRectMake(0, 0, totalWidth, buttonHeight);
+    
+    dayPickerButton.frame = CGRectMake(0, 0, buttonWidth, buttonHeight);
+    searchButton.frame = CGRectMake(totalWidth - buttonWidth, 0, buttonWidth, buttonHeight);
+    [buttonHousingView addSubview:dayPickerButton];
+    [buttonHousingView addSubview:searchButton];
+    
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer.width = -10; // Shift 10 pts to the right
+    self.navigationItem.rightBarButtonItems = @[spacer, [[UIBarButtonItem alloc] initWithCustomView:buttonHousingView]];
+}
+
 - (void)setupEventsContainer
 {
     self.eventsController = [[MITCalendarPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
@@ -156,11 +187,18 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.datePickerButton addTarget:self action:@selector(datePickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
+#pragma mark - Button Presses
+
 - (void)searchButtonPressed
 {
     MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithCategory:self.currentlySelectedCategory];
     UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
     [self presentViewController:searchNavController animated:NO completion:nil];
+}
+
+- (void)dayPickerButtonPressed
+{
+    [self presentDatePicker];
 }
 
 #pragma mark - Day of the week Collection View Datasource/Delegate
