@@ -439,14 +439,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
                        animated:(BOOL)animated
 {
     MITCalendarsCalendar *calendarForTitle;
+    if (calendar) {
+        self.eventsController.calendar =
+        self.currentlySelectedCalendar =
+        calendarForTitle = calendar;
+    }
     if (category) {
         self.eventsController.category =
         self.currentlySelectedCategory =
         calendarForTitle = category;
-    } else if (calendar) {
-        self.eventsController.calendar =
-        self.currentlySelectedCalendar =
-        calendarForTitle = calendar;
     }
     
     if (calendarForTitle.categories.count > 0) {
