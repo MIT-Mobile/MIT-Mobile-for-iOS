@@ -4,12 +4,15 @@
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
+#import "WYPopoverController.h"
+#import "MITToursCalloutContentViewController.h"
 
 static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAnnotationView";
 
 @interface MITToursMapViewController () <MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
+@property (strong, nonatomic) WYPopoverController *calloutPopoverController;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 
@@ -30,6 +33,7 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
 {
     [super viewDidLoad];
     [self setupTiledMapView];
+    [self configurePopoverAppearance];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -109,6 +113,7 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITToursStopAnnotationViewIdentifier];
     if (!annotationView) {
         annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITToursStopAnnotationViewIdentifier];
+        annotationView.canShowCallout = NO;
     }
     
     MITToursStop *stop = ((MITToursStopAnnotation *)annotation).stop;
@@ -140,6 +145,42 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     } else {
         return nil;
     }
+}
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    MITToursStopAnnotation *annotation = view.annotation;
+    
+    MITToursCalloutContentViewController *contentController = [[MITToursCalloutContentViewController alloc] initWithNibName:nil bundle:nil];
+    contentController.stopType = annotation.stop.stopType;
+    contentController.stopName = annotation.stop.title;
+    contentController.distanceInMiles = 1; // TODO
+    
+    WYPopoverController *calloutPopover = [[WYPopoverController alloc] initWithContentViewController:contentController];
+    // Allow the user to interact with the map annotations even when the popover is displayed
+    calloutPopover.passthroughViews = @[self.tiledMapView.mapView];
+    [calloutPopover presentPopoverFromRect:view.frame inView:self.tiledMapView.mapView permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
+    self.calloutPopoverController = calloutPopover;
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    if (self.calloutPopoverController) {
+        [self.calloutPopoverController dismissPopoverAnimated:YES];
+        self.calloutPopoverController = nil;
+    }
+}
+
+#pragma mark - WYPopover Appearance
+
+- (void)configurePopoverAppearance
+{
+    [WYPopoverController setDefaultTheme:[WYPopoverTheme theme]];
+    WYPopoverBackgroundView *appearance = [WYPopoverBackgroundView appearance];
+    [appearance setOuterStrokeColor:[UIColor grayColor]];
+    [appearance setViewContentInsets:UIEdgeInsetsMake(2, 2, 2, 2)];
+    [appearance setFillTopColor:[UIColor whiteColor]];
+    [appearance setFillBottomColor:[UIColor whiteColor]];
 }
 
 @end
