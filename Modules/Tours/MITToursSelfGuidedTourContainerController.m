@@ -68,8 +68,6 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.navigationController setToolbarHidden:NO];
 }
 
-
-
 - (void)showSelectedViewController
 {
     switch (self.mapListSegmentedControl.selectedSegmentIndex) {
