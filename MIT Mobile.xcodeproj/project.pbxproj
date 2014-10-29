@@ -247,6 +247,17 @@
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */; };
 		2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */; };
+		2CEC6A5F1A01461800867A66 /* dining-meal-farm_to_fork.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */; };
+		2CEC6A601A01461800867A66 /* dining-meal-gluten_free.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */; };
+		2CEC6A611A01461800867A66 /* dining-meal-halal.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */; };
+		2CEC6A621A01461800867A66 /* dining-meal-humane.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */; };
+		2CEC6A631A01461800867A66 /* dining-meal-in_balance.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */; };
+		2CEC6A641A01461800867A66 /* dining-meal-kosher.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */; };
+		2CEC6A651A01461800867A66 /* dining-meal-organic.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */; };
+		2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */; };
+		2CEC6A671A01461800867A66 /* dining-meal-vegan.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */; };
+		2CEC6A681A01461800867A66 /* dining-meal-vegetarian.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */; };
+		2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */; };
 		2CED900018BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */; };
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
@@ -1064,6 +1075,17 @@
 		2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileManagedResource.h; sourceTree = "<group>"; };
 		2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileManagedResource.m; sourceTree = "<group>"; };
 		2CEBBFA31635C7D900441252 /* Secret.m.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.m.in; sourceTree = "<group>"; };
+		2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-farm_to_fork.pdf"; sourceTree = "<group>"; };
+		2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-gluten_free.pdf"; sourceTree = "<group>"; };
+		2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-halal.pdf"; sourceTree = "<group>"; };
+		2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-humane.pdf"; sourceTree = "<group>"; };
+		2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-in_balance.pdf"; sourceTree = "<group>"; };
+		2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-kosher.pdf"; sourceTree = "<group>"; };
+		2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-organic.pdf"; sourceTree = "<group>"; };
+		2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-seafood_watch.pdf"; sourceTree = "<group>"; };
+		2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegan.pdf"; sourceTree = "<group>"; };
+		2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegetarian.pdf"; sourceTree = "<group>"; };
+		2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-well_being.pdf"; sourceTree = "<group>"; };
 		2CED8FFE18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsLoadMoreTableViewCell.h; path = Views/MITNewsLoadMoreTableViewCell.h; sourceTree = "<group>"; };
 		2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsLoadMoreTableViewCell.m; path = Views/MITNewsLoadMoreTableViewCell.m; sourceTree = "<group>"; };
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
@@ -2070,6 +2092,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2CEC6A531A01461800867A66 /* dining */,
 				EB07B06912B8971D005D6A4C /* calendar */,
 				DEE6AF1F1117477E0037F03C /* credits.html */,
 				DE5E99D21124B57C00498760 /* emergency_template.html */,
@@ -2751,6 +2774,25 @@
 				2CEBBFA31635C7D900441252 /* Secret.m.in */,
 			);
 			path = Configuration;
+			sourceTree = "<group>";
+		};
+		2CEC6A531A01461800867A66 /* dining */ = {
+			isa = PBXGroup;
+			children = (
+				2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */,
+				2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */,
+				2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */,
+				2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */,
+				2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */,
+				2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */,
+				2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */,
+				2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */,
+				2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */,
+				2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */,
+				2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */,
+			);
+			name = dining;
+			path = Resources/dining;
 			sourceTree = "<group>";
 		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
@@ -3867,9 +3909,11 @@
 			files = (
 				A59E409119CB676900CF9213 /* MITShuttleRouteContainerViewController.xib in Resources */,
 				A59E409219CB676900CF9213 /* MITShuttleRouteStatusCell.xib in Resources */,
+				2CEC6A651A01461800867A66 /* dining-meal-organic.pdf in Resources */,
 				A59E409319CB676900CF9213 /* MITShuttleStopAlarmCell.xib in Resources */,
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
+				2CEC6A5F1A01461800867A66 /* dining-meal-farm_to_fork.pdf in Resources */,
 				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
 				A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
@@ -3905,6 +3949,7 @@
 				8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */,
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
 				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
+				2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */,
 				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
@@ -3914,6 +3959,8 @@
 				225F2191197D5AD500F34DE9 /* MITEventsHomeViewController.xib in Resources */,
 				225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */,
+				2CEC6A621A01461800867A66 /* dining-meal-humane.pdf in Resources */,
+				2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				274886991930286C00414552 /* People_iPad.storyboard in Resources */,
 				2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */,
@@ -3921,6 +3968,7 @@
 				225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
+				2CEC6A681A01461800867A66 /* dining-meal-vegetarian.pdf in Resources */,
 				5E8CE40A1922B12E00703920 /* MITShuttleHomeViewController.xib in Resources */,
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
 				A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */,
@@ -3935,6 +3983,7 @@
 				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				22C012BC19B7BA6000879EF6 /* MITDiningScheduleCell.xib in Resources */,
+				2CEC6A611A01461800867A66 /* dining-meal-halal.pdf in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
@@ -3951,6 +4000,10 @@
 				A5A24B7119946EC400AA1CFC /* MITEventSearchResultsViewController.xib in Resources */,
 				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */,
+				2CEC6A631A01461800867A66 /* dining-meal-in_balance.pdf in Resources */,
+				2CEC6A671A01461800867A66 /* dining-meal-vegan.pdf in Resources */,
+				2CEC6A641A01461800867A66 /* dining-meal-kosher.pdf in Resources */,
+				2CEC6A601A01461800867A66 /* dining-meal-gluten_free.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
