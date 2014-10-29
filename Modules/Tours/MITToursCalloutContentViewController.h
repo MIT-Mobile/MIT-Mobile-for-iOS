@@ -6,5 +6,6 @@
 @property (nonatomic, strong) NSString *stopType;
 @property (nonatomic, strong) NSString *stopName;
 @property (nonatomic) CGFloat distanceInMiles;
+@property (nonatomic) BOOL shouldDisplayDistance;
 
 @end
