@@ -36,6 +36,18 @@ extern NSString * const MITImageDiningMealVegan;
 extern NSString * const MITImageDiningMealVegetarian;
 extern NSString * const MITImageDiningMealWellBeing;
 
+extern NSString * const MITResourceDiningMealFarmToFork;
+extern NSString * const MITResourceDiningMealGlutenFree;
+extern NSString * const MITResourceDiningMealHalal;
+extern NSString * const MITResourceDiningMealHumane;
+extern NSString * const MITResourceDiningMealInBalance;
+extern NSString * const MITResourceDiningMealKosher;
+extern NSString * const MITResourceDiningMealOrganic;
+extern NSString * const MITResourceDiningMealSeafoodWatch;
+extern NSString * const MITResourceDiningMealVegan;
+extern NSString * const MITResourceDiningMealVegetarian;
+extern NSString * const MITResourceDiningMealWellBeing;
+
 #pragma mark - Events (Calendar)
 extern NSString * const MITImageEventsDayPickerButton;
 extern NSString * const MITImageEventsPadChevronUp;

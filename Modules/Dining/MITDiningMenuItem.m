@@ -27,17 +27,17 @@
     static NSDictionary *flagPdfs = nil;
     if (!flagPdfs) {
         flagPdfs = @{
-                     @"farm to fork": MITImageDiningMealFarmToFork,
-                     @"organic": MITImageDiningMealOrganic,
-                     @"seafood watch": MITImageDiningMealSeafoodWatch,
-                     @"vegan": MITImageDiningMealVegan,
-                     @"vegetarian": MITImageDiningMealVegetarian,
-                     @"for your well-being": MITImageDiningMealWellBeing,
-                     @"made without gluten": MITImageDiningMealGlutenFree,
-                     @"halal": MITImageDiningMealHalal,
-                     @"kosher": MITImageDiningMealKosher,
-                     @"humane": MITImageDiningMealHumane,
-                     @"in balance": MITImageDiningMealInBalance
+                     @"farm to fork": MITResourceDiningMealFarmToFork,
+                     @"organic": MITResourceDiningMealOrganic,
+                     @"seafood watch": MITResourceDiningMealSeafoodWatch,
+                     @"vegan": MITResourceDiningMealVegan,
+                     @"vegetarian": MITResourceDiningMealVegetarian,
+                     @"for your well-being": MITResourceDiningMealWellBeing,
+                     @"made without gluten": MITResourceDiningMealGlutenFree,
+                     @"halal": MITResourceDiningMealHalal,
+                     @"kosher": MITResourceDiningMealKosher,
+                     @"humane": MITResourceDiningMealHumane,
+                     @"in balance": MITResourceDiningMealInBalance
                      };
     }
     

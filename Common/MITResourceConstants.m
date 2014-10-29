@@ -36,6 +36,20 @@ NSString * const MITImageDiningMealVegan = @"dining-meal-vegan";
 NSString * const MITImageDiningMealVegetarian = @"dining-meal-vegetarian";
 NSString * const MITImageDiningMealWellBeing = @"dining-meal-well_being";
 
+// In use by UIImage+PDF. Will be removed and replaced by vector image assets
+// the correct image sizes are generated (the app uses a mix of 20x20 and 24x24).
+NSString * const MITResourceDiningMealFarmToFork = @"dining-meal-farm_to_fork.pdf";
+NSString * const MITResourceDiningMealGlutenFree = @"dining-meal-gluten_free.pdf";
+NSString * const MITResourceDiningMealHalal = @"dining-meal-halal.pdf";
+NSString * const MITResourceDiningMealHumane = @"dining-meal-humane.pdf";
+NSString * const MITResourceDiningMealInBalance = @"dining-meal-in_balance.pdf";
+NSString * const MITResourceDiningMealKosher = @"dining-meal-kosher.pdf";
+NSString * const MITResourceDiningMealOrganic = @"dining-meal-organic.pdf";
+NSString * const MITResourceDiningMealSeafoodWatch = @"dining-meal-seafood_watch.pdf";
+NSString * const MITResourceDiningMealVegan = @"dining-meal-vegan.pdf";
+NSString * const MITResourceDiningMealVegetarian = @"dining-meal-vegetarian.pdf";
+NSString * const MITResourceDiningMealWellBeing = @"dining-meal-well_being.pdf";
+
 #pragma mark - Events (Calendar)
 NSString * const MITImageEventsDayPickerButton = @"events-day_picker_button";
 NSString * const MITImageEventsPadChevronUp = @"events-pad-chevron_up";
