@@ -470,16 +470,21 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
                            date:(NSDate *)date
                        animated:(BOOL)animated
 {
-    if (calendar) {
-        self.eventsController.calendar =
-        self.currentlySelectedCalendar = calendar;
-        self.title = calendar.name;
-    }
-    
+    MITCalendarsCalendar *calendarForTitle;
     if (category) {
         self.eventsController.category =
-        self.currentlySelectedCategory = category;
-        self.title = category.name;
+        self.currentlySelectedCategory =
+        calendarForTitle = category;
+    } else if (calendar) {
+        self.eventsController.calendar =
+        self.currentlySelectedCalendar =
+        calendarForTitle = calendar;
+    }
+    
+    if (calendarForTitle.categories.count > 0) {
+        self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
+    } else {
+        self.title = calendarForTitle.name;
     }
     
     if ([date isEqualToDate:self.currentlyDisplayedDate]) {
