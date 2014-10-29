@@ -25,14 +25,17 @@
     self.stopTypeLabel.text = [self.stopType uppercaseString];
     self.stopTypeLabel.font = [UIFont toursMapCalloutSubtitle];
     self.stopTypeLabel.textColor = [UIColor mit_greyTextColor];
+    self.stopTypeLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
     self.stopNameLabel.text = self.stopName;
     self.stopNameLabel.font = [UIFont toursMapCalloutTitle];
+    self.stopNameLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
     CGFloat smoots = self.distanceInMiles * SMOOTS_PER_MILE;
     self.distanceLabel.text = [NSString stringWithFormat:@"%.01f miles (%.f smoots)", self.distanceInMiles, smoots];
     self.distanceLabel.font = [UIFont toursMapCalloutSubtitle];
     self.distanceLabel.textColor = [UIColor mit_greyTextColor];
+    self.distanceLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
     [self.detailButton setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"] forState:UIControlStateNormal];
 }
@@ -45,6 +48,11 @@
 - (CGSize)preferredContentSize
 {
     return [self.view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+}
+
+- (CGFloat)maxLabelWidth
+{
+    return 200;
 }
 
 @end
