@@ -1,11 +1,3 @@
-//
-//  MITToursSelfGuidedTourListViewController.m
-//  MIT Mobile
-//
-//  Created by Samuel Voigt on 10/28/14.
-//
-//
-
 #import "MITToursSelfGuidedTourListViewController.h"
 
 @interface MITToursSelfGuidedTourListViewController ()
