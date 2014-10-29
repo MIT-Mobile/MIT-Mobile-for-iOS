@@ -29,7 +29,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (weak, nonatomic) IBOutlet MITExtendedNavBarView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
-@property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
@@ -80,7 +79,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
     [self setupEventsContainer];
-    [self setupDatePickerButton];
    
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
@@ -177,14 +175,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.pageWidth = self.dayPickerCollectionView.frame.size.width;
     
     self.dayPickerCollectionView.scrollsToTop = NO;
-}
-
-- (void)setupDatePickerButton
-{
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(datePickerButtonPanned:)];
-    [self.datePickerButton addGestureRecognizer:panGestureRecognizer];
-    
-    [self.datePickerButton addTarget:self action:@selector(datePickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - Button Presses
@@ -300,56 +290,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
     return 0.0;
-}
-
-#pragma mark - Date Picker Button
-
-- (void)datePickerButtonPressed
-{
-    [self presentDatePicker];
-}
-
-- (void)datePickerButtonPanned:(UIPanGestureRecognizer *)pan
-{
-    static CGFloat dayPickerCollectionViewStartXOffset;
-    
-    if (pan.state == UIGestureRecognizerStateBegan) {
-        dayPickerCollectionViewStartXOffset = self.dayPickerCollectionView.contentOffset.x;
-    }
-    if (pan.state == UIGestureRecognizerStateEnded) {
-        CGPoint velocity = [pan velocityInView:self.view];
-        
-        if (ABS(velocity.x) > 250) {
-            if (velocity.x > 0) {
-                // Scroll left one week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            } else {
-                // Scroll right one week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            }
-        } else {
-            CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
-            
-            if (ABS(xTranslation) > 190) {
-                if (xTranslation > 0) {
-                    // Scroll left one week
-                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-                } else {
-                    // Scroll right one week
-                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-                }
-            } else {
-                // Return daypicker collectionview to current week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            }
-        }
-    } else {
-        CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
-        
-        CGPoint dayPickerOffset = self.dayPickerCollectionView.contentOffset;
-        dayPickerOffset.x = dayPickerCollectionViewStartXOffset - xTranslation;
-        self.dayPickerCollectionView.contentOffset = dayPickerOffset;
-    }
 }
 
 #pragma mark - Toolbar Buttons
