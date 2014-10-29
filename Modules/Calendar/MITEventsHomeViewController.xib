@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITEventsHomeViewController">
             <connections>
-                <outlet property="datePickerButton" destination="7cg-I2-Fa8" id="2h5-Gv-Oym"/>
                 <outlet property="dayPickerCollectionView" destination="jXL-Oq-1hD" id="x6c-dO-bT4"/>
                 <outlet property="dayPickerContainerView" destination="Tgr-Jh-tU3" id="Q0e-7U-M4E"/>
                 <outlet property="eventsTableContainerView" destination="Pgi-DN-w8P" id="gqE-TX-e3z"/>
@@ -25,10 +24,9 @@
                     <rect key="frame" x="0.0" y="-11" width="320" height="64"/>
                     <subviews>
                         <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="jXL-Oq-1hD">
-                            <rect key="frame" x="0.0" y="0.0" width="280" height="44"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="44" id="8wm-SD-69f"/>
-                                <constraint firstAttribute="width" constant="280" id="iG9-LR-CYy"/>
                             </constraints>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="xWB-UK-eyu">
                                 <size key="itemSize" width="40" height="44"/>
@@ -48,25 +46,13 @@
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7cg-I2-Fa8">
-                            <rect key="frame" x="280" y="0.0" width="40" height="44"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="40" id="bXL-zA-Wqm"/>
-                                <constraint firstAttribute="height" constant="44" id="p6q-ph-AzL"/>
-                            </constraints>
-                            <state key="normal" image="events-day_picker_button">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="centerX" secondItem="Ocu-70-5sQ" secondAttribute="centerX" constant="0.5" id="27z-i8-Aft"/>
-                        <constraint firstItem="7cg-I2-Fa8" firstAttribute="leading" secondItem="jXL-Oq-1hD" secondAttribute="trailing" id="7mg-OK-62O"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="Lvx-uZ-XMF"/>
                         <constraint firstAttribute="height" constant="64" id="UBW-f3-u73"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="leading" secondItem="Tgr-Jh-tU3" secondAttribute="leading" id="gsu-LY-Vmc"/>
-                        <constraint firstItem="7cg-I2-Fa8" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="ooZ-BF-eXz"/>
                         <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="6" id="uPg-oe-Bw9"/>
                     </constraints>
                 </view>
@@ -104,15 +90,13 @@
                 <constraint firstAttribute="bottom" secondItem="O7E-nT-nqr" secondAttribute="bottom" id="Vul-sb-sg2"/>
                 <constraint firstItem="O7E-nT-nqr" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="XTj-cu-HON"/>
                 <constraint firstItem="Tgr-Jh-tU3" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-11" id="iGI-pm-WSf"/>
+                <constraint firstItem="Pgi-DN-w8P" firstAttribute="width" secondItem="jXL-Oq-1hD" secondAttribute="width" id="lrY-2g-5bn"/>
                 <constraint firstItem="Tgr-Jh-tU3" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="tsh-TB-M2K"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
         </view>
     </objects>
-    <resources>
-        <image name="events-day_picker_button" width="11" height="11"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
