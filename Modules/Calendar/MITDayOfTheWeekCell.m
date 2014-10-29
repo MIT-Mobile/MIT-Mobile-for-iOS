@@ -62,22 +62,22 @@
 {
     _state = state;
 
-    if (state == (MITDayOfTheWeekStateSelected | MITDayOfTheWeekStateToday)) {
+    if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Selected && Is Today
         self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
         self.dayOfTheMonthLabel.backgroundColor = [UIColor mit_tintColor];
         self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
-    } else if (state == MITDayOfTheWeekStateSelected) {
-        // Is Selected && Not Today
-        self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
-        self.dayOfTheMonthLabel.backgroundColor = [UIColor darkTextColor];
-        self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
-    } else if (state == (MITDayOfTheWeekStateToday | MITDayOfTheWeekStateUnselected)) {
+    } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Today && Not Selected
         self.dayOfTheMonthLabel.textColor = [UIColor mit_tintColor];
         self.dayOfTheMonthLabel.backgroundColor = [UIColor clearColor];
         self.dayOfTheMonthLabel.font = [UIFont systemFontOfSize:17.0];
-    } else if (state == MITDayOfTheWeekStateUnselected) {
+    } else if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected) {
+        // Is Selected && Not Today
+        self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
+        self.dayOfTheMonthLabel.backgroundColor = [UIColor darkTextColor];
+        self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
+    } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected) {
         // Is UnSelected && Not Today
         if (self.dayOfTheWeek == MITDayOfTheWeekSaturday || self.dayOfTheWeek == MITDayOfTheWeekSunday) {
             self.dayOfTheMonthLabel.textColor = [self lighterGrayColor];
