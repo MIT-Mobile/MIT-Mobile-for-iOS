@@ -84,6 +84,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
             self.currentlySelectedCalendar = masterCalendar.eventsCalendar;
+            self.dayPickerShouldUpdateAfterCallback = YES;
             [self updateDisplayedCalendar:self.currentlySelectedCalendar category:nil date:self.currentlyDisplayedDate animated:NO];
         }
     }];
