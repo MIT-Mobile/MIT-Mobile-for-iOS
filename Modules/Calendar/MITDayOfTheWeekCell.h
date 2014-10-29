@@ -21,5 +21,6 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
 
 @property (nonatomic) MITDayOfTheWeek dayOfTheWeek;
 @property (nonatomic) MITDayOfTheWeekState state;
+@property (nonatomic) NSInteger dayOfTheMonth;
 
 @end

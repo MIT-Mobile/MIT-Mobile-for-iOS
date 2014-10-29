@@ -21,12 +21,12 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tgr-Jh-tU3" customClass="MITExtendedNavBarView">
-                    <rect key="frame" x="0.0" y="-11" width="320" height="64"/>
+                    <rect key="frame" x="0.0" y="-11" width="320" height="84"/>
                     <subviews>
                         <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="jXL-Oq-1hD">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="44" id="8wm-SD-69f"/>
+                                <constraint firstAttribute="height" constant="64" id="8wm-SD-69f"/>
                             </constraints>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="xWB-UK-eyu">
                                 <size key="itemSize" width="40" height="44"/>
@@ -40,8 +40,8 @@
                                 <outlet property="delegate" destination="-1" id="M9p-Aw-rfk"/>
                             </connections>
                         </collectionView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
-                            <rect key="frame" x="114" y="40" width="90" height="18"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
+                            <rect key="frame" x="116" y="60" width="90" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -51,13 +51,13 @@
                     <constraints>
                         <constraint firstAttribute="centerX" secondItem="Ocu-70-5sQ" secondAttribute="centerX" constant="0.5" id="27z-i8-Aft"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="Lvx-uZ-XMF"/>
-                        <constraint firstAttribute="height" constant="64" id="UBW-f3-u73"/>
+                        <constraint firstAttribute="height" constant="84" id="UBW-f3-u73"/>
                         <constraint firstItem="jXL-Oq-1hD" firstAttribute="leading" secondItem="Tgr-Jh-tU3" secondAttribute="leading" id="gsu-LY-Vmc"/>
                         <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="6" id="uPg-oe-Bw9"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pgi-DN-w8P">
-                    <rect key="frame" x="0.0" y="52" width="320" height="408"/>
+                    <rect key="frame" x="0.0" y="72" width="320" height="388"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O7E-nT-nqr">
