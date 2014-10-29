@@ -166,8 +166,8 @@ static CGFloat const kBottomButtonYPadding = 20;
 - (void)setupLeftButton
 {
     self.leftButton = [[UIButton alloc] initWithFrame:CGRectMake(kBottomButtonXPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonYPadding, kBottomButtonSize, kBottomButtonSize)];
-    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location"] forState:UIControlStateNormal];
-    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location_selected"] forState:UIControlStateSelected];
+    [self.leftButton setImage:[UIImage imageNamed:MITImageMapLocation] forState:UIControlStateNormal];
+    [self.leftButton setImage:[UIImage imageNamed:MITImageMapLocationHighlighted] forState:UIControlStateSelected];
 
     [self.leftButton addTarget:self action:@selector(leftButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.leftButton.layer.borderWidth = 1;
@@ -185,7 +185,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 - (void)setupRightButton
 {
     self.rightButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - kBottomButtonSize - kBottomButtonXPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonYPadding, kBottomButtonSize, kBottomButtonSize)];
-    [self.rightButton setImage:[UIImage imageNamed:@"map/map_list"] forState:UIControlStateNormal];
+    [self.rightButton setImage:[UIImage imageNamed:MITImageBarButtonList] forState:UIControlStateNormal];
     [self.rightButton addTarget:self action:@selector(rightButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.rightButton.layer.borderWidth = 1;
     self.rightButton.layer.borderColor = [UIColor lightGrayColor].CGColor;

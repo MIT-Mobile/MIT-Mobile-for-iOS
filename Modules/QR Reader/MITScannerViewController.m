@@ -416,7 +416,7 @@
         
         cell.imageView.frame = imageFrame;
         cell.imageView.contentMode = UIViewContentModeScaleToFill;
-        cell.imageView.image = [UIImage imageNamed:@"news/news-placeholder.png"];
+        cell.imageView.image = [UIImage imageNamed:MITImageNewsImagePlaceholder];
         cell.imageView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
         
