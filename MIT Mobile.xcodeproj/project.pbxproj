@@ -236,7 +236,6 @@
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
 		2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */; };
-		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */; };
 		2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */; };
@@ -1046,7 +1045,6 @@
 		2CDB025015D0404500436B59 /* MITScannerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerImage.m; sourceTree = "<group>"; };
 		2CDE4EFB17A3057F00F40598 /* NSTimer+MITBlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSTimer+MITBlockTimer.h"; path = "Categories/NSTimer+MITBlockTimer.h"; sourceTree = "<group>"; };
 		2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSTimer+MITBlockTimer.m"; path = "Categories/NSTimer+MITBlockTimer.m"; sourceTree = "<group>"; };
-		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
 		2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryData.h; sourceTree = "<group>"; };
 		2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryData.m; sourceTree = "<group>"; };
 		2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsLoadMoreTableCell.xib; path = Views/NewsLoadMoreTableCell.xib; sourceTree = "<group>"; };
@@ -2080,7 +2078,6 @@
 				4BE4D3001416EB4D00E723F0 /* libraries */,
 				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
 				EB5C621F1201D93A00805EBE /* news */,
-				2CDF301E134DF504007C6813 /* qrreader */,
 				EB4C34F81281FCBD00058748 /* tours */,
 			);
 			name = Resources;
@@ -3879,7 +3876,6 @@
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */,
 				EB5C625A1201D93A00805EBE /* news in Resources */,
-				2CDF301F134DF504007C6813 /* qrreader in Resources */,
 				80F021A0199159EE0056CA06 /* MITDateNavigationBarView.xib in Resources */,
 				A52E0CF119B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
@@ -4492,7 +4488,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "0975E861-99D0-4C64-AC49-D8144D6864B3";
+				PROVISIONING_PROFILE = "0dcd0c4e-42c2-4e96-b1d8-836c31232fce";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
