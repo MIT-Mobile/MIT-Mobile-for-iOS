@@ -31,8 +31,12 @@
     self.stopNameLabel.font = [UIFont toursMapCalloutTitle];
     self.stopNameLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
-    CGFloat smoots = self.distanceInMiles * SMOOTS_PER_MILE;
-    self.distanceLabel.text = [NSString stringWithFormat:@"%.01f miles (%.f smoots)", self.distanceInMiles, smoots];
+    if (self.shouldDisplayDistance) {
+        CGFloat smoots = self.distanceInMiles * SMOOTS_PER_MILE;
+        self.distanceLabel.text = [NSString stringWithFormat:@"%.01f miles (%.f smoots)", self.distanceInMiles, smoots];
+    } else {
+        self.distanceLabel.text = @"";
+    }
     self.distanceLabel.font = [UIFont toursMapCalloutSubtitle];
     self.distanceLabel.textColor = [UIColor mit_greyTextColor];
     self.distanceLabel.preferredMaxLayoutWidth = [self maxLabelWidth];

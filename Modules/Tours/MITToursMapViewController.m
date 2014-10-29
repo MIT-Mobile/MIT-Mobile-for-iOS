@@ -7,6 +7,8 @@
 #import "WYPopoverController.h"
 #import "MITToursCalloutContentViewController.h"
 
+#define MILES_PER_METER 0.000621371
+
 static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAnnotationView";
 
 @interface MITToursMapViewController () <MKMapViewDelegate>
@@ -154,7 +156,23 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     MITToursCalloutContentViewController *contentController = [[MITToursCalloutContentViewController alloc] initWithNibName:nil bundle:nil];
     contentController.stopType = annotation.stop.stopType;
     contentController.stopName = annotation.stop.title;
-    contentController.distanceInMiles = 1; // TODO
+    
+    // Get distance for current user location
+    CLLocation *userLocation = mapView.userLocation.location;
+    if (userLocation) {
+        // TODO: DRY this out
+        NSArray *stopCoords = annotation.stop.coordinates;
+        // Convert to location coordinate
+        NSNumber *longitude = [stopCoords objectAtIndex:0];
+        NSNumber *latitude = [stopCoords objectAtIndex:1];
+        CLLocation *stopLocation = [[CLLocation alloc] initWithLatitude:[latitude doubleValue]
+                                                              longitude:[longitude doubleValue]];
+        double distanceInMeters = [stopLocation distanceFromLocation:userLocation];
+        contentController.distanceInMiles = distanceInMeters * MILES_PER_METER;
+        contentController.shouldDisplayDistance = YES;
+    } else {
+        contentController.shouldDisplayDistance = NO;
+    }
     
     WYPopoverController *calloutPopover = [[WYPopoverController alloc] initWithContentViewController:contentController];
     // Allow the user to interact with the map annotations even when the popover is displayed
