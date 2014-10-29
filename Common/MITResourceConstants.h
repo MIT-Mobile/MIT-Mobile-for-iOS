@@ -151,7 +151,6 @@ extern NSString * const MITImageToursTemplateButtonExternalLink;
 
 
 #pragma mark - Global Assets
-extern NSString * const MITImageNameBackground;
 extern NSString * const MITImageNameEmail;
 extern NSString * const MITImageNameEmailHighlight;
 extern NSString * const MITImageNameMap;
@@ -187,6 +186,7 @@ extern NSString * const MITImageLogoLightContent;
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
+extern NSString * const MITImageBarButtonList;
 
 // TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;

@@ -151,7 +151,6 @@ NSString * const MITImageToursTemplateButtonExternalLink = @"tours-template-extl
 
 
 #pragma mark - Global Assets
-NSString * const MITImageNameBackground = @"global-body-background";
 NSString * const MITImageNameEmail = @"global-action-email";
 NSString * const MITImageNameEmailHighlight = @"global-action-email-highlight";
 NSString * const MITImageNameMap = @"global-action-map";
@@ -187,6 +186,7 @@ NSString * const MITImageLogoLightContent = @"global-mit-logo-dark";
 #pragma mark UIBarButtonItem icons
 NSString * const MITImageBarButtonMenu = @"global-menu";
 NSString * const MITImageBarButtonLocation = @"global-location";
+NSString * const MITImageBarButtonList = @"global-barbutton-list";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";
