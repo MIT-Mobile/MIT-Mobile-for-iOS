@@ -99,9 +99,9 @@ extern NSString * const MITImageScannerScanBarButton;
 
 
 #pragma mark - Shuttles
-extern NSString * const MITImageShuttlesShuttleRouteActive;
-extern NSString * const MITImageShuttlesShuttleRouteInactive;
-extern NSString * const MITImageShuttlesShuttleRouteLocationUnavailable;
+extern NSString * const MITImageShuttlesRouteInService;
+extern NSString * const MITImageShuttlesRouteNotInService;
+extern NSString * const MITImageShuttlesRoutePredictionsUnavailable;
 extern NSString * const MITImageShuttlesBusBubble;
 extern NSString * const MITImageShuttlesAlertOn;
 extern NSString * const MITImageShuttlesAlertOff;
