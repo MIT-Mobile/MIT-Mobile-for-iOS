@@ -140,7 +140,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     CGFloat buttonSpacing = 10.0;
     CGFloat totalWidth = buttonWidth + buttonSpacing + buttonWidth;
     
-    
     UIView *buttonHousingView = [UIView new];
     buttonHousingView.bounds = CGRectMake(0, 0, totalWidth, buttonHeight);
     
