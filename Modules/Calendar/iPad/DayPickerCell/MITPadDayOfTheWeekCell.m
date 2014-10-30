@@ -57,6 +57,8 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
             dayOfTheWeekPrefix = @"Fri";
             break;
     }
+    
+    self.dayOfTheWeekLabel.text = dayOfTheWeekPrefix;
 }
 
 - (MITDayOfTheWeek)dayOfTheWeek
