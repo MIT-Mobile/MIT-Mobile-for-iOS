@@ -143,7 +143,6 @@ extern NSString * const MITImageToursButtonAudioPause;
 extern NSString * const MITImageToursButtonAudio;
 extern NSString * const MITImageToursButtonMap;
 extern NSString * const MITImageToursButtonMapHighlighted;
-extern NSString * const MITImageToursButtonLocation;
 extern NSString * const MITImageToursButtonScanQR;
 extern NSString * const MITImageToursButtonScanQRHighlighted;
 extern NSString * const MITImageToursButtonSidetrip;

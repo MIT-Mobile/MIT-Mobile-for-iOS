@@ -180,7 +180,6 @@
     MITCheckAsset(MITImageToursButtonAudio);
     MITCheckAsset(MITImageToursButtonMap);
     MITCheckAsset(MITImageToursButtonMapHighlighted);
-    MITCheckAsset(MITImageToursButtonLocation);
     MITCheckAsset(MITImageToursButtonScanQR);
     MITCheckAsset(MITImageToursButtonScanQRHighlighted);
     MITCheckAsset(MITImageToursButtonSidetrip);
