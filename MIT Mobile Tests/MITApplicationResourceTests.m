@@ -5,7 +5,7 @@
 #define MITCheckAsset(constant) { \
     NSString *constantName = [NSString stringWithUTF8String:#constant]; \
     NSParameterAssert(constantName); \
-    XCTAssertGreaterThan([constant length], 0, @"%@ should have a length > 0", constantName); \
+    XCTAssertGreaterThan([constant length], 0, @"%@ does not contain a valid resource name", constantName); \
     XCTAssertNotNil([UIImage imageNamed:constant], @"Asset %@ (%@) could not be found",  constantName, constant); \
 }
 
