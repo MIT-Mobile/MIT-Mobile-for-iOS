@@ -13,6 +13,8 @@
 #import "MITEventSearchResultsViewController.h"
 #import "MITAcademicHolidaysCalendarViewController.h"
 #import "MITAcademicCalendarViewController.h"
+#import "MITEventDetailViewController.h"
+#import "MITEventsTableViewController.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -26,7 +28,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 @interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
-@property (strong, nonatomic) MITEventsMapViewController *mapsViewController;
+@property (strong, nonatomic) MITEventDetailViewController *eventDetailViewController;
 
 @property (nonatomic, strong) MITEventSearchTypeAheadViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
@@ -205,7 +207,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 - (void)hideSearchBar
 {
-    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
+    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
     
     if (!self.searchMagnifyingGlassBarButtonItem) {
         UIImage *searchImage = [UIImage imageNamed:MITImageBarButtonSearch];
@@ -218,6 +220,13 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.searchBar.text = @"";
     
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem];
+    
+    MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
+    if (currentlyDisplayedController.events.count > 0) {
+        self.eventDetailViewController.event = currentlyDisplayedController.events[0];
+    } else {
+        self.eventDetailViewController.event = nil;
+    }
 }
 
 - (void)showSearchPopover
@@ -276,7 +285,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.searchBar.text = searchString;
     [self.searchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    self.splitViewController.viewControllers = @[self.resultsViewController, self.mapsViewController];
+    self.splitViewController.viewControllers = @[self.resultsViewController, self.eventDetailViewController];
     [self.resultsViewController beginSearch:searchString];
 }
 
@@ -299,7 +308,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)setupViewControllers
 {
     [self setupEventsPageViewController];
-    [self setupMapViewController];
+    [self setupEventDetailViewController];
     [self setupSplitViewController];
     [self setupTypeAheadViewController];
     [self setupResultsViewController];
@@ -320,16 +329,15 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.currentlyDisplayedDate = [[NSDate date] startOfDay];
 }
 
-- (void)setupMapViewController
+- (void)setupEventDetailViewController
 {
-    self.mapsViewController = [MITEventsMapViewController new];
-    self.mapsViewController.view.backgroundColor = [UIColor magentaColor];
+    self.eventDetailViewController = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
 }
 
 - (void)setupSplitViewController
 {
     self.splitViewController = [[MITEventsSplitViewController alloc] init];
-    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
+    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
     self.splitViewController.delegate = self;
     
     [self addChildViewController:self.splitViewController];
@@ -356,10 +364,10 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 - (void)setupToolbar
 {
-    [self setToolbarItems:@[[self leftToolbarItem], [self flexibleSpaceBarButtonItem], [self middleToolbarItem], [self flexibleSpaceBarButtonItem], [self rightToolbarItem]]];
+    [self setToolbarItems:@[[self todayToolbarItem], [self flexibleSpaceBarButtonItem], [self calendarsToolbarItem]]];
 }
 
-- (UIBarButtonItem *)leftToolbarItem
+- (UIBarButtonItem *)todayToolbarItem
 {
     return [[UIBarButtonItem alloc] initWithTitle:@"Today"
                                             style:UIBarButtonItemStylePlain
@@ -367,7 +375,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                            action:@selector(todayButtonPressed:)];
 }
 
-- (UIBarButtonItem *)middleToolbarItem
+- (UIBarButtonItem *)calendarsToolbarItem
 {
     if (!self.calendarSelectionBarButtonItem) {
         self.calendarSelectionBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Calendars"
@@ -377,15 +385,6 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     }
     
     return self.calendarSelectionBarButtonItem;
-}
-
-- (UIBarButtonItem *)rightToolbarItem
-{
-    UIImage *locationImage = [UIImage imageNamed:MITImageBarButtonLocation];
-    return [[UIBarButtonItem alloc] initWithImage:locationImage
-                                            style:UIBarButtonItemStylePlain
-                                           target:self
-                                           action:@selector(currentLocationButtonPressed:)];
 }
 
 - (UIBarButtonItem *)flexibleSpaceBarButtonItem
@@ -420,12 +419,12 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
         
         if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
             MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
-            self.splitViewController.viewControllers = @[holidaysVC, self.mapsViewController];
+            self.splitViewController.viewControllers = @[holidaysVC, self.eventDetailViewController];
         } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
             MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
-            self.splitViewController.viewControllers = @[academicVC, self.mapsViewController];
+            self.splitViewController.viewControllers = @[academicVC, self.eventDetailViewController];
         } else {
-            self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
+            self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
             [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
                                                  category:self.currentlySelectedCategory
                                                      date:self.currentlyDisplayedDate
@@ -449,11 +448,6 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:self.calendarSelectionViewController];
     self.calendarSelectorPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainerController];
     [self.calendarSelectorPopoverController presentPopoverFromBarButtonItem:self.calendarSelectionBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-}
-
-- (void)currentLocationButtonPressed:(id)sender
-{
-    [self.mapsViewController showCurrentLocation];
 }
 
 #pragma mark - MITDatePickerControllerDelegate
@@ -481,17 +475,17 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSelectEvent:(MITCalendarsEvent *)event
 {
-    if ([self.mapsViewController canSelectEvent:event]) {
-        [self.mapsViewController selectEvent:event];
-    } else {
-        // Show popover from tableview cell frame?
-    }
+    self.eventDetailViewController.event = event;
 }
 
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
  didUpdateCurrentlyDisplayedEvents:(NSArray *)currentlyDisplayedEvents
 {
-    [self.mapsViewController updateMapWithEvents:currentlyDisplayedEvents];
+    if (currentlyDisplayedEvents.count > 0) {
+        self.eventDetailViewController.event = currentlyDisplayedEvents[0];
+    } else {
+        self.eventDetailViewController.event = nil;
+    }
 }
 
 #pragma mark - Date Bar
@@ -553,11 +547,18 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 #pragma mark - MITEventSearchResultsViewControllerDelegate Methods
 
+- (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didLoadResults:(NSArray *)results
+{
+    if (results.count > 0) {
+        self.eventDetailViewController.event = results[0];
+    } else {
+        self.eventDetailViewController.event = nil;
+    }
+}
+
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event
 {
-//    MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
-//    detailVC.event = event;
-//    [self.navigationController pushViewController:detailVC animated:YES];
+    self.eventDetailViewController.event = event;
 }
 
 #pragma mark - UIPopoverControllerDelegate Methods

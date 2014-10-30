@@ -95,6 +95,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
             }
             [self hideLoadingSpinner];
             [self.tableView reloadData];
+            if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didLoadResults:)]) {
+                [self.delegate eventSearchResultsViewController:self didLoadResults:self.resultsDataSource.events];
+            }
         }];
     }];
 }
@@ -109,6 +112,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
                 // Do nothing. The user already has results for the next month and so we will just keep displaying them and reload the "x results in next year" cell so it looks like 0 more results were found
             } else {
                 self.resultsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];
+                if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didLoadResults:)]) {
+                    [self.delegate eventSearchResultsViewController:self didLoadResults:self.resultsDataSource.events];
+                }
             }
             [self.tableView reloadData];
         }];
