@@ -29,7 +29,6 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 @property (weak, nonatomic) IBOutlet MITExtendedNavBarView *dayPickerContainerView;
 @property (weak, nonatomic) IBOutlet UICollectionView *dayPickerCollectionView;
-@property (weak, nonatomic) IBOutlet UIButton *datePickerButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *todaysDateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *todaysDateLabelCenterConstraint;
@@ -70,8 +69,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.title = @"Events";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search_magnifier.png"] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
+    self.title = @"All MIT Events";
+    [self setupRightBarButtonItems];
     
     self.currentlyDisplayedDate = [[NSDate date] startOfDay];
     [self updateDatesArray];
@@ -80,12 +79,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
     [self setupEventsContainer];
-    [self setupDatePickerButton];
    
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
             self.currentlySelectedCalendar = masterCalendar.eventsCalendar;
+            self.dayPickerShouldUpdateAfterCallback = YES;
             [self updateDisplayedCalendar:self.currentlySelectedCalendar category:nil date:self.currentlyDisplayedDate animated:NO];
         }
     }];
@@ -124,6 +123,36 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [self.view bringSubviewToFront:self.dayPickerContainerView];
 }
 
+- (void)setupRightBarButtonItems
+{
+    UIButton *dayPickerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [dayPickerButton setImage:[UIImage imageNamed:@"calendar/day_picker_button"] forState:UIControlStateNormal];
+    [dayPickerButton setTintColor:self.navigationController.navigationBar.tintColor];
+    [dayPickerButton addTarget:self action:@selector(dayPickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [searchButton setImage:[UIImage imageNamed:@"global/search_magnifier"] forState:UIControlStateNormal];
+    [searchButton setTintColor:self.navigationController.navigationBar.tintColor];
+    [searchButton addTarget:self action:@selector(searchButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    CGFloat buttonWidth = 30.0;
+    CGFloat buttonHeight = 30.0;
+    CGFloat buttonSpacing = 10.0;
+    CGFloat totalWidth = buttonWidth + buttonSpacing + buttonWidth;
+    
+    UIView *buttonHousingView = [UIView new];
+    buttonHousingView.bounds = CGRectMake(0, 0, totalWidth, buttonHeight);
+    
+    dayPickerButton.frame = CGRectMake(0, 0, buttonWidth, buttonHeight);
+    searchButton.frame = CGRectMake(totalWidth - buttonWidth, 0, buttonWidth, buttonHeight);
+    [buttonHousingView addSubview:dayPickerButton];
+    [buttonHousingView addSubview:searchButton];
+    
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    spacer.width = -10; // Shift 10 pts to the right
+    self.navigationItem.rightBarButtonItems = @[spacer, [[UIBarButtonItem alloc] initWithCustomView:buttonHousingView]];
+}
+
 - (void)setupEventsContainer
 {
     self.eventsController = [[MITCalendarPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
@@ -148,19 +177,18 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     self.dayPickerCollectionView.scrollsToTop = NO;
 }
 
-- (void)setupDatePickerButton
-{
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(datePickerButtonPanned:)];
-    [self.datePickerButton addGestureRecognizer:panGestureRecognizer];
-    
-    [self.datePickerButton addTarget:self action:@selector(datePickerButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-}
+#pragma mark - Button Presses
 
 - (void)searchButtonPressed
 {
     MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithCategory:self.currentlySelectedCategory];
     UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
     [self presentViewController:searchNavController animated:NO completion:nil];
+}
+
+- (void)dayPickerButtonPressed
+{
+    [self presentDatePicker];
 }
 
 #pragma mark - Day of the week Collection View Datasource/Delegate
@@ -229,6 +257,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     if ([cellDate isEqualToDateIgnoringTime:[NSDate date]]){
         cell.state |= MITDayOfTheWeekStateToday;
     }
+    
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:cellDate];
+    cell.dayOfTheMonth = components.day;
 }
 
 - (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath
@@ -237,54 +268,28 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     return self.datesArray[adjustedIndex];
 }
 
-#pragma mark - Date Picker Button
+#pragma mark - UICollectionViewDelegateFlowLayout
 
-- (void)datePickerButtonPressed
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self presentDatePicker];
+    CGFloat height = CGRectGetHeight(collectionView.bounds);
+    CGFloat width = CGRectGetWidth(collectionView.bounds) / 7.0;
+    return CGSizeMake(width, height);
 }
 
-- (void)datePickerButtonPanned:(UIPanGestureRecognizer *)pan
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    static CGFloat dayPickerCollectionViewStartXOffset;
-    
-    if (pan.state == UIGestureRecognizerStateBegan) {
-        dayPickerCollectionViewStartXOffset = self.dayPickerCollectionView.contentOffset.x;
-    }
-    if (pan.state == UIGestureRecognizerStateEnded) {
-        CGPoint velocity = [pan velocityInView:self.view];
-        
-        if (ABS(velocity.x) > 250) {
-            if (velocity.x > 0) {
-                // Scroll left one week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            } else {
-                // Scroll right one week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            }
-        } else {
-            CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
-            
-            if (ABS(xTranslation) > 190) {
-                if (xTranslation > 0) {
-                    // Scroll left one week
-                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-                } else {
-                    // Scroll right one week
-                    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-                }
-            } else {
-                // Return daypicker collectionview to current week
-                [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-            }
-        }
-    } else {
-        CGFloat xTranslation = [pan translationInView:self.datePickerButton].x;
-        
-        CGPoint dayPickerOffset = self.dayPickerCollectionView.contentOffset;
-        dayPickerOffset.x = dayPickerCollectionViewStartXOffset - xTranslation;
-        self.dayPickerCollectionView.contentOffset = dayPickerOffset;
-    }
+    return UIEdgeInsetsZero;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
 }
 
 #pragma mark - Toolbar Buttons
@@ -432,16 +437,22 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
                            date:(NSDate *)date
                        animated:(BOOL)animated
 {
+    MITCalendarsCalendar *calendarForTitle;
     if (calendar) {
         self.eventsController.calendar =
-        self.currentlySelectedCalendar = calendar;
-        self.title = calendar.name;
+        self.currentlySelectedCalendar =
+        calendarForTitle = calendar;
     }
-    
     if (category) {
         self.eventsController.category =
-        self.currentlySelectedCategory = category;
-        self.title = category.name;
+        self.currentlySelectedCategory =
+        calendarForTitle = category;
+    }
+    
+    if (calendarForTitle.categories.count > 0) {
+        self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
+    } else if (calendarForTitle) {
+        self.title = calendarForTitle.name;
     }
     
     if ([date isEqualToDate:self.currentlyDisplayedDate]) {
