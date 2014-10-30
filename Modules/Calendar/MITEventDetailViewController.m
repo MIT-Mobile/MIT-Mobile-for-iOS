@@ -498,7 +498,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
       
                 NSString *htmlString = [NSString stringWithFormat:@"<span style=\"font-family:Helvetica; font-size: %i\">%@</span>", 17, self.event.htmlDescription];
                 
-                [cell setHTMLString:htmlString];
+                [cell setHtmlString:htmlString];
                 cell.delegate = self;
                 return cell;
             } else {

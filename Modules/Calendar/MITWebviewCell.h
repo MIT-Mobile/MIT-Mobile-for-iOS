@@ -6,7 +6,7 @@
 
 @property (nonatomic, weak) id<MITWebviewCellDelegate> delegate;
 
-- (void)setHTMLString:(NSString *)htmlString;
+@property (nonatomic, strong) NSString *htmlString;
 
 @end
 
