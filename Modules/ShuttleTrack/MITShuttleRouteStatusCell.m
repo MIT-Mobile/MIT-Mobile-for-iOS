@@ -30,8 +30,6 @@
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
             self.statusLabel.text = @"Predictions unavailable";
-
-            NSAssert(MITImageShuttlesRoutePredictionsUnavailable,@"missing image asset for MITImageShuttlesRoutePredictionsUnavailable");
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
             break;
         default:

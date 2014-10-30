@@ -49,7 +49,6 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteInService];
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
-            NSAssert(MITImageShuttlesRoutePredictionsUnavailable,@"missing image asset for MITImageShuttlesRoutePredictionsUnavailable");
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
             break;
         default:
