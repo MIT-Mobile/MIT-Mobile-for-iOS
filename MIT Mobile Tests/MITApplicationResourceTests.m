@@ -2,22 +2,19 @@
 #import <XCTest/XCTest.h>
 #import "MITResourceConstants.h"
 
-#define MITCheckAsset(constant) { \
-    NSString *constantName = [NSString stringWithUTF8String:#constant]; \
-    NSParameterAssert(constantName); \
-    XCTAssertGreaterThan([constant length], 0, @"%@ does not contain a valid resource name", constantName); \
-    XCTAssertNotNil([UIImage imageNamed:constant], @"Asset %@ (%@) could not be found",  constantName, constant); \
+#define MITCheckAsset(asset) { \
+    XCTAssertGreaterThan([asset length], 0, @"%s does not contain a valid resource name",#asset); \
+    XCTAssertNotNil([UIImage imageNamed:asset], @"Asset %s (%@) could not be found",  #asset, asset); \
 }
 
-#define MITCheckResource(constant) {\
-    NSString *constantName = [NSString stringWithUTF8String:#constant]; \
-    NSParameterAssert(constantName);\
-    XCTAssertGreaterThan([constant length], 0, @"%@ should have a length > 0", constantName);\
-    NSString *directory = [[constant stringByDeletingLastPathComponent] stringByStandardizingPath];\
-    NSString *extension = [constant pathExtension];\
-    NSString *resource = [[constant lastPathComponent] stringByDeletingPathExtension];\
-    NSString *path = [[NSBundle mainBundle] pathForResource:resource ofType:extension inDirectory:directory];\
-    XCTAssertNotNil(path,@"Resource %@ (%@) could not be found",constantName,constant);\
+#define MITCheckResource(resource) MITCheckResourceInDirectory(resource,nil)
+
+#define MITCheckResourceInDirectory(resource,directory) {\
+    XCTAssertGreaterThan([resource length], 0, @"%s does not contain a valid resource name",#resource);\
+    NSString *extension = [resource pathExtension];\
+    NSString *resourceName = [[resource lastPathComponent] stringByDeletingPathExtension]; \
+    NSString *path = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension inDirectory:directory];\
+    XCTAssertNotNil(path,@"Resource %s (%@) could not be found",#resource,resource);\
 }
 
 @interface MITApplicationResourceTests : XCTestCase
