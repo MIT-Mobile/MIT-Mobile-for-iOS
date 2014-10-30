@@ -16,6 +16,7 @@
 #import "MITEventsTableViewController.h"
 #import "MITExtendedNavBarView.h"
 #import "UINavigationBar+ExtensionPrep.h"
+#import "MITPadDayOfTheWeekCell.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -24,8 +25,9 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 };
 
 static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
+static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"kMITEventHomeDayPickerCollectionViewCellIdentifier";
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventDetailViewController *eventDetailViewController;
@@ -54,7 +56,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
 @property (strong, nonatomic) NSDate *currentlyDisplayedDate;
 
 @property (strong, nonatomic) MITExtendedNavBarView *extendedNavBarView;
-
+@property (nonatomic, strong) UICollectionView *dayPickerCollectionView;
 @end
 
 @implementation MITEventsHomeViewControllerPad
@@ -78,6 +80,8 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     [self setupRightBarButtonItems];
     [self setupToolbar];
     [self setupExtendedNavBar];
+    [self setupDayPickerCollectionView];
+
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
@@ -92,7 +96,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
-    [self alignExtendedNavBar];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -115,7 +119,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    [self alignExtendedNavBar];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
 #pragma mark - BarButtonItems Setup
@@ -202,13 +206,14 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     self.extendedNavBarView.backgroundColor = navbarGrey;
     [self.view addSubview:self.extendedNavBarView];
     [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
-
-    [self alignExtendedNavBar];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
-- (void)alignExtendedNavBar
+- (void)alignExtendedNavBarAndDayPickerCollectionView
 {
     self.extendedNavBarView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), kMITEventHomeNavBarExtensionHeight);
+    self.dayPickerCollectionView.frame = self.extendedNavBarView.bounds;
+    [self.dayPickerCollectionView reloadData];
 }
 
 #pragma mark - Date Navigation Bar Button Presses
@@ -363,6 +368,66 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                          target:nil
                                                          action:nil];
+}
+
+#pragma mark - DayPickerCollectionView Setup
+
+- (void)setupDayPickerCollectionView
+{
+    UICollectionViewFlowLayout *flow = [UICollectionViewFlowLayout new];
+    flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.dayPickerCollectionView = [[UICollectionView alloc] initWithFrame:self.extendedNavBarView.bounds collectionViewLayout:flow];
+    self.dayPickerCollectionView.frame = self.extendedNavBarView.bounds;
+    self.dayPickerCollectionView.backgroundColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.3];
+    self.dayPickerCollectionView.dataSource = self;
+    self.dayPickerCollectionView.delegate = self;
+    [self.extendedNavBarView addSubview:self.dayPickerCollectionView];
+
+    UINib *dayCellNib = [UINib nibWithNibName:MITPadDayOfTheWeekCellNibName bundle:nil];
+    [self.dayPickerCollectionView registerNib:dayCellNib forCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier];
+}
+
+#pragma mark - UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return 7;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITPadDayOfTheWeekCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier forIndexPath:indexPath];
+    cell.state = MITDayOfTheWeekStateSelected;
+    return cell;
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat height = CGRectGetHeight(collectionView.bounds);
+    CGFloat width = CGRectGetWidth(collectionView.bounds) / 7.0;
+    return CGSizeMake(width, height);
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    return UIEdgeInsetsZero;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
 }
 
 #pragma mark - Calendar Selection
