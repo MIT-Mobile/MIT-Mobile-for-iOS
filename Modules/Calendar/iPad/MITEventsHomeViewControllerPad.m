@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleShortenedDay
 };
 
-static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
+static CGFloat const kMITEventHomeNavBarExtensionHeight = 40.0;
 static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"kMITEventHomeDayPickerCollectionViewCellIdentifier";
 
 @interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
@@ -387,6 +387,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     self.dayPickerCollectionView = [[UICollectionView alloc] initWithFrame:self.extendedNavBarView.bounds collectionViewLayout:flow];
     self.dayPickerCollectionView.backgroundColor = [UIColor clearColor];
+    self.dayPickerCollectionView.showsHorizontalScrollIndicator = NO;
     self.dayPickerCollectionView.frame = self.extendedNavBarView.bounds;
     self.dayPickerCollectionView.pagingEnabled = YES;
     self.dayPickerCollectionView.dataSource = self;
