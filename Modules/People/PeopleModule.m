@@ -40,9 +40,9 @@ static NSString * const PeopleStateDetail = @"detail";
     UIUserInterfaceIdiom currentUserInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
 
     UIStoryboard *storyboard = nil;
-    if (currentUserInterfaceIdiom) {
+    if (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
-    } else {
+    } else if (currentUserInterfaceIdiom == UIUserInterfaceIdiomPad) {
         storyboard = [UIStoryboard storyboardWithName:@"People_iPad" bundle:nil];
     }
 
