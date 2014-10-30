@@ -11,11 +11,18 @@
 
 static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAnnotationView";
 
+static NSInteger kAnnotationMarginTop = 0;
+static NSInteger kAnnotationMarginBottom = 200;
+static NSInteger kAnnotationMarginLeft = 50;
+static NSInteger kAnnotationMarginRight = 50;
+static NSTimeInterval kAnnotationAdjustmentDuration = 0.5;
+
 @interface MITToursMapViewController () <MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (strong, nonatomic) WYPopoverController *calloutPopoverController;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
+@property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 
@@ -29,6 +36,7 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     if (self) {
         self.tour = tour;
         self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
+        self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
     }
     return self;
 }
@@ -171,12 +179,42 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     }
 }
 
+#pragma mark - Move Selected Annotations Away From Edge
+
+- (CGRect)adjustFrameForAnnotationView:(MKAnnotationView *)annotationView mapView:(MKMapView *)mapView insets:(UIEdgeInsets)insets
+{
+    CGRect frame = [mapView convertRect:annotationView.frame fromView:annotationView.superview];
+    CGRect safeZone = UIEdgeInsetsInsetRect(mapView.bounds, insets);
+    
+    CGRect adjustedFrame = frame;
+    BOOL isOutsideSafeZone = NO;
+    if (frame.origin.x < safeZone.origin.x) {
+        adjustedFrame.origin.x = safeZone.origin.x;
+        isOutsideSafeZone = YES;
+    } else if (frame.origin.x + frame.size.width > safeZone.origin.x + safeZone.size.width) {
+        adjustedFrame.origin.x = safeZone.origin.x + safeZone.size.width - frame.size.width;
+        isOutsideSafeZone = YES;
+    }
+    
+    if (frame.origin.y < safeZone.origin.y) {
+        adjustedFrame.origin.y = safeZone.origin.y;
+        isOutsideSafeZone = YES;
+    } else if (frame.origin.y + frame.size.height > safeZone.origin.y + safeZone.size.height) {
+        adjustedFrame.origin.y = safeZone.origin.y + safeZone.size.height - frame.size.height;
+        isOutsideSafeZone = YES;
+    }
+    
+    if (isOutsideSafeZone) {
+        return adjustedFrame;
+    }
+    return CGRectNull;
+}
 
 #pragma mark - Custom Callout
 
-- (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
+- (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
-    MITToursStopAnnotation *annotation = view.annotation;
+    MITToursStopAnnotation *annotation = annotationView.annotation;
     
     MITToursCalloutContentViewController *contentController = [[MITToursCalloutContentViewController alloc] initWithNibName:nil bundle:nil];
     contentController.stopType = annotation.stop.stopType;
@@ -202,7 +240,25 @@ static NSString * const kMITToursStopAnnotationViewIdentifier = @"MITToursStopAn
     WYPopoverController *calloutPopover = [[WYPopoverController alloc] initWithContentViewController:contentController];
     // Allow the user to interact with the map annotations even when the popover is displayed
     calloutPopover.passthroughViews = @[self.tiledMapView.mapView];
-    [calloutPopover presentPopoverFromRect:view.frame inView:self.tiledMapView.mapView permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
+    
+    // Adjust the annotation if needed
+    CGRect adjustedFrame = [self adjustFrameForAnnotationView:annotationView mapView:mapView insets:self.annotationMarginInsets];
+    if (CGRectIsNull(adjustedFrame)) {
+        // No adjustment needed
+        [calloutPopover presentPopoverFromRect:annotationView.frame inView:annotationView.superview permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
+    } else {
+        // Scroll the map to bring annotation into the safe zone, then display the callout
+        CGPoint delta = CGPointMake(adjustedFrame.origin.x - annotationView.frame.origin.x,
+                                    adjustedFrame.origin.y - annotationView.frame.origin.y);
+        CGPoint adjustedCenter = CGPointMake(-delta.x + mapView.bounds.size.width * 0.5,
+                                             -delta.y + mapView.bounds.size.height * 0.5);
+        CLLocationCoordinate2D adjustedCoordinate = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
+        [UIView animateWithDuration:kAnnotationAdjustmentDuration animations:^{
+            [mapView setCenterCoordinate:adjustedCoordinate animated:NO];
+        } completion:^(BOOL finished) {
+            [calloutPopover presentPopoverFromRect:annotationView.frame inView:annotationView.superview permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
+        }];
+    }
     
     [self dismissCurrentCallout];
     self.calloutPopoverController = calloutPopover;
