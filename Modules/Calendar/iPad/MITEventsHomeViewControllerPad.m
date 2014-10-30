@@ -23,8 +23,6 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleShortenedDay
 };
 
-static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
-static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
 
 @interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate>
@@ -79,7 +77,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     [self setupViewControllers];
     [self setupRightBarButtonItems];
     [self setupToolbar];
-
+    [self setupExtendedNavBar];
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
@@ -94,6 +92,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
+    [self alignExtendedNavBar];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -115,8 +114,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self alignDateNavigationBar];
-    [self updateDateLabel];
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self alignExtendedNavBar];
 }
 
@@ -214,6 +212,8 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
 }
 
 #pragma mark - Date Navigation Bar Button Presses
+
+// TODO: Modify for new date nav or remove
 
 - (void)previousDayButtonPressed:(UIButton *)sender
 {
@@ -456,6 +456,7 @@ static CGFloat const kMITEventHomeNavBarExtensionHeight = 44.0;
     } else {
         self.eventDetailViewController.event = nil;
     }
+    [self.mapsViewController updateMapWithEvents:currentlyDisplayedEvents];
 }
 
 #pragma mark - UISplitViewControllerDelegate
