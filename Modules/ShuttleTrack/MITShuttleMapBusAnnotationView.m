@@ -32,7 +32,7 @@
 
 - (void)setupBusImageView
 {
-    self.busImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/bus_annotation"]];
+    self.busImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageShuttlesAnnotationBus]];
     self.busImageView.translatesAutoresizingMaskIntoConstraints = NO;
     self.busImageView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
     [self addSubview:self.busImageView];
@@ -84,7 +84,7 @@
 
 - (UIImageView *)bubbleImageView
 {
-    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"shuttle/bus_bubble"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 14, 16)]];
+    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:MITImageShuttlesBusBubble] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 14, 16)]];
     bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
     return bubbleImageView;
 }

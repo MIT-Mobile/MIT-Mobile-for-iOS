@@ -22,16 +22,17 @@
     switch ([route status]) {
         case MITShuttleRouteStatusNotInService:
             self.statusLabel.text = @"Not in service";
-            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle-off"];
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteNotInService];
             break;
         case MITShuttleRouteStatusInService:
             self.statusLabel.text = @"In service";
-            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle"];
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteInService];
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
             self.statusLabel.text = @"Predictions unavailable";
-#warning TODO: question mark image
-            self.statusIconImageView.image = [UIImage imageNamed:@""];
+
+            NSAssert(MITImageShuttlesRoutePredictionsUnavailable,@"missing image asset for MITImageShuttlesRoutePredictionsUnavailable");
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
             break;
         default:
             break;

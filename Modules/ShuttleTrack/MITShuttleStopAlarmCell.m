@@ -62,12 +62,12 @@
     NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
     UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForPrediction:prediction];
     if (scheduledNotification) {
-        [self.alertButton setImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on"] forState:UIControlStateNormal];
+        [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
     } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
         self.alertButton.hidden = YES;
     } else {
-        [self.alertButton setImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-off"] forState:UIControlStateNormal];
+        [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
     }
 }
