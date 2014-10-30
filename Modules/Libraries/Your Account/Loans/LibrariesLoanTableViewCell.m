@@ -18,7 +18,7 @@
         self.selectionStyle = UITableViewCellSelectionStyleBlue;
         self.editingAccessoryType = UITableViewCellAccessoryNone;
 
-        self.statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
+        self.statusIcon.image = [UIImage imageNamed:MITImageLibrariesStatusAlert];
         self.statusIcon.hidden = YES;
     }
     
@@ -29,28 +29,13 @@
 {
     if (self.selected != selected)
     {
-        if (selected)
-        {
-            UIImage *image = [UIImage imageNamed:@"libraries/cell-selected-iOS-7"];
-            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                image = [UIImage imageNamed:@"libraries/cell-selected"];
-            } else {
-                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                self.selectionView.tintColor = [UIColor mit_tintColor];
-            }
-
+        if (selected) {
+            UIImage *image = [[UIImage imageNamed:MITImageLibrariesCheckmarkSelected] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.selectionView.tintColor = [UIColor mit_tintColor];
             self.selectionView.image = image;
-        }
-        else
-        {
-            UIImage *image = [UIImage imageNamed:@"libraries/cell-unselected-iOS-7"];
-            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                image = [UIImage imageNamed:@"libraries/cell-unselected"];
-            } else {
-                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                self.selectionView.tintColor = [UIColor lightGrayColor];
-            }
-            
+        } else {
+            UIImage *image = [[UIImage imageNamed:MITImageLibrariesCheckmark] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.selectionView.tintColor = [UIColor lightGrayColor];
             self.selectionView.image = image;
         }
     }
@@ -64,16 +49,10 @@
     // - selectionView is totally invisible and hidden, so make it unhidden
     if (state & UITableViewCellStateShowingEditControlMask) {
         if (!self.selectionView) {
-            NSString *imageName = @"libraries/cell-unselected-iOS-7";
-            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                imageName = @"libraries/cell-unselected";
-            }
-            UIImage *image = [UIImage imageNamed:imageName];
-            if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            }
-            UIImageView *selectionView = [[UIImageView alloc] initWithImage:image];
+            NSString *imageName = @"libraries-cell-unselected";
+            UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             
+            UIImageView *selectionView = [[UIImageView alloc] initWithImage:image];
             selectionView.alpha = 0.0;
             
             CGRect frame = selectionView.frame;

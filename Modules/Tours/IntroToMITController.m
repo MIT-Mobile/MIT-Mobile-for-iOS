@@ -9,11 +9,10 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.navigationItem.title = @"Introduction to MIT";
     
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"tours/intro_to_mit.html" relativeToURL:baseURL];
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        fileURL = [NSURL URLWithString:@"tours/intro_to_mit_iOS_6.html" relativeToURL:baseURL];
-    }
+    NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"intro_to_mit" ofType:@"html" inDirectory:@"tours"];
+    NSAssert(templatePath,@"failed to load resource 'tours/intro_to_mit.html'");
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:templatePath isDirectory:NO];
     
     NSError *error = nil;
     NSString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
@@ -22,6 +21,8 @@
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webview.backgroundColor = [UIColor clearColor];
     [self.view addSubview:webview];
+
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [webview loadHTMLString:htmlString baseURL:baseURL];
 }
 

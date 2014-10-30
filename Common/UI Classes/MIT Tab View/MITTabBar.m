@@ -77,11 +77,11 @@
                 control.autoresizingMask = UIViewAutoresizingFlexibleWidth;
                 control.tag = tag;
                 
-                UIImage *normalImage = [[UIImage imageNamed:@"global/tab2-unselected"] stretchableImageWithLeftCapWidth:10
+                UIImage *normalImage = [[UIImage imageNamed:MITImageTabViewInactive] stretchableImageWithLeftCapWidth:10
                                                                                                            topCapHeight:10];
-                UIImage *selectedImage = [[UIImage imageNamed:@"global/tab2-selected"] stretchableImageWithLeftCapWidth:10
+                UIImage *selectedImage = [[UIImage imageNamed:MITImageTabViewActive] stretchableImageWithLeftCapWidth:10
                                                                                                            topCapHeight:10];
-                UIImage *highlightImage = [[UIImage imageNamed:@"global/tab2-unselected-pressed"] stretchableImageWithLeftCapWidth:10
+                UIImage *highlightImage = [[UIImage imageNamed:MITImageTabViewInactiveHighlighted] stretchableImageWithLeftCapWidth:10
                                                                                                                       topCapHeight:10];
                 [control setTabImage:normalImage
                             forState:UIControlStateNormal];
