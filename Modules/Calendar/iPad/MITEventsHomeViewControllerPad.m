@@ -1,7 +1,6 @@
 #import "MITEventsHomeViewControllerPad.h"
 #import "MITCalendarSelectionViewController.h"
 #import "MITCalendarPageViewController.h"
-#import "MITDateNavigationBarView.h"
 #import "MITEventsMapViewController.h"
 #import "MITDatePickerViewController.h"
 #import "MITCalendarManager.h"
@@ -37,9 +36,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchCancelBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *goToDateBarButtonItem;
 
 @property (strong, nonatomic) MITCalendarPageViewController *eventsPageViewController;
-@property (strong, nonatomic) MITDateNavigationBarView *dateNavigationBarView;
 
 @property (strong, nonatomic) UIPopoverController *currentPopoverController;
 
@@ -90,86 +89,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
-    [self setupLeftBarButtonItems];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self alignDateNavigationBar];
-    [self updateDateLabel];
-}
-
-- (void)alignDateNavigationBar
-{
-    UIView *customView = [[self.navigationItem.leftBarButtonItems lastObject] customView];
-    CGRect currentRect = [self.view convertRect:customView.bounds fromView:customView];
-    
-    [self alignDateNavigationBarForOriginX:currentRect.origin.x];
-}
-
-- (void)alignDateNavigationBarForOriginX:(CGFloat)originX
-{
-    CGFloat targetWidth = kMITEventHomeMasterWidthPortrait;
-    if (UIInterfaceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
-        targetWidth = kMITEventHomeMasterWidthLandscape;
-    }
-    
-    self.dateNavigationBarView.bounds = CGRectMake(0, 0, targetWidth - originX, CGRectGetHeight(self.dateNavigationBarView.bounds));
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [self alignDateNavigationBar];
-    [self updateDateLabel];
 }
 
 #pragma mark - BarButtonItems Setup
-
-- (void)setupLeftBarButtonItems
-{
-    if (!self.dateNavigationBarView) {
-        [self setupDateNavigationBar];
-        
-        UIBarButtonItem *dateNavBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.dateNavigationBarView];
-        NSMutableArray *currentItems = [NSMutableArray array];
-        [currentItems addObject:self.navigationItem.leftBarButtonItems.firstObject];
-        [currentItems addObject:dateNavBarButtonItem];
-        self.navigationItem.leftBarButtonItems = currentItems;
-    }
-}
-
-- (void)setupDateNavigationBar
-{
-    UINib *nib = [UINib nibWithNibName:@"MITDateNavigationBarView" bundle:nil];
-    self.dateNavigationBarView = [[nib instantiateWithOwner:self options:nil] objectAtIndex:0];
-    self.dateNavigationBarView.bounds = CGRectMake(0, 0, 320, 44);
-    self.dateNavigationBarView.tintColor = [UIColor mit_tintColor];
-    self.dateNavigationBarView.currentDateLabel.text = @"";
-    [self setupDateNavigationButtonPresses];
-    
-    // We will calculate the absolute value programmatically as a fail safe, but since it's always 57, this helps initial setup to look cleaner
-    CGFloat originOfSecondBarButtonItemX = 57.0;
-    [self alignDateNavigationBarForOriginX:originOfSecondBarButtonItemX];
-}
-
-- (void)setupDateNavigationButtonPresses
-{
-    [self.dateNavigationBarView.previousDateButton addTarget:self action:@selector(previousDayButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.dateNavigationBarView.nextDateButton addTarget:self action:@selector(nextDayButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.dateNavigationBarView.showDateControlButton addTarget:self action:@selector(showDatePickerButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-}
 
 - (void)setupRightBarButtonItems
 {
@@ -177,7 +99,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                                                style:UIBarButtonItemStylePlain
                                                                               target:self
                                                                               action:@selector(searchButtonPressed:)];
-     self.navigationItem.rightBarButtonItem = self.searchMagnifyingGlassBarButtonItem;
+    
+    self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"] style:UIBarButtonItemStylePlain target:self action:@selector(goToDateButtonPressed)];
+    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
 }
 
 - (void)showSearchBar
@@ -219,7 +143,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     
     self.searchBar.text = @"";
     
-    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem];
+    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
     
     MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
     if (currentlyDisplayedController.events.count > 0) {
@@ -252,11 +176,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.currentlyDisplayedDate = [self.eventsPageViewController.date dayAfter];
 }
 
-- (void)showDatePickerButtonPressed:(UIButton *)sender
+- (void)goToDateButtonPressed
 {
     CGSize targetPopoverSize = CGSizeMake(320, 320);
-    CGRect actualButtonRect = [self.view convertRect:sender.bounds fromView:sender];
-    actualButtonRect.size.height -= 8; // small offset to bring pointer closer
     
     MITDatePickerViewController *datePickerViewController = [MITDatePickerViewController new];
     datePickerViewController.delegate = self;
@@ -264,7 +186,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     UINavigationController *datePickerNavController = [[UINavigationController alloc] initWithRootViewController:datePickerViewController];
     UIPopoverController *popOverController = [[UIPopoverController alloc] initWithContentViewController:datePickerNavController];
     [popOverController setPopoverContentSize:targetPopoverSize];
-    [popOverController presentPopoverFromRect:actualButtonRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    [popOverController presentPopoverFromBarButtonItem:self.goToDateBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
     self.currentPopoverController = popOverController;
 }
 
@@ -470,7 +392,6 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 {
     // Don't use setter here to avoid trying to move to date that
     _currentlyDisplayedDate = date;
-    [self updateDateLabel];
 }
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSelectEvent:(MITCalendarsEvent *)event
@@ -486,44 +407,6 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     } else {
         self.eventDetailViewController.event = nil;
     }
-}
-
-#pragma mark - Date Bar
-
-- (void)updateDateLabel
-{
-    NSUInteger currentDateStyle = MITEventDateStringStyleFull;
-    CGFloat targetWidth = MAXFLOAT;
-    CGFloat maxWidth = CGRectGetWidth(self.dateNavigationBarView.currentDateLabel.bounds);
-    NSString *dateString = nil;
-    NSUInteger totalNumberOfDateStyles = 3;
-    while (targetWidth > maxWidth && currentDateStyle < totalNumberOfDateStyles) {
-        dateString = [self dateStringForDate:self.currentlyDisplayedDate withStyle:currentDateStyle];
-        CGSize targetSize = [dateString sizeWithFont:self.dateNavigationBarView.currentDateLabel.font];
-        targetWidth = targetSize.width;
-        currentDateStyle++;
-    }
-    self.dateNavigationBarView.currentDateLabel.text = dateString;
-}
-
-- (NSString *)dateStringForDate:(NSDate *)date withStyle:(MITEventDateStringStyle)dateStringStyle
-{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.locale = [NSLocale currentLocale];
-    switch (dateStringStyle) {
-        case MITEventDateStringStyleFull:
-            dateFormatter.dateStyle = NSDateFormatterFullStyle;
-            break;
-        case MITEventDateStringStyleShortenedMonth:
-            dateFormatter.dateFormat = @"EEEE, MMM d, y";
-            break;
-        case MITEventDateStringStyleShortenedDay:
-            dateFormatter.dateFormat = @"EEE, MMM d, y";
-            break;
-        default:
-            break;
-    }
-    return [dateFormatter stringFromDate:date];
 }
 
 #pragma mark - UISplitViewControllerDelegate
@@ -581,7 +464,6 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)setCurrentlyDisplayedDate:(NSDate *)currentlyDisplayedDate
 {
     _currentlyDisplayedDate = currentlyDisplayedDate;
-    [self updateDateLabel];
     [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:currentlyDisplayedDate animated:YES];
 }
 
