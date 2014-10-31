@@ -7,13 +7,17 @@
 #import "MITEventsSplitViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "Foundation+MITAdditions.h"
 #import "MITEventSearchTypeAheadViewController.h"
 #import "MITEventSearchResultsViewController.h"
 #import "MITAcademicHolidaysCalendarViewController.h"
 #import "MITAcademicCalendarViewController.h"
 #import "MITEventDetailViewController.h"
 #import "MITEventsTableViewController.h"
+#import "MITExtendedNavBarView.h"
+#import "UINavigationBar+ExtensionPrep.h"
+#import "MITDayOfTheWeekCell.h"
+
+#import "MITDayPickerViewController.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -21,10 +25,10 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleShortenedDay
 };
 
-static CGFloat const kMITEventHomeMasterWidthPortrait = 320.0;
-static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
+static CGFloat const kMITEventHomeNavBarExtensionHeight = 40.0;
+static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"kMITEventHomeDayPickerCollectionViewCellIdentifier";
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate, MITDayPickerViewControllerDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventDetailViewController *eventDetailViewController;
@@ -50,8 +54,8 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 @property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
 @property (nonatomic, strong) UIBarButtonItem *calendarSelectionBarButtonItem;
 
-@property (strong, nonatomic) NSDate *currentlyDisplayedDate;
-
+@property (strong, nonatomic) MITExtendedNavBarView *extendedNavBarView;
+@property (strong, nonatomic) MITDayPickerViewController *dayPickerController;
 @end
 
 @implementation MITEventsHomeViewControllerPad
@@ -69,11 +73,13 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+
     self.title = @"MIT Events";
     [self setupViewControllers];
     [self setupRightBarButtonItems];
     [self setupToolbar];
+    [self setupExtendedNavBar];
+    [self setupDayPickerController];
     
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
@@ -89,6 +95,13 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
 #pragma mark - BarButtonItems Setup
@@ -99,7 +112,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                                                style:UIBarButtonItemStylePlain
                                                                               target:self
                                                                               action:@selector(searchButtonPressed:)];
-    
+
     self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"] style:UIBarButtonItemStylePlain target:self action:@selector(goToDateButtonPressed)];
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
 }
@@ -115,24 +128,24 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
         self.searchBar.placeholder = @"Search";
         self.searchBar.delegate = self;
     }
-    
+
     if (!self.searchCancelBarButtonItem) {
         self.searchCancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
                                                                           style:UIBarButtonItemStylePlain
                                                                          target:self
                                                                          action:@selector(searchButtonPressed:)];
     }
-    
+
     UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
     self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
-    
+
     [self showSearchPopover];
 }
 
 - (void)hideSearchBar
 {
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
-    
+
     if (!self.searchMagnifyingGlassBarButtonItem) {
         UIImage *searchImage = [UIImage imageNamed:@"global/search"];
         self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:searchImage
@@ -140,11 +153,11 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                                                   target:self
                                                                                   action:@selector(searchButtonPressed:)];
     }
-    
+
     self.searchBar.text = @"";
-    
+
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
-    
+
     MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
     if (currentlyDisplayedController.events.count > 0) {
         self.eventDetailViewController.event = currentlyDisplayedController.events[0];
@@ -160,26 +173,36 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     CGRect presentationRect = self.searchBar.frame;
     presentationRect.origin.y += presentationRect.size.height / 2;
     [self.typeAheadPopoverController presentPopoverFromRect:presentationRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    
+
     [self.searchBar becomeFirstResponder];
+}
+
+#pragma mark - Navigation Bar Extension
+
+- (void)setupExtendedNavBar
+{
+    // TODO: Move to category
+    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+
+    self.extendedNavBarView = [MITExtendedNavBarView new];
+    self.extendedNavBarView.backgroundColor = navbarGrey;
+    [self.view addSubview:self.extendedNavBarView];
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
+}
+
+- (void)alignExtendedNavBarAndDayPickerCollectionView
+{
+    self.extendedNavBarView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), kMITEventHomeNavBarExtensionHeight);
+    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
 }
 
 #pragma mark - Date Navigation Bar Button Presses
 
-- (void)previousDayButtonPressed:(UIButton *)sender
-{
-    self.currentlyDisplayedDate = [self.eventsPageViewController.date dayBefore];
-}
-
-- (void)nextDayButtonPressed:(UIButton *)sender
-{
-    self.currentlyDisplayedDate = [self.eventsPageViewController.date dayAfter];
-}
-
-- (void)goToDateButtonPressed
+- (void)showDatePickerButtonPressed:(UIButton *)sender
 {
     CGSize targetPopoverSize = CGSizeMake(320, 320);
-    
+
     MITDatePickerViewController *datePickerViewController = [MITDatePickerViewController new];
     datePickerViewController.delegate = self;
     datePickerViewController.shouldHideCancelButton = YES;
@@ -248,7 +271,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 {
     self.eventsPageViewController.calendar = self.currentlySelectedCalendar;
     self.eventsPageViewController.category = self.currentlySelectedCategory;
-    self.currentlyDisplayedDate = [[NSDate date] startOfDay];
+    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
 }
 
 - (void)setupEventDetailViewController
@@ -261,7 +284,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.splitViewController = [[MITEventsSplitViewController alloc] init];
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
     self.splitViewController.delegate = self;
-    
+
     [self addChildViewController:self.splitViewController];
     self.splitViewController.view.frame = self.view.bounds;
     [self.view addSubview:self.splitViewController.view];
@@ -305,7 +328,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
                                                                               target:self
                                                                               action:@selector(calendarsButtonPressed:)];
     }
-    
+
     return self.calendarSelectionBarButtonItem;
 }
 
@@ -314,6 +337,30 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                          target:nil
                                                          action:nil];
+}
+
+#pragma mark - DayPickerCollectionView Setup
+
+- (void)setupDayPickerController
+{
+    self.dayPickerController = [MITDayPickerViewController new];
+    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
+    self.dayPickerController.delegate = self;
+    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
+
+    [self.dayPickerController willMoveToParentViewController:self];
+    [self.extendedNavBarView addSubview:self.dayPickerController.view];
+    [self addChildViewController:self.dayPickerController];
+    [self.dayPickerController didMoveToParentViewController:self];
+}
+
+#pragma mark - MITDayPickerViewControllerDelegate
+
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date
+{
+    if (![self.eventsPageViewController.date isEqualToDateIgnoringTime:date]) {
+        [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
+    }
 }
 
 #pragma mark - Calendar Selection
@@ -338,7 +385,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
         self.currentlySelectedCategory = category;
         self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
         self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
-        
+
         if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
             MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
             self.splitViewController.viewControllers = @[holidaysVC, self.eventDetailViewController];
@@ -349,11 +396,11 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
             self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
             [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
                                                  category:self.currentlySelectedCategory
-                                                     date:self.currentlyDisplayedDate
+                                                     date:self.dayPickerController.currentlyDisplayedDate
                                                  animated:YES];
         }
     }
-    
+
     [self.calendarSelectorPopoverController dismissPopoverAnimated:YES];
 }
 
@@ -362,7 +409,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)todayButtonPressed:(id)sender
 {
     NSDate *today = [[NSDate date] startOfDay];
-    self.currentlyDisplayedDate = today;
+    self.dayPickerController.currentlyDisplayedDate = today;
 }
 
 - (void)calendarsButtonPressed:(id)sender
@@ -377,7 +424,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
 {
     [self.currentPopoverController dismissPopoverAnimated:YES];
-    self.currentlyDisplayedDate = date;
+    self.dayPickerController.currentlyDisplayedDate = date;
 }
 
 - (void)datePickerDidCancel:(MITDatePickerViewController *)datePicker
@@ -390,9 +437,9 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSwipeToDate:(NSDate *)date
 {
-    // Don't use setter here to avoid trying to move to date that
-    _currentlyDisplayedDate = date;
+    self.dayPickerController.currentlyDisplayedDate = date;
 }
+
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSelectEvent:(MITCalendarsEvent *)event
 {
@@ -455,16 +502,8 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
             [self.searchBar resignFirstResponder];
         }
     }
-    
+
     return YES;
-}
-
-#pragma mark - Getters | Setters
-
-- (void)setCurrentlyDisplayedDate:(NSDate *)currentlyDisplayedDate
-{
-    _currentlyDisplayedDate = currentlyDisplayedDate;
-    [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:currentlyDisplayedDate animated:YES];
 }
 
 @end

@@ -68,6 +68,7 @@
     if (completed) {
         MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.viewControllers[0];
         if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didSwipeToDate:)]) {
+            self.date = currentlyDisplayedController.date;
             [self.calendarSelectionDelegate calendarPageViewController:self didSwipeToDate:[currentlyDisplayedController date]];
         }
         if (currentlyDisplayedController.events) {
