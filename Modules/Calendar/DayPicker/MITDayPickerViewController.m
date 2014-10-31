@@ -145,16 +145,10 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 
 - (void)reloadCollectionView
 {
-    void(^executable)(void) = ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.collectionView reloadData];
         [self centerDayPickerCollectionView];
-    };
-    
-    if ([NSThread isMainThread]) {
-        executable();
-    } else {
-        dispatch_async(dispatch_get_main_queue(), executable);
-    }
+    });
 }
 
 #pragma mark - Scrolling
