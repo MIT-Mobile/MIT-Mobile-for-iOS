@@ -25,8 +25,16 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor clearColor];
     self.shouldUpdateAfterCallback = YES;
+    [self setupDayPickerCollectionView];
     // Do any additional setup after loading the view.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self centerDayPickerCollectionView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,6 +61,26 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
     NSString *nibName = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? MITPadDayOfTheWeekCellNibName : MITPhoneDayOfTheWeekCellNibName;
     UINib *dayCellNib = [UINib nibWithNibName:nibName bundle:nil];
     [self.collectionView registerNib:dayCellNib forCellWithReuseIdentifier:MITDayPickerControllerCellIdentifier];
+    
+    [self setupCollectionViewConstraints];
+}
+
+- (void)setupCollectionViewConstraints
+{
+    self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    [self.view addConstraints:@[leftConstraint, rightConstraint, topConstraint, bottomConstraint]];
+}
+
+#pragma mark - Rotation
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self reloadCollectionView];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -105,8 +133,8 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGFloat height = CGRectGetHeight(collectionView.bounds);
-    CGFloat width = CGRectGetWidth(collectionView.bounds) / 7.0;
+    CGFloat height = CGRectGetHeight(self.view.bounds);
+    CGFloat width = CGRectGetWidth(self.view.bounds) / 7.0;
     return CGSizeMake(width, height);
 }
 
@@ -223,7 +251,6 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
     _currentlyDisplayedDate = currentlyDisplayedDate;
     [self updateDatesArray];
     [self reloadCollectionView];
-    
     [self.delegate dayPickerViewController:self dateDidUpdate:_currentlyDisplayedDate];
 }
 

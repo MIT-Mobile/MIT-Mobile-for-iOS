@@ -17,6 +17,8 @@
 #import "UINavigationBar+ExtensionPrep.h"
 #import "MITDayOfTheWeekCell.h"
 
+#import "MITDayPickerViewController.h"
+
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
     MITEventDateStringStyleShortenedMonth,
@@ -26,7 +28,7 @@ typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
 static CGFloat const kMITEventHomeNavBarExtensionHeight = 40.0;
 static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"kMITEventHomeDayPickerCollectionViewCellIdentifier";
 
-@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface MITEventsHomeViewControllerPad () <MITDatePickerViewControllerDelegate, MITCalendarPageViewControllerDelegate, UISplitViewControllerDelegate, MITEventSearchTypeAheadViewControllerDelegate, MITEventSearchResultsViewControllerDelegate, UISearchBarDelegate, MITCalendarSelectionDelegate, UIPopoverControllerDelegate, MITDayPickerViewControllerDelegate>
 
 @property (strong, nonatomic) MITEventsSplitViewController *splitViewController;
 @property (strong, nonatomic) MITEventDetailViewController *eventDetailViewController;
@@ -52,17 +54,11 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 @property (nonatomic, strong) MITCalendarSelectionViewController *calendarSelectionViewController;
 @property (nonatomic, strong) UIBarButtonItem *calendarSelectionBarButtonItem;
 
-@property (strong, nonatomic) NSDate *currentlyDisplayedDate;
-
 @property (strong, nonatomic) MITExtendedNavBarView *extendedNavBarView;
-@property (nonatomic, strong) UICollectionView *dayPickerCollectionView;
-@property (nonatomic, strong) NSMutableArray *datesArray;
-@property (nonatomic) BOOL dayPickerShouldUpdateAfterCallback;
+@property (strong, nonatomic) MITDayPickerViewController *dayPickerController;
 @end
 
 @implementation MITEventsHomeViewControllerPad
-
-@synthesize currentlyDisplayedDate = _currentlyDisplayedDate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -84,9 +80,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupToolbar];
     [self setupExtendedNavBar];
     [self setupDayPickerCollectionView];
-    self.currentlyDisplayedDate = [[NSDate date] startOfDay];
-    self.dayPickerShouldUpdateAfterCallback = YES;
-    
+
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
@@ -125,7 +119,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self alignExtendedNavBarAndDayPickerCollectionView];
-    [self reloadCollectionView];
 }
 
 #pragma mark - BarButtonItems Setup
@@ -218,25 +211,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)alignExtendedNavBarAndDayPickerCollectionView
 {
     self.extendedNavBarView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), kMITEventHomeNavBarExtensionHeight);
-    self.dayPickerCollectionView.frame = self.extendedNavBarView.bounds;
-    [self.dayPickerCollectionView reloadData];
+    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
 }
 
 #pragma mark - Date Navigation Bar Button Presses
 
-// TODO: Modify for new date nav or remove
-
-- (void)previousDayButtonPressed:(UIButton *)sender
-{
-    self.currentlyDisplayedDate = [self.eventsPageViewController.date dayBefore];
-}
-
-- (void)nextDayButtonPressed:(UIButton *)sender
-{
-    self.currentlyDisplayedDate = [self.eventsPageViewController.date dayAfter];
-}
-
-- (void)goToDateButtonPressed
+- (void)showDatePickerButtonPressed:(UIButton *)sender
 {
     CGSize targetPopoverSize = CGSizeMake(320, 320);
 
@@ -308,7 +288,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     self.eventsPageViewController.calendar = self.currentlySelectedCalendar;
     self.eventsPageViewController.category = self.currentlySelectedCategory;
-    self.currentlyDisplayedDate = [[NSDate date] startOfDay];
+    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
 }
 
 - (void)setupEventDetailViewController
@@ -380,182 +360,24 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupDayPickerCollectionView
 {
-    [self updateDatesArray];
+    self.dayPickerController = [MITDayPickerViewController new];
+    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
+    self.dayPickerController.delegate = self;
+    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
 
-    UICollectionViewFlowLayout *flow = [UICollectionViewFlowLayout new];
-    flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.dayPickerCollectionView = [[UICollectionView alloc] initWithFrame:self.extendedNavBarView.bounds collectionViewLayout:flow];
-    self.dayPickerCollectionView.backgroundColor = [UIColor clearColor];
-    self.dayPickerCollectionView.showsHorizontalScrollIndicator = NO;
-    self.dayPickerCollectionView.frame = self.extendedNavBarView.bounds;
-    self.dayPickerCollectionView.pagingEnabled = YES;
-    self.dayPickerCollectionView.dataSource = self;
-    self.dayPickerCollectionView.delegate = self;
-    [self.extendedNavBarView addSubview:self.dayPickerCollectionView];
-
-    UINib *dayCellNib = [UINib nibWithNibName:MITPadDayOfTheWeekCellNibName bundle:nil];
-    [self.dayPickerCollectionView registerNib:dayCellNib forCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier];
+    [self.dayPickerController willMoveToParentViewController:self];
+    [self.extendedNavBarView addSubview:self.dayPickerController.view];
+    [self addChildViewController:self.dayPickerController];
+    [self.dayPickerController didMoveToParentViewController:self];
 }
 
-#pragma mark - UICollectionViewDataSource
+#pragma mark - MITDayPickerViewControllerDelegate
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date
 {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return 21;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    MITDayOfTheWeekCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier forIndexPath:indexPath];
-    [self configureCell:cell forIndexPath:indexPath];
-    return cell;
-}
-
-#pragma mark - UICollectionViewDelegate
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    self.currentlyDisplayedDate = [self dateForIndexPath:indexPath];
-}
-
-#pragma mark - UICollectionViewDelegateFlowLayout
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGFloat height = CGRectGetHeight(collectionView.bounds);
-    CGFloat width = CGRectGetWidth(collectionView.bounds) / 7.0;
-    return CGSizeMake(width, height);
-}
-
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    return UIEdgeInsetsZero;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 0.0;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 0.0;
-}
-
-#pragma mark - Collection View Utilities
-
-- (void)reloadCollectionView
-{
-    void(^executable)(void) = ^{
-        [self.dayPickerCollectionView reloadData];
-        [self centerDayPickerCollectionView];
-    };
-
-    if ([NSThread isMainThread]) {
-        executable();
-    } else {
-        dispatch_async(dispatch_get_main_queue(), executable);
+    if (![self.eventsPageViewController.date isEqualToDateIgnoringTime:date]) {
+        [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
     }
-
-}
-
-// TODO: Combine code from MITEventHomeViewController by moving to subclass.  Everything below this is copied.
-
-- (void)updateDatesArray
-{
-    NSMutableArray *newDatesArray = [[NSMutableArray alloc] init];
-
-    NSDate *lastWeek = [self.currentlyDisplayedDate dateBySubtractingWeek];
-    NSDate *nextWeek = [self.currentlyDisplayedDate dateByAddingWeek];
-
-    [newDatesArray addObjectsFromArray:[lastWeek datesInWeek]];
-    [newDatesArray addObjectsFromArray:[self.currentlyDisplayedDate datesInWeek]];
-    [newDatesArray addObjectsFromArray:[nextWeek datesInWeek]];
-
-    self.datesArray = newDatesArray;
-}
-
-- (void)configureCell:(MITDayOfTheWeekCell *)cell  forIndexPath:(NSIndexPath *)indexPath
-{
-    cell.dayOfTheWeek = indexPath.row % 7;
-
-    NSDate *cellDate = [self dateForIndexPath:indexPath];
-    if ([cellDate isEqualToDateIgnoringTime:self.currentlyDisplayedDate]) {
-        cell.state = MITDayOfTheWeekStateSelected;
-    }
-    else {
-        cell.state = MITDayOfTheWeekStateUnselected;
-    }
-    if ([cellDate isEqualToDateIgnoringTime:[NSDate date]]){
-        cell.state |= MITDayOfTheWeekStateToday;
-    }
-
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:cellDate];
-    cell.dayOfTheMonth = components.day;
-}
-
-- (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath
-{
-    NSInteger adjustedIndex = indexPath.row;
-    return self.datesArray[adjustedIndex];
-}
-
-- (void)centerDayPickerCollectionView
-{
-    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0]
-                                         atScrollPosition:UICollectionViewScrollPositionLeft
-                                                 animated:NO];
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    if (scrollView == self.dayPickerCollectionView && self.dayPickerShouldUpdateAfterCallback) {
-        [self updateDayPickerOffsetForInfiniteScrolling];
-    }
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
-{
-    if (scrollView == self.dayPickerCollectionView && self.dayPickerShouldUpdateAfterCallback) {
-        [self updateDayPickerOffsetForInfiniteScrolling];
-    }
-}
-
-- (void)updateDayPickerOffsetForInfiniteScrolling
-{
-    if (self.dayPickerCollectionView.contentOffset.x <= 0 ) {
-        self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateBySubtractingWeek];
-    } else if (self.dayPickerCollectionView.contentOffset.x >= CGRectGetWidth(self.dayPickerCollectionView.bounds) * 2) {
-        self.currentlyDisplayedDate = [self.currentlyDisplayedDate dateByAddingWeek];
-    }
-}
-
-- (void)delayedCenterDayPickerCollectionView
-{
-    [self updateDatesArray];
-    [self.dayPickerCollectionView reloadData];
-    [self centerDayPickerCollectionView];
-    self.dayPickerShouldUpdateAfterCallback = YES;
-}
-
-- (void)animateDayPickerCollectionViewBackwards
-{
-    self.dayPickerShouldUpdateAfterCallback = NO;
-    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-    [self performSelector:@selector(delayedCenterDayPickerCollectionView) withObject:nil afterDelay:0.3];
-}
-
-- (void)animateDayPickerCollectionViewForward
-{
-    self.dayPickerShouldUpdateAfterCallback = NO;
-    [self.dayPickerCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:14 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-    [self performSelector:@selector(delayedCenterDayPickerCollectionView) withObject:nil afterDelay:0.3];
 }
 
 #pragma mark - Calendar Selection
@@ -591,7 +413,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
             self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
             [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
                                                  category:self.currentlySelectedCategory
-                                                     date:self.currentlyDisplayedDate
+                                                     date:self.dayPickerController.currentlyDisplayedDate
                                                  animated:YES];
         }
     }
@@ -604,7 +426,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)todayButtonPressed:(id)sender
 {
     NSDate *today = [[NSDate date] startOfDay];
-    self.currentlyDisplayedDate = today;
+    self.dayPickerController.currentlyDisplayedDate = today;
 }
 
 - (void)calendarsButtonPressed:(id)sender
@@ -619,7 +441,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
 {
     [self.currentPopoverController dismissPopoverAnimated:YES];
-    self.currentlyDisplayedDate = date;
+    self.dayPickerController.currentlyDisplayedDate = date;
 }
 
 - (void)datePickerDidCancel:(MITDatePickerViewController *)datePicker
@@ -632,9 +454,9 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSwipeToDate:(NSDate *)date
 {
-    // Don't use setter here to avoid trying to move to date that
-    _currentlyDisplayedDate = date;
+    self.dayPickerController.currentlyDisplayedDate = date;
 }
+
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController
                     didSelectEvent:(MITCalendarsEvent *)event
 {
@@ -700,29 +522,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     }
 
     return YES;
-}
-
-#pragma mark - Getters | Setters
-
-- (void)setCurrentlyDisplayedDate:(NSDate *)currentlyDisplayedDate
-{
-    if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
-        [self animateDayPickerCollectionViewBackwards];
-    } else if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
-        [self animateDayPickerCollectionViewForward];
-    }
-    _currentlyDisplayedDate = currentlyDisplayedDate;
-    [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:currentlyDisplayedDate animated:YES];
-    [self updateDatesArray];
-    [self reloadCollectionView];
-}
-
-- (NSDate *)currentlyDisplayedDate
-{
-    if (!_currentlyDisplayedDate) {
-        _currentlyDisplayedDate = [[NSDate date] startOfDay];
-    }
-    return _currentlyDisplayedDate;
 }
 
 @end
