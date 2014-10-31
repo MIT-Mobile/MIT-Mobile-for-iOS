@@ -79,8 +79,8 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupRightBarButtonItems];
     [self setupToolbar];
     [self setupExtendedNavBar];
-    [self setupDayPickerCollectionView];
-
+    [self setupDayPickerController];
+    
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
             self.masterCalendar = masterCalendar;
@@ -358,7 +358,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 #pragma mark - DayPickerCollectionView Setup
 
-- (void)setupDayPickerCollectionView
+- (void)setupDayPickerController
 {
     self.dayPickerController = [MITDayPickerViewController new];
     self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];

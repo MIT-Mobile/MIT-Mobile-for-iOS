@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITEventsHomeViewController">
             <connections>
-                <outlet property="dayPickerCollectionView" destination="jXL-Oq-1hD" id="x6c-dO-bT4"/>
                 <outlet property="dayPickerContainerView" destination="Tgr-Jh-tU3" id="Q0e-7U-M4E"/>
                 <outlet property="eventsTableContainerView" destination="Pgi-DN-w8P" id="gqE-TX-e3z"/>
                 <outlet property="todaysDateLabel" destination="Ocu-70-5sQ" id="sWa-IA-QSf"/>
@@ -23,25 +22,8 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tgr-Jh-tU3" customClass="MITExtendedNavBarView">
                     <rect key="frame" x="0.0" y="-11" width="320" height="84"/>
                     <subviews>
-                        <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="jXL-Oq-1hD">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="64" id="8wm-SD-69f"/>
-                            </constraints>
-                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="xWB-UK-eyu">
-                                <size key="itemSize" width="40" height="44"/>
-                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            </collectionViewFlowLayout>
-                            <cells/>
-                            <connections>
-                                <outlet property="dataSource" destination="-1" id="9j3-Ip-4dB"/>
-                                <outlet property="delegate" destination="-1" id="M9p-Aw-rfk"/>
-                            </connections>
-                        </collectionView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
-                            <rect key="frame" x="116" y="60" width="90" height="18"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today's Date" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ocu-70-5sQ">
+                            <rect key="frame" x="115" y="60" width="90" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
@@ -50,9 +32,7 @@
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="centerX" secondItem="Ocu-70-5sQ" secondAttribute="centerX" constant="0.5" id="27z-i8-Aft"/>
-                        <constraint firstItem="jXL-Oq-1hD" firstAttribute="top" secondItem="Tgr-Jh-tU3" secondAttribute="top" id="Lvx-uZ-XMF"/>
                         <constraint firstAttribute="height" constant="84" id="UBW-f3-u73"/>
-                        <constraint firstItem="jXL-Oq-1hD" firstAttribute="leading" secondItem="Tgr-Jh-tU3" secondAttribute="leading" id="gsu-LY-Vmc"/>
                         <constraint firstAttribute="bottom" secondItem="Ocu-70-5sQ" secondAttribute="bottom" constant="6" id="uPg-oe-Bw9"/>
                     </constraints>
                 </view>
@@ -90,11 +70,11 @@
                 <constraint firstAttribute="bottom" secondItem="O7E-nT-nqr" secondAttribute="bottom" id="Vul-sb-sg2"/>
                 <constraint firstItem="O7E-nT-nqr" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="XTj-cu-HON"/>
                 <constraint firstItem="Tgr-Jh-tU3" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-11" id="iGI-pm-WSf"/>
-                <constraint firstItem="Pgi-DN-w8P" firstAttribute="width" secondItem="jXL-Oq-1hD" secondAttribute="width" id="lrY-2g-5bn"/>
                 <constraint firstItem="Tgr-Jh-tU3" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="tsh-TB-M2K"/>
             </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <point key="canvasLocation" x="587" y="324"/>
         </view>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
