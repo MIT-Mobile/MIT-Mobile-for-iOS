@@ -17,6 +17,9 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
     MITDayOfTheWeekSaturday
 };
 
+extern NSString * const MITPhoneDayOfTheWeekCellNibName;
+extern NSString * const MITPadDayOfTheWeekCellNibName;
+
 @interface MITDayOfTheWeekCell : UICollectionViewCell
 
 @property (nonatomic) MITDayOfTheWeek dayOfTheWeek;

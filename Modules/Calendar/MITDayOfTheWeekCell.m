@@ -1,6 +1,9 @@
 #import "MITDayOfTheWeekCell.h"
 #import "UIKit+MITAdditions.h"
 
+NSString * const MITPhoneDayOfTheWeekCellNibName = @"MITPhoneDayOfTheWeekCell";
+NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
+
 @interface MITDayOfTheWeekCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *dayOfTheWeekLabel;
@@ -25,8 +28,7 @@
 - (void)setDayOfTheWeek:(MITDayOfTheWeek)dayOfTheWeek
 {
     _dayOfTheWeek = dayOfTheWeek;
-    
-    if (_dayOfTheWeek == MITDayOfTheWeekSaturday || _dayOfTheWeek == MITDayOfTheWeekSunday) {
+    if (dayOfTheWeek == MITDayOfTheWeekSaturday || dayOfTheWeek == MITDayOfTheWeekSunday) {
         self.dayOfTheWeekLabel.textColor = [self lighterGrayColor];
         self.dayOfTheMonthLabel.textColor = [self lighterGrayColor];
     } else {
@@ -34,28 +36,36 @@
         self.dayOfTheMonthLabel.textColor = [UIColor darkTextColor];
     }
     
+    NSString *dayOfTheWeekPrefix;
     switch (_dayOfTheWeek) {
         case MITDayOfTheWeekSaturday:
+            dayOfTheWeekPrefix = @"Sat";
+            break;
         case MITDayOfTheWeekSunday:
-            self.dayOfTheWeekLabel.text = @"S";
+            dayOfTheWeekPrefix = @"Sun";
             break;
         case MITDayOfTheWeekMonday:
-            self.dayOfTheWeekLabel.text = @"M";
+            dayOfTheWeekPrefix = @"Mon";
             break;
-        
         case MITDayOfTheWeekTuesday:
+            dayOfTheWeekPrefix = @"Tue";
+            break;
         case MITDayOfTheWeekThursday:
-            self.dayOfTheWeekLabel.text = @"T";
+            dayOfTheWeekPrefix = @"Thu";
             break;
-            
         case MITDayOfTheWeekWednesday:
-            self.dayOfTheWeekLabel.text = @"W";
+            dayOfTheWeekPrefix = @"Wed";
             break;
-
         case MITDayOfTheWeekFriday:
-            self.dayOfTheWeekLabel.text = @"F";
+            dayOfTheWeekPrefix = @"Fri";
             break;
     }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        dayOfTheWeekPrefix = [dayOfTheWeekPrefix substringToIndex:1];
+    }
+    
+    self.dayOfTheWeekLabel.text = dayOfTheWeekPrefix;
 }
 
 - (void)setState:(MITDayOfTheWeekState)state

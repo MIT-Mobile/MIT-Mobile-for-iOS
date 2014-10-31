@@ -22,8 +22,8 @@ typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
 static const CGFloat kSlidingAnimationSpan = 40.0;
 static const NSTimeInterval kSlidingAnimationDuration = 0.3;
 
-static NSString *const kMITDayOfTheWeekCell = @"MITDayOfTheWeekCell";
 static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
+static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPickerCollectionViewCellIdentifier";
 
 @interface MITEventsHomeViewController () <UICollectionViewDataSource, UICollectionViewDelegate, MITDatePickerViewControllerDelegate, MITCalendarSelectionDelegate, MITCalendarPageViewControllerDelegate>
 
@@ -169,8 +169,8 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     self.dayPickerCollectionView.backgroundColor = [UIColor clearColor];
     
-    UINib *cellNib = [UINib nibWithNibName:kMITDayOfTheWeekCell bundle:nil];
-    [self.dayPickerCollectionView registerNib:cellNib forCellWithReuseIdentifier:kMITDayOfTheWeekCell];
+    UINib *cellNib = [UINib nibWithNibName:MITPhoneDayOfTheWeekCellNibName bundle:nil];
+    [self.dayPickerCollectionView registerNib:cellNib forCellWithReuseIdentifier:MITDayPickerCollectionViewCellIdentifier];
     
     self.pageWidth = self.dayPickerCollectionView.frame.size.width;
     
@@ -205,7 +205,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITDayOfTheWeekCell *cell = [self.dayPickerCollectionView dequeueReusableCellWithReuseIdentifier:kMITDayOfTheWeekCell
+    MITDayOfTheWeekCell *cell = [self.dayPickerCollectionView dequeueReusableCellWithReuseIdentifier:MITDayPickerCollectionViewCellIdentifier
                                                                                         forIndexPath:indexPath];
     [self configureCell:cell forIndexPath:indexPath];
     return cell;
