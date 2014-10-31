@@ -59,6 +59,21 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     self.title = @"Event Details";
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self setupTableViewInsetsForIPad];
+    }
+}
+- (void)setupTableViewInsetsForIPad
+{
+    
+    CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
+    CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+    self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
