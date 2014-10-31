@@ -2,6 +2,7 @@
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
+#import <CoreLocation/CoreLocation.h>
 
 @class MITToursStop;
 
