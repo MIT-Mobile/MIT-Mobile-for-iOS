@@ -68,7 +68,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 }
 - (void)setupTableViewInsetsForIPad
 {
-    
     CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
     CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
     self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);

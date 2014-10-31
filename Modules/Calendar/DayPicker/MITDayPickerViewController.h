@@ -1,10 +1,3 @@
-//
-//  MITDayPickerViewController.h
-//  MIT Mobile
-//
-//  Created by Logan Wright on 10/31/14.
-//
-//
 
 #import <UIKit/UIKit.h>
 
