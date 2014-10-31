@@ -98,12 +98,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self updateDateLabel];
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -471,7 +465,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     } else {
         self.eventDetailViewController.event = nil;
     }
-    [self.mapsViewController updateMapWithEvents:currentlyDisplayedEvents];
 }
 
 #pragma mark - UISplitViewControllerDelegate
