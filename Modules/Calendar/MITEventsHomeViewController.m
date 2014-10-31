@@ -174,6 +174,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 {
     if (![self.eventsController.date isEqualToDateIgnoringTime:date]) {
         [self.eventsController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
+        [self updateDisplayedDate:date];
     }
 }
 
@@ -241,7 +242,6 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
             tempLabel.center = dateLabelCenter;
             tempLabel.alpha = 1;
             self.todaysDateLabel.alpha = 0;
-            [self.dayPickerContainerView layoutIfNeeded];
         } completion:^(BOOL finished) {
             [tempLabel removeFromSuperview];
             self.todaysDateLabel.text = dateString;
@@ -363,10 +363,11 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
         self.title = calendarForTitle.name;
     }
     
-    if ([date isEqualToDate:self.dayPickerController.currentlyDisplayedDate]) {
+    if ([date isEqualToDateIgnoringTime:self.dayPickerController.currentlyDisplayedDate]) {
         animated = NO;
     }
     else {
+        self.dayPickerController.currentlyDisplayedDate = date;
         [self updateDisplayedDate:date];
     }
     
@@ -384,8 +385,6 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     }
     
     [self setDateLabelWithDate:date animationType:labelSlidingAnimationType];
-    
-    self.dayPickerController.currentlyDisplayedDate = date;
 }
 
 @end
