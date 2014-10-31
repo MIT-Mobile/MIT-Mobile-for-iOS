@@ -10,6 +10,11 @@
 #define OUT_OF_BOUNDS_DISTANCE 1609
 #define WAY_OUT_OF_BOUNDS_DISTANCE 3218
 
+#define METERS_PER_SMOOT 0.587613116
+#define KILOMETERS_PER_MILE 1.60934
+
+typedef double CLLocationSmootsDistance;
+
 FOUNDATION_STATIC_INLINE NSString* NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate) {
     return [NSString stringWithFormat:@"{ x: %lf, y: %lf }", coordinate.longitude, coordinate.latitude];
 }
@@ -21,5 +26,7 @@ FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCo
 - (CLLocationDistance)distanceFromCenterOfCampus;
 - (BOOL)isOnCampus;
 - (BOOL)isNearCampus;
+
++ (CLLocationSmootsDistance)smootsForDistance:(CLLocationDistance)distance;
 
 @end

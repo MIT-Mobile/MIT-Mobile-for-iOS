@@ -1,92 +1,111 @@
 #import "MITToursSelfGuidedTourListViewController.h"
+#import "MITToursTour.h"
+#import "MITToursTourStopCell.h"
+#import "MITToursStopCellModel.h"
+#import "MITLocationManager.h"
+
+typedef NS_ENUM(NSInteger, MITToursListSection) {
+    MITToursListSectionMainLoop,
+    MITToursListSectionSideTrips
+};
+
+static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
 
 @interface MITToursSelfGuidedTourListViewController ()
+
+@property (nonatomic, strong) NSArray *mainLoopStops;
+@property (nonatomic, strong) NSArray *sideTripsStops;
 
 @end
 
 @implementation MITToursSelfGuidedTourListViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self setupTableView];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.tableView reloadData];
+}
+
+- (void)setupTableView
+{
+    // Keep a local copy, since these are calculated properties
+    self.mainLoopStops = self.tour.mainLoopStops;
+    self.sideTripsStops = self.tour.sideTripsStops;
+    
+    UINib *cellNib = [UINib nibWithNibName:kMITToursStopCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITToursStopCell];
 }
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch (section) {
+        case MITToursListSectionMainLoop:
+            return self.mainLoopStops.count;
+            break;
+        case MITToursListSectionSideTrips:
+            return self.sideTripsStops.count;
+        default:
+            return 0;
+            break;
+    }
 }
 
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case MITToursListSectionMainLoop:
+            return @"Main Loop";
+            break;
+        case MITToursListSectionSideTrips:
+            return @"Side Trip";
+        default:
+            return nil;
+            break;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [MITToursTourStopCell heightForContent:[self stopCellModelForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITToursTourStopCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITToursStopCell];
     
-    // Configure the cell...
+    [cell setContent:[self stopCellModelForIndexPath:indexPath]];
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+- (MITToursStopCellModel *)stopCellModelForIndexPath:(NSIndexPath *)indexPath
+{
+    MITToursStop *stop;
+    NSInteger stopIndex;
+    
+    if (indexPath.section == MITToursListSectionMainLoop) {
+        stop = self.mainLoopStops[indexPath.row];
+        stopIndex = indexPath.row;
+    }
+    else {
+        stop = self.sideTripsStops[indexPath.row];
+        stopIndex = self.mainLoopStops.count + indexPath.row;
+    }
+    
+    return [[MITToursStopCellModel alloc] initWithStop:stop stopIndex:stopIndex];
 }
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
