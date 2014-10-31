@@ -1,10 +1,3 @@
-//
-//  MITDayPickerViewController.m
-//  MIT Mobile
-//
-//  Created by Logan Wright on 10/31/14.
-//
-//
 
 #import "MITDayPickerViewController.h"
 #import "MITDayOfTheWeekCell.h"
@@ -23,23 +16,18 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 
 @synthesize currentlyDisplayedDate = _currentlyDisplayedDate;
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
     self.shouldUpdateAfterCallback = YES;
     [self setupDayPickerCollectionView];
-    // Do any additional setup after loading the view.
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self centerDayPickerCollectionView];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Setup
@@ -174,8 +162,8 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 - (void)centerDayPickerCollectionView
 {
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:7 inSection:0]
-                                         atScrollPosition:UICollectionViewScrollPositionLeft
-                                                 animated:NO];
+                                atScrollPosition:UICollectionViewScrollPositionLeft
+                                        animated:NO];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
