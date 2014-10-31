@@ -7,7 +7,6 @@
 #import "MITEventsSplitViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "Foundation+MITAdditions.h"
 #import "MITEventSearchTypeAheadViewController.h"
 #import "MITEventSearchResultsViewController.h"
 #import "MITAcademicHolidaysCalendarViewController.h"
@@ -16,7 +15,7 @@
 #import "MITEventsTableViewController.h"
 #import "MITExtendedNavBarView.h"
 #import "UINavigationBar+ExtensionPrep.h"
-#import "MITPadDayOfTheWeekCell.h"
+#import "MITDayOfTheWeekCell.h"
 
 typedef NS_ENUM(NSUInteger, MITEventDateStringStyle) {
     MITEventDateStringStyleFull,
@@ -412,7 +411,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITPadDayOfTheWeekCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier forIndexPath:indexPath];
+    MITDayOfTheWeekCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMITEventHomeDayPickerCollectionViewCellIdentifier forIndexPath:indexPath];
     [self configureCell:cell forIndexPath:indexPath];
     return cell;
 }
@@ -422,14 +421,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    NSDate *targetDate = [self dateForIndexPath:indexPath];
-    if ([targetDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
-        // Backwards
-    }
-    else if ([targetDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
-        // Forwards
-    }
-    self.currentlyDisplayedDate = targetDate;
+    self.currentlyDisplayedDate = [self dateForIndexPath:indexPath];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout

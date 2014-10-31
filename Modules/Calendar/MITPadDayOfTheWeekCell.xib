@@ -8,7 +8,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MITPadDayOfTheWeekCell">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MITDayOfTheWeekCell">
             <rect key="frame" x="0.0" y="0.0" width="222" height="44"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -46,7 +46,7 @@
                 <outlet property="dayOfTheMonthLabel" destination="Fj5-c0-bU1" id="vmf-oQ-euq"/>
                 <outlet property="dayOfTheWeekLabel" destination="fdg-Kw-EW7" id="Qiv-vc-7V5"/>
             </connections>
-            <point key="canvasLocation" x="975" y="468"/>
+            <point key="canvasLocation" x="495" y="242"/>
         </collectionViewCell>
     </objects>
 </document>
