@@ -9,6 +9,9 @@
 
 @property (nonatomic, retain) NSSet *representations;
 @property (nonatomic, retain) MITToursStop *stop;
+
+@property (nonatomic, readonly) NSString *thumbnailURL;
+
 @end
 
 @interface MITToursImage (CoreDataGeneratedAccessors)

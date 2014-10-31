@@ -1,11 +1,3 @@
-//
-//  MITLocationManager.m
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/15/14.
-//
-//
-
 #import "MITLocationManager.h"
 
 static const double kMilesPerMeter = 0.000621371;
@@ -55,6 +47,11 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     locationManager.delegate = self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = kDistanceFilterMeters;
+    
+    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [locationManager requestWhenInUseAuthorization];
+    }
+    
     self.locationManager = locationManager;
 }
 

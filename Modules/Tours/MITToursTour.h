@@ -17,6 +17,9 @@
 @property (nonatomic, retain) NSOrderedSet *links;
 @property (nonatomic, retain) NSOrderedSet *stops;
 
+@property (nonatomic, readonly) NSArray *mainLoopStops;
+@property (nonatomic, readonly) NSArray *sideTripsStops;
+
 - (NSString *)durationString;
 - (NSString *)localizedLengthString;
 

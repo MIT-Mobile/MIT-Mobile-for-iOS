@@ -35,9 +35,10 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)setupViewControllers
 {
     self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
+    self.listViewController.tour = self.selfGuidedTour;
+
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
-    self.mapViewController.view.backgroundColor = [UIColor blueColor];
-    
+        
     self.listViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
     

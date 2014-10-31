@@ -1,8 +1,10 @@
 #import "MITToursTour.h"
 #import "MITToursLink.h"
 #import "MITToursStop.h"
+#import "CoreLocation+MITAdditions.h"
 
-static const CGFloat kilometersPerMile = 1.60934;
+static NSString *const kMITToursMainLoop = @"Main Loop";
+static NSString *const kMITToursSideTrip = @"Side Trip";
 
 @implementation MITToursTour
 
@@ -32,6 +34,27 @@ static const CGFloat kilometersPerMile = 1.60934;
     return mapping;
 }
 
+- (NSArray *)mainLoopStops
+{
+    return [self stopsForType:kMITToursMainLoop];
+}
+
+- (NSArray *)sideTripsStops
+{
+    return [self stopsForType:kMITToursSideTrip];
+}
+
+- (NSArray *)stopsForType:(NSString *)type
+{
+    NSMutableArray *stops = [[NSMutableArray alloc] init];
+    for (MITToursStop *stop in self.stops) {
+        if ([stop.stopType isEqualToString:type]) {
+            [stops addObject:stop];
+        }
+    }
+    return stops;
+}
+
 - (NSString *)durationString
 {
     NSInteger hours = [self.estimatedDurationInMinutes integerValue] / 60;
@@ -48,7 +71,7 @@ static const CGFloat kilometersPerMile = 1.60934;
     NSLocale *locale = [NSLocale currentLocale];
     
     CGFloat kilometers = [self.lengthInKM floatValue];
-    CGFloat miles = kilometers / kilometersPerMile;
+    CGFloat miles = kilometers / KILOMETERS_PER_MILE;
     
     BOOL systemIsMetric = [[locale objectForKey:NSLocaleUsesMetricSystem] boolValue];
     
