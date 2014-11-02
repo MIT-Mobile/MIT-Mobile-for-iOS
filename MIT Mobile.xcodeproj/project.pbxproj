@@ -639,6 +639,8 @@
 		AF37E50F19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */; };
 		AF37E51319FFDFC800F72CD2 /* MITToursCalloutContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */; };
 		AF37E51419FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */; };
+		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
+		AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
@@ -1936,6 +1938,10 @@
 		AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursCalloutContentViewController.m; sourceTree = "<group>"; };
 		AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursCalloutContentViewController.xib; sourceTree = "<group>"; };
 		AF37E51519FFE20400F72CD2 /* MITToursCalloutContentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITToursCalloutContentViewController.h; sourceTree = "<group>"; };
+		AF41E4EE1A06AD1200EC4F18 /* SMCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMCalloutView.h; path = External/SMCalloutView/SMCalloutView.h; sourceTree = "<group>"; };
+		AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMCalloutView.m; path = External/SMCalloutView/SMCalloutView.m; sourceTree = "<group>"; };
+		AF41E4F11A06AD2200EC4F18 /* SMClassicCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMClassicCalloutView.h; path = External/SMCalloutView/SMClassicCalloutView.h; sourceTree = "<group>"; };
+		AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMClassicCalloutView.m; path = External/SMCalloutView/SMClassicCalloutView.m; sourceTree = "<group>"; };
 		BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBuildInfo.h; sourceTree = "<group>"; };
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
@@ -4087,6 +4093,8 @@
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
 				2CF4F81519817ED8009F75D7 /* SDWebImage */,
 				2C1808E518F33B95008F9775 /* MITTouchstone */,
+				DE654505173D90A900562C20 /* SDWebImage */,
+				AF41E4EA1A06ACF400EC4F18 /* SMCalloutView */,
 				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
 				48EDC96417175AF400376BCF /* UIImage+PDF */,
@@ -4479,6 +4487,17 @@
 				AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */,
 			);
 			name = Map;
+			sourceTree = "<group>";
+		};
+		AF41E4EA1A06ACF400EC4F18 /* SMCalloutView */ = {
+			isa = PBXGroup;
+			children = (
+				AF41E4EE1A06AD1200EC4F18 /* SMCalloutView.h */,
+				AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */,
+				AF41E4F11A06AD2200EC4F18 /* SMClassicCalloutView.h */,
+				AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */,
+			);
+			name = SMCalloutView;
 			sourceTree = "<group>";
 		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
@@ -5387,6 +5406,7 @@
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */,
 				5E069DD4196C464C00AC27CD /* MITMapIndexedCategoryViewController.m in Sources */,
+				AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
 				0B5D71231A08261800F60120 /* UIImageView+HighlightedWebCache.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
@@ -5541,6 +5561,7 @@
 				2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */,
 				4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */,
 				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
+				AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */,
 				229FFAC6199002E500ABF029 /* MITAcademicCalendarCell.m in Sources */,
 				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
 				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
