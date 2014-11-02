@@ -1,11 +1,13 @@
 #import "MITToursMapViewController.h"
 #import "MITToursStop.h"
-#import "MITTiledMapView.h"
+#import "MITToursTiledMapView.h"
+#import "MITToursCalloutMapView.h"
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
-#import "WYPopoverController.h"
-#import "MITToursCalloutContentViewController.h"
+#import "SMCalloutView.h"
+#import "SMClassicCalloutView.h"
+#import "MITToursCalloutContentView.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -15,12 +17,11 @@ static NSInteger kAnnotationMarginTop = 0;
 static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
-static NSTimeInterval kAnnotationAdjustmentDuration = 0.5;
 
-@interface MITToursMapViewController () <MKMapViewDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate>
 
-@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (strong, nonatomic) WYPopoverController *calloutPopoverController;
+@property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
+@property (strong, nonatomic) SMCalloutView *calloutView;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
@@ -45,7 +46,7 @@ static NSTimeInterval kAnnotationAdjustmentDuration = 0.5;
 {
     [super viewDidLoad];
     [self setupTiledMapView];
-    [self configurePopoverAppearance];
+    [self setupCalloutView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -71,6 +72,26 @@ static NSTimeInterval kAnnotationAdjustmentDuration = 0.5;
     [mapView addAnnotations:annotations];
     
     [self setupMapRoutes];
+}
+
+- (void)setupCalloutView
+{
+    SMCalloutDrawnBackgroundView *backgroundView = [[SMCalloutDrawnBackgroundView alloc] initWithFrame:CGRectZero];
+    backgroundView.fillBlack = [UIColor whiteColor];
+    backgroundView.outerStrokeColor = [UIColor grayColor];
+    backgroundView.alpha = 1.0;
+
+    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
+    calloutView.contentViewMargin = 0;
+    calloutView.delegate = self;
+    calloutView.backgroundView = backgroundView;
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;
+    calloutView.constrainedInsets = UIEdgeInsetsMake(0, 0, 100, 0); // TODO: Make these accurate
+    
+    self.calloutView = calloutView;
+    
+    MITToursCalloutMapView *mapView = (MITToursCalloutMapView *)self.tiledMapView.mapView;
+    mapView.calloutView = calloutView;
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -169,123 +190,48 @@ static NSTimeInterval kAnnotationAdjustmentDuration = 0.5;
     [self dismissCurrentCallout];
 }
 
-- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
-{
-    [self dismissCurrentCallout];
-    if (mapView.selectedAnnotations.count) {
-        for (id<MKAnnotation> annotation in mapView.selectedAnnotations) {
-            [mapView deselectAnnotation:annotation animated:YES];
-        }
-    }
-}
-
-#pragma mark - Move Selected Annotations Away From Edge
-
-- (CGRect)adjustFrameForAnnotationView:(MKAnnotationView *)annotationView mapView:(MKMapView *)mapView insets:(UIEdgeInsets)insets
-{
-    CGRect frame = [mapView convertRect:annotationView.frame fromView:annotationView.superview];
-    CGRect safeZone = UIEdgeInsetsInsetRect(mapView.bounds, insets);
-    
-    CGRect adjustedFrame = frame;
-    BOOL isOutsideSafeZone = NO;
-    if (frame.origin.x < safeZone.origin.x) {
-        adjustedFrame.origin.x = safeZone.origin.x;
-        isOutsideSafeZone = YES;
-    } else if (frame.origin.x + frame.size.width > safeZone.origin.x + safeZone.size.width) {
-        adjustedFrame.origin.x = safeZone.origin.x + safeZone.size.width - frame.size.width;
-        isOutsideSafeZone = YES;
-    }
-    
-    if (frame.origin.y < safeZone.origin.y) {
-        adjustedFrame.origin.y = safeZone.origin.y;
-        isOutsideSafeZone = YES;
-    } else if (frame.origin.y + frame.size.height > safeZone.origin.y + safeZone.size.height) {
-        adjustedFrame.origin.y = safeZone.origin.y + safeZone.size.height - frame.size.height;
-        isOutsideSafeZone = YES;
-    }
-    
-    if (isOutsideSafeZone) {
-        return adjustedFrame;
-    }
-    return CGRectNull;
-}
-
 #pragma mark - Custom Callout
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
-    MITToursStopAnnotation *annotation = annotationView.annotation;
+    MITToursStop *stop = ((MITToursStopAnnotation *)annotationView.annotation).stop;
     
-    MITToursCalloutContentViewController *contentController = [[MITToursCalloutContentViewController alloc] initWithNibName:nil bundle:nil];
-    contentController.stopType = annotation.stop.stopType;
-    contentController.stopName = annotation.stop.title;
+    MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
+    [contentView configureForStop:stop userLocation:mapView.userLocation.location];
+    contentView.delegate = self;
     
-    // Get distance for current user location
-    CLLocation *userLocation = mapView.userLocation.location;
-    if (userLocation) {
-        // TODO: DRY this out
-        NSArray *stopCoords = annotation.stop.coordinates;
-        // Convert to location coordinate
-        NSNumber *longitude = [stopCoords objectAtIndex:0];
-        NSNumber *latitude = [stopCoords objectAtIndex:1];
-        CLLocation *stopLocation = [[CLLocation alloc] initWithLatitude:[latitude doubleValue]
-                                                              longitude:[longitude doubleValue]];
-        double distanceInMeters = [stopLocation distanceFromLocation:userLocation];
-        contentController.distanceInMiles = distanceInMeters * MILES_PER_METER;
-        contentController.shouldDisplayDistance = YES;
-    } else {
-        contentController.shouldDisplayDistance = NO;
-    }
+    SMCalloutView *calloutView = self.calloutView;
+    calloutView.contentView = contentView;
+    calloutView.calloutOffset = annotationView.calloutOffset;
+        
+    [calloutView sizeToFit];
     
-    WYPopoverController *calloutPopover = [[WYPopoverController alloc] initWithContentViewController:contentController];
-    // Allow the user to interact with the map annotations even when the popover is displayed
-    calloutPopover.passthroughViews = @[self.tiledMapView.mapView];
-    
-    // Adjust the annotation if needed
-    CGRect adjustedFrame = [self adjustFrameForAnnotationView:annotationView mapView:mapView insets:self.annotationMarginInsets];
-    if (CGRectIsNull(adjustedFrame)) {
-        // No adjustment needed
-        [calloutPopover presentPopoverFromRect:annotationView.frame inView:annotationView.superview permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
-    } else {
-        // Scroll the map to bring annotation into the safe zone, then display the callout
-        CGPoint delta = CGPointMake(adjustedFrame.origin.x - annotationView.frame.origin.x,
-                                    adjustedFrame.origin.y - annotationView.frame.origin.y);
-        CGPoint adjustedCenter = CGPointMake(-delta.x + mapView.bounds.size.width * 0.5,
-                                             -delta.y + mapView.bounds.size.height * 0.5);
-        CLLocationCoordinate2D adjustedCoordinate = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
-        [UIView animateWithDuration:kAnnotationAdjustmentDuration animations:^{
-            [mapView setCenterCoordinate:adjustedCoordinate animated:NO];
-        } completion:^(BOOL finished) {
-            [calloutPopover presentPopoverFromRect:annotationView.frame inView:annotationView.superview permittedArrowDirections:WYPopoverArrowDirectionUp animated:YES];
-        }];
-    }
-    
-    [self dismissCurrentCallout];
-    self.calloutPopoverController = calloutPopover;
+    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
 - (void)dismissCurrentCallout
 {
-    WYPopoverController *popover = self.calloutPopoverController;
-    if (popover) {
-        [self.dismissingPopoverControllers addObject:popover];
-        [popover dismissPopoverAnimated:YES completion:^{
-            [self.dismissingPopoverControllers removeObject:popover];
-        }];
-        self.calloutPopoverController = nil;
-    }
+    [self.calloutView dismissCalloutAnimated:YES];
 }
 
-#pragma mark - WYPopover Appearance
+#pragma mark - SMCalloutViewDelegate Methods
 
-- (void)configurePopoverAppearance
+- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
 {
-    [WYPopoverController setDefaultTheme:[WYPopoverTheme theme]];
-    WYPopoverBackgroundView *appearance = [WYPopoverBackgroundView appearance];
-    [appearance setOuterStrokeColor:[UIColor grayColor]];
-    [appearance setViewContentInsets:UIEdgeInsetsMake(2, 2, 2, 2)];
-    [appearance setFillTopColor:[UIColor whiteColor]];
-    [appearance setFillBottomColor:[UIColor whiteColor]];
+    MKMapView *mapView = self.tiledMapView.mapView;
+    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
+                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
+    [mapView setCenterCoordinate:newCenter animated:YES];
+    return kSMCalloutViewRepositionDelayForUIScrollView;
+}
+
+#pragma mark - MITToursCalloutContentViewDelegate Methods
+
+- (void)calloutWasTappedForStop:(MITToursStop *)stop
+{
+    // TODO: Transition to stop details
+    NSLog( @"Callout view clicked for stop %@", stop.title );
 }
 
 @end
