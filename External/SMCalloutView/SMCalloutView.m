@@ -25,7 +25,7 @@
 #define SUBTITLE_TOP 28 // the top of the subtitle, when present
 #define SUBTITLE_HEIGHT 15 // subtitle height, fixed
 #define BETWEEN_ACCESSORIES_MARGIN 7 // margin between accessories when no title/subtitle is present
-#define CONTENT_VIEW_MARGIN 12 // margin around content view when present
+#define DEFAULT_CONTENT_VIEW_MARGIN 12 // margin around content view when present
 #define ANCHOR_MARGIN 27 // the smallest possible distance from the edge of our control to the "tip" of the anchor, from either left or right
 #define ANCHOR_HEIGHT 13 // effective height of the anchor
 #define TOP_ANCHOR_MARGIN 13 // all the above measurements assume a bottom anchor! if we're pointing "up" we'll need to add this top margin to everything.
@@ -66,6 +66,8 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
         [self.containerView addTarget:self action:@selector(highlightIfNecessary) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragInside];
         [self.containerView addTarget:self action:@selector(unhighlightIfNecessary) forControlEvents:UIControlEventTouchDragOutside | UIControlEventTouchCancel | UIControlEventTouchUpOutside | UIControlEventTouchUpInside];
         [self.containerView addTarget:self action:@selector(calloutClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        self.contentViewMargin = DEFAULT_CONTENT_VIEW_MARGIN;
     }
     return self;
 }
@@ -195,8 +197,10 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 }
 
 - (CGFloat)calloutContainerHeight {
-    if (self.contentView)
-        return self.contentView.$height + CONTENT_VIEW_MARGIN * 2;
+    if (self.contentView) {
+        CGFloat dy = self.currentArrowDirection == SMCalloutArrowDirectionUp ? TOP_ANCHOR_MARGIN : 0;
+        return self.contentView.$height + self.contentViewMargin * 2 + dy;
+    }
     else if (self.subtitleView || self.subtitle.length > 0)
         return CALLOUT_SUB_DEFAULT_CONTAINER_HEIGHT;
     else
@@ -535,7 +539,7 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
     
     if (self.contentView) {
         self.contentView.$x = self.innerContentMarginLeft;
-        self.contentView.$y = CONTENT_VIEW_MARGIN + dy;
+        self.contentView.$y = self.contentViewMargin + dy;
     }
 }
 
