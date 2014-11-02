@@ -44,9 +44,14 @@ static CGFloat const kBottomButtonYPadding = 20;
     [self setupButtons];
 }
 
+- (MKMapView *)createMapView
+{
+    return [[MKMapView alloc] initWithFrame:self.frame];
+}
+
 - (void)setupMapView
 {
-    self.mapView = [[MKMapView alloc] initWithFrame:self.frame];
+    self.mapView = [self createMapView];
     self.mapView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.mapView];
     
