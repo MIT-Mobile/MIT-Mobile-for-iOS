@@ -35,5 +35,17 @@
 
 // Draws a custom background matching the system background but can grow in height.
 @interface SMCalloutDrawnBackgroundView : SMCalloutBackgroundView
+
+@property (nonatomic, strong) UIColor *fillBlack; // rename
+@property (nonatomic, strong) UIColor *shadowBlack; // rename
+@property (nonatomic, strong) UIColor *glossTopColor;
+@property (nonatomic, strong) UIColor *glossBottomColor;
+@property (nonatomic, strong) UIColor *strokeColor;
+@property (nonatomic, strong) UIColor *innerShadowColor;
+@property (nonatomic, strong) UIColor *innerStrokeColor;
+@property (nonatomic, strong) UIColor *outerStrokeColor;
+
+@property (nonatomic) CGFloat alpha;
+
 @end
 

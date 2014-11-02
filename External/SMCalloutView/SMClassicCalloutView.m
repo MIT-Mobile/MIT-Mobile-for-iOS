@@ -596,6 +596,17 @@
     if (self = [super initWithFrame:frame]) {
         self.backgroundColor = [UIColor clearColor];
         self.opaque = NO;
+        
+        // Set default colors
+        self.fillBlack = [UIColor colorWithRed: 0.11 green: 0.11 blue: 0.11 alpha: 1];
+        self.shadowBlack = [UIColor colorWithRed: 0 green: 0 blue: 0 alpha: 0.47];
+        self.glossBottomColor = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.2];
+        self.glossTopColor = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.85];
+        self.strokeColor = [UIColor colorWithRed: 0.199 green: 0.199 blue: 0.199 alpha: 1];
+        self.innerShadowColor = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.4];
+        self.innerStrokeColor = [UIColor colorWithRed: 0.821 green: 0.821 blue: 0.821 alpha: 0.04];
+        self.outerStrokeColor = [UIColor colorWithRed: 0 green: 0 blue: 0 alpha: 0.35];
+        self.alpha = 0.83;
     }
     return self;
 }
@@ -636,14 +647,14 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     // Color Declarations
-    UIColor* fillBlack = [UIColor colorWithRed: 0.11 green: 0.11 blue: 0.11 alpha: 1];
-    UIColor* shadowBlack = [UIColor colorWithRed: 0 green: 0 blue: 0 alpha: 0.47];
-    UIColor* glossBottom = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.2];
-    UIColor* glossTop = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.85];
-    UIColor* strokeColor = [UIColor colorWithRed: 0.199 green: 0.199 blue: 0.199 alpha: 1];
-    UIColor* innerShadowColor = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.4];
-    UIColor* innerStrokeColor = [UIColor colorWithRed: 0.821 green: 0.821 blue: 0.821 alpha: 0.04];
-    UIColor* outerStrokeColor = [UIColor colorWithRed: 0 green: 0 blue: 0 alpha: 0.35];
+    UIColor* fillBlack = self.fillBlack;
+    UIColor* shadowBlack = self.shadowBlack;
+    UIColor* glossBottom = self.glossBottomColor;
+    UIColor* glossTop = self.glossTopColor;
+    UIColor* strokeColor = self.strokeColor;
+    UIColor* innerShadowColor = self.innerShadowColor;
+    UIColor* innerStrokeColor = self.innerStrokeColor;
+    UIColor* outerStrokeColor = self.outerStrokeColor;
     
     // Gradient Declarations
     NSArray* glossFillColors = [NSArray arrayWithObjects:
@@ -671,7 +682,7 @@
     //// CoreGroup ////
     {
         CGContextSaveGState(context);
-        CGContextSetAlpha(context, 0.83);
+        CGContextSetAlpha(context, self.alpha);
         CGContextBeginTransparencyLayer(context, NULL);
         
         // Background Drawing
