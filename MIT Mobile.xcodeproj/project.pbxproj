@@ -501,8 +501,6 @@
 		80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */; };
 		80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */; };
 		80EC3C291A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */; };
-		80F0219E199159D90056CA06 /* MITDateNavigationBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */; };
-		80F021A0199159EE0056CA06 /* MITDateNavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */; };
 		80F021B0199272C50056CA06 /* MITEventsMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F021AE199272C50056CA06 /* MITEventsMapViewController.m */; };
 		80F021B1199272C50056CA06 /* MITEventsMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F021AF199272C50056CA06 /* MITEventsMapViewController.xib */; };
 		80F021B519927E470056CA06 /* MITEventPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F021B419927E470056CA06 /* MITEventPlace.m */; };
@@ -637,8 +635,6 @@
 		AF2F705419FAB89400EE6398 /* MITToursStopAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2F705319FAB89400EE6398 /* MITToursStopAnnotation.m */; };
 		AF37E50E19FFDB4C00F72CD2 /* WYPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E50B19FFDB4C00F72CD2 /* WYPopoverController.m */; };
 		AF37E50F19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */; };
-		AF37E51319FFDFC800F72CD2 /* MITToursCalloutContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */; };
-		AF37E51419FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */; };
 		AF41E4E01A06AC2700EC4F18 /* MITToursCalloutContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4DE1A06AC2700EC4F18 /* MITToursCalloutContentView.m */; };
 		AF41E4E11A06AC2700EC4F18 /* MITToursCalloutContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */; };
 		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
@@ -1739,9 +1735,6 @@
 		80EC3C251A03D1960051F417 /* MITDayPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDayPickerViewController.h; path = DayPicker/MITDayPickerViewController.h; sourceTree = "<group>"; };
 		80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDayPickerViewController.m; path = DayPicker/MITDayPickerViewController.m; sourceTree = "<group>"; };
 		80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITPadDayOfTheWeekCell.xib; sourceTree = "<group>"; };
-		80F0219C199159D90056CA06 /* MITDateNavigationBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDateNavigationBarView.h; path = iPad/DateNavigationBar/MITDateNavigationBarView.h; sourceTree = "<group>"; };
-		80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDateNavigationBarView.m; path = iPad/DateNavigationBar/MITDateNavigationBarView.m; sourceTree = "<group>"; };
-		80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDateNavigationBarView.xib; path = iPad/DateNavigationBar/MITDateNavigationBarView.xib; sourceTree = "<group>"; };
 		80F021AD199272C50056CA06 /* MITEventsMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsMapViewController.h; path = iPad/EventsMapView/MITEventsMapViewController.h; sourceTree = "<group>"; };
 		80F021AE199272C50056CA06 /* MITEventsMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsMapViewController.m; path = iPad/EventsMapView/MITEventsMapViewController.m; sourceTree = "<group>"; };
 		80F021AF199272C50056CA06 /* MITEventsMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITEventsMapViewController.xib; path = iPad/EventsMapView/MITEventsMapViewController.xib; sourceTree = "<group>"; };
@@ -1939,9 +1932,6 @@
 		AF37E50B19FFDB4C00F72CD2 /* WYPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYPopoverController.m; path = External/WYPopoverController/WYPopoverController/WYPopoverController.m; sourceTree = "<group>"; };
 		AF37E50C19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WYStoryboardPopoverSegue.h; path = External/WYPopoverController/WYPopoverController/WYStoryboardPopoverSegue.h; sourceTree = "<group>"; };
 		AF37E50D19FFDB4C00F72CD2 /* WYStoryboardPopoverSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WYStoryboardPopoverSegue.m; path = External/WYPopoverController/WYPopoverController/WYStoryboardPopoverSegue.m; sourceTree = "<group>"; };
-		AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursCalloutContentViewController.m; sourceTree = "<group>"; };
-		AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursCalloutContentViewController.xib; sourceTree = "<group>"; };
-		AF37E51519FFE20400F72CD2 /* MITToursCalloutContentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITToursCalloutContentViewController.h; sourceTree = "<group>"; };
 		AF41E4DD1A06AC2700EC4F18 /* MITToursCalloutContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursCalloutContentView.h; sourceTree = "<group>"; };
 		AF41E4DE1A06AC2700EC4F18 /* MITToursCalloutContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursCalloutContentView.m; sourceTree = "<group>"; };
 		AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursCalloutContentView.xib; sourceTree = "<group>"; };
@@ -4380,16 +4370,6 @@
 			name = DayPicker;
 			sourceTree = "<group>";
 		};
-		80F02198199159A20056CA06 /* DateNavigationBar */ = {
-			isa = PBXGroup;
-			children = (
-				80F0219C199159D90056CA06 /* MITDateNavigationBarView.h */,
-				80F0219D199159D90056CA06 /* MITDateNavigationBarView.m */,
-				80F0219F199159EE0056CA06 /* MITDateNavigationBarView.xib */,
-			);
-			name = DateNavigationBar;
-			sourceTree = "<group>";
-		};
 		80F021A9199272780056CA06 /* EventsMapView */ = {
 			isa = PBXGroup;
 			children = (
@@ -4493,9 +4473,6 @@
 				AF2F704919FA991700EE6398 /* MITToursMapViewController.h */,
 				AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */,
 				AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */,
-				AF37E51119FFDFC800F72CD2 /* MITToursCalloutContentViewController.m */,
-				AF37E51519FFE20400F72CD2 /* MITToursCalloutContentViewController.h */,
-				AF37E51219FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib */,
 			);
 			name = Map;
 			sourceTree = "<group>";
@@ -5173,7 +5150,6 @@
 				2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */,
 				A56390DA19DDDD56001DE763 /* MITLibrariesAvailabilityDetailViewController.xib in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
-				AF37E51419FFDFC800F72CD2 /* MITToursCalloutContentViewController.xib in Resources */,
 				225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
@@ -5596,7 +5572,6 @@
 				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
 				22830A411A018CD100B514D1 /* MITToursStop.m in Sources */,
 				2209CC2C1992805500E17100 /* MITCalendarPageViewController.m in Sources */,
-				AF37E51319FFDFC800F72CD2 /* MITToursCalloutContentViewController.m in Sources */,
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
 				0B394CDD19E3355D00B48F17 /* SDWebImageManager.m in Sources */,
 				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,
