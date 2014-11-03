@@ -642,6 +642,10 @@
 		AF41E4E11A06AC2700EC4F18 /* MITToursCalloutContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */; };
 		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
 		AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */; };
+		AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */; };
+		AFB09B011A07CF2600C6D337 /* MITToursStopDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */; };
+		AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */; };
+		AFB09B0F1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */; };
 		AFECAE1C1A06D32B00562B97 /* MITToursTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */; };
 		AFECAE221A06D37300562B97 /* MITToursCalloutMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECAE211A06D37300562B97 /* MITToursCalloutMapView.m */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
@@ -1946,6 +1950,12 @@
 		AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMCalloutView.m; path = External/SMCalloutView/SMCalloutView.m; sourceTree = "<group>"; };
 		AF41E4F11A06AD2200EC4F18 /* SMClassicCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMClassicCalloutView.h; path = External/SMCalloutView/SMClassicCalloutView.h; sourceTree = "<group>"; };
 		AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMClassicCalloutView.m; path = External/SMCalloutView/SMClassicCalloutView.m; sourceTree = "<group>"; };
+		AFB09AFD1A07CF2600C6D337 /* MITToursStopDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDetailViewController.h; sourceTree = "<group>"; };
+		AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailViewController.m; sourceTree = "<group>"; };
+		AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopDetailViewController.xib; sourceTree = "<group>"; };
+		AFB09B0B1A08320500C6D337 /* MITToursStopDetailContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDetailContainerViewController.h; sourceTree = "<group>"; };
+		AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailContainerViewController.m; sourceTree = "<group>"; };
+		AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopDetailContainerViewController.xib; sourceTree = "<group>"; };
 		AFECAE1A1A06D32B00562B97 /* MITToursTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursTiledMapView.h; sourceTree = "<group>"; };
 		AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursTiledMapView.m; sourceTree = "<group>"; };
 		AFECAE201A06D37300562B97 /* MITToursCalloutMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursCalloutMapView.h; sourceTree = "<group>"; };
@@ -2545,6 +2555,7 @@
 		2247B77319F70322000E1725 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				AFB09AF91A07CF0400C6D337 /* Stop Detail */,
 				224E1A9B1A000CA300913D99 /* Self Guided Tour */,
 				224E1A9119FFE08300913D99 /* About MIT */,
 				224E1A7F19FE87BE00913D99 /* Home */,
@@ -4513,6 +4524,19 @@
 			name = SMCalloutView;
 			sourceTree = "<group>";
 		};
+		AFB09AF91A07CF0400C6D337 /* Stop Detail */ = {
+			isa = PBXGroup;
+			children = (
+				AFB09AFD1A07CF2600C6D337 /* MITToursStopDetailViewController.h */,
+				AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */,
+				AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */,
+				AFB09B0B1A08320500C6D337 /* MITToursStopDetailContainerViewController.h */,
+				AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */,
+				AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */,
+			);
+			name = "Stop Detail";
+			sourceTree = "<group>";
+		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -5155,6 +5179,7 @@
 				2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */,
 				0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITPhoneDayOfTheWeekCell.xib in Resources */,
+				AFB09B0F1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib in Resources */,
 				225481F419FAA256007BEE62 /* MITToursHomeViewController.xib in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				274886991930286C00414552 /* People_iPad.storyboard in Resources */,
@@ -5197,6 +5222,7 @@
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				229FFABA198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
+				AFB09B011A07CF2600C6D337 /* MITToursStopDetailViewController.xib in Resources */,
 				A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */,
@@ -5286,6 +5312,7 @@
 				0B34E42A1A081F82002CF7F1 /* SDWebImageDownloader.m in Sources */,
 				0B34E4291A081F45002CF7F1 /* MITNewsCategoryDataSource.m in Sources */,
 				228F26B419D4B6A20049F1B7 /* MITLibrariesMITLoanItem.m in Sources */,
+				AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */,
 				A59E408D19CB663A00CF9213 /* MITMobile.m in Sources */,
 				A526FA5F19CB65C800CD1518 /* ECSlidingAnimationController.m in Sources */,
 				A5FA038F19D362FE0063FF2C /* MITLibrariesSearchResultsListViewController.m in Sources */,
@@ -5573,6 +5600,7 @@
 				2CB4862319E6E54700FAE102 /* MITNavigationModule.m in Sources */,
 				5E4C6609192CFC470091282A /* MITShuttleStop.m in Sources */,
 				4B667063140330A000714C6A /* LibrariesViewController.m in Sources */,
+				AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */,
 				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
