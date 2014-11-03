@@ -19,19 +19,12 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     [super viewDidLoad];
     [self setupTableView];
+    [self setupTableViewInsetsForIPad];
     [self showLoadingIndicator];
     self.noResultsFoundLabel.hidden = YES;
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         self.shouldIncludeNumberedPrefixes = YES;
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self setupTableViewInsetsForIPad];
     }
 }
 
@@ -42,9 +35,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)setupTableViewInsetsForIPad
 {
-    CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
-    CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-    self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        self.tableView.contentInset = UIEdgeInsetsMake(self.tableViewTopInset, 0, toolbarHeight, 0);
+    }
 }
 
 - (void)setupTableView
@@ -158,6 +152,14 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     else {
         [self showLoadingIndicator];
     }
+}
+
+- (void)setTableViewTopInset:(CGFloat)tableViewTopInset
+{
+    UIEdgeInsets current = self.tableView.contentInset;
+    current.top = tableViewTopInset;
+    self.tableView.contentInset = current;
+    _tableViewTopInset = tableViewTopInset;
 }
 
 @end

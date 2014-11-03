@@ -35,12 +35,15 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 @property (nonatomic, strong) MITEventSearchTypeAheadViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
+@property (nonatomic, strong) UINavigationController *typeAheadNavigationController;
+@property (nonatomic, strong) UISearchBar *typeAheadSearchBar;
 @property (nonatomic, strong) MITEventSearchResultsViewController *resultsViewController;
 
-@property (strong, nonatomic) UISearchBar *searchBar;
+@property (strong, nonatomic) UISearchBar *navigationSearchBar;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchCancelBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *goToDateBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *searchFieldBarButtonItem;
 
 @property (strong, nonatomic) MITCalendarPageViewController *eventsPageViewController;
 
@@ -108,55 +111,16 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupRightBarButtonItems
 {
-    self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search"]
-                                                                               style:UIBarButtonItemStylePlain
-                                                                              target:self
-                                                                              action:@selector(searchButtonPressed:)];
-
-    self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"] style:UIBarButtonItemStylePlain target:self action:@selector(goToDateButtonPressed)];
-    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
-}
-
-- (void)showSearchBar
-{
-    if (!self.searchBar) {
-        self.searchBar = [[UISearchBar alloc] init];
-        self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-        self.searchBar.bounds = CGRectMake(0, 0, 260, 44);
-        self.searchBar.showsCancelButton = YES;
-        [self.searchBar setShowsCancelButton:YES animated:YES];
-        self.searchBar.placeholder = @"Search";
-        self.searchBar.delegate = self;
-    }
-
-    if (!self.searchCancelBarButtonItem) {
-        self.searchCancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
-                                                                          style:UIBarButtonItemStylePlain
-                                                                         target:self
-                                                                         action:@selector(searchButtonPressed:)];
-    }
-
-    UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
-    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
-
-    [self showSearchPopover];
+    [self showGeneralRightBarButtonItems];
 }
 
 - (void)hideSearchBar
 {
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
 
-    if (!self.searchMagnifyingGlassBarButtonItem) {
-        UIImage *searchImage = [UIImage imageNamed:@"global/search"];
-        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:searchImage
-                                                                                   style:UIBarButtonItemStylePlain
-                                                                                  target:self
-                                                                                  action:@selector(searchButtonPressed:)];
-    }
-
-    self.searchBar.text = @"";
-
-    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
+    self.navigationSearchBar.text = @"";
+    self.typeAheadSearchBar.text = @"";
+    [self showGeneralRightBarButtonItems];
 
     MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
     if (currentlyDisplayedController.events.count > 0) {
@@ -168,13 +132,107 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)showSearchPopover
 {
-    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+    [self setupTypeAheadNavigationController];
+    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadNavigationController];
     self.typeAheadPopoverController.delegate = self;
-    CGRect presentationRect = self.searchBar.frame;
-    presentationRect.origin.y += presentationRect.size.height / 2;
-    [self.typeAheadPopoverController presentPopoverFromRect:presentationRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    [self.typeAheadPopoverController presentPopoverFromBarButtonItem:self.searchMagnifyingGlassBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 
-    [self.searchBar becomeFirstResponder];
+    [self.navigationSearchBar becomeFirstResponder];
+}
+
+#pragma mark - Search Mode Nav Bar
+
+- (void)enableSearchModeNavBar
+{
+    [self showSearchModeRightBarButtonItems];
+    [self hideExtendedNavBar];
+    [self alignViewControllerTableViewsForHeight:0.0];
+}
+
+- (void)disableSearchModeNavBar
+{
+    [self showGeneralRightBarButtonItems];
+    [self setupExtendedNavBar];
+    [self setupDayPickerController];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
+    [self.dayPickerController reloadCollectionView];
+    [self alignViewControllerTableViewsForHeight:CGRectGetHeight(self.extendedNavBarView.bounds)];
+}
+
+- (void)hideExtendedNavBar
+{
+    [self.navigationController.navigationBar restoreShadow];
+    [self.extendedNavBarView removeFromSuperview];
+}
+
+- (void)showSearchModeRightBarButtonItems
+{
+    if (!self.searchCancelBarButtonItem) {
+        self.searchCancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                       target:self
+                                                                                       action:@selector(cancelButtonPressed:)];
+    }
+    
+    UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navigationSearchBar];
+    
+    // TODO: Insert calendar selection drop down into bar button items
+    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
+}
+
+- (void)showGeneralRightBarButtonItems
+{
+    if (!self.searchMagnifyingGlassBarButtonItem) {
+        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search"]
+                                                                                   style:UIBarButtonItemStylePlain
+                                                                                  target:self
+                                                                                  action:@selector(searchButtonPressed:)];
+    }
+    
+    if (!self.goToDateBarButtonItem) {
+        self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(goToDateButtonPressed)];
+    }
+    
+    self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
+}
+
+- (void)alignViewControllerTableViewsForHeight:(CGFloat)height
+{
+    [self.eventDetailViewController addTableViewTopInsetForHeight:height];
+    self.eventsPageViewController.tableViewTopInset = height;
+}
+
+#pragma mark - TypeAheadNavigationController
+
+- (void)setupTypeAheadNavigationController
+{
+    if (!self.typeAheadNavigationController) {
+        if (!self.typeAheadViewController) {
+            [self setupTypeAheadViewController];
+        }
+        self.typeAheadNavigationController = [[UINavigationController alloc] initWithRootViewController:self.typeAheadViewController];
+        self.typeAheadViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(typeAheadDoneButtonPressed:)];
+        [self setupTypeAheadSearchBar];
+    }
+    
+    [self.typeAheadSearchBar becomeFirstResponder];
+}
+
+- (void)setupTypeAheadSearchBar
+{
+    self.typeAheadSearchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
+    self.typeAheadSearchBar.placeholder = @"Search All MIT Events";
+    self.typeAheadSearchBar.showsCancelButton = NO;
+    self.typeAheadSearchBar.delegate = self;
+    self.typeAheadViewController.navigationItem.titleView = self.typeAheadSearchBar;
+    [self.typeAheadNavigationController.navigationBar addSubview:self.typeAheadSearchBar];
+}
+
+- (void)typeAheadDoneButtonPressed:(UIBarButtonItem *)sender
+{
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
 }
 
 #pragma mark - Navigation Bar Extension
@@ -217,18 +275,21 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)searchButtonPressed:(UIBarButtonItem *)barButtonItem
 {
-    if (barButtonItem == self.searchMagnifyingGlassBarButtonItem) {
-        [self showSearchBar];
-    }
-    else if (barButtonItem == self.searchCancelBarButtonItem) {
-        [self hideSearchBar];
-    }
+    [self showSearchPopover];
+}
+
+- (void)cancelButtonPressed:(UIBarButtonItem *)sender
+{
+    [self hideSearchBar];
+    [self disableSearchModeNavBar];
 }
 
 - (void)beginSearch:(NSString *)searchString
 {
-    self.searchBar.text = searchString;
-    [self.searchBar resignFirstResponder];
+    [self enableSearchModeNavBar];
+    self.navigationSearchBar.text = searchString;
+    self.typeAheadSearchBar.text = searchString;
+    [self.navigationSearchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     self.splitViewController.viewControllers = @[self.resultsViewController, self.eventDetailViewController];
     [self.resultsViewController beginSearch:searchString];
@@ -243,7 +304,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if (!self.typeAheadPopoverController.isPopoverVisible) {
+    if (!self.typeAheadPopoverController.isPopoverVisible && searchBar == self.typeAheadSearchBar) {
         [self showSearchPopover];
     }
 }
@@ -265,6 +326,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                                                                              navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                                            options:nil];
     self.eventsPageViewController.calendarSelectionDelegate = self;
+    self.eventsPageViewController.tableViewTopInset = kMITEventHomeNavBarExtensionHeight;
 }
 
 - (void)loadEvents
@@ -343,11 +405,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupDayPickerController
 {
-    self.dayPickerController = [MITDayPickerViewController new];
-    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
-    self.dayPickerController.delegate = self;
-    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
-
+    if (!self.dayPickerController) {
+        self.dayPickerController = [MITDayPickerViewController new];
+        self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
+        self.dayPickerController.delegate = self;
+        self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
+    }
     [self.dayPickerController willMoveToParentViewController:self];
     [self.extendedNavBarView addSubview:self.dayPickerController.view];
     [self addChildViewController:self.dayPickerController];
@@ -496,14 +559,29 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController
 {
     if ([popoverController isEqual:self.typeAheadPopoverController]) {
-        if ([self.searchBar.text isEqualToString:@""]) {
+        if ([self.navigationSearchBar.text isEqualToString:@""]) {
             [self hideSearchBar];
         } else {
-            [self.searchBar resignFirstResponder];
+            [self.navigationSearchBar resignFirstResponder];
         }
     }
 
     return YES;
 }
 
+#pragma mark - Getters | Setters
+
+- (UISearchBar *)navigationSearchBar
+{
+    if (!_navigationSearchBar) {
+        _navigationSearchBar = [[UISearchBar alloc] init];
+        _navigationSearchBar.searchBarStyle = UISearchBarStyleMinimal;
+        _navigationSearchBar.bounds = CGRectMake(0, 0, 260, 44);
+        _navigationSearchBar.showsCancelButton = YES;
+        _navigationSearchBar.showsCancelButton = NO;
+        _navigationSearchBar.placeholder = @"Search";
+        _navigationSearchBar.delegate = self;
+    }
+    return _navigationSearchBar;
+}
 @end

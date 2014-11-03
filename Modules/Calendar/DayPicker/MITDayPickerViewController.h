@@ -9,4 +9,5 @@
 @interface MITDayPickerViewController : UIViewController
 @property (weak, nonatomic) id<MITDayPickerViewControllerDelegate>delegate;
 @property (strong, nonatomic) NSDate *currentlyDisplayedDate;
+- (void)reloadCollectionView;
 @end
