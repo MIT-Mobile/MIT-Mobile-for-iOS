@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "MITResourceConstants.h"
 
 // keys for NSUserDefaults dictionary go here (app preferences)
 extern NSString * const MITModuleTabOrderKey;
@@ -84,37 +85,6 @@ extern NSString * const TourStartLocationEntityName;
 extern NSString * const QRReaderResultEntityName;
 
 // resource names
-extern NSString * const MITImageNameBackground;
-extern NSString * const MITImageNameEmail;
-extern NSString * const MITImageNameEmailHighlight;
-extern NSString * const MITImageNameMap;
-extern NSString * const MITImageNameMapHighlight;
-extern NSString * const MITImageNamePeople;
-extern NSString * const MITImageNamePeopleHighlight;
-extern NSString * const MITImageNamePhone;
-extern NSString * const MITImageNamePhoneHighlight;
-extern NSString * const MITImageNameExternal;
-extern NSString * const MITImageNameExternalHighlight;
-extern NSString * const MITImageNameEmergency;
-extern NSString * const MITImageNameEmergencyHighlight;
-extern NSString * const MITImageNameSecure;
-extern NSString * const MITImageNameSecureHighlight;
-extern NSString * const MITImageNameCalendar;
-extern NSString * const MITImageNameCalendarHighlight;
-
-extern NSString * const MITImageNameScrollTabBackgroundOpaque;
-extern NSString * const MITImageNameScrollTabBackgroundTranslucent;
-extern NSString * const MITImageNameScrollTabLeftEndCap;
-extern NSString * const MITImageNameScrollTabRightEndCap;
-extern NSString * const MITImageNameScrollTabSelectedTab;
-
-extern NSString * const MITImageNameLeftArrow;
-extern NSString * const MITImageNameRightArrow;
-extern NSString * const MITImageNameUpArrow;
-extern NSString * const MITImageNameDownArrow;
-
-extern NSString * const MITImageNameSearch;
-extern NSString * const MITImageNameBookmark;
 
 // action accessory types
 typedef enum {

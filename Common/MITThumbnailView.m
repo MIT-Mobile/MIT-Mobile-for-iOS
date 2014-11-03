@@ -10,9 +10,7 @@
 
 @implementation MITThumbnailView
 + (UIImage *)placeholderImage {
-    // TODO: allow placeholders image to be set
-    static NSString * const placeholderImageName = @"news/news-placeholder.png";
-    return [UIImage imageNamed:placeholderImageName];
+    return [UIImage imageNamed:MITImageNewsImagePlaceholder];
 }
 
 - (id) initWithFrame:(CGRect)frame {

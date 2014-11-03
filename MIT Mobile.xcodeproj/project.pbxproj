@@ -8,29 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1493D01987DD1E009B7EA8 /* MITPopoverBackgroundView.m */; };
-		0B1689D11937D1EB001EB3B1 /* MITNewsiPadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */; };
 		0B34ADB919E6D839008F0BAC /* NewsStoryHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B34ADB819E6D839008F0BAC /* NewsStoryHeaderReusableView.xib */; };
+		0B34E4281A081EC1002CF7F1 /* MITNewsiPadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */; };
+		0B34E4291A081F45002CF7F1 /* MITNewsCategoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F752E19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m */; };
+		0B34E42A1A081F82002CF7F1 /* SDWebImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC019E3355D00B48F17 /* SDWebImageDownloader.m */; };
+		0B34E42C1A08205A002CF7F1 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBA19E3355D00B48F17 /* SDImageCache.m */; };
+		0B34E42D1A082075002CF7F1 /* SDWebImageDownloaderOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC219E3355D00B48F17 /* SDWebImageDownloaderOperation.m */; };
+		0B34E42E1A08209C002CF7F1 /* SDWebImageCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBC19E3355D00B48F17 /* SDWebImageCompat.m */; };
 		0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */; };
 		0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */; };
 		0B394CD619E3355D00B48F17 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CB619E3355D00B48F17 /* MKAnnotationView+WebCache.m */; };
-		0B394CD719E3355D00B48F17 /* NSData+ImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CB819E3355D00B48F17 /* NSData+ImageContentType.m */; };
-		0B394CD819E3355D00B48F17 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBA19E3355D00B48F17 /* SDImageCache.m */; };
-		0B394CD919E3355D00B48F17 /* SDWebImageCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBC19E3355D00B48F17 /* SDWebImageCompat.m */; };
-		0B394CDA19E3355D00B48F17 /* SDWebImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBE19E3355D00B48F17 /* SDWebImageDecoder.m */; };
-		0B394CDB19E3355D00B48F17 /* SDWebImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC019E3355D00B48F17 /* SDWebImageDownloader.m */; };
-		0B394CDC19E3355D00B48F17 /* SDWebImageDownloaderOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC219E3355D00B48F17 /* SDWebImageDownloaderOperation.m */; };
 		0B394CDD19E3355D00B48F17 /* SDWebImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC419E3355D00B48F17 /* SDWebImageManager.m */; };
-		0B394CDE19E3355D00B48F17 /* SDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC719E3355D00B48F17 /* SDWebImagePrefetcher.m */; };
 		0B394CDF19E3355D00B48F17 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC919E3355D00B48F17 /* UIButton+WebCache.m */; };
 		0B394CE019E3355D00B48F17 /* UIImage+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCB19E3355D00B48F17 /* UIImage+GIF.m */; };
 		0B394CE119E3355D00B48F17 /* UIImage+MultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCD19E3355D00B48F17 /* UIImage+MultiFormat.m */; };
-		0B394CE219E3355D00B48F17 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCF19E3355D00B48F17 /* UIImage+WebP.m */; };
-		0B394CE319E3355D00B48F17 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD119E3355D00B48F17 /* UIImageView+HighlightedWebCache.m */; };
 		0B394CE419E3355D00B48F17 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD319E3355D00B48F17 /* UIImageView+WebCache.m */; };
 		0B394CE519E3355D00B48F17 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD519E3355D00B48F17 /* UIView+WebCacheOperation.m */; };
 		0B394CE819E3358B00B48F17 /* MITNewsRecentSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */; };
 		0B4F9D9119912A3F0047354E /* MITNewsiPadCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4F9D9019912A3F0047354E /* MITNewsiPadCategoryViewController.m */; };
-		0B55212119D3A253003BF9F2 /* popover in Resources */ = {isa = PBXBuildFile; fileRef = 0B55212019D3A252003BF9F2 /* popover */; };
 		0B59ECE9199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B59ECE8199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m */; };
 		0B893A3F197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
@@ -216,6 +211,9 @@
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A5C161887296B0013981A /* MITNewsViewController.m */; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
+		2C5D083E1A028328006E09C3 /* MIT_Mobile_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D083D1A028328006E09C3 /* MIT_Mobile_Tests.m */; };
+		2C5D08491A028367006E09C3 /* MITApplicationResourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D08481A028367006E09C3 /* MITApplicationResourceTests.m */; };
+		2C5D084A1A028AD9006E09C3 /* MITResourceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */; };
 		2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */; };
 		2C5D7875191817F500ECB388 /* MITLauncherGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D7874191817F500ECB388 /* MITLauncherGridViewController.m */; };
 		2C5D787C19181F4000ECB388 /* MITLauncherGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D787B19181F4000ECB388 /* MITLauncherGridViewCell.m */; };
@@ -240,7 +238,6 @@
 		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
-		2C7F752F19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F752E19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m */; };
 		2C7F8DFC197EE1C600F92894 /* MITNewsGridHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C85957C19D34605002895CC /* MITCollectionViewCellSizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C85957B19D34605002895CC /* MITCollectionViewCellSizer.m */; };
@@ -264,6 +261,7 @@
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
+		2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -275,7 +273,6 @@
 		2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81451636F69900DE273F /* DDFileLogger.m */; };
 		2CCF81531636F69900DE273F /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81471636F69900DE273F /* DDLog.m */; };
 		2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81491636F69900DE273F /* DDTTYLogger.m */; };
-		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD1AE8219520E40003D7601 /* MITCollectionViewGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */; };
 		2CD1AE8319520E40003D7601 /* MITCollectionViewGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */; };
 		2CD1AE8419520E40003D7601 /* MITCollectionViewGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */; };
@@ -287,7 +284,6 @@
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
 		2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */; };
-		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */; };
 		2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */; };
@@ -300,6 +296,17 @@
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */; };
 		2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */; };
+		2CEC6A5F1A01461800867A66 /* dining-meal-farm_to_fork.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */; };
+		2CEC6A601A01461800867A66 /* dining-meal-gluten_free.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */; };
+		2CEC6A611A01461800867A66 /* dining-meal-halal.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */; };
+		2CEC6A621A01461800867A66 /* dining-meal-humane.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */; };
+		2CEC6A631A01461800867A66 /* dining-meal-in_balance.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */; };
+		2CEC6A641A01461800867A66 /* dining-meal-kosher.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */; };
+		2CEC6A651A01461800867A66 /* dining-meal-organic.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */; };
+		2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */; };
+		2CEC6A671A01461800867A66 /* dining-meal-vegan.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */; };
+		2CEC6A681A01461800867A66 /* dining-meal-vegetarian.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */; };
+		2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */; };
 		2CED900018BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */; };
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
@@ -342,7 +349,6 @@
 		48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96B17175B4000376BCF /* NSString+MD5.m */; };
 		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
 		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
-		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
@@ -545,7 +551,6 @@
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
-		EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07B06612B89440005D6A4C /* NavScrollerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; };
 		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; };
@@ -564,12 +569,7 @@
 		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; };
 		EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C4405128B662C00058748 /* SuperThinProgressBar.m */; };
-		EB54943810DFF03600B708B3 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = EB54942710DFF03600B708B3 /* icons */; };
-		EB54947310DFF7E200B708B3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = EB54947210DFF7E200B708B3 /* global */; };
-		EB5C621E1201D92E00805EBE /* map in Resources */ = {isa = PBXBuildFile; fileRef = EB5C61FC1201D92E00805EBE /* map */; };
 		EB5C625A1201D93A00805EBE /* news in Resources */ = {isa = PBXBuildFile; fileRef = EB5C621F1201D93A00805EBE /* news */; };
-		EB5C625B1201D93A00805EBE /* people in Resources */ = {isa = PBXBuildFile; fileRef = EB5C622A1201D93A00805EBE /* people */; };
-		EB5C625C1201D93A00805EBE /* shuttle in Resources */ = {isa = PBXBuildFile; fileRef = EB5C62301201D93A00805EBE /* shuttle */; };
 		EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */; };
@@ -631,6 +631,13 @@
 			remoteGlobalIDString = 25160E78145651060060A5C5;
 			remoteInfo = RestKitFrameworkTests;
 		};
+		2C5D083F1A028329006E09C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = "MIT Mobile";
+		};
 		2C98DE5618510CED00232C71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
@@ -646,6 +653,7 @@
 		0B1689CF1937D1EB001EB3B1 /* MITNewsiPadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsiPadViewController.h; sourceTree = "<group>"; };
 		0B1689D01937D1EB001EB3B1 /* MITNewsiPadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsiPadViewController.m; sourceTree = "<group>"; };
 		0B34ADB819E6D839008F0BAC /* NewsStoryHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryHeaderReusableView.xib; path = XIBs/NewsStoryHeaderReusableView.xib; sourceTree = "<group>"; };
+		0B34E42B1A082012002CF7F1 /* SDWebImageDownloaderOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderOperation.m; path = External/SDWebImage/SDWebImage/SDWebImageDownloaderOperation.m; sourceTree = "<group>"; };
 		0B378670194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryImageCollectionViewCell.xib; path = XIBs/NewsStoryImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B3786751950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryDekCollectionViewCell.xib; path = XIBs/NewsStoryDekCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B385D3819631733009A3A4B /* News v4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News v4.xcdatamodel"; sourceTree = "<group>"; };
@@ -686,7 +694,6 @@
 		0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsRecentSearchController.m; sourceTree = "<group>"; };
 		0B4F9D8F19912A3F0047354E /* MITNewsiPadCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsiPadCategoryViewController.h; sourceTree = "<group>"; };
 		0B4F9D9019912A3F0047354E /* MITNewsiPadCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsiPadCategoryViewController.m; sourceTree = "<group>"; };
-		0B55212019D3A252003BF9F2 /* popover */ = {isa = PBXFileReference; lastKnownFileType = folder; name = popover; path = Resources/popover; sourceTree = "<group>"; };
 		0B59ECE7199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsLoadMoreCollectionViewCell.h; sourceTree = "<group>"; };
 		0B59ECE8199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsLoadMoreCollectionViewCell.m; sourceTree = "<group>"; };
 		0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryLoadMoreCollectionViewCell.xib; path = XIBs/NewsStoryLoadMoreCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -1040,6 +1047,10 @@
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
 		2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesUserLocationViewController.m; sourceTree = "<group>"; };
 		2C5CE69917FDC1BE009B850D /* MITMapModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MITMapModel.h; path = Model/MITMapModel.h; sourceTree = "<group>"; };
+		2C5D08391A028328006E09C3 /* MIT Mobile Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MIT Mobile Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C5D083C1A028328006E09C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C5D083D1A028328006E09C3 /* MIT_Mobile_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIT_Mobile_Tests.m; sourceTree = "<group>"; };
+		2C5D08481A028367006E09C3 /* MITApplicationResourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITApplicationResourceTests.m; sourceTree = "<group>"; };
 		2C5D6ABC1861374300182C19 /* MITMapPlaceContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapPlaceContent.h; path = Model/MITMapPlaceContent.h; sourceTree = "<group>"; };
 		2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapPlaceContent.m; path = Model/MITMapPlaceContent.m; sourceTree = "<group>"; };
 		2C5D7873191817F500ECB388 /* MITLauncherGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLauncherGridViewController.h; path = "App Delegate/Module Launcher/MITLauncherGridViewController.h"; sourceTree = "<group>"; };
@@ -1129,6 +1140,8 @@
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB90045176B5DC3006C3C3A /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
 		2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSCalloutView.m; sourceTree = "<group>"; };
+		2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITResourceConstants.m; sourceTree = "<group>"; };
+		2CBA739B19F7E512000258C9 /* MITResourceConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITResourceConstants.h; sourceTree = "<group>"; };
 		2CBD6A0216D3CE6D002B482F /* MGSMapView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Private.h"; sourceTree = "<group>"; };
 		2CBDBDE515CC1F1F0092F76F /* QRReaderResult v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "QRReaderResult v2.xcdatamodel"; sourceTree = "<group>"; };
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
@@ -1154,7 +1167,6 @@
 		2CCF81481636F69900DE273F /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
 		2CCF81491636F69900DE273F /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
 		2CCF814F1636F69900DE273F /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
-		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
 		2CD1AE7C19520E40003D7601 /* MITCollectionViewGridLayoutRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridLayoutRow.h; sourceTree = "<group>"; };
 		2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayoutRow.m; sourceTree = "<group>"; };
 		2CD1AE7E19520E40003D7601 /* MITCollectionViewGridLayoutSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridLayoutSection.h; sourceTree = "<group>"; };
@@ -1179,7 +1191,6 @@
 		2CDB025015D0404500436B59 /* MITScannerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerImage.m; sourceTree = "<group>"; };
 		2CDE4EFB17A3057F00F40598 /* NSTimer+MITBlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSTimer+MITBlockTimer.h"; path = "Categories/NSTimer+MITBlockTimer.h"; sourceTree = "<group>"; };
 		2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSTimer+MITBlockTimer.m"; path = "Categories/NSTimer+MITBlockTimer.m"; sourceTree = "<group>"; };
-		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
 		2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryData.h; sourceTree = "<group>"; };
 		2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryData.m; sourceTree = "<group>"; };
 		2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsLoadMoreTableCell.xib; path = Views/NewsLoadMoreTableCell.xib; sourceTree = "<group>"; };
@@ -1201,6 +1212,17 @@
 		2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileManagedResource.h; sourceTree = "<group>"; };
 		2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileManagedResource.m; sourceTree = "<group>"; };
 		2CEBBFA31635C7D900441252 /* Secret.m.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.m.in; sourceTree = "<group>"; };
+		2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-farm_to_fork.pdf"; sourceTree = "<group>"; };
+		2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-gluten_free.pdf"; sourceTree = "<group>"; };
+		2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-halal.pdf"; sourceTree = "<group>"; };
+		2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-humane.pdf"; sourceTree = "<group>"; };
+		2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-in_balance.pdf"; sourceTree = "<group>"; };
+		2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-kosher.pdf"; sourceTree = "<group>"; };
+		2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-organic.pdf"; sourceTree = "<group>"; };
+		2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-seafood_watch.pdf"; sourceTree = "<group>"; };
+		2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegan.pdf"; sourceTree = "<group>"; };
+		2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegetarian.pdf"; sourceTree = "<group>"; };
+		2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-well_being.pdf"; sourceTree = "<group>"; };
 		2CED8FFE18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsLoadMoreTableViewCell.h; path = Views/MITNewsLoadMoreTableViewCell.h; sourceTree = "<group>"; };
 		2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsLoadMoreTableViewCell.m; path = Views/MITNewsLoadMoreTableViewCell.m; sourceTree = "<group>"; };
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
@@ -1290,7 +1312,6 @@
 		48EDC96D17175B4000376BCF /* PDFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDFView.m; sourceTree = "<group>"; };
 		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
 		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
-		48EDC97317175C3100376BCF /* dining */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dining; path = Resources/dining; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -1565,26 +1586,6 @@
 		DE0F6B3311109BC500F064D6 /* AboutMITVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutMITVC.m; sourceTree = "<group>"; };
 		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
 		DE129018134B748E00BEBDA2 /* MITLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogging.h; sourceTree = "<group>"; };
-		DE1348F910FFC2CC006FFF33 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
-		DE1348FA10FFC2CC006FFF33 /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
-		DE1348FB10FFC2CC006FFF33 /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
-		DE1348FC10FFC2CC006FFF33 /* 12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 12.png; sourceTree = "<group>"; };
-		DE1348FD10FFC2CC006FFF33 /* 13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 13.png; sourceTree = "<group>"; };
-		DE1348FE10FFC2CC006FFF33 /* 14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 14.png; sourceTree = "<group>"; };
-		DE1348FF10FFC2CC006FFF33 /* 15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 15.png; sourceTree = "<group>"; };
-		DE13490010FFC2CC006FFF33 /* 16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 16.png; sourceTree = "<group>"; };
-		DE13490110FFC2CC006FFF33 /* 17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 17.png; sourceTree = "<group>"; };
-		DE13490210FFC2CC006FFF33 /* 18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 18.png; sourceTree = "<group>"; };
-		DE13490310FFC2CC006FFF33 /* 19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 19.png; sourceTree = "<group>"; };
-		DE13490410FFC2CC006FFF33 /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
-		DE13490510FFC2CC006FFF33 /* 20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 20.png; sourceTree = "<group>"; };
-		DE13490610FFC2CC006FFF33 /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
-		DE13490710FFC2CC006FFF33 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
-		DE13490810FFC2CC006FFF33 /* 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 5.png; sourceTree = "<group>"; };
-		DE13490910FFC2CC006FFF33 /* 6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 6.png; sourceTree = "<group>"; };
-		DE13490A10FFC2CC006FFF33 /* 7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 7.png; sourceTree = "<group>"; };
-		DE13490B10FFC2CC006FFF33 /* 8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 8.png; sourceTree = "<group>"; };
-		DE13490C10FFC2CC006FFF33 /* 9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 9.png; sourceTree = "<group>"; };
 		DE18F9E910F19085009A69B9 /* News.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = News.xcdatamodel; sourceTree = "<group>"; };
 		DE1B4D7010CE17B30073BABC /* MITJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITJSON.h; sourceTree = "<group>"; };
 		DE1B4D7110CE17B30073BABC /* MITJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITJSON.m; sourceTree = "<group>"; };
@@ -1669,8 +1670,6 @@
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
 		DEE6AF1F1117477E0037F03C /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Resources/credits.html; sourceTree = "<group>"; };
-		EB07B06512B89440005D6A4C /* NavScrollerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavScrollerView.h; sourceTree = "<group>"; };
-		EB07B06612B89440005D6A4C /* NavScrollerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavScrollerView.m; sourceTree = "<group>"; };
 		EB07B06912B8971D005D6A4C /* calendar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = calendar; path = Resources/calendar; sourceTree = "<group>"; };
 		EB4C1E98127723B700058748 /* ToursModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToursModule.h; sourceTree = "<group>"; };
 		EB4C1E99127723B700058748 /* ToursModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToursModule.m; sourceTree = "<group>"; };
@@ -1702,12 +1701,7 @@
 		EB4C42DD1289CC8000058748 /* MITMapRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRoute.m; sourceTree = "<group>"; };
 		EB4C4404128B662C00058748 /* SuperThinProgressBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperThinProgressBar.h; sourceTree = "<group>"; };
 		EB4C4405128B662C00058748 /* SuperThinProgressBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuperThinProgressBar.m; sourceTree = "<group>"; };
-		EB54942710DFF03600B708B3 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = Resources/icons; sourceTree = "<group>"; };
-		EB54947210DFF7E200B708B3 /* global */ = {isa = PBXFileReference; lastKnownFileType = folder; name = global; path = Resources/global; sourceTree = "<group>"; };
-		EB5C61FC1201D92E00805EBE /* map */ = {isa = PBXFileReference; lastKnownFileType = folder; name = map; path = Resources/map; sourceTree = "<group>"; };
 		EB5C621F1201D93A00805EBE /* news */ = {isa = PBXFileReference; lastKnownFileType = folder; name = news; path = Resources/news; sourceTree = "<group>"; };
-		EB5C622A1201D93A00805EBE /* people */ = {isa = PBXFileReference; lastKnownFileType = folder; name = people; path = Resources/people; sourceTree = "<group>"; };
-		EB5C62301201D93A00805EBE /* shuttle */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shuttle; path = Resources/shuttle; sourceTree = "<group>"; };
 		EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiLineTableViewCell.h; path = ../MultiLineTableViewCell.h; sourceTree = "<group>"; };
 		EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultiLineTableViewCell.m; path = ../MultiLineTableViewCell.m; sourceTree = "<group>"; };
 		EB6F2B6910E9023300A29A2A /* MITUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITUIConstants.h; sourceTree = "<group>"; };
@@ -1812,6 +1806,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2C5D08361A028328006E09C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1834,6 +1835,8 @@
 				DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */,
 				DEA3B6F610CB126200BDA774 /* MITConstants.h */,
 				DEA3B6F710CB126200BDA774 /* MITConstants.m */,
+				2CBA739B19F7E512000258C9 /* MITResourceConstants.h */,
+				2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */,
 				EBA2867710E082010003BA01 /* MITLoadingActivityView.h */,
 				EBA2867810E082010003BA01 /* MITLoadingActivityView.m */,
 				5E6DEDED1924F45300BA54BE /* Location */,
@@ -1858,8 +1861,6 @@
 				2C5DECC813E9BABB00F9C089 /* Mobile Web API */,
 				2C09824A13A8F21D00778B53 /* ModuleVersions.h */,
 				2C09824B13A8F21D00778B53 /* ModuleVersions.m */,
-				EB07B06512B89440005D6A4C /* NavScrollerView.h */,
-				EB07B06612B89440005D6A4C /* NavScrollerView.m */,
 				2CFF6C2717E11AE500BAA8B2 /* Scrolling Navigation Bar */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
@@ -2015,6 +2016,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* MITMobile.app */,
+				2C5D08391A028328006E09C3 /* MIT Mobile Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2313,6 +2315,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				0B34E42B1A082012002CF7F1 /* SDWebImageDownloaderOperation.m */,
 				2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */,
 				4B83721C157E5B19004CBC49 /* External */,
 				DE715445102FE468005E6111 /* Modules */,
@@ -2320,6 +2323,7 @@
 				DE783C9810C8651300931EC5 /* App Delegate */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
+				2C5D083A1A028328006E09C3 /* MIT Mobile Tests */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -2338,25 +2342,16 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0B55212019D3A252003BF9F2 /* popover */,
-				DE5BE3EB188BA796008A135E /* Images.xcassets */,
-				48EDC97317175C3100376BCF /* dining */,
-				2CD12D4E1360584F00A73ACA /* facilities */,
-				2CDF301E134DF504007C6813 /* qrreader */,
+				2CEC6A531A01461800867A66 /* dining */,
 				EB07B06912B8971D005D6A4C /* calendar */,
-				EB4C34F81281FCBD00058748 /* tours */,
-				EB5C621F1201D93A00805EBE /* news */,
-				EB5C622A1201D93A00805EBE /* people */,
-				EB5C62301201D93A00805EBE /* shuttle */,
-				EB5C61FC1201D92E00805EBE /* map */,
-				4BE4D3001416EB4D00E723F0 /* libraries */,
-				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
-				EB54947210DFF7E200B708B3 /* global */,
-				EB54942710DFF03600B708B3 /* icons */,
-				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
 				DEE6AF1F1117477E0037F03C /* credits.html */,
 				DE5E99D21124B57C00498760 /* emergency_template.html */,
 				EBF1120412A495170002D751 /* en.lproj */,
+				DE5BE3EB188BA796008A135E /* Images.xcassets */,
+				4BE4D3001416EB4D00E723F0 /* libraries */,
+				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
+				EB5C621F1201D93A00805EBE /* news */,
+				EB4C34F81281FCBD00058748 /* tours */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2701,6 +2696,24 @@
 				2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */,
 			);
 			path = FacilitiesUserLocation;
+			sourceTree = "<group>";
+		};
+		2C5D083A1A028328006E09C3 /* MIT Mobile Tests */ = {
+			isa = PBXGroup;
+			children = (
+				2C5D08481A028367006E09C3 /* MITApplicationResourceTests.m */,
+				2C5D083D1A028328006E09C3 /* MIT_Mobile_Tests.m */,
+				2C5D083B1A028328006E09C3 /* Supporting Files */,
+			);
+			path = "MIT Mobile Tests";
+			sourceTree = "<group>";
+		};
+		2C5D083B1A028328006E09C3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2C5D083C1A028328006E09C3 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		2C5D78791918191E00ECB388 /* Module Launcher */ = {
@@ -3052,6 +3065,25 @@
 				2CEBBFA31635C7D900441252 /* Secret.m.in */,
 			);
 			path = Configuration;
+			sourceTree = "<group>";
+		};
+		2CEC6A531A01461800867A66 /* dining */ = {
+			isa = PBXGroup;
+			children = (
+				2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */,
+				2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */,
+				2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */,
+				2CEC6A571A01461800867A66 /* dining-meal-humane.pdf */,
+				2CEC6A581A01461800867A66 /* dining-meal-in_balance.pdf */,
+				2CEC6A591A01461800867A66 /* dining-meal-kosher.pdf */,
+				2CEC6A5A1A01461800867A66 /* dining-meal-organic.pdf */,
+				2CEC6A5B1A01461800867A66 /* dining-meal-seafood_watch.pdf */,
+				2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */,
+				2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */,
+				2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */,
+			);
+			name = dining;
+			path = Resources/dining;
 			sourceTree = "<group>";
 		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
@@ -3664,34 +3696,6 @@
 			path = JSON;
 			sourceTree = "<group>";
 		};
-		DE1348F810FFC2CC006FFF33 /* debug_tiles */ = {
-			isa = PBXGroup;
-			children = (
-				DE1348F910FFC2CC006FFF33 /* 1.png */,
-				DE1348FA10FFC2CC006FFF33 /* 10.png */,
-				DE1348FB10FFC2CC006FFF33 /* 11.png */,
-				DE1348FC10FFC2CC006FFF33 /* 12.png */,
-				DE1348FD10FFC2CC006FFF33 /* 13.png */,
-				DE1348FE10FFC2CC006FFF33 /* 14.png */,
-				DE1348FF10FFC2CC006FFF33 /* 15.png */,
-				DE13490010FFC2CC006FFF33 /* 16.png */,
-				DE13490110FFC2CC006FFF33 /* 17.png */,
-				DE13490210FFC2CC006FFF33 /* 18.png */,
-				DE13490310FFC2CC006FFF33 /* 19.png */,
-				DE13490410FFC2CC006FFF33 /* 2.png */,
-				DE13490510FFC2CC006FFF33 /* 20.png */,
-				DE13490610FFC2CC006FFF33 /* 3.png */,
-				DE13490710FFC2CC006FFF33 /* 4.png */,
-				DE13490810FFC2CC006FFF33 /* 5.png */,
-				DE13490910FFC2CC006FFF33 /* 6.png */,
-				DE13490A10FFC2CC006FFF33 /* 7.png */,
-				DE13490B10FFC2CC006FFF33 /* 8.png */,
-				DE13490C10FFC2CC006FFF33 /* 9.png */,
-			);
-			name = debug_tiles;
-			path = Resources/debug_tiles;
-			sourceTree = "<group>";
-		};
 		DE27768E177E7A3900CF46FF /* SVPullToRefresh */ = {
 			isa = PBXGroup;
 			children = (
@@ -3745,19 +3749,19 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				48B8129315E428DA00E791F9 /* Links */,
-				4B66705F1403304300714C6A /* Libraries */,
 				DE81CF5E10C6BC390085573D /* About */,
+				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
 				EB86CA6C115D273800C8F3D1 /* Calendar */,
 				DE715446102FE468005E6111 /* Campus Map */,
 				48327CDD16F74EA0003A2F23 /* Dining */,
 				DE715447102FE468005E6111 /* Emergency */,
-				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
+				4B66705F1403304300714C6A /* Libraries */,
+				48B8129315E428DA00E791F9 /* Links */,
 				DE81CF5F10C6BC390085573D /* News */,
-				EB7F326610CD6C5B00188BCD /* People */,
+				EB7F326610CD6C5B00188BCD /* People Directory */,
 				2CB6459C134CAF1A00E85E64 /* Scanner */,
 				DE9EFBCE10FE7D3200F5F07E /* Settings */,
-				DE715449102FE468005E6111 /* ShuttleTrack */,
+				DE715449102FE468005E6111 /* Shuttles */,
 				EB4C1E97127723B700058748 /* Tours */,
 			);
 			path = Modules;
@@ -3799,7 +3803,7 @@
 			path = Emergency;
 			sourceTree = "<group>";
 		};
-		DE715449102FE468005E6111 /* ShuttleTrack */ = {
+		DE715449102FE468005E6111 /* Shuttles */ = {
 			isa = PBXGroup;
 			children = (
 				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
@@ -3818,6 +3822,7 @@
 				5E70E398192F7FBF00165B41 /* Views */,
 				5E6DEDF41925646100BA54BE /* Old */,
 			);
+			name = Shuttles;
 			path = ShuttleTrack;
 			sourceTree = "<group>";
 		};
@@ -4014,7 +4019,7 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		EB7F326610CD6C5B00188BCD /* People */ = {
+		EB7F326610CD6C5B00188BCD /* People Directory */ = {
 			isa = PBXGroup;
 			children = (
 				481F764D188EBA470051F444 /* People.storyboard */,
@@ -4030,6 +4035,7 @@
 				274887321933ABCC00414552 /* MITPeopleSearchHandler.h */,
 				274887331933ABCC00414552 /* MITPeopleSearchHandler.m */,
 			);
+			name = "People Directory";
 			path = People;
 			sourceTree = "<group>";
 		};
@@ -4119,6 +4125,24 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* MITMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2C5D08381A028328006E09C3 /* MIT Mobile Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C5D08471A028329006E09C3 /* Build configuration list for PBXNativeTarget "MIT Mobile Tests" */;
+			buildPhases = (
+				2C5D08351A028328006E09C3 /* Sources */,
+				2C5D08361A028328006E09C3 /* Frameworks */,
+				2C5D08371A028328006E09C3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C5D08401A028329006E09C3 /* PBXTargetDependency */,
+			);
+			name = "MIT Mobile Tests";
+			productName = "MIT Mobile Tests";
+			productReference = 2C5D08391A028328006E09C3 /* MIT Mobile Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4134,6 +4158,10 @@
 								enabled = 1;
 							};
 						};
+					};
+					2C5D08381A028328006E09C3 = {
+						CreatedOnToolsVersion = 6.1;
+						TestTargetID = 1D6058900D05DD3D006BFB54;
 					};
 				};
 			};
@@ -4159,6 +4187,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* MIT Mobile */,
+				2C5D08381A028328006E09C3 /* MIT Mobile Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -4201,30 +4230,25 @@
 			files = (
 				A59E409119CB676900CF9213 /* MITShuttleRouteContainerViewController.xib in Resources */,
 				A59E409219CB676900CF9213 /* MITShuttleRouteStatusCell.xib in Resources */,
+				2CEC6A651A01461800867A66 /* dining-meal-organic.pdf in Resources */,
 				A59E409319CB676900CF9213 /* MITShuttleStopAlarmCell.xib in Resources */,
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
+				2CEC6A5F1A01461800867A66 /* dining-meal-farm_to_fork.pdf in Resources */,
 				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
 				A5FD262619C384FC0057CE9D /* MITDiningDietaryFlagListCell.xib in Resources */,
 				22BDD0CD19804E3D005BE8E9 /* MITCalendarEventCell.xib in Resources */,
 				0BCC90D519631C2C00440544 /* MITNewsRecentSearchController.xib in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				229FFAC2198FFBEF00ABF029 /* MITAcademicCalendarViewController.xib in Resources */,
-				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				0BE0C40F1975B42B00961025 /* MITViewWithCenterText.xib in Resources */,
-				EB54947310DFF7E200B708B3 /* global in Resources */,
-				EB54943810DFF03600B708B3 /* icons in Resources */,
-				EB5C621E1201D92E00805EBE /* map in Resources */,
 				EB5C625A1201D93A00805EBE /* news in Resources */,
-				EB5C625B1201D93A00805EBE /* people in Resources */,
-				2CDF301F134DF504007C6813 /* qrreader in Resources */,
 				80F021A0199159EE0056CA06 /* MITDateNavigationBarView.xib in Resources */,
 				A52E0CF119B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
 				22CFC1A919AE623F003BD72A /* MITDiningVenueInfoCell.xib in Resources */,
 				A5A303D01980500000C9C273 /* MITEventDetailCell.xib in Resources */,
-				EB5C625C1201D93A00805EBE /* shuttle in Resources */,
 				2C5D7880191828B700ECB388 /* LauncherModuleGridCell.xib in Resources */,
 				2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */,
 				EB4C34FA1281FCBD00058748 /* tours in Resources */,
@@ -4251,6 +4275,7 @@
 				8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */,
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
 				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
+				2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */,
 				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				0BD7B96E194A36D200B0EDBD /* NewsStoryClipCollectionViewCell.xib in Resources */,
 				0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */,
@@ -4264,6 +4289,8 @@
 				225F2191197D5AD500F34DE9 /* MITEventsHomeViewController.xib in Resources */,
 				225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */,
+				2CEC6A621A01461800867A66 /* dining-meal-humane.pdf in Resources */,
+				2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */,
 				0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				274886991930286C00414552 /* People_iPad.storyboard in Resources */,
@@ -4272,6 +4299,7 @@
 				225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
+				2CEC6A681A01461800867A66 /* dining-meal-vegetarian.pdf in Resources */,
 				5E8CE40A1922B12E00703920 /* MITShuttleHomeViewController.xib in Resources */,
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
 				A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */,
@@ -4287,6 +4315,7 @@
 				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				22C012BC19B7BA6000879EF6 /* MITDiningScheduleCell.xib in Resources */,
+				2CEC6A611A01461800867A66 /* dining-meal-halal.pdf in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
@@ -4298,14 +4327,24 @@
 				5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				229FFABA198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.xib in Resources */,
-				0B55212119D3A253003BF9F2 /* popover in Resources */,
 				2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */,
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
-				48EDC97417175C3100376BCF /* dining in Resources */,
 				A5A24B7119946EC400AA1CFC /* MITEventSearchResultsViewController.xib in Resources */,
 				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
+				2C3C53451896A7D300D1F9B5 /* News_iPhone.storyboard in Resources */,
+				2CEC6A631A01461800867A66 /* dining-meal-in_balance.pdf in Resources */,
+				2CEC6A671A01461800867A66 /* dining-meal-vegan.pdf in Resources */,
+				2CEC6A641A01461800867A66 /* dining-meal-kosher.pdf in Resources */,
+				2CEC6A601A01461800867A66 /* dining-meal-gluten_free.pdf in Resources */,
 				2C7A58BD1937C44C0041DBFC /* News_iPad.storyboard in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News_iPhone.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C5D08371A028328006E09C3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4364,6 +4403,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B34E42E1A08209C002CF7F1 /* SDWebImageCompat.m in Sources */,
+				0B34E42D1A082075002CF7F1 /* SDWebImageDownloaderOperation.m in Sources */,
+				0B34E42C1A08205A002CF7F1 /* SDImageCache.m in Sources */,
+				0B34E42A1A081F82002CF7F1 /* SDWebImageDownloader.m in Sources */,
+				0B34E4291A081F45002CF7F1 /* MITNewsCategoryDataSource.m in Sources */,
 				A59E408D19CB663A00CF9213 /* MITMobile.m in Sources */,
 				A526FA5F19CB65C800CD1518 /* ECSlidingAnimationController.m in Sources */,
 				A5455E3B19CB64EC005E762C /* MITShuttleStopPredictionLoader.m in Sources */,
@@ -4371,7 +4415,6 @@
 				A5455E3819CB64AB005E762C /* MITShuttleRootViewController.m in Sources */,
 				A5455E3919CB64AB005E762C /* MITShuttleMapViewController.m in Sources */,
 				A5455E3419CB648B005E762C /* MITMobileResource.m in Sources */,
-				0B394CDA19E3355D00B48F17 /* SDWebImageDecoder.m in Sources */,
 				A569BE6119CB610E0014C29E /* MITDiningMenuComparisonViewController.xib in Sources */,
 				A569BE6219CB610E0014C29E /* MITDiningHallMenuComparisonLayout.m in Sources */,
 				A569BE6319CB610E0014C29E /* MITDiningHallMenuComparisonSectionHeaderView.m in Sources */,
@@ -4382,7 +4425,6 @@
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
-				0B394CE319E3355D00B48F17 /* UIImageView+HighlightedWebCache.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */,
@@ -4405,13 +4447,12 @@
 				22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */,
 				2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
-				0B394CD819E3355D00B48F17 /* SDImageCache.m in Sources */,
 				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
+				0B34E4281A081EC1002CF7F1 /* MITNewsiPadViewController.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
 				27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */,
 				A5BF260F1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m in Sources */,
-				0B394CDB19E3355D00B48F17 /* SDWebImageDownloader.m in Sources */,
 				EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */,
 				3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */,
 				277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */,
@@ -4425,6 +4466,7 @@
 				2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				2C18090618F33B95008F9775 /* MITECPAuthnRequestMessage.m in Sources */,
+				2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */,
 				2209CC3019929BE300E17100 /* MITEventsTableViewController.m in Sources */,
 				A5A303CF1980500000C9C273 /* MITEventDetailCell.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
@@ -4443,7 +4485,6 @@
 				2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */,
 				22D90302199BA90D00AEBC7D /* MITDiningLinks.m in Sources */,
 				2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */,
-				0B394CE219E3355D00B48F17 /* UIImage+WebP.m in Sources */,
 				22B2890419B63E780093DE9E /* MITDiningFilterViewController.m in Sources */,
 				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
 				0B394CE119E3355D00B48F17 /* UIImage+MultiFormat.m in Sources */,
@@ -4470,16 +4511,14 @@
 				DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */,
 				A5A303CA19804F0B00C9C273 /* MITEventDetailViewController.m in Sources */,
 				2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */,
-				0B394CD719E3355D00B48F17 /* NSData+ImageContentType.m in Sources */,
+				0BD7B972194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m in Sources */,
 				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
 				A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */,
-				0BD7B972194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m in Sources */,
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
 				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */,
 				5E069DD4196C464C00AC27CD /* MITMapIndexedCategoryViewController.m in Sources */,
-				2C7F752F19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				2C2F779D196DBA6500284AE7 /* MITCollectionViewGridDividerView.m in Sources */,
@@ -4503,10 +4542,8 @@
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
 				5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */,
 				2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */,
-				0B394CDE19E3355D00B48F17 /* SDWebImagePrefetcher.m in Sources */,
 				A5A24B7419946FA400AA1CFC /* MITEventsRecentSearches.m in Sources */,
 				22CFC1A819AE623F003BD72A /* MITDiningVenueInfoCell.m in Sources */,
-				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */,
@@ -4670,7 +4707,6 @@
 				2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */,
 				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
-				0B394CD919E3355D00B48F17 /* SDWebImageCompat.m in Sources */,
 				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */,
@@ -4709,7 +4745,6 @@
 				2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */,
 				A52E0CF519B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m in Sources */,
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
-				0B1689D11937D1EB001EB3B1 /* MITNewsiPadViewController.m in Sources */,
 				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
 				2287A7D219BE2CAA008B0DF6 /* MITCalendarsContact.m in Sources */,
 				2287A7CF19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m in Sources */,
@@ -4806,7 +4841,6 @@
 				0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */,
 				27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */,
 				279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */,
-				0B394CDC19E3355D00B48F17 /* SDWebImageDownloaderOperation.m in Sources */,
 				27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */,
 				A5DDEB98195CA88E00BEA0E7 /* MITMapHomeViewController.m in Sources */,
 				8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */,
@@ -4818,9 +4852,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2C5D08351A028328006E09C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C5D083E1A028328006E09C3 /* MIT_Mobile_Tests.m in Sources */,
+				2C5D08491A028367006E09C3 /* MITApplicationResourceTests.m in Sources */,
+				2C5D084A1A028AD9006E09C3 /* MITResourceConstants.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2C5D08401A028329006E09C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1D6058900D05DD3D006BFB54 /* MIT Mobile */;
+			targetProxy = 2C5D083F1A028329006E09C3 /* PBXContainerItemProxy */;
+		};
 		2C98DE5718510CED00232C71 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RestKit;
@@ -4866,7 +4915,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "0975E861-99D0-4C64-AC49-D8144D6864B3";
+				PROVISIONING_PROFILE = "0dcd0c4e-42c2-4e96-b1d8-836c31232fce";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -4900,6 +4949,132 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		2C5D08411A028329006E09C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MITMobile.app/MITMobile";
+			};
+			name = Debug;
+		};
+		2C5D08421A028329006E09C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MITMobile.app/MITMobile";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2C5D08431A028329006E09C3 /* TestFlight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MITMobile.app/MITMobile";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = TestFlight;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5024,6 +5199,16 @@
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
 				DEF93C671110C9C4009DF154 /* TestFlight */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C5D08471A028329006E09C3 /* Build configuration list for PBXNativeTarget "MIT Mobile Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C5D08411A028329006E09C3 /* Debug */,
+				2C5D08421A028329006E09C3 /* Release */,
+				2C5D08431A028329006E09C3 /* TestFlight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

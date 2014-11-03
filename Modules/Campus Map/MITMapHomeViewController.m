@@ -77,8 +77,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.navigationController setToolbarHidden:NO];
         [self.tiledMapView setButtonsHidden:YES animated:NO];
         
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
-        UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/location"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonLocation] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
     } else {
@@ -132,7 +132,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
     
-    self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
+    self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
 }
 

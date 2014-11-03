@@ -100,7 +100,7 @@
                 if ([self.details[@"ready"] boolValue])
                 {
                     statusIcon = [[UIImageView alloc] init];
-                    statusIcon.image = [UIImage imageNamed:@"libraries/status-ready"];
+                    statusIcon.image = [UIImage imageNamed:MITImageLibrariesStatusReady];
                 }
                 break;
 
@@ -108,7 +108,7 @@
                 if ([self.details[@"overdue"] boolValue])
                 {
                     statusIcon = [[UIImageView alloc] init];
-                    statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
+                    statusIcon.image = [UIImage imageNamed:MITImageLibrariesStatusAlert];
                 }
                 break;
 
