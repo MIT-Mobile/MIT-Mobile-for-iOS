@@ -34,5 +34,4 @@ typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
  */
 - (CGFloat)targetTableViewHeight;
 
-- (void)addTableViewTopInsetForHeight:(CGFloat)height;
 @end

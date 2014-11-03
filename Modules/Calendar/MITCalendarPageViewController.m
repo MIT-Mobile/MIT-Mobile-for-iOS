@@ -42,7 +42,6 @@
     MITEventsTableViewController *eventsTableViewController = [[MITEventsTableViewController alloc] init];
     eventsTableViewController.date = date;
     eventsTableViewController.delegate = self;
-    eventsTableViewController.tableViewTopInset = self.tableViewTopInset;
     
     if (self.calendar) {
         [MITCalendarWebservices getEventsForCalendar:self.calendar category:self.category date:eventsTableViewController.date completion:^(NSArray *events, NSError *error)  {
@@ -112,16 +111,6 @@
     if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didUpdateCurrentlyDisplayedEvents:)]) {
         [self.calendarSelectionDelegate calendarPageViewController:self didUpdateCurrentlyDisplayedEvents:currentlyDisplayedEvents];
     }
-}
-
-#pragma mark - Getters | Setters
-
-- (void)setTableViewTopInset:(CGFloat)tableViewTopInset
-{
-    for (MITEventsTableViewController *tableVC in self.viewControllers) {
-        tableVC.tableViewTopInset = tableViewTopInset;
-    }
-    _tableViewTopInset = tableViewTopInset;
 }
 
 @end
