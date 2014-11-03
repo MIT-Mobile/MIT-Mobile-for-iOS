@@ -44,4 +44,20 @@
     }];
 }
 
+// These are hardcoded for now, but will be replaced by webservice calls when those become available
++ (NSString *)aboutMITText
+{
+    return @"The misson of MIT is to advance knowledge and educate students in science, technology, and otehr areas of scholarship that will best serve the nation and the world in the 21st century.";
+}
+
++ (NSString *)aboutMITURLString
+{
+    return @"http://web.mit.edu/institute-events/events/";
+}
+
++ (NSString *)aboutGuidedToursText
+{
+    return @"Regularly scheduled student-led campus tours are conducted Monday through Friday at 11 am and at 3 pm, excluding legal US holidays and the winter break period.";
+}
+
 @end
