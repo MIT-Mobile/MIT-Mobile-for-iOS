@@ -59,34 +59,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     self.title = @"Event Details";
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self setupTableViewInsetsForIPad];
-}
-
-- (void)addTableViewTopInsetForHeight:(CGFloat)height
-{
-    UIEdgeInsets currentInsets = self.tableView.contentInset;
-    currentInsets.top = height;
-    self.tableView.contentInset = currentInsets;
-}
-
-- (void)setupTableViewInsetsForIPad
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
-        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-        self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);
-    }
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Public Methods
 
 - (void)setEvent:(MITCalendarsEvent *)event
@@ -96,8 +68,9 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
         
         [self refreshEventRows];
         
-        [self requestEventDetails];
-        
+        if (event) {
+            [self requestEventDetails];
+        }
     }
 }
 
