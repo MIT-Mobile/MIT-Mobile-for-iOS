@@ -239,7 +239,7 @@ enum {
     vc.overviewController = self;
     
     UINavigationController *dummyVC = [[MITNavigationController alloc] initWithRootViewController:vc];
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] presentAppModalViewController:dummyVC animated:YES];
+    [self presentViewController:dummyVC animated:YES completion:nil];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

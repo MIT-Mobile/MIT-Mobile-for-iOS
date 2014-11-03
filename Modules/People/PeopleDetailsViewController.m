@@ -1,3 +1,5 @@
+#import <MessageUI/MessageUI.h>
+
 #import "PeopleDetailsViewController.h"
 #import "ConnectionDetector.h"
 #import "PeopleFavoriteData.h"
@@ -5,10 +7,8 @@
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
-//#import "MITCampusMapViewController.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -19,7 +19,7 @@ static NSInteger AttributeValueIndex    = 0;
 static NSInteger DisplayNameIndex       = 1;
 static NSInteger AccessoryIconIndex     = 2;
 
-@interface PeopleDetailsViewController ()
+@interface PeopleDetailsViewController () <MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *attributes;
 
@@ -638,7 +638,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void)emailIconTapped:(NSString *)email
 {
-    [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
+    if ([MFMailComposeViewController canSendMail]) {
+        NSParameterAssert(email);
+        
+        MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
+        [composeViewController setToRecipients:@[email]];
+        [self presentViewController:composeViewController animated:YES completion:nil];
+    }
 }
 
 - (void)externalIconTapped:(NSString *)urlString
@@ -646,6 +652,14 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     NSURL *url = [NSURL URLWithString:urlString];
     if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    if ([self.presentedViewController isEqual:controller]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

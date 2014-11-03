@@ -560,7 +560,6 @@
 		EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF114FB12A700510002D751 /* TourIntroViewController.m */; };
 		EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */; };
 		EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8AB1112B197FC00D39AE6 /* TourComponent.m */; };
-		EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */; };
 		EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B5F212B5CAF600D39AE6 /* IntroToMITController.m */; };
 		EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B8C312B6B8B400D39AE6 /* TourStartLocation.m */; };
 		EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1643,8 +1642,6 @@
 		EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		EBF8AB1012B197FC00D39AE6 /* TourComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourComponent.h; sourceTree = "<group>"; };
 		EBF8AB1112B197FC00D39AE6 /* TourComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourComponent.m; sourceTree = "<group>"; };
-		EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMailComposeController.h; sourceTree = "<group>"; };
-		EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMailComposeController.m; sourceTree = "<group>"; };
 		EBF8B5F112B5CAF600D39AE6 /* IntroToMITController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroToMITController.h; sourceTree = "<group>"; };
 		EBF8B5F212B5CAF600D39AE6 /* IntroToMITController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroToMITController.m; sourceTree = "<group>"; };
 		EBF8B8C212B6B8B400D39AE6 /* TourStartLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourStartLocation.h; sourceTree = "<group>"; };
@@ -1738,8 +1735,6 @@
 				EBA2867810E082010003BA01 /* MITLoadingActivityView.m */,
 				5E6DEDED1924F45300BA54BE /* Location */,
 				2CDA8ABE17624C2D001F011F /* Logging */,
-				EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */,
-				EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */,
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
 				EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */,
@@ -4211,7 +4206,6 @@
 				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
 				A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */,
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
-				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */,
 				5E069DD4196C464C00AC27CD /* MITMapIndexedCategoryViewController.m in Sources */,
@@ -4668,7 +4662,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4708,7 +4701,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4748,7 +4740,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "MIT Mobile Tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";

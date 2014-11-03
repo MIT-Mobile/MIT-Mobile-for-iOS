@@ -1,7 +1,6 @@
 #import "ShareDetailViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "UIKit+MITAdditions.h"
-#import "MITMailComposeController.h"
 #import "Secret.h"
 #import <Twitter/Twitter.h>
 #import <Social/Social.h>
@@ -10,6 +9,10 @@
 static NSString *kShareDetailEmail = @"Email";
 static NSString *kShareDetailFacebook = @"Facebook";
 static NSString *kShareDetailTwitter = @"Twitter";
+
+@interface ShareDetailViewController () <MFMailComposeViewControllerDelegate>
+
+@end
 
 @implementation ShareDetailViewController
 - (void)loadView {
@@ -42,18 +45,14 @@ static NSString *kShareDetailTwitter = @"Twitter";
 // subclasses should make sure emailBody and emailSubject are set up before this gets called
 // or call [super actionSheet:actionSheet clickedButtonAtIndex:buttonIndex] at the end of this
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailEmail])
-    {
-        [MITMailComposeController presentMailControllerWithRecipient:nil
-                                                             subject:[self.shareDelegate emailSubject]
-                                                                body:[self.shareDelegate emailBody]];
-    }
-    else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailFacebook])
-    {
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailEmail]) {
+        MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
+        [composeViewController setSubject:[self.shareDelegate emailSubject]];
+        [composeViewController setMessageBody:[self.shareDelegate emailBody] isHTML:NO];
+        [self presentViewController:composeViewController animated:YES completion:nil];
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailFacebook]) {
         [self composeForServiceType:SLServiceTypeFacebook];
-    }
-    else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailTwitter])
-    {
+    } else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailTwitter]) {
         [self composeForServiceType:SLServiceTypeTwitter];
     }
 }
@@ -104,4 +103,13 @@ static NSString *kShareDetailTwitter = @"Twitter";
 	
 	// Release any cached data, images, etc that aren't in use.
 }
+
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    if ([self.presentedViewController isEqual:controller]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 @end
