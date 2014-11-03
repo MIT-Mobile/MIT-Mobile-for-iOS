@@ -145,21 +145,20 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)enableSearchModeNavBar
 {
     [self showSearchModeRightBarButtonItems];
+    [self hideExtendedNavBar];
 }
 
 - (void)disableSearchModeNavBar
 {
     [self showGeneralRightBarButtonItems];
+    [self setupExtendedNavBar];
+    [self setupDayPickerController];
 }
 
 - (void)hideExtendedNavBar
 {
-    
-}
-
-- (void)showExtendedNavBar
-{
-    
+    [self.navigationController.navigationBar restoreShadow];
+    [self.extendedNavBarView removeFromSuperview];
 }
 
 - (void)showSearchModeRightBarButtonItems
@@ -272,7 +271,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)cancelButtonPressed:(UIBarButtonItem *)sender
 {
     [self hideSearchBar];
-    [self showGeneralRightBarButtonItems];
+    [self disableSearchModeNavBar];
 }
 
 - (void)beginSearch:(NSString *)searchString
@@ -395,11 +394,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupDayPickerController
 {
-    self.dayPickerController = [MITDayPickerViewController new];
-    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
-    self.dayPickerController.delegate = self;
-    self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
-
+    if (!self.dayPickerController) {
+        self.dayPickerController = [MITDayPickerViewController new];
+        self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
+        self.dayPickerController.delegate = self;
+        self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
+    }
     [self.dayPickerController willMoveToParentViewController:self];
     [self.extendedNavBarView addSubview:self.dayPickerController.view];
     [self addChildViewController:self.dayPickerController];
