@@ -7,4 +7,6 @@
 
 - (instancetype)initWithTour:(MITToursTour *)tour nibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
+- (void)centerMapOnUserLocation;
+
 @end

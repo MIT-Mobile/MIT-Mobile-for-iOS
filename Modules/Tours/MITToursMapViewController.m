@@ -234,4 +234,11 @@ static NSInteger kAnnotationMarginRight = 50;
     NSLog( @"Callout view clicked for stop %@", stop.title );
 }
 
+#pragma mark - User Location Centering
+
+- (void)centerMapOnUserLocation
+{
+    [self.tiledMapView centerMapOnUserLocation];
+}
+
 @end
