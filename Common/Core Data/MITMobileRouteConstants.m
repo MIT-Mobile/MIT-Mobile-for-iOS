@@ -29,6 +29,10 @@ NSString* const MITLibrariesPathPattern = @"apis/libraries/locations";
 NSString* const MITLibrariesLinksResourceName = @"MITLibrariesLinksResourceName";
 NSString* const MITLibrariesLinksPathPattern = @"apis/libraries/links";
 
+#pragma mark libraries Ask Us
+NSString* const MITLibrariesAskUsResourceName = @"MITLibrariesAskUsResourceName";
+NSString* const MITLibrariesAskUsPathPattern = @"apis/secure/libraries/forms/askUs";
+
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";
 NSString* const MITDiningVenueIconPathPattern = @"apis/dining/venues/:type/:venue/icon";
