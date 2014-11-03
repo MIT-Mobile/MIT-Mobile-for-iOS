@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursHomeViewControllerPad">
+            <connections>
+                <outlet property="collectionView" destination="LFJ-FY-CJQ" id="6CH-S9-iE7"/>
+                <outlet property="coverImageView" destination="nOx-mA-58a" id="8KU-f0-vwg"/>
+                <outlet property="tableView" destination="DwJ-fl-zbc" id="HZY-cE-YBX"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nOx-mA-58a">
+                    <rect key="frame" x="184" y="100" width="400" height="289"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="400" id="Afq-rO-FYa"/>
+                        <constraint firstAttribute="height" constant="289" id="me8-CR-8ZZ"/>
+                    </constraints>
+                </imageView>
+                <tableView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="DwJ-fl-zbc">
+                    <rect key="frame" x="184" y="283" width="400" height="106"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="400" id="LBx-Y4-OCj"/>
+                        <constraint firstAttribute="height" constant="106" id="t9y-iD-u7u"/>
+                    </constraints>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="ZbZ-kB-SzM"/>
+                        <outlet property="delegate" destination="-1" id="QIo-no-8VR"/>
+                    </connections>
+                </tableView>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="LFJ-FY-CJQ">
+                    <rect key="frame" x="91" y="430" width="587" height="321"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="CZT-ho-L3n">
+                        <size key="itemSize" width="400" height="75"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="tyL-OR-iLf"/>
+                    </connections>
+                </collectionView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="LFJ-FY-CJQ" secondAttribute="bottom" constant="209" id="A6V-05-RNN"/>
+                <constraint firstAttribute="trailing" secondItem="LFJ-FY-CJQ" secondAttribute="trailing" constant="90" id="BG6-Oh-8Tq"/>
+                <constraint firstItem="DwJ-fl-zbc" firstAttribute="top" secondItem="nOx-mA-58a" secondAttribute="bottom" constant="-106" id="DiE-3F-xYo"/>
+                <constraint firstItem="LFJ-FY-CJQ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="430" id="JAP-s0-7vP"/>
+                <constraint firstItem="nOx-mA-58a" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="100" id="Vqu-1c-mZg"/>
+                <constraint firstAttribute="centerX" secondItem="nOx-mA-58a" secondAttribute="centerX" id="Wwh-fH-6Lw"/>
+                <constraint firstAttribute="centerX" secondItem="DwJ-fl-zbc" secondAttribute="centerX" id="gNQ-Gk-LPz"/>
+                <constraint firstItem="LFJ-FY-CJQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="91" id="jpP-Dt-F7E"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <point key="canvasLocation" x="497" y="489"/>
+        </view>
+    </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+</document>

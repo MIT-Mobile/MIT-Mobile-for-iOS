@@ -58,6 +58,8 @@
 		2209CC3019929BE300E17100 /* MITEventsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209CC2E19929BE300E17100 /* MITEventsTableViewController.m */; };
 		2209CC3119929BE300E17100 /* MITEventsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2209CC2F19929BE300E17100 /* MITEventsTableViewController.xib */; };
 		221754931A081D19002AD787 /* MITLibrariesAskUsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 221754921A081D19002AD787 /* MITLibrariesAskUsModel.m */; };
+		2217548B1A07D48A002AD787 /* MITToursInfoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 221754891A07D48A002AD787 /* MITToursInfoCollectionCell.m */; };
+		2217548C1A07D48A002AD787 /* MITToursInfoCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2217548A1A07D48A002AD787 /* MITToursInfoCollectionCell.xib */; };
 		22312DC819C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22312DC719C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m */; };
 		22312DCB19C0E784000EDDFE /* MITDiningInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22312DCA19C0E784000EDDFE /* MITDiningInfoScheduleCell.m */; };
 		223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */; };
@@ -124,6 +126,8 @@
 		22830A3B1A012C0D00B514D1 /* MITToursTourStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22830A391A012C0D00B514D1 /* MITToursTourStopCell.xib */; };
 		22830A3E1A018A6400B514D1 /* MITToursStopCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 22830A3D1A018A6400B514D1 /* MITToursStopCellModel.m */; };
 		22830A411A018CD100B514D1 /* MITToursStop.m in Sources */ = {isa = PBXBuildFile; fileRef = 22830A401A018CD100B514D1 /* MITToursStop.m */; };
+		22830A501A03D12C00B514D1 /* MITToursHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22830A4E1A03D12B00B514D1 /* MITToursHomeViewControllerPad.m */; };
+		22830A511A03D12C00B514D1 /* MITToursHomeViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22830A4F1A03D12B00B514D1 /* MITToursHomeViewControllerPad.xib */; };
 		2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */; };
 		2287A7CF19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7CE19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.m */; };
 		2287A7D219BE2CAA008B0DF6 /* MITCalendarsContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 2287A7D119BE2CAA008B0DF6 /* MITCalendarsContact.m */; };
@@ -871,6 +875,9 @@
 		2209CC2F19929BE300E17100 /* MITEventsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITEventsTableViewController.xib; sourceTree = "<group>"; };
 		221754911A081D19002AD787 /* MITLibrariesAskUsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesAskUsModel.h; sourceTree = "<group>"; };
 		221754921A081D19002AD787 /* MITLibrariesAskUsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesAskUsModel.m; sourceTree = "<group>"; };
+		221754881A07D48A002AD787 /* MITToursInfoCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursInfoCollectionCell.h; sourceTree = "<group>"; };
+		221754891A07D48A002AD787 /* MITToursInfoCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursInfoCollectionCell.m; sourceTree = "<group>"; };
+		2217548A1A07D48A002AD787 /* MITToursInfoCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursInfoCollectionCell.xib; sourceTree = "<group>"; };
 		22312DC619C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailInfoScheduleCell.h; path = Dining/MITDiningRetailInfoScheduleCell.h; sourceTree = "<group>"; };
 		22312DC719C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailInfoScheduleCell.m; path = Dining/MITDiningRetailInfoScheduleCell.m; sourceTree = "<group>"; };
 		22312DC919C0E784000EDDFE /* MITDiningInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningInfoScheduleCell.h; path = Dining/MITDiningInfoScheduleCell.h; sourceTree = "<group>"; };
@@ -988,6 +995,9 @@
 		22830A3D1A018A6400B514D1 /* MITToursStopCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopCellModel.m; sourceTree = "<group>"; };
 		22830A3F1A018CD100B514D1 /* MITToursStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStop.h; sourceTree = "<group>"; };
 		22830A401A018CD100B514D1 /* MITToursStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStop.m; sourceTree = "<group>"; };
+		22830A4D1A03D12B00B514D1 /* MITToursHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursHomeViewControllerPad.h; sourceTree = "<group>"; };
+		22830A4E1A03D12B00B514D1 /* MITToursHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursHomeViewControllerPad.m; sourceTree = "<group>"; };
+		22830A4F1A03D12B00B514D1 /* MITToursHomeViewControllerPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursHomeViewControllerPad.xib; sourceTree = "<group>"; };
 		2287A7CA19BE2CA9008B0DF6 /* MITCalendarsLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsLocation.h; sourceTree = "<group>"; };
 		2287A7CB19BE2CA9008B0DF6 /* MITCalendarsLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarsLocation.m; sourceTree = "<group>"; };
 		2287A7CD19BE2CAA008B0DF6 /* MITCalendarsSeriesInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarsSeriesInfo.h; sourceTree = "<group>"; };
@@ -2574,6 +2584,7 @@
 		224E1A7F19FE87BE00913D99 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				22830A491A03D10F00B514D1 /* iPad */,
 				224E1A8319FE87CD00913D99 /* Cells */,
 				225481F019FAA256007BEE62 /* MITToursHomeViewController.h */,
 				225481F119FAA256007BEE62 /* MITToursHomeViewController.m */,
@@ -2591,6 +2602,9 @@
 				224E1A8919FE9B9E00913D99 /* MITToursInfoCell.h */,
 				224E1A8A19FE9B9E00913D99 /* MITToursInfoCell.m */,
 				224E1A8B19FE9B9E00913D99 /* MITToursInfoCell.xib */,
+				221754881A07D48A002AD787 /* MITToursInfoCollectionCell.h */,
+				221754891A07D48A002AD787 /* MITToursInfoCollectionCell.m */,
+				2217548A1A07D48A002AD787 /* MITToursInfoCollectionCell.xib */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -2812,6 +2826,16 @@
 				22830A391A012C0D00B514D1 /* MITToursTourStopCell.xib */,
 			);
 			name = Cells;
+			sourceTree = "<group>";
+		};
+		22830A491A03D10F00B514D1 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				22830A4D1A03D12B00B514D1 /* MITToursHomeViewControllerPad.h */,
+				22830A4E1A03D12B00B514D1 /* MITToursHomeViewControllerPad.m */,
+				22830A4F1A03D12B00B514D1 /* MITToursHomeViewControllerPad.xib */,
+			);
+			name = iPad;
 			sourceTree = "<group>";
 		};
 		22CFC19019AE5B37003BD72A /* Retail Venues */ = {
@@ -5146,12 +5170,14 @@
 				A59A25A619A1434D00AD7E3A /* MITDiningHallMealCollectionCell.xib in Resources */,
 				5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */,
 				228D661F19B6612500C7B78B /* MITDiningFiltersCell.xib in Resources */,
+				2217548C1A07D48A002AD787 /* MITToursInfoCollectionCell.xib in Resources */,
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
 				0B34ADB919E6D839008F0BAC /* NewsStoryHeaderReusableView.xib in Resources */,
 				A56390E719E07F67001DE763 /* MITLibrariesAvailabilityDetailCell.xib in Resources */,
 				2209CC3119929BE300E17100 /* MITEventsTableViewController.xib in Resources */,
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
 				5E70E39F192FC2E600165B41 /* MITShuttleRouteContainerViewController-landscape.xib in Resources */,
+				22830A511A03D12C00B514D1 /* MITToursHomeViewControllerPad.xib in Resources */,
 				80F021B1199272C50056CA06 /* MITEventsMapViewController.xib in Resources */,
 				A5A303DB1982041200C9C273 /* MITWebviewCell.xib in Resources */,
 				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
@@ -5351,6 +5377,7 @@
 				22D90302199BA90D00AEBC7D /* MITDiningLinks.m in Sources */,
 				A563905419D9C0C4001DE763 /* MITLibrariesItemDetailLineCell.m in Sources */,
 				2258CBE419CB67090067E35C /* MITLibrariesResource.m in Sources */,
+				22830A501A03D12C00B514D1 /* MITToursHomeViewControllerPad.m in Sources */,
 				2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */,
 				22B2890419B63E780093DE9E /* MITDiningFilterViewController.m in Sources */,
 				224E1A9719FFE0A100913D99 /* MITToursAboutMITViewController.m in Sources */,
@@ -5623,6 +5650,7 @@
 				A52E0CF019B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m in Sources */,
 				A563912019E4708F001DE763 /* MITLibrariesSingleSubtitleLabelCell.m in Sources */,
 				5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */,
+				2217548B1A07D48A002AD787 /* MITToursInfoCollectionCell.m in Sources */,
 				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
 				226A887F19C8C4EC00DB96B6 /* MITLibrariesWebservices.m in Sources */,
 				225819E219D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m in Sources */,
