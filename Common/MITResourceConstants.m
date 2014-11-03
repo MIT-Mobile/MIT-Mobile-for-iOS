@@ -78,6 +78,7 @@ NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
 
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
+NSString * const MITImageNewsGridView = @"news-grid-view";
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
