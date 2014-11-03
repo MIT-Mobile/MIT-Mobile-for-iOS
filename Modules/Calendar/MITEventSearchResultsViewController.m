@@ -57,6 +57,16 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     [self.tableView registerNib:[UINib nibWithNibName:kMITCalendarEventCellNibName bundle:nil] forCellReuseIdentifier:kMITCalendarEventCellIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarResultsCountCellIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarContinueSearchingCellIdentifier];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        [self setupTableViewInsetsForIPad];
+    }
+}
+
+- (void)setupTableViewInsetsForIPad
+{
+    CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
+    CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+    self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);
 }
 
 - (void)showLoadingSpinner
