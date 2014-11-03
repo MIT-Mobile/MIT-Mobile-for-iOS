@@ -5,17 +5,16 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursCalloutContentViewController">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursCalloutContentView">
             <connections>
-                <outlet property="detailButton" destination="R1j-is-PuR" id="oga-bl-GcK"/>
-                <outlet property="distanceLabel" destination="eXh-2t-cXZ" id="8px-8G-7yY"/>
-                <outlet property="stopNameLabel" destination="nbp-tq-vxq" id="MV8-RY-dn1"/>
-                <outlet property="stopTypeLabel" destination="cWp-pY-mN8" id="jgc-nu-aqd"/>
-                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="disclosureImage" destination="ZpU-Kx-jR4" id="f66-vw-6pl"/>
+                <outlet property="distanceLabel" destination="eXh-2t-cXZ" id="Y8G-In-GQY"/>
+                <outlet property="stopNameLabel" destination="nbp-tq-vxq" id="O6k-tR-gwb"/>
+                <outlet property="stopTypeLabel" destination="cWp-pY-mN8" id="dp8-oV-7i9"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" id="i5M-Pr-FkT">
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" id="i5M-Pr-FkT" customClass="UIControl">
             <rect key="frame" x="0.0" y="0.0" width="260" height="88"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -31,39 +30,32 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Distance miles (and smoots)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eXh-2t-cXZ">
-                    <rect key="frame" x="6" y="57" width="182" height="17"/>
+                    <rect key="frame" x="6" y="57.5" width="182" height="17"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R1j-is-PuR">
+                <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZpU-Kx-jR4" userLabel="Chevron Image">
                     <rect key="frame" x="196" y="22" width="30" height="44"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="30" id="V2Y-0e-6Hd"/>
-                        <constraint firstAttribute="height" constant="44" id="etJ-1g-x9W"/>
+                        <constraint firstAttribute="height" constant="44" id="GjK-1X-Vnd"/>
+                        <constraint firstAttribute="width" constant="30" id="hxq-Rf-baC"/>
                     </constraints>
-                    <state key="normal">
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="detailButtonWasPressed:" destination="-1" eventType="touchUpInside" id="8mK-Za-dw7"/>
-                    </connections>
-                </button>
+                </imageView>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="cWp-pY-mN8" firstAttribute="width" secondItem="nbp-tq-vxq" secondAttribute="width" priority="500" id="1Ju-RJ-GOv"/>
-                <constraint firstAttribute="centerY" secondItem="R1j-is-PuR" secondAttribute="centerY" id="23N-nU-i7k"/>
                 <constraint firstItem="cWp-pY-mN8" firstAttribute="leading" secondItem="nbp-tq-vxq" secondAttribute="leading" id="7aB-9f-HVU"/>
                 <constraint firstItem="eXh-2t-cXZ" firstAttribute="leading" secondItem="nbp-tq-vxq" secondAttribute="leading" id="K7X-mv-luC"/>
                 <constraint firstAttribute="bottom" secondItem="eXh-2t-cXZ" secondAttribute="bottom" priority="200" constant="12" id="L0e-bp-0ye"/>
                 <constraint firstItem="cWp-pY-mN8" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="6" id="O3D-uF-Pez"/>
                 <constraint firstItem="nbp-tq-vxq" firstAttribute="top" secondItem="cWp-pY-mN8" secondAttribute="bottom" constant="2" id="Sxi-5h-zAz"/>
-                <constraint firstItem="R1j-is-PuR" firstAttribute="leading" secondItem="cWp-pY-mN8" secondAttribute="trailing" constant="8" id="chv-cJ-Clg"/>
+                <constraint firstAttribute="trailing" secondItem="ZpU-Kx-jR4" secondAttribute="trailing" priority="200" constant="8" id="YT3-Hm-8hw"/>
                 <constraint firstItem="cWp-pY-mN8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="12" id="knQ-JN-Yem"/>
+                <constraint firstItem="ZpU-Kx-jR4" firstAttribute="leading" secondItem="cWp-pY-mN8" secondAttribute="trailing" constant="8" id="lkl-3U-ARw"/>
                 <constraint firstItem="eXh-2t-cXZ" firstAttribute="top" secondItem="nbp-tq-vxq" secondAttribute="bottom" constant="6" id="o2K-PZ-JhT"/>
-                <constraint firstAttribute="trailing" secondItem="R1j-is-PuR" secondAttribute="trailing" priority="200" constant="8" id="qbA-IR-MjL"/>
+                <constraint firstAttribute="centerY" secondItem="ZpU-Kx-jR4" secondAttribute="centerY" id="oIk-SC-BYL"/>
                 <constraint firstItem="nbp-tq-vxq" firstAttribute="width" secondItem="eXh-2t-cXZ" secondAttribute="width" priority="500" id="sgy-ck-dyi"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

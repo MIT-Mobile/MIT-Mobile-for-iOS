@@ -18,6 +18,9 @@ extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 
 - (void)centerMapOnUserLocation;
 
+// protected
+- (MKMapView *)createMapView;
+
 @end
 
 @protocol MITTiledMapViewButtonDelegate <NSObject>

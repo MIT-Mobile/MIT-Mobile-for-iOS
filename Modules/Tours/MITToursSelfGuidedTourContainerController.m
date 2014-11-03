@@ -10,10 +10,11 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 @interface MITToursSelfGuidedTourContainerController ()
 
-@property (nonatomic, strong) UIViewController *mapViewController;
+@property (nonatomic, strong) MITToursMapViewController *mapViewController;
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
 
 @property (nonatomic, strong) UISegmentedControl *mapListSegmentedControl;
+@property (nonatomic, strong) UIBarButtonItem *currentLocationButton;
 
 @end
 
@@ -65,9 +66,15 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.mapListSegmentedControl setSelectedSegmentIndex:0];
     
     UIBarButtonItem *segmentedControlItem = [[UIBarButtonItem alloc] initWithCustomView:self.mapListSegmentedControl];
+    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_location"]
+                                                                                  style:UIBarButtonItemStylePlain
+                                                                                 target:self
+                                                                                 action:@selector(currentLocationButtonPressed:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[flexibleSpace, segmentedControlItem, flexibleSpace];
+    self.toolbarItems = @[currentLocationButtonItem, flexibleSpace, segmentedControlItem, flexibleSpace];
     [self.navigationController setToolbarHidden:NO];
+    
+    self.currentLocationButton = currentLocationButtonItem;
 }
 
 - (void)showSelectedViewController
@@ -88,12 +95,14 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 {
     self.listViewController.view.hidden = YES;
     self.mapViewController.view.hidden = NO;
+    [self showCurrentLocationButton];
 }
 
 - (void)showListViewController
 {
     self.mapViewController.view.hidden = YES;
     self.listViewController.view.hidden = NO;
+    [self hideCurrentLocationButton];
 }
 
 - (void)infoButtonPressed:(id)sender
@@ -101,6 +110,31 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
     infoVC.tour = self.selfGuidedTour;
     [self.navigationController pushViewController:infoVC animated:YES];
+}
+
+#pragma mark - Current Location Button
+
+- (void)showCurrentLocationButton
+{
+    NSMutableArray *items = [self.toolbarItems mutableCopy];
+    if (![items containsObject:self.currentLocationButton]) {
+        [items insertObject:self.currentLocationButton atIndex:0];
+        [self setToolbarItems:items animated:YES];
+    }
+}
+
+- (void)hideCurrentLocationButton
+{
+    NSMutableArray *items = [self.toolbarItems mutableCopy];
+    if ([items containsObject:self.currentLocationButton]) {
+        [items removeObject:self.currentLocationButton];
+        [self setToolbarItems:items animated:YES];
+    }
+}
+
+- (void)currentLocationButtonPressed:(id)sender
+{
+    [self.mapViewController centerMapOnUserLocation];
 }
 
 @end
