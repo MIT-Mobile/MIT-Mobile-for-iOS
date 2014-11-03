@@ -171,15 +171,9 @@
 }
 
 #pragma mark Internals
-- (UIImage *)icon
-{
-    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/module-", self.iconName, @".png"];
-    return [UIImage imageNamed:iconPath];
-}
-
 - (UIImage *)springboardIcon
 {
-    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/home-", self.iconName, @".png"];
+    NSString *iconPath = [NSString stringWithFormat:@"%@%@", @"home-", self.iconName];
     return [UIImage imageNamed:iconPath];
 }
 
