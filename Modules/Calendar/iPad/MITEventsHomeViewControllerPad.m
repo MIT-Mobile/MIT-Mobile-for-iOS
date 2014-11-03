@@ -75,14 +75,18 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-
+    self.navigationController.toolbar.translucent = NO;
     self.title = @"MIT Events";
     [self setupViewControllers];
     [self setupRightBarButtonItems];
     [self setupToolbar];
     [self setupExtendedNavBar];
     [self setupDayPickerController];
+    
+    self.splitViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[extendedNavBar]-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"extendedNavBar": self.extendedNavBarView,
+                                                                                                                                                  @"splitVC": self.splitViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"splitVC": self.splitViewController.view}]];
     
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
@@ -96,8 +100,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [self.navigationController setToolbarHidden:NO animated:animated];
+    
     [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
@@ -146,7 +149,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     [self showSearchModeRightBarButtonItems];
     [self hideExtendedNavBar];
-    [self alignViewControllerTableViewsForHeight:0.0];
 }
 
 - (void)disableSearchModeNavBar
@@ -156,7 +158,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupDayPickerController];
     [self alignExtendedNavBarAndDayPickerCollectionView];
     [self.dayPickerController reloadCollectionView];
-    [self alignViewControllerTableViewsForHeight:CGRectGetHeight(self.extendedNavBarView.bounds)];
 }
 
 - (void)hideExtendedNavBar
@@ -196,12 +197,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     }
     
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
-}
-
-- (void)alignViewControllerTableViewsForHeight:(CGFloat)height
-{
-    [self.eventDetailViewController addTableViewTopInsetForHeight:height];
-    self.eventsPageViewController.tableViewTopInset = height;
 }
 
 #pragma mark - TypeAheadNavigationController
@@ -326,7 +321,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                                                                              navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                                            options:nil];
     self.eventsPageViewController.calendarSelectionDelegate = self;
-    self.eventsPageViewController.tableViewTopInset = kMITEventHomeNavBarExtensionHeight;
 }
 
 - (void)loadEvents
@@ -452,9 +446,11 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
         if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
             MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
             self.splitViewController.viewControllers = @[holidaysVC, self.eventDetailViewController];
+            self.eventDetailViewController.event = nil;
         } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
             MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
             self.splitViewController.viewControllers = @[academicVC, self.eventDetailViewController];
+            self.eventDetailViewController.event = nil;
         } else {
             self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
             [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
