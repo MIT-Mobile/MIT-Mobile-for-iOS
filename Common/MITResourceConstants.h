@@ -195,6 +195,9 @@ extern NSString * const MITImageTransparentPixel;
 extern NSString * const MITImageLogoDarkContent;
 extern NSString * const MITImageLogoLightContent;
 
+extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDown;
+extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight;
+
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
