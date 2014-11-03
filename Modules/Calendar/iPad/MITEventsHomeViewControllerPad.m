@@ -146,6 +146,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     [self showSearchModeRightBarButtonItems];
     [self hideExtendedNavBar];
+    [self alignViewControllerTableViewsForHeight:0.0];
 }
 
 - (void)disableSearchModeNavBar
@@ -153,6 +154,9 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self showGeneralRightBarButtonItems];
     [self setupExtendedNavBar];
     [self setupDayPickerController];
+    [self alignExtendedNavBarAndDayPickerCollectionView];
+    [self.dayPickerController reloadCollectionView];
+    [self alignViewControllerTableViewsForHeight:CGRectGetHeight(self.extendedNavBarView.bounds)];
 }
 
 - (void)hideExtendedNavBar
@@ -192,6 +196,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     }
     
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
+}
+
+- (void)alignViewControllerTableViewsForHeight:(CGFloat)height
+{
+    [self.eventDetailViewController addTableViewTopInsetForHeight:height];
+    self.eventsPageViewController.tableViewTopInset = height;
 }
 
 #pragma mark - TypeAheadNavigationController
@@ -316,6 +326,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                                                                              navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                                            options:nil];
     self.eventsPageViewController.calendarSelectionDelegate = self;
+    self.eventsPageViewController.tableViewTopInset = kMITEventHomeNavBarExtensionHeight;
 }
 
 - (void)loadEvents
