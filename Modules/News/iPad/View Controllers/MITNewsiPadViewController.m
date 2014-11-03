@@ -441,13 +441,13 @@ CGFloat const refreshControlTextHeight = 19;
 
     if (self.presentationStyle == MITNewsPresentationStyleList) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-            UIImage *gridImage = [UIImage imageNamed:MITImageNewsGridView];
+            UIImage *gridImage = [UIImage imageNamed:MITImageNewsShowGridView];
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleList]) {
-            UIImage *listImage = [UIImage imageNamed:MITImageBarButtonList];
+            UIImage *listImage = [UIImage imageNamed:MITImageNewsShowListView];
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             [rightBarItems addObject:listItem];
         }

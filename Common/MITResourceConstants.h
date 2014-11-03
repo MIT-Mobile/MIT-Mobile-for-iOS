@@ -76,7 +76,9 @@ extern NSString * const MITImageMapAnnotationPlacePin;
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
-extern NSString * const MITImageNewsGridView;
+extern NSString * const MITImageNewsShowGridView;
+extern NSString * const MITImageNewsShowListView;
+
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
