@@ -25,4 +25,5 @@
 
 - (void)moveToCalendar:(MITCalendarsCalendar *)calendar category:(MITCalendarsCalendar *)category date:(NSDate *)date animated:(BOOL)animated;
 
+@property (nonatomic) CGFloat tableViewTopInset;
 @end

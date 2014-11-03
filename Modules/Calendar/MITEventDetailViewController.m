@@ -65,6 +65,13 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     [self setupTableViewInsetsForIPad];
 }
 
+- (void)addTableViewTopInsetForHeight:(CGFloat)height
+{
+    UIEdgeInsets currentInsets = self.tableView.contentInset;
+    currentInsets.top = height;
+    self.tableView.contentInset = currentInsets;
+}
+
 - (void)setupTableViewInsetsForIPad
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {

@@ -67,9 +67,8 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 - (void)setupTableViewInsetsForIPad
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
         CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-        self.tableView.contentInset = UIEdgeInsetsMake(navBarHeight, 0, toolbarHeight, 0);
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, toolbarHeight, 0);
     }
 }
 
