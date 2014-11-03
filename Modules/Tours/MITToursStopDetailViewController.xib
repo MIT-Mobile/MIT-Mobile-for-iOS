@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursStopDetailViewController">
+            <connections>
+                <outlet property="bodyTextLabel" destination="T2M-yO-r3b" id="p3Z-S3-4cc"/>
+                <outlet property="scrollView" destination="w3V-59-ysb" id="06d-ZU-hFC"/>
+                <outlet property="stopImageView" destination="5Qq-dd-txi" id="tw3-AG-Szy"/>
+                <outlet property="stopTitleLabel" destination="3FI-m8-DDe" id="M9K-kz-dTT"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w3V-59-ysb">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="320" placeholderIntrinsicHeight="200" translatesAutoresizingMaskIntoConstraints="NO" id="5Qq-dd-txi">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="200"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="200" id="HEU-wF-yy8"/>
+                                <constraint firstAttribute="width" constant="320" id="V26-ec-5jH"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3FI-m8-DDe">
+                            <rect key="frame" x="8" y="208" width="304" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T2M-yO-r3b">
+                            <rect key="frame" x="8" y="237" width="304" height="100"/>
+                            <attributedString key="attributedText">
+                                <fragment>
+                                    <string key="content">Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text</string>
+                                    <attributes>
+                                        <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="T2M-yO-r3b" secondAttribute="trailing" constant="8" id="15r-Ry-XqO"/>
+                        <constraint firstItem="5Qq-dd-txi" firstAttribute="top" secondItem="w3V-59-ysb" secondAttribute="top" id="Kgp-Mn-1g5"/>
+                        <constraint firstAttribute="bottom" secondItem="T2M-yO-r3b" secondAttribute="bottom" priority="900" constant="20" symbolic="YES" id="MUN-k4-bKs"/>
+                        <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
+                        <constraint firstItem="T2M-yO-r3b" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="a48-5Y-WW1"/>
+                        <constraint firstItem="5Qq-dd-txi" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="ayj-H7-4wn"/>
+                        <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="fWh-k0-JT3"/>
+                        <constraint firstItem="T2M-yO-r3b" firstAttribute="top" secondItem="3FI-m8-DDe" secondAttribute="bottom" constant="8" id="orB-O4-Olv"/>
+                        <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="8" id="wAb-5a-E76"/>
+                        <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="8" id="xdF-bU-kIh"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="w3V-59-ysb" secondAttribute="trailing" id="3Zc-Px-7f4"/>
+                <constraint firstItem="w3V-59-ysb" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="AcZ-rF-rGX"/>
+                <constraint firstAttribute="bottom" secondItem="w3V-59-ysb" secondAttribute="bottom" id="YhV-Ix-trO"/>
+                <constraint firstItem="w3V-59-ysb" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="jlp-Mt-NI4"/>
+            </constraints>
+            <point key="canvasLocation" x="123" y="161"/>
+        </view>
+    </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>
