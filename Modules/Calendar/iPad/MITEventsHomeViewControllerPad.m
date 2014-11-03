@@ -59,6 +59,8 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 @property (strong, nonatomic) MITExtendedNavBarView *extendedNavBarView;
 @property (strong, nonatomic) MITDayPickerViewController *dayPickerController;
+@property (nonatomic, strong) NSArray *splitViewConstraints;
+
 @end
 
 @implementation MITEventsHomeViewControllerPad
@@ -82,11 +84,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupToolbar];
     [self setupExtendedNavBar];
     [self setupDayPickerController];
-    
-    self.splitViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[extendedNavBar]-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"extendedNavBar": self.extendedNavBarView,
-                                                                                                                                                  @"splitVC": self.splitViewController.view}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"splitVC": self.splitViewController.view}]];
+    [self constrainSplitViewToExtendedNavBar];
     
     [[MITCalendarManager sharedManager] getCalendarsCompletion:^(MITMasterCalendar *masterCalendar, NSError *error) {
         if (masterCalendar) {
@@ -158,10 +156,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupDayPickerController];
     [self alignExtendedNavBarAndDayPickerCollectionView];
     [self.dayPickerController reloadCollectionView];
+    [self constrainSplitViewToExtendedNavBar];
 }
 
 - (void)hideExtendedNavBar
 {
+    [self constrainSplitViewToNormalNavBar];
     [self.navigationController.navigationBar restoreShadow];
     [self.extendedNavBarView removeFromSuperview];
 }
@@ -250,6 +250,30 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
 }
 
+- (void)constrainSplitViewToExtendedNavBar
+{
+    if (self.splitViewConstraints.count > 0) {
+        [self.view removeConstraints:self.splitViewConstraints];
+    }
+    
+    self.splitViewConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[extendedNavBar]-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"extendedNavBar": self.extendedNavBarView,
+                                                                                                                                                    @"splitVC": self.splitViewController.view}];
+    self.splitViewConstraints = [self.splitViewConstraints arrayByAddingObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"splitVC": self.splitViewController.view}]];
+    [self.view addConstraints:self.splitViewConstraints];
+}
+
+- (void)constrainSplitViewToNormalNavBar
+{
+    if (self.splitViewConstraints.count > 0) {
+        [self.view removeConstraints:self.splitViewConstraints];
+    }
+    
+    self.splitViewConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"extendedNavBar": self.extendedNavBarView,
+                                                                                                                                        @"splitVC": self.splitViewController.view}];
+    self.splitViewConstraints = [self.splitViewConstraints arrayByAddingObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[splitVC]-0-|" options:0 metrics:nil views:@{@"splitVC": self.splitViewController.view}]];
+    [self.view addConstraints:self.splitViewConstraints];
+}
+
 #pragma mark - Date Navigation Bar Button Presses
 
 - (void)showDatePickerButtonPressed:(UIButton *)sender
@@ -282,6 +306,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)beginSearch:(NSString *)searchString
 {
     [self enableSearchModeNavBar];
+    self.eventDetailViewController.event = nil;
     self.navigationSearchBar.text = searchString;
     self.typeAheadSearchBar.text = searchString;
     [self.navigationSearchBar resignFirstResponder];
@@ -340,6 +365,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.splitViewController = [[MITEventsSplitViewController alloc] init];
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
     self.splitViewController.delegate = self;
+    self.splitViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self addChildViewController:self.splitViewController];
     self.splitViewController.view.frame = self.view.bounds;
