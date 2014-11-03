@@ -303,6 +303,11 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
             // TODO: Go to "Ask Us" VC
+            
+            [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {
+                
+            }];
+            
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionTellUsRow: {
