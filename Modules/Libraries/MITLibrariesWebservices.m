@@ -56,8 +56,7 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesAskUsResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        NSLog(@"result: %@", result.array);
-        completion(nil, nil);
+        completion(result.array.firstObject, error);
     }];
 }
 
