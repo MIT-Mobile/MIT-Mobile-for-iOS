@@ -9,7 +9,7 @@
     
     if (self)
     {
-        self.statusIcon.image = [UIImage imageNamed:@"libraries/status-ready"];
+        self.statusIcon.image = [UIImage imageNamed:MITImageLibrariesStatusReady];
         self.statusIcon.hidden = YES;
     }
     

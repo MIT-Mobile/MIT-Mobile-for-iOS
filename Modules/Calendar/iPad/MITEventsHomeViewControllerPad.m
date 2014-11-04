@@ -171,7 +171,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 - (void)setupRightBarButtonItems
 {
-    self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search"]
+    self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonSearch]
                                                                                style:UIBarButtonItemStylePlain
                                                                               target:self
                                                                               action:@selector(searchButtonPressed:)];
@@ -208,7 +208,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.mapsViewController];
     
     if (!self.searchMagnifyingGlassBarButtonItem) {
-        UIImage *searchImage = [UIImage imageNamed:@"global/search"];
+        UIImage *searchImage = [UIImage imageNamed:MITImageBarButtonSearch];
         self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:searchImage
                                                                                    style:UIBarButtonItemStylePlain
                                                                                   target:self
@@ -381,7 +381,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
 
 - (UIBarButtonItem *)rightToolbarItem
 {
-    UIImage *locationImage = [UIImage imageNamed:@"global/location"];
+    UIImage *locationImage = [UIImage imageNamed:MITImageBarButtonLocation];
     return [[UIBarButtonItem alloc] initWithImage:locationImage
                                             style:UIBarButtonItemStylePlain
                                            target:self

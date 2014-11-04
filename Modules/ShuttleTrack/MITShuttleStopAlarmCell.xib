@@ -34,7 +34,7 @@
                     <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="84" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYB-G0-uer">
                         <rect key="frame" x="229" y="6" width="84" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <state key="normal" image="shuttle/shuttle-alert-toggle-off.png">
+                        <state key="normal" image="shuttles-alert_off">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
                         <connections>
@@ -59,6 +59,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="shuttle/shuttle-alert-toggle-off.png" width="84" height="30"/>
+        <image name="shuttles-alert_off" width="84" height="30"/>
     </resources>
 </document>

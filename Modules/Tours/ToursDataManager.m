@@ -37,11 +37,11 @@ static ToursDataManager *s_toursDataManager = nil;
 + (UIImage *)imageForVisitStatus:(TourSiteVisitStatus)visitStatus {
     switch (visitStatus) {
         case TourSiteVisited:
-            return [UIImage imageNamed:@"tours/map_past.png"];
+            return [UIImage imageNamed:MITImageToursAnnotationStopVisited];
         case TourSiteVisiting:
-            return [UIImage imageNamed:@"tours/map_currentstop.png"];
+            return [UIImage imageNamed:MITImageToursAnnotationStopCurrent];
         case TourSiteNotVisited:
-            return [UIImage imageNamed:@"tours/map_future.png"];
+            return [UIImage imageNamed:MITImageToursAnnotationStopUnvisited];
         default:
             return nil;
     }
