@@ -11,6 +11,7 @@
 @property (nonatomic, retain) MITToursStop *stop;
 
 @property (nonatomic, readonly) NSString *thumbnailURL;
+@property (nonatomic, readonly) NSString *fullImageURL;
 
 @end
 
