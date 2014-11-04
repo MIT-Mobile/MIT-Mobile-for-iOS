@@ -94,13 +94,13 @@ CGFloat const refreshControlTextHeight = 19;
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
-    if (!self.isSingleDataSource) {
-        [self beginReachability];
-    }
 }
 
 - (void)beginReachability
 {
+    if (self.internetReachability) {
+        return;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
     //Needs to be a hostname and not a URL
     self.internetReachability = [Reachability reachabilityWithHostName:@"www.mit.edu"];
@@ -540,7 +540,9 @@ CGFloat const refreshControlTextHeight = 19;
                     });
                 }
             }
-            
+            if (!self.lastUpdated) {
+                 [self beginReachability];
+            }
         } else {
             strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
