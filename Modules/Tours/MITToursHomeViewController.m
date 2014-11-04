@@ -12,12 +12,6 @@ static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITInfoCell = @"MITToursInfoCell";
 static NSString *const kMITLinkCell = @"kMITLinkCell";
 
-// These are hardcoded for now, but will be replaced by webservice calls when those become available
-static NSString *const kAboutGuidedToursText = @"Regularly scheduled studen-led campus tours are conducted Monday through Friday at 11 am and at 3 pm, excluding legal US holidays and the winter break period.";
-static NSString *const kAboutMITText = @"The misson of MIT is to advance knowledge and educate students in science, technology, and otehr areas of scholarship that will best serve the nation and the world in the 21st century.";
-
-static NSString *const kAboutMITURL = @"http://web.mit.edu/institute-events/events/";
-
 typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     MITToursTableViewSectionInfo,
     MITToursTableViewSectionLinks
@@ -95,10 +89,10 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
                 return 106.0;
                 break;
             case 1:
-                return [MITToursInfoCell heightForContent:kAboutGuidedToursText tableViewWidth:self.tableView.frame.size.width];
+                return [MITToursInfoCell heightForContent:[MITToursWebservices aboutGuidedToursText] tableViewWidth:self.tableView.frame.size.width];
                 break;
             case 2:
-                return [MITToursInfoCell heightForContent:kAboutMITText tableViewWidth:self.tableView.frame.size.width];
+                return [MITToursInfoCell heightForContent:[MITToursWebservices aboutMITText] tableViewWidth:self.tableView.frame.size.width];
                 break;
             default:
                 break;
@@ -185,7 +179,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     MITToursInfoCell *cell = [self blankInfoCell];
     
-    [cell setContent:kAboutGuidedToursText];
+    [cell setContent:[MITToursWebservices aboutGuidedToursText]];
     [cell.infoButton setTitle:@"More about guided tours..." forState:UIControlStateNormal];
     [cell.infoButton addTarget:self action:@selector(moreAboutToursPressed:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -196,7 +190,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     MITToursInfoCell *cell = [self blankInfoCell];
     
-    [cell setContent:kAboutMITText];
+    [cell setContent:[MITToursWebservices aboutMITText]];
     [cell.infoButton setTitle:@"More about MIT..." forState:UIControlStateNormal];
     [cell.infoButton addTarget:self action:@selector(moreAboutMITPressed:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -214,7 +208,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 
 - (void)moreAboutToursPressed:(UIButton *)sender
 {
-    UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:kAboutMITURL delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
+    UIAlertView *openOutsideWebsiteAlert = [[UIAlertView alloc] initWithTitle:@"Open in Safari?" message:[MITToursWebservices aboutMITURLString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Open", nil];
     [openOutsideWebsiteAlert show];
 }
 
@@ -227,7 +221,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 1) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kAboutMITURL]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[MITToursWebservices aboutMITURLString]]];
     }
 }
 

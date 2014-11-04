@@ -4,12 +4,14 @@
 
 extern NSInteger const kMITLibrariesSearchResultsLimit;
 
-@class MITLibrariesWorldcatItem, MITLibrariesUser;
+@class MITLibrariesWorldcatItem, MITLibrariesUser, MITLibrariesAskUsModel;
 
 @interface MITLibrariesWebservices : NSObject
 
 + (void)getLinksWithCompletion:(void (^)(NSArray *links, NSError *error))completion;
 + (void)getLibrariesWithCompletion:(void (^)(NSArray *libraries, NSError *error))completion;
++ (void)getAskUsTopicsWithCompletion:(void (^)(MITLibrariesAskUsModel *askUs, NSError *error))completion;
+
 + (void)getResultsForSearch:(NSString *)searchString
               startingIndex:(NSInteger)startingIndex
                 completion:(void (^)(NSArray *items, NSError *error))completion;

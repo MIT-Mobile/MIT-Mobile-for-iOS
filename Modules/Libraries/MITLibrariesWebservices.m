@@ -5,6 +5,7 @@
 #import "MITMobileResources.h"
 #import "MITLibrariesWorldcatItem.h"
 #import "MITLibrariesUser.h"
+#import "MITLibrariesAskUsModel.h"
 
 NSInteger const kMITLibrariesSearchResultsLimit = 20;
 
@@ -48,6 +49,16 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     completion(result.array, error);
                                                 }];
+}
+
++ (void)getAskUsTopicsWithCompletion:(void (^)(MITLibrariesAskUsModel *askUs, NSError *error))completion
+{
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesAskUsResourceName
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        NSLog(@"result: %@", result.array);
+        completion(nil, nil);
+    }];
 }
 
 + (void)getResultsForSearch:(NSString *)searchString startingIndex:(NSInteger)startingIndex completion:(void (^)(NSArray *items, NSError *error))completion

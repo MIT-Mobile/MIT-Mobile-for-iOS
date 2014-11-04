@@ -2,6 +2,7 @@
 #import "MITModule.h"
 #import "CampusTourHomeController.h"
 #import "MITToursHomeViewController.h"
+#import "MITToursHomeViewControllerPad.h"
 
 @implementation ToursModule
 
@@ -36,7 +37,7 @@
 
 - (UIViewController*)createHomeViewControllerForPadIdiom
 {
-    return [[MITToursHomeViewController alloc] initWithNibName:nil bundle:nil];
+    return [[MITToursHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
 }
 
 @end

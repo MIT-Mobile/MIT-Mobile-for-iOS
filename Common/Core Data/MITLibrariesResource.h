@@ -7,3 +7,7 @@
 @interface MITLibrariesLinksResource : MITMobileResource
 - (instancetype)init;
 @end
+
+@interface MITLibrariesAskUsResource : MITMobileResource
+- (instancetype)init;
+@end

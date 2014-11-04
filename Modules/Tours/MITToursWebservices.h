@@ -7,4 +7,8 @@
 + (void)getToursWithCompletion:(void (^)(id object, NSError *error))completion;
 + (void)getTourDetailForTour:(MITToursTour *)tour completion:(void (^)(id object, NSError *error))completion;
 
++ (NSString *)aboutMITText;
++ (NSString *)aboutMITURLString;
++ (NSString *)aboutGuidedToursText;
+
 @end
