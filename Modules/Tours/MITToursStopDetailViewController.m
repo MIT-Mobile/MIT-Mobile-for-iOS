@@ -3,7 +3,7 @@
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
 
-@interface MITToursStopDetailViewController ()
+@interface MITToursStopDetailViewController () <UIScrollViewDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
 @property (strong, nonatomic) NSArray *sideTripStops;
@@ -16,6 +16,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *bodyTextLabel;
 
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
+
+@property (nonatomic) BOOL isTitleVisible;
+@property (nonatomic) CGFloat titleBottom;
+@property (nonatomic) CGFloat lastScrollOffset;
 
 @end
 
@@ -35,8 +39,25 @@
 {
     [super viewDidLoad];
     
+    self.scrollView.delegate = self;
+    
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
     [self configureForStop:self.stop];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    // Scroll to top
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    self.titleBottom = CGRectGetMaxY(self.stopTitleLabel.frame);
+    [self updateTitleVisibility];
 }
 
 - (void)setTour:(MITToursTour *)tour
@@ -85,6 +106,29 @@
             }];
         }
     }
+}
+
+#pragma mark - Title Visibility
+
+- (void)updateTitleVisibility
+{
+    BOOL wasAboveTitle = self.lastScrollOffset < self.titleBottom;
+    BOOL isAboveTitle = self.scrollView.contentOffset.y < self.titleBottom;
+    
+    self.lastScrollOffset = self.scrollView.contentOffset.y;
+    
+    if (wasAboveTitle && !isAboveTitle && [self.delegate respondsToSelector:@selector(stopDetailViewControllerTitleDidScrollBelowTitle:)]) {
+        [self.delegate stopDetailViewControllerTitleDidScrollBelowTitle:self];
+    } else if (!wasAboveTitle && isAboveTitle && [self.delegate respondsToSelector:@selector(stopDetailViewControllerTitleDidScrollAboveTitle:)]) {
+        [self.delegate stopDetailViewControllerTitleDidScrollAboveTitle:self];
+    }
+}
+
+#pragma mark - UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self updateTitleVisibility];
 }
 
 @end

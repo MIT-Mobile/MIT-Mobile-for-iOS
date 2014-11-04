@@ -1,7 +1,7 @@
 #import "MITToursStopDetailContainerViewController.h"
 #import "MITToursStopDetailViewController.h"
 
-@interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
 @property (strong, nonatomic) NSArray *sideTripStops;
@@ -81,17 +81,25 @@
 - (void)configureForStop:(MITToursStop *)stop
 {
     self.currentStop = stop;
-    [self configureNavigationForStop:stop];
+    [self configureNavigationForStop:stop shouldPutNameInTitle:NO];
 }
 
-- (void)configureNavigationForStop:(MITToursStop *)stop
+- (void)configureNavigationForStop:(MITToursStop *)stop shouldPutNameInTitle:(BOOL)shouldPutNameInTitle
 {
     NSInteger mainLoopIndex = [self.mainLoopStops indexOfObject:stop];
     if (mainLoopIndex != NSNotFound) {
-        self.title = [NSString stringWithFormat:@"Main Loop %d of %d", mainLoopIndex + 1, self.mainLoopStops.count];
+        if (shouldPutNameInTitle) {
+            self.title = stop.title;
+        } else {
+            self.title = [NSString stringWithFormat:@"Main Loop %d of %d", mainLoopIndex + 1, self.mainLoopStops.count];
+        }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
     } else {
-        self.title = @"Side Stop";
+        if (shouldPutNameInTitle) {
+            self.title = [NSString stringWithFormat:@"Side Trip - %@", stop.title];
+        } else {
+            self.title = @"Side Trip";
+        }
         [self.navigationItem setRightBarButtonItems:nil animated:YES];
     }
 }
@@ -124,15 +132,13 @@
 
 #pragma mark - UIPageViewControllerDelegateMethods
 
-- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
-{
-    MITToursStop *newStop = [self stopForViewController:pendingViewControllers[0]];
-    [self configureForStop:newStop];
-}
-
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
 {
-    NSLog(@"Did finish animating!");
+    if (completed) {
+        UIViewController *currentViewController = self.pageViewController.viewControllers[0];
+        MITToursStop *newStop = [self stopForViewController:currentViewController];
+        [self configureForStop:newStop];
+    }
 }
 
 #pragma mark - Detail View Controllers
@@ -147,7 +153,9 @@
 
 - (MITToursStopDetailViewController *)detailViewControllerForStop:(MITToursStop *)stop
 {
-    return [[MITToursStopDetailViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
+    MITToursStopDetailViewController *detailViewController = [[MITToursStopDetailViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
+    detailViewController.delegate = self;
+    return detailViewController;
 }
 
 #pragma mark - Cycling Between Stops
@@ -210,6 +218,25 @@
 - (NSInteger)indexBeforeIndex:(NSInteger)index
 {
     return (index + self.mainLoopStops.count - 1 ) % self.mainLoopStops.count;
+}
+
+#pragma mark - MITToursStopDetailViewControllerDelegate Methods
+
+- (void)stopDetailViewControllerTitleDidScrollBelowTitle:(MITToursStopDetailViewController *)detailViewController
+{
+    UIViewController *currentViewController = self.pageViewController.viewControllers[0];
+    if (detailViewController == currentViewController) {
+        MITToursStop *stop = [self stopForViewController:detailViewController];
+        [self configureNavigationForStop:stop shouldPutNameInTitle:YES];
+    }
+}
+
+- (void)stopDetailViewControllerTitleDidScrollAboveTitle:(MITToursStopDetailViewController *)detailViewController
+{    UIViewController *currentViewController = self.pageViewController.viewControllers[0];
+    if (detailViewController == currentViewController) {
+        MITToursStop *stop = [self stopForViewController:detailViewController];
+        [self configureNavigationForStop:stop shouldPutNameInTitle:NO];
+    }
 }
 
 @end
