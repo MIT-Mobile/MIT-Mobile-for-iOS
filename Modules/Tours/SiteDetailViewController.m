@@ -117,8 +117,7 @@
     }
     vc.sideTrip = self.sideTrip;
     
-    [MITAppDelegate() presentAppModalViewController:vc
-                                           animated:YES];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 #pragma mark Audio

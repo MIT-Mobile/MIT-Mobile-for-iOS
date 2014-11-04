@@ -37,9 +37,6 @@
 - (void)loadModules;
 - (void)loadRemoteObjectManager;
 
-- (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated;
-- (void)dismissAppModalViewControllerAnimated:(BOOL)animated;
-
 - (MITModule*)moduleWithTag:(NSString *)aTag;
 - (void)showModuleWithTag:(NSString *)tag;
 - (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated;

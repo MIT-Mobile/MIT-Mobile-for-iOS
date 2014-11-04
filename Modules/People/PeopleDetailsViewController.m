@@ -447,13 +447,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         // since it doesn't have its own nav bar
         UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
         
-        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-        {
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
             navController.modalPresentationStyle = UIModalPresentationFormSheet;
         }
         
-        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        [appDelegate presentAppModalViewController:navController animated:YES];
+        [self presentViewController:navController animated:YES completion:nil];
         
         CFRelease(person);
     }
@@ -467,8 +465,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             picker.modalPresentationStyle = UIModalPresentationFormSheet;
         }
         
-        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        [appDelegate presentAppModalViewController:picker animated:YES];
+        [self presentViewController:picker animated:YES completion:nil];
     }
     else if( indexPath.row == 2 )
     {
@@ -481,7 +478,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 #pragma mark Address book new person methods
 - (void)newPersonViewController:(ABNewPersonViewController *)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {	
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [newPersonViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Address book person controller methods
