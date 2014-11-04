@@ -1,10 +1,12 @@
+#import <Twitter/Twitter.h>
+#import <Social/Social.h>
+#import <MessageUI/MessageUI.h>
+#import <Accounts/Accounts.h>
+
 #import "ShareDetailViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "UIKit+MITAdditions.h"
 #import "Secret.h"
-#import <Twitter/Twitter.h>
-#import <Social/Social.h>
-#import <Accounts/Accounts.h>
 
 static NSString *kShareDetailEmail = @"Email";
 static NSString *kShareDetailFacebook = @"Facebook";
