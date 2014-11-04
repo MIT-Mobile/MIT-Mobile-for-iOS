@@ -28,7 +28,7 @@
                         <constraint firstAttribute="width" constant="40" id="w9H-EO-z8H"/>
                     </constraints>
                     <inset key="contentEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                    <state key="normal" image="calendar/iPad_events_datePicker_chevron_up"/>
+                    <state key="normal" image="events-pad-chevron_up"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AQs-W4-zpK">
                     <rect key="frame" x="296" y="2" width="40" height="40"/>
@@ -39,7 +39,7 @@
                         <constraint firstAttribute="height" constant="40" id="ld3-2y-x81"/>
                     </constraints>
                     <inset key="contentEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
-                    <state key="normal" image="calendar/iPad_events_datePicker_chevron_down"/>
+                    <state key="normal" image="events-pad-chevron_down"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LQm-CY-j2p">
                     <rect key="frame" x="336" y="2" width="40" height="40"/>
@@ -49,7 +49,7 @@
                         <constraint firstAttribute="height" constant="40" id="Vom-BH-KMc"/>
                         <constraint firstAttribute="width" constant="40" id="ttU-cZ-RzR"/>
                     </constraints>
-                    <state key="normal" image="calendar/day_picker_button.png"/>
+                    <state key="normal" image="events-day_picker_button"/>
                 </button>
             </subviews>
             <constraints>
@@ -77,8 +77,8 @@
         </view>
     </objects>
     <resources>
-        <image name="calendar/day_picker_button.png" width="16" height="16"/>
-        <image name="calendar/iPad_events_datePicker_chevron_down" width="16" height="16"/>
-        <image name="calendar/iPad_events_datePicker_chevron_up" width="16" height="16"/>
+        <image name="events-day_picker_button" width="16" height="16"/>
+        <image name="events-pad-chevron_down" width="16" height="16"/>
+        <image name="events-pad-chevron_up" width="16" height="16"/>
     </resources>
 </document>

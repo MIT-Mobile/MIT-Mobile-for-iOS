@@ -53,17 +53,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    } else {
-        self.view.backgroundColor = [UIColor mit_backgroundColor];
-    }
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     if (self.scanResult.scanImage) {
         self.qrImageView.image = self.scanResult.scanImage;
     } else {
-        self.qrImageView.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
+        self.qrImageView.image = [UIImage imageNamed:MITImageScannerMissingImage];
     }
 
     self.scanActions = [NSMutableArray array];
@@ -291,11 +286,11 @@
         NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
         
         cell.textLabel.text = cellDetails[@"title"];
-        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
-                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
+                                               highlightedImage:[UIImage imageNamed:MITImageActionExternalHighlight]];
     } else {
         cell.textLabel.text = self.scanShareDetails[@"title"];
-        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameShare]];
     }
     
     return cell;

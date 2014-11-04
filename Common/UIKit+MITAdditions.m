@@ -176,8 +176,8 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
             highlightedImageName = MITImageNamePhoneHighlight;
             break;
         case MITAccessoryViewExternal:
-            imageName = MITImageNameExternal;
-            highlightedImageName = MITImageNameExternalHighlight;
+            imageName = MITImageActionExternal;
+            highlightedImageName = MITImageActionExternalHighlight;
             break;
 		case MITAccessoryViewEmergency:
 			imageName = MITImageNameEmergency;

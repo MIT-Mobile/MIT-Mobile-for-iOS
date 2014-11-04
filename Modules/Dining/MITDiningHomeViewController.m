@@ -64,7 +64,7 @@
 {
     self.edgesForExtendedLayout = UIRectEdgeNone;
 
-    self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
+    self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
     
     self.mapBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(mapButtonPressed)];

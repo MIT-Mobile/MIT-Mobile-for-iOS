@@ -27,7 +27,7 @@
                                 <constraint firstAttribute="height" constant="2" id="deB-2m-SZz"/>
                             </constraints>
                         </view>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global/action-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="bIJ-UR-CSB">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global-disclosure_right" translatesAutoresizingMaskIntoConstraints="NO" id="bIJ-UR-CSB">
                             <rect key="frame" x="141" y="18" width="11" height="11"/>
                         </imageView>
                     </subviews>
@@ -58,7 +58,7 @@
         </collectionReusableView>
     </objects>
     <resources>
-        <image name="global/action-arrow.png" width="11" height="11"/>
+        <image name="global-disclosure_right" width="11" height="11"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

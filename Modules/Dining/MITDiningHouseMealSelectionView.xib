@@ -27,14 +27,14 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yGB-Ho-16b">
                     <rect key="frame" x="304" y="16" width="16" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <state key="normal" image="global/action-arrow-right.png">
+                    <state key="normal" image="global-action-arrow_right">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q57-Wq-ALT">
                     <rect key="frame" x="0.0" y="16" width="16" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <state key="normal" image="global/action-arrow-left.png">
+                    <state key="normal" image="global-action-arrow_left">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
@@ -65,7 +65,7 @@
         </view>
     </objects>
     <resources>
-        <image name="global/action-arrow-left.png" width="16" height="16"/>
-        <image name="global/action-arrow-right.png" width="16" height="16"/>
+        <image name="global-action-arrow_left" width="16" height="16"/>
+        <image name="global-action-arrow_right" width="16" height="16"/>
     </resources>
 </document>
