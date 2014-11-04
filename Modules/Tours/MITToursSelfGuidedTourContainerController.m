@@ -33,6 +33,11 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self setupToolbar];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setToolbarHidden:NO];
+}
+
 - (void)setupViewControllers
 {
     self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
@@ -76,8 +81,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
                                                                                  action:@selector(currentLocationButtonPressed:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     self.toolbarItems = @[currentLocationButtonItem, flexibleSpace, segmentedControlItem, flexibleSpace];
-    [self.navigationController setToolbarHidden:NO];
-    
+
     self.currentLocationButton = currentLocationButtonItem;
 }
 

@@ -1,5 +1,6 @@
 #import "MITToursStopDetailContainerViewController.h"
 #import "MITToursStopDetailViewController.h"
+#import "MITToursStopDirectionsViewController.h"
 
 @interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
@@ -33,9 +34,31 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setupToolbar];
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
     [self configureForStop:self.currentStop];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setToolbarHidden:NO];
+}
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *directionsButton = [[UIBarButtonItem alloc] initWithTitle:@"Directions" style:UIBarButtonItemStylePlain target:self action:@selector(directionsButtonPressed:)];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    self.toolbarItems = @[flexibleSpace, directionsButton];
+}
+
+- (void)directionsButtonPressed:(id)sender
+{
+    MITToursStopDirectionsViewController *directionsVC = [[MITToursStopDirectionsViewController alloc] init];
+    
+    directionsVC.stop = self.currentStop;
+    
+    [self.navigationController pushViewController:directionsVC animated:YES];
 }
 
 - (void)createPageViewController
