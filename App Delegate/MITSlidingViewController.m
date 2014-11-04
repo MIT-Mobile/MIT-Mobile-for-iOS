@@ -7,8 +7,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 @interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
-
-@property(nonatomic,weak) id<UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout> animationController;
 @end
 
 @implementation MITSlidingViewController
@@ -162,12 +160,18 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     [self setVisibleViewController:moduleViewController];
 }
 
-- (IBAction)toggleViewControllerPicker:(id)sender
+
+- (void)showModuleSelector:(BOOL)animated completion:(void(^)(void))block
 {
     if (self.slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
-        [self.slidingViewController anchorTopViewToRightAnimated:YES];
-    } else {
-        [self.slidingViewController resetTopViewAnimated:YES];
+        [self.slidingViewController anchorTopViewToRightAnimated:animated onComplete:block];
+    }
+}
+
+- (void)hideModuleSelector:(BOOL)animated completion:(void(^)(void))block
+{
+    if (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+        [self.slidingViewController resetTopViewAnimated:animated onComplete:block];
     }
 }
 
@@ -236,4 +240,5 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
         [self setVisibleViewController:moduleViewController animated:YES];
     }
 }
+
 @end
