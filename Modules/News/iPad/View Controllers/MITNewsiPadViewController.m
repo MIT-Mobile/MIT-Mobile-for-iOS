@@ -611,7 +611,7 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     
-    [self setProgress:YES];
+    [self setStoryUpdateInProgress:YES];
     [self updateLoadingCell];
     self.loadingMoreStories = YES;
     
@@ -623,16 +623,13 @@ CGFloat const refreshControlTextHeight = 19;
                                      if (!strongSelf) {
                                          return;
                                      }
-                                     [strongSelf setProgress:NO];
+                                     [strongSelf setStoryUpdateInProgress:NO];
                                      strongSelf.loadingMoreStories = NO;
                                      
                                      if (error) {
                                          DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSources[section]);
-                                         if (error.code == NSURLErrorNotConnectedToInternet) {
-                                             [self setError:@"No Internet Connection"];
-                                         } else {
-                                             [self setError:@"Failed..."];
-                                         }
+
+                                         [self storyUpdateDidFinishWithError:error];
                                          [strongSelf updateLoadingCell];
                                          dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
                                          dispatch_after(popTime, dispatch_get_main_queue(), ^{
@@ -651,8 +648,14 @@ CGFloat const refreshControlTextHeight = 19;
 }
 
 #pragma mark setters
-- (void)setError:(NSString *)message
+- (void)storyUpdateDidFinishWithError:(NSError *)error
 {
+    NSString *message = nil;
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"No Internet Connection";
+    } else {
+        message = @"Failed...";
+    }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.errorMessage = message;
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
@@ -660,7 +663,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
 }
 
-- (void)setProgress:(BOOL)progress
+- (void)setStoryUpdateInProgress:(BOOL)progress
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyUpdateInProgress = progress;
