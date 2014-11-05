@@ -540,7 +540,7 @@ CGFloat const refreshControlTextHeight = 19;
                     });
                 }
             }
-            if (!self.lastUpdated) {
+            if (!self.lastUpdated && ![self.dataSources count]) {
                  [self beginReachability];
             }
         } else {
@@ -551,6 +551,10 @@ CGFloat const refreshControlTextHeight = 19;
                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
                     [strongRefresh endRefreshing];
                 });
+            }
+            if (self.internetReachability) {
+                [self.internetReachability stopNotifier];
+                self.internetReachability = nil;
             }
         }
     }];
