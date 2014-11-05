@@ -9,14 +9,6 @@
 
 @implementation MITLibrariesAskUsFormSheetViewController
 
-#pragma mark - Initialization
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:@"MITLibrariesFormSheetViewController" bundle:nil];
-    return self;
-}
-
 #pragma mark - Setup
 
 - (void)setup
