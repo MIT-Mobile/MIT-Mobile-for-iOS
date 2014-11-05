@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITLibrariesFormSheetViewController">
             <connections>
+                <outlet property="activityIndicator" destination="Ptg-0D-ce8" id="IVK-Et-C3c"/>
                 <outlet property="tableView" destination="kcI-n6-Pof" id="US5-r7-e50"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -24,9 +25,19 @@
                         <outlet property="delegate" destination="-1" id="Tgt-5W-vtX"/>
                     </connections>
                 </tableView>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Ptg-0D-ce8">
+                    <rect key="frame" x="282" y="281" width="37" height="37"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="37" id="ZcV-gW-wEj"/>
+                        <constraint firstAttribute="height" constant="37" id="hfY-vz-ywm"/>
+                    </constraints>
+                    <color key="color" red="1" green="0.0" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                </activityIndicatorView>
             </subviews>
             <constraints>
                 <constraint firstItem="kcI-n6-Pof" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="7oz-mX-4L8"/>
+                <constraint firstAttribute="centerY" secondItem="Ptg-0D-ce8" secondAttribute="centerY" id="A0D-gL-wZ1"/>
+                <constraint firstAttribute="centerX" secondItem="Ptg-0D-ce8" secondAttribute="centerX" id="JdU-Y7-60r"/>
                 <constraint firstAttribute="bottom" secondItem="kcI-n6-Pof" secondAttribute="bottom" id="LIa-BV-zhN"/>
                 <constraint firstItem="kcI-n6-Pof" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="VQ2-dG-4wU"/>
                 <constraint firstAttribute="trailing" secondItem="kcI-n6-Pof" secondAttribute="trailing" id="oRb-4f-BwT"/>

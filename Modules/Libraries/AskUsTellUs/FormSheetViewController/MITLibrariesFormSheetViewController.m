@@ -4,6 +4,7 @@
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"
 #import "MITLibrariesFormSheetCellMultiLineTextEntry.h"
 #import "MITLibrariesFormSheetCellWebLink.h"
+#import "UIKit+MITAdditions.h"
 
 static NSString * const MITLibrariesFormSheetCellIdentifierOptions = @"MITLibrariesFormSheetCellIdentifierOptions";
 static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry = @"MITLibrariesFormSheetCellIdentifierSingleLineTextEntry";
@@ -12,6 +13,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 @interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
 
 @implementation MITLibrariesFormSheetViewController
@@ -25,8 +27,14 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 - (void)setup
 {
+    [self setupActivityIndicator];
     [self setupTableView];
     [self setupNavigationBar];
+}
+
+- (void)setupActivityIndicator
+{
+    self.activityIndicator.color = [UIColor mit_tintColor];
 }
 
 - (void)setupTableView
@@ -55,6 +63,18 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
                                                                              action:@selector(submitButtonPressed:)];
+}
+
+#pragma mark - Activity Indicator
+
+- (void)showActivityIndicator
+{
+    [self.activityIndicator startAnimating];
+}
+
+- (void)hideActivityIndicator
+{
+    [self.activityIndicator stopAnimating];
 }
 
 #pragma mark - Button Presses
