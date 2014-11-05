@@ -7,6 +7,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 @interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
+@property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
 @end
 
 @implementation MITSlidingViewController
@@ -48,6 +49,16 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 }
 
 #pragma mark Properties
+- (UIBarButtonItem*)leftBarButtonItem
+{
+    if (!_leftBarButtonItem) {
+        UIImage *image = [UIImage imageNamed:MITImageBarButtonMenu];
+        _leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_showModuleSelector:)];
+    }
+    
+    return _leftBarButtonItem;
+}
+
 - (MITDrawerViewController*)drawerViewController
 {
     if ([self.slidingViewController.underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
@@ -146,9 +157,8 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     // controller must do something itself.
     if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
-        UIBarButtonItem *backButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleViewControllerPicker:)];
         UIViewController *rootViewController = [navigationController.viewControllers firstObject];
-        rootViewController.navigationItem.leftBarButtonItem = backButtonItem;
+        rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
     }
     
     [self.slidingViewController resetTopViewAnimated:YES];
@@ -176,6 +186,11 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 }
 
 #pragma mark Private
+- (IBAction)_showModuleSelector:(id)sender
+{
+    [self showModuleSelector:YES completion:nil];
+}
+
 - (void)_showInitialModuleIfNeeded
 {
     if (!self.visibleViewController) {
