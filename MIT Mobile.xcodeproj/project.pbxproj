@@ -521,6 +521,8 @@
 		80598DC71A0A8A5E0095CEAA /* MITLibrariesFormSheetCellWebLink.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80598DC51A0A8A5E0095CEAA /* MITLibrariesFormSheetCellWebLink.xib */; };
 		80598DD11A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DD01A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m */; };
 		80598DD41A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DD31A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.m */; };
+		80598DD71A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DD61A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m */; };
+		80598DDE1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DDD1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80A7CBCF199E853300BFDD39 /* MITDiningMapsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A7CBCD199E853300BFDD39 /* MITDiningMapsViewController.m */; };
 		80A7CBD0199E853300BFDD39 /* MITDiningMapsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80A7CBCE199E853300BFDD39 /* MITDiningMapsViewController.xib */; };
@@ -1797,6 +1799,10 @@
 		80598DD01A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetElement.m; path = AskUsTellUs/FormSheetViewController/Models/MITLibrariesFormSheetElement.m; sourceTree = "<group>"; };
 		80598DD21A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetGroup.h; path = AskUsTellUs/FormSheetViewController/Models/MITLibrariesFormSheetGroup.h; sourceTree = "<group>"; };
 		80598DD31A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetGroup.m; path = AskUsTellUs/FormSheetViewController/Models/MITLibrariesFormSheetGroup.m; sourceTree = "<group>"; };
+		80598DD51A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetElementAvailableOption.h; path = AskUsTellUs/FormSheetViewController/Models/MITLibrariesFormSheetElementAvailableOption.h; sourceTree = "<group>"; };
+		80598DD61A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetElementAvailableOption.m; path = AskUsTellUs/FormSheetViewController/Models/MITLibrariesFormSheetElementAvailableOption.m; sourceTree = "<group>"; };
+		80598DDC1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetElementStatus.h; path = AskUsTellUs/FormSheetViewController/Models/CustomElements/MITLibrariesFormSheetElementStatus.h; sourceTree = "<group>"; };
+		80598DDD1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetElementStatus.m; path = AskUsTellUs/FormSheetViewController/Models/CustomElements/MITLibrariesFormSheetElementStatus.m; sourceTree = "<group>"; };
 		80885CB41991410700D6661C /* MITEventsHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsHomeViewControllerPad.h; path = iPad/MITEventsHomeViewControllerPad.h; sourceTree = "<group>"; };
 		80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsHomeViewControllerPad.m; path = iPad/MITEventsHomeViewControllerPad.m; sourceTree = "<group>"; };
 		80A7CBCC199E853300BFDD39 /* MITDiningMapsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningMapsViewController.h; path = Dining/MITDiningMapsViewController.h; sourceTree = "<group>"; };
@@ -4564,12 +4570,24 @@
 		80598DCE1A0AA9980095CEAA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				80598DDB1A0AC2380095CEAA /* CustomElements */,
 				80598DCF1A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.h */,
 				80598DD01A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m */,
 				80598DD21A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.h */,
 				80598DD31A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.m */,
+				80598DD51A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.h */,
+				80598DD61A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		80598DDB1A0AC2380095CEAA /* CustomElements */ = {
+			isa = PBXGroup;
+			children = (
+				80598DDC1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.h */,
+				80598DDD1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m */,
+			);
+			name = CustomElements;
 			sourceTree = "<group>";
 		};
 		80885CAD19913F4E00D6661C /* iPad */ = {
@@ -5833,6 +5851,7 @@
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				0B394CE419E3355D00B48F17 /* UIImageView+WebCache.m in Sources */,
+				80598DD71A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m in Sources */,
 				2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */,
 				2C3E8C751A2516B100C36DF2 /* MITTestFlightLogger.m in Sources */,
 				0B394CE019E3355D00B48F17 /* UIImage+GIF.m in Sources */,
@@ -5855,6 +5874,7 @@
 				2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
+				80598DDE1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m in Sources */,
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
 				2CB4862019E6D9D300FAE102 /* MITModule.m in Sources */,

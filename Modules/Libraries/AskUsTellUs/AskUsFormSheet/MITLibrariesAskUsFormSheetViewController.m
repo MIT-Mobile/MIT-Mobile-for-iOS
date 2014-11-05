@@ -2,6 +2,7 @@
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesAskUsModel.h"
+#import "MITLibrariesFormSheetElementStatus.h"
 
 @interface MITLibrariesAskUsFormSheetViewController ()
 @end
@@ -26,42 +27,61 @@
 
 - (void)setupFormSheetGroups
 {
-    NSMutableArray *formSheetGroups = [NSMutableArray array];
-    [formSheetGroups addObject:[self topFormSheetGroup]];
-    [formSheetGroups addObject:[self bottomFormSheetGroup]];
-    self.formSheetGroups = formSheetGroups;
-    [self reloadTableView];
+    [self showActivityIndicator];
+    [self buildTopFormSheetGroupInBackgroundWithCompletion:^(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error) {
+        [self hideActivityIndicator];
+        if (!error) {
+            [self hideActivityIndicator];
+            NSMutableArray *formSheetGroups = [NSMutableArray array];
+            [formSheetGroups addObject:formSheetGroup];
+            [formSheetGroups addObject:[self bottomFormSheetGroup]];
+            self.formSheetGroups = formSheetGroups;
+            [self reloadTableView];
+        } else {
+            NSLog(@"Error building top form sheet group: %@", error);
+            [self notifyOfTopicsFetchFailure];
+        }
+    }];
 }
 
-- (MITLibrariesFormSheetGroup *)topFormSheetGroup
+
+#pragma mark - Data Assembly
+
+// Backgrounded for topics fetch
+- (void)buildTopFormSheetGroupInBackgroundWithCompletion:(void(^)(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error))completion
 {
-    MITLibrariesFormSheetElement *topic = [MITLibrariesFormSheetElement new];
-    topic.type = MITLibrariesFormSheetElementTypeOptions;
-    topic.title = @"Topic";
-    topic.value = @"General";
+    [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {
+        if (!error) {
+            MITLibrariesFormSheetElement *topic = [MITLibrariesFormSheetElement new];
+            topic.type = MITLibrariesFormSheetElementTypeOptions;
+            topic.title = @"Topic";
+            topic.availableOptions = askUs.topics;
+            
+            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElement new];
+            subject.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
+            subject.title = @"Subject";
+            
+            MITLibrariesFormSheetElement *detailedQuestion = [MITLibrariesFormSheetElement new];
+            detailedQuestion.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
+            detailedQuestion.title = @"Detailed question";
+            
+            MITLibrariesFormSheetGroup *topGroup = [MITLibrariesFormSheetGroup new];
+            topGroup.headerTitle = nil;
+            topGroup.footerTitle = nil;
+            topGroup.elements = @[topic, subject, detailedQuestion];
+            
+            completion(topGroup, nil);
+        } else {
+            completion(nil, error);
+        }
+    }];
     
-    MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElement new];
-    subject.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
-    subject.title = @"Subject";
     
-    MITLibrariesFormSheetElement *detailedQuestion = [MITLibrariesFormSheetElement new];
-    detailedQuestion.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
-    detailedQuestion.title = @"Detailed question";
-    
-    MITLibrariesFormSheetGroup *topGroup = [MITLibrariesFormSheetGroup new];
-    topGroup.headerTitle = nil;
-    topGroup.footerTitle = nil;
-    topGroup.elements = @[topic, subject, detailedQuestion];
-    
-    return topGroup;
 }
 
 - (MITLibrariesFormSheetGroup *)bottomFormSheetGroup
 {
-    MITLibrariesFormSheetElement *status = [MITLibrariesFormSheetElement new];
-    status.type = MITLibrariesFormSheetElementTypeOptions;
-    status.title = @"Status";
-    status.value = @"MIT Undergrad Student";
+    MITLibrariesFormSheetElementStatus *status = [MITLibrariesFormSheetElementStatus new];
     
     MITLibrariesFormSheetElement *department = [MITLibrariesFormSheetElement new];
     department.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
@@ -95,6 +115,13 @@
     technicalHelpGroup.elements = @[usingVPN, location];
     
     return technicalHelpGroup;
+}
+
+#pragma mark - Failure Alerts
+
+- (void)notifyOfTopicsFetchFailure
+{
+    
 }
 
 @end
