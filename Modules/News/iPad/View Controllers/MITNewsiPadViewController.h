@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
 - (void)updateRefreshStatusWithText:(NSString *)refreshText;
 - (void)reloadViewItems:(UIRefreshControl *)refreshControl;
 - (void)getMoreStoriesForSection:(NSInteger)section completion:(void (^)(NSError *))block;
+- (void)showRefreshControl;
 
 @end
 
