@@ -687,6 +687,7 @@
 		AF41E4E11A06AC2700EC4F18 /* MITToursCalloutContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */; };
 		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
 		AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */; };
+		AF9282C71A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */; };
 		AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */; };
 		AFB09B011A07CF2600C6D337 /* MITToursStopDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */; };
 		AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */; };
@@ -2083,6 +2084,8 @@
 		AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMCalloutView.m; path = External/SMCalloutView/SMCalloutView.m; sourceTree = "<group>"; };
 		AF41E4F11A06AD2200EC4F18 /* SMClassicCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMClassicCalloutView.h; path = External/SMCalloutView/SMClassicCalloutView.h; sourceTree = "<group>"; };
 		AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMClassicCalloutView.m; path = External/SMCalloutView/SMClassicCalloutView.m; sourceTree = "<group>"; };
+		AF9282C51A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopCollectionViewPagedLayout.h; sourceTree = "<group>"; };
+		AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopCollectionViewPagedLayout.m; sourceTree = "<group>"; };
 		AFB09AFD1A07CF2600C6D337 /* MITToursStopDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDetailViewController.h; sourceTree = "<group>"; };
 		AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailViewController.m; sourceTree = "<group>"; };
 		AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopDetailViewController.xib; sourceTree = "<group>"; };
@@ -4883,6 +4886,8 @@
 				AFECC2BC1A0A851200B59442 /* Cells */,
 				AFECC2C41A0A877500B59442 /* MITToursStopCollectionViewManager.h */,
 				AFECC2C51A0A877500B59442 /* MITToursStopCollectionViewManager.m */,
+				AF9282C51A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.h */,
+				AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */,
 			);
 			name = "Stop Collection View";
 			sourceTree = "<group>";
@@ -5858,6 +5863,7 @@
 				2C18090418F33B95008F9775 /* MITTouchstoneRequestOperation.m in Sources */,
 				80F021B519927E470056CA06 /* MITEventPlace.m in Sources */,
 				5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */,
+				AF9282C71A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m in Sources */,
 				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
