@@ -11,12 +11,24 @@ static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry =
 static NSString * const MITLibrariesFormSheetCellIdentifierMultiLineTextEntry = @"MITLibrariesFormSheetCellIdentifierMultiLineTextEntry";
 static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrariesFormSheetCellIdentifierWebLink";
 
+static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
+
 @interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
 
 @implementation MITLibrariesFormSheetViewController
+
+#pragma mark - Initialization
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:MITLibrariesFormSheetViewControllerNibName bundle:nil];
+    return self;
+}
+
+#pragma mark - LifeCycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -30,6 +42,9 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
     [self setupActivityIndicator];
     [self setupTableView];
     [self setupNavigationBar];
+
+    
+    NSLog(@"\n\n\n\n\n ****** ENSURE LOGGED IN FOR RELEASE ******** \n\n\n\n\n");
 }
 
 - (void)setupActivityIndicator

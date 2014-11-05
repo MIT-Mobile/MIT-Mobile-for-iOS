@@ -10,14 +10,6 @@
 
 @implementation MITLibrariesConsultationFormSheetViewController
 
-#pragma mark - Initialization
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:@"MITLibrariesFormSheetViewController" bundle:nil];
-    return self;
-}
-
 #pragma mark - Setup
 
 - (void)setup
@@ -115,32 +107,6 @@
     bottomGroup.elements = @[status, department, phoneNumber];
     
     return bottomGroup;
-}
-
-- (MITLibrariesFormSheetGroup *)technicalHelpFormSheetGroup
-{
-    MITLibrariesFormSheetElement *usingVPN = [MITLibrariesFormSheetElement new];
-    usingVPN.type = MITLibrariesFormSheetElementTypeOptions;
-    usingVPN.title = @"Using VPN";
-    MITLibrariesFormSheetElementAvailableOption *vpnOptionOnCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    vpnOptionOnCampus.value = @"On Campus";
-    // TODO: Find actual html value
-    vpnOptionOnCampus.htmlValue = @"on_campus";
-    MITLibrariesFormSheetElementAvailableOption *vpnOptionOffCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    vpnOptionOffCampus.value = @"Off Campus";
-    // TODO: Find actual html value
-    vpnOptionOffCampus.htmlValue = @"off_campus";
-    usingVPN.availableOptions = @[vpnOptionOnCampus, vpnOptionOffCampus];
-    
-    MITLibrariesFormSheetElement *location = [MITLibrariesFormSheetElement new];
-    location.type = MITLibrariesFormSheetElementTypeOptions;
-    location.title = @"Location";
-    
-    MITLibrariesFormSheetGroup *technicalHelpGroup = [MITLibrariesFormSheetGroup new];
-    technicalHelpGroup.headerTitle = @"TECHNICAL HELP";
-    technicalHelpGroup.elements = @[usingVPN, location];
-    
-    return technicalHelpGroup;
 }
 
 #pragma mark - Failure Alerts
