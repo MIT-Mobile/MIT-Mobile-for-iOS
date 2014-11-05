@@ -5,7 +5,7 @@
 
 static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate, UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
 @property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
 @end
