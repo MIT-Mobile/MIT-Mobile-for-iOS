@@ -22,6 +22,7 @@
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
 #import "MITResourceConstants.h"
+#import "MITMobileServerConfiguration.h"
 
 CGFloat const refreshControlTextHeight = 19;
 
@@ -102,8 +103,7 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)beginReachability
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-    //Needs to be a hostname and not a URL
-    self.internetReachability = [Reachability reachabilityWithHostName:@"www.mit.edu"];
+    self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerURL().host];
 	[self.internetReachability startNotifier];
 }
 
