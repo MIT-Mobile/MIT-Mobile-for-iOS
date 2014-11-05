@@ -57,11 +57,11 @@
                             <constraints>
                                 <constraint firstAttribute="height" constant="200" id="MlK-yH-UTl"/>
                             </constraints>
-                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8di-sL-UAM">
+                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8di-sL-UAM" customClass="MITToursStopCollectionViewPagedLayout">
                                 <size key="itemSize" width="120" height="180"/>
                                 <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="sectionInset" minX="5" minY="0.0" maxX="5" maxY="0.0"/>
                             </collectionViewFlowLayout>
                             <connections>
                                 <outlet property="dataSource" destination="4Jd-xW-Qvw" id="JFW-9v-TRI"/>

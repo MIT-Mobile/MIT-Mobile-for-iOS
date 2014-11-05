@@ -16,6 +16,8 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
 {
     UINib *cellNib = [UINib nibWithNibName:@"MITToursStopCollectionViewCell" bundle:[NSBundle mainBundle]];
     [self.collectionView registerNib:cellNib forCellWithReuseIdentifier:kCellReuseIdentifier];
+    
+    self.collectionView.decelerationRate = UIScrollViewDecelerationRateFast * 0.5;
 }
 
 #pragma mark - UICollectionViewDataSource Methods
