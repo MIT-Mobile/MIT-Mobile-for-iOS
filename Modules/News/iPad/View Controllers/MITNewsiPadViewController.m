@@ -353,7 +353,9 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
-    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+    if (self.refreshControl.refreshing) {
+        self.previousPositionOfMainView = CGPointMake(0, 0);
+    } else if (_presentationStyle == MITNewsPresentationStyleGrid) {
         self.previousPositionOfMainView = self.gridViewController.collectionView.contentOffset;
     } else {
         self.previousPositionOfMainView = self.listViewController.tableView.contentOffset;

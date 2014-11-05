@@ -133,9 +133,10 @@
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
-    [self reloadData];
     self.searchBar.text = searchTerm;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
+
+    [self reloadData];
     
     __weak MITNewsSearchController *weakSelf = self;
     [self.dataSource refresh:^(NSError *error) {
@@ -242,6 +243,7 @@
 {
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
     loadingActivityView.frame = self.view.frame;
+    self.view.alpha = 1;
     [self.view addSubview:loadingActivityView];
     self.messageActivityView = loadingActivityView;
 }
