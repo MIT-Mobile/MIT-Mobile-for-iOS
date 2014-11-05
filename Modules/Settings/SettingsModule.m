@@ -7,7 +7,7 @@
 {
     self = [super initWithName:MITModuleTagSettings title:@"Settings"];
     if (self) {
-        self.imageName = @"settings";
+        self.imageName = MITImageSettingsModuleIcon;
     }
 
     return self;

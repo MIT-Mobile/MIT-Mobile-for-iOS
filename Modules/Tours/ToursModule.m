@@ -7,7 +7,7 @@
     self = [super initWithName:MITModuleTagTours title:@"Tours"];
     if (self) {
         self.longTitle = @"Campus Tour";
-        self.imageName = @"tours";
+        self.imageName = MITImageToursModuleIcon;
     }
 
     return self;

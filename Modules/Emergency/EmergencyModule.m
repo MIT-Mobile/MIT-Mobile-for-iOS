@@ -16,7 +16,7 @@
     self = [super initWithName:MITModuleTagEmergency title:@"Emergency"];
     if (self) {
         self.longTitle = @"Emergency Info";
-        self.imageName = @"icons/home-emergency";
+        self.imageName = MITImageEmergencyModuleIcon;
     }
     
     return self;

@@ -6,7 +6,7 @@
     self = [super initWithName:MITModuleTagCampusMap title:@"Map"];
     if (self != nil) {
         self.longTitle = @"Campus Map";
-        self.imageName = @"icons/home-map";
+        self.imageName = MITImageMapModuleIcon;
     }
 
     return self;

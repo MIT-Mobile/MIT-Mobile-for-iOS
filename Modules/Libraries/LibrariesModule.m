@@ -8,7 +8,7 @@
 {
     self = [super initWithName:MITModuleTagLibraries title:@"Libraries"];
     if (self) {
-        self.imageName = @"icons/home-libraries";
+        self.imageName = MITImageLibrariesModuleIcon;
         self.requestQueue = [[NSOperationQueue alloc] init];
     }
     

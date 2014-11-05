@@ -5,7 +5,7 @@
 - (instancetype)init {
     self = [super initWithName:MITModuleTagLinks title:@"Links"];
     if (self) {
-        self.imageName = @"icons/home-webmitedu";
+        self.imageName = MITImageLinksModuleIcon;
     }
     
     return self;

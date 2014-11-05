@@ -8,7 +8,7 @@
     self = [super initWithName:MITModuleTagFacilities title:@"Bldg Services"];
     if (self) {
         self.longTitle = @"Building Services";
-        self.imageName = @"icons/home-facilities";
+        self.imageName = MITImageBuildingServicesModuleIcon;
     }
     
     return self;

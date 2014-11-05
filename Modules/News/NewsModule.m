@@ -8,7 +8,7 @@
     self = [super initWithName:MITModuleTagNewsOffice title:@"News"];
     if (self) {
         self.longTitle = @"News Office";
-        self.imageName = @"news";
+        self.imageName = MITImageNewsModuleIcon;
     }
     
     return self;

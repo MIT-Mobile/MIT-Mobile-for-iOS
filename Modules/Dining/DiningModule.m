@@ -9,7 +9,7 @@
 {
     self = [super initWithName:MITModuleTagDining title:@"Dining"];
     if (self) {
-        self.imageName = @"icons/home-dining";
+        self.imageName = MITImageDiningModuleIcon;
     }
 
     return self;

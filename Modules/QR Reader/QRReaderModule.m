@@ -6,7 +6,7 @@
     self = [super initWithName:MITModuleTagQRReader title:@"Scanner"];
     if (self) {
         self.longTitle = @"Scanner";
-        self.imageName = @"qrreader";
+        self.imageName = MITImageScannerModuleIcon;
     }
     
     return self;

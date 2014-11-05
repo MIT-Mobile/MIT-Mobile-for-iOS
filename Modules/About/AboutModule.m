@@ -5,7 +5,7 @@
 - (instancetype) init {
     self = [super initWithName:MITModuleTagAbout title:@"About"];
     if (self) {
-        self.imageName = @"icons/home-about";
+        self.imageName = MITImageAboutModuleIcon;
     }
     
     return self;

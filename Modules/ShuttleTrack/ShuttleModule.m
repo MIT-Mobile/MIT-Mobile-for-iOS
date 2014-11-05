@@ -8,7 +8,7 @@
     self = [super initWithName:MITModuleTagShuttle title:@"Shuttles"];
     if (self) {
         self.longTitle = @"ShuttleTrack";
-        self.imageName = @"shuttle";
+        self.imageName = MITImageShuttlesModuleIcon;
     }
     return self;
 }
