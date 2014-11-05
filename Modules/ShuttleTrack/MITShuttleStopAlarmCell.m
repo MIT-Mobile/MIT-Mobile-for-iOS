@@ -67,7 +67,7 @@
     } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
         self.alertButton.hidden = YES;
     } else {
-        [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];
+        [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOff] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
     }
 }
