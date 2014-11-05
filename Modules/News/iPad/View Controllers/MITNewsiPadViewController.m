@@ -136,15 +136,7 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     
-    CGFloat textHeight = 0;
-    if (!self.refreshControl.attributedTitle.string) {
-        textHeight = refreshControlTextHeight;
-    }
-    if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-    } else {
-        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-    }
+    [self showRefreshControl];
     [self updateRefreshStatusWithText:@"Updating..."];
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -582,14 +574,24 @@ CGFloat const refreshControlTextHeight = 19;
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.refreshControl beginRefreshing];
             [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
-                if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-                    [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
-                } else {
-                    [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
-                }
+                [self showRefreshControl];
+
             } completion:nil];
         }];
         [self reloadViewItems:self.refreshControl];
+    }
+}
+
+- (void)showRefreshControl
+{
+    CGFloat textHeight = 0;
+    if (!self.refreshControl.attributedTitle.string) {
+        textHeight = refreshControlTextHeight;
+    }
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    } else {
+        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
     }
 }
 
