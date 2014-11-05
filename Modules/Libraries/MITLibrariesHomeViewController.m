@@ -7,6 +7,7 @@
 #import "MITLibrariesLocationsHoursViewController.h"
 #import "MITLibrariesSearchResultDetailViewController.h"
 #import "MITLibrariesYourAccountViewController.h"
+#import "MITLibrariesAskUsHomeViewController.h"
 
 static NSInteger const kMITLibrariesHomeViewControllerNumberOfSections = 2;
 
@@ -302,12 +303,8 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
-            // TODO: Go to "Ask Us" VC
-            
-            [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {
-                
-            }];
-            
+            MITLibrariesAskUsHomeViewController *askUsHomeVC = [MITLibrariesAskUsHomeViewController new];
+            [self.navigationController pushViewController:askUsHomeVC animated:YES];
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionTellUsRow: {
