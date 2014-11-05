@@ -572,14 +572,17 @@ CGFloat const refreshControlTextHeight = 19;
 - (void)reachabilityChanged:(NSNotification *)note
 {
     if (!self.lastUpdated) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl beginRefreshing];
-            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
-                [self showRefreshControl];
-
-            } completion:nil];
-        }];
-        [self reloadViewItems:self.refreshControl];
+        Reachability* curReach = [note object];
+        NetworkStatus netStatus = [curReach currentReachabilityStatus];
+        if (netStatus != NotReachable) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+                [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
+                    [self showRefreshControl];
+                } completion:nil];
+            }];
+            [self reloadViewItems:self.refreshControl];
+        }
     }
 }
 
