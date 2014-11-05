@@ -8,6 +8,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursStopDetailViewController">
             <connections>
                 <outlet property="bodyTextLabel" destination="T2M-yO-r3b" id="p3Z-S3-4cc"/>
+                <outlet property="mainLoopCollectionView" destination="utD-mE-rH7" id="A26-el-9VJ"/>
+                <outlet property="mainLoopCollectionViewManager" destination="4Jd-xW-Qvw" id="VDR-qA-4Nv"/>
                 <outlet property="scrollView" destination="w3V-59-ysb" id="06d-ZU-hFC"/>
                 <outlet property="stopImageView" destination="5Qq-dd-txi" id="tw3-AG-Szy"/>
                 <outlet property="stopTitleLabel" destination="3FI-m8-DDe" id="M9K-kz-dTT"/>
@@ -49,18 +51,38 @@
                             </attributedString>
                             <nil key="highlightedColor"/>
                         </label>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7">
+                            <rect key="frame" x="-40" y="345" width="400" height="200"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="200" id="MlK-yH-UTl"/>
+                            </constraints>
+                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8di-sL-UAM">
+                                <size key="itemSize" width="120" height="180"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </collectionViewFlowLayout>
+                            <connections>
+                                <outlet property="dataSource" destination="4Jd-xW-Qvw" id="JFW-9v-TRI"/>
+                                <outlet property="delegate" destination="4Jd-xW-Qvw" id="2Wx-VX-QH8"/>
+                            </connections>
+                        </collectionView>
                     </subviews>
                     <constraints>
+                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="8" id="0Dk-RV-sDw"/>
                         <constraint firstAttribute="trailing" secondItem="T2M-yO-r3b" secondAttribute="trailing" constant="8" id="15r-Ry-XqO"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="top" secondItem="w3V-59-ysb" secondAttribute="top" id="Kgp-Mn-1g5"/>
-                        <constraint firstAttribute="bottom" secondItem="T2M-yO-r3b" secondAttribute="bottom" priority="900" constant="20" symbolic="YES" id="MUN-k4-bKs"/>
                         <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
                         <constraint firstItem="T2M-yO-r3b" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="a48-5Y-WW1"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="ayj-H7-4wn"/>
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="fWh-k0-JT3"/>
                         <constraint firstItem="T2M-yO-r3b" firstAttribute="top" secondItem="3FI-m8-DDe" secondAttribute="bottom" constant="8" id="orB-O4-Olv"/>
+                        <constraint firstAttribute="trailing" secondItem="utD-mE-rH7" secondAttribute="trailing" constant="-40" id="rVK-wA-LWA"/>
+                        <constraint firstAttribute="bottom" secondItem="utD-mE-rH7" secondAttribute="bottom" priority="900" constant="20" symbolic="YES" id="si7-Qm-lr6"/>
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="8" id="wAb-5a-E76"/>
                         <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="8" id="xdF-bU-kIh"/>
+                        <constraint firstItem="utD-mE-rH7" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="-40" id="zaB-3h-oty"/>
                     </constraints>
                 </scrollView>
             </subviews>
@@ -73,6 +95,11 @@
             </constraints>
             <point key="canvasLocation" x="123" y="161"/>
         </view>
+        <customObject id="4Jd-xW-Qvw" userLabel="Main Loop Collection View Manager" customClass="MITToursStopCollectionViewManager">
+            <connections>
+                <outlet property="collectionView" destination="utD-mE-rH7" id="GEG-oX-oUZ"/>
+            </connections>
+        </customObject>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
