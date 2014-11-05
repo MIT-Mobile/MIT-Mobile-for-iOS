@@ -618,7 +618,7 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     
-    [self setStoryUpdateInProgress:YES];
+    [self setNewsStoryUpdateInProgress:YES];
     [self updateLoadingCell];
     self.loadingMoreStories = YES;
     
@@ -630,7 +630,7 @@ CGFloat const refreshControlTextHeight = 19;
                                      if (!strongSelf) {
                                          return;
                                      }
-                                     [strongSelf setStoryUpdateInProgress:NO];
+                                     [strongSelf setNewsStoryUpdateInProgress:NO];
                                      strongSelf.loadingMoreStories = NO;
                                      
                                      if (error) {
@@ -670,7 +670,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
 }
 
-- (void)setStoryUpdateInProgress:(BOOL)progress
+- (void)setNewsStoryUpdateInProgress:(BOOL)progress
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyUpdateInProgress = progress;
