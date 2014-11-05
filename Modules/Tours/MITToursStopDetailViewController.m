@@ -2,6 +2,7 @@
 #import "MITToursImage.h"
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
+#import "MITToursStopCollectionViewManager.h"
 
 @interface MITToursStopDetailViewController () <UIScrollViewDelegate>
 
@@ -10,6 +11,9 @@
 @property (nonatomic) NSUInteger mainLoopIndex;
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
+@property (weak, nonatomic) IBOutlet UICollectionView *mainLoopCollectionView;
+@property (strong, nonatomic) IBOutlet MITToursStopCollectionViewManager *mainLoopCollectionViewManager;
 
 @property (weak, nonatomic) IBOutlet UIImageView *stopImageView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
@@ -41,8 +45,8 @@
     
     self.scrollView.delegate = self;
     
-
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
+    [self.mainLoopCollectionViewManager registerCells];
     [self configureForStop:self.stop];
 }
 
@@ -82,6 +86,10 @@
     self.stopTitleLabel.text = stop.title;
     [self configureBodyTextForStop:stop];
     [self configureImageForStop:stop];
+    
+    self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    [self.mainLoopCollectionView reloadData];
+    
     [self.view setNeedsLayout];
 }
 
