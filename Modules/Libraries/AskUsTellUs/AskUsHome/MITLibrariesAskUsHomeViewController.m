@@ -7,6 +7,7 @@
 #import "LibrariesAppointmentViewController.h"
 
 #import "MITLibrariesAskUsFormSheetViewController.h"
+#import "MITLibrariesConsultationFormSheetViewController.h"
 
 static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MITLibrariesAskUsHomeViewControllerCellIdentifier";
 
@@ -135,13 +136,13 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
     
     switch (indexPath.row) {
         case AskUsOptionAskUs: {
-            MITLibrariesAskUsFormSheetViewController *askUs = [[MITLibrariesAskUsFormSheetViewController alloc] initWithNibName:nil bundle:nil];
+            MITLibrariesAskUsFormSheetViewController *askUs = [MITLibrariesAskUsFormSheetViewController  new];
             [self.navigationController pushViewController:askUs animated:YES];
             // TODO: Open ask us controller
             break;
         }
         case AskUsOptionConsultation: {
-            LibrariesAppointmentViewController *appointmentVC = [LibrariesAppointmentViewController new];
+            MITLibrariesConsultationFormSheetViewController *appointmentVC = [MITLibrariesConsultationFormSheetViewController new];
             [self.navigationController pushViewController:appointmentVC animated:YES];
             // TODO: Open Consultation Controller
             break;
