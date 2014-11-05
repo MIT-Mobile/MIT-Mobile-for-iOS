@@ -44,7 +44,6 @@
     }];
 }
 
-
 #pragma mark - Data Assembly
 
 // Backgrounded for topics fetch
@@ -105,6 +104,15 @@
     MITLibrariesFormSheetElement *usingVPN = [MITLibrariesFormSheetElement new];
     usingVPN.type = MITLibrariesFormSheetElementTypeOptions;
     usingVPN.title = @"Using VPN";
+    MITLibrariesFormSheetElementAvailableOption *vpnOptionOnCampus = [MITLibrariesFormSheetElementAvailableOption new];
+    vpnOptionOnCampus.value = @"On Campus";
+    // TODO: Find actual html value
+    vpnOptionOnCampus.htmlValue = @"on_campus";
+    MITLibrariesFormSheetElementAvailableOption *vpnOptionOffCampus = [MITLibrariesFormSheetElementAvailableOption new];
+    vpnOptionOffCampus.value = @"Off Campus";
+    // TODO: Find actual html value
+    vpnOptionOffCampus.htmlValue = @"off_campus";
+    usingVPN.availableOptions = @[vpnOptionOnCampus, vpnOptionOffCampus];
     
     MITLibrariesFormSheetElement *location = [MITLibrariesFormSheetElement new];
     location.type = MITLibrariesFormSheetElementTypeOptions;

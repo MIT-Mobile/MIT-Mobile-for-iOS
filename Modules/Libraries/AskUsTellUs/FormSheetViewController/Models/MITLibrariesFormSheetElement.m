@@ -27,4 +27,8 @@
     }
     return returnVal;
 }
+- (NSString *)title
+{
+    return !_optional ? _title : [NSString stringWithFormat:@"%@ (optional)", _title];
+}
 @end
