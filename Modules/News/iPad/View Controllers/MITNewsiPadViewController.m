@@ -545,6 +545,7 @@ CGFloat const refreshControlTextHeight = 19;
                 });
             }
             if (self.internetReachability) {
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
                 [self.internetReachability stopNotifier];
                 self.internetReachability = nil;
             }
