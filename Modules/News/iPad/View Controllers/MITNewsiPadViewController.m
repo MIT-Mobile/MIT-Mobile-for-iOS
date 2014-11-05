@@ -569,12 +569,12 @@ CGFloat const refreshControlTextHeight = 19;
     self.messageView = nil;
 }
 
-- (void)reachabilityChanged:(NSNotification *)note
+- (void)reachabilityChanged:(NSNotification *)notification
 {
     if (!self.lastUpdated) {
-        Reachability* curReach = [note object];
-        NetworkStatus netStatus = [curReach currentReachabilityStatus];
-        if (netStatus != NotReachable) {
+        Reachability* reachabilityObject = [notification object];
+        NetworkStatus statusOfNetwork = [reachabilityObject currentReachabilityStatus];
+        if (statusOfNetwork != NotReachable) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [self.refreshControl beginRefreshing];
                 [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
