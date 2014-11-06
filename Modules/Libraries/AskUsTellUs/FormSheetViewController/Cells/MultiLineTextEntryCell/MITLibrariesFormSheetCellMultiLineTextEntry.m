@@ -7,7 +7,6 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 
 @interface MITLibrariesFormSheetCellMultiLineTextEntry () <UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet PlaceholderTextView *textView;
-@property (weak, nonatomic) MITLibrariesFormSheetElement *element;
 @end
 
 @implementation MITLibrariesFormSheetCellMultiLineTextEntry
@@ -21,7 +20,6 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 {
     self.textView.placeholder = element.title;
     self.textView.text = element.value;
-    self.element = element;
 }
 
 + (CGFloat)heightForCell
@@ -43,7 +41,8 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    self.element.value = textView.text;
+    NSString *textToSend = textView.text.length > 0 ? textView.text : nil;
+    [self.delegate textEntryCell:self didUpdateValue:textToSend];
 }
 
 @end

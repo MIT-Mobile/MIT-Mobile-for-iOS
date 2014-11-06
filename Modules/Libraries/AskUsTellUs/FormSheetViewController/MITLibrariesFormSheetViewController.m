@@ -15,7 +15,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
 
-@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetOptionsSelectionViewControllerDelegate>
+@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetOptionsSelectionViewControllerDelegate, MITLibrariesFormSheetTextEntryCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
@@ -80,6 +80,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
                                                                               style:UIBarButtonItemStylePlain
                                                                              target:self
                                                                              action:@selector(submitButtonPressed:)];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
 }
 
 #pragma mark - Activity Indicator
@@ -98,7 +99,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)submitButtonPressed:(UIBarButtonItem *)sender
 {
-    // TODO: Submit form
+    [self submitForm];
 }
 
 #pragma mark - Form Submission
@@ -106,6 +107,13 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)submitForm
 {
     
+}
+
+#pragma mark - Submit Button Validation
+
+- (void)updateSubmitButton
+{
+    self.navigationItem.rightBarButtonItem.enabled = [self isFormValid];
 }
 
 #pragma mark - Form Validity
@@ -163,9 +171,11 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
             break;
         case MITLibrariesFormSheetElementTypeSingleLineTextEntry:
             cell = [tableView dequeueReusableCellWithIdentifier:MITLibrariesFormSheetCellIdentifierSingleLineTextEntry forIndexPath:indexPath];
+            [(UITableViewCell<MITLibrariesFormSheetTextEntryCellProtocol> *)cell setDelegate:self];
             break;
         case MITLibrariesFormSheetElementTypeMultiLineTextEntry:
             cell = [tableView dequeueReusableCellWithIdentifier:MITLibrariesFormSheetCellIdentifierMultiLineTextEntry forIndexPath:indexPath];
+            [(UITableViewCell<MITLibrariesFormSheetTextEntryCellProtocol> *)cell setDelegate:self];
             break;
         case MITLibrariesFormSheetElementTypeWebLink:
             cell = [tableView dequeueReusableCellWithIdentifier:MITLibrariesFormSheetCellIdentifierWebLink forIndexPath:indexPath];
@@ -239,6 +249,19 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         default:
             // Ignore other touches
             break;
+    }
+}
+
+#pragma mark - MITLibrariesFormSheetTextEntryCellDelegate
+
+- (void)textEntryCell:(UITableViewCell<MITLibrariesFormSheetTextEntryCellProtocol> *)cell didUpdateValue:(id)value
+{
+    NSIndexPath *indexPathForCell = [self.tableView indexPathForCell:cell];
+    if (indexPathForCell) {
+        MITLibrariesFormSheetGroup *groupForSection = self.formSheetGroups[indexPathForCell.section];
+        MITLibrariesFormSheetElement *elementForRow = groupForSection.elements[indexPathForCell.row];
+        elementForRow.value = value;
+        [self updateSubmitButton];
     }
 }
 

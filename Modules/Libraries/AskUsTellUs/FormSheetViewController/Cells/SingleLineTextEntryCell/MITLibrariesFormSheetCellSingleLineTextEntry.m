@@ -6,7 +6,6 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
 
 @interface MITLibrariesFormSheetCellSingleLineTextEntry () <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *textField;
-@property (weak, nonatomic) MITLibrariesFormSheetElement *element;
 @end
 
 @implementation MITLibrariesFormSheetCellSingleLineTextEntry
@@ -21,7 +20,6 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
 {
     self.textField.placeholder = element.title;
     self.textField.text = element.value;
-    self.element = element;
 }
 
 + (CGFloat)heightForCell
@@ -33,7 +31,8 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
 
 - (void)textFieldTextDidChange:(UITextField *)textField
 {
-    self.element.value = textField.text;
+    NSString *textToSend = textField.text.length > 0 ? textField.text : nil;
+    [self.delegate textEntryCell:self didUpdateValue:textToSend];
 }
 
 #pragma mark - UITextFieldDelegate
