@@ -22,4 +22,9 @@
     return [UIFont fontWithName:@"HelveticaNeue" size:14];
 }
 
++ (UIFont *)toursStopCollectionViewCellTitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:12];
+}
+
 @end
