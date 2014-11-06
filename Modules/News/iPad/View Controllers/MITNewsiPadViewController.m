@@ -241,8 +241,10 @@ CGFloat const refreshControlTextHeight = 19;
     if (!_searchBar) {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self.searchController;
-        self.searchController.searchBar = searchBar;
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        searchBar.placeholder = @"Search";
+        self.searchController.searchBar = searchBar;
+        
         _searchBar = searchBar;
     }
     return _searchBar;
