@@ -9,7 +9,6 @@
 @interface MITToursStopDetailViewController () <UIScrollViewDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
-@property (strong, nonatomic) NSArray *sideTripStops;
 @property (nonatomic) NSUInteger mainLoopIndex;
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
@@ -75,7 +74,6 @@
 {
     _tour = tour;
     self.mainLoopStops = [[tour mainLoopStops] copy];
-    self.sideTripStops = [[tour sideTripsStops] copy];
 }
 
 - (void)setStop:(MITToursStop *)stop
@@ -94,22 +92,35 @@
     [self configureImageForStop:stop];
     
     NSInteger index = [self.mainLoopStops indexOfObject:stop];
-    if (index != NSNotFound) {
-        // We want the current stop to be the "center" of the array of stops.
-        NSMutableArray *stops = [[NSMutableArray alloc] init];
-        NSInteger offset = index - self.mainLoopStops.count / 2;
-        for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
-            NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
-            [stops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
-        }
-        self.mainLoopCollectionViewManager.stops = stops;
-    } else {
-        self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    if (index == NSNotFound) {
+        index = 0;
     }
+    // We want the current stop to be the "center" of the array of stops.
+    NSMutableArray *sortedMainLoopStops = [[NSMutableArray alloc] init];
+    NSInteger offset = index - self.mainLoopStops.count / 2;
+    for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
+        NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
+    }
+    self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    self.mainLoopCollectionViewManager.stopsInDisplayOrder = sortedMainLoopStops;
     [self.mainLoopCollectionView reloadData];
     [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
     
-    self.nearHereCollectionViewManager.stops = self.sideTripStops;
+    // Order the stops by distance from the current stop
+    CLLocation *currentStopLocation = [stop locationForStop];
+    NSArray *sortedStops = [self.tour.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        CLLocationDistance distance1 = [[((MITToursStop *)obj1) locationForStop] distanceFromLocation:currentStopLocation];
+        CLLocationDistance distance2 = [[((MITToursStop *)obj2) locationForStop] distanceFromLocation:currentStopLocation];
+        if (distance1 < distance2) {
+            return NSOrderedAscending;
+        } else if (distance1 > distance2) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedSame;
+    }];
+    self.nearHereCollectionViewManager.stops = [self.tour.stops copy];
+    self.nearHereCollectionViewManager.stopsInDisplayOrder = [sortedStops copy];
     [self.nearHereCollectionView reloadData];
     
     [self.view setNeedsLayout];

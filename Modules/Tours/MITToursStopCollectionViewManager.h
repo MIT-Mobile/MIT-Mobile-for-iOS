@@ -5,6 +5,7 @@
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (strong, nonatomic) NSArray *stops;
+@property (strong, nonatomic) NSArray *stopsInDisplayOrder;
 
 - (void)setup;
 
