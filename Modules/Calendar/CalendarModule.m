@@ -8,7 +8,7 @@
     self = [super initWithName:MITModuleTagCalendar title:@"Events"];
     if (self != nil) {
         self.longTitle = @"Events Calendar";
-        self.imageName = MITImageEventsDayPickerButton;
+        self.imageName = MITImageEventsModuleIcon;
     }
 
     return self;
