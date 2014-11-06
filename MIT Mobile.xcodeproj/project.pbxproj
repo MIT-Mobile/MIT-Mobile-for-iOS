@@ -502,6 +502,8 @@
 		5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */; };
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
+		801062601A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8010625E1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m */; };
+		801062611A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8010625F1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib */; };
 		8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */; };
 		8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */; };
 		8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */; };
@@ -1768,6 +1770,9 @@
 		5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapBrowseContainerViewController.xib; sourceTree = "<group>"; };
 		5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
+		8010625D1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetOptionsSelectionViewController.h; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.h; sourceTree = "<group>"; };
+		8010625E1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetOptionsSelectionViewController.m; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.m; sourceTree = "<group>"; };
+		8010625F1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITLibrariesFormSheetOptionsSelectionViewController.xib; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.xib; sourceTree = "<group>"; };
 		8011C4ED199D48CA00ED8F56 /* MITDiningPlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningPlace.h; path = Dining/MITDiningPlace.h; sourceTree = "<group>"; };
 		8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningPlace.m; path = Dining/MITDiningPlace.m; sourceTree = "<group>"; };
 		8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueDetailViewController.h; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.h; sourceTree = "<group>"; };
@@ -4458,6 +4463,16 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		801062591A0BC77A002C8A8B /* OptionsSelectionVC */ = {
+			isa = PBXGroup;
+			children = (
+				8010625D1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.h */,
+				8010625E1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m */,
+				8010625F1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib */,
+			);
+			name = OptionsSelectionVC;
+			sourceTree = "<group>";
+		};
 		80598D7F1A0968780095CEAA /* AskUsTellUs */ = {
 			isa = PBXGroup;
 			children = (
@@ -4502,6 +4517,7 @@
 		80598DA41A0A73D30095CEAA /* FormSheetViewController */ = {
 			isa = PBXGroup;
 			children = (
+				801062591A0BC77A002C8A8B /* OptionsSelectionVC */,
 				80598DCE1A0AA9980095CEAA /* Models */,
 				80598DAA1A0A7F980095CEAA /* Cells */,
 				80598DA51A0A74160095CEAA /* MITLibrariesFormSheetViewController.h */,
@@ -5391,6 +5407,7 @@
 				2258CBDB19CA1E450067E35C /* MITLibrariesHomeViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
+				801062611A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib in Resources */,
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */,
@@ -5593,6 +5610,7 @@
 				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				0B34E4281A081EC1002CF7F1 /* MITNewsiPadViewController.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
+				801062601A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m in Sources */,
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
 				27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */,
 				A5BF260F1969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.m in Sources */,
