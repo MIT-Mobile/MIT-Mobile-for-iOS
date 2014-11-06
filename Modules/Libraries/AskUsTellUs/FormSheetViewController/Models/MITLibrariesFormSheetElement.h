@@ -16,5 +16,6 @@ typedef NS_ENUM(NSInteger, MITLibrariesFormSheetElementType) {
 @property (nonatomic, strong) NSArray *availableOptions; // Used for type 'Options' to indicate possible values.  Array<MITLibrariesFormSheetAvailableOption> or Array<id> depending on need.
 @property (nonatomic) BOOL optional;
 @property (nonatomic, copy) NSString *htmlParameterKey; // The corresponding HTML argument
+@property (nonatomic, readonly) id htmlParameterValue; // The current value formatted for its html argument
 @end
 

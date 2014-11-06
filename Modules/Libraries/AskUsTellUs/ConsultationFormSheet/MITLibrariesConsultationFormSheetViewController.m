@@ -37,6 +37,15 @@
     }];
 }
 
+#pragma mark - HTML Parameters Assembly
+
+- (NSDictionary *)formAsHTMLParametersDictionary
+{
+    NSMutableDictionary *superForm = [[super formAsHTMLParametersDictionary] mutableCopy];
+    superForm[@"ask_type"] = @"consultation";
+    return superForm;
+}
+
 #pragma mark - Data Assembly
 
 // Backgrounded for topics fetch
