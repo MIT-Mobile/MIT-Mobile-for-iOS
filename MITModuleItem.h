@@ -5,11 +5,10 @@
 @property(nonatomic,copy) NSString *name;
 @property(nonatomic,copy) NSString *title;
 @property(nonatomic,strong) UIImage *image;
+@property(nonatomic,strong) UIImage *selectedImage;
 
 @property(nonatomic,copy) NSString *badgeValue;
 
-@property(nonatomic,copy) NSString *longTitle;
-@property(nonatomic,strong) UIImage *selectedImage;
 
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title image:(UIImage*)image;
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title image:(UIImage*)image selectedImage:(UIImage*)selectedImage;
