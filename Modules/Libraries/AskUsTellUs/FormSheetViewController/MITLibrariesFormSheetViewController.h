@@ -11,4 +11,5 @@
 - (void)setup;
 - (void)showActivityIndicator;
 - (void)hideActivityIndicator;
+- (NSDictionary *)formAsHTMLParametersDictionary;
 @end

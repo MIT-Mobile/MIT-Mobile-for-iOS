@@ -3,6 +3,19 @@
 #import "MITLibrariesFormSheetElementAvailableOption.h"
 
 @implementation MITLibrariesFormSheetElement
+- (id)htmlParameterValue
+{
+    id htmlReturnVal = self.value;
+    if (self.type == MITLibrariesFormSheetElementTypeOptions) {
+        for (MITLibrariesFormSheetElementAvailableOption *availableOption in self.availableOptions) {
+            if ([availableOption.value isEqual:self.value]) {
+                htmlReturnVal = availableOption.htmlValue;
+                break;
+            }
+        }
+    }
+    return htmlReturnVal;
+}
 - (id)value
 {
     if (!_value) {

@@ -123,7 +123,23 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)submitForm
 {
-    
+    NSDictionary *htmlParameters = [self formAsHTMLParametersDictionary];
+    NSLog(@"Form Dictionary: %@", htmlParameters);
+}
+
+- (NSDictionary *)formAsHTMLParametersDictionary
+{
+    NSMutableDictionary *formDict = [NSMutableDictionary dictionary];
+    for (MITLibrariesFormSheetGroup *group in self.formSheetGroups) {
+        for (MITLibrariesFormSheetElement *element in group.elements) {
+            if (element.value && element.htmlParameterKey) {
+                formDict[element.htmlParameterKey] = element.htmlParameterValue;
+            } else if (!element.optional) {
+                NSLog(@"ERROR: Required form sheet element has no value! %@", element.title);
+            }
+        }
+    }
+    return formDict;
 }
 
 #pragma mark - Submit Button Validation
