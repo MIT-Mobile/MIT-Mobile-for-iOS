@@ -30,6 +30,7 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
  * @see -[NSURL query]
  */
 - (NSDictionary*)queryDictionary;
+- (NSDictionary*)URLDecodedQueryDictionary;
 @end
 
 @interface NSArray (MITAdditions)

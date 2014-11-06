@@ -2,7 +2,7 @@
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/xpath.h>
-#import "Foundation+MITAdditions.h"
+#import "MITAdditions.h"
 
 #pragma mark Error Domains
 NSString * const MITXMLErrorDomain = @"MITXMLError";
@@ -96,7 +96,17 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
                                     path:path];
 }
 
+- (NSDictionary*)URLDecodedQueryDictionary
+{
+    return [self _queryDictionary:YES];
+}
+
 - (NSDictionary*)queryDictionary
+{
+    return [self _queryDictionary:NO];
+}
+
+- (NSDictionary*)_queryDictionary:(BOOL)useURLDecoding
 {
     NSArray *queryParameters = [[self query] componentsSeparatedByString:@"&"];
     
@@ -107,13 +117,29 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [queryParameters enumerateObjectsUsingBlock:^(NSString *queryPair, NSUInteger idx, BOOL *stop) {
         NSArray *parameter = [queryPair componentsSeparatedByString:@"="];
-        
+        NSString *key = nil;
+        id value = nil;
+
         if ([parameter count] == 1) {
-            // This is a singlet parameter. Mark this using [NSNull null] for now
-            parameters[parameter[0]] = [NSNull null];
+            // This is a singlet parameter. Mark this using [NSNull null]
+            if (useURLDecoding) {
+                key = [parameter[0] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+            } else {
+                key = parameter[0];
+            }
+
+            value = [NSNull null];
         } else if ([parameter count] == 2) {
-            parameters[parameter[0]] = parameter[1];
+            if (useURLDecoding) {
+                key = [parameter[0] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+                value = [parameter[1] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+            } else {
+                key = parameter[0];
+                value = parameter[1];
+            }
         }
+
+        parameters[key] = value;
     }];
     
     return parameters;
@@ -436,10 +462,12 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 }
 
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding {
-    return (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
-                                                                                                (CFStringRef)self,
-                                                                                                NULL,
-                                                                                                CFStringConvertNSStringEncodingToEncoding(encoding)));
+    NSString *decodedString = [self stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    decodedString = (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                         (CFStringRef)decodedString,
+                                                                                                         NULL,
+                                                                                                         CFStringConvertNSStringEncodingToEncoding(encoding)));
+    return decodedString;
 }
 @end
 
