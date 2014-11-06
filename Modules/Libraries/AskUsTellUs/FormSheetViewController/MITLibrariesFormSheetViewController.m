@@ -6,6 +6,8 @@
 #import "MITLibrariesFormSheetCellWebLink.h"
 #import "UIKit+MITAdditions.h"
 
+#import "MITLibrariesFormSheetOptionsSelectionViewController.h"
+
 static NSString * const MITLibrariesFormSheetCellIdentifierOptions = @"MITLibrariesFormSheetCellIdentifierOptions";
 static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry = @"MITLibrariesFormSheetCellIdentifierSingleLineTextEntry";
 static NSString * const MITLibrariesFormSheetCellIdentifierMultiLineTextEntry = @"MITLibrariesFormSheetCellIdentifierMultiLineTextEntry";
@@ -13,7 +15,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
 
-@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetOptionsSelectionViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
@@ -106,6 +108,27 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     
 }
 
+#pragma mark - Form Validity
+
+- (BOOL)isFormValid
+{
+    BOOL isFormValid = YES;
+    
+    for (MITLibrariesFormSheetGroup *group in self.formSheetGroups) {
+        for (MITLibrariesFormSheetElement *element in group.elements) {
+            if (!element.optional && !element.value) {
+                isFormValid = NO;
+                break;
+            }
+        }
+        if (!isFormValid) {
+            break;
+        }
+    }
+    
+    return isFormValid;
+}
+
 #pragma mark - TableView Reload
 
 - (void)reloadTableView
@@ -194,6 +217,37 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    MITLibrariesFormSheetGroup *groupForSection = self.formSheetGroups[indexPath.section];
+    MITLibrariesFormSheetElement *elementForRow = groupForSection.elements[indexPath.row];
+    
+    switch (elementForRow.type) {
+        case MITLibrariesFormSheetElementTypeOptions: {
+            MITLibrariesFormSheetOptionsSelectionViewController *optionsSelectorVC = [MITLibrariesFormSheetOptionsSelectionViewController new];
+            optionsSelectorVC.delegate = self;
+            optionsSelectorVC.element = elementForRow;
+            [self.navigationController pushViewController:optionsSelectorVC animated:YES];
+            break;
+        }
+        case MITLibrariesFormSheetElementTypeWebLink: {
+            NSURL *url = [NSURL URLWithString:elementForRow.value];
+            if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+            break;
+        }
+        default:
+            // Ignore other touches
+            break;
+    }
+}
+
+#pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
+
+- (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    [self reloadTableView];
 }
 
 @end
