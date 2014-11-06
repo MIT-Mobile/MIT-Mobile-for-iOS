@@ -1,6 +1,7 @@
 
 #import "MITLibrariesTellUsFormSheetViewController.h"
 #import "MITLibrariesFormSheetElementStatus.h"
+#import "MITLibrariesWebservices.h"
 
 @implementation MITLibrariesTellUsFormSheetViewController
 
@@ -20,6 +21,15 @@
     [formSheetGroups addObject:[self bottomFormSheetGroup]];
     self.formSheetGroups = formSheetGroups;
     [self reloadTableView];
+}
+
+#pragma mark - Form Submission
+
+- (void)submitFormForParameters:(NSDictionary *)parameters
+{
+    [MITLibrariesWebservices postTellUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
+        NSLog(@"Submitted tell us w/ response: %@ and error: %@", responseObject, error);
+    }];
 }
 
 #pragma mark - Data Assembly

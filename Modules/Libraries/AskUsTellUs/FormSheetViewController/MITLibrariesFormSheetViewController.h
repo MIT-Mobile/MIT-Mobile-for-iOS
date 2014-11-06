@@ -12,4 +12,5 @@
 - (void)showActivityIndicator;
 - (void)hideActivityIndicator;
 - (NSDictionary *)formAsHTMLParametersDictionary;
+- (void)submitFormForParameters:(NSDictionary *)parameters;
 @end

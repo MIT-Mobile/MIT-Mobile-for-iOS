@@ -116,15 +116,14 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)submitButtonPressed:(UIBarButtonItem *)sender
 {
-    [self submitForm];
+    [self submitFormForParameters:[self formAsHTMLParametersDictionary]];
 }
 
 #pragma mark - Form Submission
 
-- (void)submitForm
+- (void)submitFormForParameters:(NSDictionary *)parameters
 {
-    NSDictionary *htmlParameters = [self formAsHTMLParametersDictionary];
-    NSLog(@"Form Dictionary: %@", htmlParameters);
+    NSLog(@"FORM SHEET VIEW CONTROLLER: Should be implemented by subclass");
 }
 
 - (NSDictionary *)formAsHTMLParametersDictionary

@@ -38,6 +38,15 @@
     }];
 }
 
+#pragma mark - Form Submission
+
+- (void)submitFormForParameters:(NSDictionary *)parameters
+{
+    [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
+        NSLog(@"Submitted askUs: Consultation - w/ response: %@ and error: %@", responseObject, error);
+    }];
+}
+
 #pragma mark - HTML Parameters Assembly
 
 - (NSDictionary *)formAsHTMLParametersDictionary
@@ -73,8 +82,7 @@
             MITLibrariesFormSheetElement *purpose = [MITLibrariesFormSheetElement new];
             purpose.type = MITLibrariesFormSheetElementTypeOptions;
             purpose.title = @"Purpose";
-            purpose.htmlParameterKey = @"why";
-            purpose.optional = YES;
+            purpose.htmlParameterKey = @"purpose";
             purpose.availableOptions = @[@"Course", @"Thesis", @"Research"];
             
             MITLibrariesFormSheetElement *course = [MITLibrariesFormSheetElement new];
