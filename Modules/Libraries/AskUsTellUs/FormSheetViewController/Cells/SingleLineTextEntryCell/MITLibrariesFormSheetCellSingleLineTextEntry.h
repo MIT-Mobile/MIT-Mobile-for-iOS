@@ -4,6 +4,6 @@
 
 extern NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName;
 
-@interface MITLibrariesFormSheetCellSingleLineTextEntry : UITableViewCell <MITLibrariesFormSheetCellProtocol>
-
+@interface MITLibrariesFormSheetCellSingleLineTextEntry : UITableViewCell <MITLibrariesFormSheetTextEntryCellProtocol>
+@property (weak, nonatomic) id<MITLibrariesFormSheetTextEntryCellDelegate>delegate;
 @end
