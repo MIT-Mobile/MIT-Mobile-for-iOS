@@ -3,6 +3,8 @@
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
 #import "MITToursStopCollectionViewManager.h"
+#import "MITToursStopInfiniteScrollCollectionViewManager.h"
+#import "MITInfiniteScrollCollectionView.h"
 
 @interface MITToursStopDetailViewController () <UIScrollViewDelegate>
 
@@ -12,8 +14,8 @@
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
-@property (weak, nonatomic) IBOutlet UICollectionView *mainLoopCollectionView;
-@property (strong, nonatomic) IBOutlet MITToursStopCollectionViewManager *mainLoopCollectionViewManager;
+@property (weak, nonatomic) IBOutlet MITInfiniteScrollCollectionView *mainLoopCollectionView;
+@property (strong, nonatomic) IBOutlet MITToursStopInfiniteScrollCollectionViewManager *mainLoopCollectionViewManager;
 
 @property (weak, nonatomic) IBOutlet UIImageView *stopImageView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
@@ -46,7 +48,7 @@
     self.scrollView.delegate = self;
     
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
-    [self.mainLoopCollectionViewManager registerCells];
+    [self.mainLoopCollectionViewManager setup];
     [self configureForStop:self.stop];
 }
 
@@ -87,8 +89,22 @@
     [self configureBodyTextForStop:stop];
     [self configureImageForStop:stop];
     
-    self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    if (index != NSNotFound) {
+        // We want the current stop to be the "center" of the array of stops.
+        NSMutableArray *stops = [[NSMutableArray alloc] init];
+        NSInteger offset = index - self.mainLoopStops.count / 2;
+        for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
+            NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
+            [stops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
+        }
+        self.mainLoopCollectionViewManager.stops = stops;
+    } else {
+        self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    }
+    
     [self.mainLoopCollectionView reloadData];
+    [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
     
     [self.view setNeedsLayout];
 }

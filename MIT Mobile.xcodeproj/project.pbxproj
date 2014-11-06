@@ -622,6 +622,8 @@
 		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
 		AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */; };
 		AF9282C71A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */; };
+		AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282C91A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m */; };
+		AF9282CD1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282CC1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m */; };
 		AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */; };
 		AFB09B011A07CF2600C6D337 /* MITToursStopDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */; };
 		AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */; };
@@ -1923,6 +1925,10 @@
 		AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMClassicCalloutView.m; path = External/SMCalloutView/SMClassicCalloutView.m; sourceTree = "<group>"; };
 		AF9282C51A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopCollectionViewPagedLayout.h; sourceTree = "<group>"; };
 		AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopCollectionViewPagedLayout.m; sourceTree = "<group>"; };
+		AF9282C81A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITInfiniteScrollCollectionView.h; sourceTree = "<group>"; };
+		AF9282C91A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITInfiniteScrollCollectionView.m; sourceTree = "<group>"; };
+		AF9282CB1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopInfiniteScrollCollectionViewManager.h; sourceTree = "<group>"; };
+		AF9282CC1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopInfiniteScrollCollectionViewManager.m; sourceTree = "<group>"; };
 		AFB09AFD1A07CF2600C6D337 /* MITToursStopDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDetailViewController.h; sourceTree = "<group>"; };
 		AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailViewController.m; sourceTree = "<group>"; };
 		AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopDetailViewController.xib; sourceTree = "<group>"; };
@@ -4534,6 +4540,10 @@
 				AFECC2BC1A0A851200B59442 /* Cells */,
 				AFECC2C41A0A877500B59442 /* MITToursStopCollectionViewManager.h */,
 				AFECC2C51A0A877500B59442 /* MITToursStopCollectionViewManager.m */,
+				AF9282CB1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.h */,
+				AF9282CC1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m */,
+				AF9282C81A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.h */,
+				AF9282C91A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m */,
 				AF9282C51A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.h */,
 				AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */,
 			);
@@ -5371,6 +5381,7 @@
 				80598DBA1A0A81460095CEAA /* MITLibrariesFormSheetCellSingleLineTextEntry.m in Sources */,
 				2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */,
 				22D9BB9C19D1CC280065A2E7 /* MITLibrariesCitation.m in Sources */,
+				AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
 				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
@@ -5446,6 +5457,7 @@
 				DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */,
 				2258CBED19CB7EDC0067E35C /* MITLibrariesDate.m in Sources */,
 				22CFC1B219AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.m in Sources */,
+				AF9282CD1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m in Sources */,
 				2247B77B19F98C69000E1725 /* UIFont+MITTours.m in Sources */,
 				22D9031F199BE2CC00AEBC7D /* MITDiningWebservices.m in Sources */,
 				DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */,
