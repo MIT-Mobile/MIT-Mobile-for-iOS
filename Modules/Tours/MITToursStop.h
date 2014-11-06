@@ -20,6 +20,7 @@
 @property (nonatomic, readonly) CLLocation *locationForStop;
 
 - (NSString *)thumbnailURL;
+- (NSString *)fullImageURL;
 
 @end
 

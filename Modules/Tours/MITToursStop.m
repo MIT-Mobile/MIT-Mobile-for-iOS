@@ -35,6 +35,12 @@
     return image.thumbnailURL;
 }
 
+- (NSString *)fullImageURL
+{
+    MITToursImage *image = self.images[0];
+    return image.fullImageURL;
+}
+
 - (CLLocation *)locationForStop
 {
     return [[CLLocation alloc] initWithLatitude:[self.coordinates[1] doubleValue] longitude:[self.coordinates[0] doubleValue]];

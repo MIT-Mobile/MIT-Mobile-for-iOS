@@ -54,6 +54,10 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 {
     UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStylePlain target:self action:@selector(infoButtonPressed:)];
     self.navigationItem.rightBarButtonItem = infoButton;
+    
+    // Following screens should have no "Back" text on back button
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    self.navigationItem.backBarButtonItem = backItem;
 }
 
 - (void)setupToolbar

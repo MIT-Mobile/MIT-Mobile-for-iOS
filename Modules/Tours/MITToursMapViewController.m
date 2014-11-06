@@ -8,6 +8,7 @@
 #import "SMCalloutView.h"
 #import "SMClassicCalloutView.h"
 #import "MITToursCalloutContentView.h"
+#import "MITToursStopDetailContainerViewController.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -230,8 +231,8 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)calloutWasTappedForStop:(MITToursStop *)stop
 {
-    // TODO: Transition to stop details
-    NSLog( @"Callout view clicked for stop %@", stop.title );
+    MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
+    [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
 }
 
 #pragma mark - User Location Centering
