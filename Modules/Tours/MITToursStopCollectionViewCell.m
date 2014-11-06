@@ -14,7 +14,7 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    self.titleLabel.font = [UIFont toursButtonSubtitle];
+    self.titleLabel.font = [UIFont toursStopCollectionViewCellTitle];
 }
 
 - (void)configureForImageURL:(NSURL *)imageURL title:(NSString *)title
