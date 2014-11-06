@@ -9,6 +9,7 @@
 - (void)setup
 {
     [super setup];
+    self.title = @"Tell Us";
     [self setupFormSheetGroups];
 }
 

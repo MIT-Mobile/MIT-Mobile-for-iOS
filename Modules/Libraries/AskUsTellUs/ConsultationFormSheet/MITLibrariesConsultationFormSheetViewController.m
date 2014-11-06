@@ -15,6 +15,7 @@
 - (void)setup
 {
     [super setup];
+    self.title = @"Consultation";
     [self setupFormSheetGroups];
 }
 

@@ -14,6 +14,7 @@
 - (void)setup
 {
     [super setup];
+    self.title = @"Ask Us!";
     [self setupFormSheetGroups];
 }
 
