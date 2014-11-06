@@ -1,18 +1,11 @@
 #import "MITToursStopCollectionViewManager.h"
 #import "MITToursStopCollectionViewCell.h"
-#import "MITToursStop.h"
-
-@interface MITToursStopCollectionViewManager () <UICollectionViewDelegate, UICollectionViewDataSource>
-
-@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
-@end
 
 @implementation MITToursStopCollectionViewManager
 
 static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell";
 
-- (void)registerCells
+- (void)setup
 {
     UINib *cellNib = [UINib nibWithNibName:@"MITToursStopCollectionViewCell" bundle:[NSBundle mainBundle]];
     [self.collectionView registerNib:cellNib forCellWithReuseIdentifier:kCellReuseIdentifier];

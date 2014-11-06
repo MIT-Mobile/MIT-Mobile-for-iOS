@@ -8,8 +8,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursStopDetailViewController">
             <connections>
                 <outlet property="bodyTextLabel" destination="T2M-yO-r3b" id="p3Z-S3-4cc"/>
-                <outlet property="mainLoopCollectionView" destination="utD-mE-rH7" id="A26-el-9VJ"/>
-                <outlet property="mainLoopCollectionViewManager" destination="4Jd-xW-Qvw" id="VDR-qA-4Nv"/>
+                <outlet property="mainLoopCollectionView" destination="utD-mE-rH7" id="kVH-52-1Aq"/>
+                <outlet property="mainLoopCollectionViewManager" destination="4Jd-xW-Qvw" id="WdP-P0-OY0"/>
                 <outlet property="scrollView" destination="w3V-59-ysb" id="06d-ZU-hFC"/>
                 <outlet property="stopImageView" destination="5Qq-dd-txi" id="tw3-AG-Szy"/>
                 <outlet property="stopTitleLabel" destination="3FI-m8-DDe" id="M9K-kz-dTT"/>
@@ -51,7 +51,7 @@
                             </attributedString>
                             <nil key="highlightedColor"/>
                         </label>
-                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7">
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7" customClass="MITInfiniteScrollCollectionView">
                             <rect key="frame" x="-40" y="345" width="400" height="200"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
@@ -95,7 +95,7 @@
             </constraints>
             <point key="canvasLocation" x="123" y="161"/>
         </view>
-        <customObject id="4Jd-xW-Qvw" userLabel="Main Loop Collection View Manager" customClass="MITToursStopCollectionViewManager">
+        <customObject id="4Jd-xW-Qvw" userLabel="Main Loop Collection View Manager" customClass="MITToursStopInfiniteScrollCollectionViewManager">
             <connections>
                 <outlet property="collectionView" destination="utD-mE-rH7" id="GEG-oX-oUZ"/>
             </connections>
