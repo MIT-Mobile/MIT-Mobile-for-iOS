@@ -37,6 +37,15 @@
     }];
 }
 
+#pragma mark - Form Submission
+
+- (void)submitFormForParameters:(NSDictionary *)parameters
+{
+    [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
+        NSLog(@"Submitted askUs: AskUs! - w/ response: %@ and error: %@", responseObject, error);
+    }];
+}
+
 #pragma mark - HTML Parameters Assembly
 
 - (NSDictionary *)formAsHTMLParametersDictionary
