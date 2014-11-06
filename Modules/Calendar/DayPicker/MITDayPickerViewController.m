@@ -1,4 +1,3 @@
-
 #import "MITDayPickerViewController.h"
 #import "MITDayOfTheWeekCell.h"
 #import "UIKit+MITAdditions.h"

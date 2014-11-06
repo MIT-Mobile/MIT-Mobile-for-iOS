@@ -71,8 +71,7 @@ static NSInteger kAnnotationMarginRight = 50;
         [annotations addObject:annotation];
     }
     [mapView addAnnotations:annotations];
-    
-    [self setupMapRoutes];
+    [self.tiledMapView showRouteForStops:[self.tour.stops array]];
 }
 
 - (void)setupCalloutView
@@ -118,24 +117,6 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
-- (void)setupMapRoutes
-{
-    for (MITToursStop *stop in self.tour.stops) {
-        MITToursDirectionsToStop *directionsToNextStop = stop.directionsToNextStop;
-        NSArray *routePoints = (NSArray *)directionsToNextStop.path;
-        CLLocationCoordinate2D segmentPoints[routePoints.count];
-        for (NSInteger i = 0; i < routePoints.count; i++) {
-            NSArray *point = [routePoints objectAtIndex:i];
-            // Convert to location coordinate
-            NSNumber *longitude = [point objectAtIndex:0];
-            NSNumber *latitude = [point objectAtIndex:1];
-            segmentPoints[i] = CLLocationCoordinate2DMake([latitude doubleValue],[longitude doubleValue]);
-        }
-        MKPolyline *polyline = [MKPolyline polylineWithCoordinates:segmentPoints count:routePoints.count];
-        [self.tiledMapView.mapView addOverlay:polyline];
-    }
-}
-
 #pragma mark - MKMapViewDelegate Methods
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -163,22 +144,6 @@ static NSInteger kAnnotationMarginRight = 50;
     }
     
     return annotationView;
-}
-
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
-{
-    if ([overlay isKindOfClass:[MKPolyline class]]) {
-        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
-        renderer.lineWidth = 2.5;
-        renderer.fillColor = [UIColor redColor];
-        renderer.strokeColor = [UIColor redColor];
-        renderer.alpha = 1.0;
-        return renderer;
-    } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
-        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    } else {
-        return nil;
-    }
 }
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
