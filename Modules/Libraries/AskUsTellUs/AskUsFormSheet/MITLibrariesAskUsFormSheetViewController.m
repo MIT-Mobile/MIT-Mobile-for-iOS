@@ -46,15 +46,18 @@
             MITLibrariesFormSheetElement *topic = [MITLibrariesFormSheetElement new];
             topic.type = MITLibrariesFormSheetElementTypeOptions;
             topic.title = @"Topic";
+            topic.htmlParameterKey = @"topic";
             topic.availableOptions = askUs.topics;
             
             MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElement new];
             subject.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
             subject.title = @"Subject";
+            subject.htmlParameterKey = @"subject";
             
             MITLibrariesFormSheetElement *detailedQuestion = [MITLibrariesFormSheetElement new];
             detailedQuestion.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
             detailedQuestion.title = @"Detailed question";
+            detailedQuestion.htmlParameterKey = @"question";
             
             MITLibrariesFormSheetGroup *topGroup = [MITLibrariesFormSheetGroup new];
             topGroup.headerTitle = nil;
@@ -77,10 +80,12 @@
     MITLibrariesFormSheetElement *department = [MITLibrariesFormSheetElement new];
     department.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
     department.title = @"Department, Lab, or Center";
+    department.htmlParameterKey = @"department";
     
     MITLibrariesFormSheetElement *phoneNumber = [MITLibrariesFormSheetElement new];
     phoneNumber.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
     phoneNumber.title = @"Phone";
+    phoneNumber.htmlParameterKey = @"phone";
     phoneNumber.optional = YES;
     
     MITLibrariesFormSheetGroup *bottomGroup = [MITLibrariesFormSheetGroup new];
@@ -96,12 +101,26 @@
     MITLibrariesFormSheetElement *usingVPN = [MITLibrariesFormSheetElement new];
     usingVPN.type = MITLibrariesFormSheetElementTypeOptions;
     usingVPN.title = @"Using VPN";
-    usingVPN.availableOptions = @[@"No", @"Yes"];
+    usingVPN.htmlParameterKey = @"vpn";
+    MITLibrariesFormSheetElementAvailableOption *no = [MITLibrariesFormSheetElementAvailableOption new];
+    no.value = @"No";
+    no.htmlValue = @"no";
+    MITLibrariesFormSheetElementAvailableOption *yes = [MITLibrariesFormSheetElementAvailableOption new];
+    yes.value = @"Yes";
+    yes.htmlValue = @"yes";
+    usingVPN.availableOptions = @[no, yes];
     
     MITLibrariesFormSheetElement *location = [MITLibrariesFormSheetElement new];
     location.type = MITLibrariesFormSheetElementTypeOptions;
     location.title = @"Location";
-    location.availableOptions = @[@"On Campus", @"Off Campus"];
+    location.htmlParameterKey = @"on_campus";
+    MITLibrariesFormSheetElementAvailableOption *onCampus = [MITLibrariesFormSheetElementAvailableOption new];
+    onCampus.value = @"On Campus";
+    onCampus.htmlValue = @"on campus";
+    MITLibrariesFormSheetElementAvailableOption *offCampus = [MITLibrariesFormSheetElementAvailableOption new];
+    offCampus.value = @"Off Campus";
+    offCampus.htmlValue = @"off campus";
+    location.availableOptions = @[onCampus, offCampus];
     
     MITLibrariesFormSheetGroup *technicalHelpGroup = [MITLibrariesFormSheetGroup new];
     technicalHelpGroup.headerTitle = @"TECHNICAL HELP";

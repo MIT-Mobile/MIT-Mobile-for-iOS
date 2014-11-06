@@ -3,14 +3,6 @@
 #import "MITLibrariesFormSheetElementAvailableOption.h"
 
 @implementation MITLibrariesFormSheetElement
-- (id)htmlParamaterValue
-{
-    id htmlReturnVal = _value;
-    if ([htmlReturnVal isKindOfClass:[MITLibrariesFormSheetElementAvailableOption class]]) {
-        htmlReturnVal = [(MITLibrariesFormSheetElementAvailableOption *)htmlReturnVal htmlValue];
-    }
-    return htmlReturnVal;
-}
 - (id)value
 {
     if (!_value) {
