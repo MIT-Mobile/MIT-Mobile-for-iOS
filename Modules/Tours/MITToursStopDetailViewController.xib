@@ -10,6 +10,8 @@
                 <outlet property="bodyTextLabel" destination="T2M-yO-r3b" id="p3Z-S3-4cc"/>
                 <outlet property="mainLoopCollectionView" destination="utD-mE-rH7" id="kVH-52-1Aq"/>
                 <outlet property="mainLoopCollectionViewManager" destination="4Jd-xW-Qvw" id="WdP-P0-OY0"/>
+                <outlet property="nearHereCollectionView" destination="q74-8a-1TS" id="Jnz-9f-qNc"/>
+                <outlet property="nearHereCollectionViewManager" destination="Xa0-jO-pYn" id="Dmj-gS-sQD"/>
                 <outlet property="scrollView" destination="w3V-59-ysb" id="06d-ZU-hFC"/>
                 <outlet property="stopImageView" destination="5Qq-dd-txi" id="tw3-AG-Szy"/>
                 <outlet property="stopTitleLabel" destination="3FI-m8-DDe" id="M9K-kz-dTT"/>
@@ -38,10 +40,9 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T2M-yO-r3b">
-                            <rect key="frame" x="8" y="237" width="304" height="100"/>
+                            <rect key="frame" x="8" y="237" width="304" height="20"/>
                             <attributedString key="attributedText">
-                                <fragment>
-                                    <string key="content">Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text Body Text</string>
+                                <fragment content="Body Text ">
                                     <attributes>
                                         <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <font key="NSFont" size="17" name="HelveticaNeue"/>
@@ -51,8 +52,21 @@
                             </attributedString>
                             <nil key="highlightedColor"/>
                         </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Loop" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z54-xP-Njy" userLabel="Main Loop">
+                            <rect key="frame" x="20" y="273" width="280" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bBh-II-3qI" userLabel="Main Loop Stroke">
+                            <rect key="frame" x="20" y="302" width="280" height="1"/>
+                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="p0R-Dx-5H3"/>
+                            </constraints>
+                        </view>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7" customClass="MITInfiniteScrollCollectionView">
-                            <rect key="frame" x="-40" y="345" width="400" height="200"/>
+                            <rect key="frame" x="-40" y="311" width="400" height="200"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="200" id="MlK-yH-UTl"/>
@@ -68,19 +82,64 @@
                                 <outlet property="delegate" destination="4Jd-xW-Qvw" id="2Wx-VX-QH8"/>
                             </connections>
                         </collectionView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Near Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vtL-EF-PNk" userLabel="Near Here">
+                            <rect key="frame" x="20" y="527" width="280" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lK8-NE-OOH" userLabel="Near Here Stroke">
+                            <rect key="frame" x="20" y="556" width="280" height="1"/>
+                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="oGD-e0-UxQ"/>
+                            </constraints>
+                        </view>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="q74-8a-1TS">
+                            <rect key="frame" x="-40" y="565" width="400" height="200"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="200" id="i72-2M-EGk"/>
+                            </constraints>
+                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="d3u-7J-O6x" customClass="MITToursStopCollectionViewPagedLayout">
+                                <size key="itemSize" width="120" height="180"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="135" minY="0.0" maxX="135" maxY="0.0"/>
+                            </collectionViewFlowLayout>
+                            <connections>
+                                <outlet property="dataSource" destination="Xa0-jO-pYn" id="yrs-UT-Sqa"/>
+                                <outlet property="delegate" destination="Xa0-jO-pYn" id="RWZ-or-xik"/>
+                            </connections>
+                        </collectionView>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="8" id="0Dk-RV-sDw"/>
                         <constraint firstAttribute="trailing" secondItem="T2M-yO-r3b" secondAttribute="trailing" constant="8" id="15r-Ry-XqO"/>
+                        <constraint firstItem="lK8-NE-OOH" firstAttribute="top" secondItem="vtL-EF-PNk" secondAttribute="bottom" constant="8" id="1s2-RN-oiB"/>
+                        <constraint firstItem="vtL-EF-PNk" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" constant="16" id="6Vs-vZ-4GI"/>
+                        <constraint firstItem="z54-xP-Njy" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="16" id="BB3-sx-8GF"/>
+                        <constraint firstAttribute="trailing" secondItem="q74-8a-1TS" secondAttribute="trailing" constant="-40" id="HUc-qU-wYj"/>
+                        <constraint firstItem="q74-8a-1TS" firstAttribute="top" secondItem="lK8-NE-OOH" secondAttribute="bottom" constant="8" id="JkZ-vO-Y19"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="top" secondItem="w3V-59-ysb" secondAttribute="top" id="Kgp-Mn-1g5"/>
+                        <constraint firstAttribute="trailing" secondItem="bBh-II-3qI" secondAttribute="trailing" constant="20" id="RKn-F4-vmg"/>
                         <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
+                        <constraint firstItem="z54-xP-Njy" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="SKC-da-shw"/>
+                        <constraint firstAttribute="trailing" secondItem="lK8-NE-OOH" secondAttribute="trailing" constant="20" id="Sok-0G-Fd6"/>
+                        <constraint firstItem="q74-8a-1TS" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="-40" id="XI3-JX-SlH"/>
                         <constraint firstItem="T2M-yO-r3b" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="a48-5Y-WW1"/>
+                        <constraint firstItem="bBh-II-3qI" firstAttribute="top" secondItem="z54-xP-Njy" secondAttribute="bottom" constant="8" id="aa7-Fx-6jT"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="ayj-H7-4wn"/>
+                        <constraint firstItem="vtL-EF-PNk" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="bXB-Kv-3cj"/>
+                        <constraint firstAttribute="bottom" secondItem="q74-8a-1TS" secondAttribute="bottom" priority="900" constant="20" symbolic="YES" id="eTM-WQ-Ntm"/>
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="fWh-k0-JT3"/>
+                        <constraint firstAttribute="trailing" secondItem="z54-xP-Njy" secondAttribute="trailing" constant="20" id="jFn-gU-DT5"/>
+                        <constraint firstItem="bBh-II-3qI" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="lvu-Xb-2xE"/>
+                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="bBh-II-3qI" secondAttribute="bottom" constant="8" id="nnn-U0-Zlp"/>
                         <constraint firstItem="T2M-yO-r3b" firstAttribute="top" secondItem="3FI-m8-DDe" secondAttribute="bottom" constant="8" id="orB-O4-Olv"/>
                         <constraint firstAttribute="trailing" secondItem="utD-mE-rH7" secondAttribute="trailing" constant="-40" id="rVK-wA-LWA"/>
-                        <constraint firstAttribute="bottom" secondItem="utD-mE-rH7" secondAttribute="bottom" priority="900" constant="20" symbolic="YES" id="si7-Qm-lr6"/>
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="8" id="wAb-5a-E76"/>
+                        <constraint firstItem="lK8-NE-OOH" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="wHj-6Z-w8i"/>
+                        <constraint firstAttribute="trailing" secondItem="vtL-EF-PNk" secondAttribute="trailing" constant="20" id="wp8-JD-48o"/>
                         <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="8" id="xdF-bU-kIh"/>
                         <constraint firstItem="utD-mE-rH7" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="-40" id="zaB-3h-oty"/>
                     </constraints>
@@ -98,6 +157,11 @@
         <customObject id="4Jd-xW-Qvw" userLabel="Main Loop Collection View Manager" customClass="MITToursStopInfiniteScrollCollectionViewManager">
             <connections>
                 <outlet property="collectionView" destination="utD-mE-rH7" id="GEG-oX-oUZ"/>
+            </connections>
+        </customObject>
+        <customObject id="Xa0-jO-pYn" userLabel="Near Here Collection View Manager" customClass="MITToursStopCollectionViewManager">
+            <connections>
+                <outlet property="collectionView" destination="q74-8a-1TS" id="jTz-uh-OAy"/>
             </connections>
         </customObject>
     </objects>

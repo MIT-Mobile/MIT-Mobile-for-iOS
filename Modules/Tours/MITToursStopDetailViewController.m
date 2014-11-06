@@ -17,6 +17,9 @@
 @property (weak, nonatomic) IBOutlet MITInfiniteScrollCollectionView *mainLoopCollectionView;
 @property (strong, nonatomic) IBOutlet MITToursStopInfiniteScrollCollectionViewManager *mainLoopCollectionViewManager;
 
+@property (weak, nonatomic) IBOutlet UICollectionView *nearHereCollectionView;
+@property (strong, nonatomic) IBOutlet MITToursStopCollectionViewManager *nearHereCollectionViewManager;
+
 @property (weak, nonatomic) IBOutlet UIImageView *stopImageView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *bodyTextLabel;
@@ -49,6 +52,7 @@
     
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
     [self.mainLoopCollectionViewManager setup];
+    [self.nearHereCollectionViewManager setup];
     [self configureForStop:self.stop];
 }
 
@@ -102,9 +106,11 @@
     } else {
         self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
     }
-    
     [self.mainLoopCollectionView reloadData];
     [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
+    
+    self.nearHereCollectionViewManager.stops = self.sideTripStops;
+    [self.nearHereCollectionView reloadData];
     
     [self.view setNeedsLayout];
 }
