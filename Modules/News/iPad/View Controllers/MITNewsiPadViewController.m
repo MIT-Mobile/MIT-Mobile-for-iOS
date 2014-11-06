@@ -95,13 +95,13 @@ CGFloat const refreshControlTextHeight = 19;
     self.showsFeaturedStories = NO;
     self.containerView.backgroundColor = [UIColor whiteColor];
     self.containerView.autoresizesSubviews = YES;
-    if (!self.isSingleDataSource) {
-        [self beginReachability];
-    }
 }
 
 - (void)beginReachability
 {
+    if (self.internetReachability) {
+        return;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
     self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerURL().host];
 	[self.internetReachability startNotifier];
@@ -136,15 +136,7 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     
-    CGFloat textHeight = 0;
-    if (!self.refreshControl.attributedTitle.string) {
-        textHeight = refreshControlTextHeight;
-    }
-    if (_presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-    } else {
-        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
-    }
+    [self showRefreshControl];
     [self updateRefreshStatusWithText:@"Updating..."];
     
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -542,7 +534,9 @@ CGFloat const refreshControlTextHeight = 19;
                     });
                 }
             }
-            
+            if (!self.lastUpdated && ![self.dataSources count]) {
+                 [self beginReachability];
+            }
         } else {
             strongSelf.lastUpdated = [NSDate date];
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
@@ -551,6 +545,11 @@ CGFloat const refreshControlTextHeight = 19;
                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
                     [strongRefresh endRefreshing];
                 });
+            }
+            if (self.internetReachability) {
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
+                [self.internetReachability stopNotifier];
+                self.internetReachability = nil;
             }
         }
     }];
@@ -572,20 +571,33 @@ CGFloat const refreshControlTextHeight = 19;
     self.messageView = nil;
 }
 
-- (void)reachabilityChanged:(NSNotification *)note
+- (void)reachabilityChanged:(NSNotification *)notification
 {
     if (!self.lastUpdated) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.refreshControl beginRefreshing];
-            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
-                if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-                    [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
-                } else {
-                    [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + 19)) animated:YES];
-                }
-            } completion:nil];
-        }];
-        [self reloadViewItems:self.refreshControl];
+        Reachability* reachabilityObject = [notification object];
+        NetworkStatus statusOfNetwork = [reachabilityObject currentReachabilityStatus];
+        if (statusOfNetwork != NotReachable) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.refreshControl beginRefreshing];
+                [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
+                    [self showRefreshControl];
+                } completion:nil];
+            }];
+            [self reloadViewItems:self.refreshControl];
+        }
+    }
+}
+
+- (void)showRefreshControl
+{
+    CGFloat textHeight = 0;
+    if (!self.refreshControl.attributedTitle.string) {
+        textHeight = refreshControlTextHeight;
+    }
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+        [self.gridViewController.collectionView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
+    } else {
+        [self.listViewController.tableView setContentOffset:CGPointMake(0, - (self.refreshControl.frame.size.height + textHeight)) animated:YES];
     }
 }
 
