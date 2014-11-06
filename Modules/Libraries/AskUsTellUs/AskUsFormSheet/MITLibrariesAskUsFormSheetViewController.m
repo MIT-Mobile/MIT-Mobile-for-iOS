@@ -91,29 +91,74 @@
     return bottomGroup;
 }
 
-- (MITLibrariesFormSheetGroup *)technicalHelpFormSheetGroup
+- (MITLibrariesFormSheetGroup *)getNewTechnicalHelpFormSheetGroup
 {
     MITLibrariesFormSheetElement *usingVPN = [MITLibrariesFormSheetElement new];
     usingVPN.type = MITLibrariesFormSheetElementTypeOptions;
     usingVPN.title = @"Using VPN";
-    MITLibrariesFormSheetElementAvailableOption *vpnOptionOnCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    vpnOptionOnCampus.value = @"On Campus";
-    // TODO: Find actual html value
-    vpnOptionOnCampus.htmlValue = @"on_campus";
-    MITLibrariesFormSheetElementAvailableOption *vpnOptionOffCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    vpnOptionOffCampus.value = @"Off Campus";
-    // TODO: Find actual html value
-    vpnOptionOffCampus.htmlValue = @"off_campus";
-    usingVPN.availableOptions = @[vpnOptionOnCampus, vpnOptionOffCampus];
+    usingVPN.availableOptions = @[@"No", @"Yes"];
     
     MITLibrariesFormSheetElement *location = [MITLibrariesFormSheetElement new];
     location.type = MITLibrariesFormSheetElementTypeOptions;
     location.title = @"Location";
+    location.availableOptions = @[@"On Campus", @"Off Campus"];
     
     MITLibrariesFormSheetGroup *technicalHelpGroup = [MITLibrariesFormSheetGroup new];
     technicalHelpGroup.headerTitle = @"TECHNICAL HELP";
     technicalHelpGroup.elements = @[usingVPN, location];
     
+    return technicalHelpGroup;
+}
+
+#pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
+
+- (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
+{
+    [super formSheetOptionsSelectionViewController:optionsSelectionViewController didFinishUpdatingElement:element];
+    if ([element.title isEqualToString:@"Topic"]) {
+        if ([element.value isEqualToString:@"Technical Help"]) {
+            [self showTechnicalFormGroup];
+        } else {
+            [self hideTechnicalFormGroup];
+        }
+    }
+}
+
+- (void)showTechnicalFormGroup
+{
+    MITLibrariesFormSheetGroup *technicalHelpGroup = [self activeTechnicalHelpGroup];
+    if (!technicalHelpGroup) {
+        NSMutableArray *formSheetGroups = [self.formSheetGroups mutableCopy];
+        if (1 < formSheetGroups.count) {
+            [formSheetGroups insertObject:[self getNewTechnicalHelpFormSheetGroup] atIndex:1];
+        } else {
+            [formSheetGroups addObject:[self getNewTechnicalHelpFormSheetGroup]];
+        }
+        self.formSheetGroups = formSheetGroups;
+        [self reloadTableView];
+    }
+}
+
+- (void)hideTechnicalFormGroup
+{
+    MITLibrariesFormSheetGroup *technicalHelpGroup = [self activeTechnicalHelpGroup];
+    if (technicalHelpGroup) {
+        NSMutableArray *formSheetGroups = [self.formSheetGroups mutableCopy];
+        [formSheetGroups removeObject:technicalHelpGroup];
+        self.formSheetGroups = formSheetGroups;
+        [self reloadTableView];
+    }
+}
+
+- (MITLibrariesFormSheetGroup *)activeTechnicalHelpGroup
+{
+    MITLibrariesFormSheetGroup *technicalHelpGroup;
+    for (MITLibrariesFormSheetGroup *group in self.formSheetGroups) {
+        if ([group.headerTitle.lowercaseString isEqualToString:@"technical help"]) {
+            technicalHelpGroup = group;
+            break;
+        }
+    }
     return technicalHelpGroup;
 }
 

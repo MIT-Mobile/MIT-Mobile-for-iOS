@@ -4,7 +4,6 @@
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"
 #import "MITLibrariesFormSheetCellMultiLineTextEntry.h"
 #import "MITLibrariesFormSheetCellWebLink.h"
-#import "MITLibrariesFormSheetOptionsSelectionViewController.h"
 
 #import "UIKit+MITAdditions.h"
 #import "MITTouchstoneController.h"
@@ -16,7 +15,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
 
-@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetOptionsSelectionViewControllerDelegate, MITLibrariesFormSheetTextEntryCellDelegate>
+@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetTextEntryCellDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
