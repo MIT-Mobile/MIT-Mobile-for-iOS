@@ -4,9 +4,10 @@
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"
 #import "MITLibrariesFormSheetCellMultiLineTextEntry.h"
 #import "MITLibrariesFormSheetCellWebLink.h"
-#import "UIKit+MITAdditions.h"
-
 #import "MITLibrariesFormSheetOptionsSelectionViewController.h"
+
+#import "UIKit+MITAdditions.h"
+#import "MITTouchstoneController.h"
 
 static NSString * const MITLibrariesFormSheetCellIdentifierOptions = @"MITLibrariesFormSheetCellIdentifierOptions";
 static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry = @"MITLibrariesFormSheetCellIdentifierSingleLineTextEntry";
@@ -44,9 +45,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     [self setupActivityIndicator];
     [self setupTableView];
     [self setupNavigationBar];
-
-    
-    NSLog(@"\n\n\n\n\n ****** ENSURE LOGGED IN FOR RELEASE ******** \n\n\n\n\n");
+    [self verifyAuthorization];
 }
 
 - (void)setupActivityIndicator
@@ -81,6 +80,25 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
                                                                              target:self
                                                                              action:@selector(submitButtonPressed:)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
+}
+
+#pragma mark - Authorization
+
+- (void)verifyAuthorization
+{
+    self.tableView.hidden = YES;
+    if (![[MITTouchstoneController sharedController] isLoggedIn]) {
+        [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
+            if (error || !success) {
+                NSLog(@"Login Failed w/ Error: %@", error);
+                [self.navigationController popViewControllerAnimated:YES];
+            } else {
+                self.tableView.hidden = NO;
+            }
+        }];
+    } else {
+        self.tableView.hidden = NO;
+    }
 }
 
 #pragma mark - Activity Indicator
