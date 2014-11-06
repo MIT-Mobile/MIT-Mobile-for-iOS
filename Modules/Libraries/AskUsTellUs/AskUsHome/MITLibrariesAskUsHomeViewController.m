@@ -15,8 +15,6 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
     AskUsOptionAskUs,
     AskUsOptionConsultation,
     AskUsOptionGeneral,
-    
-    AskUsOptionAvailableOptionsCount
 };
 
 @interface MITLibrariesAskUsHomeTableViewCell : UITableViewCell
@@ -35,6 +33,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 @interface MITLibrariesAskUsHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *askUsOptionsTableView;
+@property (nonatomic, strong) NSArray *tableViewData;
 @end
 
 @implementation MITLibrariesAskUsHomeViewController
@@ -58,6 +57,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 - (void)setupTableView
 {
+    self.tableViewData = @[@[@(AskUsOptionAskUs), @(AskUsOptionConsultation)],@[@(AskUsOptionGeneral)]];
     [self.askUsOptionsTableView registerClass:[MITLibrariesAskUsHomeTableViewCell class] forCellReuseIdentifier:MITLibrariesAskUsHomeViewControllerCellIdentifier];
     self.askUsOptionsTableView.tableFooterView = [UIView new]; // Prevent empty cells
 }
@@ -66,12 +66,13 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return self.tableViewData.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return AskUsOptionAvailableOptionsCount;
+    NSArray *sectionData = self.tableViewData[section];
+    return sectionData.count;;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -85,10 +86,17 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 #pragma mark - Ask Us Options
 
+- (NSInteger)askUsOptionForIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *section = self.tableViewData[indexPath.section];
+    NSInteger enumValue = [section[indexPath.row] integerValue];
+    return enumValue;
+}
+
 - (NSString *)titleTextForIndexPath:(NSIndexPath *)indexPath
 {
     NSString *titleText;
-    switch (indexPath.row) {
+    switch ([self askUsOptionForIndexPath:indexPath]) {
         case AskUsOptionAskUs:
             titleText = @"Ask Us!";
             break;
@@ -106,7 +114,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 - (NSString *)detailTextForIndexPath:(NSIndexPath *)indexPath
 {
     NSString *detailText;
-    if (indexPath.row == AskUsOptionGeneral) {
+    if ([self askUsOptionForIndexPath:indexPath] == AskUsOptionGeneral) {
         detailText = @"617.324.2275";
     }
     return detailText;
@@ -115,7 +123,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 - (UIView *)accessoryViewForIndexPath:(NSIndexPath *)indexPath
 {
     UIView *accessoryView;
-    switch (indexPath.row) {
+    switch ([self askUsOptionForIndexPath:indexPath]) {
         case AskUsOptionAskUs:
         case AskUsOptionConsultation:
             accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
@@ -134,7 +142,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    switch (indexPath.row) {
+    switch ([self askUsOptionForIndexPath:indexPath]) {
         case AskUsOptionAskUs: {
             MITLibrariesAskUsFormSheetViewController *askUs = [MITLibrariesAskUsFormSheetViewController  new];
             [self.navigationController pushViewController:askUs animated:YES];
