@@ -22,6 +22,9 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (self.stopsInDisplayOrder) {
+        return self.stopsInDisplayOrder.count;
+    }
     return self.stops.count;
 }
 
@@ -32,7 +35,14 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
     // Configure the cell
     MITToursStop *stop = [self stopForIndexPath:indexPath];
     NSURL *imageURL = [NSURL URLWithString:[stop thumbnailURL]];
-    [cell configureForImageURL:imageURL title:stop.title];
+    
+    // Get canonical number of stop
+    NSString *title = stop.title;
+    NSInteger index = [self.stops indexOfObject:stop];
+    if (index != NSNotFound) {
+        title = [NSString stringWithFormat:@"%d. %@", index + 1, stop.title];
+    }
+    [cell configureForImageURL:imageURL title:title];
     
     return cell;
 }
@@ -41,7 +51,11 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
 
 - (MITToursStop *)stopForIndexPath:(NSIndexPath *)path
 {
-    return [self.stops objectAtIndex:path.item];
+    NSArray *stops = self.stopsInDisplayOrder;
+    if (!stops) {
+        stops = self.stops;
+    }
+    return [stops objectAtIndex:path.item];
 }
 
 #pragma mark - UICollectionViewDelegate Methods
