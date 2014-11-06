@@ -10,6 +10,7 @@
     if (self) {
         self.type = MITLibrariesFormSheetElementTypeOptions;
         self.title = @"Status";
+        self.htmlParameterKey = @"status";
         [self setupAvailableOptions];
     }
     return self;

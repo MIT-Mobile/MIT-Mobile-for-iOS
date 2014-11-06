@@ -47,30 +47,36 @@
             MITLibrariesFormSheetElement *topic = [MITLibrariesFormSheetElement new];
             topic.type = MITLibrariesFormSheetElementTypeOptions;
             topic.title = @"Topic";
+            topic.htmlParameterKey = @"topic";
             topic.availableOptions = askUs.consultationLists;
             
             MITLibrariesFormSheetElement *timeframe = [MITLibrariesFormSheetElement new];
             timeframe.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
             timeframe.title = @"Timeframe";
+            timeframe.htmlParameterKey = @"timeframe";
             
             MITLibrariesFormSheetElement *howCanWeHelp = [MITLibrariesFormSheetElement new];
             howCanWeHelp.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
             howCanWeHelp.title = @"How can we help you?";
+            howCanWeHelp.htmlParameterKey = @"description";
             
             MITLibrariesFormSheetElement *purpose = [MITLibrariesFormSheetElement new];
             purpose.type = MITLibrariesFormSheetElementTypeOptions;
             purpose.title = @"Purpose";
+            purpose.htmlParameterKey = @"why";
             purpose.optional = YES;
             purpose.availableOptions = @[@"Course", @"Thesis", @"Research"];
             
             MITLibrariesFormSheetElement *course = [MITLibrariesFormSheetElement new];
             course.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
             course.title = @"Course";
+            course.htmlParameterKey = @"course";
             course.optional = YES;
             
             MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElement new];
             subject.type = MITLibrariesFormSheetElementTypeOptions;
             subject.title = @"Subject";
+            subject.htmlParameterKey = @"subject";
             subject.availableOptions = @[@"General", @"Art & Architecture", @"Engineering & Computer Science", @"GIS", @"Humanities", @"Management & Business", @"Science", @"Social Sciences", @"Urban Planning"];
             
             
@@ -95,10 +101,12 @@
     MITLibrariesFormSheetElement *department = [MITLibrariesFormSheetElement new];
     department.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
     department.title = @"Department, Lab, or Center";
+    department.htmlParameterKey = @"department";
     
     MITLibrariesFormSheetElement *phoneNumber = [MITLibrariesFormSheetElement new];
     phoneNumber.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
     phoneNumber.title = @"Phone";
+    phoneNumber.htmlParameterKey = @"phone";
     phoneNumber.optional = YES;
     
     MITLibrariesFormSheetGroup *bottomGroup = [MITLibrariesFormSheetGroup new];

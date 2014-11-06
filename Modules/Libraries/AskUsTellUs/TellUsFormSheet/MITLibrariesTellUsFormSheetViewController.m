@@ -30,6 +30,7 @@
     MITLibrariesFormSheetElement *feedback = [MITLibrariesFormSheetElement new];
     feedback.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
     feedback.title = @"Feedback";
+    feedback.htmlParameterKey = @"feedback";
     
     MITLibrariesFormSheetGroup *topGroup = [MITLibrariesFormSheetGroup new];
     topGroup.headerTitle = nil;
