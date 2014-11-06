@@ -1,7 +1,10 @@
 #import "MITTiledMapView.h"
 #import "MITMapDelegateInterceptor.h"
+#import "MITToursStop.h"
+#import "MITToursDirectionsToStop.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
+const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
 
 static CGFloat const kBottomButtonSize = 44;
 static CGFloat const kBottomButtonXPadding = 8;
@@ -42,6 +45,8 @@ static CGFloat const kBottomButtonYPadding = 20;
     [self setupMapView];
     [self setupTileOverlays];
     [self setupButtons];
+    
+    [self setMapDelegate:nil]; // Ensures that we're at least intercepting delegate calls we want to, even if the user never sets a proper delegate
 }
 
 - (MKMapView *)createMapView
@@ -221,6 +226,47 @@ static CGFloat const kBottomButtonYPadding = 20;
     if ([self.buttonDelegate respondsToSelector:@selector(mitTiledMapViewRightButtonPressed:)]) {
         [self.buttonDelegate mitTiledMapViewRightButtonPressed:self];
     }
+}
+
+#pragma mark - Route drawing
+
+- (void)showRouteForStops:(NSArray *)stops
+{
+    for (MITToursStop *stop in stops) {
+        MITToursDirectionsToStop *directionsToNextStop = stop.directionsToNextStop;
+        NSArray *routePoints = (NSArray *)directionsToNextStop.path;
+        CLLocationCoordinate2D segmentPoints[routePoints.count];
+        for (NSInteger i = 0; i < routePoints.count; i++) {
+            NSArray *point = [routePoints objectAtIndex:i];
+            // Convert to location coordinate
+            NSNumber *longitude = [point objectAtIndex:0];
+            NSNumber *latitude = [point objectAtIndex:1];
+            segmentPoints[i] = CLLocationCoordinate2DMake([latitude doubleValue],[longitude doubleValue]);
+        }
+        MKPolyline *polyline = [MKPolyline polylineWithCoordinates:segmentPoints count:routePoints.count];
+        [self.mapView addOverlay:polyline];
+    }
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+        renderer.lineWidth = 2.5;
+        renderer.fillColor = [UIColor redColor];
+        renderer.strokeColor = [UIColor redColor];
+        renderer.alpha = 1.0;
+        return renderer;
+    } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    } else {
+        return nil;
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    NSLog(@"Regiion: %@, %g, %g", NSStringFromCLLocationCoordinate2D(self.mapView.region.center), self.mapView.region.span.longitudeDelta, self.mapView.region.span.latitudeDelta);
 }
 
 #pragma mark - Tile Overlays
