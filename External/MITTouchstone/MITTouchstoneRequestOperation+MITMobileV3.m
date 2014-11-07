@@ -2,6 +2,9 @@
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMobileServerConfiguration.h"
 
+NSString * const MITTouchstoneRequestOperationRequestMethodGET = @"GET";
+NSString * const MITTOuchstoneRequestOperationRequestMethodPOST = @"POST";
+
 @implementation MITTouchstoneRequestOperation (MITMobileV3)
 
 // This replaces the V2 requestForModule with the V3 api endpoints (i.e. uses a URL without the module as a parameter, but as part of the base URL)

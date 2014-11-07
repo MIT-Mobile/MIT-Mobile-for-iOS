@@ -40,7 +40,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 + (void)postTellUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion
 {
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibraryWebservicesFormsKey, kMITLibraryWebservicesTellUsKey];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:parameters andRequestMethod:@"POST"];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTOuchstoneRequestOperationRequestMethodPOST];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
         completion(responseObject, nil);
@@ -54,7 +56,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 + (void)postAskUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion
 {
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibraryWebservicesFormsKey, kMITLibraryWebservicesAskUsKey];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:parameters andRequestMethod:@"POST"];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTOuchstoneRequestOperationRequestMethodPOST];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
         completion(responseObject, nil);
@@ -102,7 +106,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     [parameters setObject:[NSString stringWithFormat:@"%d", kMITLibrariesSearchResultsLimit]  forKey:kMITLibraryWebservicesLimitKey];
     
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:parameters andRequestMethod:@"GET"];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
@@ -119,7 +125,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 {
     if (item.identifier) {
         NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint, item.identifier];
-        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:nil andRequestMethod:@"GET"];
+        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                       parameters:nil
+                                                                 andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
         MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
         [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
@@ -140,7 +148,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 + (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion
 {
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibrariesAccountEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:nil andRequestMethod:@"GET"];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:nil
+                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
     
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     

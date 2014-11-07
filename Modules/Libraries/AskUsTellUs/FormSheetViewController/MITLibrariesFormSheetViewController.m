@@ -141,6 +141,45 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     return formDict;
 }
 
+#pragma mark - Form Submission Error / Success Notifications
+
+- (void)notifyFormSubmissionError
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unable to Submit Form!"
+                                                    message:@"Please verify that you have a valid internet connection and try again."
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    
+    [alert show];
+}
+
+- (void)notifyFormSubmissionSuccessWithResponseObject:(id)responseObject
+{
+    NSString *message;
+    if ([responseObject isKindOfClass:[NSDictionary class]]) {
+        NSString *thankYou = responseObject[@"thank_you_text"];
+        NSString *email = responseObject[@"email"];
+        if (thankYou) {
+            message = thankYou;
+        }
+        if (thankYou && email) {
+            message = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.", thankYou, email];
+        } else if (thankYou) {
+            message = thankYou;
+        } else if (email) {
+            message = [NSString stringWithFormat:@"Thanks for your submission! You will be contacted at %@", email];
+        } else {
+            message = [NSString stringWithFormat:@"Thank you for your submission!"];
+        }
+    }
+    
+    NSString *title = @"Success!";
+    NSString *confirmation = @"Ok";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    [alert show];
+}
+
 #pragma mark - Submit Button Validation
 
 - (void)updateSubmitButton

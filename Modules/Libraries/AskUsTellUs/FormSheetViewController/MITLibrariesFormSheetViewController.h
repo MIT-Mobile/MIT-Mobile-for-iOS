@@ -13,4 +13,6 @@
 - (void)hideActivityIndicator;
 - (NSDictionary *)formAsHTMLParametersDictionary;
 - (void)submitFormForParameters:(NSDictionary *)parameters;
+- (void)notifyFormSubmissionError;
+- (void)notifyFormSubmissionSuccessWithResponseObject:(id)responseObject;
 @end

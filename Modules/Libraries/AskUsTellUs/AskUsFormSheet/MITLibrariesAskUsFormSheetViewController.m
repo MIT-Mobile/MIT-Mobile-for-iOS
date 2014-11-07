@@ -43,8 +43,13 @@
 {
     [self showActivityIndicator];
     [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
-        NSLog(@"Submitted askUs: AskUs! - w/ response: %@ and error: %@", responseObject, error);
         [self hideActivityIndicator];
+        if (!error) {
+            [self notifyFormSubmissionSuccessWithResponseObject:responseObject];
+            [self.navigationController popViewControllerAnimated:YES];
+        } else {
+            [self notifyFormSubmissionError];
+        }
     }];
 }
 
