@@ -42,8 +42,10 @@
 
 - (void)submitFormForParameters:(NSDictionary *)parameters
 {
+    [self showActivityIndicator];
     [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
         NSLog(@"Submitted askUs: Consultation - w/ response: %@ and error: %@", responseObject, error);
+        [self hideActivityIndicator];
     }];
 }
 
