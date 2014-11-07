@@ -108,33 +108,41 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
 
-    UIApplication *sharedApplication = [UIApplication sharedApplication];
-    if ([sharedApplication respondsToSelector:@selector(registerForRemoteNotifications)]) {
-        [sharedApplication registerForRemoteNotifications];
-    } else {
-        [sharedApplication registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
-    }
-
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
+
+    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [application registerForRemoteNotifications];
+    } else {
+        [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    }
+
     return YES;
 }
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |
+                                                    UIUserNotificationTypeSound |
+                                                    UIUserNotificationTypeAlert);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+
     [MITUnreadNotifications updateUI];
     [MITUnreadNotifications synchronizeWithMIT];
 
     //APNS dictionary generated from the json of a push notificaton
     NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
 
-    // check if application was opened in response to a notofication
-    if(apnsDict) {
-        [self handleNotification:apnsDict];
-    }
-
     [self.window makeKeyAndVisible];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
+
+    // check if application was opened in response to a notification
+    if(apnsDict) {
+        [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:apnsDict];
+    }
     return YES;
 }
 
@@ -229,26 +237,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
     return (BOOL)[[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 }
 
-- (void)handleNotification:(NSDictionary*)userInfo
-{
-    [self.pendingNotifications addObject:userInfo];
-}
-
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    [self handleNotification:notification.userInfo];
-
-    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    if (!applicationName) {
-        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
-    }
-
-    UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:applicationName
-                                                              message:notification.alertBody
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Close"
-                                                    otherButtonTitles:MITMobileButtonTitleView, nil];
-    [notificationView show];
+    [self _didRecieveNotification:notification.userInfo withAlert:notification.alertBody];
 
     if ([application.scheduledLocalNotifications count] == 0) {
         [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
@@ -256,22 +247,8 @@ static NSString* const MITMobileButtonTitleView = @"View";
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [self handleNotification:userInfo];
-    [MITUnreadNotifications updateUI];
-
-    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    if (!applicationName) {
-        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
-    }
-
     NSString *message = userInfo[@"aps"][@"alert"];
-
-    UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:applicationName
-                                                              message:message
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Close"
-                                                    otherButtonTitles:MITMobileButtonTitleView, nil];
-    [notificationView show];
+    [self _didRecieveNotification:userInfo withAlert:message];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -571,6 +548,24 @@ static NSString* const MITMobileButtonTitleView = @"View";
     _remoteObjectManager = remoteObjectManager;
 }
 
+#pragma mark Private
+- (void)_didRecieveNotification:(NSDictionary*)userInfo withAlert:(NSString*)alertBody
+{
+    [MITUnreadNotifications addNotification:userInfo];
+    [MITUnreadNotifications updateUI];
+
+    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    if (!applicationName) {
+        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
+    }
+
+    UIAlertView *notificationView = [[UIAlertView alloc] initWithTitle:applicationName
+                                                               message:alertBody
+                                                              delegate:self
+                                                     cancelButtonTitle:@"Close"
+                                                     otherButtonTitles:MITMobileButtonTitleView, nil];
+    [notificationView show];
+}
 
 #pragma mark Application modules helper methods
 - (MITModule*)moduleWithTag:(NSString *)tag
