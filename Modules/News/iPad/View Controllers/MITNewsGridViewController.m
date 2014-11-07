@@ -153,7 +153,9 @@
     
     if ([identifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         [self getMoreStoriesForSection:indexPath.section];
+        return;
     }
+    
     MITNewsStory *story = [self storyAtIndexPath:indexPath];
     if (story) {
         [self didSelectStoryAtIndexPath:indexPath];
