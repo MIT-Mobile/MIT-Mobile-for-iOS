@@ -279,4 +279,11 @@
     }
 }
 
+- (void)stopDetailViewController:(MITToursStopDetailViewController *)detailViewController didSelectStop:(MITToursStop *)stop
+{
+    if (stop != self.currentStop) {
+        [self transitionToStop:stop];
+    }
+}
+
 @end
