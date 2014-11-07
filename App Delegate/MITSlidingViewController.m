@@ -252,7 +252,11 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     UIViewController *moduleViewController = [self _moduleViewControllerWithName:moduleItem.name];
     
     if (moduleViewController) {
-        [self setVisibleViewController:moduleViewController animated:YES];
+        // Call the application delegate directly to change the module so we follow the same
+        // event handling as everything else.
+        // May need to rework this once we see how it functions.
+        // (bskinner - 2014.11.07
+        [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:YES];
     }
 }
 
