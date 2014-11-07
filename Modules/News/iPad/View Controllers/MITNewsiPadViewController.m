@@ -128,7 +128,7 @@ CGFloat const refreshControlTextHeight = 19;
             [self updateRefreshStatusWithLastUpdatedTime];
         }
         [self updateNavigationItem:YES];
-    } else {
+    } else if (!self.storyUpdateInProgress){
         [self updateRefreshStatusWithLastUpdatedTime];
     }
     
