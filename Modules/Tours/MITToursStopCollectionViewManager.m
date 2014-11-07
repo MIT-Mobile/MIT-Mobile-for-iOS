@@ -67,4 +67,13 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
 
 #pragma mark - UICollectionViewDelegate Methods
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(collectionView:didSelectItemForStop:)]) {
+        MITToursStop *stop = [self stopForIndexPath:indexPath];
+        [self.delegate collectionView:self.collectionView didSelectItemForStop:stop];
+    }
+    [collectionView deselectItemAtIndexPath:indexPath animated:NO];
+}
+
 @end

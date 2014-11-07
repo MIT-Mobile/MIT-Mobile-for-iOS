@@ -19,5 +19,6 @@
 @optional
 - (void)stopDetailViewControllerTitleDidScrollBelowTitle:(MITToursStopDetailViewController *)detailViewController;
 - (void)stopDetailViewControllerTitleDidScrollAboveTitle:(MITToursStopDetailViewController *)detailViewController;
+- (void)stopDetailViewController:(MITToursStopDetailViewController *)detailViewController didSelectStop:(MITToursStop *)stop;
 
 @end

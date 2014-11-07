@@ -6,7 +6,7 @@
 #import "MITToursStopInfiniteScrollCollectionViewManager.h"
 #import "MITInfiniteScrollCollectionView.h"
 
-@interface MITToursStopDetailViewController () <UIScrollViewDelegate>
+@interface MITToursStopDetailViewController () <UIScrollViewDelegate, MITToursCollectionViewManagerDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
 @property (nonatomic) NSUInteger mainLoopIndex;
@@ -52,6 +52,8 @@
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
     [self.mainLoopCollectionViewManager setup];
     [self.nearHereCollectionViewManager setup];
+    self.mainLoopCollectionViewManager.delegate = self;
+    self.nearHereCollectionViewManager.delegate = self;
     [self configureForStop:self.stop];
 }
 
@@ -173,6 +175,15 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self updateTitleVisibility];
+}
+
+#pragma mark - MITToursCollectionViewManagerDelegate Methods
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemForStop:(MITToursStop *)stop
+{
+    if ([self.delegate respondsToSelector:@selector(stopDetailViewController:didSelectStop:)]) {
+        [self.delegate stopDetailViewController:self didSelectStop:stop];
+    }
 }
 
 @end
