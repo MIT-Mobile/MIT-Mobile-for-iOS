@@ -29,16 +29,6 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 
 #pragma mark - UITextFiewDelegate
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if ([text isEqualToString:@"\n"]) {
-        [textView resignFirstResponder];
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
 - (void)textViewDidChange:(UITextView *)textView
 {
     NSString *textToSend = textView.text.length > 0 ? textView.text : nil;
