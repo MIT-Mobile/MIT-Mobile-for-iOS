@@ -147,7 +147,11 @@
 
 - (void)notifyOfTopicsFetchFailure
 {
-    
+    NSString *title = @"Unable To Fetch Options";
+    NSString *message = @"We were unable to receive some of the options necessary for submiting a request.  Please check your internet connection and try again.";
+    NSString *confirmation = @"Ok";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    [alert show];
 }
 
 @end
