@@ -189,14 +189,19 @@
 
 + (instancetype)notificationWithString:(NSString*)string
 {
-    NSRange delimiterRange = [string rangeOfString:@":"];
+    NSParameterAssert(string);
 
-    if (delimiterRange.location == NSNotFound) {
-        return nil;
+    NSRange delimiterRange = [string rangeOfString:@":"];
+    NSArray *notificationComponents = [string componentsSeparatedByString:@":"];
+
+    NSString *tag = [notificationComponents firstObject];
+    NSString *identifier = nil;
+    if ([notificationComponents count] > 1) {
+        NSRange identifierRange = NSMakeRange(1, [notificationComponents count] - 1);
+        NSIndexSet *identifierIndexes = [NSIndexSet indexSetWithIndexesInRange:identifierRange];
+        identifier = [[notificationComponents objectsAtIndexes:identifierIndexes] componentsJoinedByString:@":"];
     }
 
-    NSString *tag = [string substringToIndex:delimiterRange.location];
-    NSString *identifier = [string substringFromIndex:delimiterRange.location + 1];
     return [[self alloc] initWithModuleTag:tag noticeIdentifier:identifier];
 }
 
@@ -211,7 +216,6 @@
 - (instancetype)initWithModuleTag:(NSString*)tag noticeIdentifier:(NSString*)identifier
 {
     NSParameterAssert(tag);
-    NSParameterAssert(identifier);
 
     self = [super init];
     if (self) {
@@ -253,7 +257,8 @@
 - (BOOL)isEqualToNotification:(MITNotification*)otherNotification
 {
     return ([self.tag isEqualToString:otherNotification.tag] &&
-            [self.identifier isEqualToString:otherNotification.identifier]);
+            (self.identifier == otherNotification.identifier ||
+             [self.identifier isEqualToString:otherNotification.identifier]));
 }
 
 @end
@@ -262,11 +267,6 @@
 + (MITNotification*)fromString:(NSString*)noticeString
 {
     return [self notificationWithString:noticeString];
-}
-	
-- (id)initWithModuleName:(NSString *)aModuleName noticeId:(NSString *)anId
-{
-    return [self initWithModuleTag:aModuleName noticeIdentifier:anId];
 }
 
 - (NSString*)moduleName
@@ -288,4 +288,5 @@
 {
     return [self isEqualToNotification:other];
 }
+
 @end
