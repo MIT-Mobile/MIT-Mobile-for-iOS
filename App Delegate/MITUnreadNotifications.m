@@ -3,6 +3,9 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
+#import "MITModuleItem.h"
+
+NSString* const MITNotificationModuleTagKey = @"tag";
 
 @implementation MITUnreadNotifications
 
@@ -53,14 +56,10 @@
 	}
 	
 
-    /*  Commented out by bskinner on 2014.10.02, Needs to be replaced with an updated version
-     taking into account the updated view controller hierarchy.
-     
-     // update the badge values for each tab item
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	for(MITModule *module in appDelegate.modules) {
-		[module setBadgeValue:[modulesBadgeString[module.tag] stringValue]];
-	}*/
+        module.viewController.moduleItem.badgeValue = [@(badgeCountInt) stringValue];
+	}
 	
 	// update the total badge value for the application
 	[UIApplication sharedApplication].applicationIconBadgeNumber = [notifications count];
@@ -84,22 +83,16 @@
         [MITUnreadNotifications saveUnreadNotifications:notifications];
         [MITUnreadNotifications updateUI];
 
-        /* Commented out by bskinner on 2014.10.02, Needs to be replaced with an updated version
-            taking into account the updated view controller hierarchy.
-         
-        // since receiving the unread notices from the server is asynchrous event
-        // we want all the modules to know that this data may have changed
-        // so we pass of the new version of the data to each module
         NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
         for (MITModule *module in modules) {
             NSMutableArray *moduleNotifications = [NSMutableArray array];
 
             for (MITNotification *notification in notifications) {
-                if([notification.moduleName isEqualToString:module.tag]) {
+                if([notification.moduleName isEqualToString:module.name]) {
                     [moduleNotifications addObject:notification];
                 }
             }
-        }*/
+        }
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
     }];
@@ -161,6 +154,7 @@
 			[self updateUI];
 		}
 	}
+    
 	return notification;
 }
 
@@ -171,6 +165,7 @@
 			return YES;
 		}
 	}
+
 	return NO;
 }
 

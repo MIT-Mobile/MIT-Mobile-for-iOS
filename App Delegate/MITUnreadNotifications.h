@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "MITDeviceRegistration.h"
 
+extern NSString* const MITNotificationModuleTagKey;
+
 @interface MITNotification : NSObject <NSSecureCoding>
 @property (nonatomic,readonly,copy) NSString *tag;
 @property (nonatomic,readonly,copy) NSString *identifier;
@@ -16,7 +18,6 @@
 @property (nonatomic,readonly) NSString *moduleName;
 @property (nonatomic,readonly) NSString *noticeId;
 + (instancetype)fromString:(NSString*)noticeString;
-- (instancetype)initWithModuleName:(NSString*)moduleName noticeId:(NSString*)noticeId;
 - (NSString*)string;
 - (BOOL)isEqualTo:(MITNotification*)other;
 @end
