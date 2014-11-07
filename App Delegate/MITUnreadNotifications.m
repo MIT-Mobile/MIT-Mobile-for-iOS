@@ -186,7 +186,6 @@ NSString* const MITNotificationModuleTagKey = @"tag";
 {
     NSParameterAssert(string);
 
-    NSRange delimiterRange = [string rangeOfString:@":"];
     NSArray *notificationComponents = [string componentsSeparatedByString:@":"];
 
     NSString *tag = [notificationComponents firstObject];
@@ -229,12 +228,20 @@ NSString* const MITNotificationModuleTagKey = @"tag";
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"{module:%@, tag:%@}", self.tag, self.identifier];
+    if (self.tag && self.identifier) {
+        return [NSString stringWithFormat:@"{module:%@, tag:%@}", self.tag, self.identifier];
+    } else {
+        return [NSString stringWithFormat:@"{module:%@}", self.tag];
+    }
 }
 
 - (NSString*)stringValue
 {
-    return [NSString stringWithFormat:@"%@:%@", self.tag, self.identifier];
+    if (self.tag && self.identifier) {
+        return [NSString stringWithFormat:@"%@:%@",self.tag,self.identifier];
+    } else {
+        return [NSString stringWithString:self.tag];
+    }
 }
 
 - (BOOL)isEqual:(id)object
