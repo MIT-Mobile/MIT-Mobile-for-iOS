@@ -97,7 +97,11 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    self.view.alpha = .5;
+    if([searchBar.text isEqualToString:@""]) {
+        self.view.alpha = .5;
+    } else {
+        self.view.alpha = 0;
+    }
     [self removeNoResultsView];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -111,9 +115,11 @@
         [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
         [self changeToMainStories];
         [self clearTable];
+        self.view.alpha = .5;
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
         [self changeToSearchStories];
+        self.view.alpha = 0;
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -133,9 +139,10 @@
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
     [self addLoadingView];
-    [self reloadData];
     self.searchBar.text = searchTerm;
     self.dataSource = [MITNewsStoriesDataSource dataSourceForQuery:searchTerm];
+
+    [self reloadData];
     
     __weak MITNewsSearchController *weakSelf = self;
     [self.dataSource refresh:^(NSError *error) {
@@ -241,7 +248,9 @@
 - (void)addLoadingView
 {
     MITViewWithCenterTextAndIndicator *loadingActivityView = [[[NSBundle mainBundle] loadNibNamed:@"MITViewWithCenterTextAndIndicator" owner:self options:nil] objectAtIndex:0];
+    loadingActivityView.overviewText.text = @"Loading...";
     loadingActivityView.frame = self.view.frame;
+    self.view.alpha = 1;
     [self.view addSubview:loadingActivityView];
     self.messageActivityView = loadingActivityView;
 }

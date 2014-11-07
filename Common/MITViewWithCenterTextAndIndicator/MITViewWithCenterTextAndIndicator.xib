@@ -12,24 +12,25 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSD-Wl-z7Y">
-                    <rect key="frame" x="351" y="487" width="67" height="50"/>
+                    <rect key="frame" x="361" y="487" width="47" height="50"/>
                     <subviews>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="wa6-B0-4eW">
-                            <rect key="frame" x="20" y="7" width="37" height="37"/>
+                            <rect key="frame" x="0.0" y="7" width="37" height="37"/>
                             <color key="color" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         </activityIndicatorView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="700" translatesAutoresizingMaskIntoConstraints="NO" id="zQd-RX-6S5" customClass="MultiLineLabel">
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                            <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <constraints>
+                        <constraint firstItem="zQd-RX-6S5" firstAttribute="leading" secondItem="wa6-B0-4eW" secondAttribute="trailing" constant="10" id="IuC-s5-iJa"/>
                         <constraint firstAttribute="centerY" secondItem="zQd-RX-6S5" secondAttribute="centerY" id="Pqy-qy-27u"/>
-                        <constraint firstItem="wa6-B0-4eW" firstAttribute="leading" secondItem="zQd-RX-6S5" secondAttribute="trailing" constant="20" id="Zpp-bX-1zy"/>
-                        <constraint firstItem="zQd-RX-6S5" firstAttribute="leading" secondItem="OSD-Wl-z7Y" secondAttribute="leading" id="o4F-gm-4l3"/>
+                        <constraint firstAttribute="trailing" secondItem="zQd-RX-6S5" secondAttribute="trailing" id="mvv-Ka-uFA"/>
                         <constraint firstAttribute="height" constant="50" id="qme-d8-7oh"/>
                         <constraint firstAttribute="centerY" secondItem="wa6-B0-4eW" secondAttribute="centerY" id="tIK-gn-TFu"/>
-                        <constraint firstAttribute="trailing" secondItem="wa6-B0-4eW" secondAttribute="trailing" constant="10" id="wq5-tE-3ai"/>
+                        <constraint firstItem="wa6-B0-4eW" firstAttribute="leading" secondItem="OSD-Wl-z7Y" secondAttribute="leading" id="tIb-FD-fci"/>
                     </constraints>
                 </view>
             </subviews>

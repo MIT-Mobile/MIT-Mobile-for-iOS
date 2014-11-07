@@ -22,6 +22,7 @@
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
 #import "MITResourceConstants.h"
+#import "MITMobileServerConfiguration.h"
 
 CGFloat const refreshControlTextHeight = 19;
 
@@ -102,8 +103,7 @@ CGFloat const refreshControlTextHeight = 19;
         return;
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-    //Needs to be a hostname and not a URL
-    self.internetReachability = [Reachability reachabilityWithHostName:@"www.mit.edu"];
+    self.internetReachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerURL().host];
 	[self.internetReachability startNotifier];
 }
 
@@ -241,8 +241,10 @@ CGFloat const refreshControlTextHeight = 19;
     if (!_searchBar) {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self.searchController;
-        self.searchController.searchBar = searchBar;
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        searchBar.placeholder = @"Search";
+        self.searchController.searchBar = searchBar;
+        
         _searchBar = searchBar;
     }
     return _searchBar;
@@ -345,7 +347,9 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)searchButtonWasTriggered:(UIBarButtonItem *)sender
 {
-    if (_presentationStyle == MITNewsPresentationStyleGrid) {
+    if (self.refreshControl.refreshing) {
+        self.previousPositionOfMainView = CGPointMake(0, 0);
+    } else if (_presentationStyle == MITNewsPresentationStyleGrid) {
         self.previousPositionOfMainView = self.gridViewController.collectionView.contentOffset;
     } else {
         self.previousPositionOfMainView = self.listViewController.tableView.contentOffset;
