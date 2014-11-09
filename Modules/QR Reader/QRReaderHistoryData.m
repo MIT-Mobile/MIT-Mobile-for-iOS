@@ -5,6 +5,8 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 
+NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKey";
+
 @implementation QRReaderHistoryData
 - (id)init {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
@@ -72,4 +74,29 @@
     
     return result;
 }
+
+- (NSArray *)fetchRecentScans
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"QRReaderResult"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date >= %@", [self lastTimeHistoryWasOpened]];
+    
+    NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date"
+                                                                   ascending:NO];
+    fetchRequest.sortDescriptors = @[dateDescriptor];
+    
+    return[self.context executeFetchRequest:fetchRequest error:NULL];
+}
+
+- (void)persistLastTimeHistoryWasOpened
+{
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kScannerHistoryLastOpenDateKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSDate *)lastTimeHistoryWasOpened
+{
+    NSDate * lastTimeHistoryWasOpened = [[NSUserDefaults standardUserDefaults] objectForKey:kScannerHistoryLastOpenDateKey];
+    return (lastTimeHistoryWasOpened == nil ? [NSDate date] : lastTimeHistoryWasOpened);
+}
+
 @end

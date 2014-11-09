@@ -33,6 +33,7 @@
 @property (weak) UIImageView *cameraUnavailableView;
 @property (weak) MITScannerOverlayView *overlayView;
 @property (weak) UIButton *infoButton;
+@property (weak) UIButton *advancedButton;
 
 @property (nonatomic,assign) BOOL isCaptureActive;
 @property (readonly) BOOL isScanningSupported;
@@ -69,7 +70,6 @@
     self = [super initWithNibName:nil
                            bundle:nil];
     if (self) {
-        self.title = @"Scanner";
         self.isCaptureActive = NO;
 
         self.renderingQueue = [[NSOperationQueue alloc] init];
@@ -151,13 +151,20 @@
     [scannerView addSubview:overlay];
     self.overlayView = overlay;
 
-
-    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    UIButton *infoButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    [infoButton setTitle:@"Info" forState:UIControlStateNormal];
+    [infoButton sizeToFit];
     [infoButton addTarget:self action:@selector(showHelp:) forControlEvents:UIControlEventTouchUpInside];
     [scannerView addSubview:infoButton];
     self.infoButton = infoButton;
 
-
+    UIButton *advancedButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    [advancedButton setTitle:@"Advanced" forState:UIControlStateNormal];
+    [advancedButton sizeToFit];
+    [advancedButton addTarget:self action:@selector(showAdvancedMenu:) forControlEvents:UIControlEventTouchUpInside];
+    [scannerView addSubview:advancedButton];
+    self.advancedButton = advancedButton;
+    
     [controllerView addSubview:scannerView];
     self.scanView = scannerView;
 }
@@ -182,10 +189,15 @@
 
         self.overlayView.frame = scannerContentBounds;
 
-        CGRect frame = self.infoButton.bounds;
+        CGRect frame = self.advancedButton.bounds;
         frame.origin.x = CGRectGetMaxX(scannerContentBounds) - (CGRectGetWidth(frame) + 20.); //20px -> standard spacing between a view and it's superview
         frame.origin.y = CGRectGetMaxY(scannerContentBounds) - (CGRectGetHeight(frame) + 20.);
-        self.infoButton.frame = frame;
+        self.advancedButton.frame = frame;
+        
+        CGRect infoBtnFrame = self.infoButton.bounds;
+        infoBtnFrame.origin.x = CGRectGetMinX(scannerContentBounds) + 20.;
+        infoBtnFrame.origin.y = frame.origin.y;
+        self.infoButton.frame = infoBtnFrame;
     }
 
     if (self->_historyView) {
@@ -219,14 +231,21 @@
 {
     [super viewDidLoad];
 
+    UIBarButtonItem *menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
+    menuBarButton.tintColor = [UIColor whiteColor];
+    [self.navigationItem setLeftBarButtonItem:menuBarButton];
+    
     if (self.isScanningSupported)
     {
         UIBarButtonItem *toolbarItem = [[UIBarButtonItem alloc] initWithTitle:@"History"
                                                                         style:UIBarButtonItemStyleBordered
                                                                        target:self
                                                                        action:@selector(showHistory:)];
+        toolbarItem.tintColor = [UIColor whiteColor];
         self.navigationItem.rightBarButtonItem = toolbarItem;
     }
+    
+    [self makeNavigationBarTransparent];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -239,6 +258,8 @@
     if (self->_historyView) {
         [self.historyView deselectRowAtIndexPath:[self.historyView indexPathForSelectedRow] animated:YES];
     }
+    
+    [self updateHistoryButtonTitle];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -290,6 +311,8 @@
 
 - (IBAction)showHistory:(id)sender
 {
+    [self.scannerHistory persistLastTimeHistoryWasOpened];
+    
     [self stopSessionCapture];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
@@ -324,7 +347,7 @@
                                 UIViewAnimationOptionShowHideTransitionViews |
                                 UIViewAnimationOptionTransitionFlipFromLeft)
                     completion:^(BOOL finished) {
-                        self.navigationItem.rightBarButtonItem.title = @"History";
+                        [self updateHistoryButtonTitle];
                         [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
                         self.navigationItem.rightBarButtonItem.enabled = YES;
                         [self.historyView removeFromSuperview];
@@ -345,6 +368,37 @@
     helpNavController.navigationBar.translucent = NO;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
+
+- (void)makeNavigationBarTransparent
+{
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)menuButtonPressed
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (NSString *)historyTitleWithNumberOfRecentScans:(NSInteger)numberOfRecentScans
+{
+    if( numberOfRecentScans > 0 )
+    {
+        return [NSString stringWithFormat:@"History (%i)", numberOfRecentScans];
+    }
+    
+    return @"History";
+}
+
+- (void)updateHistoryButtonTitle
+{
+    NSArray *recentScans = [self.scannerHistory fetchRecentScans];
+    
+    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:[recentScans count]];
+}
+
+#pragma mark - Scanning Methods
 
 - (BOOL)isCaptureActive
 {
@@ -370,7 +424,7 @@
         [self.captureSession stopRunning];
     }
 }
-#pragma mark - Scanning Methods
+
 - (BOOL)isScanningSupported
 {
     return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
@@ -447,8 +501,6 @@
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
-    __weak MITScannerViewController *weakSelf = self;
-    
     [metadataObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if( [obj isKindOfClass:[AVMetadataMachineReadableCodeObject class]] )
         {
@@ -459,17 +511,32 @@
             {
                 if( [code.type isEqualToString:allowedCodeType] )
                 {
-                    [self captureBarcodeImageWithCompletionHandler:^(UIImage *image) {
-                        
-                        NSLog(@"code found");
-                        
-                        [weakSelf stopSessionCapture];
-                        [weakSelf codeFound:code screenshot:image];
-                    }];
+                    [self codeFound:code];
                     
                     return;
                 }
             }
+        }
+    }];
+}
+
+- (void)codeFound:(AVMetadataMachineReadableCodeObject *)code
+{
+    __weak MITScannerViewController *weakSelf = self;
+    
+    [self captureBarcodeImageWithCompletionHandler:^(UIImage *image) {
+        
+        if( image == nil )
+        {
+            // do not proceed and wait for a new scan which should be almost immediately.
+            return;
+        }
+        else
+        {
+            NSLog(@"code found and image captured");
+            
+            [weakSelf stopSessionCapture];
+            [weakSelf proccessBarcode:code screenshot:image];
         }
     }];
 }
@@ -498,18 +565,25 @@
              image = [[UIImage alloc] initWithData:imageData];
          }
          
+         if( image == nil )
+         {
+             NSLog(@"missing screenshot");
+         }
+         
          if( completionBlock ) completionBlock( image );
      }];
 }
 
-- (void)codeFound:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
+- (void)proccessBarcode:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
 {
     AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
     self.overlayView.highlighted = YES;
     
-    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue 
+    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue
                                                           withDate:[NSDate date]
                                                          withImage:screenshot];
+    
+    [self updateHistoryButtonTitle];
     
     QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
     

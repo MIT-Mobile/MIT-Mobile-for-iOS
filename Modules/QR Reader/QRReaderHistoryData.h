@@ -21,4 +21,10 @@
 
 - (void)deleteScanResult:(QRReaderResult*)result;
 
+- (NSArray *)fetchRecentScans;
+
+- (void)persistLastTimeHistoryWasOpened;
+
+- (NSDate *)lastTimeHistoryWasOpened;
+
 @end
