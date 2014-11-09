@@ -3895,7 +3895,7 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = THP5EV5EJ9;
+						DevelopmentTeam = A35W4MM59Y;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -4627,7 +4627,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "0dcd0c4e-42c2-4e96-b1d8-836c31232fce";
+				PROVISIONING_PROFILE = "8de62c67-25e5-4823-897f-a3aac21d7d6d";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -4923,6 +4923,7 @@
 				2C5D08431A028329006E09C3 /* TestFlight */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */ = {
 			isa = XCConfigurationList;

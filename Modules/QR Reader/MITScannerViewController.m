@@ -3,7 +3,6 @@
 
 #import "MITScannerViewController.h"
 #import "MITScannerOverlayView.h"
-#import "ZBarSDK.h"
 #import "QRReaderHistoryData.h"
 #import "QRReaderDetailViewController.h"
 #import "UIKit+MITAdditions.h"
@@ -11,16 +10,28 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "MITScannerHelpViewController.h"
 #import "UIImage+Resize.h"
+#import "UIView+Image.h"
 #import "MITNavigationController.h"
 #import "CoreDataManager.h"
 
-@interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate,UITableViewDataSource,NSFetchedResultsControllerDelegate>
+@interface MITScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate>
+
+#pragma mark - Scanner AVFoundation properties
+
+@property (nonatomic, strong) AVCaptureSession *captureSession;
+@property (nonatomic, strong) AVCaptureDevice *captureDevice;
+@property (nonatomic, strong) AVCaptureDeviceInput *deviceInput;
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
+
+@property (nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
+
+@property (nonatomic, strong) NSMutableArray *allowedBarcodeTypes;
 
 #pragma mark - Scanner Properties
 @property (strong) UIView *scanView;
 @property (weak) UIImageView *cameraUnavailableView;
 @property (weak) MITScannerOverlayView *overlayView;
-@property (weak) ZBarReaderView *readerView;
 @property (weak) UIButton *infoButton;
 
 @property (nonatomic,assign) BOOL isCaptureActive;
@@ -39,21 +50,21 @@
 - (IBAction)showScanner:(id)sender;
 - (IBAction)showHelp:(id)sender;
 
-- (void)startCapture;
-- (void)stopCapture;
+- (void)startSessionCapture;
+- (void)stopSessionCapture;
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath;
 @end
 #pragma mark -
 
 @implementation MITScannerViewController
-- (id)init
+
+- (instancetype)init
 {
-    return [self initWithNibName:nil
-                          bundle:nil];
+    return [self initWithNibName:nil bundle:nil];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nil
                            bundle:nil];
@@ -117,14 +128,7 @@
     scannerView.backgroundColor = [UIColor blackColor];
 
     if (self.isScanningSupported) {
-        ZBarReaderView *readerView = [[ZBarReaderView alloc] init];
-        readerView.torchMode = AVCaptureTorchModeOff;
-        readerView.readerDelegate = self;
-        readerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth);
-
-        [scannerView addSubview:readerView];
-        self.readerView = readerView;
+        [self setupCaptureSession];
     } else {
         UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageScannerCameraUnsupported]];
         unsupportedView.contentMode = UIViewContentModeCenter;
@@ -163,9 +167,14 @@
     self.scanView.frame = self.view.bounds;
     {
         CGRect scannerContentBounds = self.scanView.bounds;
-        if (self.isScanningSupported) {
-            self.readerView.frame = scannerContentBounds;
-        } else {
+        
+        if (self.isScanningSupported)
+        {
+            self.previewLayer.frame = scannerContentBounds;
+            [self.scanView.layer insertSublayer:self.previewLayer atIndex:0];
+        }
+        else
+        {
             CGRect cameraFrame = scannerContentBounds;
             cameraFrame.origin.y += 44.;
             self.cameraUnavailableView.frame = cameraFrame;
@@ -238,7 +247,7 @@
 
     if (self.scanView.hidden == NO)
     {
-        [self startCapture];
+        [self startSessionCapture];
     }
     else
     {
@@ -257,7 +266,7 @@
         DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
     }
     
-    [self stopCapture];
+    [self stopSessionCapture];
     // rely on Springboard to reset the navbar style to what it prefers
 //    self.navigationController.navigationBar.translucent = NO;
 }
@@ -281,7 +290,7 @@
 
 - (IBAction)showHistory:(id)sender
 {
-    [self stopCapture];
+    [self stopSessionCapture];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [self.fetchController performFetch:nil];
@@ -304,7 +313,7 @@
 
 - (IBAction)showScanner:(id)sender
 {
-    [self startCapture];
+    [self startSessionCapture];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [UIView transitionFromView:self.historyView
@@ -341,21 +350,23 @@
     return (self->_isCaptureActive && self.isScanningSupported);
 }
 
-- (void)startCapture
+- (void)startSessionCapture
 {
     if (self.isCaptureActive == NO)
     {
         self.isCaptureActive = YES;
-        [self.readerView start];
+        
+        [self.captureSession startRunning];
+        self.metadataOutput.metadataObjectTypes = self.metadataOutput.availableMetadataObjectTypes;
     }
 }
 
-- (void)stopCapture
+- (void)stopSessionCapture
 {
     if (self.isCaptureActive)
     {
         self.isCaptureActive = NO;
-        [self.readerView stop];
+        [self.captureSession stopRunning];
     }
 }
 #pragma mark - Scanning Methods
@@ -364,38 +375,151 @@
     return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
 }
 
-- (void)readerView:(ZBarReaderView*)readerView
-    didReadSymbols:(ZBarSymbolSet*)symbols
-         fromImage:(UIImage*)image
+- (NSMutableArray *) allowedBarcodeTypes
 {
-    ZBarSymbol *readerSymbol = nil;
-    
-    // Grab the first symbol
-    for(readerSymbol in symbols)
-        break;
-    
-    if (readerSymbol)
+    if( _allowedBarcodeTypes == nil )
     {
-        self.navigationController.navigationBar.userInteractionEnabled = NO;
-        [self stopCapture];
-        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-        self.overlayView.highlighted = YES;
-        
-        QRReaderResult *result = [self.scannerHistory insertScanResult:readerSymbol.data
-                                                              withDate:[NSDate date]
-                                                             withImage:image];
-        
-        QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
-        
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^{
-            [self.navigationController pushViewController:viewController
-                                                 animated:YES];
-            
-            self.navigationController.navigationBar.userInteractionEnabled = YES;
-            self.overlayView.highlighted = NO;
-        });
+        _allowedBarcodeTypes = [NSMutableArray new];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeQRCode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypePDF417Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeUPCECode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeAztecCode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Mod43Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN13Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN8Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode93Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode128Code];
     }
+    
+    return _allowedBarcodeTypes;
+}
+
+- (void)setupCaptureSession
+{
+    if( self.captureSession != nil ) {
+        return;
+    }
+    
+    // 1.
+    self.captureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if( self.captureDevice == nil )
+    {
+        NSLog(@"No video camera on this device!");
+        return;
+    }
+    
+    // 2.
+    self.captureSession = [[AVCaptureSession alloc] init];
+    
+    // 3.
+    self.deviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:self.captureDevice error:nil];
+    
+    // 4.
+    if( [self.captureSession canAddInput:self.deviceInput] )
+    {
+        [self.captureSession addInput:self.deviceInput];
+    }
+
+    // 5.
+    self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureSession];
+    self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    
+    // 6.
+    self.metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+    dispatch_queue_t metadataQueue = dispatch_queue_create("edu.mit.mobile.metadataQueue", 0);
+    [self.metadataOutput setMetadataObjectsDelegate:self queue:metadataQueue];
+    
+    // 7.
+    if( [self.captureSession canAddOutput:self.metadataOutput] )
+    {
+        [self.captureSession addOutput:self.metadataOutput];
+    }
+    
+    // 8. another output to capture screenshots
+    self.stillImageOutput = [AVCaptureStillImageOutput new];
+    if( [self.captureSession canAddOutput:self.stillImageOutput] )
+    {
+        [self.captureSession addOutput:self.stillImageOutput];
+    }
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+    __weak MITScannerViewController *weakSelf = self;
+    
+    [metadataObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if( [obj isKindOfClass:[AVMetadataMachineReadableCodeObject class]] )
+        {
+            AVMetadataObject *metadataObject = [self.previewLayer transformedMetadataObjectForMetadataObject:obj];
+            AVMetadataMachineReadableCodeObject *code =  (AVMetadataMachineReadableCodeObject*)metadataObject;
+            
+            for( NSString *allowedCodeType in self.allowedBarcodeTypes )
+            {
+                if( [code.type isEqualToString:allowedCodeType] )
+                {
+                    [self captureBarcodeImageWithCompletionHandler:^(UIImage *image) {
+                        
+                        NSLog(@"code found");
+                        
+                        [weakSelf stopSessionCapture];
+                        [weakSelf codeFound:code screenshot:image];
+                    }];
+                    
+                    return;
+                }
+            }
+        }
+    }];
+}
+
+- (void)captureBarcodeImageWithCompletionHandler:(void(^)(UIImage *))completionBlock
+{
+    __block UIImage *image;
+    
+    __weak MITScannerViewController *weakSelf = self;
+    
+    [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo]
+                                                       completionHandler:^(CMSampleBufferRef imageSampleBuffer, NSError *error)
+     {
+         NSLog(@"capturing still image");
+         
+         if( !weakSelf.isCaptureActive )
+         {
+             // TODO: how come capturing image happens after session is stopped capturing?
+             // how to stop it? couldn't find 'close' method for connection.
+             return;
+         }
+         
+         if( imageSampleBuffer != nil )
+         {
+             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+             image = [[UIImage alloc] initWithData:imageData];
+         }
+         
+         if( completionBlock ) completionBlock( image );
+     }];
+}
+
+- (void)codeFound:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
+{
+    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    self.overlayView.highlighted = YES;
+    
+    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue 
+                                                          withDate:[NSDate date]
+                                                         withImage:screenshot];
+    
+    QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        [self.navigationController pushViewController:viewController
+                                             animated:YES];
+        
+        self.navigationController.navigationBar.userInteractionEnabled = YES;
+        self.overlayView.highlighted = NO;
+    });
 }
 
 #pragma mark - History Methods
