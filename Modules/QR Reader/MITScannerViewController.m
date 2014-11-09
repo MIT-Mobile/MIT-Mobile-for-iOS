@@ -328,6 +328,7 @@
                         [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
                         self.navigationItem.rightBarButtonItem.enabled = YES;
                         [self.historyView removeFromSuperview];
+                        self.historyView = nil;
                         [self.fetchContext save:nil];
                     }];
 }
@@ -640,7 +641,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
       newIndexPath:(NSIndexPath *)newIndexPath
 {
     
-    if (self.historyView.isHidden)
+    if (_historyView == nil)
     {
         return;
     }
