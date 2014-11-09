@@ -46,4 +46,9 @@
     return [[CLLocation alloc] initWithLatitude:[self.coordinates[1] doubleValue] longitude:[self.coordinates[0] doubleValue]];
 }
 
+- (BOOL)isMainLoopStop
+{
+    return [self.stopType isEqualToString:@"Main Loop"];
+}
+
 @end

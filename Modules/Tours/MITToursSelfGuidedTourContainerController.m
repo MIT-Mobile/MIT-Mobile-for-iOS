@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO];
 }
 

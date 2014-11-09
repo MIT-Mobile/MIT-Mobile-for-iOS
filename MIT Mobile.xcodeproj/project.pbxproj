@@ -191,6 +191,8 @@
 		22E180A919DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E180A719DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib */; };
 		22E180AC19DDF1980017AC9A /* MITLibrariesLoansViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180AB19DDF1980017AC9A /* MITLibrariesLoansViewController.m */; };
 		22E180B219DDF1C50017AC9A /* MITLibrariesHoldsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E180B119DDF1C50017AC9A /* MITLibrariesHoldsViewController.m */; };
+		22E1D3331A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E1D3321A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m */; };
+		22E1D3361A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E1D3351A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m */; };
 		22E6BC9619E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */; };
 		22E6BCA319E321A2003E278C /* MITLibrariesFinesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCA219E321A2003E278C /* MITLibrariesFinesViewController.m */; };
 		22E6BCBB19E46949003E278C /* MITLibrariesHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCB919E46949003E278C /* MITLibrariesHomeViewControllerPad.m */; };
@@ -1122,6 +1124,10 @@
 		22E180AB19DDF1980017AC9A /* MITLibrariesLoansViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLoansViewController.m; sourceTree = "<group>"; };
 		22E180B019DDF1C50017AC9A /* MITLibrariesHoldsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesHoldsViewController.h; sourceTree = "<group>"; };
 		22E180B119DDF1C50017AC9A /* MITLibrariesHoldsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesHoldsViewController.m; sourceTree = "<group>"; };
+		22E1D3311A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDirectionAnnotation.h; sourceTree = "<group>"; };
+		22E1D3321A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDirectionAnnotation.m; sourceTree = "<group>"; };
+		22E1D3341A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDirectionsAnnotationView.h; sourceTree = "<group>"; };
+		22E1D3351A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDirectionsAnnotationView.m; sourceTree = "<group>"; };
 		22E6BC9419E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesLoansFinesHoldsTableViewController.h; sourceTree = "<group>"; };
 		22E6BC9519E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesLoansFinesHoldsTableViewController.m; sourceTree = "<group>"; };
 		22E6BCA119E321A2003E278C /* MITLibrariesFinesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesFinesViewController.h; sourceTree = "<group>"; };
@@ -2535,6 +2541,8 @@
 				2247B77A19F98C69000E1725 /* UIFont+MITTours.m */,
 				AF2F705219FAB89400EE6398 /* MITToursStopAnnotation.h */,
 				AF2F705319FAB89400EE6398 /* MITToursStopAnnotation.m */,
+				22E1D3311A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.h */,
+				22E1D3321A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m */,
 				22830A3C1A018A6400B514D1 /* MITToursStopCellModel.h */,
 				22830A3D1A018A6400B514D1 /* MITToursStopCellModel.m */,
 				220540271A0BE33D003C8346 /* MITToursHTMLTemplateInjector.h */,
@@ -4522,6 +4530,8 @@
 				AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */,
 				AFECAE201A06D37300562B97 /* MITToursCalloutMapView.h */,
 				AFECAE211A06D37300562B97 /* MITToursCalloutMapView.m */,
+				22E1D3341A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.h */,
+				22E1D3351A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -5358,6 +5368,7 @@
 				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
 				A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
+				22E1D3331A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				A5A30406198AD0FB00C9C273 /* MITEventSearchViewController.m in Sources */,
@@ -5679,6 +5690,7 @@
 				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
 				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
+				22E1D3361A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m in Sources */,
 				225819EB19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m in Sources */,
 				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				0B1493D11987DD1E009B7EA8 /* MITPopoverBackgroundView.m in Sources */,

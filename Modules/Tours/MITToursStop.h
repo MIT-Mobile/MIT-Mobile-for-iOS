@@ -18,6 +18,7 @@
 @property (nonatomic, retain) MITToursTour *tour;
 
 @property (nonatomic, readonly) CLLocation *locationForStop;
+@property (nonatomic, readonly) BOOL isMainLoopStop;
 
 - (NSString *)thumbnailURL;
 - (NSString *)fullImageURL;
