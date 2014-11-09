@@ -264,11 +264,6 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
-- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
-{
-    NSLog(@"Regiion: %@, %g, %g", NSStringFromCLLocationCoordinate2D(self.mapView.region.center), self.mapView.region.span.longitudeDelta, self.mapView.region.span.latitudeDelta);
-}
-
 #pragma mark - Tile Overlays
 
 - (void)setupTileOverlays
