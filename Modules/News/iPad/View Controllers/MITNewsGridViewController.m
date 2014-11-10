@@ -44,6 +44,7 @@
     [self didLoadCollectionView];
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)didLoadCollectionView
