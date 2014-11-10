@@ -2,14 +2,22 @@
 #import "MITToursImage.h"
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
+#import "MITToursStopCollectionViewManager.h"
+#import "MITToursStopInfiniteScrollCollectionViewManager.h"
+#import "MITInfiniteScrollCollectionView.h"
 
-@interface MITToursStopDetailViewController () <UIScrollViewDelegate>
+@interface MITToursStopDetailViewController () <UIScrollViewDelegate, MITToursCollectionViewManagerDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
-@property (strong, nonatomic) NSArray *sideTripStops;
 @property (nonatomic) NSUInteger mainLoopIndex;
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
+@property (weak, nonatomic) IBOutlet MITInfiniteScrollCollectionView *mainLoopCollectionView;
+@property (strong, nonatomic) IBOutlet MITToursStopInfiniteScrollCollectionViewManager *mainLoopCollectionViewManager;
+
+@property (weak, nonatomic) IBOutlet UICollectionView *nearHereCollectionView;
+@property (strong, nonatomic) IBOutlet MITToursStopCollectionViewManager *nearHereCollectionViewManager;
 
 @property (weak, nonatomic) IBOutlet UIImageView *stopImageView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
@@ -41,8 +49,11 @@
     
     self.scrollView.delegate = self;
     
-
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
+    [self.mainLoopCollectionViewManager setup];
+    [self.nearHereCollectionViewManager setup];
+    self.mainLoopCollectionViewManager.delegate = self;
+    self.nearHereCollectionViewManager.delegate = self;
     [self configureForStop:self.stop];
 }
 
@@ -65,7 +76,6 @@
 {
     _tour = tour;
     self.mainLoopStops = [[tour mainLoopStops] copy];
-    self.sideTripStops = [[tour sideTripsStops] copy];
 }
 
 - (void)setStop:(MITToursStop *)stop
@@ -82,6 +92,41 @@
     self.stopTitleLabel.text = stop.title;
     [self configureBodyTextForStop:stop];
     [self configureImageForStop:stop];
+    
+    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    if (index == NSNotFound) {
+        index = 0;
+    }
+    // We want the current stop to be the "center" of the array of stops.
+    NSMutableArray *sortedMainLoopStops = [[NSMutableArray alloc] init];
+    NSInteger offset = index - self.mainLoopStops.count / 2;
+    for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
+        NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
+    }
+    self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
+    self.mainLoopCollectionViewManager.stopsInDisplayOrder = sortedMainLoopStops;
+    self.mainLoopCollectionViewManager.selectedStop = stop;
+    [self.mainLoopCollectionView reloadData];
+    [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
+    
+    // Order the stops by distance from the current stop
+    CLLocation *currentStopLocation = [stop locationForStop];
+    NSArray *sortedStops = [self.tour.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        CLLocationDistance distance1 = [[((MITToursStop *)obj1) locationForStop] distanceFromLocation:currentStopLocation];
+        CLLocationDistance distance2 = [[((MITToursStop *)obj2) locationForStop] distanceFromLocation:currentStopLocation];
+        if (distance1 < distance2) {
+            return NSOrderedAscending;
+        } else if (distance1 > distance2) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedSame;
+    }];
+    self.nearHereCollectionViewManager.stops = [self.tour.stops copy];
+    self.nearHereCollectionViewManager.stopsInDisplayOrder = [sortedStops copy];
+    self.nearHereCollectionViewManager.selectedStop = stop;
+    [self.nearHereCollectionView reloadData];
+    
     [self.view setNeedsLayout];
 }
 
@@ -130,6 +175,15 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self updateTitleVisibility];
+}
+
+#pragma mark - MITToursCollectionViewManagerDelegate Methods
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemForStop:(MITToursStop *)stop
+{
+    if ([self.delegate respondsToSelector:@selector(stopDetailViewController:didSelectStop:)]) {
+        [self.delegate stopDetailViewController:self didSelectStop:stop];
+    }
 }
 
 @end

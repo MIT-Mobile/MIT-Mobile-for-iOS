@@ -8,4 +8,6 @@
 + (UIFont *)toursMapCalloutTitle;
 + (UIFont *)toursMapCalloutSubtitle;
 
++ (UIFont *)toursStopCollectionViewCellTitle;
+
 @end
