@@ -2,6 +2,7 @@
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesAskUsModel.h"
 #import "MITLibrariesFormSheetElementStatus.h"
+#import "MITLibrariesFormSheetGroupTechnicalHelp.h"
 
 @interface MITLibrariesAskUsFormSheetViewController ()
 @end
@@ -111,39 +112,6 @@
     return bottomGroup;
 }
 
-- (MITLibrariesFormSheetGroup *)getNewTechnicalHelpFormSheetGroup
-{
-    MITLibrariesFormSheetElement *usingVPN = [MITLibrariesFormSheetElement new];
-    usingVPN.type = MITLibrariesFormSheetElementTypeOptions;
-    usingVPN.title = @"Using VPN";
-    usingVPN.htmlParameterKey = @"vpn";
-    MITLibrariesFormSheetElementAvailableOption *no = [MITLibrariesFormSheetElementAvailableOption new];
-    no.value = @"No";
-    no.htmlValue = @"no";
-    MITLibrariesFormSheetElementAvailableOption *yes = [MITLibrariesFormSheetElementAvailableOption new];
-    yes.value = @"Yes";
-    yes.htmlValue = @"yes";
-    usingVPN.availableOptions = @[no, yes];
-    
-    MITLibrariesFormSheetElement *location = [MITLibrariesFormSheetElement new];
-    location.type = MITLibrariesFormSheetElementTypeOptions;
-    location.title = @"Location";
-    location.htmlParameterKey = @"on_campus";
-    MITLibrariesFormSheetElementAvailableOption *onCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    onCampus.value = @"On Campus";
-    onCampus.htmlValue = @"on campus";
-    MITLibrariesFormSheetElementAvailableOption *offCampus = [MITLibrariesFormSheetElementAvailableOption new];
-    offCampus.value = @"Off Campus";
-    offCampus.htmlValue = @"off campus";
-    location.availableOptions = @[onCampus, offCampus];
-    
-    MITLibrariesFormSheetGroup *technicalHelpGroup = [MITLibrariesFormSheetGroup new];
-    technicalHelpGroup.headerTitle = @"TECHNICAL HELP";
-    technicalHelpGroup.elements = @[usingVPN, location];
-    
-    return technicalHelpGroup;
-}
-
 #pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
 
 - (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
@@ -164,9 +132,9 @@
     if (!technicalHelpGroup) {
         NSMutableArray *formSheetGroups = [self.formSheetGroups mutableCopy];
         if (1 < formSheetGroups.count) {
-            [formSheetGroups insertObject:[self getNewTechnicalHelpFormSheetGroup] atIndex:1];
+            [formSheetGroups insertObject:[MITLibrariesFormSheetGroupTechnicalHelp new] atIndex:1];
         } else {
-            [formSheetGroups addObject:[self getNewTechnicalHelpFormSheetGroup]];
+            [formSheetGroups addObject:[MITLibrariesFormSheetGroupTechnicalHelp new]];
         }
         self.formSheetGroups = formSheetGroups;
         [self reloadTableView];
