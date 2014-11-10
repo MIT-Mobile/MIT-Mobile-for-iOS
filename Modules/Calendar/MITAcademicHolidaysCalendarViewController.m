@@ -95,6 +95,8 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
     return cell;
 }
 
+#pragma mark - General Methods
+
 - (NSString *)dateStringForHolidayEvent:(MITCalendarsEvent *)event
 {
     NSString *dateString = [self.dateFormatter stringFromDate:event.startAt];
@@ -104,6 +106,19 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
     }
     
     return dateString;
+}
+
+- (void)scrollToDate:(NSDate *)date
+{
+    for (MITCalendarsEvent *event in self.events) {
+        if ([event.startAt compare:date] == NSOrderedDescending) {
+            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.events indexOfObject:event] inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            return;
+        }
+    }
+    
+    // If we found nothing, scroll to the last one
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(self.events.count - 1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 @end
