@@ -13,15 +13,17 @@
 
 #import "UIImageView+WebCache.h"
 
-@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate, UIGestureRecognizerDelegate>
+@interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate, UIGestureRecognizerDelegate, UIBarPositioningDelegate, UINavigationBarDelegate>
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *toggleUIGesture;
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *resetZoomGesture;
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
+@property (nonatomic,getter = isStatusBarHidden) BOOL statusBarHidden;
 @property (nonatomic,strong) NSMutableArray *galleryPageViewControllers;
 @property (nonatomic) NSInteger selectedIndex;
 
 @property (nonatomic, strong) NSMutableArray *thumbnailImages;
 @property (strong, nonatomic) IBOutlet ThumbnailPickerView *thumbnailPickerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarHeightConstraint;
 
 @end
 
@@ -55,6 +57,7 @@
     
     self.edgesForExtendedLayout = UIRectEdgeAll;
     self.extendedLayoutIncludesOpaqueBars = YES;
+    self.navigationBar.delegate = self;
     self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.view.backgroundColor = [UIColor blackColor];
@@ -67,6 +70,19 @@
     // for the first view controller
     [self didChangeSelectedIndex];
     [self.thumbnailPickerView setSelectedIndex:0];
+    [self setPhoneNavigationBarHeight:[UIApplication sharedApplication].statusBarOrientation];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self setPhoneNavigationBarHeight:toInterfaceOrientation];
+}
+
+- (void)viewWillLayoutSubviews
+{
+    self.navigationBarHeightConstraint.constant = (self.view.bounds.size.height > self.view.bounds.size.width)? 44 : 32;
+    [self.view setNeedsLayout];
+    [self.view updateConstraintsIfNeeded];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -254,11 +270,23 @@
     [self setInterfaceHidden:interfaceHidden animated:NO];
 }
 
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+{
+    return UIBarPositionTopAttached;
+}
+
 - (void)setInterfaceHidden:(BOOL)interfaceHidden animated:(BOOL)animated
 {
     if (_interfaceHidden != interfaceHidden) {
         _interfaceHidden = interfaceHidden;
         
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        
+        if (UIInterfaceOrientationIsLandscape(orientation)) {
+            _statusBarHidden = YES;
+        } else {
+            _statusBarHidden = interfaceHidden;
+        }
         if (!_interfaceHidden) {
             [self setNeedsStatusBarAppearanceUpdate];
         }
@@ -297,8 +325,19 @@
     }
 }
 
-- (BOOL)prefersStatusBarHidden {
-    return self.isInterfaceHidden;
+- (void)setPhoneNavigationBarHeight:(UIInterfaceOrientation)orientation
+{
+    if (UIInterfaceOrientationIsLandscape(orientation)) {
+        _statusBarHidden = YES;
+    } else {
+        _statusBarHidden = _interfaceHidden;
+    }
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    return self.statusBarHidden;
 }
 
 #pragma mark - UIPageViewController
