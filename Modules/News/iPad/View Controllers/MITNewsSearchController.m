@@ -38,7 +38,7 @@
 #pragma mark - Dynamic Properties
 - (MITNewsRecentSearchController *)recentSearchController
 {
-    if(!_recentSearchController) {
+    if (!_recentSearchController) {
         MITNewsRecentSearchController *recentSearchController = [[MITNewsRecentSearchController alloc] init];
         recentSearchController.searchController = self;
         _recentSearchController = recentSearchController;
@@ -77,7 +77,12 @@
     } else {
         [self changeToSearchStories];
     }
-    self.messageActivityView.alpha = 1;
+    if (self.messageView || self.messageActivityView) {
+        self.view.alpha = 1;
+        self.messageView.alpha = 1;
+    } else {
+        self.messageActivityView.alpha = 1;
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -97,12 +102,9 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if([searchBar.text isEqualToString:@""]) {
-        self.view.alpha = .5;
-    } else {
-        self.view.alpha = 0;
-    }
-    [self removeNoResultsView];
+    self.view.alpha = .5;
+    self.messageView.alpha = .5;
+    self.messageActivityView.alpha = .5;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
@@ -113,13 +115,8 @@
 {
     if ([searchText isEqualToString:@""]) {
         [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self changeToMainStories];
-        [self clearTable];
-        self.view.alpha = .5;
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self changeToSearchStories];
-        self.view.alpha = 0;
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -163,10 +160,14 @@
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [strongSelf removeLoadingView];
-            strongSelf.view.alpha = 0;
+            if (!self.recentSearchPopoverController) {
+                strongSelf.view.alpha = 0;
+            }
             if ([strongSelf.dataSource.objects count] == 0) {
                 [strongSelf addNoResultsView];
-                strongSelf.view.alpha = 1;
+                if (!self.recentSearchPopoverController) {
+                    strongSelf.view.alpha = 1;
+                }
             }
             [strongSelf reloadData];
         }
