@@ -10,6 +10,7 @@
 - (void)setup;
 - (void)showActivityIndicator;
 - (void)hideActivityIndicator;
+- (void)closeFormSheetViewController;
 - (void)submitFormForParameters:(NSDictionary *)parameters;
 - (void)notifyFormSubmissionError;
 - (void)notifyFormSubmissionSuccessWithResponseObject:(id)responseObject;

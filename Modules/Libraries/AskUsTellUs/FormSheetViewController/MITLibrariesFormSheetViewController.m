@@ -90,21 +90,28 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
             if (error || !success) {
                 NSLog(@"Login Failed w/ Error: %@", error);
-                if (self.navigationController) {
-                    if (self.navigationController.presentingViewController) {
-                        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-                    } else {
-                        [self.navigationController popViewControllerAnimated:YES];
-                    }
-                } else {
-                    [self dismissViewControllerAnimated:YES completion:nil];
-                }
+                [self closeFormSheetViewController];
             } else {
                 [self setup];
             }
         }];
     } else {
         [self setup];
+    }
+}
+
+#pragma mark - Closing FormSheet View Controller
+
+- (void)closeFormSheetViewController
+{
+    if (self.navigationController) {
+        if (self.navigationController.presentingViewController) {
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
