@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetViewController.h"
 #import "MITLibrariesFormSheetCellOptions.h"
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"

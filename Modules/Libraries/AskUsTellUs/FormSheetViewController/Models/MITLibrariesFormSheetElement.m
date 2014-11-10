@@ -1,8 +1,8 @@
-
 #import "MITLibrariesFormSheetElement.h"
 #import "MITLibrariesFormSheetElementAvailableOption.h"
 
 @implementation MITLibrariesFormSheetElement
+
 - (id)htmlParameterValue
 {
     id htmlReturnVal = self.value;
@@ -43,4 +43,5 @@
         _availableOptions = availableOptions;
     }
 }
+
 @end

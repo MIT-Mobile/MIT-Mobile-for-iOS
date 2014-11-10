@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetElementAvailableOption.h"
 
 @implementation MITLibrariesFormSheetElementAvailableOption

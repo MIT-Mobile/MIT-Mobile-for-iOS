@@ -1,4 +1,3 @@
-
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesAskUsModel.h"
@@ -64,7 +63,6 @@
 
 #pragma mark - Data Assembly
 
-// Backgrounded for topics fetch
 - (void)buildTopFormSheetGroupInBackgroundWithCompletion:(void(^)(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error))completion
 {
     [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {
@@ -95,8 +93,6 @@
             completion(nil, error);
         }
     }];
-    
-    
 }
 
 - (MITLibrariesFormSheetGroup *)bottomFormSheetGroup

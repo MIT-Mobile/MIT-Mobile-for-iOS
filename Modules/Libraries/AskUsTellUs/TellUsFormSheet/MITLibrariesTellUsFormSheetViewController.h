@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetViewController.h"
 
 @interface MITLibrariesTellUsFormSheetViewController : MITLibrariesFormSheetViewController

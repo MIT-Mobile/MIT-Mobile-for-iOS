@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetCellMultiLineTextEntry.h"
 #import "PlaceholderTextView.h"
 #import "MITLibrariesFormSheetElement.h"
