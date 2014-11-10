@@ -1,5 +1,6 @@
 #import "MITToursStopCollectionViewManager.h"
 #import "MITToursStopCollectionViewCell.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation MITToursStopCollectionViewManager
 
@@ -43,6 +44,12 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
         title = [NSString stringWithFormat:@"%d. %@", index + 1, stop.title];
     }
     [cell configureForImageURL:imageURL title:title];
+    
+    if (stop == self.selectedStop) {
+        cell.backgroundColor = [UIColor mit_backgroundColor];
+    } else {
+        cell.backgroundColor = [UIColor clearColor];
+    }
     
     return cell;
 }

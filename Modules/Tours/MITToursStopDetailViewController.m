@@ -104,6 +104,7 @@
     }
     self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
     self.mainLoopCollectionViewManager.stopsInDisplayOrder = sortedMainLoopStops;
+    self.mainLoopCollectionViewManager.selectedStop = stop;
     [self.mainLoopCollectionView reloadData];
     [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
     
@@ -121,6 +122,7 @@
     }];
     self.nearHereCollectionViewManager.stops = [self.tour.stops copy];
     self.nearHereCollectionViewManager.stopsInDisplayOrder = [sortedStops copy];
+    self.nearHereCollectionViewManager.selectedStop = stop;
     [self.nearHereCollectionView reloadData];
     
     [self.view setNeedsLayout];
