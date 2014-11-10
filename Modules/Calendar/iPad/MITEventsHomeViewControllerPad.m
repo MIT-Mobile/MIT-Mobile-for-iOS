@@ -38,12 +38,18 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 @property (nonatomic, strong) UINavigationController *typeAheadNavigationController;
 @property (nonatomic, strong) UISearchBar *typeAheadSearchBar;
 @property (nonatomic, strong) MITEventSearchResultsViewController *resultsViewController;
+@property (nonatomic, strong) UIViewController *currentCalendarListViewController;
 
 @property (strong, nonatomic) UISearchBar *navigationSearchBar;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchCancelBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *goToDateBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchFieldBarButtonItem;
+@property (strong, nonatomic) MITCalendarsCalendar *currentSearchCategory;
+@property (strong, nonatomic) UIBarButtonItem *searchCategoryBarButtonItem;
+@property (nonatomic, strong) MITCalendarSelectionViewController *currentSearchCategorySelectionViewController;
+@property (nonatomic, strong) NSString *currentSearchTerm;
+@property (nonatomic, assign) BOOL isInSearchMode;
 
 @property (strong, nonatomic) MITCalendarPageViewController *eventsPageViewController;
 
@@ -78,7 +84,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     [super viewDidLoad];
     self.navigationController.toolbar.translucent = NO;
-    self.title = @"MIT Events";
+    self.title = @"All MIT Events";
     [self setupViewControllers];
     [self setupRightBarButtonItems];
     [self setupToolbar];
@@ -117,17 +123,19 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)hideSearchBar
 {
-    self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
+    self.splitViewController.viewControllers = @[self.currentCalendarListViewController, self.eventDetailViewController];
 
     self.navigationSearchBar.text = @"";
     self.typeAheadSearchBar.text = @"";
     [self showGeneralRightBarButtonItems];
 
-    MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
-    if (currentlyDisplayedController.events.count > 0) {
-        self.eventDetailViewController.event = currentlyDisplayedController.events[0];
-    } else {
-        self.eventDetailViewController.event = nil;
+    if ([self.currentCalendarListViewController isEqual:self.eventsPageViewController]) {
+        MITEventsTableViewController *currentlyDisplayedController = (MITEventsTableViewController *)self.eventsPageViewController.viewControllers[0];
+        if (currentlyDisplayedController.events.count > 0) {
+            self.eventDetailViewController.event = currentlyDisplayedController.events[0];
+        } else {
+            self.eventDetailViewController.event = nil;
+        }
     }
 }
 
@@ -177,7 +185,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navigationSearchBar];
     
     // TODO: Insert calendar selection drop down into bar button items
-    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem];
+    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem, self.searchCategoryBarButtonItem];
 }
 
 - (void)showGeneralRightBarButtonItems
@@ -193,7 +201,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
         self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
-                                                                     action:@selector(goToDateButtonPressed)];
+                                                                     action:@selector(showDatePickerButtonPressed:)];
     }
     
     self.navigationItem.rightBarButtonItems = @[self.searchMagnifyingGlassBarButtonItem, self.goToDateBarButtonItem];
@@ -299,13 +307,26 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)cancelButtonPressed:(UIBarButtonItem *)sender
 {
+    self.isInSearchMode = NO;
     [self hideSearchBar];
     [self disableSearchModeNavBar];
+    [self updateTitle];
 }
 
 - (void)beginSearch:(NSString *)searchString
 {
-    [self enableSearchModeNavBar];
+    if (!self.isInSearchMode) {
+        self.isInSearchMode = YES;
+        
+        self.title = nil;
+        self.currentSearchTerm = searchString;
+        self.currentSearchCategory = nil;
+        self.currentSearchCategorySelectionViewController = [[MITCalendarSelectionViewController alloc] initWithStyle:UITableViewStylePlain];
+        self.currentSearchCategorySelectionViewController.shouldHideRegistrar = YES;
+        self.currentSearchCategorySelectionViewController.delegate = self;
+        [self enableSearchModeNavBar];
+    }
+    
     self.eventDetailViewController.event = nil;
     self.navigationSearchBar.text = searchString;
     self.typeAheadSearchBar.text = searchString;
@@ -313,6 +334,40 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     self.splitViewController.viewControllers = @[self.resultsViewController, self.eventDetailViewController];
     [self.resultsViewController beginSearch:searchString];
+}
+
+- (void)searchCategoryButtonPressed
+{
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.currentSearchCategorySelectionViewController];
+    self.currentPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.currentPopoverController presentPopoverFromBarButtonItem:self.searchCategoryBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+}
+
+- (UIBarButtonItem *)searchCategoryBarButtonItem
+{
+    if (!_searchCategoryBarButtonItem) {
+        _searchCategoryBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:@selector(searchCategoryButtonPressed)];
+        [self updateSearchCategoryButtonTitle];
+    }
+    
+    return _searchCategoryBarButtonItem;
+}
+
+- (void)setCurrentSearchCategory:(MITCalendarsCalendar *)currentSearchCategory
+{
+    if ([currentSearchCategory isEqualToCalendar:_currentSearchCategory]) {
+        return;
+    }
+    
+    _currentSearchCategory = currentSearchCategory;
+    
+    [self updateSearchCategoryButtonTitle];
+}
+
+- (void)updateSearchCategoryButtonTitle
+{
+    NSString *title = self.currentSearchCategory.name ? self.currentSearchCategory.name : @"All MIT Events";
+    self.searchCategoryBarButtonItem.title = [NSString stringWithFormat:@"%@ %@", title, @"▾"];
 }
 
 #pragma mark - UISearchBarDelegate Methods
@@ -363,6 +418,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)setupSplitViewController
 {
     self.splitViewController = [[MITEventsSplitViewController alloc] init];
+    self.currentCalendarListViewController = self.eventsPageViewController;
     self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
     self.splitViewController.delegate = self;
     self.splitViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -377,7 +433,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     self.typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
     self.typeAheadViewController.delegate = self;
-    self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
 }
 
 - (void)setupResultsViewController
@@ -441,8 +496,16 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date
 {
-    if (![self.eventsPageViewController.date isEqualToDateIgnoringTime:date]) {
-        [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
+    if ([self.currentlySelectedCalendar.identifier isEqualToString:self.masterCalendar.academicHolidaysCalendar.identifier]) {
+        MITAcademicHolidaysCalendarViewController *academicCalendarVC = (MITAcademicHolidaysCalendarViewController *)self.currentCalendarListViewController;
+        [academicCalendarVC scrollToDate:date];
+    } else if ([self.currentlySelectedCalendar.identifier isEqualToString:self.masterCalendar.academicCalendar.identifier]) {
+        MITAcademicCalendarViewController *academicCalendarVC = (MITAcademicCalendarViewController *)self.currentCalendarListViewController;
+        [academicCalendarVC scrollToDate:date];
+    } else {
+        if (![self.eventsPageViewController.date isEqualToDateIgnoringTime:date]) {
+            [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
+        }
     }
 }
 
@@ -462,31 +525,51 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                       didSelectCalendar:(MITCalendarsCalendar *)calendar
                                category:(MITCalendarsCalendar *)category
 {
-    if (calendar) {
-        self.title = category.name ? : calendar.name;
-        self.currentlySelectedCalendar = calendar;
-        self.currentlySelectedCategory = category;
-        self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
-        self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
-
-        if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
-            MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
-            self.splitViewController.viewControllers = @[holidaysVC, self.eventDetailViewController];
-            self.eventDetailViewController.event = nil;
-        } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
-            MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
-            self.splitViewController.viewControllers = @[academicVC, self.eventDetailViewController];
-            self.eventDetailViewController.event = nil;
-        } else {
-            self.splitViewController.viewControllers = @[self.eventsPageViewController, self.eventDetailViewController];
-            [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
-                                                 category:self.currentlySelectedCategory
-                                                     date:self.dayPickerController.currentlyDisplayedDate
-                                                 animated:YES];
+    if ([viewController isEqual:self.calendarSelectionViewController]) {
+        if (calendar) {
+            self.currentlySelectedCalendar = calendar;
+            self.currentlySelectedCategory = category;
+            [self updateTitle];
+            self.typeAheadViewController.currentCalendar = self.currentlySelectedCategory;
+            self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
+            
+            if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicHolidaysCalendar.identifier]) {
+                MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
+                self.currentCalendarListViewController = holidaysVC;
+                self.eventDetailViewController.event = nil;
+            } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
+                MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
+                self.currentCalendarListViewController = academicVC;
+                self.eventDetailViewController.event = nil;
+            } else {
+                self.currentCalendarListViewController = self.eventsPageViewController;
+                [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
+                                                     category:self.currentlySelectedCategory
+                                                         date:self.dayPickerController.currentlyDisplayedDate
+                                                     animated:YES];
+            }
+            
+            self.splitViewController.viewControllers = @[self.currentCalendarListViewController, self.eventDetailViewController];
         }
+        
+        [self.calendarSelectorPopoverController dismissPopoverAnimated:YES];
+    } else if ([viewController isEqual:self.currentSearchCategorySelectionViewController]) {
+        self.currentSearchCategory = category;
+        self.resultsViewController.currentCalendar = category;
+        [self.resultsViewController beginSearch:self.currentSearchTerm];
+        [self.currentPopoverController dismissPopoverAnimated:YES];
     }
+}
 
-    [self.calendarSelectorPopoverController dismissPopoverAnimated:YES];
+- (void)updateTitle
+{
+    if (self.currentlySelectedCategory.name) {
+        self.title = self.currentlySelectedCategory.name;
+    } else if (self.currentlySelectedCalendar == self.masterCalendar.eventsCalendar) {
+        self.title = @"All MIT Events";
+    } else {
+        self.title = self.currentlySelectedCalendar.name;
+    }
 }
 
 #pragma mark - Toolbar Button Presses
