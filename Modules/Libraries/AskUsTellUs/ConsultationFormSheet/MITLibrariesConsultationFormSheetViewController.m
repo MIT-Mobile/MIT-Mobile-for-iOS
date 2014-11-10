@@ -52,7 +52,6 @@
         } else {
             [self notifyFormSubmissionError];
         }
-        
     }];
 }
 
@@ -107,8 +106,6 @@
             completion(nil, error);
         }
     }];
-    
-    
 }
 
 - (MITLibrariesFormSheetGroup *)bottomFormSheetGroup

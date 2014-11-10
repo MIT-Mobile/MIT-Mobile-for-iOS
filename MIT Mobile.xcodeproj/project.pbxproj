@@ -529,6 +529,7 @@
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80A7CBCF199E853300BFDD39 /* MITDiningMapsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A7CBCD199E853300BFDD39 /* MITDiningMapsViewController.m */; };
 		80A7CBD0199E853300BFDD39 /* MITDiningMapsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80A7CBCE199E853300BFDD39 /* MITDiningMapsViewController.xib */; };
+		80C5D9C31A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C5D9C21A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m */; };
 		80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */; };
 		80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */; };
 		80EC3C291A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */; };
@@ -1816,6 +1817,8 @@
 		80A7CBCC199E853300BFDD39 /* MITDiningMapsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningMapsViewController.h; path = Dining/MITDiningMapsViewController.h; sourceTree = "<group>"; };
 		80A7CBCD199E853300BFDD39 /* MITDiningMapsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningMapsViewController.m; path = Dining/MITDiningMapsViewController.m; sourceTree = "<group>"; };
 		80A7CBCE199E853300BFDD39 /* MITDiningMapsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningMapsViewController.xib; path = Dining/MITDiningMapsViewController.xib; sourceTree = "<group>"; };
+		80C5D9C11A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetGroupTechnicalHelp.h; path = AskUsTellUs/FormSheetViewController/Models/CustomGroups/MITLibrariesFormSheetGroupTechnicalHelp.h; sourceTree = "<group>"; };
+		80C5D9C21A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetGroupTechnicalHelp.m; path = AskUsTellUs/FormSheetViewController/Models/CustomGroups/MITLibrariesFormSheetGroupTechnicalHelp.m; sourceTree = "<group>"; };
 		80D1C6A31993E7370073F1FD /* MITEventsSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsSplitViewController.h; path = iPad/EventsSplitViewController/MITEventsSplitViewController.h; sourceTree = "<group>"; };
 		80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsSplitViewController.m; path = iPad/EventsSplitViewController/MITEventsSplitViewController.m; sourceTree = "<group>"; };
 		80EC3C251A03D1960051F417 /* MITDayPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDayPickerViewController.h; path = DayPicker/MITDayPickerViewController.h; sourceTree = "<group>"; };
@@ -4590,6 +4593,7 @@
 		80598DCE1A0AA9980095CEAA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				80C5D9BD1A110A3800E63FDD /* CustomGroups */,
 				80598DDB1A0AC2380095CEAA /* CustomElements */,
 				80598DCF1A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.h */,
 				80598DD01A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m */,
@@ -4628,6 +4632,15 @@
 				80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */,
 			);
 			name = iPad;
+			sourceTree = "<group>";
+		};
+		80C5D9BD1A110A3800E63FDD /* CustomGroups */ = {
+			isa = PBXGroup;
+			children = (
+				80C5D9C11A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.h */,
+				80C5D9C21A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m */,
+			);
+			name = CustomGroups;
 			sourceTree = "<group>";
 		};
 		80D1C69F1993E70B0073F1FD /* EventsSplitViewController */ = {
@@ -6095,6 +6108,7 @@
 				A56390E619E07F67001DE763 /* MITLibrariesAvailabilityDetailCell.m in Sources */,
 				5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */,
 				224F6B2619D484EC0062D340 /* MITLibrariesCoverImage.m in Sources */,
+				80C5D9C31A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m in Sources */,
 				224BAC3819F00B96004A6477 /* MITLibrariesSearchResultsContainerViewControllerPad.m in Sources */,
 				DE65451E173D90A900562C20 /* SDWebImageDecoder.m in Sources */,
 				2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */,
