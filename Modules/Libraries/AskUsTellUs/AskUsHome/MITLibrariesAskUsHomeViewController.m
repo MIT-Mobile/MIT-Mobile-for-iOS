@@ -4,14 +4,9 @@
 #import "LibrariesAppointmentViewController.h"
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesConsultationFormSheetViewController.h"
+#import "MITLibrariesTellUsFormSheetViewController.h"
 
 static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MITLibrariesAskUsHomeViewControllerCellIdentifier";
-
-typedef NS_ENUM(NSInteger, AskUsOption) {
-    AskUsOptionAskUs,
-    AskUsOptionConsultation,
-    AskUsOptionGeneral,
-};
 
 @interface MITLibrariesAskUsHomeTableViewCell : UITableViewCell
 @end
@@ -29,14 +24,21 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 @interface MITLibrariesAskUsHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *askUsOptionsTableView;
-@property (nonatomic, strong) NSArray *tableViewData;
 @end
 
 @implementation MITLibrariesAskUsHomeViewController
 
+@synthesize availableAskUsOptions = _availableAskUsOptions;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
+    if (!self.title || self.title.length == 0) {
+        self.title = @"Ask Us";
+    }
+    
+    // Needs to be set explicitly for popover controller issues
+    self.askUsOptionsTableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,7 +55,6 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 - (void)setupTableView
 {
-    self.tableViewData = @[@[@(AskUsOptionAskUs), @(AskUsOptionConsultation)],@[@(AskUsOptionGeneral)]];
     [self.askUsOptionsTableView registerClass:[MITLibrariesAskUsHomeTableViewCell class] forCellReuseIdentifier:MITLibrariesAskUsHomeViewControllerCellIdentifier];
     self.askUsOptionsTableView.tableFooterView = [UIView new]; // Prevent empty cells
 }
@@ -62,12 +63,12 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return self.tableViewData.count;
+    return self.availableAskUsOptions.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *sectionData = self.tableViewData[section];
+    NSArray *sectionData = self.availableAskUsOptions[section];
     return sectionData.count;;
 }
 
@@ -84,7 +85,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 
 - (NSInteger)askUsOptionForIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *section = self.tableViewData[indexPath.section];
+    NSArray *section = self.availableAskUsOptions[indexPath.section];
     NSInteger enumValue = [section[indexPath.row] integerValue];
     return enumValue;
 }
@@ -93,14 +94,18 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 {
     NSString *titleText;
     switch ([self askUsOptionForIndexPath:indexPath]) {
-        case AskUsOptionAskUs:
+        case MITLibrariesAskUsOptionAskUs:
             titleText = @"Ask Us!";
             break;
-        case AskUsOptionConsultation:
+        case MITLibrariesAskUsOptionConsultation:
             titleText = @"Make a research consultation appointment";
             break;
-        case AskUsOptionGeneral:
+        case MITLibrariesAskUsOptionTellUs:
+            titleText = @"Tell Us!";
+            break;
+        case MITLibrariesAskUsOptionGeneral:
             titleText = @"General Help";
+            break;
         default:
             break;
     }
@@ -110,7 +115,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 - (NSString *)detailTextForIndexPath:(NSIndexPath *)indexPath
 {
     NSString *detailText;
-    if ([self askUsOptionForIndexPath:indexPath] == AskUsOptionGeneral) {
+    if ([self askUsOptionForIndexPath:indexPath] == MITLibrariesAskUsOptionGeneral) {
         detailText = @"617.324.2275";
     }
     return detailText;
@@ -120,11 +125,12 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 {
     UIView *accessoryView;
     switch ([self askUsOptionForIndexPath:indexPath]) {
-        case AskUsOptionAskUs:
-        case AskUsOptionConsultation:
+        case MITLibrariesAskUsOptionAskUs:
+        case MITLibrariesAskUsOptionTellUs:
+        case MITLibrariesAskUsOptionConsultation:
             accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
             break;
-        case AskUsOptionGeneral:
+        case MITLibrariesAskUsOptionGeneral:
             accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
         default:
             break;
@@ -138,28 +144,37 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    switch ([self askUsOptionForIndexPath:indexPath]) {
-        case AskUsOptionAskUs: {
-            MITLibrariesAskUsFormSheetViewController *askUs = [MITLibrariesAskUsFormSheetViewController  new];
-            [self.navigationController pushViewController:askUs animated:YES];
-            // TODO: Open ask us controller
-            break;
-        }
-        case AskUsOptionConsultation: {
-            MITLibrariesConsultationFormSheetViewController *appointmentVC = [MITLibrariesConsultationFormSheetViewController new];
-            [self.navigationController pushViewController:appointmentVC animated:YES];
-            // TODO: Open Consultation Controller
-            break;
-        }
-        case AskUsOptionGeneral: {
-            NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
+    MITLibrariesAskUsOption selectedOption = [self askUsOptionForIndexPath:indexPath];
+    if (!self.delegate) {
+        switch (selectedOption) {
+            case MITLibrariesAskUsOptionAskUs: {
+                MITLibrariesAskUsFormSheetViewController *askUs = [MITLibrariesAskUsFormSheetViewController  new];
+                [self.navigationController pushViewController:askUs animated:YES];
+                break;
             }
-            break;
+            case MITLibrariesAskUsOptionConsultation: {
+                MITLibrariesConsultationFormSheetViewController *appointmentVC = [MITLibrariesConsultationFormSheetViewController new];
+                [self.navigationController pushViewController:appointmentVC animated:YES];
+                break;
+            }
+            case MITLibrariesAskUsOptionTellUs: {
+                MITLibrariesTellUsFormSheetViewController *tellUsVC = [MITLibrariesTellUsFormSheetViewController new];
+                [self.navigationController pushViewController:tellUsVC animated:YES];
+                break;
+            }
+            case MITLibrariesAskUsOptionGeneral: {
+                NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
+                if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                    [[UIApplication sharedApplication] openURL:url];
+                }
+                break;
+            }
+            default:
+                break;
         }
-        default:
-            break;
+    }
+    else {
+        [self.delegate librariesAskUsHomeViewController:self didSelectAskUsOption:selectedOption];
     }
 }
 
@@ -173,6 +188,22 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
     cell.detailTextLabel.text = [self detailTextForIndexPath:indexPath];
     CGSize detailSize = [cell.detailTextLabel sizeThatFits:maxSize];
     return titleSize.height + detailSize.height + 30; // Padding
+}
+
+#pragma mark - Getters | Setters
+
+- (NSArray *)availableAskUsOptions {
+    if (!_availableAskUsOptions) {
+        NSArray *topGroup = @[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation)];
+        NSArray *bottomGroup = @[@(MITLibrariesAskUsOptionGeneral)];
+        _availableAskUsOptions = @[topGroup, bottomGroup];
+    }
+    return _availableAskUsOptions;
+}
+- (void)setAvailableAskUsOptions:(NSArray *)availableOptions
+{
+    _availableAskUsOptions = availableOptions;
+    [self.askUsOptionsTableView reloadData];
 }
 
 @end

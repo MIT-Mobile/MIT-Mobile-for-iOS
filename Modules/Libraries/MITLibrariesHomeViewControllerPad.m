@@ -8,13 +8,19 @@
 #import "MITLibrariesRecentSearchesViewController.h"
 #import "MITLibrariesSearchResultsContainerViewControllerPad.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLibrariesAskUsHomeViewController.h"
+#import "MITLibrariesAskUsFormSheetViewController.h"
+#import "MITLibrariesConsultationFormSheetViewController.h"
+#import "MITLibrariesTellUsFormSheetViewController.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeAccount,
     MITLibrariesPadDisplayModeSearch
 };
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate,MITLibrariesRecentSearchesDelegate>
+static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize = {480,400};
+
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -31,6 +37,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 @property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 @property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
 @property (nonatomic, strong) UIPopoverController *recentSearchesPopoverController;
+@property (nonatomic, strong) UIPopoverController *askUsHomePopoverController;
 
 @property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
 @property (nonatomic, strong) MITLibrariesRecentSearchesViewController *recentSearchesViewController;
@@ -178,7 +185,15 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 - (void)askUsTellUsPressed:(id)sender
 {
-    NSLog(@"Ask Us");
+    MITLibrariesAskUsHomeViewController *askUsHomeVC = [MITLibrariesAskUsHomeViewController new];
+    NSArray *topGroup = @[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation), @(MITLibrariesAskUsOptionTellUs)];
+    NSArray *bottomGroup = @[@(MITLibrariesAskUsOptionGeneral)];
+    askUsHomeVC.availableAskUsOptions = @[topGroup, bottomGroup];
+    askUsHomeVC.delegate = self;
+    UINavigationController *askUsNav = [[UINavigationController alloc] initWithRootViewController:askUsHomeVC];
+    self.askUsHomePopoverController = [[UIPopoverController alloc] initWithContentViewController:askUsNav];
+    self.askUsHomePopoverController.popoverContentSize = CGSizeMake(320, 400);
+    [self.askUsHomePopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
 - (void)quickLinksPressed:(id)sender
@@ -315,6 +330,51 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 {
     self.searchBar.text = searchTerm;
     [self searchBarSearchButtonClicked:self.searchBar];
+}
+
+#pragma mark - MITLibrariesAskUsHomeViewControllerDelegate
+
+- (void)librariesAskUsHomeViewController:(MITLibrariesAskUsHomeViewController *)askUsHomeViewController didSelectAskUsOption:(MITLibrariesAskUsOption)selectedOption
+{
+    [self.askUsHomePopoverController dismissPopoverAnimated:YES];
+    
+    UIViewController *formSheetVCForPresentation;
+    switch (selectedOption) {
+        case MITLibrariesAskUsOptionAskUs: {
+            formSheetVCForPresentation = [MITLibrariesAskUsFormSheetViewController new];
+            break;
+        }
+        case MITLibrariesAskUsOptionConsultation: {
+            formSheetVCForPresentation = [MITLibrariesConsultationFormSheetViewController new];
+            break;
+        }
+        case MITLibrariesAskUsOptionTellUs: {
+            formSheetVCForPresentation = [MITLibrariesTellUsFormSheetViewController new];
+            break;
+        }
+        case MITLibrariesAskUsOptionGeneral: {
+            NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    
+    if (formSheetVCForPresentation) {
+        formSheetVCForPresentation.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(presentedFormSheetViewControllerCancelButtonPressed:)];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:formSheetVCForPresentation];
+        nav.modalPresentationStyle = UIModalPresentationFormSheet;
+        nav.preferredContentSize = MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize;
+        [self presentViewController:nav animated:NO completion:nil];
+    }
+}
+
+- (void)presentedFormSheetViewControllerCancelButtonPressed:(UIBarButtonItem *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

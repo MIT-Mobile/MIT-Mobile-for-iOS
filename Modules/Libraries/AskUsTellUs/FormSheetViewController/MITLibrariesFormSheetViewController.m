@@ -34,7 +34,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setup];
+    [self verifyAuthorization];
 }
 
 #pragma mark - Setup
@@ -44,7 +44,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     [self setupActivityIndicator];
     [self setupTableView];
     [self setupNavigationBar];
-    [self verifyAuthorization];
 }
 
 - (void)setupActivityIndicator
@@ -54,6 +53,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)setupTableView
 {
+    self.tableView.hidden = NO;
     [self registerTableViewCells];
 }
 
@@ -90,13 +90,28 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
             if (error || !success) {
                 NSLog(@"Login Failed w/ Error: %@", error);
-                [self.navigationController popViewControllerAnimated:YES];
+                [self closeFormSheetViewController];
             } else {
-                self.tableView.hidden = NO;
+                [self setup];
             }
         }];
     } else {
-        self.tableView.hidden = NO;
+        [self setup];
+    }
+}
+
+#pragma mark - Closing FormSheet View Controller
+
+- (void)closeFormSheetViewController
+{
+    if (self.navigationController) {
+        if (self.navigationController.presentingViewController) {
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

@@ -31,7 +31,7 @@
         [self hideActivityIndicator];
         if (!error) {
             [self notifyFormSubmissionSuccessWithResponseObject:responseObject];
-            [self.navigationController popViewControllerAnimated:YES];
+            [self closeFormSheetViewController];
         } else {
             [self notifyFormSubmissionError];
         }
