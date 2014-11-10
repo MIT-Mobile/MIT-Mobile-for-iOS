@@ -7,21 +7,23 @@
 #import "MITToursInfoCell.h"
 #import "MITToursAboutMITViewController.h"
 #import "MITToursSelfGuidedTourContainerController.h"
+#import "MITToursLinksDataSourceDelegate.h"
+#import "MITMailComposeController.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITInfoCell = @"MITToursInfoCell";
-static NSString *const kMITLinkCell = @"kMITLinkCell";
 
 typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     MITToursTableViewSectionInfo,
     MITToursTableViewSectionLinks
 };
 
-@interface MITToursHomeViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface MITToursHomeViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, MITToursLinksDataSourceDelegateDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) MITToursTour *selfGuidedTour;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) MITToursLinksDataSourceDelegate *linksDataSourceDelegate;
 
 @end
 
@@ -51,6 +53,9 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 
 - (void)setupTableView
 {
+    self.linksDataSourceDelegate = [[MITToursLinksDataSourceDelegate alloc] init];
+    self.linksDataSourceDelegate.delegate = self;
+    
     UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 110)];
     UIImage *headerImage = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
     UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
@@ -116,7 +121,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
             return 3;
         }
         else if (section == MITToursTableViewSectionLinks) {
-            return 3;
+            return [self.linksDataSourceDelegate tableView:tableView numberOfRowsInSection:section];
         }
     }
     return 0;
@@ -139,29 +144,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
         }
     }
     else if (indexPath.section == MITToursTableViewSectionLinks) {
-        UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLinkCell];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITLinkCell];
-        }
-        
-        switch (indexPath.row) {
-            case 0:
-                cell.textLabel.text = @"Send Feedback";
-                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-                break;
-            case 1:
-                cell.textLabel.text = @"MIT Information Center";
-                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-                break;
-            case 2:
-                cell.textLabel.text = @"MIT Admissions";
-                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-                break;
-                
-            default:
-                break;
-        }
-        return cell;
+        return [self.linksDataSourceDelegate tableView:tableView cellForRowAtIndexPath:indexPath];
     }
     return [UITableViewCell new];
 }
@@ -235,6 +218,20 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
             [self.navigationController pushViewController:tourVC animated:YES];
         }
     }
+    else {
+        [self.linksDataSourceDelegate tableView:tableView didSelectRowAtIndexPath:indexPath];
+    }
+}
+
+- (void)presentMailViewController:(MFMailComposeViewController *)mailViewController
+{
+    mailViewController.mailComposeDelegate = self;
+    [self presentViewController:mailViewController animated:YES completion:NULL];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end
