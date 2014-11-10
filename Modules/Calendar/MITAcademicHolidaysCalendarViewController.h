@@ -2,4 +2,6 @@
 
 @interface MITAcademicHolidaysCalendarViewController : UIViewController
 
+- (void)scrollToDate:(NSDate *)date;
+
 @end

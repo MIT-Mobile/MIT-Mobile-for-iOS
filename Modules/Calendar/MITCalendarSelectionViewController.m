@@ -104,11 +104,11 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
+#pragma mark - TableView Delegate/DataSource Methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (self.mode == kCalendarSelectionModeRoot) {
+    if (self.mode == kCalendarSelectionModeRoot && !self.shouldHideRegistrar) {
         return 2;
     } else {
         return 1;
@@ -117,7 +117,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == kEventsSectionRegistrar && self.mode == kCalendarSelectionModeRoot) {
+    if (section == kEventsSectionRegistrar && self.mode == kCalendarSelectionModeRoot && !self.shouldHideRegistrar) {
         return 2;
     } else {
         return (self.mode == kCalendarSelectionModeRoot) ? [self.masterCalendar.eventsCalendar.categories count] + 1 : [self.category.categories count] + 1;
@@ -126,7 +126,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if (self.mode == kCalendarSelectionModeRoot) {
+    if (self.mode == kCalendarSelectionModeRoot && !self.shouldHideRegistrar) {
         if (section == kEventsSectionRegistrar) {
             return @"REGISTRAR CALENDARS";
         }
@@ -148,7 +148,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     
     cell.accessoryType = UITableViewCellAccessoryNone;
     
-    if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar) {
+    if (self.mode == kCalendarSelectionModeRoot && indexPath.section == kEventsSectionRegistrar && !self.shouldHideRegistrar) {
         if (indexPath.row == kEventsCellRowAcademicHolidays) {
             cell.textLabel.text = self.masterCalendar.academicHolidaysCalendar.name;
             if (self.interfaceIsPad) {
@@ -179,34 +179,13 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     return cell;
 }
 
-- (void)setAccessoryForCell:(UITableViewCell *)cell forCategory:(MITCalendarsCalendar *)category
-{
-    cell.accessoryView = nil;
-    if (category.categories.count > 0) {
-        if ([self pathContainsCategory:category]) {
-            cell.accessoryView = [[MITColoredChevron alloc] initWithFrame:CGRectMake(0, 0, 13, 18)];
-        }
-        else {
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-    }
-    else {
-        if ([category isEqualToCalendar:self.selectedCategory] || [self pathContainsCategory:category]) {
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        }
-        else {
-            cell.accessoryType = UITableViewCellAccessoryNone;
-        }
-    }
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     switch (self.mode) {
         case kCalendarSelectionModeRoot: {
-            if (indexPath.section == kEventsSectionRegistrar) {
+            if (indexPath.section == kEventsSectionRegistrar && !self.shouldHideRegistrar) {
                 [self selectRegistrarCalendarAtIndex:indexPath.row];
             } else {
                 self.selectedCalendar = self.masterCalendar.eventsCalendar;
@@ -239,6 +218,29 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     }
 }
 
+#pragma mark - TableView Helper Methods
+
+- (void)setAccessoryForCell:(UITableViewCell *)cell forCategory:(MITCalendarsCalendar *)category
+{
+    cell.accessoryView = nil;
+    if (category.categories.count > 0) {
+        if ([self pathContainsCategory:category]) {
+            cell.accessoryView = [[MITColoredChevron alloc] initWithFrame:CGRectMake(0, 0, 13, 18)];
+        }
+        else {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
+    }
+    else {
+        if ([category isEqualToCalendar:self.selectedCategory] || [self pathContainsCategory:category]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
+        else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    }
+}
+
 - (void)selectRegistrarCalendarAtIndex:(NSInteger)index
 {
     if (!self.interfaceIsPad) {
@@ -261,18 +263,6 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     }
 }
 
-- (void)showAcademicHolidaysCalendar
-{
-    MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
-    [self.navigationController pushViewController:holidaysVC animated:YES];
-}
-
-- (void)showAcademicCalendar
-{
-    MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
-    [self.navigationController pushViewController:academicVC animated:YES];
-}
-
 - (void)selectCalendarAtIndexPath:(NSIndexPath *)indexPath
 {
     MITCalendarsCalendar *selectedCategory = (self.mode == kCalendarSelectionModeRoot) ? self.masterCalendar.eventsCalendar.categories[indexPath.row - 1] : self.category.categories[indexPath.row - 1];
@@ -284,6 +274,20 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
         [self selectCategory:selectedCategory];
         [self.tableView reloadData];
     }
+}
+
+#pragma mark -
+
+- (void)showAcademicHolidaysCalendar
+{
+    MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
+    [self.navigationController pushViewController:holidaysVC animated:YES];
+}
+
+- (void)showAcademicCalendar
+{
+    MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
+    [self.navigationController pushViewController:academicVC animated:YES];
 }
 
 - (void)selectCategory:(MITCalendarsCalendar *)category
@@ -330,7 +334,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
                                category:(MITCalendarsCalendar *)category
 {
     // This will eventually chain back up to the presenting view controller
-    [self.delegate calendarSelectionViewController:viewController didSelectCalendar:calendar category:category];
+    [self.delegate calendarSelectionViewController:self didSelectCalendar:calendar category:category];
 }
 
 #pragma mark - Selection State Tracking
@@ -354,6 +358,7 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
 
 @end
 
+#pragma mark -
 @implementation MITColoredChevron
 
 - (id)initWithFrame:(CGRect)frame {
