@@ -4,9 +4,6 @@
 #import "MITLibrariesFormSheetElementStatus.h"
 #import "MITLibrariesFormSheetGroupTechnicalHelp.h"
 
-@interface MITLibrariesAskUsFormSheetViewController ()
-@end
-
 @implementation MITLibrariesAskUsFormSheetViewController
 
 #pragma mark - Setup

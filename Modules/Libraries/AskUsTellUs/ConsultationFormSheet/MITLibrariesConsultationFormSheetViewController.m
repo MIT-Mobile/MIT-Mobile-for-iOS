@@ -3,10 +3,6 @@
 #import "MITLibrariesAskUsModel.h"
 #import "MITLibrariesFormSheetElementStatus.h"
 
-@interface MITLibrariesConsultationFormSheetViewController ()
-
-@end
-
 @implementation MITLibrariesConsultationFormSheetViewController
 
 #pragma mark - Setup
