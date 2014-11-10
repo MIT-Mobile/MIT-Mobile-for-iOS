@@ -211,7 +211,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self.navigationController pushViewController:infoVC animated:YES];
 }
 
-
 #pragma mark - Meal Selection View
 
 - (void)updateMealSelection
