@@ -8,6 +8,8 @@ extern NSInteger const kMITLibrariesSearchResultsLimit;
 
 @interface MITLibrariesWebservices : NSObject
 
++ (NSDictionary *)formSheetGroupsAsHTMLParametersDictionary:(NSArray *)formSheetGroups;
+
 + (void)postTellUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion;
 + (void)postAskUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion;
 

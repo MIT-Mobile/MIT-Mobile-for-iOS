@@ -41,8 +41,10 @@
 
 - (void)submitFormForParameters:(NSDictionary *)parameters
 {
+    NSMutableDictionary *paramsToSubmit = [parameters mutableCopy];
+    paramsToSubmit[@"ask_type"] = @"consultation";
     [self showActivityIndicator];
-    [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
+    [MITLibrariesWebservices postAskUsFormForParameters:paramsToSubmit withCompletion:^(id responseObject, NSError *error) {
         [self hideActivityIndicator];
         if (!error) {
             [self notifyFormSubmissionSuccessWithResponseObject:responseObject];
@@ -54,18 +56,8 @@
     }];
 }
 
-#pragma mark - HTML Parameters Assembly
-
-- (NSDictionary *)formAsHTMLParametersDictionary
-{
-    NSMutableDictionary *superForm = [[super formAsHTMLParametersDictionary] mutableCopy];
-    superForm[@"ask_type"] = @"consultation";
-    return superForm;
-}
-
 #pragma mark - Data Assembly
 
-// Backgrounded for topics fetch
 - (void)buildTopFormSheetGroupInBackgroundWithCompletion:(void(^)(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error))completion
 {
     [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {

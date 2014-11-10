@@ -40,8 +40,10 @@
 
 - (void)submitFormForParameters:(NSDictionary *)parameters
 {
+    NSMutableDictionary *paramsToSubmit = [parameters mutableCopy];
+    paramsToSubmit[@"ask_type"] = @"ask_us";
     [self showActivityIndicator];
-    [MITLibrariesWebservices postAskUsFormForParameters:parameters withCompletion:^(id responseObject, NSError *error) {
+    [MITLibrariesWebservices postAskUsFormForParameters:paramsToSubmit withCompletion:^(id responseObject, NSError *error) {
         [self hideActivityIndicator];
         if (!error) {
             [self notifyFormSubmissionSuccessWithResponseObject:responseObject];
@@ -50,15 +52,6 @@
             [self notifyFormSubmissionError];
         }
     }];
-}
-
-#pragma mark - HTML Parameters Assembly
-
-- (NSDictionary *)formAsHTMLParametersDictionary
-{
-    NSMutableDictionary *superForm = [[super formAsHTMLParametersDictionary] mutableCopy];
-    superForm[@"ask_type"] = @"ask_us";
-    return superForm;
 }
 
 #pragma mark - Data Assembly

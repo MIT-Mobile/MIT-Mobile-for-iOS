@@ -3,9 +3,9 @@
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"
 #import "MITLibrariesFormSheetCellMultiLineTextEntry.h"
 #import "MITLibrariesFormSheetCellWebLink.h"
-
 #import "UIKit+MITAdditions.h"
 #import "MITTouchstoneController.h"
+#import "MITLibrariesWebservices.h"
 
 static NSString * const MITLibrariesFormSheetCellIdentifierOptions = @"MITLibrariesFormSheetCellIdentifierOptions";
 static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry = @"MITLibrariesFormSheetCellIdentifierSingleLineTextEntry";
@@ -115,7 +115,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)submitButtonPressed:(UIBarButtonItem *)sender
 {
-    [self submitFormForParameters:[self formAsHTMLParametersDictionary]];
+    [self submitFormForParameters:[MITLibrariesWebservices formSheetGroupsAsHTMLParametersDictionary:self.formSheetGroups]];
 }
 
 #pragma mark - Form Submission
@@ -123,21 +123,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)submitFormForParameters:(NSDictionary *)parameters
 {
     NSLog(@"FORM SHEET VIEW CONTROLLER: Should be implemented by subclass");
-}
-
-- (NSDictionary *)formAsHTMLParametersDictionary
-{
-    NSMutableDictionary *formDict = [NSMutableDictionary dictionary];
-    for (MITLibrariesFormSheetGroup *group in self.formSheetGroups) {
-        for (MITLibrariesFormSheetElement *element in group.elements) {
-            if (element.value && element.htmlParameterKey) {
-                formDict[element.htmlParameterKey] = element.htmlParameterValue;
-            } else if (!element.optional) {
-                NSLog(@"ERROR: Required form sheet element has no value! %@", element.title);
-            }
-        }
-    }
-    return formDict;
 }
 
 #pragma mark - Form Submission Error / Success Notifications
