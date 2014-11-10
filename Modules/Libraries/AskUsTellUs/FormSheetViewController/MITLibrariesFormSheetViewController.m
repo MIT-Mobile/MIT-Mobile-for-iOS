@@ -31,7 +31,8 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 #pragma mark - LifeCycle
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     [self setup];
 }

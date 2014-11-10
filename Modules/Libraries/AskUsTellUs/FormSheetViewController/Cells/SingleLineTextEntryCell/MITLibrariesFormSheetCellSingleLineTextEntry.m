@@ -11,6 +11,7 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.textField.delegate = self;
     [self.textField addTarget:self action:@selector(textFieldTextDidChange:) forControlEvents:UIControlEventEditingChanged];
 }
