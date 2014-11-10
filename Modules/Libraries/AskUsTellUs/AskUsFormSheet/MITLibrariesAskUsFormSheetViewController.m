@@ -1,8 +1,8 @@
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesAskUsModel.h"
-#import "MITLibrariesFormSheetElementStatus.h"
-#import "MITLibrariesFormSheetGroupTechnicalHelp.h"
+#import "MITLibrariesFormSheetElementCustomElementsHeader.h"
+#import "MITLibrariesFormSheetGroupCustomGroupsHeader.h"
 
 @implementation MITLibrariesAskUsFormSheetViewController
 
@@ -18,16 +18,14 @@
 - (void)setupFormSheetGroups
 {
     [self showActivityIndicator];
-    [self buildTopFormSheetGroupInBackgroundWithCompletion:^(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error) {
+    [MITLibrariesFormSheetGroupAskUsTopGroup loadAskUsTopGroupInBackgroundWithCompletion:^(MITLibrariesFormSheetGroupAskUsTopGroup *askUsTopGroup, NSError *error) {
         [self hideActivityIndicator];
         if (!error) {
-            [self hideActivityIndicator];
-            NSMutableArray *formSheetGroups = [NSMutableArray array];
-            [formSheetGroups addObject:formSheetGroup];
-            [formSheetGroups addObject:[self bottomFormSheetGroup]];
-            self.formSheetGroups = formSheetGroups;
+            MITLibrariesFormSheetGroupAskUsBottomGroup *bottomGroup = [MITLibrariesFormSheetGroupAskUsBottomGroup new];
+            self.formSheetGroups = @[askUsTopGroup, bottomGroup];
             [self reloadTableView];
-        } else {
+        }
+        else {
             NSLog(@"Error building top form sheet group: %@", error);
             [self notifyOfTopicsFetchFailure];
         }
@@ -50,63 +48,6 @@
             [self notifyFormSubmissionError];
         }
     }];
-}
-
-#pragma mark - Data Assembly
-
-- (void)buildTopFormSheetGroupInBackgroundWithCompletion:(void(^)(MITLibrariesFormSheetGroup *formSheetGroup, NSError *error))completion
-{
-    [MITLibrariesWebservices getAskUsTopicsWithCompletion:^(MITLibrariesAskUsModel *askUs, NSError *error) {
-        if (!error) {
-            MITLibrariesFormSheetElement *topic = [MITLibrariesFormSheetElement new];
-            topic.type = MITLibrariesFormSheetElementTypeOptions;
-            topic.title = @"Topic";
-            topic.htmlParameterKey = @"topic";
-            topic.availableOptions = askUs.topics;
-            
-            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElement new];
-            subject.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
-            subject.title = @"Subject";
-            subject.htmlParameterKey = @"subject";
-            
-            MITLibrariesFormSheetElement *detailedQuestion = [MITLibrariesFormSheetElement new];
-            detailedQuestion.type = MITLibrariesFormSheetElementTypeMultiLineTextEntry;
-            detailedQuestion.title = @"Detailed question";
-            detailedQuestion.htmlParameterKey = @"question";
-            
-            MITLibrariesFormSheetGroup *topGroup = [MITLibrariesFormSheetGroup new];
-            topGroup.headerTitle = nil;
-            topGroup.footerTitle = nil;
-            topGroup.elements = @[topic, subject, detailedQuestion];
-            
-            completion(topGroup, nil);
-        } else {
-            completion(nil, error);
-        }
-    }];
-}
-
-- (MITLibrariesFormSheetGroup *)bottomFormSheetGroup
-{
-    MITLibrariesFormSheetElementStatus *status = [MITLibrariesFormSheetElementStatus new];
-    
-    MITLibrariesFormSheetElement *department = [MITLibrariesFormSheetElement new];
-    department.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
-    department.title = @"Department, Lab, or Center";
-    department.htmlParameterKey = @"department";
-    
-    MITLibrariesFormSheetElement *phoneNumber = [MITLibrariesFormSheetElement new];
-    phoneNumber.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
-    phoneNumber.title = @"Phone";
-    phoneNumber.htmlParameterKey = @"phone";
-    phoneNumber.optional = YES;
-    
-    MITLibrariesFormSheetGroup *bottomGroup = [MITLibrariesFormSheetGroup new];
-    bottomGroup.headerTitle = @"PERSONAL INFO";
-    bottomGroup.footerTitle = nil;
-    bottomGroup.elements = @[status, department, phoneNumber];
-    
-    return bottomGroup;
 }
 
 #pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
