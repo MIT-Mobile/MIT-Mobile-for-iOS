@@ -1,6 +1,7 @@
 #import <MapKit/MapKit.h>
 
 extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
+extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 
 @protocol MITTiledMapViewButtonDelegate;
 
@@ -17,6 +18,8 @@ extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 - (void)setRightButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 
 - (void)centerMapOnUserLocation;
+
+- (void)showRouteForStops:(NSArray *)stops;
 
 // protected
 - (MKMapView *)createMapView;

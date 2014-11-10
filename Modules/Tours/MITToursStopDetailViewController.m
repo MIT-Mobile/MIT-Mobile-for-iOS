@@ -41,6 +41,7 @@
     
     self.scrollView.delegate = self;
     
+
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
     [self configureForStop:self.stop];
 }

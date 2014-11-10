@@ -1,5 +1,6 @@
 #import "MITToursStopDetailContainerViewController.h"
 #import "MITToursStopDetailViewController.h"
+#import "MITToursStopDirectionsViewController.h"
 
 @interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
@@ -33,9 +34,34 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setupToolbar];
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
     [self configureForStop:self.currentStop];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:NO];
+}
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *directionsButton = [[UIBarButtonItem alloc] initWithTitle:@"Directions" style:UIBarButtonItemStylePlain target:self action:@selector(directionsButtonPressed:)];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    self.toolbarItems = @[flexibleSpace, directionsButton];
+}
+
+- (void)directionsButtonPressed:(id)sender
+{
+    MITToursStopDirectionsViewController *directionsVC = [[MITToursStopDirectionsViewController alloc] init];
+    
+    directionsVC.currentStop = [self mainLoopStopBeforeStop:self.currentStop];
+
+    directionsVC.nextStop = self.currentStop;
+    
+    [self.navigationController pushViewController:directionsVC animated:YES];
 }
 
 - (void)createPageViewController
@@ -218,6 +244,20 @@
 - (NSInteger)indexBeforeIndex:(NSInteger)index
 {
     return (index + self.mainLoopStops.count - 1 ) % self.mainLoopStops.count;
+}
+
+- (MITToursStop *)mainLoopStopAfterStop:(MITToursStop *)stop
+{
+    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    index = [self indexAfterIndex:index];
+    return self.mainLoopStops[index];
+}
+
+- (MITToursStop *)mainLoopStopBeforeStop:(MITToursStop *)stop
+{
+    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    index = [self indexBeforeIndex:index];
+    return self.mainLoopStops[index];
 }
 
 #pragma mark - MITToursStopDetailViewControllerDelegate Methods
