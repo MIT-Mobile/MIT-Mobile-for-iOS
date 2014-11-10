@@ -1,3 +1,5 @@
+#import <MessageUI/MessageUI.h>
+
 #import "PeopleDetailsViewController.h"
 #import "ConnectionDetector.h"
 #import "PeopleFavoriteData.h"
@@ -5,10 +7,8 @@
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
-//#import "MITCampusMapViewController.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -19,7 +19,7 @@ static NSInteger AttributeValueIndex    = 0;
 static NSInteger DisplayNameIndex       = 1;
 static NSInteger AccessoryIconIndex     = 2;
 
-@interface PeopleDetailsViewController ()
+@interface PeopleDetailsViewController () <MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *attributes;
 
@@ -447,13 +447,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         // since it doesn't have its own nav bar
         UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
         
-        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-        {
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
             navController.modalPresentationStyle = UIModalPresentationFormSheet;
         }
         
-        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        [appDelegate presentAppModalViewController:navController animated:YES];
+        [self presentViewController:navController animated:YES completion:nil];
         
         CFRelease(person);
     }
@@ -467,8 +465,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             picker.modalPresentationStyle = UIModalPresentationFormSheet;
         }
         
-        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        [appDelegate presentAppModalViewController:picker animated:YES];
+        [self presentViewController:picker animated:YES completion:nil];
     }
     else if( indexPath.row == 2 )
     {
@@ -481,8 +478,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 #pragma mark Address book new person methods
 - (void)newPersonViewController:(ABNewPersonViewController *)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [newPersonViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Address book person controller methods
@@ -602,10 +598,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     ABAddressBookSave(ab, &error);
 	CFRelease(newPerson);
     CFRelease(ab);
-	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
 
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 	return NO; // don't navigate to built-in view
 }
 
@@ -619,8 +613,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - App-switching actions
@@ -642,7 +635,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void)emailIconTapped:(NSString *)email
 {
-    [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
+    if ([MFMailComposeViewController canSendMail]) {
+        NSParameterAssert(email);
+        
+        MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
+        [composeViewController setToRecipients:@[email]];
+        [self presentViewController:composeViewController animated:YES completion:nil];
+    }
 }
 
 - (void)externalIconTapped:(NSString *)urlString
@@ -650,6 +649,14 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     NSURL *url = [NSURL URLWithString:urlString];
     if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    if ([self.presentedViewController isEqual:controller]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

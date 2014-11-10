@@ -32,9 +32,9 @@
         fadeView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                      UIViewAutoresizingFlexibleHeight);
         fadeView.animationImages = [NSArray arrayWithObjects:
-                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_killian.jpg"]],
-                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_stata.jpg"]],
-                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_great_sail.jpg"]],
+                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursWallpaperKillian]],
+                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursWallpaperStata]],
+                                               [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursWallpaperGreatSail]],
                                                nil];
         fadeView.scrollDistance = 40;
         [mainView addSubview:fadeView];
@@ -213,17 +213,10 @@
             
             if (self.tours) {
                 cell.textLabel.text = @"Begin Self-Guided Tour";
-                //CampusTour *tour = self.tours[indexPath.row];
-                //cell.textLabel.text = tour.title;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                    cell.accessoryType = UITableViewCellAccessoryNone;
-                    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
-                }
             } else if (self.shouldRetry && !self.isLoading) {
                 cell.textLabel.text = @"Retry Loading";
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
-//                cell.accessoryType = UITableViewCellAccessoryNone;
                 cell.accessoryView = nil;
             } else {
                 cell.textLabel.text = @"Loading...";
@@ -236,15 +229,8 @@
         case 1:
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"Introduction to MIT";
-                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                    cell.accessoryType = UITableViewCellAccessoryNone;
-                    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
-                }
             } else {
                 CGRect hairlineFrame = CGRectMake(15, 0, tableView.frame.size.width - 15, 1.0 / [[UIScreen mainScreen] scale]);
-                if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                    hairlineFrame = CGRectMake(10, 0, tableView.frame.size.width - 20, 1.0 / [[UIScreen mainScreen] scale]);
-                }
                 UIView *hairline = [[UIView alloc] initWithFrame:hairlineFrame];
                 hairline.backgroundColor = [UIColor lightGrayColor];
                 hairline.tag = 5235;
@@ -253,7 +239,7 @@
                 // on either side of the cell's view
                 [cell addSubview:hairline];
                 cell.textLabel.text = @"Guided Tours";
-                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external-white.png"]];
+                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternalWhite]];
                 cell.autoresizesSubviews = YES;
             }
             cell.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];

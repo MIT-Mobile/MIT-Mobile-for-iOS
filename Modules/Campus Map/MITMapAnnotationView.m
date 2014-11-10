@@ -29,7 +29,7 @@
         self.canShowCallout = NO;
         self.backgroundColor = [UIColor clearColor];
         self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
+        self.image = [UIImage imageNamed:MITImageMapAnnotationPin];
         self.centerOffset = CGPointMake(0, -(self.image.size.height / 2.0));
         self.calloutOffset = CGPointMake(0, (self.image.size.height / 4.0));
         self.canShowCallout = YES;
@@ -42,9 +42,9 @@
     
     // TODO: separate pin drop from shadow appearing
     if (_animatesDrop) {
-        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
+        self.image = [UIImage imageNamed:MITImageMapAnnotationPin];
     } else {
-        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
+        self.image = [UIImage imageNamed:MITImageMapAnnotationPin];
     }
 }
 

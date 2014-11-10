@@ -31,7 +31,7 @@
 
 - (NSString *)iconName
 {
-    return [NSString stringWithFormat:@"map/map_category_%@", self.identifier];
+    return [NSString stringWithFormat:@"map-category-%@", self.identifier];
 }
 
 - (NSString *)sectionIndexTitle

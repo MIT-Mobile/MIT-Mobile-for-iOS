@@ -82,41 +82,6 @@ NSString * const CampusTourSideTripEntityName = @"CampusTourSideTrip";
 NSString * const TourStartLocationEntityName = @"TourStartLocation";
 NSString * const QRReaderResultEntityName = @"QRReaderResult";
 
-// resource names
-
-NSString * const MITImageNameBackground      = @"global/body-background.png";
-
-NSString * const MITImageNameEmail           = @"global/action-email.png";
-NSString * const MITImageNameEmailHighlight  = @"global/action-email-highlight.png";
-NSString * const MITImageNameMap             = @"global/action-map.png";
-NSString * const MITImageNameMapHighlight    = @"global/action-map-highlight.png";
-NSString * const MITImageNamePeople          = @"global/action-people.png";
-NSString * const MITImageNamePeopleHighlight = @"global/action-people-highlight.png";
-NSString * const MITImageNamePhone           = @"global/action-phone.png";
-NSString * const MITImageNamePhoneHighlight  = @"global/action-phone-highlight.png";
-NSString * const MITImageNameExternal           = @"global/action-external.png";
-NSString * const MITImageNameExternalHighlight  = @"global/action-external-highlight.png";
-NSString * const MITImageNameEmergency          = @"global/action-emergency.png";
-NSString * const MITImageNameEmergencyHighlight = @"global/action-emergency-highlight.png";
-NSString * const MITImageNameSecure           = @"global/action-secure.png";
-NSString * const MITImageNameSecureHighlight  = @"global/action-secure-highlight.png";
-NSString * const MITImageNameCalendar       = @"global/action-calendar";
-NSString * const MITImageNameCalendarHighlight  = @"global/action-calendar-highlight";
-
-NSString * const MITImageNameScrollTabBackgroundOpaque = @"global/scrolltabs-background-opaque.png";
-NSString * const MITImageNameScrollTabBackgroundTranslucent = @"global/scrolltabs-background-transparent.png";
-NSString * const MITImageNameScrollTabLeftEndCap = @"global/scrolltabs-leftarrow.png";
-NSString * const MITImageNameScrollTabRightEndCap = @"global/scrolltabs-rightarrow.png";
-NSString * const MITImageNameScrollTabSelectedTab = @"global/scrolltabs-selected.png";
-
-NSString * const MITImageNameLeftArrow = @"global/arrow-white-left.png";
-NSString * const MITImageNameRightArrow = @"global/arrow-white-right.png";
-NSString * const MITImageNameUpArrow = @"global/arrow-white-up.png";
-NSString * const MITImageNameDownArrow = @"global/arrow-white-down.png";
-
-NSString * const MITImageNameSearch = @"global/search.png";
-NSString * const MITImageNameBookmark = @"global/bookmark.png";
-
 // Info.plist additions
 
 NSString * const MITBuildRevisionKey = @"MITBuildRevision";

@@ -114,17 +114,17 @@ enum {
     
     [self updateTourComponents];
     
-    self.locateUserButton.image = [UIImage imageNamed:@"global/location"];
+    self.locateUserButton.image = [UIImage imageNamed:MITImageBarButtonLocation];
     
     [self showMap:YES];
 }
 
 - (void)dismiss:(id)sender {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)selectionDidComplete {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)orientationChanged:(NSNotification *)notification {
@@ -239,7 +239,7 @@ enum {
     vc.overviewController = self;
     
     UINavigationController *dummyVC = [[MITNavigationController alloc] initWithRootViewController:vc];
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] presentAppModalViewController:dummyVC animated:YES];
+    [self presentViewController:dummyVC animated:YES completion:nil];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -429,7 +429,7 @@ enum {
         legend.userInteractionEnabled = NO;
         legend.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         
-        UIImage *backgroundImage = [UIImage imageNamed:@"tours/map-legend-overlay.png"];
+        UIImage *backgroundImage = [UIImage imageNamed:MITImageToursMapLegendOverlay];
         UIImageView *backgroundView = [[UIImageView alloc] initWithImage:[backgroundImage stretchableImageWithLeftCapWidth:0
                                                                                                                topCapHeight:0]];
         backgroundView.frame = CGRectMake(0, -4, legend.frame.size.width, legend.frame.size.height + 4); // compensate for transparent pixels
@@ -471,13 +471,9 @@ enum {
     UIControl *control = 
     (UIControl *)[self.view viewWithTag:kOverviewSiteScrimControlTag];
     if (!control) {
-        UIImage *scrim = [UIImage imageNamed:@"tours/tour_notsure_scrim_top.png"];
+        UIImage *scrim = [UIImage imageNamed:MITImageToursScrimNotSureTop];
         
         CGRect frame = CGRectMake(0, 64., self.view.frame.size.width, scrim.size.height);
-        
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            frame = CGRectMake(0, 0, self.view.frame.size.width, scrim.size.height);
-        }
         
         control = [[UIControl alloc] initWithFrame:frame];
         control.backgroundColor = [UIColor clearColor];
@@ -512,7 +508,7 @@ enum {
         [control addSubview:anotherLabel];
         [control addTarget:self action:@selector(showStartSuggestions:) forControlEvents:UIControlEventTouchUpInside];
 		
-		UIImageView *chevronView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow.png"]];
+		UIImageView *chevronView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
 		chevronView.center = CGPointMake(control.frame.size.width - 10, (round(control.frame.size.height / 2)-2));
 		chevronView.userInteractionEnabled = NO;
 		[control addSubview:chevronView];
@@ -954,7 +950,7 @@ enum {
             annotationView.calloutOffset = CGPointZero;
             UIImageView *markerView = [self tourDirectionMarkerFromLocation:source
                                                                   toLocation:dest
-                                                                   withImage:[UIImage imageNamed:@"tours/map_starting_arrow"]];
+                                                                   withImage:[UIImage imageNamed:MITImageToursAnnotationArrowStart]];
             [annotationView addSubview:markerView];
             annotationView.frame = CGRectOffset(markerView.bounds,
                                                 -CGRectGetMidX(markerView.frame),
@@ -967,7 +963,7 @@ enum {
                 annotationView.calloutOffset = CGPointZero;
                 UIImageView *markerView = [self tourDirectionMarkerFromLocation:self.sideTrip
                                                                       toLocation:siteAnnotation.site
-                                                                       withImage:[UIImage imageNamed:@"tours/map_ending_arrow"]];
+                                                                       withImage:[UIImage imageNamed:MITImageToursAnnotationArrowEnd]];
                 [annotationView addSubview:markerView];
                 annotationView.frame = CGRectOffset(markerView.bounds,
                                                     -CGRectGetMidX(markerView.frame),
@@ -1030,7 +1026,7 @@ enum {
     UIImageView *sideTripIconView = 
     (UIImageView *)[self.contentView viewWithTag:kOverviewSiteCellSideTripIconTag];
     if (!sideTripIconView) {
-        sideTripIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/side_trip_arrow"]];
+        sideTripIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursSideTripArrow]];
         sideTripIconView.tag = kOverviewSiteCellSideTripIconTag;
         
         CGRect iconFrame = sideTripIconView.frame;

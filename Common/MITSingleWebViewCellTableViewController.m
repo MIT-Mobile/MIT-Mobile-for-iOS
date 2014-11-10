@@ -38,9 +38,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-//    self.tableView.opaque = YES;
     self.tableView.backgroundView = nil;
-//    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     
     // Prevent excess cells from appearing.
     self.tableView.tableFooterView = [UIView new];

@@ -646,13 +646,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 
     if (state == MITShuttleStopStateDefault) {
-        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot"];
+        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
     } else if (state == MITShuttleStopStateNext) {
-        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next"];
+        return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
     } else if (state == MITShuttleStopStateSelected) {
-        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-selected"] ;
+        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
     } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-        return [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next-selected"];
+        return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
     }
     return nil;
 }

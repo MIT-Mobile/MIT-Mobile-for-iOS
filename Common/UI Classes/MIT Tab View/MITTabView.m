@@ -59,13 +59,13 @@ static CGFloat kHeaderDefaultHeight = 5.0;
       forControlEvents:UIControlEventValueChanged];
 
         if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            UIImage *normalImage = [[UIImage imageNamed:@"global/tab2-unselected"] stretchableImageWithLeftCapWidth:10
+            UIImage *normalImage = [[UIImage imageNamed:MITImageTabViewInactive] stretchableImageWithLeftCapWidth:10
                                                                                                        topCapHeight:10];
-            UIImage *selectedImage = [[UIImage imageNamed:@"global/tab2-selected"] stretchableImageWithLeftCapWidth:10
+            UIImage *selectedImage = [[UIImage imageNamed:MITImageTabViewActive] stretchableImageWithLeftCapWidth:10
                                                                                                        topCapHeight:10];
-            UIImage *highlightImage = [[UIImage imageNamed:@"global/tab2-unselected-pressed"] stretchableImageWithLeftCapWidth:10
+            UIImage *highlightImage = [[UIImage imageNamed:MITImageTabViewInactiveHighlighted] stretchableImageWithLeftCapWidth:10
                                                                                                                   topCapHeight:10];
-            UIImage *nnDividerImage = [[UIImage imageNamed:@"global/tab2-divider"] stretchableImageWithLeftCapWidth:0 topCapHeight:10];
+            UIImage *nnDividerImage = [[UIImage imageNamed:MITImageTabViewDivider] stretchableImageWithLeftCapWidth:0 topCapHeight:10];
             
             [control setBackgroundImage:normalImage forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
             [control setBackgroundImage:highlightImage forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];

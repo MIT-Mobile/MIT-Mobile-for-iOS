@@ -26,13 +26,13 @@
 
 - (void)setNoPredictions:(MITShuttleRoute *)route
 {
-    self.leftImageView.image = nil;
+    self.leftImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
     self.mainLabel.text = route.routeDescription;
 }
 
 - (void)setNotInService:(MITShuttleRoute *)route
 {
-    self.leftImageView.image = [UIImage imageNamed:@"shuttle/shuttle-off"];
+    self.leftImageView.image = [UIImage imageNamed:MITImageShuttlesRouteNotInService];
     self.mainLabel.text = route.routeDescription;
 }
 

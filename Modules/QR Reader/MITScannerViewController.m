@@ -126,7 +126,7 @@
         [scannerView addSubview:readerView];
         self.readerView = readerView;
     } else {
-        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]];
+        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageScannerCameraUnsupported]];
         unsupportedView.contentMode = UIViewContentModeCenter;
         [scannerView addSubview:unsupportedView];
         self.cameraUnavailableView = unsupportedView;
@@ -416,7 +416,7 @@
         
         cell.imageView.frame = imageFrame;
         cell.imageView.contentMode = UIViewContentModeScaleToFill;
-        cell.imageView.image = [UIImage imageNamed:@"news/news-placeholder.png"];
+        cell.imageView.image = [UIImage imageNamed:MITImageNewsImagePlaceholder];
         cell.imageView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
         

@@ -262,7 +262,7 @@
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
                 options = safeAnnotation.markerOptions;
             } else {
-                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:MITImageMapAnnotationPin];
                 options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
             }
             

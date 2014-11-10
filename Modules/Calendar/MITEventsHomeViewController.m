@@ -71,7 +71,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.title = @"Events";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search_magnifier.png"] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonSearchMagnifier] style:UIBarButtonItemStylePlain target:self action:@selector(searchButtonPressed)];
     
     self.currentlyDisplayedDate = [[NSDate date] startOfDay];
     [self updateDatesArray];

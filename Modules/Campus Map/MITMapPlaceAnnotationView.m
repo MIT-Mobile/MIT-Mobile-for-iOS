@@ -12,7 +12,7 @@
 {
     self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.image = [UIImage imageNamed:@"map/map_place_pin"];
+        self.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
         self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
@@ -41,7 +41,7 @@
 - (void)setupDisclosureButton
 {
     UIButton *disclosureButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [disclosureButton setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"] forState:UIControlStateNormal];
+    [disclosureButton setImage:[UIImage imageNamed:MITImageDisclosureRight] forState:UIControlStateNormal];
     self.rightCalloutAccessoryView = disclosureButton;
 }
 

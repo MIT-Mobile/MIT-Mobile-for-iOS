@@ -35,7 +35,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
                           forState:UIControlStateDisabled];
         renewButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
 
-        UIImage *buttonBackground = [[UIImage imageNamed:@"global/tab2-summary-button"] stretchableImageWithLeftCapWidth:5 topCapHeight:5];
+        UIImage *buttonBackground = [[UIImage imageNamed:MITImageTabViewSummaryButton] stretchableImageWithLeftCapWidth:5 topCapHeight:5];
         [renewButton setBackgroundImage:buttonBackground forState:UIControlStateNormal];
         renewButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 3.0, 0.0, -3.0);
 

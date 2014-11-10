@@ -1,78 +1,54 @@
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-#import "MITUnreadNotifications.h"
-
-@class MIT_MobileAppDelegate;
+@class MITModuleItem;
 
 @interface MITModule : NSObject
-@property (nonatomic,readonly,weak) UIViewController *homeViewController;
+@property(nonatomic,readonly,copy) NSString *name;
+@property(nonatomic,readonly,copy) NSString *title;
+@property(nonatomic,copy) NSString *longTitle;
 
-@property (nonatomic, copy) NSString *tag;
-@property (nonatomic, copy) NSString *shortName;
-@property (nonatomic, copy) NSString *longName;
-@property (nonatomic,readonly) UIImage *springboardIcon;
+@property(nonatomic,strong) UIImage *image;
+@property(nonatomic,copy) NSString *imageName;
 
-@property (nonatomic, assign) BOOL pushNotificationEnabled;
-@property (nonatomic, assign) BOOL pushNotificationSupported;
+@property(nonatomic,strong) IBOutlet UIViewController *viewController;
 
+- (instancetype)initWithName:(NSString*)name title:(NSString*)title;
 
-@property (nonatomic,readonly) BOOL isLoaded DEPRECATED_ATTRIBUTE;
-
-@property (nonatomic, strong) UIViewController *moduleHomeController DEPRECATED_ATTRIBUTE;
-@property (nonatomic, copy) NSString *iconName DEPRECATED_ATTRIBUTE;
-
-@property (nonatomic, retain) NSString *badgeValue DEPRECATED_ATTRIBUTE;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
-
-@property (nonatomic) BOOL hasLaunchedBegun DEPRECATED_ATTRIBUTE;
-@property (nonatomic, retain) NSString *currentPath DEPRECATED_ATTRIBUTE;
-@property (nonatomic, retain) NSString *currentQuery DEPRECATED_ATTRIBUTE;
-
-#pragma mark Required methods (must override in subclass)
-- (instancetype)initWithTag:(NSString*)tag;
-
-#pragma mark iDevice support
-/** Indicates support for a specific user interface idiom.
- *  Returns 'NO' by default.
- *
- *  In order to support existing modules, if the module subclass
- *  responds to loadModuleHomeController and the current interface idiom is
- *  equal to UIUserInterfaceIdiomPhone, then this method will return YES.
- *  This behavior should be considered deprecated.
- *
- * @return YES if the passes idiom is supported.
- * @see UIUserInterfaceIdiom
+/*! Returns YES if the current user interface idiom is supported.
  */
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
+- (BOOL)supportsCurrentUserInterfaceIdiom;
 
-- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom;
-
-/** Create an iPad compatible home view controller for the module.
+/*! Returns YES if the view controller has been loaded.
+ * Calling this method does not invoke the autoloading.
  */
-- (UIViewController*)createHomeViewControllerForPadIdiom;
+- (BOOL)isViewControllerLoaded;
 
-
-/** Create an iPad compatible home view controller for the module.
- *
- *  In order to support existing modules, if the module subclass
- *  responds to loadModuleHomeController, it and the other moduleHomeController
- *  methods will be used to create and manage the view controller.
- *  This behavior should be considered deprecated.
- *
- * @related homeViewControllerForUserInterfaceIdiom:
- * @see createHomeViewControllerForPadIdiom
+/*! Creates the primary module's view controller.
+ *  This method should never be called directly. This method will be called
+ *  by the module when the primary view controller is requested but is currently
+ *  set to nil. This method creates or loads a UIViewController and assigns it
+ *  to the view controller property. By default, a UIViewController with an
+ *  empty UIView will be created.
  */
-- (UIViewController*)createHomeViewControllerForPhoneIdiom;
+- (void)loadViewController;
 
-#pragma mark Optional methods
-- (void)applicationDidFinishLaunching DEPRECATED_ATTRIBUTE; // Called after all modules are initialized and have added their tabNavController to the tab bar
-- (void)applicationWillTerminate DEPRECATED_ATTRIBUTE; // Called before app quits. Last chance to save state.
-- (void)applicationDidEnterBackground DEPRECATED_ATTRIBUTE;
-- (void)applicationWillEnterForeground DEPRECATED_ATTRIBUTE;
+/*! Called after the viewController is loaded.
+ *  This method should never be called directly.
+ */
+- (void)viewControllerDidLoad;
 
-- (void)didAppear DEPRECATED_ATTRIBUTE;
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query DEPRECATED_ATTRIBUTE;
-- (void)resetURL DEPRECATED_ATTRIBUTE; // reset the URL, (i.e. path and query to empty strings)
+/*! Called when the module receives a notification.
+ *  The module may not be visible or be made active after 
+ *  this method is called. Subclasses should call the
+ *  super implementation.
+ */
+- (void)didReceiveNotification:(NSDictionary*)userInfo;
 
-- (BOOL)handleNotification:(MITNotification *)notification shouldOpen:(BOOL)shouldOpen; // Called when a push notification arrives
-- (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
+/*! Called when the module receives a URL request.
+ *  The module may not be visible or be made active after
+ *  this method is called. Subclasses should call the
+ *  super implementation.
+ */
+- (void)didReceiveRequestWithURL:(NSURL*)url;
 @end

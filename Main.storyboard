@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="NQ3-MW-P2V">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <scenes>
+        <!--Root View Controller-->
+        <scene sceneID="Zcy-y5-WMa">
+            <objects>
+                <viewController storyboardIdentifier="RootViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NQ3-MW-P2V" userLabel="Root View Controller" customClass="MITSlidingViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="OoY-LT-cGM"/>
+                        <viewControllerLayoutGuide type="bottom" id="fC8-ML-kob"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="LLS-BU-w7e">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="slidingViewControllerStoryboardId" value="SlidingViewController"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dTh-v6-a2D" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="61" y="347"/>
+        </scene>
+        <!--Sliding View Controller-->
+        <scene sceneID="90N-Vr-VVF">
+            <objects>
+                <viewController storyboardIdentifier="SlidingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="VSF-i2-F9v" customClass="ECSlidingViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7qd-f2-T7a"/>
+                        <viewControllerLayoutGuide type="bottom" id="sjx-Wx-oXu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="pEN-BS-Xjf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.84313725490196079" green="0.85490196078431369" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" red="0.63921568627450975" green="0.12156862745098039" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="underLeftViewControllerStoryboardId" value="UnderLeftTableViewController"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="topViewControllerStoryboardId" value="EmptyTopViewController"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ocN-Bb-a0i" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="347"/>
+        </scene>
+        <!--Drawer View Controller-->
+        <scene sceneID="FfA-Nh-0fp">
+            <objects>
+                <viewController storyboardIdentifier="UnderLeftTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Gno-Gy-Qfl" customClass="MITDrawerViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="C4C-1f-Nig"/>
+                        <viewControllerLayoutGuide type="bottom" id="cW3-k6-Ycr"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="eTz-6P-ORC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PGF-OG-hTZ">
+                                <rect key="frame" x="0.0" y="83" width="320" height="397"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="28" reuseIdentifier="DrawerItemCellReuseIdentifier" textLabel="OXW-jM-6Ec" style="IBUITableViewCellStyleDefault" id="faF-RV-gs1">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="faF-RV-gs1" id="7sI-dV-o0O">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXW-jM-6Ec">
+                                                    <rect key="frame" x="15" y="0.0" width="290" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="Gno-Gy-Qfl" id="NFJ-KP-AJS"/>
+                                    <outlet property="delegate" destination="Gno-Gy-Qfl" id="kLM-Yt-u6A"/>
+                                </connections>
+                            </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L2p-My-RBr" userLabel="Logo Container">
+                                <rect key="frame" x="0.0" y="20" width="320" height="55"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mit-logo" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-H9-lcz">
+                                        <rect key="frame" x="20" y="20" width="66" height="35"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="cj9-H9-lcz" secondAttribute="height" multiplier="126:66" id="kcd-sB-FVy"/>
+                                            <constraint firstAttribute="width" constant="66" id="qkz-5q-cY3"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="leading" secondItem="L2p-My-RBr" secondAttribute="leading" constant="20" id="1Oy-K2-Neg"/>
+                                    <constraint firstItem="cj9-H9-lcz" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="top" constant="20" id="7ne-LI-Y05"/>
+                                    <constraint firstAttribute="bottom" secondItem="cj9-H9-lcz" secondAttribute="bottom" id="ZwT-83-zi9"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="L2p-My-RBr" firstAttribute="top" secondItem="C4C-1f-Nig" secondAttribute="bottom" id="22t-Pk-2Kf"/>
+                            <constraint firstItem="L2p-My-RBr" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="7WY-sb-LVy"/>
+                            <constraint firstItem="cW3-k6-Ycr" firstAttribute="top" secondItem="PGF-OG-hTZ" secondAttribute="bottom" id="FYw-oo-EFP"/>
+                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="leading" secondItem="eTz-6P-ORC" secondAttribute="leading" id="Hzw-bg-a60"/>
+                            <constraint firstAttribute="trailing" secondItem="PGF-OG-hTZ" secondAttribute="trailing" id="TBF-aY-IaH"/>
+                            <constraint firstItem="PGF-OG-hTZ" firstAttribute="top" secondItem="L2p-My-RBr" secondAttribute="bottom" constant="8" symbolic="YES" id="fev-Vu-SZ4"/>
+                            <constraint firstAttribute="trailing" secondItem="L2p-My-RBr" secondAttribute="trailing" id="je7-T9-py6"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="logoContainer" destination="L2p-My-RBr" id="7Hb-ZH-yKA"/>
+                        <outlet property="logoView" destination="cj9-H9-lcz" id="oRO-aN-jlI"/>
+                        <outlet property="tableView" destination="PGF-OG-hTZ" id="6rB-j1-ena"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jOj-io-mdT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="990"/>
+        </scene>
+        <!--Default Top View Controller-->
+        <scene sceneID="yCb-yi-SR7">
+            <objects>
+                <viewController storyboardIdentifier="EmptyTopViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="70A-yj-Cra" userLabel="Default Top View Controller" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Inw-6g-JwS"/>
+                        <viewControllerLayoutGuide type="bottom" id="T5E-3d-tip"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8Ct-3j-So2">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <attributedString key="userComments">
+                        <fragment content="Contains no content. Used as a placeholder for ECSlidingViewController.">
+                            <attributes>
+                                <font key="NSFont" metaFont="smallSystem"/>
+                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                            </attributes>
+                        </fragment>
+                    </attributedString>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yaZ-D7-Hx9" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="436" y="-300"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="mit-logo" width="104" height="54"/>
+    </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+    <color key="tintColor" red="0.63921568630000003" green="0.1215686275" blue="0.20392156859999999" alpha="1" colorSpace="calibratedRGB"/>
+</document>

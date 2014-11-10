@@ -8,6 +8,7 @@
 #import "MITDiningVenues.h"
 #import "MITAdditions.h"
 #import "MITCoreData.h"
+#import "MITSlidingViewController.h"
 
 @interface MITDiningHomeViewController () <NSFetchedResultsControllerDelegate, MITDiningRefreshRequestDelegate>
 
@@ -64,8 +65,7 @@
 {
     self.edgesForExtendedLayout = UIRectEdgeNone;
 
-    self.menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
-    [self.navigationItem setLeftBarButtonItem:self.menuBarButton];
+    [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
     
     self.mapBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(mapButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.mapBarButton];
@@ -197,12 +197,6 @@
 }
 
 #pragma mark - Navbar Button Actions
-
-- (void)menuButtonPressed
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)mapButtonPressed
 {
     if (self.mapViewController.view.hidden) {

@@ -18,7 +18,7 @@
 }
 
 - (void)cancelButtonTapped:(id)sender {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - View lifecycle
@@ -49,8 +49,10 @@
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.delegate = self;
     
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"tours/suggested.html" relativeToURL:baseURL];
+    NSString *templatePath = [[NSBundle mainBundle] pathForResource:@"suggested" ofType:@"html" inDirectory:@"tours"];
+    NSAssert(templatePath,@"failed to locate resource 'tours/suggested.html'");
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:templatePath isDirectory:NO];
     
     NSError *error = nil;
     NSMutableString *htmlString = [[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
@@ -127,6 +129,8 @@
     [htmlString replaceOccurrencesOfString:@"__ITEMS__" withString:items options:NSLiteralSearch range:NSMakeRange(0, [htmlString length])];
     
     [self.view addSubview:self.webView];
+
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];
 }
 
@@ -144,7 +148,7 @@
 
     if (location) {
         [self.overviewController selectAnnotationForSite:location.startSite];
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
     
     return YES;

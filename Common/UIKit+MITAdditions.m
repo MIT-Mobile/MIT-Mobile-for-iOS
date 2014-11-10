@@ -176,8 +176,8 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
             highlightedImageName = MITImageNamePhoneHighlight;
             break;
         case MITAccessoryViewExternal:
-            imageName = MITImageNameExternal;
-            highlightedImageName = MITImageNameExternalHighlight;
+            imageName = MITImageActionExternal;
+            highlightedImageName = MITImageActionExternalHighlight;
             break;
 		case MITAccessoryViewEmergency:
 			imageName = MITImageNameEmergency;
@@ -405,13 +405,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 	return labelContainer;
 }
 
-@end
-
-@implementation UIActionSheet (MITUIAdditions)
-- (void)showFromAppDelegate {
-    MIT_MobileAppDelegate *appDelegate = MITAppDelegate();
-    [self showInView:appDelegate.rootNavigationController.view];
-}
 @end
 
 

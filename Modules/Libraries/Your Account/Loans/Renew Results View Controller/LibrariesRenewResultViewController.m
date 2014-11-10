@@ -123,12 +123,12 @@
     };
     
     if (successCount) {
-        addIconAndLabel([UIImage imageNamed:@"libraries/status-ok"], 
+        addIconAndLabel([UIImage imageNamed:MITImageLibrariesStatusOK],
                         [NSString stringWithFormat:@"%lu renewed successfully!", (unsigned long)successCount]);
     }
     
     if (failureCount) {
-        addIconAndLabel([UIImage imageNamed:@"libraries/status-error"], 
+        addIconAndLabel([UIImage imageNamed:MITImageLibrariesStatusError],
                         [NSString stringWithFormat:@"%lu could not be renewed.", (unsigned long)failureCount]);
     }
     

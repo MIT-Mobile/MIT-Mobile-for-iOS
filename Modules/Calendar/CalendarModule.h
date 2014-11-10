@@ -1,10 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@class CalendarEventsViewController;
-
-@interface CalendarModule : MITModule
-@property (nonatomic, readonly) CalendarEventsViewController *calendarVC;
+@interface CalendarModule : MITNavigationModule
+- (instancetype)init;
 
 @end
 
