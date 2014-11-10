@@ -622,12 +622,24 @@ static NSString* const MITMobileButtonTitleView = @"View";
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
 {
-    [self.rootViewController presentViewController:viewController animated:YES completion:nil];
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+    if (presented) {
+        [presented presentViewController:viewController animated:YES completion:nil];
+    } else {
+        [rootViewController presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 - (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
 {
-    [self.rootViewController dismissViewControllerAnimated:YES completion:completion];
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+    if (presented) {
+        [presented dismissViewControllerAnimated:NO completion:nil];
+    } else {
+        [rootViewController dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 #pragma mark UIAlertViewDelegate

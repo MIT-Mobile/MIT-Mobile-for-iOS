@@ -194,7 +194,9 @@ static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MI
 
 - (NSArray *)availableAskUsOptions {
     if (!_availableAskUsOptions) {
-        _availableAskUsOptions = @[@[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation)], @[@(MITLibrariesAskUsOptionGeneral)]];
+        NSArray *topGroup = @[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation)];
+        NSArray *bottomGroup = @[@(MITLibrariesAskUsOptionGeneral)];
+        _availableAskUsOptions = @[topGroup, bottomGroup];
     }
     return _availableAskUsOptions;
 }

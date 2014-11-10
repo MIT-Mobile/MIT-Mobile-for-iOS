@@ -9,6 +9,9 @@
 #import "MITLibrariesSearchResultsContainerViewControllerPad.h"
 #import "UIKit+MITAdditions.h"
 #import "MITLibrariesAskUsHomeViewController.h"
+#import "MITLibrariesAskUsFormSheetViewController.h"
+#import "MITLibrariesConsultationFormSheetViewController.h"
+#import "MITLibrariesTellUsFormSheetViewController.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeAccount,
@@ -333,9 +336,17 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 - (void)librariesAskUsHomeViewController:(MITLibrariesAskUsHomeViewController *)askUsHomeViewController didSelectAskUsOption:(MITLibrariesAskUsOption)selectedOption
 {
+    [self.askUsHomePopoverController dismissPopoverAnimated:YES];
     switch (selectedOption) {
         case MITLibrariesAskUsOptionAskUs: {
             //
+            MITLibrariesAskUsFormSheetViewController *askUsFormSheetVC = [MITLibrariesAskUsFormSheetViewController new];
+            askUsFormSheetVC.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:nil action:nil];
+            askUsFormSheetVC.preferredContentSize = CGSizeMake(480, 400);
+            UINavigationController *askUsNav = [[UINavigationController alloc] initWithRootViewController:askUsFormSheetVC];
+            askUsNav.modalPresentationStyle = UIModalPresentationFormSheet;
+            askUsNav.preferredContentSize = CGSizeMake(480, 400);
+            [self presentViewController:askUsNav animated:NO completion:nil];
         }
         case MITLibrariesAskUsOptionConsultation: {
             //
