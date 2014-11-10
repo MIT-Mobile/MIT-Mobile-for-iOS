@@ -166,7 +166,7 @@ typedef NS_ENUM(NSInteger, AskUsOption) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static MITLibrariesAskUsHomeTableViewCell *cell;
-    cell = [MITLibrariesAskUsHomeTableViewCell new];
+    if (!cell) cell = [MITLibrariesAskUsHomeTableViewCell new];
     cell.textLabel.text = [self titleTextForIndexPath:indexPath];
     CGSize maxSize = CGSizeMake(CGRectGetWidth(tableView.bounds), CGFLOAT_MAX);
     CGSize titleSize = [cell.textLabel sizeThatFits:maxSize];
