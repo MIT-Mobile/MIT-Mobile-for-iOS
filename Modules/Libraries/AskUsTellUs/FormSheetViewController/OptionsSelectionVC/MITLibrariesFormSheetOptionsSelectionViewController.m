@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetOptionsSelectionViewController.h"
 #import "MITLibrariesFormSheetElement.h"
 #import "MITLibrariesFormSheetElementAvailableOption.h"

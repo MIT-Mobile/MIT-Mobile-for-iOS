@@ -1,4 +1,3 @@
-
 #import "MITLibrariesFormSheetCellSingleLineTextEntry.h"
 #import "MITLibrariesFormSheetElement.h"
 

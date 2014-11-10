@@ -113,7 +113,7 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 - (NSSet *)acceptableContentTypes
 {
     /*
-     Necessary to override acceptable content types because in 'RKHTTPRequestOperation' line 101 in the method - (NSError *)error {...} it sets an error if MITECPMIMEType isn't declared as an acceptable type causing the operation to not run again after log in.  By adding this, no error is registered, the faulty mime type is handled in 'connectionDidFinishLoading' and resuming the operation functions as expected.
+     Necessary to handle error between restKit and touchstone operations.
      */
     NSMutableSet *acceptableContentTypes = [[super acceptableContentTypes] mutableCopy];
     [acceptableContentTypes addObject:MITECPMIMEType];
