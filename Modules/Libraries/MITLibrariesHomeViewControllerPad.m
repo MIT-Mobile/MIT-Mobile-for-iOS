@@ -18,6 +18,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeSearch
 };
 
+static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize = {480,400};
+
 @interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
@@ -337,22 +339,20 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 - (void)librariesAskUsHomeViewController:(MITLibrariesAskUsHomeViewController *)askUsHomeViewController didSelectAskUsOption:(MITLibrariesAskUsOption)selectedOption
 {
     [self.askUsHomePopoverController dismissPopoverAnimated:YES];
+    
+    UIViewController *formSheetVCForPresentation;
     switch (selectedOption) {
         case MITLibrariesAskUsOptionAskUs: {
-            //
-            MITLibrariesAskUsFormSheetViewController *askUsFormSheetVC = [MITLibrariesAskUsFormSheetViewController new];
-            askUsFormSheetVC.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:nil action:nil];
-            askUsFormSheetVC.preferredContentSize = CGSizeMake(480, 400);
-            UINavigationController *askUsNav = [[UINavigationController alloc] initWithRootViewController:askUsFormSheetVC];
-            askUsNav.modalPresentationStyle = UIModalPresentationFormSheet;
-            askUsNav.preferredContentSize = CGSizeMake(480, 400);
-            [self presentViewController:askUsNav animated:NO completion:nil];
+            formSheetVCForPresentation = [MITLibrariesAskUsFormSheetViewController new];
+            break;
         }
         case MITLibrariesAskUsOptionConsultation: {
-            //
+            formSheetVCForPresentation = [MITLibrariesConsultationFormSheetViewController new];
+            break;
         }
         case MITLibrariesAskUsOptionTellUs: {
-            //
+            formSheetVCForPresentation = [MITLibrariesTellUsFormSheetViewController new];
+            break;
         }
         case MITLibrariesAskUsOptionGeneral: {
             NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
@@ -364,6 +364,19 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
         default:
             break;
     }
+    
+    if (formSheetVCForPresentation) {
+        formSheetVCForPresentation.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(presentedFormSheetViewControllerCancelButtonPressed:)];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:formSheetVCForPresentation];
+        nav.modalPresentationStyle = UIModalPresentationFormSheet;
+        nav.preferredContentSize = MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize;
+        [self presentViewController:nav animated:NO completion:nil];
+    }
+}
+
+- (void)presentedFormSheetViewControllerCancelButtonPressed:(UIBarButtonItem *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -13,6 +13,6 @@ typedef NS_ENUM(NSInteger, MITLibrariesAskUsOption) {
 @end
 
 @interface MITLibrariesAskUsHomeViewController : UIViewController
-@property (nonatomic, strong) NSArray *availableAskUsOptions; // [[MITLibrariesAskUsOption]] ie: @[@[@(MITLibrariesAskUsOptionAskUs),@(MITLibrariesAskUsOptionConsultation)], @[@(MITLibrariesAskUsOptionTellUs)]]
-@property (weak, nonatomic) id<MITLibrariesAskUsHomeViewControllerDelegate> delegate; // Used to override option selection from opening in navigationController
+@property (nonatomic, strong) NSArray *availableAskUsOptions; // [[MITLibrariesAskUsOption]]
+@property (weak, nonatomic) id<MITLibrariesAskUsHomeViewControllerDelegate> delegate;
 @end
