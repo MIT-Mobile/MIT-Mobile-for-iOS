@@ -4,6 +4,7 @@
 #import "MITToursWebservices.h"
 #import "MITToursTour.h"
 #import "MITToursAboutMITViewController.h"
+#import "MITToursLinksTableViewController.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCell";
@@ -13,10 +14,11 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 @property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
 @property (nonatomic, strong) MITToursTour *selfGuidedTour;
+
+@property (nonatomic, strong) UIPopoverController *linksPopover;
 
 @end
 
@@ -28,6 +30,7 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 
     self.coverImageView.image = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
     
+    [self setupNavBar];
     [self setupTableView];
     [self setupCollectionView];
     
@@ -43,6 +46,12 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
         }
     }];
 
+}
+
+- (void)setupNavBar
+{
+    UIBarButtonItem *linksButton = [[UIBarButtonItem alloc] initWithTitle:@"Links" style:UIBarButtonItemStylePlain target:self action:@selector(linksButtonPressed:)];
+    self.navigationItem.rightBarButtonItem = linksButton;
 }
 
 - (void)setupTableView
@@ -182,6 +191,23 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     if (buttonIndex == 1) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[MITToursWebservices aboutMITURLString]]];
     }
+}
+
+- (void)linksButtonPressed:(id)sender
+{
+    [self.linksPopover presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+- (UIPopoverController *)linksPopover
+{
+    if (!_linksPopover) {
+        MITToursLinksTableViewController *linksVC = [[MITToursLinksTableViewController alloc] init];
+        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:linksVC];
+        _linksPopover = [[UIPopoverController alloc] initWithContentViewController:navVC];
+        [_linksPopover setPopoverContentSize:CGSizeMake(320, 132 + navVC.navigationBar.frame.size.height)];
+
+    }
+    return _linksPopover;
 }
 
 @end
