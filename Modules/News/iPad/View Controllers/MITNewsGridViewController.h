@@ -26,6 +26,7 @@
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
+- (void)updateLoadingMoreCellString;
 
 #pragma mark Subclass methods
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
@@ -34,6 +35,7 @@
 
 @property (nonatomic) BOOL showSingleCategory;
 @property (nonatomic, strong) NSString *errorMessage;
+@property (nonatomic, strong) NSError *error;
 @property (nonatomic) BOOL storyUpdateInProgress;
 
 @end

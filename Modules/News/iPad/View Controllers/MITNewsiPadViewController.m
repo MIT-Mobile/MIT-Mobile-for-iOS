@@ -650,6 +650,10 @@ CGFloat const refreshControlTextHeight = 19;
                                          [strongSelf updateLoadingCell];
                                          dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
                                          dispatch_after(popTime, dispatch_get_main_queue(), ^{
+                                             if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+                                                 self.gridViewController.errorMessage = nil;
+                                                 self.gridViewController.error = nil;
+                                             }
                                              [strongSelf updateLoadingCell];
                                          });
                                      } else {
@@ -675,6 +679,8 @@ CGFloat const refreshControlTextHeight = 19;
     }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.errorMessage = message;
+        self.gridViewController.error = error;
+        [self.gridViewController updateLoadingMoreCellString];
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.errorMessage = message;
     }
@@ -684,6 +690,7 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyUpdateInProgress = progress;
+        [self.gridViewController updateLoadingMoreCellString];
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.storyUpdateInProgress = progress;
     }
@@ -698,7 +705,11 @@ CGFloat const refreshControlTextHeight = 19;
         dataSource = self.dataSources[0];
     }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]]];
+        if (self.gridViewController.errorMessage) {
+            [self storyUpdateDidFinishWithError:self.gridViewController.error];
+        } else {
+            [self setNewsStoryUpdateInProgress:self.gridViewController.storyUpdateInProgress];
+        }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
