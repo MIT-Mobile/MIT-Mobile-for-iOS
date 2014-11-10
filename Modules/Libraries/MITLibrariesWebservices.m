@@ -6,6 +6,8 @@
 #import "MITLibrariesWorldcatItem.h"
 #import "MITLibrariesUser.h"
 #import "MITLibrariesAskUsModel.h"
+#import "MITLibrariesFormSheetGroup.h"
+#import "MITLibrariesFormSheetElement.h"
 
 NSInteger const kMITLibrariesSearchResultsLimit = 20;
 
@@ -29,9 +31,60 @@ static NSString *const kMITLibraryWebservicesSearchResponseTotalResultsKey = @"t
 
 static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRecentSearchResultsKey";
 
+static NSString * const kMITLibraryWebservicesFormsKey = @"forms";
+static NSString * const kMITLibraryWebservicesAskUsKey = @"askUs";
+static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
+
 @implementation MITLibrariesWebservices
 
 #pragma mark - Libraries Webservice Calls
+
++ (NSDictionary *)formSheetGroupsAsHTMLParametersDictionary:(NSArray *)formSheetGroups
+{
+    NSMutableDictionary *formDict = [NSMutableDictionary dictionary];
+    for (MITLibrariesFormSheetGroup *group in formSheetGroups) {
+        for (MITLibrariesFormSheetElement *element in group.elements) {
+            if (element.value && element.htmlParameterKey) {
+                formDict[element.htmlParameterKey] = element.htmlParameterValue;
+            } else if (!element.optional) {
+                NSLog(@"ERROR: Required form sheet element has no value! %@", element.title);
+            }
+        }
+    }
+    return formDict;
+}
+
++ (void)postTellUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion
+{
+    NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibraryWebservicesFormsKey, kMITLibraryWebservicesTellUsKey];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTOuchstoneRequestOperationRequestMethodPOST];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
+        completion(responseObject, nil);
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        completion(nil, error);
+    }];
+    
+    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+}
+
++ (void)postAskUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion
+{
+    NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibraryWebservicesFormsKey, kMITLibraryWebservicesAskUsKey];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTOuchstoneRequestOperationRequestMethodPOST];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
+        completion(responseObject, nil);
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        completion(nil, error);
+    }];
+    
+    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+}
 
 + (void)getLinksWithCompletion:(void (^)(NSArray *links, NSError *error))completion
 {
@@ -56,8 +109,7 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesAskUsResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        NSLog(@"result: %@", result.array);
-        completion(nil, nil);
+        completion(result.array.firstObject, error);
     }];
 }
 
@@ -71,7 +123,9 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
     [parameters setObject:[NSString stringWithFormat:@"%d", kMITLibrariesSearchResultsLimit]  forKey:kMITLibraryWebservicesLimitKey];
     
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:parameters];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:parameters
+                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
@@ -88,7 +142,9 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
 {
     if (item.identifier) {
         NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint, item.identifier];
-        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:nil];
+        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                       parameters:nil
+                                                                 andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
         MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     
         [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
@@ -109,7 +165,9 @@ static NSString *const kMITLibrariesRecentSearchResultsKey = @"kMITLibrariesRece
 + (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion
 {
     NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibrariesAccountEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint parameters:nil];
+    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
+                                                                   parameters:nil
+                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
     
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
     

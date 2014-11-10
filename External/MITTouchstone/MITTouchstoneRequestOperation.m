@@ -110,6 +110,14 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
     }];
 }
 
+- (NSSet *)acceptableContentTypes
+{
+    // Necessary to handle error between restKit and touchstone operations.
+    NSMutableSet *acceptableContentTypes = [[super acceptableContentTypes] mutableCopy];
+    [acceptableContentTypes addObject:MITECPMIMEType];
+    return acceptableContentTypes;
+}
+
 - (void)pause:(BOOL)useHTTPRange
 {
     [self.lock lock];
