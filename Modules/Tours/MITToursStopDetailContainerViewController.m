@@ -10,6 +10,8 @@
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
 
+@property (strong, nonatomic) MITToursStop *mostRecentMainLoopStop;
+
 @end
 
 @implementation MITToursStopDetailContainerViewController
@@ -20,6 +22,12 @@
     if (self) {
         self.tour = tour;
         self.currentStop = stop;
+        if ([stop isMainLoopStop]) {
+            self.mostRecentMainLoopStop = stop;
+        }
+        else {
+            self.mostRecentMainLoopStop = self.mainLoopStops[0];
+        }
     }
     return self;
 }
@@ -57,8 +65,13 @@
 {
     MITToursStopDirectionsViewController *directionsVC = [[MITToursStopDirectionsViewController alloc] init];
     
-    directionsVC.currentStop = [self mainLoopStopBeforeStop:self.currentStop];
-
+    if ([self.currentStop isMainLoopStop]) {
+        directionsVC.currentStop = [self mainLoopStopBeforeStop:self.currentStop];
+    }
+    else {
+        directionsVC.currentStop = self.mostRecentMainLoopStop;
+    }
+    
     directionsVC.nextStop = self.currentStop;
     
     [self.navigationController pushViewController:directionsVC animated:YES];
@@ -208,6 +221,10 @@
 
 - (void)transitionToStop:(MITToursStop *)stop
 {
+    if ([stop isMainLoopStop]) {
+        self.mostRecentMainLoopStop = stop;
+    }
+    
     NSInteger currentIndex = [self.mainLoopStops indexOfObject:self.currentStop];
     NSInteger newIndex = [self.mainLoopStops indexOfObject:stop];
     

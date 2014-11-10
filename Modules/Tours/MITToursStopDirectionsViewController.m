@@ -97,7 +97,7 @@
 
 - (NSString *)HTMLDirectionToSideTripStop
 {
-    return [MITToursHTMLTemplateInjector templatedHTMLForSideTripStop:self.nextStop viewWidth:self.view.frame.size.width];
+    return [MITToursHTMLTemplateInjector templatedHTMLForSideTripStop:self.nextStop fromMainLoopStop:self.currentStop viewWidth:self.view.frame.size.width];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
