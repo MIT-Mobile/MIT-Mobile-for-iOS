@@ -6,6 +6,8 @@
 #import "MITLibrariesWorldcatItem.h"
 #import "MITLibrariesUser.h"
 #import "MITLibrariesAskUsModel.h"
+#import "MITLibrariesFormSheetGroup.h"
+#import "MITLibrariesFormSheetElement.h"
 
 NSInteger const kMITLibrariesSearchResultsLimit = 20;
 
@@ -36,6 +38,21 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 @implementation MITLibrariesWebservices
 
 #pragma mark - Libraries Webservice Calls
+
++ (NSDictionary *)formSheetGroupsAsHTMLParametersDictionary:(NSArray *)formSheetGroups
+{
+    NSMutableDictionary *formDict = [NSMutableDictionary dictionary];
+    for (MITLibrariesFormSheetGroup *group in formSheetGroups) {
+        for (MITLibrariesFormSheetElement *element in group.elements) {
+            if (element.value && element.htmlParameterKey) {
+                formDict[element.htmlParameterKey] = element.htmlParameterValue;
+            } else if (!element.optional) {
+                NSLog(@"ERROR: Required form sheet element has no value! %@", element.title);
+            }
+        }
+    }
+    return formDict;
+}
 
 + (void)postTellUsFormForParameters:(NSDictionary *)parameters withCompletion:(void(^)(id responseObject, NSError *error))completion
 {
