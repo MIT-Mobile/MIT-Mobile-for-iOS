@@ -8,6 +8,7 @@ NSString * const MITLibrariesFormSheetCellWebLinkNibName = @"MITLibrariesFormShe
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
 }
 

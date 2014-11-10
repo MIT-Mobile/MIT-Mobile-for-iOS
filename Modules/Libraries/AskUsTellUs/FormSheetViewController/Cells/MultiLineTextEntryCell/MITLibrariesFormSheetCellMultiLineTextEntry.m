@@ -12,6 +12,7 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.textView.delegate = self;
 }
 

@@ -7,6 +7,7 @@ NSString * const MITLibrariesFormSheetCellOptionsNibName = @"MITLibrariesFormShe
 
 - (void)configureCellForFormSheetElement:(MITLibrariesFormSheetElement *)element
 {
+    [super awakeFromNib];
     self.textLabel.text = element.title;
     self.detailTextLabel.text = element.value;
 }
