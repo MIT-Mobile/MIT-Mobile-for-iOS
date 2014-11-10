@@ -8,13 +8,14 @@
 #import "MITLibrariesRecentSearchesViewController.h"
 #import "MITLibrariesSearchResultsContainerViewControllerPad.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLibrariesAskUsHomeViewController.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeAccount,
     MITLibrariesPadDisplayModeSearch
 };
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate,MITLibrariesRecentSearchesDelegate>
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 @property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 @property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
 @property (nonatomic, strong) UIPopoverController *recentSearchesPopoverController;
+@property (nonatomic, strong) UIPopoverController *askUsHomePopoverController;
 
 @property (nonatomic, strong) MITLibrariesQuickLinksViewController *quickLinksViewController;
 @property (nonatomic, strong) MITLibrariesRecentSearchesViewController *recentSearchesViewController;
@@ -178,6 +180,16 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 - (void)askUsTellUsPressed:(id)sender
 {
+    
+    MITLibrariesAskUsHomeViewController *askUsHomeVC = [MITLibrariesAskUsHomeViewController new];
+    NSArray *topGroup = @[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation), @(MITLibrariesAskUsOptionTellUs)];
+    NSArray *bottomGroup = @[@(MITLibrariesAskUsOptionGeneral)];
+    askUsHomeVC.availableAskUsOptions = @[topGroup, bottomGroup];
+    askUsHomeVC.delegate = self;
+    UINavigationController *askUsNav = [[UINavigationController alloc] initWithRootViewController:askUsHomeVC];
+    self.askUsHomePopoverController = [[UIPopoverController alloc] initWithContentViewController:askUsNav];
+    self.askUsHomePopoverController.popoverContentSize = CGSizeMake(320, 400);
+    [self.askUsHomePopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
     NSLog(@"Ask Us");
 }
 
@@ -315,6 +327,32 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 {
     self.searchBar.text = searchTerm;
     [self searchBarSearchButtonClicked:self.searchBar];
+}
+
+#pragma mark - MITLibrariesAskUsHomeViewControllerDelegate
+
+- (void)librariesAskUsHomeViewController:(MITLibrariesAskUsHomeViewController *)askUsHomeViewController didSelectAskUsOption:(MITLibrariesAskUsOption)selectedOption
+{
+    switch (selectedOption) {
+        case MITLibrariesAskUsOptionAskUs: {
+            //
+        }
+        case MITLibrariesAskUsOptionConsultation: {
+            //
+        }
+        case MITLibrariesAskUsOptionTellUs: {
+            //
+        }
+        case MITLibrariesAskUsOptionGeneral: {
+            NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 @end
