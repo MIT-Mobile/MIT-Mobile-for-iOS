@@ -185,7 +185,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 
 - (void)askUsTellUsPressed:(id)sender
 {
-    
     MITLibrariesAskUsHomeViewController *askUsHomeVC = [MITLibrariesAskUsHomeViewController new];
     NSArray *topGroup = @[@(MITLibrariesAskUsOptionAskUs), @(MITLibrariesAskUsOptionConsultation), @(MITLibrariesAskUsOptionTellUs)];
     NSArray *bottomGroup = @[@(MITLibrariesAskUsOptionGeneral)];
@@ -195,7 +194,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     self.askUsHomePopoverController = [[UIPopoverController alloc] initWithContentViewController:askUsNav];
     self.askUsHomePopoverController.popoverContentSize = CGSizeMake(320, 400);
     [self.askUsHomePopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-    NSLog(@"Ask Us");
 }
 
 - (void)quickLinksPressed:(id)sender
