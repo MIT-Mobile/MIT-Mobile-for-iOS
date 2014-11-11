@@ -2,13 +2,13 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6250"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITDiningHouseVenueDetailViewController">
             <connections>
                 <outlet property="comparisonContainerView" destination="9gK-U5-7s8" id="vNz-KG-VkP"/>
-                <outlet property="tableView" destination="LaD-T0-YN7" id="3GR-Oo-krq"/>
+                <outlet property="mealsContainerView" destination="JJa-jv-mYX" id="iCj-SM-dHE"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -21,24 +21,20 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="LaD-T0-YN7">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JJa-jv-mYX">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <connections>
-                        <outlet property="dataSource" destination="-1" id="DZZ-zl-gQ2"/>
-                        <outlet property="delegate" destination="-1" id="lGl-nF-AFT"/>
-                    </connections>
-                </tableView>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="9gK-U5-7s8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="9lQ-zw-WGX"/>
+                <constraint firstItem="JJa-jv-mYX" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Bh2-vr-2cQ"/>
                 <constraint firstAttribute="bottom" secondItem="9gK-U5-7s8" secondAttribute="bottom" id="Hgi-5Z-1oN"/>
-                <constraint firstAttribute="bottom" secondItem="LaD-T0-YN7" secondAttribute="bottom" id="I87-TU-abx"/>
-                <constraint firstItem="LaD-T0-YN7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Txb-E0-wcH"/>
-                <constraint firstItem="LaD-T0-YN7" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="aNZ-Yq-J5B"/>
+                <constraint firstAttribute="bottom" secondItem="JJa-jv-mYX" secondAttribute="bottom" id="VEQ-e5-FEc"/>
+                <constraint firstItem="JJa-jv-mYX" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="jVk-ls-Mhd"/>
                 <constraint firstItem="9gK-U5-7s8" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="k21-ob-pGi"/>
-                <constraint firstAttribute="trailing" secondItem="LaD-T0-YN7" secondAttribute="trailing" id="nD5-EK-Vgv"/>
+                <constraint firstAttribute="trailing" secondItem="JJa-jv-mYX" secondAttribute="trailing" id="nrN-DR-svm"/>
                 <constraint firstAttribute="trailing" secondItem="9gK-U5-7s8" secondAttribute="trailing" id="tPF-bk-AbK"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
