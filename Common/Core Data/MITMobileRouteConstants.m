@@ -37,6 +37,10 @@ NSString* const MITLibrariesAskUsPathPattern = @"apis/secure/libraries/forms/ask
 NSString* const MITLibrariesSearchResourceName = @"MITLibrariesSearchResourceName";
 NSString* const MITLibrariesSearchPathPattern = @"apis/libraries/worldcat/";
 
+#pragma mark libraries item detail
+NSString* const MITLibrariesItemDetailResourceName = @"MITLibrariesItemDetailResourceName";
+NSString* const MITLibrariesItemDetailPathPattern = @"apis/libraries/worldcat/:itemId";
+
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";
 NSString* const MITDiningVenueIconPathPattern = @"apis/dining/venues/:type/:venue/icon";
