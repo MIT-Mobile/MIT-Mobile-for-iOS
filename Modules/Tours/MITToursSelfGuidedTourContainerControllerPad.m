@@ -2,8 +2,9 @@
 #import "MITToursSelfGuidedTourListViewController.h"
 #import "MITToursSelfGuidedTourInfoViewController.h"
 #import "MITToursMapViewController.h"
+#import "MITToursStopDetailContainerViewController.h"
 
-@interface MITToursSelfGuidedTourContainerControllerPad ()
+@interface MITToursSelfGuidedTourContainerControllerPad () <MITToursSelfGuidedTourListViewControllerDelegate, MITToursMapViewControllerDelegate>
 
 @property (nonatomic, strong) MITToursMapViewController *mapViewController;
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
@@ -33,9 +34,11 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 {
     self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
     self.listViewController.tour = self.selfGuidedTour;
+    self.listViewController.delegate = self;
     
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
     self.mapViewController.shouldShowStopDescriptions = YES;
+    self.mapViewController.delegate = self;
     
     [self addChildViewController:self.listViewController];
     [self addChildViewController:self.mapViewController];
@@ -149,6 +152,31 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 - (void)currentLocationButtonPressed:(UIBarButtonItem *)sender
 {
     [self.mapViewController centerMapOnUserLocation];
+}
+
+#pragma mark - MITToursSelfGuidedTourListViewController Methods
+
+- (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop
+{
+    [self.mapViewController selectStop:stop];
+}
+
+#pragma mark - MITToursMapViewControllerDelegate Methods
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectStop:(MITToursStop *)stop
+{
+    [self.listViewController selectStop:stop];
+}
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didDeselectStop:(MITToursStop *)stop
+{
+    [self.listViewController deselectStop:stop];
+}
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
+{
+    MITToursStopDetailContainerViewController *detailViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
+    [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
 @end
