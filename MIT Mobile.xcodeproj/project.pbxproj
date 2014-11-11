@@ -92,6 +92,7 @@
 		27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB921519737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m */; };
 		27B4FDD3199318CF00DF36B1 /* PeopleRecentSearchTermList.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD2199318CF00DF36B1 /* PeopleRecentSearchTermList.m */; };
 		27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */; };
+		27CBD2131A105F7C003A2F9F /* MITScannerHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CBD2121A105F7C003A2F9F /* MITScannerHistoryViewController.m */; };
 		27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */; };
 		27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CC401953EA40003F447F /* MITPeopleFavoritesTableViewController.m */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -769,6 +770,8 @@
 		27B4FDD4199318D000DF36B1 /* PeopleRecentSearchTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleRecentSearchTerm.h; sourceTree = "<group>"; };
 		27B4FDD5199318D000DF36B1 /* PeopleRecentSearchTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleRecentSearchTerm.m; sourceTree = "<group>"; };
 		27B4FDD719931FBA00DF36B1 /* PeopleDataModel 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 8.xcdatamodel"; sourceTree = "<group>"; };
+		27CBD2111A105F7C003A2F9F /* MITScannerHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerHistoryViewController.h; sourceTree = "<group>"; };
+		27CBD2121A105F7C003A2F9F /* MITScannerHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerHistoryViewController.m; sourceTree = "<group>"; };
 		27D2CC3C1953E3B8003F447F /* PeopleFavoriteData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleFavoriteData.h; sourceTree = "<group>"; };
 		27D2CC3D1953E3B8003F447F /* PeopleFavoriteData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleFavoriteData.m; sourceTree = "<group>"; };
 		27D2CC3F1953EA40003F447F /* MITPeopleFavoritesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleFavoritesTableViewController.h; sourceTree = "<group>"; };
@@ -2642,6 +2645,8 @@
 			children = (
 				2C15EB7415A349B200C9C345 /* MITScannerViewController.h */,
 				2C15EB7515A349B200C9C345 /* MITScannerViewController.m */,
+				27CBD2111A105F7C003A2F9F /* MITScannerHistoryViewController.h */,
+				27CBD2121A105F7C003A2F9F /* MITScannerHistoryViewController.m */,
 				2CDF3017134DEAD3007C6813 /* Model */,
 				2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */,
 				2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */,
@@ -4335,6 +4340,7 @@
 				EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */,
 				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
 				EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */,
+				27CBD2131A105F7C003A2F9F /* MITScannerHistoryViewController.m in Sources */,
 				223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */,
 				8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */,
 				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
