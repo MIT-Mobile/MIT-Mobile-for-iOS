@@ -9,7 +9,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     MITToursSelfGuidedTourList
 };
 
-@interface MITToursSelfGuidedTourContainerController () <MITToursSelfGuidedTourListViewControllerDelegate>
+@interface MITToursSelfGuidedTourContainerController () <MITToursSelfGuidedTourListViewControllerDelegate, MITToursMapViewControllerDelegate>
 
 @property (nonatomic, strong) MITToursMapViewController *mapViewController;
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     self.listViewController.delegate = self;
 
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
+    self.mapViewController.delegate = self;
         
     self.listViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
@@ -151,6 +152,20 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 #pragma mark - MITToursSelfGuidedTourListViewControllerDelegate Methods
 
 - (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop
+{
+    [self transitionToDetailsForStop:stop];
+}
+
+#pragma mark - MITToursMapViewControllerDelegate Methods
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
+{
+    [self transitionToDetailsForStop:stop];
+}
+
+#pragma mark - Transition to Stop Details
+
+- (void)transitionToDetailsForStop:(MITToursStop *)stop
 {
     MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];

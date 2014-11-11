@@ -153,11 +153,19 @@ static NSInteger kAnnotationMarginRight = 50;
         return;
     }
     [self presentCalloutForMapView:mapView annotationView:view];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectStop:)]) {
+        MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
+        [self.delegate mapViewController:self didSelectStop:stop];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     [self dismissCurrentCallout];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)]) {
+        MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
+        [self.delegate mapViewController:self didDeselectStop:stop];
+    }
 }
 
 #pragma mark - Custom Callout
@@ -200,8 +208,9 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)calloutWasTappedForStop:(MITToursStop *)stop
 {
-    MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
-    [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectCalloutForStop:)]) {
+        [self.delegate mapViewController:self didSelectCalloutForStop:stop];
+    }
 }
 
 #pragma mark - User Location Centering
