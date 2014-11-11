@@ -1,17 +1,20 @@
 #import "MITToursSelfGuidedTourListViewController.h"
 #import "MITToursTour.h"
 #import "MITToursTourStopCell.h"
+#import "MITToursTourDetailCell.h"
 #import "MITToursStopCellModel.h"
 #import "MITLocationManager.h"
 #import "UIKit+MITAdditions.h"
 #import "UIFont+MITTours.h"
 
 typedef NS_ENUM(NSInteger, MITToursListSection) {
+    MITToursListSectionDetails,
     MITToursListSectionMainLoop,
     MITToursListSectionSideTrips
 };
 
 static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
+static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 
 @interface MITToursSelfGuidedTourListViewController ()
 
@@ -42,8 +45,11 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
     // Keep a local copy, since these are calculated properties
     self.mainLoopStops = self.tour.mainLoopStops;
     self.sideTripsStops = self.tour.sideTripsStops;
+
+    UINib *cellNib = [UINib nibWithNibName:kMITToursTourDetailCell bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITToursTourDetailCell];
     
-    UINib *cellNib = [UINib nibWithNibName:kMITToursStopCell bundle:nil];
+    cellNib = [UINib nibWithNibName:kMITToursStopCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITToursStopCell];
 }
 
@@ -51,12 +57,15 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     switch (section) {
+        case MITToursListSectionDetails:
+            return 1;
+            break;
         case MITToursListSectionMainLoop:
             return self.mainLoopStops.count;
             break;
@@ -67,29 +76,23 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
             break;
     }
 }
-//
-//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-//{
-//    switch (section) {
-//        case MITToursListSectionMainLoop:
-//            return @"Main Loop";
-//            break;
-//        case MITToursListSectionSideTrips:
-//            return @"Side Trip";
-//        default:
-//            return nil;
-//            break;
-//    }
-//}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 30.0;
+    if (section == MITToursListSectionDetails) {
+        return 0.0;
+    }
+    else {
+        return 30.0;
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     switch (section) {
+       case MITToursListSectionDetails:
+            return nil;
+            break;
         case MITToursListSectionMainLoop:
             return self.mainLoopSectionHeaderView;
             break;
@@ -103,16 +106,26 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [MITToursTourStopCell heightForContent:[self stopCellModelForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
+    if (indexPath.section == MITToursListSectionDetails) {
+        return 92.0;
+    }
+    else {
+        return [MITToursTourStopCell heightForContent:[self stopCellModelForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITToursTourStopCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITToursStopCell];
-    
-    [cell setContent:[self stopCellModelForIndexPath:indexPath]];
-    
-    return cell;
+    if (indexPath.section == MITToursListSectionDetails) {
+        return [self.tableView dequeueReusableCellWithIdentifier:kMITToursTourDetailCell];
+    }
+    else {
+        MITToursTourStopCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITToursStopCell];
+        
+        [cell setContent:[self stopCellModelForIndexPath:indexPath]];
+        
+        return cell;
+    }
 }
 
 - (MITToursStopCellModel *)stopCellModelForIndexPath:(NSIndexPath *)indexPath
@@ -157,7 +170,10 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewController:didSelectStop:)]) {
+    if (indexPath.section == MITToursListSectionDetails && [self.delegate respondsToSelector:@selector(selfGuidedTourListViewControllerDidPressInfoButton:)]) {
+        [self.delegate selfGuidedTourListViewControllerDidPressInfoButton:self];
+    }
+    else if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewController:didSelectStop:)]) {
         [self.delegate selfGuidedTourListViewController:self didSelectStop:[self stopForIndexPath:indexPath]];
     }
 }
