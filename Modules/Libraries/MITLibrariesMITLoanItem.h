@@ -1,10 +1,11 @@
 #import "MITLibrariesMITItem.h"
 #import "MITLibrariesWebservices.h"
+#import "MITMappedObject.h"
 
-@interface MITLibrariesMITLoanItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol>
+@interface MITLibrariesMITLoanItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol, MITMappedObject>
 
-@property (nonatomic, strong) NSDate *loanedAt;
-@property (nonatomic, strong) NSDate *dueAt;
+@property (nonatomic, readonly) NSDate *loanedAt;
+@property (nonatomic, readonly) NSDate *dueAt;
 @property (nonatomic) BOOL overdue;
 @property (nonatomic) BOOL longOverdue;
 @property (nonatomic) NSInteger pendingFine;
