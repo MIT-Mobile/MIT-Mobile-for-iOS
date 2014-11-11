@@ -1,8 +1,15 @@
 #import <UIKit/UIKit.h>
 
-@class MITToursTour;
-@class MITToursStop;
-@protocol MITToursSelfGuidedTourListViewControllerDelegate;
+@class MITToursTour, MITToursStop, MITToursSelfGuidedTourListViewController;
+
+@protocol MITToursSelfGuidedTourListViewControllerDelegate <NSObject>
+
+- (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController;
+
+@optional
+- (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop;
+
+@end
 
 @interface MITToursSelfGuidedTourListViewController : UITableViewController
 
@@ -15,9 +22,4 @@
 
 @end
 
-@protocol MITToursSelfGuidedTourListViewControllerDelegate <NSObject>
 
-@optional
-- (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop;
-
-@end
