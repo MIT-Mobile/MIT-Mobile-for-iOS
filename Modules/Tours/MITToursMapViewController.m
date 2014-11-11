@@ -118,6 +118,40 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
+#pragma mark - Programmatically Triggered Stop Selection
+
+- (MITToursStopAnnotation *)annotationForStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotationForStop = nil;
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
+        if (![annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+            continue;
+        }
+        if (((MITToursStopAnnotation *)annotation).stop == stop) {
+            annotationForStop = annotation;
+        }
+    }
+    return annotationForStop;
+}
+
+- (void)selectStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotation = [self annotationForStop:stop];
+    if (!annotation) {
+        return;
+    }
+    [self.tiledMapView.mapView selectAnnotation:annotation animated:YES];
+}
+
+- (void)deselectStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotation = [self annotationForStop:stop];
+    if (!annotation) {
+        return;
+    }
+    [self.tiledMapView.mapView deselectAnnotation:annotation animated:YES];
+}
+
 #pragma mark - MKMapViewDelegate Methods
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation

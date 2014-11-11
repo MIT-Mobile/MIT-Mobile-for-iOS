@@ -14,6 +14,9 @@
 
 - (void)centerMapOnUserLocation;
 
+- (void)selectStop:(MITToursStop *)stop;
+- (void)deselectStop:(MITToursStop *)stop;
+
 @end
 
 @protocol MITToursMapViewControllerDelegate <NSObject>

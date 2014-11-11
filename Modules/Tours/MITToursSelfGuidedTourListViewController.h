@@ -10,6 +10,9 @@
 
 @property (nonatomic, weak) id<MITToursSelfGuidedTourListViewControllerDelegate> delegate;
 
+- (void)selectStop:(MITToursStop *)stop;
+- (void)deselectStop:(MITToursStop *)stop;
+
 @end
 
 @protocol MITToursSelfGuidedTourListViewControllerDelegate <NSObject>

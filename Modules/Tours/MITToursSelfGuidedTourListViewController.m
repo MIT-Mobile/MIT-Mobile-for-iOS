@@ -116,12 +116,43 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
     return self.sideTripsStops[indexPath.row];
 }
 
+- (NSIndexPath *)indexPathForStop:(MITToursStop *)stop
+{
+    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    if (index != NSNotFound) {
+        return [NSIndexPath indexPathForRow:index inSection:MITToursListSectionMainLoop];
+    }
+    index = [self.sideTripsStops indexOfObject:stop];
+    if (index != NSNotFound) {
+        return [NSIndexPath indexPathForRow:index inSection:MITToursListSectionSideTrips];
+    }
+    return nil;
+}
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewController:didSelectStop:)]) {
         [self.delegate selfGuidedTourListViewController:self didSelectStop:[self stopForIndexPath:indexPath]];
+    }
+}
+
+#pragma mark - Programmatic Stop Selection
+
+- (void)selectStop:(MITToursStop *)stop
+{
+    NSIndexPath *indexPath = [self indexPathForStop:stop];
+    if (indexPath) {
+        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    }
+}
+
+- (void)deselectStop:(MITToursStop *)stop
+{
+    NSIndexPath *indexPath = [self indexPathForStop:stop];
+    if (indexPath) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 
