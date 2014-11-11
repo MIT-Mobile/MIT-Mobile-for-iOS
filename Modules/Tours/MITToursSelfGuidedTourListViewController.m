@@ -149,8 +149,10 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 {
     if (indexPath.section == MITToursListSectionMainLoop) {
         return self.mainLoopStops[indexPath.row];
+    } else if (indexPath.section == MITToursListSectionSideTrips) {
+        return self.sideTripsStops[indexPath.row];
     }
-    return self.sideTripsStops[indexPath.row];
+    return nil;
 }
 
 - (NSIndexPath *)indexPathForStop:(MITToursStop *)stop
