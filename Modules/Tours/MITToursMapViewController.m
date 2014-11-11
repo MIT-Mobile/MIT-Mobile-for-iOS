@@ -39,6 +39,7 @@ static NSInteger kAnnotationMarginRight = 50;
         self.tour = tour;
         self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
         self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
+        self.shouldShowStopDescriptions = NO;
     }
     return self;
 }
@@ -117,6 +118,40 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
+#pragma mark - Programmatically Triggered Stop Selection
+
+- (MITToursStopAnnotation *)annotationForStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotationForStop = nil;
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
+        if (![annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+            continue;
+        }
+        if (((MITToursStopAnnotation *)annotation).stop == stop) {
+            annotationForStop = annotation;
+        }
+    }
+    return annotationForStop;
+}
+
+- (void)selectStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotation = [self annotationForStop:stop];
+    if (!annotation) {
+        return;
+    }
+    [self.tiledMapView.mapView selectAnnotation:annotation animated:YES];
+}
+
+- (void)deselectStop:(MITToursStop *)stop
+{
+    MITToursStopAnnotation *annotation = [self annotationForStop:stop];
+    if (!annotation) {
+        return;
+    }
+    [self.tiledMapView.mapView deselectAnnotation:annotation animated:YES];
+}
+
 #pragma mark - MKMapViewDelegate Methods
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -148,12 +183,23 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+    if (![view.annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+        return;
+    }
     [self presentCalloutForMapView:mapView annotationView:view];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectStop:)]) {
+        MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
+        [self.delegate mapViewController:self didSelectStop:stop];
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     [self dismissCurrentCallout];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)]) {
+        MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
+        [self.delegate mapViewController:self didDeselectStop:stop];
+    }
 }
 
 #pragma mark - Custom Callout
@@ -163,7 +209,7 @@ static NSInteger kAnnotationMarginRight = 50;
     MITToursStop *stop = ((MITToursStopAnnotation *)annotationView.annotation).stop;
     
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForStop:stop userLocation:mapView.userLocation.location];
+    [contentView configureForStop:stop userLocation:mapView.userLocation.location showDescription:self.shouldShowStopDescriptions];
     contentView.delegate = self;
     
     SMCalloutView *calloutView = self.calloutView;
@@ -196,8 +242,9 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)calloutWasTappedForStop:(MITToursStop *)stop
 {
-    MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
-    [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectCalloutForStop:)]) {
+        [self.delegate mapViewController:self didSelectCalloutForStop:stop];
+    }
 }
 
 #pragma mark - User Location Centering

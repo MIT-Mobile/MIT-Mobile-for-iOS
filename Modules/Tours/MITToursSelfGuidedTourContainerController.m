@@ -2,13 +2,14 @@
 #import "MITToursSelfGuidedTourListViewController.h"
 #import "MITToursSelfGuidedTourInfoViewController.h"
 #import "MITToursMapViewController.h"
+#import "MITToursStopDetailContainerViewController.h"
 
 typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     MITToursSelfGuidedTourMap,
     MITToursSelfGuidedTourList
 };
 
-@interface MITToursSelfGuidedTourContainerController ()
+@interface MITToursSelfGuidedTourContainerController () <MITToursSelfGuidedTourListViewControllerDelegate, MITToursMapViewControllerDelegate>
 
 @property (nonatomic, strong) MITToursMapViewController *mapViewController;
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
@@ -43,8 +44,10 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 {
     self.listViewController = [[MITToursSelfGuidedTourListViewController alloc] init];
     self.listViewController.tour = self.selfGuidedTour;
+    self.listViewController.delegate = self;
 
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
+    self.mapViewController.delegate = self;
         
     self.listViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
@@ -144,6 +147,28 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)currentLocationButtonPressed:(id)sender
 {
     [self.mapViewController centerMapOnUserLocation];
+}
+
+#pragma mark - MITToursSelfGuidedTourListViewControllerDelegate Methods
+
+- (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop
+{
+    [self transitionToDetailsForStop:stop];
+}
+
+#pragma mark - MITToursMapViewControllerDelegate Methods
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
+{
+    [self transitionToDetailsForStop:stop];
+}
+
+#pragma mark - Transition to Stop Details
+
+- (void)transitionToDetailsForStop:(MITToursStop *)stop
+{
+    MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
+    [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
 }
 
 @end
