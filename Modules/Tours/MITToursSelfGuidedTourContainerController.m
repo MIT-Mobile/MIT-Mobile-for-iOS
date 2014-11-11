@@ -61,9 +61,6 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)setupNavBar
 {
-    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStylePlain target:self action:@selector(infoButtonPressed:)];
-    self.navigationItem.rightBarButtonItem = infoButton;
-    
     // Following screens should have no "Back" text on back button
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
@@ -117,7 +114,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self hideCurrentLocationButton];
 }
 
-- (void)infoButtonPressed:(id)sender
+- (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
     MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
     infoVC.tour = self.selfGuidedTour;
