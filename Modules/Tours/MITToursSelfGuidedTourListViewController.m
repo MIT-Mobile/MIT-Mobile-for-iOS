@@ -3,6 +3,8 @@
 #import "MITToursTourStopCell.h"
 #import "MITToursStopCellModel.h"
 #import "MITLocationManager.h"
+#import "UIKit+MITAdditions.h"
+#import "UIFont+MITTours.h"
 
 typedef NS_ENUM(NSInteger, MITToursListSection) {
     MITToursListSectionMainLoop,
@@ -15,6 +17,9 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
 
 @property (nonatomic, strong) NSArray *mainLoopStops;
 @property (nonatomic, strong) NSArray *sideTripsStops;
+
+@property (nonatomic, strong) UIView *mainLoopSectionHeaderView;
+@property (nonatomic, strong) UIView *sideTripsSectionHeaderView;
 
 @end
 
@@ -62,15 +67,34 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
             break;
     }
 }
+//
+//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+//{
+//    switch (section) {
+//        case MITToursListSectionMainLoop:
+//            return @"Main Loop";
+//            break;
+//        case MITToursListSectionSideTrips:
+//            return @"Side Trip";
+//        default:
+//            return nil;
+//            break;
+//    }
+//}
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 30.0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     switch (section) {
         case MITToursListSectionMainLoop:
-            return @"Main Loop";
+            return self.mainLoopSectionHeaderView;
             break;
         case MITToursListSectionSideTrips:
-            return @"Side Trip";
+            return self.sideTripsSectionHeaderView;
         default:
             return nil;
             break;
@@ -154,6 +178,39 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
     if (indexPath) {
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
+}
+
+- (UIView *)mainLoopSectionHeaderView
+{
+    if (!_mainLoopSectionHeaderView) {
+        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/circle_red"]];
+        circleView.frame = CGRectMake(8, 9, 12, 12);
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 0, self.tableView.frame.size.width - 40, 30)];
+        label.font = [UIFont toursMapCalloutTitle];
+        label.text = @"MAIN LOOP";
+        _mainLoopSectionHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 30)];
+        _mainLoopSectionHeaderView.backgroundColor = [UIColor mit_backgroundColor];
+        [_mainLoopSectionHeaderView addSubview:circleView];
+        [_mainLoopSectionHeaderView addSubview:label];
+    }
+    return _mainLoopSectionHeaderView;
+}
+
+- (UIView *)sideTripsSectionHeaderView
+{
+    if (!_sideTripsSectionHeaderView) {
+        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/circle_blue"]];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 0, self.tableView.frame.size.width - 40, 30)];
+        circleView.frame = CGRectMake(8, 9, 12, 12);
+        label.font = [UIFont toursMapCalloutTitle];
+        label.text = @"SIDE TRIPS";
+        _sideTripsSectionHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 30)];
+        _sideTripsSectionHeaderView.backgroundColor = [UIColor mit_backgroundColor];
+        [_sideTripsSectionHeaderView addSubview:circleView];
+        [_sideTripsSectionHeaderView addSubview:label];
+
+    }
+    return _sideTripsSectionHeaderView;
 }
 
 @end
