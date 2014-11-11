@@ -689,6 +689,7 @@
 		AF41E4E11A06AC2700EC4F18 /* MITToursCalloutContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */; };
 		AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */; };
 		AF41E4F31A06AD2200EC4F18 /* SMClassicCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */; };
+		AF598F2D1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = AF598F2C1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.m */; };
 		AF9282C71A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */; };
 		AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282C91A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m */; };
 		AF9282CD1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9282CC1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m */; };
@@ -2092,6 +2093,8 @@
 		AF41E4EF1A06AD1200EC4F18 /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMCalloutView.m; path = External/SMCalloutView/SMCalloutView.m; sourceTree = "<group>"; };
 		AF41E4F11A06AD2200EC4F18 /* SMClassicCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMClassicCalloutView.h; path = External/SMCalloutView/SMClassicCalloutView.h; sourceTree = "<group>"; };
 		AF41E4F21A06AD2200EC4F18 /* SMClassicCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMClassicCalloutView.m; path = External/SMCalloutView/SMClassicCalloutView.m; sourceTree = "<group>"; };
+		AF598F2B1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursSelfGuidedTourContainerControllerPad.h; sourceTree = "<group>"; };
+		AF598F2C1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursSelfGuidedTourContainerControllerPad.m; sourceTree = "<group>"; };
 		AF9282C51A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopCollectionViewPagedLayout.h; sourceTree = "<group>"; };
 		AF9282C61A0AC6FD00CCC25A /* MITToursStopCollectionViewPagedLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopCollectionViewPagedLayout.m; sourceTree = "<group>"; };
 		AF9282C81A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITInfiniteScrollCollectionView.h; sourceTree = "<group>"; };
@@ -2791,6 +2794,7 @@
 		224E1A9B1A000CA300913D99 /* Self Guided Tour */ = {
 			isa = PBXGroup;
 			children = (
+				AF598F231A114372008459BB /* iPad */,
 				22830A331A012BDC00B514D1 /* Cells */,
 				224E1A9F1A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.h */,
 				224E1AA01A000CCB00913D99 /* MITToursSelfGuidedTourContainerController.m */,
@@ -4896,6 +4900,15 @@
 			name = SMCalloutView;
 			sourceTree = "<group>";
 		};
+		AF598F231A114372008459BB /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				AF598F2B1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.h */,
+				AF598F2C1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.m */,
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
 		AF9282D71A0BFC4300CCC25A /* Stop Collection View */ = {
 			isa = PBXGroup;
 			children = (
@@ -6315,6 +6328,7 @@
 				22D9BBAC19D21B140065A2E7 /* MITLibrariesUser.m in Sources */,
 				2247B76C19F6DA16000E1725 /* MITToursTour.m in Sources */,
 				224F6B2019D480F10062D340 /* MITLibrariesMITItem.m in Sources */,
+				AF598F2D1A11683D008459BB /* MITToursSelfGuidedTourContainerControllerPad.m in Sources */,
 				80598DD11A0AA9BB0095CEAA /* MITLibrariesFormSheetElement.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

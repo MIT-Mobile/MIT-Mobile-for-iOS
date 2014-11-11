@@ -5,6 +5,7 @@
 #import "MITToursTour.h"
 #import "MITToursAboutMITViewController.h"
 #import "MITToursLinksTableViewController.h"
+#import "MITToursSelfGuidedTourContainerControllerPad.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCell";
@@ -90,6 +91,15 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
     [cell setTour:self.selfGuidedTour];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    MITToursSelfGuidedTourContainerControllerPad *containerController = [[MITToursSelfGuidedTourContainerControllerPad alloc] init];
+    containerController.selfGuidedTour = self.selfGuidedTour;
+    [self.navigationController pushViewController:containerController animated:YES];
 }
 
 // iOS 7 requires this to make the cell transparent for whatever reason
