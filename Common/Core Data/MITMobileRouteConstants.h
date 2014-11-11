@@ -33,6 +33,10 @@ FOUNDATION_EXTERN NSString* const MITLibrariesLinksPathPattern;
 FOUNDATION_EXTERN NSString* const MITLibrariesAskUsResourceName;
 FOUNDATION_EXTERN NSString* const MITLibrariesAskUsPathPattern;
 
+#pragma mark libraries search
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchPathPattern;
+
 #pragma mark dining/venues/:type/:venue/icon
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconPathPattern;

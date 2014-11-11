@@ -4,7 +4,9 @@
 #import "MITLibrariesCoverImage.h"
 #import "MITLibrariesWebservices.h"
 
-@interface MITLibrariesWorldcatItem : NSObject <MITInitializableWithDictionaryProtocol>
+#import "MITMappedObject.h"
+
+@interface MITLibrariesWorldcatItem : NSObject <MITInitializableWithDictionaryProtocol, MITMappedObject>
 
 @property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) NSString *url;
@@ -23,7 +25,7 @@
 @property (nonatomic, strong) NSArray *editions;
 @property (nonatomic, strong) NSArray *address;
 @property (nonatomic, strong) NSArray *holdings;
-@property (nonatomic, strong) NSArray *citations;
+@property (nonatomic, strong, readonly) NSArray *citations;
 @property (nonatomic, strong) NSString *composedHTML;
 
 - (NSString *)yearsString;

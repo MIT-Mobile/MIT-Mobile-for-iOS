@@ -558,6 +558,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
     MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
     [remoteObjectManager addResource:librariesAskUsResource];
     
+    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
+    [remoteObjectManager addResource:librariesSearchResource];
+    
     MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursToursResource];
     

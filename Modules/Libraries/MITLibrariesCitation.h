@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
+#import "MITMappedObject.h"
 
-@interface MITLibrariesCitation : NSObject
+@interface MITLibrariesCitation : NSObject <MITMappedObject>
 
 - (instancetype)initWithName:(NSString *)name citation:(NSString *)citation;
 
