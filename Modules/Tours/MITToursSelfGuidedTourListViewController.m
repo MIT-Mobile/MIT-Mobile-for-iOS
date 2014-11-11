@@ -108,4 +108,21 @@ static NSString *const kMITToursStopCell = @"MITToursTourStopCell";
     return [[MITToursStopCellModel alloc] initWithStop:stop stopIndex:stopIndex];
 }
 
+- (MITToursStop *)stopForIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == MITToursListSectionMainLoop) {
+        return self.mainLoopStops[indexPath.row];
+    }
+    return self.sideTripsStops[indexPath.row];
+}
+
+#pragma mark - Table view delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewController:didSelectStop:)]) {
+        [self.delegate selfGuidedTourListViewController:self didSelectStop:[self stopForIndexPath:indexPath]];
+    }
+}
+
 @end
