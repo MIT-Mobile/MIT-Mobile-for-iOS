@@ -1,8 +1,9 @@
 #import "MITLibrariesResource.h"
+#import "MITMobileRouteConstants.h"
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesLink.h"
 #import "MITLibrariesAskUsModel.h"
-#import "MITMobileRouteConstants.h"
+#import "MITLibrariesWorldcatItem.h"
 
 @implementation MITLibrariesResource
 
@@ -41,6 +42,21 @@
     self = [super initWithName:MITLibrariesAskUsResourceName pathPattern:MITLibrariesAskUsPathPattern];
     if (self) {
         [self addMapping:[MITLibrariesAskUsModel objectMapping]
+               atKeyPath:nil
+        forRequestMethod:RKRequestMethodGET];
+    }
+    return self;
+}
+
+@end
+
+@implementation MITLibrariesSearchResource
+
+- (instancetype)init
+{
+    self = [super initWithName:MITLibrariesSearchResourceName pathPattern:MITLibrariesSearchPathPattern];
+    if (self) {
+        [self addMapping:[MITLibrariesWorldcatItem objectMapping]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }

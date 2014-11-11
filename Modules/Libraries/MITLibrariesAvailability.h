@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "MITInitializableWithDictionaryProtocol.h"
+#import "MITMappedObject.h"
 
-@interface MITLibrariesAvailability : NSObject <MITInitializableWithDictionaryProtocol>
+@interface MITLibrariesAvailability : NSObject <MITInitializableWithDictionaryProtocol, MITMappedObject>
 
 @property (nonatomic, strong) NSString *location;
 @property (nonatomic, strong) NSString *collection;
