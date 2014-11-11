@@ -147,7 +147,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)currentLocationButtonPressed:(UIBarButtonItem *)sender
 {
-    
+    [self.mapViewController centerMapOnUserLocation];
 }
 
 @end
