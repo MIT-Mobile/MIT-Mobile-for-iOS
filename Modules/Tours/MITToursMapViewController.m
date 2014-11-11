@@ -148,6 +148,9 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+    if (![view.annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+        return;
+    }
     [self presentCalloutForMapView:mapView annotationView:view];
 }
 
