@@ -81,9 +81,6 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupNavBar
 {
-    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStylePlain target:self action:@selector(infoButtonPressed:)];
-    self.navigationItem.rightBarButtonItem = infoButton;
-    
     // Following screens should have no "Back" text on back button
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
@@ -154,9 +151,21 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 #pragma mark - Actions
 
-- (void)infoButtonPressed:(UIBarButtonItem *)sender
+- (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
+    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    infoVC.tour = self.selfGuidedTour;
+    infoVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(tourInfoDoneButtonWasPressed:)];
     
+    UINavigationController *infoNavigationController = [[UINavigationController alloc] initWithRootViewController:infoVC];
+    infoNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self presentViewController:infoNavigationController animated:YES completion:nil];
+}
+
+- (void)tourInfoDoneButtonWasPressed:(UIBarButtonItem *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)listButtonPressed:(UIBarButtonItem *)sender
