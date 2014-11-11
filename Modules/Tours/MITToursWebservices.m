@@ -47,7 +47,7 @@
 // These are hardcoded for now, but will be replaced by webservice calls when those become available
 + (NSString *)aboutMITText
 {
-    return @"The misson of MIT is to advance knowledge and educate students in science, technology, and otehr areas of scholarship that will best serve the nation and the world in the 21st century.";
+    return @"The misson of MIT is to advance knowledge and educate students in science, technology, and other areas of scholarship that will best serve the nation and the world in the 21st century.";
 }
 
 + (NSString *)aboutMITURLString
