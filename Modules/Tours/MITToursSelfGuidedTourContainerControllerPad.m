@@ -47,7 +47,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     // TODO: Clean up the magic numbers here
     self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     self.mapViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView]-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[listView]-44-|" options:0 metrics:nil views:viewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView(==320)]" options:0 metrics:nil views:viewDict]];
