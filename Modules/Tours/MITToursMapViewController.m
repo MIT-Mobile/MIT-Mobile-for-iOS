@@ -39,6 +39,7 @@ static NSInteger kAnnotationMarginRight = 50;
         self.tour = tour;
         self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
         self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
+        self.shouldShowStopDescriptions = NO;
     }
     return self;
 }
@@ -166,7 +167,7 @@ static NSInteger kAnnotationMarginRight = 50;
     MITToursStop *stop = ((MITToursStopAnnotation *)annotationView.annotation).stop;
     
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForStop:stop userLocation:mapView.userLocation.location];
+    [contentView configureForStop:stop userLocation:mapView.userLocation.location showDescription:self.shouldShowStopDescriptions];
     contentView.delegate = self;
     
     SMCalloutView *calloutView = self.calloutView;

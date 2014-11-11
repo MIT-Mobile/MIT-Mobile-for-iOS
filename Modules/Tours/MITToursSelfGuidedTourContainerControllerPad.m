@@ -35,6 +35,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     self.listViewController.tour = self.selfGuidedTour;
     
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
+    self.mapViewController.shouldShowStopDescriptions = YES;
     
     [self addChildViewController:self.listViewController];
     [self addChildViewController:self.mapViewController];

@@ -5,6 +5,9 @@
 #define SMOOTS_PER_MILE 945.671642
 #define MILES_PER_METER 0.000621371
 
+static CGFloat const kDistanceLabelTopSpacing = 6;
+static CGFloat const kDescriptionLabelTopSpacing = 16;
+
 @interface MITToursCalloutContentView ()
 
 @property (strong, nonatomic) UIView *containerView;
@@ -12,7 +15,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *stopTypeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *stopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *distanceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *stopDescriptionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *disclosureImage;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *distanceSpacingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionSpacingConstraint;
 
 @property (strong, nonatomic) UIGestureRecognizer *tapRecognizer;
 
@@ -57,7 +64,7 @@
     }
 }
 
-- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation
+- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation showDescription:(BOOL)showDescription
 {
     self.stop = stop;
     self.stopType = stop.stopType;
@@ -92,17 +99,46 @@
     if (self.shouldDisplayDistance) {
         CGFloat smoots = self.distanceInMiles * SMOOTS_PER_MILE;
         self.distanceLabel.text = [NSString stringWithFormat:@"%.01f miles (%.f smoots)", self.distanceInMiles, smoots];
+        self.distanceSpacingConstraint.constant = kDistanceLabelTopSpacing;
     } else {
         self.distanceLabel.text = @"";
+        self.distanceSpacingConstraint.constant = 0;
     }
     self.distanceLabel.font = [UIFont toursMapCalloutSubtitle];
     self.distanceLabel.textColor = [UIColor mit_greyTextColor];
     self.distanceLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
+    if (showDescription) {
+        self.stopDescriptionLabel.attributedText = [self attributedBodyTextForStop:stop];
+        self.descriptionSpacingConstraint.constant = kDescriptionLabelTopSpacing;
+    } else {
+        self.stopDescriptionLabel.attributedText = nil;
+        self.descriptionSpacingConstraint.constant = 0;
+    }
+    
     [self.disclosureImage setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]];
     
+    [self.containerView setNeedsUpdateConstraints];
     [self.containerView setNeedsLayout];
     [self sizeToFit];
+}
+
+- (NSAttributedString *)attributedBodyTextForStop:(MITToursStop *)stop
+{
+    // Mostly copied from MITToursStopDetailViewController
+    // TODO: Should move this somewhere shared to keep things DRY
+    NSData *bodyTextData = [NSData dataWithBytes:[stop.bodyHTML cStringUsingEncoding:NSUTF8StringEncoding] length:stop.bodyHTML.length];
+    NSMutableAttributedString *bodyString = [[NSMutableAttributedString alloc] initWithData:bodyTextData options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:NULL error:nil];
+    
+    [bodyString setAttributes:@{NSFontAttributeName: [UIFont toursMapCalloutSubtitle]}
+                        range:NSMakeRange(0, bodyString.length)];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
+    paragraphStyle.lineHeightMultiple = 1.0;
+    [bodyString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, bodyString.length)];
+    
+    return bodyString;
 }
 
 - (void)calloutWasTapped:(UIGestureRecognizer *)sender
