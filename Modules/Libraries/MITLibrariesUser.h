@@ -2,8 +2,9 @@
 #import "MITLibrariesMITFineItem.h"
 #import "MITLibrariesMITHoldItem.h"
 #import "MITLibrariesMITLoanItem.h"
+#import "MITMappedObject.h"
 
-@interface MITLibrariesUser : NSObject <MITInitializableWithDictionaryProtocol>
+@interface MITLibrariesUser : NSObject <MITMappedObject, MITInitializableWithDictionaryProtocol>
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSArray *loans;
