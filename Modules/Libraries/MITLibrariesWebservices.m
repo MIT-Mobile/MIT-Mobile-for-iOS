@@ -130,20 +130,12 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 + (void)getItemDetailsForItem:(MITLibrariesWorldcatItem *)item completion:(void (^)(MITLibrariesWorldcatItem *item, NSError *error))completion
 {
     if (item.identifier) {
-        NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint, item.identifier];
-        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
-                                                                       parameters:nil
-                                                                 andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
-        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    
-        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-            MITLibrariesWorldcatItem *newItem = [[MITLibrariesWorldcatItem alloc] initWithDictionary:responseObject];
-            completion(newItem, nil);
-        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-            completion(nil, error);
-        }];
-        
-        [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+        [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesItemDetailResourceName
+                                                        object:@{@"itemId" : item.identifier}
+                                                    parameters:nil
+                                                    completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                        completion(result.array.firstObject, error);
+                                                    }];
     }
     else {
         NSError *error = [[NSError alloc] initWithDomain:kMITLibrariesErrorDomain code:NSURLErrorResourceUnavailable userInfo:@{NSLocalizedDescriptionKey : @"Item not found"}];

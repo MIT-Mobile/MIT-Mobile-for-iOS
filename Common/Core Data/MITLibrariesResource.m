@@ -64,3 +64,16 @@
 }
 
 @end
+
+@implementation MITLibrariesItemDetailResource
+
+- (instancetype)init
+{
+    self = [super initWithName:MITLibrariesItemDetailResourceName pathPattern:MITLibrariesItemDetailPathPattern];
+    if (self) {
+        [self addMapping:[MITLibrariesWorldcatItem objectMapping] atKeyPath:nil forRequestMethod:RKRequestMethodGET];
+    }
+    return self;
+}
+
+@end
