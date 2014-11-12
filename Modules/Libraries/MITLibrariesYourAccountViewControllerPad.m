@@ -129,7 +129,11 @@
     
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
         if (!error) {
+            NSDate *updatedDate = [NSDate date];
+            self.listViewController.finesUpdatedDate = updatedDate;
             self.listViewController.user = user;
+            
+            self.gridViewController.finesUpdatedDate = updatedDate;
             self.gridViewController.user = user;
             [self showCurrentlySelectedViewController];
         }
