@@ -225,11 +225,9 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     __block MITDiningHouseVenueDetailViewController *blockSelf = self;
     NSArray *listViewControllers = @[[self listViewControllerAtIndex:index + 1]];
     [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:^(BOOL finished) {
-        if (finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
+        });
     }];
 }
 
@@ -250,11 +248,9 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     __block MITDiningHouseVenueDetailViewController *blockSelf = self;
     NSArray *listViewControllers = @[[self listViewControllerAtIndex:index - 1]];
     [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
-        if (finished) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
+        });
     }];
 }
 
