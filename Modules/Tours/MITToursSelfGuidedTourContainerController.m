@@ -15,7 +15,8 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
 
 @property (nonatomic, strong) UISegmentedControl *mapListSegmentedControl;
-@property (nonatomic, strong) UIBarButtonItem *currentLocationButton;
+@property (nonatomic, strong) UIBarButtonItem *userLocationBarButtonItem;
+@property (nonatomic, strong) UIButton *userLocationButton;
 
 @end
 
@@ -76,14 +77,21 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.mapListSegmentedControl setSelectedSegmentIndex:0];
     
     UIBarButtonItem *segmentedControlItem = [[UIBarButtonItem alloc] initWithCustomView:self.mapListSegmentedControl];
-    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_location"]
-                                                                                  style:UIBarButtonItemStylePlain
-                                                                                 target:self
-                                                                                 action:@selector(currentLocationButtonPressed:)];
+    
+    // For user location button, we use an actual UIButton so that we can easily change its selected state
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"map/map_location"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"map/map_location_selected"];
+    CGSize imageSize = userLocationImageNormal.size;
+    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+    [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
+    [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
+    [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
+    
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     self.toolbarItems = @[currentLocationButtonItem, flexibleSpace, segmentedControlItem, flexibleSpace];
 
-    self.currentLocationButton = currentLocationButtonItem;
+    self.userLocationBarButtonItem = currentLocationButtonItem;
 }
 
 - (void)showSelectedViewController
@@ -126,8 +134,8 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)showCurrentLocationButton
 {
     NSMutableArray *items = [self.toolbarItems mutableCopy];
-    if (![items containsObject:self.currentLocationButton]) {
-        [items insertObject:self.currentLocationButton atIndex:0];
+    if (![items containsObject:self.userLocationBarButtonItem]) {
+        [items insertObject:self.userLocationBarButtonItem atIndex:0];
         [self setToolbarItems:items animated:YES];
     }
 }
@@ -135,15 +143,15 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)hideCurrentLocationButton
 {
     NSMutableArray *items = [self.toolbarItems mutableCopy];
-    if ([items containsObject:self.currentLocationButton]) {
-        [items removeObject:self.currentLocationButton];
+    if ([items containsObject:self.userLocationBarButtonItem]) {
+        [items removeObject:self.userLocationBarButtonItem];
         [self setToolbarItems:items animated:YES];
     }
 }
 
 - (void)currentLocationButtonPressed:(id)sender
 {
-    [self.mapViewController centerMapOnUserLocation];
+    [self.mapViewController toggleUserTrackingMode];
 }
 
 #pragma mark - MITToursSelfGuidedTourListViewControllerDelegate Methods
@@ -158,6 +166,11 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
 {
     [self transitionToDetailsForStop:stop];
+}
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    self.userLocationButton.selected = (mode == MKUserTrackingModeFollow);
 }
 
 #pragma mark - Transition to Stop Details

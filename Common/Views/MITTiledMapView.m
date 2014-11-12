@@ -117,6 +117,11 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
+- (BOOL)isTrackingUser
+{
+    return self.mapView.userTrackingMode == MKUserTrackingModeFollow;
+}
+
 - (void)toggleUserTrackingMode
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
@@ -298,6 +303,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 - (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
 {
     [self updateLeftButtonForCurrentUserTrackingMode];
+    [self.userTrackingDelegate mitTiledMapView:self didChangeUserTrackingMode:mode animated:animated];
 }
 
 - (void)setMapDelegate:(id<MKMapViewDelegate>)mapDelegate

@@ -19,7 +19,7 @@ static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
 
-@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 @property (strong, nonatomic) SMCalloutView *calloutView;
@@ -60,6 +60,7 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)setupTiledMapView
 {
     [self.tiledMapView setMapDelegate:self];
+    [self.tiledMapView setUserTrackingDelegate:self];
     [self.tiledMapView setButtonsHidden:YES animated:NO];
     
     MKMapView *mapView = self.tiledMapView.mapView;
@@ -202,6 +203,15 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
+#pragma mark - MITTiledMapViewUserTrackingDelegate
+
+- (void)mitTiledMapView:(MITTiledMapView *)mitTiledMapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didChangeUserTrackingMode:animated:)]) {
+        [self.delegate mapViewController:self didChangeUserTrackingMode:mode animated:animated];
+    }
+}
+
 #pragma mark - Custom Callout
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
@@ -249,9 +259,19 @@ static NSInteger kAnnotationMarginRight = 50;
 
 #pragma mark - User Location Centering
 
+- (BOOL)isTrackingUser
+{
+    return self.tiledMapView.isTrackingUser;
+}
+
 - (void)centerMapOnUserLocation
 {
     [self.tiledMapView centerMapOnUserLocation];
+}
+
+- (void)toggleUserTrackingMode
+{
+    [self.tiledMapView toggleUserTrackingMode];
 }
 
 @end
