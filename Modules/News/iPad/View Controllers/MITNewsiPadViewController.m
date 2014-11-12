@@ -319,6 +319,9 @@ CGFloat const refreshControlTextHeight = 19;
                                     completion:^(BOOL finished) {
                                         [toViewController didMoveToParentViewController:self];
                                         [fromViewController removeFromParentViewController];
+                                        if (self.storyUpdateInProgress) {
+                                            [self startAndShowRefreshControl];
+                                        }
                                     }];
         }
     }
@@ -326,19 +329,18 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)startAndShowRefreshControl
 {
-    if (self.storyUpdateInProgress && (self.gridViewController.collectionView.contentOffset.y == 0 && self.listViewController.tableView.contentOffset.y == 0)) {
-        if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-            [self.gridViewController.collectionView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
-        } else {
-            [self.listViewController.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
-        }
-        [self updateRefreshStatusWithText:@"Updating..."];
+    if (self.storyUpdateInProgress) {
         
-        if (!self.refreshControl.refreshing) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self.refreshControl endRefreshing];
-                [self.refreshControl beginRefreshing];
-            }];
+        if ((self.presentationStyle == MITNewsPresentationStyleGrid && self.gridViewController.collectionView.contentOffset.y == 0) || (self.presentationStyle == MITNewsPresentationStyleList && self.listViewController.tableView.contentOffset.y == 0)) {
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:UIViewAnimationOptionBeginFromCurrentState
+                             animations:^(void){
+                [self showRefreshControl];
+            } completion:nil];
+            
+            [self.refreshControl beginRefreshing];
+            [self updateRefreshStatusWithText:@"Updating..."];
         }
     }
 }
@@ -369,7 +371,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsGrid:(UIBarButtonItem *)sender
 {
-    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
+    if (!self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleGrid;
         [self updateNavigationItem:YES];
     }
@@ -377,7 +379,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (IBAction)showStoriesAsList:(UIBarButtonItem *)sender
 {
-    if (!self.storyUpdateInProgress && !self.messageView && !self.loadingMoreStories) {
+    if (!self.messageView && !self.loadingMoreStories) {
         self.presentationStyle = MITNewsPresentationStyleList;
         [self updateNavigationItem:YES];
     }
@@ -512,7 +514,6 @@ CGFloat const refreshControlTextHeight = 19;
         if (!strongRefresh) {
             return;
         }
-        strongSelf.refreshControl = strongRefresh;
 
         if (error) {
             DDLogWarn(@"update failed; %@",error);
@@ -541,13 +542,13 @@ CGFloat const refreshControlTextHeight = 19;
             if (strongRefresh.refreshing) {
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                    [strongRefresh endRefreshing];
+                    [strongSelf.refreshControl endRefreshing];
                 });
             }
-            if (self.internetReachability) {
+            if (strongSelf.internetReachability) {
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
-                [self.internetReachability stopNotifier];
-                self.internetReachability = nil;
+                [strongSelf.internetReachability stopNotifier];
+                strongSelf.internetReachability = nil;
             }
         }
     }];
