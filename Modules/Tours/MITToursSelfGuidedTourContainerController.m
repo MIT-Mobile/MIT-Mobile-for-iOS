@@ -58,6 +58,23 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     
     [self.view addSubview:self.listViewController.view];
     [self.view addSubview:self.mapViewController.view];
+    
+    NSDictionary *viewDict = @{ @"listView": self.listViewController.view,
+                                @"mapView": self.mapViewController.view,
+                                @"topGuide": self.topLayoutGuide,
+                                @"bottomGuide": self.bottomLayoutGuide };
+    // TODO: Clean up the magic numbers here
+    self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.mapViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[mapView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[listView]-0-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[listView]-0-|" options:0 metrics:nil views:viewDict]];
+    
+    [self.listViewController.view setNeedsUpdateConstraints];
+    [self.mapViewController.view setNeedsUpdateConstraints];
+    [self.view setNeedsUpdateConstraints];
+    [self.view layoutIfNeeded];
 }
 
 - (void)setupNavBar

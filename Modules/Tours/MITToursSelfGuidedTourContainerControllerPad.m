@@ -49,13 +49,15 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     [self.view addSubview:self.listViewController.view];
     
     NSDictionary *viewDict = @{ @"listView": self.listViewController.view,
-                                @"mapView": self.mapViewController.view };
+                                @"mapView": self.mapViewController.view,
+                                @"topGuide": self.topLayoutGuide,
+                                @"bottomGuide": self.bottomLayoutGuide };
     // TODO: Clean up the magic numbers here
     self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     self.mapViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView]-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[listView]-44-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[mapView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[listView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView(==320)]" options:0 metrics:nil views:viewDict]];
 
     // We keep track of the list view's leading constraint so we can use it to show/hide the list
