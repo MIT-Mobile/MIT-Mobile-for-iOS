@@ -111,7 +111,6 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
     [modelSet addObject:@"Tours"];
     [modelSet addObject:@"QRReaderResult"];
     [modelSet addObject:@"FacilitiesLocations"];
-    [modelSet addObject:@"LibrariesLocationsHours"];
     [modelSet addObject:@"Dining"];
     return modelSet;
 }
