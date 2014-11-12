@@ -324,7 +324,7 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                     NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
     
-    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk. TechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
+    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk. TechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:self.finesUpdatedDate]]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                      NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
     

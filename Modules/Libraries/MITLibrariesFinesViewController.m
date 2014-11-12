@@ -77,7 +77,7 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
                                                                      attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                   NSFontAttributeName : [UIFont librariesHeaderFont]}];
     
-    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:[NSDate date]]]
+    NSAttributedString *detailsString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" as of %@.\nPayable at any MIT library service desk.\nTechCASH accepted only at Hayden Library.", [dateFormatter stringFromDate:self.finesUpdatedDate]]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                      NSFontAttributeName : [UIFont systemFontOfSize:14.0]}];
     
