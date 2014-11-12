@@ -3,13 +3,16 @@
 #import "MITModuleItem.h"
 #import "MITDrawerViewController.h"
 #import "MITAdditions.h"
+#import "MITSlidingAnimationController.h"
 
 static NSString* const MITDrawerNavigationControllerStoryboardId = @"DrawerNavigationController";
 static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableViewController";
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,ECSlidingViewControllerLayout,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,weak) MITDrawerViewController *drawerViewController;
 @property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
+
+@property(nonatomic,weak) MITSlidingAnimationController *animationController;
 
 - (NSArray*)moduleItems;
 @end
@@ -58,6 +61,10 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
     if (!([self.viewControllers count] > 0)) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"there must be at least one module added before being presented" userInfo:nil];
     }
+
+    CGRect frame = self.slidingViewController.underLeftViewController.view.bounds;
+    frame.size.width -= self.slidingViewController.anchorRightPeekAmount;
+    self.drawerViewController.view.frame = frame;
 
     [self _showInitialModuleIfNeeded];
 }
@@ -262,6 +269,22 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
         // (bskinner - 2014.11.07
         [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:YES];
     }
+}
+
+- (id<ECSlidingViewControllerLayout>)slidingViewController:(ECSlidingViewController *)slidingViewController
+                        layoutControllerForTopViewPosition:(ECSlidingViewControllerTopViewPosition)topViewPosition
+{
+    return self.animationController;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)slidingViewController:(ECSlidingViewController *)slidingViewController
+                                   animationControllerForOperation:(ECSlidingViewControllerOperation)operation
+                                                 topViewController:(UIViewController *)topViewController
+{
+    MITSlidingAnimationController *slidingAnimationController = [[MITSlidingAnimationController alloc] initWithSlidingViewController:slidingViewController operation:operation];
+    self.animationController = slidingAnimationController;
+
+    return self.animationController;
 }
 
 @end
