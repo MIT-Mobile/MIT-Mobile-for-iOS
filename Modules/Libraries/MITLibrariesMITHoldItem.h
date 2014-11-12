@@ -1,8 +1,7 @@
 #import "MITLibrariesMITItem.h"
-#import "MITInitializableWithDictionaryProtocol.h"
 #import "MITMappedObject.h"
 
-@interface MITLibrariesMITHoldItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol, MITMappedObject>
+@interface MITLibrariesMITHoldItem : MITLibrariesMITItem <MITMappedObject>
 
 @property (nonatomic, strong) NSString *status;
 @property (nonatomic, strong) NSString *pickupLocation;

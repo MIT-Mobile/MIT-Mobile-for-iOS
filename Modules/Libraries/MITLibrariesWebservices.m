@@ -196,20 +196,6 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     return operationQueue;
 }
 
-+ (NSArray *)parseJSONArray:(NSArray *)JSONArray intoObjectsOfClass:(Class)initializableDictionaryClass
-{
-    if (!JSONArray || ![initializableDictionaryClass conformsToProtocol:@protocol(MITInitializableWithDictionaryProtocol)]) {
-        return nil;
-    }
-    
-    NSMutableArray *objects = [[NSMutableArray alloc] init];
-    for (NSDictionary *objectDictionary in JSONArray) {
-        id parsedObject = [[initializableDictionaryClass alloc] initWithDictionary:objectDictionary];
-        [objects addObject:parsedObject];
-    }
-    return objects;
-}
-
 + (RKISO8601DateFormatter *)librariesDateFormatter
 {
     static RKISO8601DateFormatter *dateFormatter;

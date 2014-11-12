@@ -33,33 +33,6 @@
     return mapping;
 }
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
-{
-    self = [super init];
-    if (self) {
-        self.identifier = dictionary[@"id"];
-        self.url = dictionary[@"url"];
-        self.worldCatUrl = dictionary[@"worldcat_url"];
-        self.title = dictionary[@"title"];
-        self.coverImages = [MITLibrariesWebservices parseJSONArray:dictionary[@"cover_images"] intoObjectsOfClass:[MITLibrariesCoverImage class]];
-        self.author = dictionary[@"authors"];
-        self.year = dictionary[@"years"];
-        self.publisher = dictionary[@"publishers"];
-        self.format = dictionary[@"formats"];
-        self.isbns = dictionary[@"isbns"];
-        self.subject = dictionary[@"subjects"];
-        self.language = dictionary[@"langs"];
-        self.extent = dictionary[@"extents"];
-        self.summaries = dictionary[@"summaries"];
-        self.editions = dictionary[@"editions"];
-        self.address = dictionary[@"address"];
-        self.holdings = [MITLibrariesWebservices parseJSONArray:dictionary[@"holdings"] intoObjectsOfClass:[MITLibrariesHolding class]];
-        self.rawCitations = dictionary[@"citations"];
-        self.composedHTML = dictionary[@"composed-html"];
-    }
-    return self;
-}
-
 - (NSArray *)citations
 {
     return [self parseCitations:self.rawCitations];

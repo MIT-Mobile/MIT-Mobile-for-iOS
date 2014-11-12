@@ -4,7 +4,7 @@
 #import "MITLibrariesMITLoanItem.h"
 #import "MITMappedObject.h"
 
-@interface MITLibrariesUser : NSObject <MITMappedObject, MITInitializableWithDictionaryProtocol>
+@interface MITLibrariesUser : NSObject <MITMappedObject>
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSArray *loans;

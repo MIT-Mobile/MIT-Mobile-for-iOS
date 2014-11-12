@@ -3,7 +3,7 @@
 #import "MITLibrariesWebservices.h"
 #import "MITMappedObject.h"
 
-@interface MITLibrariesHolding : NSObject <MITInitializableWithDictionaryProtocol, MITMappedObject>
+@interface MITLibrariesHolding : NSObject <MITMappedObject>
 
 @property (nonatomic, strong) NSString *code;
 @property (nonatomic, strong) NSString *library;

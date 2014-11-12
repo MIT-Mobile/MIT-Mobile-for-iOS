@@ -1080,7 +1080,6 @@
 		228D661B19B6612500C7B78B /* MITDiningFiltersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningFiltersCell.h; path = Dining/MITDiningFiltersCell.h; sourceTree = "<group>"; };
 		228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningFiltersCell.m; path = Dining/MITDiningFiltersCell.m; sourceTree = "<group>"; };
 		228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningFiltersCell.xib; path = Dining/MITDiningFiltersCell.xib; sourceTree = "<group>"; };
-		228F26AE19D4A19A0049F1B7 /* MITInitializableWithDictionaryProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITInitializableWithDictionaryProtocol.h; sourceTree = "<group>"; };
 		228F26B219D4B6A20049F1B7 /* MITLibrariesMITLoanItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITLoanItem.h; sourceTree = "<group>"; };
 		228F26B319D4B6A20049F1B7 /* MITLibrariesMITLoanItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesMITLoanItem.m; sourceTree = "<group>"; };
 		228F26B519D4B6BE0049F1B7 /* MITLibrariesMITHoldItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITHoldItem.h; sourceTree = "<group>"; };
@@ -2905,7 +2904,6 @@
 			children = (
 				226A887D19C8C4EC00DB96B6 /* MITLibrariesWebservices.h */,
 				226A887E19C8C4EC00DB96B6 /* MITLibrariesWebservices.m */,
-				228F26AE19D4A19A0049F1B7 /* MITInitializableWithDictionaryProtocol.h */,
 			);
 			name = Webservices;
 			sourceTree = "<group>";

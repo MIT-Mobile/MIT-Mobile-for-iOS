@@ -2,9 +2,7 @@
 #import "MITLibrariesCoverImage.h"
 #import "MITLibrariesWebservices.h"
 
-@interface MITLibrariesMITItem : NSObject <MITInitializableWithDictionaryProtocol>
-
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
+@interface MITLibrariesMITItem : NSObject
 
 @property (nonatomic, strong) NSString *callNumber;
 @property (nonatomic, strong) NSString *author;
@@ -20,4 +18,5 @@
 
 + (NSDictionary *)attributeMappings;
 + (NSArray *)relationshipMappings; // [RKRelationshipMapping]
+
 @end

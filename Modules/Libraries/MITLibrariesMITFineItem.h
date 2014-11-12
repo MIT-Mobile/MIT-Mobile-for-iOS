@@ -2,7 +2,7 @@
 #import "MITLibrariesWebservices.h"
 #import "MITMappedObject.h"
 
-@interface MITLibrariesMITFineItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol, MITMappedObject>
+@interface MITLibrariesMITFineItem : MITLibrariesMITItem <MITMappedObject>
 
 @property (nonatomic, strong) NSString *status;
 @property (nonatomic, strong) NSString *fineDescription;

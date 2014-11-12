@@ -28,22 +28,7 @@
     
     return mapping;
 }
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
-{
-    self = [super initWithDictionary:dictionary];
-    if (self) {
-        self.loanedAtDateString = dictionary[@"loaned_at"];
-        self.dueAtDateString = dictionary[@"due_at"];
-        self.overdue = [dictionary[@"overdue"] boolValue];
-        self.longOverdue = [dictionary[@"long_overdue"] boolValue];
-        self.pendingFine = [dictionary[@"pending_fine"] integerValue];
-        self.formattedPendingFine = dictionary[@"formatted_pending_fine"];
-        self.dueText = dictionary[@"due_text"];
-        self.hasHold = [dictionary[@"has_hold"] boolValue];
-    }
-    return self;
-}
-                      
+
 #pragma mark - Getters | Setters
 
 - (NSDate *)loanedAt

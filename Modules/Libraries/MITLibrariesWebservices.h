@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "MITInitializableWithDictionaryProtocol.h"
 #import <RestKit/ISO8601DateFormatterValueTransformer.h>
 
 extern NSInteger const kMITLibrariesSearchResultsLimit;
@@ -27,7 +26,6 @@ extern NSInteger const kMITLibrariesSearchResultsLimit;
 + (NSArray *)recentSearchStrings;
 + (void)clearRecentSearches;
 
-+ (NSArray *)parseJSONArray:(NSArray *)JSONArray intoObjectsOfClass:(Class)initializableDictionaryClass;
 + (RKISO8601DateFormatter *)librariesDateFormatter;
 
 @end

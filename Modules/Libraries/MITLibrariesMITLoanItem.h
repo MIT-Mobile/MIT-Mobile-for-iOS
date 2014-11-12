@@ -2,7 +2,7 @@
 #import "MITLibrariesWebservices.h"
 #import "MITMappedObject.h"
 
-@interface MITLibrariesMITLoanItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol, MITMappedObject>
+@interface MITLibrariesMITLoanItem : MITLibrariesMITItem <MITMappedObject>
 
 @property (nonatomic, readonly) NSDate *loanedAt;
 @property (nonatomic, readonly) NSDate *dueAt;
