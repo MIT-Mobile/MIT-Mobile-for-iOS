@@ -22,6 +22,8 @@
 - (void)selectStop:(MITToursStop *)stop;
 - (void)deselectStop:(MITToursStop *)stop;
 
+- (void)saveCurrentMapRect;
+
 @end
 
 @protocol MITToursMapViewControllerDelegate <NSObject>

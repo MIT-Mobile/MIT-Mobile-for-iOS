@@ -202,6 +202,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
 {
+    [self.mapViewController saveCurrentMapRect];
     MITToursStopDetailContainerViewController *detailViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:detailViewController animated:YES];
 }

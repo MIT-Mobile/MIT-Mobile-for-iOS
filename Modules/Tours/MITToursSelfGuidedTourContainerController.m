@@ -197,6 +197,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)transitionToDetailsForStop:(MITToursStop *)stop
 {
+    [self.mapViewController saveCurrentMapRect];
     MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
 }
@@ -205,6 +206,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)transitionToTourInfo
 {
+    [self.mapViewController saveCurrentMapRect];
     MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
     infoVC.tour = self.selfGuidedTour;
     [self.navigationController pushViewController:infoVC animated:YES];
