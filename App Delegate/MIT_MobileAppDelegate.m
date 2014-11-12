@@ -505,7 +505,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
-                            @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
