@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursMapViewController">
             <connections>
                 <outlet property="tiledMapView" destination="jKD-aI-51I" id="ho0-fj-uEd"/>
+                <outlet property="tourDetailsView" destination="8LK-Y6-SF9" id="bzn-Ww-iNQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -20,11 +21,57 @@
                     <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8LK-Y6-SF9" userLabel="Tour Details View">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="92"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uZr-cu-FpT">
+                            <rect key="frame" x="8" y="14" width="304" height="66"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="304" id="pnG-ce-7ei"/>
+                            </constraints>
+                            <attributedString key="attributedText">
+                                <fragment>
+                                    <string key="content">Videotaping and photography are prohibited inside MIT buildings.
+
+</string>
+                                    <attributes>
+                                        <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <font key="NSFont" size="14" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                                <fragment content="Tour Details...">
+                                    <attributes>
+                                        <color key="NSColor" red="0.63137254901960782" green="0.12156862745098039" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
+                                        <font key="NSFont" size="14" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="0.75" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="92" id="7IX-nf-XNj"/>
+                        <constraint firstAttribute="trailing" secondItem="uZr-cu-FpT" secondAttribute="trailing" constant="8" id="Ctj-Qh-UNo"/>
+                        <constraint firstItem="uZr-cu-FpT" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" constant="8" id="Xfk-d5-FBl"/>
+                        <constraint firstItem="uZr-cu-FpT" firstAttribute="top" secondItem="8LK-Y6-SF9" secondAttribute="top" constant="14" id="dXq-SD-B0o"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="Ctj-Qh-UNo"/>
+                        </mask>
+                    </variation>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="jKD-aI-51I" secondAttribute="trailing" id="1aP-Wd-58Z"/>
+                <constraint firstAttribute="trailing" secondItem="8LK-Y6-SF9" secondAttribute="trailing" id="7zq-5g-5cp"/>
                 <constraint firstAttribute="bottom" secondItem="jKD-aI-51I" secondAttribute="bottom" id="P7L-iA-Pug"/>
+                <constraint firstItem="8LK-Y6-SF9" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="X2r-D0-MHy"/>
+                <constraint firstItem="8LK-Y6-SF9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="gFx-zG-wtn"/>
                 <constraint firstItem="jKD-aI-51I" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="jqW-Yu-Gip"/>
                 <constraint firstItem="jKD-aI-51I" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="pPK-8Z-CXX"/>
             </constraints>
