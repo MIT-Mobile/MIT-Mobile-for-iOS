@@ -3,4 +3,6 @@
 
 @interface MITLibrariesItemLoanFineCell : MITAutoSizingCell
 
+@property (weak, nonatomic) IBOutlet UIView *ipadSeparator;
+
 @end

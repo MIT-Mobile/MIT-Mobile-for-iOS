@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
@@ -46,12 +46,21 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dCw-AA-6yL">
+                        <rect key="frame" x="30" y="103" width="260" height="1"/>
+                        <color key="backgroundColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="btp-YW-BWs"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="7YF-Ut-Jcq" firstAttribute="top" secondItem="WMC-Ax-Dnx" secondAttribute="bottom" constant="1" id="1Ll-sV-5Iw"/>
                     <constraint firstItem="WMC-Ax-Dnx" firstAttribute="top" secondItem="ygE-Td-DxX" secondAttribute="topMargin" constant="2" id="7sH-4O-pXe"/>
                     <constraint firstItem="7YF-Ut-Jcq" firstAttribute="leading" secondItem="WMC-Ax-Dnx" secondAttribute="leading" id="9j4-Y0-qCD"/>
                     <constraint firstItem="WMC-Ax-Dnx" firstAttribute="leading" secondItem="ygE-Td-DxX" secondAttribute="leadingMargin" constant="63" id="AuW-2e-Ivh"/>
+                    <constraint firstItem="dCw-AA-6yL" firstAttribute="leading" secondItem="ygE-Td-DxX" secondAttribute="leading" constant="30" id="CvG-fR-ZeM"/>
+                    <constraint firstAttribute="bottom" secondItem="dCw-AA-6yL" secondAttribute="bottom" id="CwZ-h7-Ncm"/>
                     <constraint firstItem="6g5-iZ-hGC" firstAttribute="top" secondItem="3tx-cq-vvp" secondAttribute="bottom" id="H1q-k7-kV7"/>
                     <constraint firstItem="lJQ-sO-Eqy" firstAttribute="top" secondItem="ygE-Td-DxX" secondAttribute="topMargin" constant="6" id="KIL-sh-W4V"/>
                     <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="lJQ-sO-Eqy" secondAttribute="bottom" priority="750" constant="-4" id="M7s-lR-4Ol"/>
@@ -64,12 +73,14 @@
                     <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="6g5-iZ-hGC" secondAttribute="bottom" constant="2" id="ihq-Tt-foU"/>
                     <constraint firstItem="6g5-iZ-hGC" firstAttribute="leading" secondItem="3tx-cq-vvp" secondAttribute="leading" id="kSF-4Y-roA"/>
                     <constraint firstAttribute="trailingMargin" secondItem="WMC-Ax-Dnx" secondAttribute="trailing" id="qO8-1T-2st"/>
+                    <constraint firstAttribute="trailing" secondItem="dCw-AA-6yL" secondAttribute="trailing" constant="30" id="wcd-A9-SfB"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="authorAndPublicationDateLabel" destination="6g5-iZ-hGC" id="Fah-h4-1I2"/>
                 <outlet property="bookCoverImageView" destination="lJQ-sO-Eqy" id="IHL-Dg-W2d"/>
                 <outlet property="holdDateLabel" destination="7YF-Ut-Jcq" id="Ga1-6A-GrK"/>
+                <outlet property="ipadSeparator" destination="dCw-AA-6yL" id="iz5-u2-or4"/>
                 <outlet property="itemTitleLabel" destination="3tx-cq-vvp" id="Z8e-Bu-ymB"/>
                 <outlet property="readyForPickupLabel" destination="WMC-Ax-Dnx" id="zBx-A7-hY4"/>
             </connections>

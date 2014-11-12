@@ -25,6 +25,7 @@
     [self.holdDateLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
     [self.authorAndPublicationDateLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
     
+    self.ipadSeparator.backgroundColor = [UIColor mit_cellSeparatorColor];
     self.separatorInset = UIEdgeInsetsMake(0, 71, 0, 0);
 }
 
