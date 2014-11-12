@@ -93,7 +93,7 @@
                                         </constraints>
                                     </webView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lyu-sR-MC2" customClass="MITHighlightOnTouchView">
-                                        <rect key="frame" x="60" y="800" width="648" height="121.5"/>
+                                        <rect key="frame" x="60" y="800" width="648" height="123”/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MsR-he-jtK">
                                                 <constraints>
