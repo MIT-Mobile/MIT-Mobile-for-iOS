@@ -37,7 +37,7 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 
 @implementation MITLibrariesWebservices
 
-#pragma mark - Libraries Webservice Calls
+#pragma mark - Libraries Webservice Calls - POST
 
 + (NSDictionary *)formSheetGroupsAsHTMLParametersDictionary:(NSArray *)formSheetGroups
 {
@@ -85,6 +85,8 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     
     [[self MITWebserviceOperationQueue] addOperation:requestOperation];
 }
+
+#pragma mark - Libraries Webservice Calls - GET
 
 + (void)getLinksWithCompletion:(void (^)(NSArray *links, NSError *error))completion
 {
@@ -145,21 +147,12 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 
 + (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion
 {
-    NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibrariesAccountEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
-                                                                   parameters:nil
-                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
-    
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    
-    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-        MITLibrariesUser *user = [[MITLibrariesUser alloc] initWithDictionary:responseObject];
-        completion(user, nil);
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-        completion(nil, error);
-    }];
-    
-    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesUserResourceName
+                                                    object:nil
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    completion(result.array.firstObject, error);
+                                                }];
 }
 
 + (NSArray *)recentSearchStrings

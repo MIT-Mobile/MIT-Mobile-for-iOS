@@ -4,6 +4,7 @@
 #import "MITLibrariesLink.h"
 #import "MITLibrariesAskUsModel.h"
 #import "MITLibrariesWorldcatItem.h"
+#import "MITLibrariesUser.h"
 
 @implementation MITLibrariesResource
 
@@ -71,7 +72,24 @@
 {
     self = [super initWithName:MITLibrariesItemDetailResourceName pathPattern:MITLibrariesItemDetailPathPattern];
     if (self) {
-        [self addMapping:[MITLibrariesWorldcatItem objectMapping] atKeyPath:nil forRequestMethod:RKRequestMethodGET];
+        [self addMapping:[MITLibrariesWorldcatItem objectMapping]
+               atKeyPath:nil
+        forRequestMethod:RKRequestMethodGET];
+    }
+    return self;
+}
+
+@end
+
+@implementation MITLibrariesUserResource
+
+- (instancetype)init
+{
+    self = [super initWithName:MITLibrariesUserResourceName pathPattern:MITLibrariesUserPathPattern];
+    if (self) {
+        [self addMapping:[MITLibrariesUser objectMapping]
+               atKeyPath:nil
+        forRequestMethod:RKRequestMethodGET];
     }
     return self;
 }
