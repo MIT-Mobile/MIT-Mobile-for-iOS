@@ -192,7 +192,7 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-         MITLibrariesYourAccountCollectionViewHeader * header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier forIndexPath:indexPath];
+        MITLibrariesYourAccountCollectionViewHeader *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier forIndexPath:indexPath];
         
         NSAttributedString *headerText = nil;
         
