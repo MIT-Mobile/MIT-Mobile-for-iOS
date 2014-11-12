@@ -89,9 +89,8 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 - (void)setupToolbar
 {
     // We use actual UIButtons so that we can easily change the selected state
-    // TODO: Drop in the correct assets here
-    UIImage *listToggleImageNormal = [UIImage imageNamed:@"global/menu"];
-    UIImage *listToggleImageSelected = [UIImage imageNamed:@"global/menu"];
+    UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
+    UIImage *listToggleImageSelected = [UIImage imageNamed:@"tours/list-view"];
     CGSize listToggleImageSize = listToggleImageNormal.size;
     self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
     [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
@@ -99,8 +98,8 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     [self.listViewToggleButton addTarget:self action:@selector(listButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *listButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
     
-    UIImage *userLocationImageNormal = [UIImage imageNamed:@"map/map_location"];
-    UIImage *userLocationImageSelected = [UIImage imageNamed:@"map/map_location_selected"];
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"tours/track-user_disabled"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"tours/track-user_active"];
     CGSize userLocationImageSize = userLocationImageNormal.size;
     self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, userLocationImageSize.width, userLocationImageSize.height)];
     [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
