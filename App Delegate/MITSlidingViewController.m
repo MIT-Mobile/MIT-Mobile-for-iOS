@@ -2,6 +2,7 @@
 #import "MITModule.h"
 #import "MITModuleItem.h"
 #import "MITDrawerViewController.h"
+#import "MITAdditions.h"
 
 static NSString* const MITDrawerNavigationControllerStoryboardId = @"DrawerNavigationController";
 static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableViewController";
@@ -169,6 +170,7 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
     if (self.slidingViewController.topViewController != newVisibleViewController) {
         [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
         self.slidingViewController.topViewController = newVisibleViewController;
+        newVisibleViewController.view.backgroundColor = [UIColor mit_backgroundColor];
     }
 
     if (![self.slidingViewController.view.gestureRecognizers containsObject:self.slidingViewController.panGesture]) {
