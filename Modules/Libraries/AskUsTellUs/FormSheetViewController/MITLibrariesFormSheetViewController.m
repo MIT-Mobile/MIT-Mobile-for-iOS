@@ -37,6 +37,18 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     [self verifyAuthorization];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self registerKeyboardListeners];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self unregisterKeyboardListeners];
+}
+
 #pragma mark - Setup
 
 - (void)setup
@@ -79,6 +91,66 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
                                                                              target:self
                                                                              action:@selector(submitButtonPressed:)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
+}
+
+#pragma mark - Keyboard Functionality
+
+- (void)registerKeyboardListeners
+{
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+    [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+- (void)unregisterKeyboardListeners
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)keyboardWillShow:(NSNotification *)note
+{
+    NSDictionary *keyboardAnimationDetail = note.userInfo;
+    UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? CGRectGetHeight(keyboardFrame) : CGRectGetWidth(keyboardFrame);
+    
+    [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+        UIEdgeInsets contentInsets = self.tableView.contentInset;
+        contentInsets.bottom = keyboardHeight;
+        self.tableView.contentInset = contentInsets;
+    } completion:nil];
+}
+
+- (void)keyboardWillHide:(NSNotification *)note
+{
+    NSDictionary *keyboardAnimationDetail = note.userInfo;
+    UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
+    [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+        UIEdgeInsets contentInsets = self.tableView.contentInset;
+        contentInsets.bottom = 0;
+        self.tableView.contentInset = contentInsets;
+    } completion:nil];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *)note
+{
+    NSDictionary *keyboardAnimationDetail = note.userInfo;
+    UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? CGRectGetHeight(keyboardFrame) : CGRectGetWidth(keyboardFrame);
+    
+    [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+        UIEdgeInsets currentInsets = self.tableView.contentInset;
+        currentInsets.bottom = keyboardHeight;
+        self.tableView.contentInset = currentInsets;
+    } completion:nil];
 }
 
 #pragma mark - Authorization
