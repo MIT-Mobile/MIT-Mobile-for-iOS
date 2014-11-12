@@ -96,8 +96,8 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     UIBarButtonItem *segmentedControlItem = [[UIBarButtonItem alloc] initWithCustomView:self.mapListSegmentedControl];
     
     // For user location button, we use an actual UIButton so that we can easily change its selected state
-    UIImage *userLocationImageNormal = [UIImage imageNamed:@"map/map_location"];
-    UIImage *userLocationImageSelected = [UIImage imageNamed:@"map/map_location_selected"];
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"tours/track-user_disabled"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"tours/track-user_active"];
     CGSize imageSize = userLocationImageNormal.size;
     self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
     [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
