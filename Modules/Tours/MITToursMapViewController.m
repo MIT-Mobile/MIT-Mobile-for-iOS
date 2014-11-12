@@ -29,6 +29,7 @@ static NSInteger kAnnotationMarginRight = 50;
 @property (weak, nonatomic) IBOutlet UIView *tourDetailsView;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
+@property (nonatomic) MKMapRect savedMapRect;
 
 @end
 
@@ -43,6 +44,7 @@ static NSInteger kAnnotationMarginRight = 50;
         self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
         self.shouldShowStopDescriptions = NO;
         self.shouldShowTourDetailsPanel = YES;
+        self.savedMapRect = MKMapRectNull;
     }
     return self;
 }
@@ -103,10 +105,15 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+
+    MKMapView *mapView = self.tiledMapView.mapView;
+    if (!MKMapRectIsNull(self.savedMapRect)) {
+        [mapView setVisibleMapRect:self.savedMapRect animated:animated];
+        return;
+    }
     
     // TODO: This code was more-or-less copied from the dining module map setup. Consider sharing
     // the code to DRY this out.
-    MKMapView *mapView = self.tiledMapView.mapView;
     if ([mapView.annotations count] > 0) {
         MKMapRect zoomRect = MKMapRectNull;
         for (id <MKAnnotation> annotation in mapView.annotations)
@@ -121,6 +128,11 @@ static NSInteger kAnnotationMarginRight = 50;
         // TODO: Figure out what the default region should be?
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
+}
+
+- (void)saveCurrentMapRect
+{
+    self.savedMapRect = self.tiledMapView.mapView.visibleMapRect;
 }
 
 #pragma mark - Tour Details
