@@ -162,6 +162,7 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
 
+    UIViewController *oldVisibleViewController = _visibleViewController;
     _visibleViewController = newVisibleViewController;
     
     self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
@@ -169,7 +170,11 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
     if (self.slidingViewController.topViewController != newVisibleViewController) {
         [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
         self.slidingViewController.topViewController = newVisibleViewController;
+
         newVisibleViewController.view.backgroundColor = [UIColor mit_backgroundColor];
+        newVisibleViewController.view.layer.shadowColor = [UIColor blackColor].CGColor;
+        newVisibleViewController.view.layer.shadowOpacity = 1.0;
+        oldVisibleViewController.view.layer.shadowOpacity = 0.0;
     }
 
     if (![self.slidingViewController.view.gestureRecognizers containsObject:self.slidingViewController.panGesture]) {
