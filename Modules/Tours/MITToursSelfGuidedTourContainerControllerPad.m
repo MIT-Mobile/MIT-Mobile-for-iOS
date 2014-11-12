@@ -10,8 +10,9 @@
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
 
 @property (nonatomic, strong) NSLayoutConstraint *listViewLeadingConstraint;
-
 @property (nonatomic) BOOL isShowingListView;
+
+@property (nonatomic, strong) UIButton *userLocationButton;
 
 @end
 
@@ -90,10 +91,17 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(listButtonPressed:)];
-    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_location"]
-                                                                                  style:UIBarButtonItemStylePlain
-                                                                                 target:self
-                                                                                 action:@selector(currentLocationButtonPressed:)];
+    
+    // For user location button, we use an actual UIButton so that we can easily change its selected state
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"map/map_location"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"map/map_location_selected"];
+    CGSize imageSize = userLocationImageNormal.size;
+    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+    [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
+    [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
+    [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
+
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     self.toolbarItems = @[listButton, flexibleSpace, currentLocationButtonItem];
 }
@@ -151,7 +159,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)currentLocationButtonPressed:(UIBarButtonItem *)sender
 {
-    [self.mapViewController centerMapOnUserLocation];
+    [self.mapViewController toggleUserTrackingMode];
 }
 
 #pragma mark - MITToursSelfGuidedTourListViewController Methods
@@ -177,6 +185,11 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 {
     MITToursStopDetailContainerViewController *detailViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    self.userLocationButton.selected = (mode == MKUserTrackingModeFollow);
 }
 
 @end
