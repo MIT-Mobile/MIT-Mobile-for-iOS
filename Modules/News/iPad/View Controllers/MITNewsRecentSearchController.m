@@ -5,7 +5,6 @@
 @interface MITNewsRecentSearchController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) MITNewsModelController *modelController;
-@property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, readwrite) UIActionSheet *confirmSheet;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *clearButtonItem;
 @property (nonatomic, strong) NSString *filterString;
@@ -41,6 +40,14 @@
     if ([self.recentResults count] == 0) {
         self.clearButtonItem.enabled = NO;
     }
+}
+
+- (void)initializeTable
+{
+    self.tableView = [[UITableView alloc] init];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
 }
 
 - (void)viewWillAppear:(BOOL)animated

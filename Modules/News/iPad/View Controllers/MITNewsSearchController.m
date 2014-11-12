@@ -50,7 +50,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -72,9 +74,7 @@
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self hideSearchRecents];
-    if ([searchBar.text isEqualToString:@""]) {
-        [self changeToMainStories];
-    } else {
+    if (![searchBar.text isEqualToString:@""]) {
         [self changeToSearchStories];
     }
     if (self.messageView || self.messageActivityView) {
@@ -102,19 +102,23 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    self.view.alpha = .5;
-    self.messageView.alpha = .5;
-    self.messageActivityView.alpha = .5;
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
+        self.view.alpha = .5;
+        self.messageView.alpha = .5;
+        self.messageActivityView.alpha = .5;
+    } else {
+        [self showTableSearchRecents];
+        self.view.alpha = 1;
     }
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
-        [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
+        }
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     }
@@ -200,6 +204,15 @@
     self.recentSearchPopoverController = recentSearchPopoverController;
 }
 
+- (void)showTableSearchRecents
+{
+    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.frame];
+    [self.recentSearchController initializeTable];
+    tableView = self.recentSearchController.tableView;
+    tableView.frame = self.view.frame;
+    [self.view addSubview:tableView];
+}
+
 - (void)hideSearchField
 {
     [self.delegate hideSearchField];
@@ -212,7 +225,13 @@
     if (self.dataSource == nil) {
         [self hideSearchField];
     } else {
-        self.view.alpha = 0;
+        if (self.messageActivityView || self.messageView) {
+            self.view.alpha = 1;
+            self.messageView.alpha = 1;
+            self.messageActivityView.alpha = 1;
+        } else {
+            self.view.alpha = 0;
+        }
     }
     return YES;
 }

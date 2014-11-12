@@ -5,8 +5,10 @@
 
 @property MITNewsSearchController *searchController;
 @property (nonatomic, readonly) UIActionSheet *confirmSheet;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 - (void)addRecentSearchItem:(NSString *)searchTerm;
 - (void)filterResultsUsingString:(NSString *)filterString;
+- (void)initializeTable;
 
 @end
