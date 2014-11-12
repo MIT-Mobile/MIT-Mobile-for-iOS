@@ -3,16 +3,17 @@
 #import "MITModuleItem.h"
 #import "MITDrawerViewController.h"
 
-static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseIdentifier";
+static NSString* const MITDrawerNavigationControllerStoryboardId = @"DrawerNavigationController";
+static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableViewController";
 
 @interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
-@property(nonatomic,readonly) MITDrawerViewController *drawerViewController;
+@property(nonatomic,weak) MITDrawerViewController *drawerViewController;
 @property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
+
+- (NSArray*)moduleItems;
 @end
 
 @implementation MITSlidingViewController
-@dynamic drawerViewController;
-
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {
     if (self) {
@@ -24,6 +25,29 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    NSAssert(self.slidingViewControllerStoryboardId, @"slidingViewControllerStoryboardId may not be nil.");
+
+    ECSlidingViewController *slidingViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.slidingViewControllerStoryboardId];
+
+    NSAssert([slidingViewController isKindOfClass:[ECSlidingViewController class]],@"object with storyboard ID %@ is a kind of %@, expected %@", self.slidingViewControllerStoryboardId,NSStringFromClass([slidingViewController class]),NSStringFromClass([ECSlidingViewController class]));
+    NSAssert(slidingViewController.underLeftViewController, @"slidingViewController does not have a valid underLeftViewController");
+    NSAssert([slidingViewController.underLeftViewController isKindOfClass:[UINavigationController class]], @"underLeftViewController is a kind of %@, expected %@",NSStringFromClass([slidingViewController.underLeftViewController class]),NSStringFromClass([UINavigationController class]));
+
+    [self addChildViewController:slidingViewController];
+    slidingViewController.view.frame = self.view.bounds;
+    [self.view addSubview:slidingViewController.view];
+    [slidingViewController didMoveToParentViewController:self];
+
+    UINavigationController *drawerNavigationController = (UINavigationController*)slidingViewController.underLeftViewController;
+    MITDrawerViewController *drawerTableViewController = (MITDrawerViewController*)[drawerNavigationController.viewControllers firstObject];
+    NSAssert([drawerTableViewController isKindOfClass:[MITDrawerViewController class]], @"underLeftViewController's root view is a kind of %@, expected %@",NSStringFromClass([drawerTableViewController class]), NSStringFromClass([MITDrawerViewController class]));
+
+    self.slidingViewController = slidingViewController;
+    self.slidingViewController.delegate = self;
+
+    self.drawerViewController = drawerTableViewController;
+    self.drawerViewController.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -33,10 +57,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     if (!([self.viewControllers count] > 0)) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"there must be at least one module added before being presented" userInfo:nil];
     }
-    
-    self.slidingViewController.delegate = self;
-    self.drawerViewController.delegate = self;
-    
+
     [self _showInitialModuleIfNeeded];
 }
 
@@ -59,15 +80,6 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     return _leftBarButtonItem;
 }
 
-- (MITDrawerViewController*)drawerViewController
-{
-    if ([self.slidingViewController.underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
-        return (MITDrawerViewController*)self.slidingViewController.underLeftViewController;
-    } else {
-        return nil;
-    }
-}
-
 - (ECSlidingViewController*)slidingViewController
 {
     if (![self isSlidingViewControllerLoaded]) {
@@ -76,6 +88,19 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     }
     
     return _slidingViewController;
+}
+
+- (NSArray*)moduleItems
+{
+    NSMutableArray *moduleItems = [[NSMutableArray alloc] init];
+    [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, NSUInteger idx, BOOL *stop) {
+        MITModuleItem *moduleItem = viewController.moduleItem;
+        if (moduleItem) {
+            [moduleItems addObject:moduleItem];
+        }
+    }];
+
+    return moduleItems;
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers
@@ -88,11 +113,9 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     if (![_viewControllers isEqualToArray:viewControllers]) {
         NSArray *oldViewControllers = _viewControllers;
 
-        NSMutableArray *moduleItems = [[NSMutableArray alloc] init];
         _viewControllers = [viewControllers filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UIViewController *viewController, NSDictionary *bindings) {
             MITModuleItem *moduleItem = viewController.moduleItem;
             if (moduleItem) {
-                [moduleItems addObject:viewController.moduleItem];
                 return YES;
             } else {
                 NSLog(@"%@ does not have a valid module item",viewController);
@@ -100,7 +123,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
             }
         }]];
         
-        [self.drawerViewController setModuleItems:moduleItems animated:animated];
+        [self.drawerViewController setModuleItems:[self moduleItems] animated:animated];
         [self.drawerViewController setSelectedModuleItem:self.visibleViewController.moduleItem animated:animated];
 
         if (!self.isViewLoaded) {
@@ -145,7 +168,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
     
     if (self.slidingViewController.topViewController != newVisibleViewController) {
         [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
-        [self.slidingViewController setTopViewController:newVisibleViewController];
+        self.slidingViewController.topViewController = newVisibleViewController;
     }
 
     if (![self.slidingViewController.view.gestureRecognizers containsObject:self.slidingViewController.panGesture]) {
@@ -160,8 +183,10 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
         UIViewController *rootViewController = [navigationController.viewControllers firstObject];
         rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
     }
-    
-    [self.slidingViewController resetTopViewAnimated:YES];
+
+    if (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+        [self.slidingViewController resetTopViewAnimated:YES];
+    }
 }
 
 - (void)setVisibleViewControllerWithModuleName:(NSString *)name
@@ -194,6 +219,7 @@ static NSString* const MITRootLogoHeaderReuseIdentifier = @"RootLogoHeaderReuseI
 - (void)_showInitialModuleIfNeeded
 {
     if (!self.visibleViewController) {
+        self.drawerViewController.moduleItems = [self moduleItems];
         self.visibleViewController = [self.viewControllers firstObject];
     }
 }

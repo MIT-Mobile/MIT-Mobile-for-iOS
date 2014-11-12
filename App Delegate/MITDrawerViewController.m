@@ -2,14 +2,10 @@
 #import "MITSlidingViewController.h"
 #import "MITModuleItem.h"
 
-static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
+static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 static NSUInteger const MITModuleSectionIndex = 0;
 
 @interface MITDrawerViewController ()
-@property(nonatomic,weak) IBOutlet UIView *logoContainer;
-@property(nonatomic,weak) IBOutlet UIImageView *logoView;
-@property(nonatomic,weak) IBOutlet UITableView *tableView;
-
 @property (nonatomic,strong) NSIndexPath *selectedIndexPath;
 @end
 
