@@ -13,6 +13,7 @@
 @property (nonatomic) BOOL isShowingListView;
 
 @property (nonatomic, strong) UIButton *userLocationButton;
+@property (nonatomic, strong) UIButton *listViewToggleButton;
 
 @end
 
@@ -87,23 +88,28 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupToolbar
 {
-    UIBarButtonItem *listButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(listButtonPressed:)];
+    // We use actual UIButtons so that we can easily change the selected state
+    // TODO: Drop in the correct assets here
+    UIImage *listToggleImageNormal = [UIImage imageNamed:@"global/menu"];
+    UIImage *listToggleImageSelected = [UIImage imageNamed:@"global/menu"];
+    CGSize listToggleImageSize = listToggleImageNormal.size;
+    self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
+    [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
+    [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
+    [self.listViewToggleButton addTarget:self action:@selector(listButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *listButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
     
-    // For user location button, we use an actual UIButton so that we can easily change its selected state
     UIImage *userLocationImageNormal = [UIImage imageNamed:@"map/map_location"];
     UIImage *userLocationImageSelected = [UIImage imageNamed:@"map/map_location_selected"];
-    CGSize imageSize = userLocationImageNormal.size;
-    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+    CGSize userLocationImageSize = userLocationImageNormal.size;
+    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, userLocationImageSize.width, userLocationImageSize.height)];
     [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
     [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
     [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
 
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[listButton, flexibleSpace, currentLocationButtonItem];
+    self.toolbarItems = @[listButtonItem, flexibleSpace, currentLocationButtonItem];
 }
 
 #pragma mark - List View Panel
@@ -114,6 +120,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
         return;
     }
     self.isShowingListView = YES;
+    self.listViewToggleButton.selected = YES;
     [self moveListViewToOffset:0 animated:animated];
 }
 
@@ -123,6 +130,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
         return;
     }
     self.isShowingListView = NO;
+    self.listViewToggleButton.selected = NO;
     [self moveListViewToOffset:-CGRectGetWidth(self.listViewController.view.frame) animated:animated];
 }
 
