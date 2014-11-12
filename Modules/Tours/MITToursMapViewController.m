@@ -26,6 +26,8 @@ static NSInteger kAnnotationMarginRight = 50;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
+@property (weak, nonatomic) IBOutlet UIView *tourDetailsView;
+
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 
 @end
@@ -40,6 +42,7 @@ static NSInteger kAnnotationMarginRight = 50;
         self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
         self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
         self.shouldShowStopDescriptions = NO;
+        self.shouldShowTourDetailsPanel = YES;
     }
     return self;
 }
@@ -49,6 +52,7 @@ static NSInteger kAnnotationMarginRight = 50;
     [super viewDidLoad];
     [self setupTiledMapView];
     [self setupCalloutView];
+    [self setupTourDetailsView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -116,6 +120,29 @@ static NSInteger kAnnotationMarginRight = 50;
     } else {
         // TODO: Figure out what the default region should be?
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
+    }
+}
+
+#pragma mark - Tour Details
+
+- (void)setupTourDetailsView
+{
+    self.tourDetailsView.hidden = !self.shouldShowTourDetailsPanel;
+
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tourDetailsViewWasTapped:)];
+    [self.tourDetailsView addGestureRecognizer:tapRecognizer];
+}
+
+- (void)setShouldShowTourDetailsPanel:(BOOL)shouldShowTourDetailsPanel
+{
+    _shouldShowTourDetailsPanel = shouldShowTourDetailsPanel;
+    self.tourDetailsView.hidden = !shouldShowTourDetailsPanel;
+}
+
+- (void)tourDetailsViewWasTapped:(UITapGestureRecognizer *)sender
+{
+    if ([self.delegate respondsToSelector:@selector(mapViewControllerDidPressInfoButton:)]) {
+        [self.delegate mapViewControllerDidPressInfoButton:self];
     }
 }
 

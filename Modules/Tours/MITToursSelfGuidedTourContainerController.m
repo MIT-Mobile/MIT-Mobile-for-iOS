@@ -141,9 +141,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
-    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
-    infoVC.tour = self.selfGuidedTour;
-    [self.navigationController pushViewController:infoVC animated:YES];
+    [self transitionToTourInfo];
 }
 
 #pragma mark - Current Location Button
@@ -190,12 +188,26 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     self.userLocationButton.selected = (mode == MKUserTrackingModeFollow);
 }
 
+- (void)mapViewControllerDidPressInfoButton:(MITToursMapViewController *)mapViewController
+{
+    [self transitionToTourInfo];
+}
+
 #pragma mark - Transition to Stop Details
 
 - (void)transitionToDetailsForStop:(MITToursStop *)stop
 {
     MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
+}
+
+#pragma mark - Transition to Tour Info
+
+- (void)transitionToTourInfo
+{
+    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    infoVC.tour = self.selfGuidedTour;
+    [self.navigationController pushViewController:infoVC animated:YES];
 }
 
 @end
