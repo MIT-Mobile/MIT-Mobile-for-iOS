@@ -3,10 +3,9 @@
 #import "MITLibrariesCitation.h"
 #import "MITLibrariesCoverImage.h"
 #import "MITLibrariesWebservices.h"
-
 #import "MITMappedObject.h"
 
-@interface MITLibrariesWorldcatItem : NSObject <MITInitializableWithDictionaryProtocol, MITMappedObject>
+@interface MITLibrariesWorldcatItem : NSObject <MITMappedObject>
 
 @property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) NSString *url;
