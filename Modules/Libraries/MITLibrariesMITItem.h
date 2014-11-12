@@ -18,4 +18,6 @@
 @property (nonatomic, strong) NSString *barcode;
 @property (nonatomic, strong) NSArray *coverImages;
 
++ (NSDictionary *)attributeMappings;
++ (NSArray *)relationshipMappings; // [RKRelationshipMapping]
 @end

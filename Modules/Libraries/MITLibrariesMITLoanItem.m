@@ -10,7 +10,8 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesMITLoanItem class]];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
+    NSDictionary *superMappings = [super attributeMappings];
+    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionaryWithDictionary:superMappings];
     attributeMappings[@"loaned_at"] = @"loanedAtDateString";
     attributeMappings[@"due_at"] = @"dueAtDateString";
     attributeMappings[@"overdue"] = @"overdue";
@@ -20,6 +21,11 @@
     attributeMappings[@"due_text"] = @"dueText";
     attributeMappings[@"has_hold"] = @"hasHold";
     [mapping addAttributeMappingsFromDictionary:attributeMappings];
+
+    for (RKRelationshipMapping *relationshipMapping in [super relationshipMappings]) {
+        [mapping addPropertyMapping:relationshipMapping];
+    }
+    
     return mapping;
 }
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary

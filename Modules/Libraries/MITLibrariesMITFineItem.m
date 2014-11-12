@@ -9,13 +9,19 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesMITFineItem class]];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
+    NSDictionary *superMappings = [super attributeMappings];
+    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionaryWithDictionary:superMappings];
     attributeMappings[@"status"] = @"status";
     attributeMappings[@"description"] = @"fineDescription";
     attributeMappings[@"formatted_amount"] = @"formattedAmount";
     attributeMappings[@"amount"] = @"amount";
     attributeMappings[@"fined_at"] = @"finedAtDateString";
     [mapping addAttributeMappingsFromDictionary:attributeMappings];
+    
+    for (RKRelationshipMapping *relationshipMapping in [super relationshipMappings]) {
+        [mapping addPropertyMapping:relationshipMapping];
+    }
+    
     return mapping;
 }
 

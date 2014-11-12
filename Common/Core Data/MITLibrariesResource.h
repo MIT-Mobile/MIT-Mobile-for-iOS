@@ -19,3 +19,7 @@
 @interface MITLibrariesItemDetailResource : MITMobileResource
 - (instancetype)init;
 @end
+
+@interface MITLibrariesUserResource : MITMobileResource
+- (instancetype)init;
+@end
