@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursStopDetailViewController">
             <connections>
                 <outlet property="bodyTextLabel" destination="T2M-yO-r3b" id="p3Z-S3-4cc"/>
                 <outlet property="mainLoopCollectionView" destination="utD-mE-rH7" id="kVH-52-1Aq"/>
-                <outlet property="mainLoopCollectionViewManager" destination="4Jd-xW-Qvw" id="WdP-P0-OY0"/>
                 <outlet property="nearHereCollectionView" destination="q74-8a-1TS" id="Jnz-9f-qNc"/>
-                <outlet property="nearHereCollectionViewManager" destination="Xa0-jO-pYn" id="Dmj-gS-sQD"/>
                 <outlet property="scrollView" destination="w3V-59-ysb" id="06d-ZU-hFC"/>
                 <outlet property="stopImageView" destination="5Qq-dd-txi" id="tw3-AG-Szy"/>
                 <outlet property="stopTitleLabel" destination="3FI-m8-DDe" id="M9K-kz-dTT"/>
@@ -64,10 +62,6 @@
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                 <inset key="sectionInset" minX="5" minY="52" maxX="5" maxY="16"/>
                             </collectionViewFlowLayout>
-                            <connections>
-                                <outlet property="dataSource" destination="4Jd-xW-Qvw" id="JFW-9v-TRI"/>
-                                <outlet property="delegate" destination="4Jd-xW-Qvw" id="2Wx-VX-QH8"/>
-                            </connections>
                         </collectionView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Loop" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z54-xP-Njy" userLabel="Main Loop">
                             <rect key="frame" x="20" y="273" width="280" height="21"/>
@@ -107,10 +101,6 @@
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                 <inset key="sectionInset" minX="170" minY="28" maxX="170" maxY="0.0"/>
                             </collectionViewFlowLayout>
-                            <connections>
-                                <outlet property="dataSource" destination="Xa0-jO-pYn" id="yrs-UT-Sqa"/>
-                                <outlet property="delegate" destination="Xa0-jO-pYn" id="RWZ-or-xik"/>
-                            </connections>
                         </collectionView>
                     </subviews>
                     <constraints>
@@ -154,16 +144,6 @@
             </constraints>
             <point key="canvasLocation" x="123" y="161"/>
         </view>
-        <customObject id="4Jd-xW-Qvw" userLabel="Main Loop Collection View Manager" customClass="MITToursStopInfiniteScrollCollectionViewManager">
-            <connections>
-                <outlet property="collectionView" destination="utD-mE-rH7" id="GEG-oX-oUZ"/>
-            </connections>
-        </customObject>
-        <customObject id="Xa0-jO-pYn" userLabel="Near Here Collection View Manager" customClass="MITToursStopCollectionViewManager">
-            <connections>
-                <outlet property="collectionView" destination="q74-8a-1TS" id="jTz-uh-OAy"/>
-            </connections>
-        </customObject>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

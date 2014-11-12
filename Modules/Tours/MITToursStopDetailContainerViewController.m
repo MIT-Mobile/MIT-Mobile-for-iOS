@@ -82,14 +82,14 @@
     self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
     self.pageViewController.dataSource = self;
     self.pageViewController.delegate = self;
-
-    UIViewController *currentPage = [self detailViewControllerForStop:self.currentStop];
-    [self.pageViewController setViewControllers:@[currentPage] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     UIView *pageView = self.pageViewController.view;
     [self addChildViewController:self.pageViewController];
     [self.view addSubview:pageView];
     [self.pageViewController didMoveToParentViewController:self];
+    
+    UIViewController *currentPage = [self detailViewControllerForStop:self.currentStop];
+    [self.pageViewController setViewControllers:@[currentPage] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     NSDictionary *pageViewDict = NSDictionaryOfVariableBindings(pageView);
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
@@ -301,6 +301,11 @@
     if (stop != self.currentStop) {
         [self transitionToStop:stop];
     }
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self.pageViewController.view setNeedsLayout];
 }
 
 @end
