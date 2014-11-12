@@ -60,7 +60,7 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setupMapBoundingBoxAnimated:YES];
+    [self setupMapBoundingBoxAnimated:animated];
 }
 
 - (void)setupTiledMapView
@@ -123,7 +123,7 @@ static NSInteger kAnnotationMarginRight = 50;
             zoomRect = MKMapRectUnion(zoomRect, pointRect);
         }
         double inset = -zoomRect.size.width * 0.1;
-        [mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
+        [mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:animated];
     } else {
         // TODO: Figure out what the default region should be?
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
