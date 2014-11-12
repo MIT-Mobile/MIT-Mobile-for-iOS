@@ -45,6 +45,11 @@
     return proposedContentOffset;
 }
 
+- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
+{
+    return [self targetContentOffsetForProposedContentOffset:proposedContentOffset withScrollingVelocity:CGPointMake(0, 0)];
+}
+
 #pragma mark - Helpers
 
 - (CGFloat)squaredDistanceFromPoint:(CGPoint)from toPoint:(CGPoint)to

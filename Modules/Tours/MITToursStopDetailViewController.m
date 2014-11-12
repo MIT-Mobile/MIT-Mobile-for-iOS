@@ -14,10 +14,10 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 @property (weak, nonatomic) IBOutlet MITInfiniteScrollCollectionView *mainLoopCollectionView;
-@property (strong, nonatomic) IBOutlet MITToursStopInfiniteScrollCollectionViewManager *mainLoopCollectionViewManager;
+@property (strong, nonatomic) MITToursStopInfiniteScrollCollectionViewManager *mainLoopCollectionViewManager;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *nearHereCollectionView;
-@property (strong, nonatomic) IBOutlet MITToursStopCollectionViewManager *nearHereCollectionViewManager;
+@property (strong, nonatomic) MITToursStopCollectionViewManager *nearHereCollectionViewManager;
 
 @property (weak, nonatomic) IBOutlet UIImageView *stopImageView;
 @property (weak, nonatomic) IBOutlet UILabel *stopTitleLabel;
@@ -50,10 +50,7 @@
     self.scrollView.delegate = self;
     
     self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
-    [self.mainLoopCollectionViewManager setup];
-    [self.nearHereCollectionViewManager setup];
-    self.mainLoopCollectionViewManager.delegate = self;
-    self.nearHereCollectionViewManager.delegate = self;
+    [self setupCollectionViews];
     [self configureForStop:self.stop];
 }
 
@@ -63,6 +60,27 @@
     
     // Scroll to top
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+}
+
+- (void)setupCollectionViews
+{
+    self.mainLoopCollectionViewManager = [[MITToursStopInfiniteScrollCollectionViewManager alloc] init];
+    self.nearHereCollectionViewManager = [[MITToursStopCollectionViewManager alloc] init];
+    
+    self.mainLoopCollectionViewManager.collectionView = self.mainLoopCollectionView;
+    self.nearHereCollectionViewManager.collectionView = self.nearHereCollectionView;
+    
+    [self.mainLoopCollectionViewManager setup];
+    [self.nearHereCollectionViewManager setup];
+    
+    self.mainLoopCollectionViewManager.delegate = self;
+    self.nearHereCollectionViewManager.delegate = self;
+    
+    self.mainLoopCollectionView.dataSource = self.mainLoopCollectionViewManager;
+    self.mainLoopCollectionView.delegate = self.mainLoopCollectionViewManager;
+    
+    self.nearHereCollectionView.dataSource = self.nearHereCollectionViewManager;
+    self.nearHereCollectionView.delegate = self.nearHereCollectionViewManager;
 }
 
 - (void)viewDidLayoutSubviews
@@ -184,6 +202,12 @@
     if ([self.delegate respondsToSelector:@selector(stopDetailViewController:didSelectStop:)]) {
         [self.delegate stopDetailViewController:self didSelectStop:stop];
     }
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    self.mainLoopCollectionView.contentOffset = CGPointMake([self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset].x, 0);
+    self.nearHereCollectionView.contentOffset = CGPointMake([self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset].x, 0);
 }
 
 @end
