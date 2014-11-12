@@ -427,7 +427,7 @@
                                   baseURL:nil];
             [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
         }
-        }];
+    }];
 }
 
 - (void)storyAfterStory:(MITNewsStory*)story completion:(void(^)(MITNewsStory *nextStory, NSError *error))block
