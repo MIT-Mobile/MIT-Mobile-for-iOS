@@ -84,7 +84,6 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
 - (ECSlidingViewController*)slidingViewController
 {
     if (![self isSlidingViewControllerLoaded]) {
-        [self loadSlidingViewController];
         NSAssert(_slidingViewController,@"failed to load slidingViewController");
     }
     
@@ -244,34 +243,6 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
 - (BOOL)isSlidingViewControllerLoaded
 {
     return (_slidingViewController != nil);
-}
-
-- (void)loadSlidingViewController
-{
-    if (![self isSlidingViewControllerLoaded]) {
-        ECSlidingViewController *slidingViewController = nil;
-        
-        if (self.slidingViewControllerStoryboardId) {
-            slidingViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.slidingViewControllerStoryboardId];
-        } else {
-            UIViewController *visibleViewController = [[UIViewController alloc] init];
-
-            UIView *emptyView = [[UIView alloc] initWithFrame:self.view.bounds];
-            emptyView.backgroundColor = [UIColor whiteColor];
-            emptyView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-            visibleViewController.view = emptyView;
-
-            slidingViewController = [[ECSlidingViewController alloc] initWithTopViewController:visibleViewController];
-        }
-
-        [self addChildViewController:slidingViewController];
-
-        slidingViewController.view.frame = self.view.bounds;
-        [self.view addSubview:slidingViewController.view];
-        [slidingViewController didMoveToParentViewController:self];
-        
-        _slidingViewController = slidingViewController;
-    }
 }
 
 #pragma mark Delegation
