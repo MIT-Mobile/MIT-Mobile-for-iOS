@@ -1,5 +1,4 @@
 #import "LibrariesModule.h"
-#import "LibrariesViewController.h"
 #import "MITLibrariesHomeViewController.h"
 #import "MITLibrariesHomeViewControllerPad.h"
 
