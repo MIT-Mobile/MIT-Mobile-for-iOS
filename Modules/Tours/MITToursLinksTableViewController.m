@@ -32,6 +32,7 @@
 
 - (void)presentMailViewController:(MFMailComposeViewController *)mailViewController
 {
+    mailViewController.modalPresentationStyle = UIModalPresentationFormSheet;
     mailViewController.mailComposeDelegate = self;
    [self presentViewController:mailViewController animated:YES completion:NULL];
 }
