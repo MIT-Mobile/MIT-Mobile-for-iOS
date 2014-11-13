@@ -1,6 +1,6 @@
 #import "MITWebviewCell.h"
 
-static CGFloat const kWebViewHorizontalPadding = 15.0;
+static CGFloat const kWebViewHorizontalPadding = 7.5;
 static CGFloat const kWebViewVerticalPadding = 6.0;
 
 @interface MITWebviewCell () <UIWebViewDelegate>
