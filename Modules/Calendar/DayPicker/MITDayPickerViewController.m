@@ -224,15 +224,19 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 
 - (void)setCurrentlyDisplayedDate:(NSDate *)currentlyDisplayedDate
 {
-    if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
-        [self animateDayPickerCollectionViewBackwards];
-    } else if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
-        [self animateDayPickerCollectionViewForward];
+    if (!_currentlyDisplayedDate || !currentlyDisplayedDate || ![currentlyDisplayedDate isEqualToDateIgnoringTime:_currentlyDisplayedDate]) {
+        if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
+            [self animateDayPickerCollectionViewBackwards];
+        } else if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
+            [self animateDayPickerCollectionViewForward];
+        }
+        NSDate *oldDate = _currentlyDisplayedDate;
+        NSDate *newDate = currentlyDisplayedDate;
+        _currentlyDisplayedDate = currentlyDisplayedDate;
+        [self updateDatesArray];
+        [self reloadCollectionView];
+        [self.delegate dayPickerViewController:self dateDidUpdate:newDate fromOldDate:oldDate];
     }
-    _currentlyDisplayedDate = currentlyDisplayedDate;
-    [self updateDatesArray];
-    [self reloadCollectionView];
-    [self.delegate dayPickerViewController:self dateDidUpdate:_currentlyDisplayedDate];
 }
 
 - (NSDate *)currentlyDisplayedDate
