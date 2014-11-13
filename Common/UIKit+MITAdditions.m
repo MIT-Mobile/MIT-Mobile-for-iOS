@@ -100,6 +100,11 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     return [UIColor colorWithRed:227.0/255.0 green:227.0/255.0 blue:229.0/255.0 alpha:1.0];
 }
 
++ (UIColor *)mit_navBarColor
+{
+    return [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+}
+
 + (UIColor *)mit_systemTintColor
 {
     static UIColor *systemTintColor = nil;

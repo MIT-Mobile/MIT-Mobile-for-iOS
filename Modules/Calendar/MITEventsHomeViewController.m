@@ -104,7 +104,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 - (void)setupExtendedNavBar
 {
-    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+    UIColor *navbarGrey = [UIColor mit_navBarColor];
     
     [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
     
