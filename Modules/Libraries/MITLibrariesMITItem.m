@@ -4,18 +4,17 @@
 
 + (NSDictionary *)attributeMappings
 {
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
-    attributeMappings[@"call_number"] = @"callNumber";
-    attributeMappings[@"author"] = @"author";
-    attributeMappings[@"year"] = @"year";
-    attributeMappings[@"title"] = @"title";
-    attributeMappings[@"imprint"] = @"imprint";
-    attributeMappings[@"isbn"] = @"isbn";
-    attributeMappings[@"doc_number"] = @"docNumber";
-    attributeMappings[@"material"] = @"material";
-    attributeMappings[@"sub_library"] = @"subLibrary";
-    attributeMappings[@"barcode"] = @"barcode";
-    return attributeMappings;
+    return @{@"call_number" : @"callNumber",
+             @"author" : @"author",
+             @"year" : @"year",
+             @"title" : @"title",
+             @"imprint" : @"imprint",
+             @"isbn" : @"isbn",
+             @"doc_number" : @"docNumber",
+             @"material" : @"material",
+             @"sub_library" : @"subLibrary",
+             @"barcode" : @"barcode"};
+
 }
 
 + (NSArray *)relationshipMappings

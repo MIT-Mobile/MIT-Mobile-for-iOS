@@ -9,25 +9,23 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesWorldcatItem class]];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
-    attributeMappings[@"id"] = @"identifier";
-    attributeMappings[@"url"] = @"url";
-    attributeMappings[@"worldcat_url"] = @"worldCatUrl";
-    attributeMappings[@"title"] = @"title";
-    attributeMappings[@"authors"] = @"author";
-    attributeMappings[@"years"] = @"year";
-    attributeMappings[@"publishers"] = @"publisher";
-    attributeMappings[@"formats"] = @"format";
-    attributeMappings[@"isbns"] = @"isbns";
-    attributeMappings[@"subjects"] = @"subject";
-    attributeMappings[@"langs"] = @"language";
-    attributeMappings[@"extents"] = @"extent";
-    attributeMappings[@"summaries"] = @"summaries";
-    attributeMappings[@"editions"] = @"editions";
-    attributeMappings[@"address"] = @"address";
-    attributeMappings[@"composed-html"] = @"composedHTML";
-    attributeMappings[@"citations"] = @"rawCitations";
-    [mapping addAttributeMappingsFromDictionary:attributeMappings];
+    [mapping addAttributeMappingsFromDictionary:@{ @"id" : @"identifier",
+                                                   @"url" : @"url",
+                                                   @"worldcat_url" : @"worldCatUrl",
+                                                   @"title" : @"title",
+                                                   @"authors" : @"author",
+                                                   @"years" : @"year",
+                                                   @"publishers" : @"publisher",
+                                                   @"formats" : @"format",
+                                                   @"isbns" : @"isbns",
+                                                   @"subjects" : @"subject",
+                                                   @"langs" : @"language",
+                                                   @"extents" : @"extent",
+                                                   @"summaries" : @"summaries",
+                                                   @"editions" : @"editions",
+                                                   @"address" : @"address",
+                                                   @"composed-html" : @"composedHTML",
+                                                   @"citations" : @"rawCitations"}];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"holdings" toKeyPath:@"holdings" withMapping:[MITLibrariesHolding objectMapping]]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cover_images" toKeyPath:@"coverImages" withMapping:[MITLibrariesCoverImage objectMapping]]];
     return mapping;

@@ -10,17 +10,16 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesMITLoanItem class]];
-    NSDictionary *superMappings = [super attributeMappings];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionaryWithDictionary:superMappings];
-    attributeMappings[@"loaned_at"] = @"loanedAtDateString";
-    attributeMappings[@"due_at"] = @"dueAtDateString";
-    attributeMappings[@"overdue"] = @"overdue";
-    attributeMappings[@"long_overdue"] = @"longOverdue";
-    attributeMappings[@"pending_fine"] = @"pendingFine";
-    attributeMappings[@"formatted_pending_fine"] = @"formattedPendingFine";
-    attributeMappings[@"due_text"] = @"dueText";
-    attributeMappings[@"has_hold"] = @"hasHold";
-    [mapping addAttributeMappingsFromDictionary:attributeMappings];
+    NSMutableDictionary *superMappings = [[super attributeMappings] mutableCopy];
+    [superMappings addEntriesFromDictionary:@{@"loaned_at" : @"loanedAtDateString",
+                                             @"due_at" : @"dueAtDateString",
+                                             @"overdue" : @"overdue",
+                                             @"long_overdue" : @"longOverdue",
+                                             @"pending_fine" : @"pendingFine",
+                                             @"formatted_pending_fine" : @"formattedPendingFine",
+                                             @"due_text" : @"dueText",
+                                              @"has_hold" : @"hasHold"}];
+    [mapping addAttributeMappingsFromDictionary:superMappings];
 
     for (RKRelationshipMapping *relationshipMapping in [super relationshipMappings]) {
         [mapping addPropertyMapping:relationshipMapping];
