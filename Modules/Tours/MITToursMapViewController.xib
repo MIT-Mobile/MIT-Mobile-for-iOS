@@ -24,6 +24,13 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8LK-Y6-SF9" userLabel="Tour Details View">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="75"/>
                     <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8V8-E1-coP" userLabel="Bottom stroke">
+                            <rect key="frame" x="0.0" y="74" width="600" height="1"/>
+                            <color key="backgroundColor" red="0.79083625637755106" green="0.79083625637755106" blue="0.79083625637755106" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="p7I-MM-Omy"/>
+                            </constraints>
+                        </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k0g-YJ-H0l" userLabel="Videotaping and photography are prohibited inside MIT buildings.  Tour Details...">
                             <rect key="frame" x="8" y="8" width="304" height="59"/>
                             <constraints>
@@ -61,8 +68,11 @@ Cg
                     <color key="backgroundColor" red="0.97604482962448846" green="0.97459013661932059" blue="1" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="75" id="7IX-nf-XNj"/>
+                        <constraint firstAttribute="bottom" secondItem="8V8-E1-coP" secondAttribute="bottom" id="9Nq-Sw-iX8"/>
                         <constraint firstItem="k0g-YJ-H0l" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" constant="8" id="NpQ-wD-yBn"/>
                         <constraint firstItem="k0g-YJ-H0l" firstAttribute="top" secondItem="8LK-Y6-SF9" secondAttribute="top" constant="8" id="Pvi-zp-vy9"/>
+                        <constraint firstAttribute="trailing" secondItem="8V8-E1-coP" secondAttribute="trailing" id="oEM-be-tSt"/>
+                        <constraint firstItem="8V8-E1-coP" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" id="s0f-r1-oY8"/>
                     </constraints>
                 </view>
             </subviews>
