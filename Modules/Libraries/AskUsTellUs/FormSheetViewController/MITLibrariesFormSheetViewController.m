@@ -117,9 +117,14 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat keyboardHeight = UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]) ? CGRectGetHeight(keyboardFrame) : CGRectGetWidth(keyboardFrame);
     
+    CGRect rectInWindow = [self.view convertRect:self.view.bounds toView:[UIApplication sharedApplication].keyWindow];
+    CGFloat totalWindowHeight =  CGRectGetHeight([UIApplication sharedApplication].keyWindow.bounds);
+    CGFloat maxFormSheetY = CGRectGetMaxY(rectInWindow);
+    CGFloat keyboardAdjustmentOffset = totalWindowHeight - maxFormSheetY;
+    
     [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
         UIEdgeInsets contentInsets = self.tableView.contentInset;
-        contentInsets.bottom = keyboardHeight;
+        contentInsets.bottom = keyboardHeight - keyboardAdjustmentOffset;
         self.tableView.contentInset = contentInsets;
     } completion:nil];
 }
