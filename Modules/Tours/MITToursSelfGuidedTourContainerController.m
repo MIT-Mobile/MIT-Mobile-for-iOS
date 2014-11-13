@@ -15,7 +15,8 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
 
 @property (nonatomic, strong) UISegmentedControl *mapListSegmentedControl;
-@property (nonatomic, strong) UIBarButtonItem *currentLocationButton;
+@property (nonatomic, strong) UIBarButtonItem *userLocationBarButtonItem;
+@property (nonatomic, strong) UIButton *userLocationButton;
 
 @end
 
@@ -57,6 +58,23 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     
     [self.view addSubview:self.listViewController.view];
     [self.view addSubview:self.mapViewController.view];
+    
+    NSDictionary *viewDict = @{ @"listView": self.listViewController.view,
+                                @"mapView": self.mapViewController.view,
+                                @"topGuide": self.topLayoutGuide,
+                                @"bottomGuide": self.bottomLayoutGuide };
+    // TODO: Clean up the magic numbers here
+    self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.mapViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[mapView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[listView]-0-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[listView]-0-|" options:0 metrics:nil views:viewDict]];
+    
+    [self.listViewController.view setNeedsUpdateConstraints];
+    [self.mapViewController.view setNeedsUpdateConstraints];
+    [self.view setNeedsUpdateConstraints];
+    [self.view layoutIfNeeded];
 }
 
 - (void)setupNavBar
@@ -76,14 +94,21 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.mapListSegmentedControl setSelectedSegmentIndex:0];
     
     UIBarButtonItem *segmentedControlItem = [[UIBarButtonItem alloc] initWithCustomView:self.mapListSegmentedControl];
-    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_location"]
-                                                                                  style:UIBarButtonItemStylePlain
-                                                                                 target:self
-                                                                                 action:@selector(currentLocationButtonPressed:)];
+    
+    // For user location button, we use an actual UIButton so that we can easily change its selected state
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"tours/track-user_disabled"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"tours/track-user_active"];
+    CGSize imageSize = userLocationImageNormal.size;
+    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+    [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
+    [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
+    [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
+    
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     self.toolbarItems = @[currentLocationButtonItem, flexibleSpace, segmentedControlItem, flexibleSpace];
 
-    self.currentLocationButton = currentLocationButtonItem;
+    self.userLocationBarButtonItem = currentLocationButtonItem;
 }
 
 - (void)showSelectedViewController
@@ -116,9 +141,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
-    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
-    infoVC.tour = self.selfGuidedTour;
-    [self.navigationController pushViewController:infoVC animated:YES];
+    [self transitionToTourInfo];
 }
 
 #pragma mark - Current Location Button
@@ -126,8 +149,8 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)showCurrentLocationButton
 {
     NSMutableArray *items = [self.toolbarItems mutableCopy];
-    if (![items containsObject:self.currentLocationButton]) {
-        [items insertObject:self.currentLocationButton atIndex:0];
+    if (![items containsObject:self.userLocationBarButtonItem]) {
+        [items insertObject:self.userLocationBarButtonItem atIndex:0];
         [self setToolbarItems:items animated:YES];
     }
 }
@@ -135,15 +158,15 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)hideCurrentLocationButton
 {
     NSMutableArray *items = [self.toolbarItems mutableCopy];
-    if ([items containsObject:self.currentLocationButton]) {
-        [items removeObject:self.currentLocationButton];
+    if ([items containsObject:self.userLocationBarButtonItem]) {
+        [items removeObject:self.userLocationBarButtonItem];
         [self setToolbarItems:items animated:YES];
     }
 }
 
 - (void)currentLocationButtonPressed:(id)sender
 {
-    [self.mapViewController centerMapOnUserLocation];
+    [self.mapViewController toggleUserTrackingMode];
 }
 
 #pragma mark - MITToursSelfGuidedTourListViewControllerDelegate Methods
@@ -160,12 +183,33 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self transitionToDetailsForStop:stop];
 }
 
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    self.userLocationButton.selected = (mode == MKUserTrackingModeFollow);
+}
+
+- (void)mapViewControllerDidPressInfoButton:(MITToursMapViewController *)mapViewController
+{
+    [self transitionToTourInfo];
+}
+
 #pragma mark - Transition to Stop Details
 
 - (void)transitionToDetailsForStop:(MITToursStop *)stop
 {
+    [self.mapViewController saveCurrentMapRect];
     MITToursStopDetailContainerViewController *stopDetailContainerViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:stopDetailContainerViewController animated:YES];
+}
+
+#pragma mark - Transition to Tour Info
+
+- (void)transitionToTourInfo
+{
+    [self.mapViewController saveCurrentMapRect];
+    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    infoVC.tour = self.selfGuidedTour;
+    [self.navigationController pushViewController:infoVC animated:YES];
 }
 
 @end

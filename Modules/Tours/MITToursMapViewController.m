@@ -19,14 +19,17 @@ static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
 
-@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 @property (strong, nonatomic) SMCalloutView *calloutView;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
+@property (weak, nonatomic) IBOutlet UIView *tourDetailsView;
+
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
+@property (nonatomic) MKMapRect savedMapRect;
 
 @end
 
@@ -40,6 +43,8 @@ static NSInteger kAnnotationMarginRight = 50;
         self.dismissingPopoverControllers = [[NSMutableArray alloc] init];
         self.annotationMarginInsets = UIEdgeInsetsMake(kAnnotationMarginTop, kAnnotationMarginLeft, kAnnotationMarginBottom, kAnnotationMarginRight);
         self.shouldShowStopDescriptions = NO;
+        self.shouldShowTourDetailsPanel = YES;
+        self.savedMapRect = MKMapRectNull;
     }
     return self;
 }
@@ -49,17 +54,19 @@ static NSInteger kAnnotationMarginRight = 50;
     [super viewDidLoad];
     [self setupTiledMapView];
     [self setupCalloutView];
+    [self setupTourDetailsView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setupMapBoundingBoxAnimated:YES];
+    [self setupMapBoundingBoxAnimated:animated];
 }
 
 - (void)setupTiledMapView
 {
     [self.tiledMapView setMapDelegate:self];
+    [self.tiledMapView setUserTrackingDelegate:self];
     [self.tiledMapView setButtonsHidden:YES animated:NO];
     
     MKMapView *mapView = self.tiledMapView.mapView;
@@ -98,10 +105,15 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+
+    MKMapView *mapView = self.tiledMapView.mapView;
+    if (!MKMapRectIsNull(self.savedMapRect)) {
+        [mapView setVisibleMapRect:self.savedMapRect animated:animated];
+        return;
+    }
     
     // TODO: This code was more-or-less copied from the dining module map setup. Consider sharing
     // the code to DRY this out.
-    MKMapView *mapView = self.tiledMapView.mapView;
     if ([mapView.annotations count] > 0) {
         MKMapRect zoomRect = MKMapRectNull;
         for (id <MKAnnotation> annotation in mapView.annotations)
@@ -111,10 +123,38 @@ static NSInteger kAnnotationMarginRight = 50;
             zoomRect = MKMapRectUnion(zoomRect, pointRect);
         }
         double inset = -zoomRect.size.width * 0.1;
-        [mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
+        [mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:animated];
     } else {
         // TODO: Figure out what the default region should be?
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
+    }
+}
+
+- (void)saveCurrentMapRect
+{
+    self.savedMapRect = self.tiledMapView.mapView.visibleMapRect;
+}
+
+#pragma mark - Tour Details
+
+- (void)setupTourDetailsView
+{
+    self.tourDetailsView.hidden = !self.shouldShowTourDetailsPanel;
+
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tourDetailsViewWasTapped:)];
+    [self.tourDetailsView addGestureRecognizer:tapRecognizer];
+}
+
+- (void)setShouldShowTourDetailsPanel:(BOOL)shouldShowTourDetailsPanel
+{
+    _shouldShowTourDetailsPanel = shouldShowTourDetailsPanel;
+    self.tourDetailsView.hidden = !shouldShowTourDetailsPanel;
+}
+
+- (void)tourDetailsViewWasTapped:(UITapGestureRecognizer *)sender
+{
+    if ([self.delegate respondsToSelector:@selector(mapViewControllerDidPressInfoButton:)]) {
+        [self.delegate mapViewControllerDidPressInfoButton:self];
     }
 }
 
@@ -202,6 +242,15 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
+#pragma mark - MITTiledMapViewUserTrackingDelegate
+
+- (void)mitTiledMapView:(MITTiledMapView *)mitTiledMapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didChangeUserTrackingMode:animated:)]) {
+        [self.delegate mapViewController:self didChangeUserTrackingMode:mode animated:animated];
+    }
+}
+
 #pragma mark - Custom Callout
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
@@ -249,9 +298,19 @@ static NSInteger kAnnotationMarginRight = 50;
 
 #pragma mark - User Location Centering
 
+- (BOOL)isTrackingUser
+{
+    return self.tiledMapView.isTrackingUser;
+}
+
 - (void)centerMapOnUserLocation
 {
     [self.tiledMapView centerMapOnUserLocation];
+}
+
+- (void)toggleUserTrackingMode
+{
+    [self.tiledMapView toggleUserTrackingMode];
 }
 
 @end

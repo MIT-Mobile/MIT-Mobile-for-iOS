@@ -149,8 +149,10 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 {
     if (indexPath.section == MITToursListSectionMainLoop) {
         return self.mainLoopStops[indexPath.row];
+    } else if (indexPath.section == MITToursListSectionSideTrips) {
+        return self.sideTripsStops[indexPath.row];
     }
-    return self.sideTripsStops[indexPath.row];
+    return nil;
 }
 
 - (NSIndexPath *)indexPathForStop:(MITToursStop *)stop
@@ -170,8 +172,11 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == MITToursListSectionDetails && [self.delegate respondsToSelector:@selector(selfGuidedTourListViewControllerDidPressInfoButton:)]) {
-        [self.delegate selfGuidedTourListViewControllerDidPressInfoButton:self];
+    if (indexPath.section == MITToursListSectionDetails) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewControllerDidPressInfoButton:)]) {
+            [self.delegate selfGuidedTourListViewControllerDidPressInfoButton:self];
+        }
     }
     else if ([self.delegate respondsToSelector:@selector(selfGuidedTourListViewController:didSelectStop:)]) {
         [self.delegate selfGuidedTourListViewController:self didSelectStop:[self stopForIndexPath:indexPath]];

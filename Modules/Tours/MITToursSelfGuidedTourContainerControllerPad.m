@@ -10,8 +10,10 @@
 @property (nonatomic, strong) MITToursSelfGuidedTourListViewController *listViewController;
 
 @property (nonatomic, strong) NSLayoutConstraint *listViewLeadingConstraint;
-
 @property (nonatomic) BOOL isShowingListView;
+
+@property (nonatomic, strong) UIButton *userLocationButton;
+@property (nonatomic, strong) UIButton *listViewToggleButton;
 
 @end
 
@@ -38,6 +40,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
     self.mapViewController.shouldShowStopDescriptions = YES;
+    self.mapViewController.shouldShowTourDetailsPanel = NO;
     self.mapViewController.delegate = self;
     
     [self addChildViewController:self.listViewController];
@@ -47,13 +50,15 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     [self.view addSubview:self.listViewController.view];
     
     NSDictionary *viewDict = @{ @"listView": self.listViewController.view,
-                                @"mapView": self.mapViewController.view };
+                                @"mapView": self.mapViewController.view,
+                                @"topGuide": self.topLayoutGuide,
+                                @"bottomGuide": self.bottomLayoutGuide };
     // TODO: Clean up the magic numbers here
     self.listViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     self.mapViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView]-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[mapView]-0-|" options:0 metrics:nil views:viewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[listView]-44-|" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[mapView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide]-0-[listView]-0-[bottomGuide]" options:0 metrics:nil views:viewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView(==320)]" options:0 metrics:nil views:viewDict]];
 
     // We keep track of the list view's leading constraint so we can use it to show/hide the list
@@ -76,9 +81,6 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupNavBar
 {
-    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStylePlain target:self action:@selector(infoButtonPressed:)];
-    self.navigationItem.rightBarButtonItem = infoButton;
-    
     // Following screens should have no "Back" text on back button
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
@@ -86,16 +88,27 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupToolbar
 {
-    UIBarButtonItem *listButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu"]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(listButtonPressed:)];
-    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_location"]
-                                                                                  style:UIBarButtonItemStylePlain
-                                                                                 target:self
-                                                                                 action:@selector(currentLocationButtonPressed:)];
+    // We use actual UIButtons so that we can easily change the selected state
+    UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
+    UIImage *listToggleImageSelected = [UIImage imageNamed:@"tours/list-view"];
+    CGSize listToggleImageSize = listToggleImageNormal.size;
+    self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
+    [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
+    [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
+    [self.listViewToggleButton addTarget:self action:@selector(listButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *listButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
+    
+    UIImage *userLocationImageNormal = [UIImage imageNamed:@"tours/track-user_disabled"];
+    UIImage *userLocationImageSelected = [UIImage imageNamed:@"tours/track-user_active"];
+    CGSize userLocationImageSize = userLocationImageNormal.size;
+    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, userLocationImageSize.width, userLocationImageSize.height)];
+    [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
+    [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
+    [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
+
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[listButton, flexibleSpace, currentLocationButtonItem];
+    self.toolbarItems = @[listButtonItem, flexibleSpace, currentLocationButtonItem];
 }
 
 #pragma mark - List View Panel
@@ -106,6 +119,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
         return;
     }
     self.isShowingListView = YES;
+    self.listViewToggleButton.selected = YES;
     [self moveListViewToOffset:0 animated:animated];
 }
 
@@ -115,6 +129,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
         return;
     }
     self.isShowingListView = NO;
+    self.listViewToggleButton.selected = NO;
     [self moveListViewToOffset:-CGRectGetWidth(self.listViewController.view.frame) animated:animated];
 }
 
@@ -135,9 +150,21 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 #pragma mark - Actions
 
-- (void)infoButtonPressed:(UIBarButtonItem *)sender
+- (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
+    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    infoVC.tour = self.selfGuidedTour;
+    infoVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(tourInfoDoneButtonWasPressed:)];
     
+    UINavigationController *infoNavigationController = [[UINavigationController alloc] initWithRootViewController:infoVC];
+    infoNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self presentViewController:infoNavigationController animated:YES completion:nil];
+}
+
+- (void)tourInfoDoneButtonWasPressed:(UIBarButtonItem *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)listButtonPressed:(UIBarButtonItem *)sender
@@ -151,7 +178,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)currentLocationButtonPressed:(UIBarButtonItem *)sender
 {
-    [self.mapViewController centerMapOnUserLocation];
+    [self.mapViewController toggleUserTrackingMode];
 }
 
 #pragma mark - MITToursSelfGuidedTourListViewController Methods
@@ -175,8 +202,14 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)mapViewController:(MITToursMapViewController *)mapViewController didSelectCalloutForStop:(MITToursStop *)stop
 {
+    [self.mapViewController saveCurrentMapRect];
     MITToursStopDetailContainerViewController *detailViewController = [[MITToursStopDetailContainerViewController alloc] initWithTour:self.selfGuidedTour stop:stop nibName:nil bundle:nil];
     [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+- (void)mapViewController:(MITToursMapViewController *)mapViewController didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    self.userLocationButton.selected = (mode == MKUserTrackingModeFollow);
 }
 
 @end
