@@ -1,6 +1,5 @@
 #import "ToursModule.h"
 #import "MITModule.h"
-#import "CampusTourHomeController.h"
 #import "MITToursHomeViewController.h"
 #import "MITToursHomeViewControllerPad.h"
 
@@ -16,14 +15,6 @@
     }
     return self;
 }
-
-//- (void)loadModuleHomeController
-//{
-//    CampusTourHomeController *controller = [[CampusTourHomeController alloc] init];
-//    
-//    self.homeController = controller;
-//    self.moduleHomeController = controller;
-//}
 
 - (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
 {
