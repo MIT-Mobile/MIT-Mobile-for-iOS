@@ -107,7 +107,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == MITToursListSectionDetails) {
-        return 92.0;
+        return 75.0;
     }
     else {
         return [MITToursTourStopCell heightForContent:[self stopCellModelForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
