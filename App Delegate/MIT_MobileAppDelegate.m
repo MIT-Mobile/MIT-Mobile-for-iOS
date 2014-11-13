@@ -85,6 +85,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
     }
 #endif
     
+    [[UIApplication sharedApplication]
+     setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
