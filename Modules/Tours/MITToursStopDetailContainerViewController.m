@@ -106,7 +106,7 @@
     
     NSDictionary *pageViewDict = NSDictionaryOfVariableBindings(pageView);
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[pageView]-48-|" options:0 metrics:nil views:pageViewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
     pageView.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
