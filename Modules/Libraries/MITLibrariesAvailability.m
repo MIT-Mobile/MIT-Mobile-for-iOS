@@ -5,13 +5,11 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesAvailability class]];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
-    attributeMappings[@"location"] = @"location";
-    attributeMappings[@"collection"] = @"collection";
-    attributeMappings[@"call_number"] = @"callNumber";
-    attributeMappings[@"status"] = @"status";
-    attributeMappings[@"available"] = @"available";
-    [mapping addAttributeMappingsFromDictionary:attributeMappings];
+    [mapping addAttributeMappingsFromDictionary:@{@"location" : @"location",
+                                                  @"collection" : @"collection",
+                                                  @"call_number" : @"callNumber",
+                                                  @"status" : @"status",
+                                                  @"available" : @"available"}];
     return mapping;
 }
 

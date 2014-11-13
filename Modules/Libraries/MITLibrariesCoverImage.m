@@ -5,11 +5,9 @@
 + (RKMapping *)objectMapping
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesCoverImage class]];
-    NSMutableDictionary *attributeMappings = [NSMutableDictionary dictionary];
-    attributeMappings[@"width"] = @"width";
-    attributeMappings[@"height"] = @"height";
-    attributeMappings[@"url"] = @"url";
-    [mapping addAttributeMappingsFromDictionary:attributeMappings];
+    [mapping addAttributeMappingsFromDictionary:@{@"width" : @"width",
+                                                  @"height" : @"height",
+                                                  @"url" : @"url"}];
     return mapping;
 }
 
