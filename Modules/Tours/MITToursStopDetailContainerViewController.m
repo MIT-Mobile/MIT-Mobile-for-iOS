@@ -74,7 +74,20 @@
     
     directionsVC.nextStop = self.currentStop;
     
-    [self.navigationController pushViewController:directionsVC animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:directionsVC];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+
+        directionsVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(directionsDoneButtonPressed:)];
+        [self presentViewController:navigationController animated:YES completion:nil];
+    } else {
+        [self.navigationController pushViewController:directionsVC animated:YES];
+    }
+}
+
+- (void)directionsDoneButtonPressed:(UIBarButtonItem *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)createPageViewController
