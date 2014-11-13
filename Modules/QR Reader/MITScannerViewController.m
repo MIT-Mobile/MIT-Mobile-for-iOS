@@ -164,7 +164,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     UIBarButtonItem *menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
     menuBarButton.tintColor = [UIColor whiteColor];
     [self.navigationItem setLeftBarButtonItem:menuBarButton];
@@ -222,6 +222,7 @@
 {
     [self.scannerHistory persistLastTimeHistoryWasOpened];
     
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
     [self.navigationController pushViewController:[MITScannerHistoryViewController new] animated:YES];
 }
 
@@ -236,6 +237,11 @@
     }
     helpNavController.navigationBar.translucent = NO;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
+}
+
+- (void)showAdvancedMenu:(id)sender
+{
+    
 }
 
 - (void)makeNavigationBarTransparent

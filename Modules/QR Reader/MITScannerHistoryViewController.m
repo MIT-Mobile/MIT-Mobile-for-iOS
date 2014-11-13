@@ -10,6 +10,7 @@
 #import "CoreDataManager.h"
 
 #import "UIImage+Resize.h"
+#import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
 @interface MITScannerHistoryViewController ()<UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate>
@@ -19,7 +20,9 @@
 
 @property (strong) QRReaderHistoryData *scannerHistory;
 
-@property (nonatomic,weak) UITableView *tableView;
+@property (nonatomic, weak) UITableView *tableView;
+@property (nonatomic, weak) UIToolbar *multiEditToolbar;
+@property (nonatomic, weak) UIBarButtonItem *deleteButton;
 
 @property (strong) NSOperationQueue *renderingQueue;
 
@@ -87,11 +90,16 @@
     
     [self.view addSubview:historyView];
     self.tableView = historyView;
+    
+    self.tableView.allowsMultipleSelectionDuringEditing = YES;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.tableView.tintColor = [UIColor mit_tintColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -134,8 +142,12 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:reusableCellId];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName size:16.0];
+        
+        UIView *selectedClearView = [[UIView alloc] initWithFrame:cell.frame];
+        selectedClearView.backgroundColor = [UIColor clearColor];
+        cell.multipleSelectionBackgroundView = selectedClearView;
     }
     
     [self configureCell:cell atIndexPath:indexPath];
@@ -166,6 +178,22 @@
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         [self.scannerHistory deleteScanResult:result];
+    }
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
+    
+    if( editing )
+    {
+        [self.tableView setEditing:YES animated:YES];
+        [self setMultiEditToolbarHidden:NO];
+    }
+    else
+    {
+        [self.tableView setEditing:NO animated:YES];
+        [self setMultiEditToolbarHidden:YES];
     }
 }
 
@@ -223,11 +251,26 @@
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if( self.tableView.editing )
+    {
+        [self updateDeleteButtonTitle];
+        
+        return;
+    }
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
     [self.navigationController pushViewController:detailView animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if( self.tableView.editing )
+    {
+        [self updateDeleteButtonTitle];
+    }
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
@@ -259,6 +302,62 @@
         default:
             break;
     }
+}
+
+#pragma mark - multi edit logic
+
+- (UIToolbar *)multiEditToolbar
+{
+    if ( _multiEditToolbar == nil )
+    {
+        UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+        toolbar.barStyle = UIBarStyleDefault;
+        toolbar.hidden = YES;
+        toolbar.tintColor = [UIColor mit_tintColor];
+        
+        UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didTapDelete:)];
+        UIBarButtonItem *flexiableItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        
+        toolbar.items = @[flexiableItem, deleteItem, flexiableItem];
+        
+        [toolbar sizeToFit];
+        
+        CGRect toolbarFrame = toolbar.frame;
+        toolbarFrame.origin.y = self.view.frame.size.height - toolbarFrame.size.height;
+        toolbar.frame = toolbarFrame;
+        
+        [self.view addSubview:toolbar];
+        _multiEditToolbar = toolbar;
+        _deleteButton = deleteItem;
+    }
+    
+    return _multiEditToolbar;
+}
+
+- (void)setMultiEditToolbarHidden:(BOOL)isHidden
+{
+    [self.multiEditToolbar setHidden:isHidden];
+    
+    // update tableView content size based on added toolbar at the bottom
+    CGFloat updatedContentHeight = isHidden ? (self.tableView.contentSize.height - self.multiEditToolbar.frame.size.height) : (self.tableView.contentSize.height + self.multiEditToolbar.frame.size.height);
+    self.tableView.contentSize = CGSizeMake(self.tableView.contentSize.width, updatedContentHeight);
+    
+    // reset to 'delete all' every time bar gets unhidden
+    if( isHidden == NO ) {
+        [self updateDeleteButtonTitle];
+    }
+}
+
+- (void)updateDeleteButtonTitle
+{
+    NSArray *selectedRows = [self.tableView indexPathsForSelectedRows];
+    
+    self.deleteButton.title = [selectedRows count] > 0 ? @"Delete" : @"Delete All";
+}
+
+- (void)didTapDelete:(id)sender
+{
+    
 }
 
 @end
