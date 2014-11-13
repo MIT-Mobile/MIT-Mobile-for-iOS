@@ -3,7 +3,7 @@
 
 @class MITDayPickerViewController;
 @protocol MITDayPickerViewControllerDelegate <NSObject>
-- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date;
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate;
 @end
 
 @interface MITDayPickerViewController : UIViewController
