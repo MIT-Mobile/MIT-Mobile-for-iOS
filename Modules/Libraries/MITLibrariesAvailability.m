@@ -2,17 +2,15 @@
 
 @implementation MITLibrariesAvailability
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super init];
-    if (self) {
-        self.location = dictionary[@"location"];
-        self.collection = dictionary[@"collection"];
-        self.callNumber = dictionary[@"call_number"];
-        self.status = dictionary[@"status"];
-        self.available = [dictionary[@"available"] boolValue];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesAvailability class]];
+    [mapping addAttributeMappingsFromDictionary:@{@"location" : @"location",
+                                                  @"collection" : @"collection",
+                                                  @"call_number" : @"callNumber",
+                                                  @"status" : @"status",
+                                                  @"available" : @"available"}];
+    return mapping;
 }
 
 @end

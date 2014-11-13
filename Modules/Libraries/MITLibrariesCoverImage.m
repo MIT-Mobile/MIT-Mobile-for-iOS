@@ -2,15 +2,13 @@
 
 @implementation MITLibrariesCoverImage
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super init];
-    if (self) {
-        self.width = [dictionary[@"width"] integerValue];
-        self.height = [dictionary[@"height"] integerValue];
-        self.url = dictionary[@"url"];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesCoverImage class]];
+    [mapping addAttributeMappingsFromDictionary:@{@"width" : @"width",
+                                                  @"height" : @"height",
+                                                  @"url" : @"url"}];
+    return mapping;
 }
 
 @end

@@ -2,15 +2,20 @@
 
 @implementation MITLibrariesMITHoldItem
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super initWithDictionary:dictionary];
-    if (self) {
-        self.status = dictionary[@"status"];
-        self.pickupLocation = dictionary[@"pickup_location"];
-        self.readyForPickup = [dictionary[@"ready_for_pickup"] boolValue];
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesMITHoldItem class]];
+    NSMutableDictionary *superMappings = [[super attributeMappings] mutableCopy];
+    [superMappings addEntriesFromDictionary:@{@"status" : @"status",
+                                             @"pickup_location" : @"pickupLocation",
+                                              @"ready_for_pickup" : @"readyForPickup"}];
+    [mapping addAttributeMappingsFromDictionary:superMappings];
+    
+    for (RKRelationshipMapping *relationshipMapping in [super relationshipMappings]) {
+        [mapping addPropertyMapping:relationshipMapping];
     }
-    return self;
+    
+    return mapping;
 }
 
 @end

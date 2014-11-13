@@ -2,24 +2,27 @@
 
 @implementation MITLibrariesMITItem
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (NSDictionary *)attributeMappings
 {
-    self = [super init];
-    if (self) {
-        self.callNumber = dictionary[@"call_number"];
-        self.author = dictionary[@"author"];
-        self.year = dictionary[@"year"];
-        self.title = dictionary[@"title"];
-        self.imprint = dictionary[@"imprint"];
-        self.isbn = dictionary[@"isbn"];
-        self.docNumber = dictionary[@"doc_number"];
-        self.material = dictionary[@"material"];
-        self.subLibrary = dictionary[@"sub_library"];
-        self.barcode = dictionary[@"barcode"];
-        self.coverImages = [MITLibrariesWebservices parseJSONArray:dictionary[@"cover_images"]
-                                                intoObjectsOfClass:[MITLibrariesCoverImage class]];
-    }
-    return self;
+    return @{@"call_number" : @"callNumber",
+             @"author" : @"author",
+             @"year" : @"year",
+             @"title" : @"title",
+             @"imprint" : @"imprint",
+             @"isbn" : @"isbn",
+             @"doc_number" : @"docNumber",
+             @"material" : @"material",
+             @"sub_library" : @"subLibrary",
+             @"barcode" : @"barcode"};
+
+}
+
++ (NSArray *)relationshipMappings
+{
+    NSMutableArray *relationshipMappings = [NSMutableArray array];
+    RKRelationshipMapping *coverImagesRelationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cover_images" toKeyPath:@"coverImages" withMapping:[MITLibrariesCoverImage objectMapping]];
+    [relationshipMappings addObject:coverImagesRelationshipMapping];
+    return relationshipMappings;
 }
 
 @end

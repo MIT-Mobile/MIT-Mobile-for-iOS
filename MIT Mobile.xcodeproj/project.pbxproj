@@ -217,14 +217,6 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
-		2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */; };
-		2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */; };
-		2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */; };
-		2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */; };
-		2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */; };
-		2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */; };
-		2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */; };
-		2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */; };
 		2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2523127A0E8F00058748 /* MITThumbnailView.m */; };
 		2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */; };
 		2C2CB48F19229A6300FCC056 /* MITLauncherListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CB48E19229A6300FCC056 /* MITLauncherListViewController.m */; };
@@ -294,7 +286,6 @@
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
 		2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */; };
 		2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */; };
-		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -371,32 +362,15 @@
 		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
 		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
-		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
-		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
-		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
-		4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */; };
 		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
 		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
-		4B667063140330A000714C6A /* LibrariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667061140330A000714C6A /* LibrariesViewController.m */; };
-		4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4B667062140330A000714C6A /* LibrariesViewController.xib */; };
 		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
-		4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */; };
-		4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */; };
-		4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */; };
-		4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7B66F4142D01BD00366615 /* WorldCatSearchController.m */; };
-		4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7B66F7142D01FE00366615 /* WorldCatBook.m */; };
 		4B83723B157E5B5C004CBC49 /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B837235157E5B5C004CBC49 /* libzbar.a */; };
 		4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B837237157E5B5C004CBC49 /* zbar-back.png */; };
 		4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */ = {isa = PBXBuildFile; fileRef = 4B837238157E5B5C004CBC49 /* zbar-help.html */; };
 		4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B837239157E5B5C004CBC49 /* zbar-helpicons.png */; };
 		4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B83723A157E5B5C004CBC49 /* zbar-samples.png */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
-		4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */; };
-		4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */; };
-		4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */; };
-		4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */; };
-		4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */; };
-		4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */; };
 		4BE4D3011416EB4D00E723F0 /* libraries in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D3001416EB4D00E723F0 /* libraries */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -615,9 +589,7 @@
 		A5FFD24A19FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = A5FFD24819FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.m */; };
 		A5FFD24B19FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5FFD24919FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.xib */; };
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
-		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
-		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
 		AF2F704C19FA991700EE6398 /* MITToursMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */; };
 		AF2F704D19FA991700EE6398 /* MITToursMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */; };
 		AF2F705419FAB89400EE6398 /* MITToursStopAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2F705319FAB89400EE6398 /* MITToursStopAnnotation.m */; };
@@ -678,20 +650,6 @@
 		DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767C18AAE9AD00327823 /* DDDispatchQueueLogFormatter.m */; };
 		DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; };
-		DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */; };
-		DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */; };
-		DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */; };
-		DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */; };
-		DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC514886F1A00B5719A /* LibrariesHoldsSummaryView.m */; };
-		DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC714886F1A00B5719A /* LibrariesHoldsTabController.m */; };
-		DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC914886F1A00B5719A /* LibrariesHoldsTableViewCell.m */; };
-		DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FCB14886F1A00B5719A /* LibrariesAccountViewController.m */; };
-		DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FCD14886F1A00B5719A /* LibrariesTableViewCell.m */; };
-		DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD014886F1A00B5719A /* LibrariesLoanSummaryView.m */; };
-		DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */; };
-		DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */; };
-		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
@@ -731,8 +689,6 @@
 		EB7F32D310CD6FB300188BCD /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB7F32D210CD6FB300188BCD /* AddressBook.framework */; };
 		EB7F32D710CD6FBB00188BCD /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */; };
 		EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86CA6E115D276700C8F3D1 /* CalendarModule.m */; };
-		EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */; };
-		EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4E1145F495900028A18 /* WorldCatHoldingsViewController.m */; };
 		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; };
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
@@ -951,7 +907,6 @@
 		228D661B19B6612500C7B78B /* MITDiningFiltersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningFiltersCell.h; path = Dining/MITDiningFiltersCell.h; sourceTree = "<group>"; };
 		228D661C19B6612500C7B78B /* MITDiningFiltersCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningFiltersCell.m; path = Dining/MITDiningFiltersCell.m; sourceTree = "<group>"; };
 		228D661D19B6612500C7B78B /* MITDiningFiltersCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningFiltersCell.xib; path = Dining/MITDiningFiltersCell.xib; sourceTree = "<group>"; };
-		228F26AE19D4A19A0049F1B7 /* MITInitializableWithDictionaryProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITInitializableWithDictionaryProtocol.h; sourceTree = "<group>"; };
 		228F26B219D4B6A20049F1B7 /* MITLibrariesMITLoanItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITLoanItem.h; sourceTree = "<group>"; };
 		228F26B319D4B6A20049F1B7 /* MITLibrariesMITLoanItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesMITLoanItem.m; sourceTree = "<group>"; };
 		228F26B519D4B6BE0049F1B7 /* MITLibrariesMITHoldItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITHoldItem.h; sourceTree = "<group>"; };
@@ -1188,23 +1143,6 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
-		2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElement.h; path = "Form Elements/LibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryFormElement.m; path = "Form Elements/LibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuLibraryFormElement.h; path = "Form Elements/MenuLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MenuLibraryFormElement.m; path = "Form Elements/MenuLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249ECE17AC119C003C41FE /* TextLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextLibraryFormElement.h; path = "Form Elements/TextLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextLibraryFormElement.m; path = "Form Elements/TextLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249ED117AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DedicatedViewTextLibraryFormElement.h; path = "Form Elements/DedicatedViewTextLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DedicatedViewTextLibraryFormElement.m; path = "Form Elements/DedicatedViewTextLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249ED417AC133B003C41FE /* ExternalLinkLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExternalLinkLibraryFormElement.h; path = "Form Elements/ExternalLinkLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ExternalLinkLibraryFormElement.m; path = "Form Elements/ExternalLinkLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElementGroup.h; path = "Form Elements/LibraryFormElementGroup.h"; sourceTree = "<group>"; };
-		2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryFormElementGroup.m; path = "Form Elements/LibraryFormElementGroup.m"; sourceTree = "<group>"; };
-		2C249EDB17AC22FE003C41FE /* TextAreaLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextAreaLibraryFormElement.h; path = "Form Elements/TextAreaLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextAreaLibraryFormElement.m; path = "Form Elements/TextAreaLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249EDE17AC5096003C41FE /* TopicsMenuLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopicsMenuLibraryFormElement.h; path = "Form Elements/TopicsMenuLibraryFormElement.h"; sourceTree = "<group>"; };
-		2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopicsMenuLibraryFormElement.m; path = "Form Elements/TopicsMenuLibraryFormElement.m"; sourceTree = "<group>"; };
-		2C249EE117AC556C003C41FE /* LibraryFormElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElements.h; path = "Form Elements/LibraryFormElements.h"; sourceTree = "<group>"; };
 		2C276711184CC90E00E53E9F /* MITMobileResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileResource.h; sourceTree = "<group>"; };
 		2C276712184CC90E00E53E9F /* MITMobileResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileResource.m; sourceTree = "<group>"; };
 		2C2C6F8B18CF58AC00E15D62 /* UITableView+DynamicSizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITableView+DynamicSizing.h"; path = "Categories/UITableView+DynamicSizing.h"; sourceTree = "<group>"; };
@@ -1337,8 +1275,6 @@
 		2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacesResource.m; sourceTree = "<group>"; };
 		2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesResource.h; sourceTree = "<group>"; };
 		2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesResource.m; sourceTree = "<group>"; };
-		2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesHoldingsDetailViewController.h; path = WorldCatSearch/LibrariesHoldingsDetailViewController.h; sourceTree = "<group>"; };
-		2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesHoldingsDetailViewController.m; path = WorldCatSearch/LibrariesHoldingsDetailViewController.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB90045176B5DC3006C3C3A /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
@@ -1496,34 +1432,14 @@
 		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
 		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
 		48EDC97317175C3100376BCF /* dining */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dining; path = Resources/dining; sourceTree = "<group>"; };
-		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
-		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
-		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
-		4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryEmailFormViewController.m; sourceTree = "<group>"; };
 		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
-		4B33EA11141AC65300B30312 /* LibrariesAskUsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsTableViewController.h; sourceTree = "<group>"; };
-		4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsTableViewController.m; sourceTree = "<group>"; };
-		4B33EA14141AC9D900B30312 /* LibrariesAppointmentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAppointmentViewController.h; sourceTree = "<group>"; };
-		4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAppointmentViewController.m; sourceTree = "<group>"; };
 		4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSideTripMapAnnotation.h; sourceTree = "<group>"; };
 		4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSideTripMapAnnotation.m; sourceTree = "<group>"; };
 		4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourMapAnnotation.h; sourceTree = "<group>"; };
 		4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourMapAnnotation.m; sourceTree = "<group>"; };
 		4B53F2AE1355062D0081EA38 /* TourGeoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourGeoLocation.h; sourceTree = "<group>"; };
-		4B667060140330A000714C6A /* LibrariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesViewController.h; sourceTree = "<group>"; };
-		4B667061140330A000714C6A /* LibrariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesViewController.m; sourceTree = "<group>"; };
-		4B667062140330A000714C6A /* LibrariesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LibrariesViewController.xib; sourceTree = "<group>"; };
 		4B667065140330CD00714C6A /* LibrariesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesModule.h; sourceTree = "<group>"; };
 		4B667066140330CD00714C6A /* LibrariesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesModule.m; sourceTree = "<group>"; };
-		4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursViewController.h; path = LocationsHours/LibrariesLocationsHoursViewController.h; sourceTree = "<group>"; };
-		4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursViewController.m; path = LocationsHours/LibrariesLocationsHoursViewController.m; sourceTree = "<group>"; };
-		4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LibrariesLocationsHours.xcdatamodel; sourceTree = "<group>"; };
-		4B779FDD141E42050082DEF9 /* LibrariesTellUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesTellUsViewController.h; sourceTree = "<group>"; };
-		4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesTellUsViewController.m; sourceTree = "<group>"; };
-		4B7B66F3142D01BD00366615 /* WorldCatSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldCatSearchController.h; path = WorldCatSearch/WorldCatSearchController.h; sourceTree = "<group>"; };
-		4B7B66F4142D01BD00366615 /* WorldCatSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WorldCatSearchController.m; path = WorldCatSearch/WorldCatSearchController.m; sourceTree = "<group>"; };
-		4B7B66F6142D01FE00366615 /* WorldCatBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldCatBook.h; path = WorldCatSearch/WorldCatBook.h; sourceTree = "<group>"; };
-		4B7B66F7142D01FE00366615 /* WorldCatBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WorldCatBook.m; path = WorldCatSearch/WorldCatBook.m; sourceTree = "<group>"; };
 		4B837221157E5B5C004CBC49 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		4B837222157E5B5C004CBC49 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 		4B837223157E5B5C004CBC49 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
@@ -1551,18 +1467,6 @@
 		4B83723A157E5B5C004CBC49 /* zbar-samples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-samples.png"; sourceTree = "<group>"; };
 		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
 		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
-		4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesBookDetailViewController.h; path = WorldCatSearch/LibrariesBookDetailViewController.h; sourceTree = "<group>"; };
-		4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesBookDetailViewController.m; path = WorldCatSearch/LibrariesBookDetailViewController.m; sourceTree = "<group>"; };
-		4BAA30AB143A8DF1004C47C1 /* LibraryMenuElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryMenuElementViewController.h; sourceTree = "<group>"; };
-		4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryMenuElementViewController.m; sourceTree = "<group>"; };
-		4BE4D2F214115B9600E723F0 /* LibrariesLocationsHoursTermHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursTermHours.h; path = LocationsHours/LibrariesLocationsHoursTermHours.h; sourceTree = "<group>"; };
-		4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursTermHours.m; path = LocationsHours/LibrariesLocationsHoursTermHours.m; sourceTree = "<group>"; };
-		4BE4D2F514115C7600E723F0 /* LibrariesLocationsHoursTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursTerm.h; path = LocationsHours/LibrariesLocationsHoursTerm.h; sourceTree = "<group>"; };
-		4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursTerm.m; path = LocationsHours/LibrariesLocationsHoursTerm.m; sourceTree = "<group>"; };
-		4BE4D2F814115CF900E723F0 /* LibrariesLocationsHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHours.h; path = LocationsHours/LibrariesLocationsHours.h; sourceTree = "<group>"; };
-		4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
-		4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursDetailViewController.h; path = LocationsHours/LibrariesLocationsHoursDetailViewController.h; sourceTree = "<group>"; };
-		4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursDetailViewController.m; path = LocationsHours/LibrariesLocationsHoursDetailViewController.m; sourceTree = "<group>"; };
 		4BE4D3001416EB4D00E723F0 /* libraries */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libraries; path = Resources/libraries; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -1918,11 +1822,7 @@
 		A5FFD24819FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountCollectionViewHeader.m; sourceTree = "<group>"; };
 		A5FFD24919FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountCollectionViewHeader.xib; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
-		A6930563144CEBFC0012EEFA /* ThankYouViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThankYouViewController.h; sourceTree = "<group>"; };
-		A6930564144CEBFC0012EEFA /* ThankYouViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThankYouViewController.m; sourceTree = "<group>"; };
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
-		A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTextElementViewController.h; sourceTree = "<group>"; };
-		A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryTextElementViewController.m; sourceTree = "<group>"; };
 		AF2F704919FA991700EE6398 /* MITToursMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursMapViewController.h; sourceTree = "<group>"; };
 		AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursMapViewController.m; sourceTree = "<group>"; };
 		AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursMapViewController.xib; sourceTree = "<group>"; };
@@ -2056,34 +1956,6 @@
 		DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDMultiFormatter.m; sourceTree = "<group>"; };
 		DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceholderTextView.h; sourceTree = "<group>"; };
 		DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderTextView.m; sourceTree = "<group>"; };
-		DEBF5FB814886F1A00B5719A /* LibrariesDetailLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailLabel.h; sourceTree = "<group>"; };
-		DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailLabel.m; sourceTree = "<group>"; };
-		DEBF5FBA14886F1A00B5719A /* LibrariesDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailViewController.h; sourceTree = "<group>"; };
-		DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailViewController.m; sourceTree = "<group>"; };
-		DEBF5FBD14886F1A00B5719A /* LibrariesFinesSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesSummaryView.h; sourceTree = "<group>"; };
-		DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesSummaryView.m; sourceTree = "<group>"; };
-		DEBF5FBF14886F1A00B5719A /* LibrariesFinesTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTabController.h; sourceTree = "<group>"; };
-		DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesTabController.m; sourceTree = "<group>"; };
-		DEBF5FC114886F1A00B5719A /* LibrariesFinesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTableViewCell.h; sourceTree = "<group>"; };
-		DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesTableViewCell.m; sourceTree = "<group>"; };
-		DEBF5FC414886F1A00B5719A /* LibrariesHoldsSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsSummaryView.h; sourceTree = "<group>"; };
-		DEBF5FC514886F1A00B5719A /* LibrariesHoldsSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsSummaryView.m; sourceTree = "<group>"; };
-		DEBF5FC614886F1A00B5719A /* LibrariesHoldsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTabController.h; sourceTree = "<group>"; };
-		DEBF5FC714886F1A00B5719A /* LibrariesHoldsTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTabController.m; sourceTree = "<group>"; };
-		DEBF5FC814886F1A00B5719A /* LibrariesHoldsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTableViewCell.h; sourceTree = "<group>"; };
-		DEBF5FC914886F1A00B5719A /* LibrariesHoldsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTableViewCell.m; sourceTree = "<group>"; };
-		DEBF5FCA14886F1A00B5719A /* LibrariesAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAccountViewController.h; sourceTree = "<group>"; };
-		DEBF5FCB14886F1A00B5719A /* LibrariesAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAccountViewController.m; sourceTree = "<group>"; };
-		DEBF5FCC14886F1A00B5719A /* LibrariesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesTableViewCell.h; sourceTree = "<group>"; };
-		DEBF5FCD14886F1A00B5719A /* LibrariesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesTableViewCell.m; sourceTree = "<group>"; };
-		DEBF5FCF14886F1A00B5719A /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
-		DEBF5FD014886F1A00B5719A /* LibrariesLoanSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanSummaryView.m; sourceTree = "<group>"; };
-		DEBF5FD114886F1A00B5719A /* LibrariesLoanTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTabController.h; sourceTree = "<group>"; };
-		DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTabController.m; sourceTree = "<group>"; };
-		DEBF5FD314886F1A00B5719A /* LibrariesLoanTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableViewCell.h; sourceTree = "<group>"; };
-		DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableViewCell.m; sourceTree = "<group>"; };
-		DEBF5FD614886F1A00B5719A /* LibrariesRenewResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewResultViewController.h; sourceTree = "<group>"; };
-		DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewResultViewController.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
 		DEE283E910F5109000B39531 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
@@ -2146,10 +2018,6 @@
 		EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		EB86CA6D115D276700C8F3D1 /* CalendarModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarModule.h; sourceTree = "<group>"; };
 		EB86CA6E115D276700C8F3D1 /* CalendarModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarModule.m; sourceTree = "<group>"; };
-		EB9FF4A4145A1D7500028A18 /* BookDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookDetailTableViewCell.h; path = WorldCatSearch/BookDetailTableViewCell.h; sourceTree = "<group>"; };
-		EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookDetailTableViewCell.m; path = WorldCatSearch/BookDetailTableViewCell.m; sourceTree = "<group>"; };
-		EB9FF4E0145F495900028A18 /* WorldCatHoldingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldCatHoldingsViewController.h; path = WorldCatSearch/WorldCatHoldingsViewController.h; sourceTree = "<group>"; };
-		EB9FF4E1145F495900028A18 /* WorldCatHoldingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WorldCatHoldingsViewController.m; path = WorldCatSearch/WorldCatHoldingsViewController.m; sourceTree = "<group>"; };
 		EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchViewController.m; sourceTree = "<group>"; };
 		EBA2867710E082010003BA01 /* MITLoadingActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLoadingActivityView.h; sourceTree = "<group>"; };
 		EBA2867810E082010003BA01 /* MITLoadingActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLoadingActivityView.m; sourceTree = "<group>"; };
@@ -2627,26 +2495,11 @@
 			name = Cells;
 			sourceTree = "<group>";
 		};
-		226A887619C8854D00DB96B6 /* Old */ = {
-			isa = PBXGroup;
-			children = (
-				4B0D8A55142CF8430083AC66 /* WorldCatSearch */,
-				DEBF5FB614886F1A00B5719A /* Your Account */,
-				4B1B7E3D1417CA0E0090039F /* EmailForms */,
-				4B66706B1403FE7700714C6A /* LocationsHours */,
-				4B667060140330A000714C6A /* LibrariesViewController.h */,
-				4B667061140330A000714C6A /* LibrariesViewController.m */,
-				4B667062140330A000714C6A /* LibrariesViewController.xib */,
-			);
-			name = Old;
-			sourceTree = "<group>";
-		};
 		226A887A19C8855A00DB96B6 /* Webservices */ = {
 			isa = PBXGroup;
 			children = (
 				226A887D19C8C4EC00DB96B6 /* MITLibrariesWebservices.h */,
 				226A887E19C8C4EC00DB96B6 /* MITLibrariesWebservices.m */,
-				228F26AE19D4A19A0049F1B7 /* MITInitializableWithDictionaryProtocol.h */,
 			);
 			name = Webservices;
 			sourceTree = "<group>";
@@ -3238,29 +3091,6 @@
 				2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */,
 			);
 			path = FacilitiesRoot;
-			sourceTree = "<group>";
-		};
-		2C249EC617AC0AF7003C41FE /* Form Elements */ = {
-			isa = PBXGroup;
-			children = (
-				2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */,
-				2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */,
-				2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */,
-				2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */,
-				2C249ED117AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.h */,
-				2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */,
-				2C249ED417AC133B003C41FE /* ExternalLinkLibraryFormElement.h */,
-				2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */,
-				2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */,
-				2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */,
-				2C249EDB17AC22FE003C41FE /* TextAreaLibraryFormElement.h */,
-				2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */,
-				2C249ECE17AC119C003C41FE /* TextLibraryFormElement.h */,
-				2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */,
-				2C249EDE17AC5096003C41FE /* TopicsMenuLibraryFormElement.h */,
-				2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */,
-			);
-			name = "Form Elements";
 			sourceTree = "<group>";
 		};
 		2C32D33A170CB78000F9FD44 /* Layers */ = {
@@ -3875,50 +3705,6 @@
 			path = "External/UIImage+PDF";
 			sourceTree = "<group>";
 		};
-		4B0D8A55142CF8430083AC66 /* WorldCatSearch */ = {
-			isa = PBXGroup;
-			children = (
-				4B7B66F3142D01BD00366615 /* WorldCatSearchController.h */,
-				4B7B66F4142D01BD00366615 /* WorldCatSearchController.m */,
-				4B7B66F6142D01FE00366615 /* WorldCatBook.h */,
-				4B7B66F7142D01FE00366615 /* WorldCatBook.m */,
-				4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */,
-				4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */,
-				2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */,
-				2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */,
-				EB9FF4A4145A1D7500028A18 /* BookDetailTableViewCell.h */,
-				EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */,
-				EB9FF4E0145F495900028A18 /* WorldCatHoldingsViewController.h */,
-				EB9FF4E1145F495900028A18 /* WorldCatHoldingsViewController.m */,
-			);
-			name = WorldCatSearch;
-			sourceTree = "<group>";
-		};
-		4B1B7E3D1417CA0E0090039F /* EmailForms */ = {
-			isa = PBXGroup;
-			children = (
-				2C249EE117AC556C003C41FE /* LibraryFormElements.h */,
-				2C249EC617AC0AF7003C41FE /* Form Elements */,
-				4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */,
-				4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */,
-				4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */,
-				4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */,
-				4B33EA11141AC65300B30312 /* LibrariesAskUsTableViewController.h */,
-				4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */,
-				4B33EA14141AC9D900B30312 /* LibrariesAppointmentViewController.h */,
-				4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */,
-				4B779FDD141E42050082DEF9 /* LibrariesTellUsViewController.h */,
-				4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */,
-				4BAA30AB143A8DF1004C47C1 /* LibraryMenuElementViewController.h */,
-				4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */,
-				A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */,
-				A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */,
-				A6930563144CEBFC0012EEFA /* ThankYouViewController.h */,
-				A6930564144CEBFC0012EEFA /* ThankYouViewController.m */,
-			);
-			path = EmailForms;
-			sourceTree = "<group>";
-		};
 		4B66705F1403304300714C6A /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -3926,31 +3712,12 @@
 				226A887C19C8856F00DB96B6 /* View Controllers */,
 				226A887B19C8856600DB96B6 /* Models */,
 				226A887A19C8855A00DB96B6 /* Webservices */,
-				226A887619C8854D00DB96B6 /* Old */,
 				4B667065140330CD00714C6A /* LibrariesModule.h */,
 				4B667066140330CD00714C6A /* LibrariesModule.m */,
 				A50884F019D1EA9C0047A21B /* UIKit+MITLibraries.h */,
 				A50884EE19D1EA820047A21B /* UIKit+MITLibraries.m */,
 			);
 			path = Libraries;
-			sourceTree = "<group>";
-		};
-		4B66706B1403FE7700714C6A /* LocationsHours */ = {
-			isa = PBXGroup;
-			children = (
-				4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */,
-				4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */,
-				4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */,
-				4BE4D2F814115CF900E723F0 /* LibrariesLocationsHours.h */,
-				4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */,
-				4BE4D2F514115C7600E723F0 /* LibrariesLocationsHoursTerm.h */,
-				4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */,
-				4BE4D2F214115B9600E723F0 /* LibrariesLocationsHoursTermHours.h */,
-				4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */,
-				4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */,
-				4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */,
-			);
-			name = LocationsHours;
 			sourceTree = "<group>";
 		};
 		4B83721C157E5B19004CBC49 /* External */ = {
@@ -4866,81 +4633,6 @@
 			name = Settings;
 			sourceTree = "<group>";
 		};
-		DEBF5FB614886F1A00B5719A /* Your Account */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FB714886F1A00B5719A /* Detail View */,
-				DEBF5FBC14886F1A00B5719A /* Fines */,
-				DEBF5FC314886F1A00B5719A /* Holds */,
-				DEBF5FCA14886F1A00B5719A /* LibrariesAccountViewController.h */,
-				DEBF5FCB14886F1A00B5719A /* LibrariesAccountViewController.m */,
-				DEBF5FCC14886F1A00B5719A /* LibrariesTableViewCell.h */,
-				DEBF5FCD14886F1A00B5719A /* LibrariesTableViewCell.m */,
-				DEBF5FCE14886F1A00B5719A /* Loans */,
-			);
-			path = "Your Account";
-			sourceTree = "<group>";
-		};
-		DEBF5FB714886F1A00B5719A /* Detail View */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FB814886F1A00B5719A /* LibrariesDetailLabel.h */,
-				DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */,
-				DEBF5FBA14886F1A00B5719A /* LibrariesDetailViewController.h */,
-				DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */,
-			);
-			path = "Detail View";
-			sourceTree = "<group>";
-		};
-		DEBF5FBC14886F1A00B5719A /* Fines */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FBD14886F1A00B5719A /* LibrariesFinesSummaryView.h */,
-				DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */,
-				DEBF5FBF14886F1A00B5719A /* LibrariesFinesTabController.h */,
-				DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */,
-				DEBF5FC114886F1A00B5719A /* LibrariesFinesTableViewCell.h */,
-				DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */,
-			);
-			path = Fines;
-			sourceTree = "<group>";
-		};
-		DEBF5FC314886F1A00B5719A /* Holds */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FC414886F1A00B5719A /* LibrariesHoldsSummaryView.h */,
-				DEBF5FC514886F1A00B5719A /* LibrariesHoldsSummaryView.m */,
-				DEBF5FC614886F1A00B5719A /* LibrariesHoldsTabController.h */,
-				DEBF5FC714886F1A00B5719A /* LibrariesHoldsTabController.m */,
-				DEBF5FC814886F1A00B5719A /* LibrariesHoldsTableViewCell.h */,
-				DEBF5FC914886F1A00B5719A /* LibrariesHoldsTableViewCell.m */,
-			);
-			path = Holds;
-			sourceTree = "<group>";
-		};
-		DEBF5FCE14886F1A00B5719A /* Loans */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FCF14886F1A00B5719A /* LibrariesLoanSummaryView.h */,
-				DEBF5FD014886F1A00B5719A /* LibrariesLoanSummaryView.m */,
-				DEBF5FD114886F1A00B5719A /* LibrariesLoanTabController.h */,
-				DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */,
-				DEBF5FD314886F1A00B5719A /* LibrariesLoanTableViewCell.h */,
-				DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */,
-				DEBF5FD514886F1A00B5719A /* Renew Results View Controller */,
-			);
-			path = Loans;
-			sourceTree = "<group>";
-		};
-		DEBF5FD514886F1A00B5719A /* Renew Results View Controller */ = {
-			isa = PBXGroup;
-			children = (
-				DEBF5FD614886F1A00B5719A /* LibrariesRenewResultViewController.h */,
-				DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */,
-			);
-			path = "Renew Results View Controller";
-			sourceTree = "<group>";
-		};
 		EB4C1E97127723B700058748 /* Tours */ = {
 			isa = PBXGroup;
 			children = (
@@ -5252,7 +4944,6 @@
 				274886991930286C00414552 /* People_iPad.storyboard in Resources */,
 				2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */,
 				A56390DA19DDDD56001DE763 /* MITLibrariesAvailabilityDetailViewController.xib in Resources */,
-				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
 				225A22C219829D2300276F27 /* MITDatePickerViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */,
@@ -5415,7 +5106,6 @@
 				22D9BB9C19D1CC280065A2E7 /* MITLibrariesCitation.m in Sources */,
 				AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
-				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
 				801062601A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m in Sources */,
 				EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */,
@@ -5564,7 +5254,6 @@
 				DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				80C5D9FF1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m in Sources */,
-				2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */,
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				AFECC2C21A0A856600B59442 /* MITToursStopCollectionViewCell.m in Sources */,
@@ -5585,7 +5274,6 @@
 				2C18090818F33B95008F9775 /* NSMutableURLRequest+ECP.m in Sources */,
 				2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */,
 				2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */,
-				2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */,
 				80F021B0199272C50056CA06 /* MITEventsMapViewController.m in Sources */,
 				AFECAE1C1A06D32B00562B97 /* MITToursTiledMapView.m in Sources */,
 				5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */,
@@ -5593,7 +5281,6 @@
 				22C012BB19B7BA6000879EF6 /* MITDiningScheduleCell.m in Sources */,
 				EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */,
 				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
-				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
 				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
 				80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,
@@ -5654,84 +5341,53 @@
 				DEA4C65718BD8F4400A60657 /* PeopleRecentsData.m in Sources */,
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
 				5E4C6609192CFC470091282A /* MITShuttleStop.m in Sources */,
-				4B667063140330A000714C6A /* LibrariesViewController.m in Sources */,
 				AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */,
-				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
-				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
 				80598DD41A0AA9D60095CEAA /* MITLibrariesFormSheetGroup.m in Sources */,
 				2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */,
-				4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */,
-				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
 				80598DE21A0ACCA60095CEAA /* MITLibrariesTellUsFormSheetViewController.m in Sources */,
 				AF41E4F01A06AD1200EC4F18 /* SMCalloutView.m in Sources */,
 				229FFAC6199002E500ABF029 /* MITAcademicCalendarCell.m in Sources */,
 				221C44FF1A129EF500FC5A92 /* MITToursTourDetailCell.m in Sources */,
-				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
-				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
 				22830A411A018CD100B514D1 /* MITToursStop.m in Sources */,
 				2209CC2C1992805500E17100 /* MITCalendarPageViewController.m in Sources */,
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
 				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,
 				2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */,
-				2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */,
 				2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */,
-				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				22E6BCA319E321A2003E278C /* MITLibrariesFinesViewController.m in Sources */,
 				A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */,
 				A5FA03A719D5D6940063FF2C /* NSData+ImageContentType.m in Sources */,
-				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
-				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				80598DD71A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m in Sources */,
-				2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */,
-				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
 				22D90311199BA90E00AEBC7D /* MITDiningLocation.m in Sources */,
 				2C3C5D93191F076800D59D33 /* ECSlidingViewController.m in Sources */,
-				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
-				4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */,
-				4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */,
 				274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */,
-				4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */,
-				4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
-				A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */,
 				A5A9A99019CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m in Sources */,
 				2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
-				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
 				80598DDE1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m in Sources */,
-				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
-				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
 				80C5D9D71A1117F300E63FDD /* MITLibrariesFormSheetGroupAskUsTopGroup.m in Sources */,
 				225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */,
 				80598DB41A0A80FF0095CEAA /* MITLibrariesFormSheetCellOptions.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 				22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */,
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
-				2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */,
-				DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */,
 				2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */,
 				5EE17BED1962FC8300F375B5 /* MITMapPlaceCell.m in Sources */,
-				DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */,
 				A5A9A98A19CA14CB0090BE4F /* MITExtendedNavBarView.m in Sources */,
 				22E1D3361A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m in Sources */,
 				225819EB19D9FA5E00BE42E4 /* MITLibrariesClosingsTerm.m in Sources */,
-				DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */,
 				225819D519D9A05C00BE42E4 /* MITAutoSizingCell.m in Sources */,
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
 				A59A259919A142EB00AD7E3A /* MITDiningHouseHomeViewControllerPad.m in Sources */,
-				DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */,
-				DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */,
-				DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */,
-				DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */,
 				A52E0CF019B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m in Sources */,
 				A563912019E4708F001DE763 /* MITLibrariesSingleSubtitleLabelCell.m in Sources */,
 				5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */,
 				2217548B1A07D48A002AD787 /* MITToursInfoCollectionCell.m in Sources */,
-				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
 				226A887F19C8C4EC00DB96B6 /* MITLibrariesWebservices.m in Sources */,
 				80C5D9F21A111E7A00E63FDD /* MITLibrariesFormSheetGroupConsultationTopGroup.m in Sources */,
 				225819E219D9F0AF00BE42E4 /* MITLibrariesLibraryDetailViewController.m in Sources */,
@@ -5741,7 +5397,6 @@
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
 				22D830A71A092C4B00B780E0 /* MITToursStopDirectionsViewController.m in Sources */,
-				DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */,
 				22D9BBA219D1CC380065A2E7 /* MITLibrariesHolding.m in Sources */,
 				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
 				22D90327199BF0E000AEBC7D /* MITDiningHomeViewController.m in Sources */,
@@ -5750,15 +5405,10 @@
 				22D90341199D497100AEBC7D /* MITDiningVenueCell.m in Sources */,
 				22D902F9199BA90C00AEBC7D /* MITDiningHouseDay.m in Sources */,
 				80C5D9DA1A11191C00E63FDD /* MITLibrariesFormSheetGroupAskUsBottomGroup.m in Sources */,
-				DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */,
-				DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */,
 				224E1AA71A00108900913D99 /* MITToursSelfGuidedTourListViewController.m in Sources */,
 				A563905919D9E7CC001DE763 /* MITLibrariesHoldingLibraryHeaderCopyInfoCell.m in Sources */,
 				2247B75A19F6AC04000E1725 /* MITToursLink.m in Sources */,
-				DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */,
 				2C9BAFC218A01D6B003B9AD0 /* MITNewsStoryViewController.m in Sources */,
-				DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */,
-				DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */,
 				22C7530019AD125600DD6E73 /* MITDiningRetailVenueDataManager.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				80C5D9C91A11142800E63FDD /* MITLibrariesFormSheetElementTopic.m in Sources */,
@@ -5797,7 +5447,6 @@
 				A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */,
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
-				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				2289814A19D0761B0045BF91 /* MITLibrariesWorldcatItem.m in Sources */,
 				225819C019D999AC00BE42E4 /* MITLibrariesLocationsHoursViewController.m in Sources */,
 				5E8CE40E1922BBE900703920 /* MITShuttleRouteCell.m in Sources */,
@@ -5857,7 +5506,6 @@
 				22830A3E1A018A6400B514D1 /* MITToursStopCellModel.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				A563910D19E2F1A2001DE763 /* MITLibrariesCitationCell.m in Sources */,
-				2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */,
 				2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */,
 				5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */,
 				22E6BC9619E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m in Sources */,
@@ -6217,17 +5865,6 @@
 			);
 			currentVersion = 5ED4735C195C5314001D6B78 /* CampusMap v3.xcdatamodel */;
 			path = CampusMap.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-		4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */,
-			);
-			currentVersion = 4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */;
-			name = LibrariesLocationsHours.xcdatamodeld;
-			path = LocationsHours/LibrariesLocationsHours.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

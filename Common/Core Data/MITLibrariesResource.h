@@ -11,3 +11,15 @@
 @interface MITLibrariesAskUsResource : MITMobileResource
 - (instancetype)init;
 @end
+
+@interface MITLibrariesSearchResource : MITMobileResource
+- (instancetype)init;
+@end
+
+@interface MITLibrariesItemDetailResource : MITMobileResource
+- (instancetype)init;
+@end
+
+@interface MITLibrariesUserResource : MITMobileResource
+- (instancetype)init;
+@end

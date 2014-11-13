@@ -25,9 +25,9 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
     [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
         if (libraries) {
             self.libraries = libraries;
-            [self.refreshControl endRefreshing];
             [self.tableView reloadData];
         }
+        [self.refreshControl endRefreshing];
     }];
 }
 

@@ -3,20 +3,18 @@
 
 @implementation MITLibrariesUser
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super init];
-    if (self) {
-        self.name = dictionary[@"name"];
-        self.loans = [MITLibrariesWebservices parseJSONArray:dictionary[@"loans"] intoObjectsOfClass:[MITLibrariesMITLoanItem class]];
-        self.holds = [MITLibrariesWebservices parseJSONArray:dictionary[@"holds"] intoObjectsOfClass:[MITLibrariesMITHoldItem class]];
-        self.fines = [MITLibrariesWebservices parseJSONArray:dictionary[@"fines"] intoObjectsOfClass:[MITLibrariesMITFineItem class]];
-        self.formattedBalance = dictionary[@"formatted_balance"];
-        self.balance = [dictionary[@"balance"] integerValue];
-        self.overdueItemsCount = [dictionary[@"overdue_count"] integerValue];
-        self.readyForPickupCount = [dictionary[@"ready_for_pickup_count"] integerValue];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesUser class]];
+    [mapping addAttributeMappingsFromDictionary:@{@"name" : @"name",
+                                                  @"formatted_balance" : @"formattedBalance",
+                                                  @"balance" : @"balance",
+                                                  @"overdue_count" : @"overdueItemsCount",
+                                                  @"ready_for_pickup_count" : @"readyForPickupCount"}];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"loans" toKeyPath:@"loans" withMapping:[MITLibrariesMITLoanItem objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"holds" toKeyPath:@"holds" withMapping:[MITLibrariesMITHoldItem objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"fines" toKeyPath:@"fines" withMapping:[MITLibrariesMITFineItem objectMapping]]];
+    return mapping;
 }
 
 @end

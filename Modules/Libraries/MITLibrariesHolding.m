@@ -2,18 +2,16 @@
 
 @implementation MITLibrariesHolding
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super init];
-    if (self) {
-        self.code = dictionary[@"code"];
-        self.library = dictionary[@"library"];
-        self.address = dictionary[@"address"];
-        self.count = [dictionary[@"count"] integerValue];
-        self.requestUrl = dictionary[@"item_request_url"];
-        self.availability = [MITLibrariesWebservices parseJSONArray:dictionary[@"availability"] intoObjectsOfClass:[MITLibrariesAvailability class]];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesHolding class]];
+    [mapping addAttributeMappingsFromDictionary:@{@"code" : @"code",
+                                                  @"library" : @"library",
+                                                  @"address" : @"address",
+                                                  @"count" : @"count",
+                                                  @"item_request_url" : @"requestUrl"}];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"availability" toKeyPath:@"availability" withMapping:[MITLibrariesAvailability objectMapping]]];
+    return mapping;
 }
 
 @end

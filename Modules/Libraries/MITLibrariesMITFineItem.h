@@ -1,12 +1,13 @@
 #import "MITLibrariesMITItem.h"
 #import "MITLibrariesWebservices.h"
+#import "MITMappedObject.h"
 
-@interface MITLibrariesMITFineItem : MITLibrariesMITItem <MITInitializableWithDictionaryProtocol>
+@interface MITLibrariesMITFineItem : MITLibrariesMITItem <MITMappedObject>
 
 @property (nonatomic, strong) NSString *status;
 @property (nonatomic, strong) NSString *fineDescription;
 @property (nonatomic, strong) NSString *formattedAmount;
 @property (nonatomic) NSInteger amount;
-@property (nonatomic, strong) NSDate *finedAtDate;
+@property (nonatomic, readonly) NSDate *finedAtDate;
 
 @end

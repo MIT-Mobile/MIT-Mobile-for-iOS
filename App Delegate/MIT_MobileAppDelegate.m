@@ -505,7 +505,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
-                            @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
@@ -636,6 +635,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
     [remoteObjectManager addResource:librariesAskUsResource];
+    
+    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
+    [remoteObjectManager addResource:librariesSearchResource];
+    
+    MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
+    [remoteObjectManager addResource:librariesUserResource];
+    
+    MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
+    [remoteObjectManager addResource:librariesItemDetailResource];
     
     MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursToursResource];

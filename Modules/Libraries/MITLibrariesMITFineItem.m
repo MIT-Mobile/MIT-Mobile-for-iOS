@@ -1,18 +1,34 @@
 #import "MITLibrariesMITFineItem.h"
 
+@interface MITLibrariesMITFineItem ()
+@property (nonatomic, copy) NSString *finedAtDateString;
+@end
+
 @implementation MITLibrariesMITFineItem
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super initWithDictionary:dictionary];
-    if (self) {
-        self.status = dictionary[@"status"];
-        self.fineDescription = dictionary[@"description"];
-        self.formattedAmount = dictionary[@"formatted_amount"];
-        self.amount = [dictionary[@"amount"] integerValue];
-        self.finedAtDate = [[MITLibrariesWebservices librariesDateFormatter] dateFromString:dictionary[@"fined_at"]];
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesMITFineItem class]];
+    NSMutableDictionary *superMappings = [[super attributeMappings] mutableCopy];
+    [superMappings addEntriesFromDictionary:@{@"status" : @"status",
+                                              @"description" : @"fineDescription",
+                                              @"formatted_amount" : @"formattedAmount",
+                                              @"amount" : @"amount",
+                                              @"fined_at" : @"finedAtDateString"}];
+    [mapping addAttributeMappingsFromDictionary:superMappings];
+    
+    for (RKRelationshipMapping *relationshipMapping in [super relationshipMappings]) {
+        [mapping addPropertyMapping:relationshipMapping];
     }
-    return self;
+    
+    return mapping;
+}
+
+#pragma mark - Getters
+
+- (NSDate *)finedAtDate
+{
+    return [[MITLibrariesWebservices librariesDateFormatter] dateFromString:self.finedAtDateString];
 }
 
 @end

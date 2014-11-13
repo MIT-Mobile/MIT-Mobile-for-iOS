@@ -1,32 +1,39 @@
 #import "MITLibrariesWorldcatItem.h"
 
+@interface MITLibrariesWorldcatItem ()
+@property (strong, nonatomic) NSDictionary *rawCitations;
+@end
+
 @implementation MITLibrariesWorldcatItem
 
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary
++ (RKMapping *)objectMapping
 {
-    self = [super init];
-    if (self) {
-        self.identifier = dictionary[@"id"];
-        self.url = dictionary[@"url"];
-        self.worldCatUrl = dictionary[@"worldcat_url"];
-        self.title = dictionary[@"title"];
-        self.coverImages = [MITLibrariesWebservices parseJSONArray:dictionary[@"cover_images"] intoObjectsOfClass:[MITLibrariesCoverImage class]];
-        self.author = dictionary[@"authors"];
-        self.year = dictionary[@"years"];
-        self.publisher = dictionary[@"publishers"];
-        self.format = dictionary[@"formats"];
-        self.isbns = dictionary[@"isbns"];
-        self.subject = dictionary[@"subjects"];
-        self.language = dictionary[@"langs"];
-        self.extent = dictionary[@"extents"];
-        self.summaries = dictionary[@"summaries"];
-        self.editions = dictionary[@"editions"];
-        self.address = dictionary[@"address"];
-        self.holdings = [MITLibrariesWebservices parseJSONArray:dictionary[@"holdings"] intoObjectsOfClass:[MITLibrariesHolding class]];
-        self.citations = [self parseCitations:dictionary[@"citations"]];
-        self.composedHTML = dictionary[@"composed-html"];
-    }
-    return self;
+    RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesWorldcatItem class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"id" : @"identifier",
+                                                   @"url" : @"url",
+                                                   @"worldcat_url" : @"worldCatUrl",
+                                                   @"title" : @"title",
+                                                   @"authors" : @"author",
+                                                   @"years" : @"year",
+                                                   @"publishers" : @"publisher",
+                                                   @"formats" : @"format",
+                                                   @"isbns" : @"isbns",
+                                                   @"subjects" : @"subject",
+                                                   @"langs" : @"language",
+                                                   @"extents" : @"extent",
+                                                   @"summaries" : @"summaries",
+                                                   @"editions" : @"editions",
+                                                   @"address" : @"address",
+                                                   @"composed-html" : @"composedHTML",
+                                                   @"citations" : @"rawCitations"}];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"holdings" toKeyPath:@"holdings" withMapping:[MITLibrariesHolding objectMapping]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cover_images" toKeyPath:@"coverImages" withMapping:[MITLibrariesCoverImage objectMapping]]];
+    return mapping;
+}
+
+- (NSArray *)citations
+{
+    return [self parseCitations:self.rawCitations];
 }
 
 - (NSArray *)parseCitations:(NSDictionary *)JSONCitations

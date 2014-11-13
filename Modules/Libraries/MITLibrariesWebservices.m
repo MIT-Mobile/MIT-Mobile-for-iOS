@@ -37,7 +37,7 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 
 @implementation MITLibrariesWebservices
 
-#pragma mark - Libraries Webservice Calls
+#pragma mark - Libraries Webservice Calls - POST
 
 + (NSDictionary *)formSheetGroupsAsHTMLParametersDictionary:(NSArray *)formSheetGroups
 {
@@ -86,6 +86,8 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     [[self MITWebserviceOperationQueue] addOperation:requestOperation];
 }
 
+#pragma mark - Libraries Webservice Calls - GET
+
 + (void)getLinksWithCompletion:(void (^)(NSArray *links, NSError *error))completion
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesLinksResourceName
@@ -121,40 +123,21 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     [parameters setObject:[NSString stringWithFormat:@"%d", startingIndex] forKey:kMITLibraryWebservicesStartIndexKey];
     [parameters setObject:searchString ? searchString : @"" forKey:kMITLibraryWebservicesSearchTermKey];
     [parameters setObject:[NSString stringWithFormat:@"%d", kMITLibrariesSearchResultsLimit]  forKey:kMITLibraryWebservicesLimitKey];
-    
-    NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
-                                                                   parameters:parameters
-                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    
-    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-        NSArray *items = [MITLibrariesWebservices parseJSONArray:responseObject intoObjectsOfClass:[MITLibrariesWorldcatItem class]];
-        completion(items, nil);
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-        completion(nil, error);
+
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesSearchResourceName parameters:parameters completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        completion(result.array, error);
     }];
-    
-    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
 }
 
 + (void)getItemDetailsForItem:(MITLibrariesWorldcatItem *)item completion:(void (^)(MITLibrariesWorldcatItem *item, NSError *error))completion
 {
     if (item.identifier) {
-        NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesBaseEndpoint, kMITLibrariesSearchEndpoint, item.identifier];
-        NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
-                                                                       parameters:nil
-                                                                 andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
-        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    
-        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-            MITLibrariesWorldcatItem *newItem = [[MITLibrariesWorldcatItem alloc] initWithDictionary:responseObject];
-            completion(newItem, nil);
-        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-            completion(nil, error);
-        }];
-        
-        [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+        [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesItemDetailResourceName
+                                                        object:@{@"itemId" : item.identifier}
+                                                    parameters:nil
+                                                    completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                        completion(result.array.firstObject, error);
+                                                    }];
     }
     else {
         NSError *error = [[NSError alloc] initWithDomain:kMITLibrariesErrorDomain code:NSURLErrorResourceUnavailable userInfo:@{NSLocalizedDescriptionKey : @"Item not found"}];
@@ -164,21 +147,12 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 
 + (void)getUserWithCompletion:(void (^)(MITLibrariesUser *user, NSError *error))completion
 {
-    NSString *requestEndpoint = [NSString stringWithFormat:@"%@/%@/%@", kMITLibrariesSecureEndpointPrefix, kMITLibrariesBaseEndpoint, kMITLibrariesAccountEndpoint];
-    NSURLRequest *request = [MITTouchstoneRequestOperation requestForEndpoint:requestEndpoint
-                                                                   parameters:nil
-                                                             andRequestMethod:MITTouchstoneRequestOperationRequestMethodGET];
-    
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    
-    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-        MITLibrariesUser *user = [[MITLibrariesUser alloc] initWithDictionary:responseObject];
-        completion(user, nil);
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-        completion(nil, error);
-    }];
-    
-    [[self MITWebserviceOperationQueue] addOperation:requestOperation];
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesUserResourceName
+                                                    object:nil
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    completion(result.array.firstObject, error);
+                                                }];
 }
 
 + (NSArray *)recentSearchStrings
@@ -220,20 +194,6 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
         operationQueue = [[NSOperationQueue alloc] init];
     }
     return operationQueue;
-}
-
-+ (NSArray *)parseJSONArray:(NSArray *)JSONArray intoObjectsOfClass:(Class)initializableDictionaryClass
-{
-    if (!JSONArray || ![initializableDictionaryClass conformsToProtocol:@protocol(MITInitializableWithDictionaryProtocol)]) {
-        return nil;
-    }
-    
-    NSMutableArray *objects = [[NSMutableArray alloc] init];
-    for (NSDictionary *objectDictionary in JSONArray) {
-        id parsedObject = [[initializableDictionaryClass alloc] initWithDictionary:objectDictionary];
-        [objects addObject:parsedObject];
-    }
-    return objects;
 }
 
 + (RKISO8601DateFormatter *)librariesDateFormatter
