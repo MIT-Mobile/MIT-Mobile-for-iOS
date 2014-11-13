@@ -82,10 +82,14 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     // Following screens should have no "Back" text on back button
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
+    
+    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)setupToolbar
 {
+    self.navigationController.toolbar.translucent = NO;
+    
     self.mapListSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Map", @"List"]];
     [self.mapListSegmentedControl addTarget:self action:@selector(showSelectedViewController) forControlEvents:UIControlEventValueChanged];
     [self.mapListSegmentedControl setWidth:90.0 forSegmentAtIndex:0];

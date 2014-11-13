@@ -29,6 +29,8 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 {
     [super viewDidLoad];
 
+    self.title = @"Tours";
+    
     self.coverImageView.image = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
     
     [self setupNavBar];

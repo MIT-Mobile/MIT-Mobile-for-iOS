@@ -107,7 +107,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == MITToursListSectionDetails) {
-        return 92.0;
+        return 75.0;
     }
     else {
         return [MITToursTourStopCell heightForContent:[self stopCellModelForIndexPath:indexPath] tableViewWidth:self.tableView.frame.size.width];
@@ -210,7 +210,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
         label.font = [UIFont toursMapCalloutTitle];
         label.text = @"MAIN LOOP";
         _mainLoopSectionHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 30)];
-        _mainLoopSectionHeaderView.backgroundColor = [UIColor mit_backgroundColor];
+        _mainLoopSectionHeaderView.backgroundColor = [UIColor mit_navBarColor];
         [_mainLoopSectionHeaderView addSubview:circleView];
         [_mainLoopSectionHeaderView addSubview:label];
     }
@@ -226,7 +226,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
         label.font = [UIFont toursMapCalloutTitle];
         label.text = @"SIDE TRIPS";
         _sideTripsSectionHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 30)];
-        _sideTripsSectionHeaderView.backgroundColor = [UIColor mit_backgroundColor];
+        _sideTripsSectionHeaderView.backgroundColor = [UIColor mit_navBarColor];
         [_sideTripsSectionHeaderView addSubview:circleView];
         [_sideTripsSectionHeaderView addSubview:label];
 
