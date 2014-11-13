@@ -9,6 +9,7 @@
 #import "SMClassicCalloutView.h"
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
+#import "UIKit+MITAdditions.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -71,6 +72,7 @@ static NSInteger kAnnotationMarginRight = 50;
     
     MKMapView *mapView = self.tiledMapView.mapView;
     mapView.showsUserLocation = YES;
+    mapView.tintColor = [UIColor mit_systemTintColor];
     
     // Set up annotations from stops
     NSMutableArray *annotations = [[NSMutableArray alloc] init];

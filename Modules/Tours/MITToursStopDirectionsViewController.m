@@ -6,6 +6,7 @@
 #import "MITToursHTMLTemplateInjector.h"
 #import "MITToursStopDirectionAnnotation.h"
 #import "MITToursStopDirectionsAnnotationView.h"
+#import "UIKit+MITAdditions.h"
 
 static CGFloat const kIPadMapHeight = 300;
 static CGFloat const kWebViewContentMargin = 8;
@@ -53,6 +54,7 @@ static CGFloat const kWebViewContentMargin = 8;
     self.tiledMapView.mapView.showsUserLocation = YES;
     [self.tiledMapView showRouteForStops:[self.currentStop.tour.stops array]];
     self.tiledMapView.userInteractionEnabled = NO;
+    self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.tiledMapViewHeightConstraint.constant = kIPadMapHeight;
