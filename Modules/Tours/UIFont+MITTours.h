@@ -10,4 +10,9 @@
 
 + (UIFont *)toursStopCollectionViewCellTitle;
 
++ (UIFont *)toursPageTitle;
++ (UIFont *)toursTitle;
++ (UIFont *)toursSubtitle;
++ (UIFont *)toursDetail;
+
 @end

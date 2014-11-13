@@ -27,4 +27,24 @@
     return [UIFont fontWithName:@"HelveticaNeue" size:12];
 }
 
++ (UIFont *)toursPageTitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue-Medium" size:20];
+}
+
++ (UIFont *)toursTitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:17];
+}
+
++ (UIFont *)toursSubtitle
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:17];
+}
+
++ (UIFont *)toursDetail
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:14];
+}
+
 @end
