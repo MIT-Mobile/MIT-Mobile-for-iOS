@@ -7,11 +7,17 @@
 #import "MITToursStopDirectionAnnotation.h"
 #import "MITToursStopDirectionsAnnotationView.h"
 
+static CGFloat const kIPadMapHeight = 300;
+static CGFloat const kWebViewContentMargin = 8;
+
 @interface MITToursStopDirectionsViewController () <UIWebViewDelegate, MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIScrollView *containerScrollView;
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tiledMapViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *webViewHeightConstraint;
 
 @end
 
@@ -25,13 +31,18 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupMapView];
-    [self setupWebView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self setupWebView];
 }
 
 - (void)setupMapView
@@ -42,6 +53,11 @@
     self.tiledMapView.mapView.showsUserLocation = YES;
     [self.tiledMapView showRouteForStops:[self.currentStop.tour.stops array]];
     self.tiledMapView.userInteractionEnabled = NO;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.tiledMapViewHeightConstraint.constant = kIPadMapHeight;
+        [self.view needsUpdateConstraints];
+    }
     
     [self setupAnnotations];
 }
@@ -92,20 +108,24 @@
 
 - (NSString *)HTMLDirectionsToNextMainLoopStop
 {
-    return [MITToursHTMLTemplateInjector templatedHTMLForDirectionsToStop:self.currentStop.directionsToNextStop viewWidth:self.view.frame.size.width];
+    return [MITToursHTMLTemplateInjector templatedHTMLForDirectionsToStop:self.currentStop.directionsToNextStop viewWidth:[self webViewContentWidth]];
 }
 
 - (NSString *)HTMLDirectionToSideTripStop
 {
-    return [MITToursHTMLTemplateInjector templatedHTMLForSideTripStop:self.nextStop fromMainLoopStop:self.currentStop viewWidth:self.view.frame.size.width];
+    return [MITToursHTMLTemplateInjector templatedHTMLForSideTripStop:self.nextStop fromMainLoopStop:self.currentStop viewWidth:[self webViewContentWidth]];
+}
+
+- (CGFloat)webViewContentWidth
+{
+    return CGRectGetWidth(self.view.bounds) - 2 * kWebViewContentMargin;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     CGFloat webViewContentHeight = self.webView.scrollView.contentSize.height;
-    CGFloat totalHeight = self.tiledMapView.frame.size.height + webViewContentHeight;
-    self.webView.frame = CGRectMake(0, self.webView.frame.origin.y, self.view.frame.size.width, webViewContentHeight);
-    [self.containerScrollView setContentSize:CGSizeMake(self.view.frame.size.width, totalHeight)];
+    self.webViewHeightConstraint.constant = webViewContentHeight;
+    [self.view setNeedsUpdateConstraints];
 }
 
 #pragma mark - Map View Delegate
