@@ -170,12 +170,12 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 #pragma mark - MITDayPickerViewControllerDelegate
 
-- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate
 {
-    if (![self.eventsController.date isEqualToDateIgnoringTime:date]) {
-        [self.eventsController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:date animated:YES];
-        [self updateDisplayedDate:date];
+    if (![self.eventsController.date isEqualToDateIgnoringTime:newDate]) {
+        [self.eventsController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:newDate animated:YES];
     }
+    [self updateDisplayedDate:newDate fromOldDate:oldDate];
 }
 
 #pragma mark - Rotation
@@ -205,7 +205,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 - (IBAction)todayButtonPressed:(id)sender
 {
-    [self updateDisplayedCalendar:nil category:nil date:[[NSDate date] startOfDay] animated:YES];
+    self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
 }
 
 #pragma mark - Animating Date Label
@@ -330,12 +330,11 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.event = event;
     [self.navigationController pushViewController:detailVC animated:YES];
-
 }
 
 - (void)calendarPageViewController:(MITCalendarPageViewController *)viewController didSwipeToDate:(NSDate *)date
 {
-    [self updateDisplayedDate:date];
+    self.dayPickerController.currentlyDisplayedDate = date;
 }
 
 #pragma mark - Display Refreshing
@@ -366,10 +365,6 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     if ([date isEqualToDateIgnoringTime:self.dayPickerController.currentlyDisplayedDate]) {
         animated = NO;
     }
-    else {
-        self.dayPickerController.currentlyDisplayedDate = date;
-        [self updateDisplayedDate:date];
-    }
     
     [self.eventsController moveToCalendar:self.currentlySelectedCalendar
                                  category:self.currentlySelectedCategory
@@ -377,14 +372,14 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
                                  animated:animated];
 }
 
-- (void)updateDisplayedDate:(NSDate *)date
+- (void)updateDisplayedDate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate
 {
     MITSlidingAnimationType labelSlidingAnimationType = MITSlidingAnimationTypeForward;
-    if ([self.dayPickerController.currentlyDisplayedDate compare:date] == NSOrderedDescending) {
+    if ([oldDate compare:newDate] == NSOrderedDescending) {
         labelSlidingAnimationType = MITSlidingAnimationTypeBackward;
     }
     
-    [self setDateLabelWithDate:date animationType:labelSlidingAnimationType];
+    [self setDateLabelWithDate:newDate animationType:labelSlidingAnimationType];
 }
 
 @end

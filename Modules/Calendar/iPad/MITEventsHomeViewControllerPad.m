@@ -408,6 +408,8 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.eventsPageViewController.calendar = self.currentlySelectedCalendar;
     self.eventsPageViewController.category = self.currentlySelectedCategory;
     self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
+    // Force Update
+    [self updateDisplayedDateFromDatePicker:self.dayPickerController.currentlyDisplayedDate];
 }
 
 - (void)setupEventDetailViewController
@@ -482,7 +484,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     if (!self.dayPickerController) {
         self.dayPickerController = [MITDayPickerViewController new];
-        self.dayPickerController.currentlyDisplayedDate = [[NSDate date] startOfDay];
         self.dayPickerController.delegate = self;
         self.dayPickerController.view.frame = self.extendedNavBarView.bounds;
     }
@@ -494,7 +495,12 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 #pragma mark - MITDayPickerViewControllerDelegate
 
-- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)date
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate
+{
+    [self updateDisplayedDateFromDatePicker:newDate];
+}
+
+- (void)updateDisplayedDateFromDatePicker:(NSDate *)date
 {
     if ([self.currentlySelectedCalendar.identifier isEqualToString:self.masterCalendar.academicHolidaysCalendar.identifier]) {
         MITAcademicHolidaysCalendarViewController *academicCalendarVC = (MITAcademicHolidaysCalendarViewController *)self.currentCalendarListViewController;
