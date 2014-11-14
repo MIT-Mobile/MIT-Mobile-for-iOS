@@ -311,6 +311,9 @@ static CGFloat const kBottomButtonYPadding = 20;
     self.delegateInterceptor.middleManDelegate = self;
     self.delegateInterceptor.endOfLineDelegate = mapDelegate;
     
+    // Have to set the delegate to something else and then back, because MKMapView only checks the delegate methods its delegate responds to once, at the time of setting
+    // Since we could be changing which selectors the interceptor responds to here, we have to force MKMapView to re-query it
+    self.mapView.delegate = nil;
     self.mapView.delegate = self.delegateInterceptor;
 }
 
