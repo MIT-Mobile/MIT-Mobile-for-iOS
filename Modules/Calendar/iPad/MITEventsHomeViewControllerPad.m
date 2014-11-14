@@ -584,6 +584,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     NSDate *today = [[NSDate date] startOfDay];
     self.dayPickerController.currentlyDisplayedDate = today;
+    [self.resultsViewController scrollToToday];
 }
 
 - (void)calendarsButtonPressed:(id)sender
