@@ -234,4 +234,16 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     }
 }
 
+#pragma mark - Today Scrolling
+
+- (void)scrollToToday
+{
+    NSInteger todaySection = [self.resultsDataSource sectionBeginningAtDate:[NSDate date]];
+    NSIndexPath *todayIndexPath = [NSIndexPath indexPathForRow:0 inSection:todaySection];
+    MITCalendarsEvent *eventForIndexPath = [self.resultsDataSource eventForIndexPath:todayIndexPath];
+    if (eventForIndexPath) {
+        [self.tableView scrollToRowAtIndexPath:todayIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }
+}
+
 @end

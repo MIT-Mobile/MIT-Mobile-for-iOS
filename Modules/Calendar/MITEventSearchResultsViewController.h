@@ -10,6 +10,7 @@
 @property (nonatomic, strong) MITCalendarsCalendar *currentCalendar;
 
 - (void)beginSearch:(NSString *)searchString;
+- (void)scrollToToday;
 @end
 
 @protocol MITEventSearchResultsViewControllerDelegate <NSObject>

@@ -569,12 +569,21 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)updateTitle
 {
-    if (self.currentlySelectedCategory.name) {
-        self.title = self.currentlySelectedCategory.name;
-    } else if (self.currentlySelectedCalendar == self.masterCalendar.eventsCalendar) {
-        self.title = @"All MIT Events";
+    MITCalendarsCalendar *calendarForTitle;
+    if (self.currentlySelectedCategory) {
+        calendarForTitle = self.currentlySelectedCategory;
     } else {
-        self.title = self.currentlySelectedCalendar.name;
+        calendarForTitle = self.currentlySelectedCalendar;
+    }
+    
+    if (calendarForTitle.categories.count > 0) {
+        if (calendarForTitle == self.masterCalendar.eventsCalendar) {
+            self.title = @"All MIT Events";
+        } else {
+            self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
+        }
+    } else if (calendarForTitle) {
+        self.title = calendarForTitle.name;
     }
 }
 
@@ -584,6 +593,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     NSDate *today = [[NSDate date] startOfDay];
     self.dayPickerController.currentlyDisplayedDate = today;
+    [self.resultsViewController scrollToToday];
 }
 
 - (void)calendarsButtonPressed:(id)sender
