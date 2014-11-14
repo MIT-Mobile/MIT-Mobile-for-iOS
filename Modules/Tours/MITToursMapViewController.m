@@ -264,9 +264,7 @@ static NSInteger kAnnotationMarginRight = 50;
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = contentView;
     calloutView.calloutOffset = annotationView.calloutOffset;
-        
-    [calloutView sizeToFit];
-    
+
     [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
