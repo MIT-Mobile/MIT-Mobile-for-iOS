@@ -529,6 +529,16 @@ CGFloat const refreshControlTextHeight = 19;
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 
             } else {
+                BOOL *storyHasBeenDownloaded = NO;
+                for (MITNewsDataSource *datasource in strongSelf.dataSources) {
+                    if ([datasource.objects count] != 0) {
+                        storyHasBeenDownloaded = YES;
+                        break;
+                    }
+                }
+                if (!storyHasBeenDownloaded) {
+                    [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
+                }
                 if (strongRefresh.refreshing) {
                     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(MITNewsRefreshControlHangTime * NSEC_PER_SEC));
                     dispatch_after(popTime, dispatch_get_main_queue(), ^{
