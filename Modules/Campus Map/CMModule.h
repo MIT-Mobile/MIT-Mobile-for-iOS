@@ -1,5 +1,8 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
+#import "MITMapHomeViewController.h"
 
-@interface CMModule : MITModule
+@interface CMModule : MITNavigationModule
+@property(nonatomic,weak) MITMapHomeViewController* rootViewController;
 
+- (instancetype)init;
 @end

@@ -905,3 +905,13 @@ typedef struct {
 }
 
 @end
+
+@implementation NSIndexPath (MITAdditions)
++ (NSIndexPath*)indexPathWithIndexPath:(NSIndexPath*)indexPath
+{
+    NSUInteger indexes[indexPath.length];
+    [indexPath getIndexes:indexes];
+
+    return [[NSIndexPath alloc] initWithIndexes:indexes length:indexPath.length];
+}
+@end

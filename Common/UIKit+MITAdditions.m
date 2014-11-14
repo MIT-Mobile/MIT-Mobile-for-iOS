@@ -407,13 +407,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 @end
 
-@implementation UIActionSheet (MITUIAdditions)
-- (void)showFromAppDelegate {
-    MIT_MobileAppDelegate *appDelegate = MITAppDelegate();
-    [self showInView:appDelegate.rootNavigationController.view];
-}
-@end
-
 
 #define JSON_ERROR_CODE -2
 @implementation UIAlertView (MITUIAdditions)

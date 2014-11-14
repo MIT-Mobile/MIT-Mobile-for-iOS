@@ -127,7 +127,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
         }
     };
     
-    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:LibrariesTag];
+    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:LibrariesTag];
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     [librariesModule.requestQueue addOperation:requestOperation];
 }
@@ -456,7 +456,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (void)submitForm:(NSDictionary *)parameters {
-    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:LibrariesTag];
+    LibrariesModule *librariesModule = (LibrariesModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:LibrariesTag];
 
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";

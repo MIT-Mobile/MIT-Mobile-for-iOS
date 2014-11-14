@@ -1,27 +1,22 @@
 #import "ToursModule.h"
-#import "MITModule.h"
 #import "CampusTourHomeController.h"
 
-
 @implementation ToursModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = ToursTag;
-        self.shortName = @"Tours";
-        self.longName = @"Campus Tour";
-        self.iconName = @"tours";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagTours title:@"Tours"];
+    if (self) {
+        self.longTitle = @"Campus Tour";
+        self.imageName = MITImageToursModuleIcon;
     }
+
     return self;
 }
 
-- (void)loadModuleHomeController
+- (void)loadRootViewController
 {
-    CampusTourHomeController *controller = [[CampusTourHomeController alloc] init];
-    
-    self.homeController = controller;
-    self.moduleHomeController = controller;
+    CampusTourHomeController *rootViewController = [[CampusTourHomeController alloc] init];
+    self.rootViewController = rootViewController;
 }
 
 @end

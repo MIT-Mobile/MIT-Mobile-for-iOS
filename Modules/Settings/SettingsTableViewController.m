@@ -226,17 +226,17 @@ enum {
     if (MITSettingsSectionNotifications == indexPath.section) {
         MITModule *aModule = self.notifications[indexPath.row];
 
-        cell.textLabel.text = aModule.longName;
+        cell.textLabel.text = aModule.title;
 
         UISwitch *switchView = (UISwitch*)cell.accessoryView;
         switchView.tag = indexPath.row;
 
         if (self.canRegisterForNotifications) {
-            [switchView setOn:aModule.pushNotificationEnabled
-                     animated:NO];
+            //[switchView setOn:aModule.pushNotificationEnabled
+            //         animated:NO];
         } else {
             switchView.enabled = NO;
-            aModule.pushNotificationEnabled = NO;
+           //aModule.pushNotificationEnabled = NO;
         }
     } else if (MITSettingsSectionTouchstone == indexPath.section) {
         cell.textLabel.text = @"Touchstone Settings";
@@ -294,8 +294,8 @@ enum {
         [self.notifications enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
             // Save the currently enabled state for the module. We will be using this data
             // to reset the state after switching the API server
-            notificationStates[module.tag] = @(module.pushNotificationEnabled);
-            [self performPushConfigurationForModule:module.tag
+            //notificationStates[module.tag] = @(module.pushNotificationEnabled);
+            [self performPushConfigurationForModule:module.name
                                             enabled:NO];
         }];
 
@@ -333,7 +333,7 @@ enum {
     UISwitch *aSwitch = sender;
     MITModule *aModule = self.notifications[aSwitch.tag];
 
-    [self performPushConfigurationForModule:aModule.tag
+    [self performPushConfigurationForModule:aModule.name
                                     enabled:[aSwitch isOn]];
 }
 
@@ -354,7 +354,7 @@ enum {
 
         return;
     } else {
-        MITModule *module = [MITAppDelegate() moduleForTag:tag];
+        MITModule *module = [MITAppDelegate() moduleWithTag:tag];
         NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
         parameters[@"module_name"] = tag;
         parameters[@"enabled"] = (enabled ? @"1" : @"0");
@@ -366,7 +366,7 @@ enum {
             if (![jsonResult isKindOfClass:[NSDictionary class]]) {
                 DDLogError(@"fatal error: invalid response for push configuration");
             } else if ([jsonResult[@"success"] boolValue]) {
-                module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
+               // module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
             } else {
                 if (error) {
                     [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];

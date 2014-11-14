@@ -4,6 +4,7 @@
 #import "MITShuttleStopPredictionLoader.h"
 #import "MITCoreDataController.h"
 #import "CoreData+MITAdditions.h"
+#import "MITUnreadNotifications.h"
 
 static NSString * const kMITShuttleStopNotificationStopIdKey = @"kMITShuttleStopNotificationStopIdKey";
 static NSString * const kMITShuttleStopNotificationVehicleIdKey = @"kMITShuttleStopNotificationVehicleIdKey";
@@ -65,7 +66,9 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
     notification.alertBody = [NSString stringWithFormat:@"The shuttle is arriving at %@ in %d minutes", prediction.stop.title, abs(kMITShuttleStopNotificationInterval / 60)];
     notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         prediction.stopId,
                               kMITShuttleStopNotificationVehicleIdKey:      prediction.vehicleId,
-                              kMITShuttleStopNotificationPredictionDateKey: predictionDate};
+                              kMITShuttleStopNotificationPredictionDateKey: predictionDate,
+                              MITNotificationModuleTagKey: MITModuleTagShuttle};
+    
     UIApplication *application = [UIApplication sharedApplication];
     [application scheduleLocalNotification:notification];
     if (application.backgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {
