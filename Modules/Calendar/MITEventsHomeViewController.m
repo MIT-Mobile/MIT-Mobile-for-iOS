@@ -357,7 +357,11 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     }
     
     if (calendarForTitle.categories.count > 0) {
-        self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
+        if (calendarForTitle == self.masterCalendar.eventsCalendar) {
+            self.title = @"All MIT Events";
+        } else {
+            self.title = [NSString stringWithFormat:@"All %@", calendarForTitle.name];
+        }
     } else if (calendarForTitle) {
         self.title = calendarForTitle.name;
     }
