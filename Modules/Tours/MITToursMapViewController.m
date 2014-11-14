@@ -58,10 +58,10 @@ static NSInteger kAnnotationMarginRight = 50;
     [self setupTourDetailsView];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    [self setupMapBoundingBoxAnimated:animated];
+    [super viewDidAppear:animated];
+    [self setupMapBoundingBoxAnimated:NO];
 }
 
 - (void)setupTiledMapView
@@ -107,8 +107,6 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
-    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-
     MKMapView *mapView = self.tiledMapView.mapView;
     if (!MKMapRectIsNull(self.savedMapRect)) {
         [mapView setVisibleMapRect:self.savedMapRect animated:animated];
