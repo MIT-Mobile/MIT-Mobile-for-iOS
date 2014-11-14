@@ -138,15 +138,12 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)moveListViewToOffset:(CGFloat)offset animated:(BOOL)animated
 {
+    self.listViewLeadingConstraint.constant = offset;
     if (animated) {
         [UIView animateWithDuration:kPanelAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            self.listViewLeadingConstraint.constant = offset;
-            [self.view setNeedsUpdateConstraints];
             [self.view layoutIfNeeded];
         } completion:nil];
     } else {
-        self.listViewLeadingConstraint.constant = offset;
-        [self.view setNeedsUpdateConstraints];
         [self.view layoutIfNeeded];
     }
 }
