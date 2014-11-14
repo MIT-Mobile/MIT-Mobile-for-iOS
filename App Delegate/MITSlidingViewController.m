@@ -215,7 +215,10 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
         UIViewController *rootViewController = [navigationController.viewControllers firstObject];
-        rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+
+        if (!rootViewController.navigationItem.leftBarButtonItem) {
+            rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+        }
     }
 
     if (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
