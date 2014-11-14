@@ -429,7 +429,6 @@ static NSString* const MITMobileButtonTitleView = @"View";
                             @"News",
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
-                            @"Tours",
                             @"PeopleDataModel",
                             @"MITToursDataModel"];
     
