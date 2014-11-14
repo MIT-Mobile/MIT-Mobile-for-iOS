@@ -64,7 +64,10 @@
 {
     NSInteger sectionIndex = 0;
     for (int i = 0; i < self.eventDates.count; i++) {
-        if ([date compare:self.eventDates[i]] == NSOrderedAscending) {
+        if ([date isEqualToDateIgnoringTime:self.eventDates[i]]) {
+            sectionIndex = i;
+            break;
+        } else if ([date compare:self.eventDates[i]] == NSOrderedAscending) {
             sectionIndex = i;
             break;
         }
