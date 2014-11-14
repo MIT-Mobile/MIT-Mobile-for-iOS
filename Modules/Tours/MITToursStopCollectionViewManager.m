@@ -46,7 +46,7 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
     [cell configureForImageURL:imageURL title:title];
     
     if (stop == self.selectedStop) {
-        cell.backgroundColor = [UIColor mit_backgroundColor];
+        cell.backgroundColor = [UIColor mit_navBarColor];
     } else {
         cell.backgroundColor = [UIColor clearColor];
     }
