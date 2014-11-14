@@ -7,8 +7,16 @@
 
 static NSString* const MITDrawerNavigationControllerStoryboardId = @"DrawerNavigationController";
 static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableViewController";
+static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPad = 270.;
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,ECSlidingViewControllerLayout,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
+// This number was picked in order to have an equal amount of whitespace on either
+// side of the leftBarButtonIcon. 54pt results in having 14pt of whitespace on either side.
+// This was tested on iOS 8 and iOS 7
+// (bskinner - 2014.11.14)
+static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone = 54.;
+
+
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
 @property(nonatomic,weak) MITDrawerViewController *drawerViewController;
 @property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
 
@@ -62,10 +70,23 @@ static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableV
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"there must be at least one module added before being presented" userInfo:nil];
     }
 
-    CGRect frame = self.slidingViewController.underLeftViewController.view.bounds;
-    frame.size.width -= self.slidingViewController.anchorRightPeekAmount;
-    self.drawerViewController.view.frame = frame;
+    switch ([UIDevice currentDevice].userInterfaceIdiom) {
+        case UIUserInterfaceIdiomPhone: {
+            self.slidingViewController.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone;
+        } break;
 
+        case UIUserInterfaceIdiomPad: {
+            self.slidingViewController.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPad;
+        } break;
+
+        default: {
+            // Leave it alone
+        } break;
+    }
+    
+    self.slidingViewController.delegate = self;
+    self.drawerViewController.delegate = self;
+    
     [self _showInitialModuleIfNeeded];
 }
 
