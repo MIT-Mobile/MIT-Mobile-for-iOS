@@ -93,6 +93,7 @@ static NSInteger kAnnotationMarginRight = 50;
 
     SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
     calloutView.contentViewMargin = 0;
+    calloutView.anchorMargin = 39;
     calloutView.delegate = self;
     calloutView.backgroundView = backgroundView;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;

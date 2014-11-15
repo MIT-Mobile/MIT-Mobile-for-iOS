@@ -26,7 +26,7 @@
 #define SUBTITLE_HEIGHT 15 // subtitle height, fixed
 #define BETWEEN_ACCESSORIES_MARGIN 7 // margin between accessories when no title/subtitle is present
 #define DEFAULT_CONTENT_VIEW_MARGIN 12 // margin around content view when present
-#define ANCHOR_MARGIN 27 // the smallest possible distance from the edge of our control to the "tip" of the anchor, from either left or right
+#define DEFAULT_ANCHOR_MARGIN 27 // the smallest possible distance from the edge of our control to the "tip" of the anchor, from either left or right
 #define ANCHOR_HEIGHT 13 // effective height of the anchor
 #define TOP_ANCHOR_MARGIN 13 // all the above measurements assume a bottom anchor! if we're pointing "up" we'll need to add this top margin to everything.
 #define COMFORTABLE_MARGIN 10 // when we try to reposition content to be visible, we'll consider this margin around your target rect
@@ -68,6 +68,7 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
         [self.containerView addTarget:self action:@selector(calloutClicked) forControlEvents:UIControlEventTouchUpInside];
         
         self.contentViewMargin = DEFAULT_CONTENT_VIEW_MARGIN;
+        self.anchorMargin = DEFAULT_ANCHOR_MARGIN;
     }
     return self;
 }
@@ -328,8 +329,8 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
         calloutX = constrainedRect.origin.x+constrainedRect.size.width-self.$width;
     
     // what's the farthest to the left and right that we could point to, given our background image constraints?
-    CGFloat minPointX = calloutX + ANCHOR_MARGIN;
-    CGFloat maxPointX = calloutX + self.$width - ANCHOR_MARGIN;
+    CGFloat minPointX = calloutX + self.anchorMargin;
+    CGFloat maxPointX = calloutX + self.$width - self.anchorMargin;
     
     // we may need to scoot over to the left or right to point at the correct spot
     CGFloat adjustX = 0;
