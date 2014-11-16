@@ -216,8 +216,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    self.mainLoopCollectionView.contentOffset = CGPointMake([self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset].x, 0);
-    self.nearHereCollectionView.contentOffset = CGPointMake([self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset].x, 0);
+    self.mainLoopCollectionView.contentOffset = [self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset];
+    self.nearHereCollectionView.contentOffset = [self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset];
 }
 
 @end
