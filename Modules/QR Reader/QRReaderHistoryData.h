@@ -28,4 +28,6 @@
 
 - (NSDate *)lastTimeHistoryWasOpened;
 
+- (void)saveDataModelChanges;
+
 @end

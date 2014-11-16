@@ -7,7 +7,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITBatchScanningCell.h"
 
-NSString* const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
+NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 
 @interface MITScannerAdvancedMenuViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;

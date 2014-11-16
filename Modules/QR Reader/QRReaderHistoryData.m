@@ -9,7 +9,7 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
 
 @implementation QRReaderHistoryData
 - (id)init {
-    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     return [self initWithManagedContext:context];
@@ -103,8 +103,25 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
 
 - (NSDate *)lastTimeHistoryWasOpened
 {
-    NSDate * lastTimeHistoryWasOpened = [[NSUserDefaults standardUserDefaults] objectForKey:kScannerHistoryLastOpenDateKey];
-    return (lastTimeHistoryWasOpened == nil ? [NSDate date] : lastTimeHistoryWasOpened);
+    NSDate *lastTimeHistoryWasOpened = [[NSUserDefaults standardUserDefaults] objectForKey:kScannerHistoryLastOpenDateKey];
+    if ( lastTimeHistoryWasOpened == nil )
+    {
+        [self persistLastTimeHistoryWasOpened];
+        
+        return [NSDate date];
+    }
+    
+    return lastTimeHistoryWasOpened;
+}
+
+- (void)saveDataModelChanges
+{
+    NSError *saveError = nil;
+    [self.context save:&saveError];
+    if (saveError)
+    {
+        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
+    }
 }
 
 @end

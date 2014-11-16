@@ -60,6 +60,8 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.isCaptureActive = NO;
+        
+        self.scannerHistory = [[QRReaderHistoryData alloc] init];
     }
     return self;
 }
@@ -200,6 +202,8 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self stopSessionCapture];
+    
+    [self.scannerHistory saveDataModelChanges];
 }
 
 - (void)viewDidUnload
@@ -468,6 +472,29 @@
     
     [self updateHistoryButtonTitle];
     
+    BOOL doBatchScanning = [[NSUserDefaults standardUserDefaults] boolForKey:kBatchScanningSettingKey];
+    if ( doBatchScanning )
+    {
+        [self continueBatchScanning];
+    }
+    else
+    {
+        [self showScanDetailsForScanResult:result];
+    }
+}
+
+- (void)continueBatchScanning
+{
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        self.overlayView.highlighted = NO;
+        
+        [self startSessionCapture];
+    });
+}
+
+- (void)showScanDetailsForScanResult:(QRReaderResult *)result
+{
     QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
     
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));

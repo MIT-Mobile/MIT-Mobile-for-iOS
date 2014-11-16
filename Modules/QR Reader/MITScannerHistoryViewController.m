@@ -41,7 +41,7 @@
         self.renderingQueue = [[NSOperationQueue alloc] init];
         self.renderingQueue.maxConcurrentOperationCount = 1;
         
-        NSManagedObjectContext *fetchContext = [[NSManagedObjectContext alloc] init];
+        NSManagedObjectContext *fetchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         fetchContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
         fetchContext.undoManager = nil;
         fetchContext.stalenessInterval = 0;
