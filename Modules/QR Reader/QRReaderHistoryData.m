@@ -30,6 +30,14 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
     [self.context deleteObject:result];
 }
 
+- (void)deleteScanResults:(NSArray *)results
+{
+    for( QRReaderResult *result in results )
+    {
+        [self deleteScanResult:result];
+    }
+}
+
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
                            withDate:(NSDate *)date {
     return [self insertScanResult:scanResult

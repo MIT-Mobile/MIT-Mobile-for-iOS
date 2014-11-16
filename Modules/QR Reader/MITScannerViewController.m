@@ -10,6 +10,7 @@
 #import "QRReaderResult.h"
 #import "MITScannerHelpViewController.h"
 #import "MITNavigationController.h"
+#import "MITScannerAdvancedMenuViewController.h"
 
 @interface MITScannerViewController () <AVCaptureMetadataOutputObjectsDelegate>
 
@@ -230,18 +231,16 @@
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        helpNavController.navigationBar.barStyle = UIBarStyleDefault;
-    } else {
-        helpNavController.navigationBar.barStyle = UIBarStyleBlack;
-    }
+    helpNavController.navigationBar.barStyle = UIBarStyleDefault;
     helpNavController.navigationBar.translucent = NO;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 
 - (void)showAdvancedMenu:(id)sender
 {
-    
+    MITScannerAdvancedMenuViewController *vc = [MITScannerAdvancedMenuViewController new];
+    UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:vc];
+    [self.navigationController presentViewController:navController animated:YES completion:NULL];
 }
 
 - (void)makeNavigationBarTransparent

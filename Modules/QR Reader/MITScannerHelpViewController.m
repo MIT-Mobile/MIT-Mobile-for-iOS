@@ -22,11 +22,7 @@
 {
     [super viewDidLoad];
 
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    } else {
-        self.view.backgroundColor = [UIColor mit_backgroundColor];
-    }
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.title = @"Scanner Help";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];
 }

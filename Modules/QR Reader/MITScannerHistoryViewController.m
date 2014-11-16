@@ -13,6 +13,9 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 
+@interface MITScannerHistoryViewController (MITActionSheetHandler) <UIActionSheetDelegate>
+@end
+
 @interface MITScannerHistoryViewController ()<UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate>
 
 @property (strong) NSFetchedResultsController *fetchController;
@@ -80,9 +83,12 @@
         self.view.tintColor = [UIColor whiteColor];
     }
     
-    CGRect tableViewFrame = self.view.bounds;
-    tableViewFrame.origin.y = 64.;
-    tableViewFrame.size.height -= 64.;
+    // make navigation bar visible
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:nil];
+    [self.navigationController.navigationBar setTranslucent:NO];
+    
+    // setup tableview
     UITableView *historyView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     historyView.delegate = self;
     historyView.dataSource = self;
@@ -104,31 +110,50 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self.fetchController performFetch:nil];
+    [super viewWillAppear:animated];
     
-    // revert navigation bar back to be visible
-    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    [self.navigationController.navigationBar setShadowImage:nil];
-    [self.navigationController.navigationBar setTranslucent:NO];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    
+    [self.fetchController performFetch:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    // since we manually re-adding navigationBar in loadview, we need to adjust tableView contentSize
+    [self adjustScrollViewSize:self.tableView byAddingView:self.navigationController.navigationBar];;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    
     [self.renderingQueue cancelAllOperations];
     
+    [self saveDataModelChanges];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)applicationDidEnterBackground:(id)sender
+{
+    [self saveDataModelChanges];
+}
+
+- (void)saveDataModelChanges
+{
     NSError *saveError = nil;
     [self.fetchContext save:&saveError];
     if (saveError)
     {
         DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - UITableViewDataSource
@@ -274,6 +299,11 @@
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
+{
+    [self.tableView beginUpdates];
+}
+
 - (void)controller:(NSFetchedResultsController *)controller
    didChangeObject:(id)anObject
        atIndexPath:(NSIndexPath *)indexPath
@@ -302,6 +332,13 @@
         default:
             break;
     }
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
+{
+    [self.tableView endUpdates];
+    
+    [self updateDeleteButtonTitle];
 }
 
 #pragma mark - multi edit logic
@@ -348,6 +385,12 @@
     }
 }
 
+- (void)adjustScrollViewSize:(UIScrollView *)scrollView byAddingView:(UIView *)view
+{
+    CGFloat updatedContentHeight = scrollView.contentSize.height + view.frame.size.height;
+    scrollView.contentSize = CGSizeMake( scrollView.contentSize.width, updatedContentHeight );
+}
+
 - (void)updateDeleteButtonTitle
 {
     NSArray *selectedRows = [self.tableView indexPathsForSelectedRows];
@@ -357,7 +400,47 @@
 
 - (void)didTapDelete:(id)sender
 {
+    NSArray *selectedRows = [self.tableView indexPathsForSelectedRows];
     
+    if( [selectedRows count] > 0 )
+    {
+        [self deleteItemsAtIndexPaths:selectedRows];
+    }
+    else
+    {
+        [self deleteAll];
+    }
+}
+
+- (void)deleteAll
+{
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:@"Delete All"
+                                                    otherButtonTitles:nil];
+    [actionSheet showInView:self.view];
+}
+
+- (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths
+{
+    for( NSIndexPath *indexPath in indexPaths )
+    {
+        [self.scannerHistory deleteScanResult:[self.fetchController objectAtIndexPath:indexPath]];
+    }
 }
 
 @end
+
+@implementation MITScannerHistoryViewController (MITActionSheetHandler)
+
+- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if( buttonIndex != actionSheet.cancelButtonIndex )
+    {
+        [self.scannerHistory deleteScanResults:[self.fetchController fetchedObjects]];
+    }
+}
+
+@end
+
