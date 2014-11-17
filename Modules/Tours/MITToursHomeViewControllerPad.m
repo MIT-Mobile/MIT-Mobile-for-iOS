@@ -10,7 +10,7 @@
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCell";
 
-@interface MITToursHomeViewControllerPad () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource>
+@interface MITToursHomeViewControllerPad () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
 
@@ -112,6 +112,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     [cell setBackgroundColor:[UIColor clearColor]];
 }
 
+#pragma mark - CollectionView Delegate
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [MITToursInfoCollectionCell sizeForInfoText:[self infoTextForIndexPath:indexPath] buttonText:[self buttonTextForIndexPath:indexPath]];
+}
+
 #pragma mark - CollectionView Datasource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -126,16 +133,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITToursInfoCollectionCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:kMITToursInfoCollectionCell forIndexPath:indexPath];
-    [cell.infoButton removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
-    
+    MITToursInfoCollectionCell *cell = [self blankInfoCellForIndexPath:indexPath];
+    [cell configureForInfoText:[self infoTextForIndexPath:indexPath] buttonText:[self buttonTextForIndexPath:indexPath]];
     if (indexPath.row == 0) {
-        return [self moreAboutToursCellForIndexPath:indexPath];
+        [cell.infoButton addTarget:self action:@selector(moreAboutToursPressed:) forControlEvents:UIControlEventTouchUpInside];
     }
     else {
-        return [self moreAboutMITCellForIndexPath:indexPath];
+        [cell.infoButton addTarget:self action:@selector(moreAboutMITPressed:) forControlEvents:UIControlEventTouchUpInside];
     }
-    
     return cell;
 }
 
@@ -144,26 +149,24 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     [self.tableView reloadData];
 }
 
-- (UICollectionViewCell *)moreAboutToursCellForIndexPath:(NSIndexPath *)indexPath
+- (NSString *)infoTextForIndexPath:(NSIndexPath *)indexPath
 {
-    MITToursInfoCollectionCell *cell = [self blankInfoCellForIndexPath:indexPath];
-
-    cell.infoTextLabel.text = [MITToursWebservices aboutGuidedToursText];
-    [cell.infoButton setTitle:@"More about guided tours..." forState:UIControlStateNormal];
-    [cell.infoButton addTarget:self action:@selector(moreAboutToursPressed:) forControlEvents:UIControlEventTouchUpInside];
-    
-    return cell;
+    if (indexPath.row == 0) {
+        return [MITToursWebservices aboutGuidedToursText];
+    }
+    else {
+        return [MITToursWebservices aboutMITText];
+    }
 }
 
-- (UICollectionViewCell *)moreAboutMITCellForIndexPath:(NSIndexPath *)indexPath
+- (NSString *)buttonTextForIndexPath:(NSIndexPath *)indexPath
 {
-    MITToursInfoCollectionCell *cell = [self blankInfoCellForIndexPath:indexPath];
-
-    cell.infoTextLabel.text = [MITToursWebservices aboutMITText];
-    [cell.infoButton setTitle:@"More about MIT..." forState:UIControlStateNormal];
-    [cell.infoButton addTarget:self action:@selector(moreAboutMITPressed:) forControlEvents:UIControlEventTouchUpInside];
-    
-    return cell;
+    if (indexPath.row == 0) {
+        return @"More about guided tours...";
+    }
+    else {
+        return @"More about MIT...";
+    }
 }
 
 - (MITToursInfoCollectionCell *)blankInfoCellForIndexPath:(NSIndexPath *)indexPath
