@@ -42,14 +42,6 @@
     }
 }
 
-- (void)initializeTable
-{
-    self.tableView = [[UITableView alloc] init];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];

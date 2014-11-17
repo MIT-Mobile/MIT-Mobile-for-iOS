@@ -187,6 +187,12 @@
         [self.recentSearchPopoverController dismissPopoverAnimated:YES];
         self.recentSearchPopoverController = nil;
     }
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        [self.recentSearchController willMoveToParentViewController:nil];
+        [self.recentSearchController.view removeFromSuperview];
+        [self.recentSearchController removeFromParentViewController];
+        self.recentSearchController = nil;
+    }
 }
 
 - (void)showSearchRecents
@@ -206,11 +212,9 @@
 
 - (void)showTableSearchRecents
 {
-    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.frame];
-    [self.recentSearchController initializeTable];
-    tableView = self.recentSearchController.tableView;
-    tableView.frame = self.view.frame;
-    [self.view addSubview:tableView];
+    [self addChildViewController:self.recentSearchController];
+    [self.view addSubview:self.recentSearchController.view];
+    [self.recentSearchController didMoveToParentViewController:self];
 }
 
 - (void)hideSearchField
