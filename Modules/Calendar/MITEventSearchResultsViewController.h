@@ -8,9 +8,11 @@
 
 @property (nonatomic, weak) id<MITEventSearchResultsViewControllerDelegate> delegate;
 @property (nonatomic, strong) MITCalendarsCalendar *currentCalendar;
+@property (nonatomic) BOOL shouldIndicateCellSelectedState;
 
 - (void)beginSearch:(NSString *)searchString;
 - (void)scrollToToday;
+- (void)selectFirstRow;
 @end
 
 @protocol MITEventSearchResultsViewControllerDelegate <NSObject>
