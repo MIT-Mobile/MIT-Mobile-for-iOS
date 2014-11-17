@@ -84,10 +84,13 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     // Following screens should have no "Back" text on back button
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
+    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)setupToolbar
 {
+    self.navigationController.toolbar.translucent = NO;
+    
     // We use actual UIButtons so that we can easily change the selected state
     UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
     UIImage *listToggleImageSelected = [UIImage imageNamed:@"tours/list-view"];
@@ -135,15 +138,12 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)moveListViewToOffset:(CGFloat)offset animated:(BOOL)animated
 {
+    self.listViewLeadingConstraint.constant = offset;
     if (animated) {
         [UIView animateWithDuration:kPanelAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            self.listViewLeadingConstraint.constant = offset;
-            [self.view setNeedsUpdateConstraints];
             [self.view layoutIfNeeded];
         } completion:nil];
     } else {
-        self.listViewLeadingConstraint.constant = offset;
-        [self.view setNeedsUpdateConstraints];
         [self.view layoutIfNeeded];
     }
 }

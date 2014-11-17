@@ -39,8 +39,17 @@
         }
     }
     if (closestAttributes) {
-        return CGPointMake(closestAttributes.center.x - halfWidth,
-                           closestAttributes.center.y - halfHeight);
+        CGFloat newOffsetX = closestAttributes.center.x - halfWidth;
+        CGFloat newOffsetY = closestAttributes.center.y - halfHeight;
+        
+        // Clamp content offset based on content size. This prevents us from choosing a content offset
+        // that would cause the collection view to bounce.
+        CGFloat maxOffsetX = self.collectionViewContentSize.width - CGRectGetWidth(self.collectionView.bounds);
+        CGFloat maxOffsetY = self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds);
+        newOffsetX = MAX(0, MIN(newOffsetX, maxOffsetX));
+        newOffsetY = MAX(0, MIN(newOffsetX, maxOffsetY));
+        
+        return CGPointMake(newOffsetX, newOffsetY);
     }
     return proposedContentOffset;
 }

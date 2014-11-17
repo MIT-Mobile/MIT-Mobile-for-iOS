@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6250"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursMapViewController">
@@ -22,21 +22,35 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8LK-Y6-SF9" userLabel="Tour Details View">
-                    <rect key="frame" x="0.0" y="0.0" width="600" height="92"/>
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="75"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uZr-cu-FpT">
-                            <rect key="frame" x="8" y="14" width="304" height="66"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8V8-E1-coP" userLabel="Bottom stroke">
+                            <rect key="frame" x="0.0" y="74" width="600" height="1"/>
+                            <color key="backgroundColor" red="0.79083625637755106" green="0.79083625637755106" blue="0.79083625637755106" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="304" id="pnG-ce-7ei"/>
+                                <constraint firstAttribute="height" constant="1" id="p7I-MM-Omy"/>
+                            </constraints>
+                        </view>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k0g-YJ-H0l" userLabel="Videotaping and photography are prohibited inside MIT buildings.  Tour Details...">
+                            <rect key="frame" x="8" y="8" width="304" height="59"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="304" id="RtA-lF-q8v"/>
                             </constraints>
                             <attributedString key="attributedText">
-                                <fragment>
-                                    <string key="content">Videotaping and photography are prohibited inside MIT buildings.
-
-</string>
+                                <fragment content="Videotaping and photography are prohibited inside MIT buildings. ">
                                     <attributes>
                                         <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <font key="NSFont" size="14" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                                <fragment>
+                                    <string key="content" base64-UTF8="YES">
+Cg
+</string>
+                                    <attributes>
+                                        <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <font key="NSFont" size="8" name="HelveticaNeue"/>
                                         <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                     </attributes>
                                 </fragment>
@@ -51,18 +65,15 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="0.75" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.97604482962448846" green="0.97459013661932059" blue="1" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="92" id="7IX-nf-XNj"/>
-                        <constraint firstAttribute="trailing" secondItem="uZr-cu-FpT" secondAttribute="trailing" constant="8" id="Ctj-Qh-UNo"/>
-                        <constraint firstItem="uZr-cu-FpT" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" constant="8" id="Xfk-d5-FBl"/>
-                        <constraint firstItem="uZr-cu-FpT" firstAttribute="top" secondItem="8LK-Y6-SF9" secondAttribute="top" constant="14" id="dXq-SD-B0o"/>
+                        <constraint firstAttribute="height" constant="75" id="7IX-nf-XNj"/>
+                        <constraint firstAttribute="bottom" secondItem="8V8-E1-coP" secondAttribute="bottom" id="9Nq-Sw-iX8"/>
+                        <constraint firstItem="k0g-YJ-H0l" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" constant="8" id="NpQ-wD-yBn"/>
+                        <constraint firstItem="k0g-YJ-H0l" firstAttribute="top" secondItem="8LK-Y6-SF9" secondAttribute="top" constant="8" id="Pvi-zp-vy9"/>
+                        <constraint firstAttribute="trailing" secondItem="8V8-E1-coP" secondAttribute="trailing" id="oEM-be-tSt"/>
+                        <constraint firstItem="8V8-E1-coP" firstAttribute="leading" secondItem="8LK-Y6-SF9" secondAttribute="leading" id="s0f-r1-oY8"/>
                     </constraints>
-                    <variation key="default">
-                        <mask key="constraints">
-                            <exclude reference="Ctj-Qh-UNo"/>
-                        </mask>
-                    </variation>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

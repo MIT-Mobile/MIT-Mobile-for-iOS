@@ -25,29 +25,29 @@
                     <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qt9-ch-Gmw">
-                            <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
+                            <rect key="frame" x="0.0" y="0.0" width="768" height="963"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXA-mW-SLF">
-                                    <rect key="frame" x="80" y="20" width="608" height="21"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXA-mW-SLF">
+                                    <rect key="frame" x="80" y="20" width="608" height="24"/>
+                                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="20"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Dlg-Z2-21j">
-                                    <rect key="frame" x="80" y="58" width="608" height="339"/>
+                                    <rect key="frame" x="80" y="61" width="608" height="339"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="339" id="LiC-so-Exl"/>
                                         <constraint firstAttribute="width" constant="608" id="grm-uY-F3g"/>
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Body Text" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mpo-8H-jaQ">
-                                    <rect key="frame" x="80" y="423" width="608" height="21"/>
+                                    <rect key="frame" x="80" y="426" width="608" height="21"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="L7N-LS-eWa" customClass="MITInfiniteScrollCollectionView">
-                                    <rect key="frame" x="-80" y="505" width="928" height="228"/>
+                                    <rect key="frame" x="-80" y="508" width="928" height="228"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="228" id="Wny-qA-KqO"/>
@@ -60,7 +60,7 @@
                                     </collectionViewFlowLayout>
                                 </collectionView>
                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="mkP-tY-bLD">
-                                    <rect key="frame" x="-80" y="732" width="928" height="228"/>
+                                    <rect key="frame" x="-80" y="735" width="928" height="228"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="228" id="Mfa-tU-gAg"/>
@@ -73,24 +73,24 @@
                                     </collectionViewFlowLayout>
                                 </collectionView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Loop" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQj-WK-8Ti">
-                                    <rect key="frame" x="80" y="505" width="82" height="21"/>
+                                    <rect key="frame" x="80" y="508" width="82" height="21"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Near Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="05o-gE-JOU">
-                                    <rect key="frame" x="80" y="732" width="78" height="21"/>
+                                    <rect key="frame" x="80" y="735" width="78" height="21"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zSh-A9-eWP">
-                                    <rect key="frame" x="80" y="534" width="608" height="1"/>
+                                    <rect key="frame" x="80" y="537" width="608" height="1"/>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="VKJ-D2-okk"/>
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dYn-eJ-Jbl">
-                                    <rect key="frame" x="80" y="761" width="608" height="1"/>
+                                    <rect key="frame" x="80" y="764" width="608" height="1"/>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="Wbq-dN-FsT"/>

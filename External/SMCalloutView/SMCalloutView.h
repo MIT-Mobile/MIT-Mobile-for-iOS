@@ -56,6 +56,9 @@ extern NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView;
 
 // Margin above and below content. Not exposed as part of the original SMCalloutView.
 @property (nonatomic) CGFloat contentViewMargin;
+// The smallest possible distance from the edge of our control to the "tip" of the anchor.
+// Not exposed as part of the original SMCalloutView.
+@property (nonatomic) CGFloat anchorMargin;
 
 // calloutOffset is the offset in screen points from the top-middle of the annotation view, where the anchor of the callout should be shown.
 @property (nonatomic, assign) CGPoint calloutOffset;

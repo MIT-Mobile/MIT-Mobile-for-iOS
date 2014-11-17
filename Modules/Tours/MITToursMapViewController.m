@@ -9,6 +9,7 @@
 #import "SMClassicCalloutView.h"
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
+#import "UIKit+MITAdditions.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -57,10 +58,10 @@ static NSInteger kAnnotationMarginRight = 50;
     [self setupTourDetailsView];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    [self setupMapBoundingBoxAnimated:animated];
+    [super viewDidAppear:animated];
+    [self setupMapBoundingBoxAnimated:NO];
 }
 
 - (void)setupTiledMapView
@@ -71,6 +72,7 @@ static NSInteger kAnnotationMarginRight = 50;
     
     MKMapView *mapView = self.tiledMapView.mapView;
     mapView.showsUserLocation = YES;
+    mapView.tintColor = [UIColor mit_systemTintColor];
     
     // Set up annotations from stops
     NSMutableArray *annotations = [[NSMutableArray alloc] init];
@@ -91,6 +93,7 @@ static NSInteger kAnnotationMarginRight = 50;
 
     SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
     calloutView.contentViewMargin = 0;
+    calloutView.anchorMargin = 39;
     calloutView.delegate = self;
     calloutView.backgroundView = backgroundView;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;
@@ -104,8 +107,6 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
-    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-
     MKMapView *mapView = self.tiledMapView.mapView;
     if (!MKMapRectIsNull(self.savedMapRect)) {
         [mapView setVisibleMapRect:self.savedMapRect animated:animated];

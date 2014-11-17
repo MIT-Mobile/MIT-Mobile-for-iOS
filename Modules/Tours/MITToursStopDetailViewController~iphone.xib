@@ -31,14 +31,14 @@
                                 <constraint firstAttribute="width" constant="320" id="V26-ec-5jH"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3FI-m8-DDe">
-                            <rect key="frame" x="8" y="208" width="304" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3FI-m8-DDe">
+                            <rect key="frame" x="10" y="210" width="300" height="24"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="20"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T2M-yO-r3b">
-                            <rect key="frame" x="8" y="237" width="304" height="20"/>
+                            <rect key="frame" x="10" y="244" width="300" height="20"/>
                             <attributedString key="attributedText">
                                 <fragment content="Body Text ">
                                     <attributes>
@@ -51,7 +51,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7" customClass="MITInfiniteScrollCollectionView">
-                            <rect key="frame" x="-95" y="257" width="510" height="228"/>
+                            <rect key="frame" x="-95" y="272" width="510" height="228"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="228" id="MlK-yH-UTl"/>
@@ -64,33 +64,33 @@
                             </collectionViewFlowLayout>
                         </collectionView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Loop" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z54-xP-Njy" userLabel="Main Loop">
-                            <rect key="frame" x="20" y="273" width="280" height="21"/>
+                            <rect key="frame" x="20" y="288" width="280" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bBh-II-3qI" userLabel="Main Loop Stroke">
-                            <rect key="frame" x="20" y="300" width="280" height="1"/>
+                            <rect key="frame" x="20" y="315" width="280" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="p0R-Dx-5H3"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lK8-NE-OOH" userLabel="Near Here Stroke">
-                            <rect key="frame" x="20" y="504" width="280" height="1"/>
+                            <rect key="frame" x="20" y="519" width="280" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="oGD-e0-UxQ"/>
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Near Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vtL-EF-PNk" userLabel="Near Here">
-                            <rect key="frame" x="20" y="477" width="280" height="21"/>
+                            <rect key="frame" x="20" y="492" width="280" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="q74-8a-1TS">
-                            <rect key="frame" x="-90" y="485" width="500" height="196"/>
+                            <rect key="frame" x="-90" y="500" width="500" height="196"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="196" id="i72-2M-EGk"/>
@@ -104,33 +104,33 @@
                         </collectionView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="trailing" secondItem="T2M-yO-r3b" secondAttribute="trailing" constant="8" id="15r-Ry-XqO"/>
+                        <constraint firstAttribute="trailing" secondItem="T2M-yO-r3b" secondAttribute="trailing" constant="10" id="15r-Ry-XqO"/>
                         <constraint firstItem="lK8-NE-OOH" firstAttribute="top" secondItem="vtL-EF-PNk" secondAttribute="bottom" constant="6" id="1s2-RN-oiB"/>
                         <constraint firstItem="vtL-EF-PNk" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" constant="-8" id="6Vs-vZ-4GI"/>
-                        <constraint firstItem="z54-xP-Njy" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="16" id="BB3-sx-8GF"/>
+                        <constraint firstItem="z54-xP-Njy" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="24" id="BB3-sx-8GF"/>
                         <constraint firstAttribute="trailing" secondItem="q74-8a-1TS" secondAttribute="trailing" constant="-90" id="HUc-qU-wYj"/>
                         <constraint firstItem="q74-8a-1TS" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" id="Jg4-Mi-mhD"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="top" secondItem="w3V-59-ysb" secondAttribute="top" id="Kgp-Mn-1g5"/>
                         <constraint firstAttribute="trailing" secondItem="bBh-II-3qI" secondAttribute="trailing" constant="20" id="RKn-F4-vmg"/>
                         <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
-                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" id="RxB-i6-iql"/>
+                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="8" id="RxB-i6-iql"/>
                         <constraint firstItem="z54-xP-Njy" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="SKC-da-shw"/>
                         <constraint firstAttribute="trailing" secondItem="lK8-NE-OOH" secondAttribute="trailing" constant="20" id="Sok-0G-Fd6"/>
                         <constraint firstItem="q74-8a-1TS" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="-90" id="XI3-JX-SlH"/>
-                        <constraint firstItem="T2M-yO-r3b" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="a48-5Y-WW1"/>
+                        <constraint firstItem="T2M-yO-r3b" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="10" id="a48-5Y-WW1"/>
                         <constraint firstItem="bBh-II-3qI" firstAttribute="top" secondItem="z54-xP-Njy" secondAttribute="bottom" constant="6" id="aa7-Fx-6jT"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="ayj-H7-4wn"/>
                         <constraint firstItem="vtL-EF-PNk" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="bXB-Kv-3cj"/>
                         <constraint firstAttribute="bottom" secondItem="q74-8a-1TS" secondAttribute="bottom" priority="900" id="eTM-WQ-Ntm"/>
-                        <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="8" id="fWh-k0-JT3"/>
+                        <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="10" id="fWh-k0-JT3"/>
                         <constraint firstAttribute="trailing" secondItem="z54-xP-Njy" secondAttribute="trailing" constant="20" id="jFn-gU-DT5"/>
                         <constraint firstItem="bBh-II-3qI" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="lvu-Xb-2xE"/>
-                        <constraint firstItem="T2M-yO-r3b" firstAttribute="top" secondItem="3FI-m8-DDe" secondAttribute="bottom" constant="8" id="orB-O4-Olv"/>
+                        <constraint firstItem="T2M-yO-r3b" firstAttribute="top" secondItem="3FI-m8-DDe" secondAttribute="bottom" constant="10" id="orB-O4-Olv"/>
                         <constraint firstAttribute="trailing" secondItem="utD-mE-rH7" secondAttribute="trailing" constant="-95" id="rVK-wA-LWA"/>
-                        <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="8" id="wAb-5a-E76"/>
+                        <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="10" id="wAb-5a-E76"/>
                         <constraint firstItem="lK8-NE-OOH" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="wHj-6Z-w8i"/>
                         <constraint firstAttribute="trailing" secondItem="vtL-EF-PNk" secondAttribute="trailing" constant="20" id="wp8-JD-48o"/>
-                        <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="8" id="xdF-bU-kIh"/>
+                        <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="10" id="xdF-bU-kIh"/>
                         <constraint firstItem="utD-mE-rH7" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="-95" id="zaB-3h-oty"/>
                     </constraints>
                 </scrollView>

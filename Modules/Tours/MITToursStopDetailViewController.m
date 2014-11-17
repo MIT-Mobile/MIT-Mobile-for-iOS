@@ -5,6 +5,7 @@
 #import "MITToursStopCollectionViewManager.h"
 #import "MITToursStopInfiniteScrollCollectionViewManager.h"
 #import "MITInfiniteScrollCollectionView.h"
+#import "UIFont+MITTours.h"
 
 @interface MITToursStopDetailViewController () <UIScrollViewDelegate, MITToursCollectionViewManagerDelegate>
 
@@ -49,7 +50,7 @@
     
     self.scrollView.delegate = self;
     
-    self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
+    [self setupLabels];
     [self setupCollectionViews];
     [self configureForStop:self.stop];
 }
@@ -60,6 +61,12 @@
     
     // Scroll to top
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+}
+
+- (void)setupLabels
+{
+    self.stopTitleLabel.preferredMaxLayoutWidth = self.stopTitleLabel.bounds.size.width;
+    self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
 }
 
 - (void)setupCollectionViews
@@ -155,7 +162,10 @@
     
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineHeightMultiple = 1.0;
-    [bodyString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, bodyString.length)];
+
+    NSDictionary *attributes = @{ NSParagraphStyleAttributeName: paragraphStyle,
+                                  NSFontAttributeName: [UIFont toursTitle] };
+    [bodyString addAttributes:attributes range:NSMakeRange(0, bodyString.length)];
     
     [self.bodyTextLabel setAttributedText:bodyString];
 }
@@ -206,8 +216,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    self.mainLoopCollectionView.contentOffset = CGPointMake([self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset].x, 0);
-    self.nearHereCollectionView.contentOffset = CGPointMake([self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset].x, 0);
+    self.mainLoopCollectionView.contentOffset = [self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset];
+    self.nearHereCollectionView.contentOffset = [self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset];
 }
 
 @end

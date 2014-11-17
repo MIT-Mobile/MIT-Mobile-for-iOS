@@ -106,21 +106,44 @@
     
     NSDictionary *pageViewDict = NSDictionaryOfVariableBindings(pageView);
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[pageView]-48-|" options:0 metrics:nil views:pageViewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
     pageView.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
 - (void)setupMainLoopCycleButtons
 {
-    UIBarButtonItem *upButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(displayNextStop)];
-    UIBarButtonItem *downButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(displayPreviousStop)];
-    self.mainLoopCycleButtons = @[upButton, downButton];
+    UIImage *upButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_up"];
+    UIImage *downButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_down"];
+
+    CGFloat spacing = 10;
+    CGFloat width = upButtonImage.size.width + downButtonImage.size.width + spacing;
+    CGFloat height = MAX(upButtonImage.size.height, downButtonImage.size.height);
+    CGRect parentFrame = CGRectMake(0, 0, width, height);
+    UIView *parentView = [[UIView alloc] initWithFrame:parentFrame];
+    
+    UIButton *upButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [upButton setImage:upButtonImage forState:UIControlStateNormal];
+    [upButton addTarget:self action:@selector(displayNextStop) forControlEvents:UIControlEventTouchUpInside];
+
+    UIButton *downButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [downButton setImage:downButtonImage forState:UIControlStateNormal];
+    [downButton addTarget:self action:@selector(displayPreviousStop) forControlEvents:UIControlEventTouchUpInside];
+    
+    [parentView addSubview:upButton];
+    [parentView addSubview:downButton];
+    
+    upButton.frame = CGRectMake(0,
+                                0.5 * (height - upButtonImage.size.height),
+                                upButtonImage.size.width,
+                                upButtonImage.size.height);
+    downButton.frame = CGRectMake(width - downButtonImage.size.width,
+                                  0.5 * (height - downButtonImage.size.height),
+                                  downButtonImage.size.width,
+                                  downButtonImage.size.height);
+
+    UIBarButtonItem *buttonContainerItem = [[UIBarButtonItem alloc] initWithCustomView:parentView];
+    
+    self.mainLoopCycleButtons = @[buttonContainerItem];
 }
 
 #pragma mark - Configuration for Stop
