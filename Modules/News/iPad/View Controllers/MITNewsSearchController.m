@@ -200,7 +200,11 @@
     if (self.recentSearchPopoverController) {
         return;
     }
-    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
+    // Wrapping recentSearchController in a UINavigationController to make the Clear button appear in the iPad popover.
+    // This is done so we can use the recentSearchController without a navgiation bar on the iPhone.
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.recentSearchController];
+    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];

@@ -5,6 +5,7 @@
 @interface MITNewsRecentSearchController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) MITNewsModelController *modelController;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, readwrite) UIActionSheet *confirmSheet;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *clearButtonItem;
 @property (nonatomic, strong) NSString *filterString;
