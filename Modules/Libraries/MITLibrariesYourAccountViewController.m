@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 @property (nonatomic, strong) MITLibrariesFinesViewController *finesViewController;
 
 @property (nonatomic, strong) MITLibrariesUser *user;
+@property (nonatomic, strong) NSDate *finesUpdatedDate;
 
 @end
 
@@ -32,9 +33,9 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 
     self.title = @"My Account";
     
-    [self refreshUserData];
-    
     [self setupViewControllers];
+    
+    [self refreshUserData];
     
     [self setupToolbar];
 }
@@ -63,6 +64,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     [MITLibrariesWebservices getUserWithCompletion:^(MITLibrariesUser *user, NSError *error) {
         if (!error) {
             self.user = user;
+            self.finesUpdatedDate = [NSDate date];
             [self refreshViewControllers];
         }
         else {
@@ -162,6 +164,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     self.holdsViewController.readyForPickupCount = self.user.readyForPickupCount;
     self.holdsViewController.items = self.user.holds;
     
+    self.finesViewController.finesUpdatedDate = self.finesUpdatedDate;
     self.finesViewController.finesBalance = self.user.formattedBalance;
     self.finesViewController.items = self.user.fines;
     

@@ -40,6 +40,13 @@
                             <constraint firstAttribute="width" constant="55" id="JdY-Rc-9tP"/>
                         </constraints>
                     </imageView>
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cOA-e4-xZM">
+                        <rect key="frame" x="30" y="103" width="260" height="1"/>
+                        <color key="backgroundColor" red="0.73333333329999995" green="0.73333333329999995" blue="0.73333333329999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="Jxj-aH-9hE"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="PdR-3u-t99" firstAttribute="top" secondItem="MRA-XZ-MQH" secondAttribute="bottom" constant="3" id="0u6-zl-c54"/>
@@ -52,7 +59,10 @@
                     <constraint firstItem="MRA-XZ-MQH" firstAttribute="leading" secondItem="PdR-3u-t99" secondAttribute="leading" id="PsT-u0-E1Y"/>
                     <constraint firstItem="MRA-XZ-MQH" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="SMT-6A-Ar6"/>
                     <constraint firstItem="86J-0C-iTR" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="SiB-qE-CdE"/>
+                    <constraint firstItem="cOA-e4-xZM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="30" id="Y5N-FN-GKW"/>
                     <constraint firstItem="MRA-XZ-MQH" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="1" id="YNA-aL-uRn"/>
+                    <constraint firstAttribute="bottom" secondItem="cOA-e4-xZM" secondAttribute="bottom" id="gBq-qQ-eGy"/>
+                    <constraint firstAttribute="trailing" secondItem="cOA-e4-xZM" secondAttribute="trailing" constant="30" id="jRo-De-YFc"/>
                     <constraint firstItem="MRA-XZ-MQH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="63" id="qnE-lo-LfX"/>
                     <constraint firstItem="MRA-XZ-MQH" firstAttribute="trailing" secondItem="PdR-3u-t99" secondAttribute="trailing" id="sRD-yo-IUn"/>
                 </constraints>
@@ -61,6 +71,7 @@
                 <outlet property="authorAndPublicationDateLabel" destination="izh-4L-qzz" id="Ka9-XU-PDW"/>
                 <outlet property="bookCoverImageView" destination="86J-0C-iTR" id="yPe-nP-j8t"/>
                 <outlet property="dueDateLabel" destination="MRA-XZ-MQH" id="PHG-jS-fjK"/>
+                <outlet property="ipadSeparator" destination="cOA-e4-xZM" id="2qP-5B-W4d"/>
                 <outlet property="itemTitleLabel" destination="PdR-3u-t99" id="Mn9-TQ-Yhz"/>
             </connections>
             <point key="canvasLocation" x="140" y="180"/>
