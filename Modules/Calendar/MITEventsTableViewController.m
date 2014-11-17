@@ -85,7 +85,9 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    if (!self.shouldIndicateCellSelectedState) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    }
     [self.delegate eventsTableView:self didSelectEvent:self.events[indexPath.row]];
 }
 
@@ -112,6 +114,15 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         int actualOffset = defaultOffset - holidayEventsOffset;
         
         return [NSString stringWithFormat:@"%i", actualOffset];
+    }
+}
+
+#pragma mark - Initial Selection
+
+- (void)selectFirstRow
+{
+    if (self.events.count > 0) {
+        [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:YES scrollPosition:UITableViewRowAnimationTop];
     }
 }
 

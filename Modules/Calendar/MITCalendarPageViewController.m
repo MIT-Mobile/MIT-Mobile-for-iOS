@@ -42,15 +42,15 @@
     MITEventsTableViewController *eventsTableViewController = [[MITEventsTableViewController alloc] init];
     eventsTableViewController.date = date;
     eventsTableViewController.delegate = self;
+    eventsTableViewController.shouldIndicateCellSelectedState = self.shouldIndicateCellSelectedState;
     
     if (self.calendar) {
         [MITCalendarWebservices getEventsForCalendar:self.calendar category:self.category date:eventsTableViewController.date completion:^(NSArray *events, NSError *error)  {
             if (events) {
                 [eventsTableViewController setEvents:events];
                 if (eventsTableViewController == [self.viewControllers firstObject]) {
-                    if ([self.calendarSelectionDelegate respondsToSelector:@selector(calendarPageViewController:didUpdateCurrentlyDisplayedEvents:)]) {
-                        [self currentlyDisplayedEventsDidChange:events];
-                    }
+                    [self currentlyDisplayedEventsDidChange:events];
+                    [eventsTableViewController selectFirstRow];
                 }
             }
         }];
