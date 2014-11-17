@@ -32,23 +32,42 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
     
     switch (indexPath.row) {
         case MITToursLinksCellFeedback:
+        {
             cell.textLabel.text = @"Send Feedback";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+            UIView *topSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 0.5)];
+            topSeparator.backgroundColor = [UIColor lightGrayColor];
+            [cell addSubview:topSeparator];
+            UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(15, cell.frame.size.height - 1, cell.frame.size.width - 15, 0.5)];
+            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
+            [cell addSubview:bottomSeparator];
             break;
+        }
         case MITToursLinksCellInformationCenter:
+        {
             cell.textLabel.text = @"MIT Information Center";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(15, cell.frame.size.height - 1, cell.frame.size.width - 15, 0.5)];
+            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
+            [cell addSubview:bottomSeparator];
             break;
+        }
         case MITToursLinksCellAdmissions:
+        {
             cell.textLabel.text = @"MIT Admissions";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, cell.frame.size.height - 1, cell.frame.size.width, 0.5)];
+            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
+            [cell addSubview:bottomSeparator];
             break;
-            
+        }
         default:
             break;
     }
     return cell;
 }
+
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {

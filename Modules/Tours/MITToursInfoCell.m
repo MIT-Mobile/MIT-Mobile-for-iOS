@@ -3,6 +3,7 @@
 @interface MITToursInfoCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *infoLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorHeight;
 
 @end
 
@@ -11,7 +12,7 @@
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-    self.separatorInset = UIEdgeInsetsMake(0, self.frame.size.width, 0, 0);
+    self.separatorHeight.constant = 0.5;
 }
 
 - (void)setContent:(id)content
