@@ -28,10 +28,20 @@
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
                     </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p0l-KH-9eg">
+                        <rect key="frame" x="0.0" y="52" width="320" height="1"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="QD0-rC-6d1"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="leading" secondItem="kQG-ha-oug" secondAttribute="leading" id="5xl-K1-kMC"/>
                     <constraint firstItem="kQG-ha-oug" firstAttribute="top" secondItem="o6Z-ks-diT" secondAttribute="bottom" constant="-5" id="HOp-HO-Tpr"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="p0l-KH-9eg" secondAttribute="bottom" constant="-8" id="Pec-fR-sSP"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="p0l-KH-9eg" secondAttribute="trailing" constant="-8" id="UtJ-yv-Jye"/>
+                    <constraint firstItem="p0l-KH-9eg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="-8" id="WY0-hO-8pD"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="ePo-T4-bKn"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="hlI-6E-NOh"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="r4k-fz-mvd"/>
@@ -42,6 +52,8 @@
             <connections>
                 <outlet property="infoButton" destination="kQG-ha-oug" id="TER-0w-FBK"/>
                 <outlet property="infoLabel" destination="o6Z-ks-diT" id="XxR-S7-0Cy"/>
+                <outlet property="separatorHeight" destination="QD0-rC-6d1" id="amX-mY-rlX"/>
+                <outlet property="separatorView" destination="p0l-KH-9eg" id="qN4-Dw-Gt5"/>
             </connections>
             <point key="canvasLocation" x="504" y="491"/>
         </tableViewCell>

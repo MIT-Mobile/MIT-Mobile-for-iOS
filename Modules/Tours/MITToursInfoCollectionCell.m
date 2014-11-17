@@ -2,9 +2,4 @@
 
 @implementation MITToursInfoCollectionCell
 
-- (void)awakeFromNib
-{
-    // Initialization code
-}
-
 @end
