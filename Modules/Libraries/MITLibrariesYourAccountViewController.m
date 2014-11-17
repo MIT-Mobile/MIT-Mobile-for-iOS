@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
 @property (nonatomic, strong) MITLibrariesFinesViewController *finesViewController;
 
 @property (nonatomic, strong) MITLibrariesUser *user;
-@property (nonatomic, assign) NSDate *finesUpdatedDate;
+@property (nonatomic, strong) NSDate *finesUpdatedDate;
 
 @end
 
