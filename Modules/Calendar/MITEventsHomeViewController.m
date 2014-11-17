@@ -386,16 +386,4 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     [self setDateLabelWithDate:newDate animationType:labelSlidingAnimationType];
 }
 
-#pragma mark - Rotation
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationPortrait;
-}
-
-- (BOOL)shouldAutorotate
-{
-    return NO;
-}
-
 @end
