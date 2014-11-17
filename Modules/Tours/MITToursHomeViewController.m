@@ -51,6 +51,11 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     }];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.navigationController.toolbarHidden = YES;
+}
+
 - (void)setupTableView
 {
     self.linksDataSourceDelegate = [[MITToursLinksDataSourceDelegate alloc] init];
