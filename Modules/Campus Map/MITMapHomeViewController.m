@@ -133,6 +133,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+    
+    // Menu button set from MIT_MobileAppDelegate -- Capturing reference for search mode.
+    self.menuBarButton = self.navigationItem.leftBarButtonItem;
 }
 
 - (void)setupMapView
@@ -256,7 +259,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
-    
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
