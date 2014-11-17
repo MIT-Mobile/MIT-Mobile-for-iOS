@@ -508,7 +508,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
                             @"News",
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
-                            @"Tours",
                             @"PeopleDataModel",
                             @"MITToursDataModel"];
     
