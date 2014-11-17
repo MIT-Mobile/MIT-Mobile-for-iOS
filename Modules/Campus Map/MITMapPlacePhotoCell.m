@@ -17,7 +17,9 @@
 - (void)setPlace:(MITMapPlace *)place
 {
     [self.photoImageView setImageWithURL:place.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-        [self resizeImageView:image];
+        if (image){
+            [self resizeImageView:image];
+        }
     }];
     
     self.captionLabel.text = place.imageCaption;
@@ -30,6 +32,9 @@
     
     CGSize imageSize = image.size;
     CGFloat aspectRatio = imageSize.width / imageSize.height;
+    if (isnan(aspectRatio)) {
+        aspectRatio = 1.0;
+    }
     CGRect imageFrame = self.photoImageView.frame;
     if (maxImageViewSize.width / aspectRatio <= maxImageViewSize.height) {
         imageFrame.size.width = maxImageViewSize.width;
