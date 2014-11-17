@@ -50,7 +50,9 @@
                 [eventsTableViewController setEvents:events];
                 if (eventsTableViewController == [self.viewControllers firstObject]) {
                     [self currentlyDisplayedEventsDidChange:events];
-                    [eventsTableViewController selectFirstRow];
+                    if (self.shouldIndicateCellSelectedState) {
+                        [eventsTableViewController selectFirstRow];
+                    }
                 }
             }
         }];
