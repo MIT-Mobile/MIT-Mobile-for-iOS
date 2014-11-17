@@ -32,9 +32,6 @@
     
     CGSize imageSize = image.size;
     CGFloat aspectRatio = imageSize.width / imageSize.height;
-    if (isnan(aspectRatio)) {
-        aspectRatio = 1.0;
-    }
     CGRect imageFrame = self.photoImageView.frame;
     if (maxImageViewSize.width / aspectRatio <= maxImageViewSize.height) {
         imageFrame.size.width = maxImageViewSize.width;

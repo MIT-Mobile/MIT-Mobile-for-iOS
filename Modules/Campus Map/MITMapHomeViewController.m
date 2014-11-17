@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -582,6 +582,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
         detailVC.place = place;
         self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+        self.currentPlacePopoverController.delegate = self;
         UIView *annotationView = [self.mapView viewForAnnotation:place];
         
         CGFloat tableHeight = 0;
@@ -719,6 +720,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
         [self setPlacesWithQuery:query];
+    }
+}
+
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    if (popoverController == self.currentPlacePopoverController) {
+        for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
+            [self.mapView deselectAnnotation:annotation animated:NO];
+        }
     }
 }
 
