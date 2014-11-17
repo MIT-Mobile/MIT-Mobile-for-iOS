@@ -80,9 +80,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     [self.activityIndicator stopAnimating];
     self.activityIndicator.hidden = YES;
-    
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    
+        
     [self.tableView reloadData];
 }
 
@@ -162,6 +160,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     MITToursInfoCell *cell = [self blankInfoCell];
     
+    cell.separatorView.hidden = YES;
     [cell setContent:[MITToursWebservices aboutGuidedToursText]];
     [cell.infoButton setTitle:@"More about guided tours..." forState:UIControlStateNormal];
     [cell.infoButton addTarget:self action:@selector(moreAboutToursPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -173,10 +172,11 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     MITToursInfoCell *cell = [self blankInfoCell];
     
+    cell.separatorView.hidden = NO;
     [cell setContent:[MITToursWebservices aboutMITText]];
     [cell.infoButton setTitle:@"More about MIT..." forState:UIControlStateNormal];
     [cell.infoButton addTarget:self action:@selector(moreAboutMITPressed:) forControlEvents:UIControlEventTouchUpInside];
-    
+        
     return cell;
 }
 
