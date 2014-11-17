@@ -157,7 +157,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self hideExtendedNavBar];
 }
 
-- (void)disableSearchModeNavBar
+- (void)showExtendedNavBarAndStandardDisplay
 {
     [self showGeneralRightBarButtonItems];
     [self setupExtendedNavBar];
@@ -242,13 +242,14 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupExtendedNavBar
 {
-    // TODO: Move to category
-    UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
-
-    self.extendedNavBarView = [MITExtendedNavBarView new];
-    self.extendedNavBarView.backgroundColor = navbarGrey;
-    [self.view addSubview:self.extendedNavBarView];
-    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
+    if (![self.view.subviews containsObject:self.extendedNavBarView]) {
+        UIColor *navbarGrey = [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+        self.extendedNavBarView = [MITExtendedNavBarView new];
+        self.extendedNavBarView.backgroundColor = navbarGrey;
+        [self.view addSubview:self.extendedNavBarView];
+        [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:navbarGrey];
+    }
+    
     [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
@@ -309,7 +310,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     self.isInSearchMode = NO;
     [self hideSearchBar];
-    [self disableSearchModeNavBar];
+    [self showExtendedNavBarAndStandardDisplay];
     [self updateTitle];
 }
 
@@ -545,11 +546,14 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                 MITAcademicHolidaysCalendarViewController *holidaysVC = [[MITAcademicHolidaysCalendarViewController alloc] init];
                 self.currentCalendarListViewController = holidaysVC;
                 self.eventDetailViewController.event = nil;
+                [self hideExtendedNavBar];
             } else if ([calendar.identifier isEqualToString:[MITCalendarManager sharedManager].masterCalendar.academicCalendar.identifier]) {
                 MITAcademicCalendarViewController *academicVC = [[MITAcademicCalendarViewController alloc] init];
                 self.currentCalendarListViewController = academicVC;
                 self.eventDetailViewController.event = nil;
+                [self hideExtendedNavBar];
             } else {
+                [self showExtendedNavBarAndStandardDisplay];
                 self.currentCalendarListViewController = self.eventsPageViewController;
                 [self.eventsPageViewController moveToCalendar:self.currentlySelectedCalendar
                                                      category:self.currentlySelectedCategory
@@ -595,7 +599,16 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     NSDate *today = [[NSDate date] startOfDay];
     self.dayPickerController.currentlyDisplayedDate = today;
-    [self.resultsViewController scrollToToday];
+    
+    if ([self.currentCalendarListViewController isKindOfClass:[MITAcademicCalendarViewController class]]) {
+        [(MITAcademicCalendarViewController *)self.currentCalendarListViewController scrollToDate:today];
+    } else if ([self.currentCalendarListViewController isKindOfClass:[MITAcademicHolidaysCalendarViewController class]]) {
+        [(MITAcademicHolidaysCalendarViewController *)self.currentCalendarListViewController scrollToDate:today];
+    }
+    
+    if ([self.splitViewController.viewControllers containsObject:self.resultsViewController]) {
+        [self.resultsViewController scrollToToday];
+    }
 }
 
 - (void)calendarsButtonPressed:(id)sender
