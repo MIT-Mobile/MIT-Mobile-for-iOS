@@ -4,6 +4,6 @@
 @interface MITLibrariesFinesViewController : MITLibrariesLoansFinesHoldsTableViewController
 
 @property (nonatomic, strong) NSString *finesBalance;
-@property (nonatomic, assign) NSDate *finesUpdatedDate;
+@property (nonatomic, strong) NSDate *finesUpdatedDate;
 
 @end

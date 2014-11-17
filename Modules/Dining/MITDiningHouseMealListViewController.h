@@ -6,7 +6,6 @@
 
 @property (nonatomic, strong) MITDiningMeal *meal;
 
-
 - (void)applyFilters:(NSSet *)filters;
 
 @end

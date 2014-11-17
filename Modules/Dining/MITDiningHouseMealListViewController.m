@@ -16,7 +16,8 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 @implementation MITDiningHouseMealListViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     [self setupTableView];

@@ -179,8 +179,6 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"loans header: %f", self.loansHeaderView.frame.origin.y - self.tableView.contentOffset.y);
-    return;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     MITLibrariesMITItem *selectedItem = nil;
