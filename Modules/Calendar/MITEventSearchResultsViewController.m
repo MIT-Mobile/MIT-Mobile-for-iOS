@@ -148,7 +148,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (!self.shouldIndicateCellSelectedState) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
     
     if ([self.resultsDataSource allSections].count > indexPath.section) {
         if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didSelectEvent:)]) {
@@ -234,6 +236,18 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     }
 }
 
+#pragma mark - Initial Row Selection
+
+- (void)selectFirstRow
+{
+    if (self.resultsDataSource.events.count > 0) {
+        NSIndexPath *firstRowIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        if ([self.resultsDataSource eventForIndexPath:firstRowIndexPath]) {
+            [self.tableView selectRowAtIndexPath:firstRowIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+        }
+    }
+}
+
 #pragma mark - Today Scrolling
 
 - (void)scrollToToday
@@ -242,7 +256,8 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     NSIndexPath *todayIndexPath = [NSIndexPath indexPathForRow:0 inSection:todaySection];
     MITCalendarsEvent *eventForIndexPath = [self.resultsDataSource eventForIndexPath:todayIndexPath];
     if (eventForIndexPath) {
-        [self.tableView scrollToRowAtIndexPath:todayIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        [self.tableView selectRowAtIndexPath:todayIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+        [self tableView:self.tableView didSelectRowAtIndexPath:todayIndexPath];
     }
 }
 

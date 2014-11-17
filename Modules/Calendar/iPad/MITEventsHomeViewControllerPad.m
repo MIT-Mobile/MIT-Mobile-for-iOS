@@ -400,6 +400,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.eventsPageViewController = [[MITCalendarPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
                                                                              navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                                            options:nil];
+    self.eventsPageViewController.shouldIndicateCellSelectedState = YES;
     self.eventsPageViewController.calendarSelectionDelegate = self;
 }
 
@@ -440,6 +441,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)setupResultsViewController
 {
     self.resultsViewController = [[MITEventSearchResultsViewController alloc] initWithNibName:nil bundle:nil];
+    self.resultsViewController.shouldIndicateCellSelectedState = YES;
     self.resultsViewController.delegate = self;
     self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
 }
@@ -664,6 +666,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didLoadResults:(NSArray *)results
 {
     if (results.count > 0) {
+        [self.resultsViewController selectFirstRow];
         self.eventDetailViewController.event = results[0];
     } else {
         self.eventDetailViewController.event = nil;
