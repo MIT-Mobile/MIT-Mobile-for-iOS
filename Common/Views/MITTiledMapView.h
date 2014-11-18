@@ -24,6 +24,7 @@ extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 - (void)centerMapOnUserLocation;
 
 - (void)showRouteForStops:(NSArray *)stops;
+- (void)zoomToFitCoordinates:(NSArray *)coordinates;
 
 - (void)toggleUserTrackingMode;
 

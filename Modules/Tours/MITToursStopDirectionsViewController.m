@@ -67,6 +67,7 @@ static CGFloat const kWebViewContentMargin = 8;
     }
     
     [self setupAnnotations];
+    [self setupRegion];
 }
 
 - (void)setupAnnotations
@@ -74,7 +75,7 @@ static CGFloat const kWebViewContentMargin = 8;
     CLLocationCoordinate2D currentStopAnnotationCoordinate;
     CLLocationCoordinate2D nextStopAnnotationCoordinate;
     
-    if (self.nextStop.isMainLoopStop && [self.currentStop.directionsToNextStop.path count] > 1) {
+    if ([self areDirectionsOnMainLoop]) {
         currentStopAnnotationCoordinate = [self coordinateFromArray:self.currentStop.directionsToNextStop.path[1]];
         
         NSInteger coordinateIndex = [self.currentStop.directionsToNextStop.path count] - 2;
@@ -90,6 +91,21 @@ static CGFloat const kWebViewContentMargin = 8;
     MITToursStopDirectionAnnotation *nextStopAnnotation = [[MITToursStopDirectionAnnotation alloc] initWithStop:self.nextStop coordinate:nextStopAnnotationCoordinate isDestination:YES];
     
     [self.tiledMapView.mapView addAnnotations:@[currentStopAnnotation, nextStopAnnotation]];
+}
+
+- (void)setupRegion
+{
+    if ([self areDirectionsOnMainLoop]) {
+        [self.tiledMapView zoomToFitCoordinates:self.currentStop.directionsToNextStop.path];
+    }
+    else {
+        [self.tiledMapView zoomToFitCoordinates:@[self.currentStop.coordinates, self.nextStop.coordinates]];
+    }
+}
+
+- (BOOL)areDirectionsOnMainLoop
+{
+    return (self.nextStop.isMainLoopStop && [self.currentStop.directionsToNextStop.path count] > 1);
 }
 
 - (CLLocationCoordinate2D)coordinateFromArray:(NSArray *)array
