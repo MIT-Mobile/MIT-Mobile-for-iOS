@@ -107,13 +107,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 + (UIColor *)mit_systemTintColor
 {
-    static UIColor *systemTintColor = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        UIView *view = [[UIView alloc] init];
-        systemTintColor = view.tintColor;
-    });
-    return systemTintColor;
+    return [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
 }
 
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
