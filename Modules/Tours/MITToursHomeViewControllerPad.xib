@@ -48,6 +48,7 @@
                     </collectionViewFlowLayout>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="tyL-OR-iLf"/>
+                        <outlet property="delegate" destination="-1" id="V1V-3k-orV"/>
                     </connections>
                 </collectionView>
             </subviews>
