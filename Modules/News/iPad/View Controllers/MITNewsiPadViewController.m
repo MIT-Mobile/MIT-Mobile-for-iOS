@@ -640,7 +640,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
     
     [self setNewsStoryUpdateInProgress:YES];
-    [self updateLoadingCell];
+    [self updateLoadingCellWithError:nil];
     self.loadingMoreStories = YES;
     
     __weak MITNewsiPadViewController *weakSelf = self;
@@ -658,10 +658,13 @@ CGFloat const refreshControlTextHeight = 19;
                                          DDLogWarn(@"failed to get more stories from datasource %@",strongSelf.dataSources[section]);
 
                                          [self storyUpdateDidFinishWithError:error];
-                                         [strongSelf updateLoadingCell];
+                                         [strongSelf updateLoadingCellWithError:error];
                                          dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
                                          dispatch_after(popTime, dispatch_get_main_queue(), ^{
-                                             [strongSelf updateLoadingCell];
+                                             if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+                                                 self.gridViewController.errorMessage = nil;
+                                             }
+                                             [strongSelf updateLoadingCellWithError:error];
                                          });
                                      } else {
                                          DDLogVerbose(@"retrieved more stores from datasource %@",strongSelf.dataSources[section]);
@@ -686,6 +689,7 @@ CGFloat const refreshControlTextHeight = 19;
     }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.errorMessage = message;
+        [self.gridViewController updateLoadingMoreCellString];
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.errorMessage = message;
     }
@@ -695,12 +699,13 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyUpdateInProgress = progress;
+        [self.gridViewController updateLoadingMoreCellString];
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.storyUpdateInProgress = progress;
     }
 }
 
-- (void)updateLoadingCell
+- (void)updateLoadingCellWithError:(NSError *)error
 {
     MITNewsDataSource *dataSource = nil;
     if (self.showSearchStories) {
@@ -709,7 +714,11 @@ CGFloat const refreshControlTextHeight = 19;
         dataSource = self.dataSources[0];
     }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
-        [self.gridViewController.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]]];
+        if (self.gridViewController.errorMessage) {
+            [self storyUpdateDidFinishWithError:error];
+        } else {
+            [self setNewsStoryUpdateInProgress:self.gridViewController.storyUpdateInProgress];
+        }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }

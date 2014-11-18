@@ -44,6 +44,7 @@
     [self didLoadCollectionView];
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)didLoadCollectionView
@@ -162,6 +163,22 @@
     }
 }
 
+- (void)updateLoadingMoreCellString
+{
+    UICollectionViewCell *collectionViewCell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]];
+    MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
+    if (self.errorMessage) {
+        loadMoreCell.textLabel.text = self.errorMessage;
+        loadMoreCell.loadingIndicator.hidden = YES;
+    } else if (_storyUpdateInProgress) {
+        loadMoreCell.textLabel.text = @"Loading More...";
+        loadMoreCell.loadingIndicator.hidden = NO;
+    } else {
+        loadMoreCell.textLabel.text = @"Load More...";
+        loadMoreCell.loadingIndicator.hidden = YES;
+    }
+}
+
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cellIdentifier = [self identifierForCellAtIndexPath:indexPath];
@@ -171,11 +188,9 @@
     
     if ([collectionViewCell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;;
-            
-            if(self.errorMessage) {
+            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
+            if (self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
-                self.errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";

@@ -26,6 +26,7 @@
 - (NSString*)titleForCategoryInSection:(NSUInteger)section;
 - (NSUInteger)numberOfStoriesForCategoryInSection:(NSUInteger)section;
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath;
+- (void)updateLoadingMoreCellString;
 
 #pragma mark Subclass methods
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
