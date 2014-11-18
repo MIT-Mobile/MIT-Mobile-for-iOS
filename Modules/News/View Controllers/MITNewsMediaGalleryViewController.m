@@ -80,7 +80,7 @@
 
 - (void)viewWillLayoutSubviews
 {
-    self.navigationBarHeightConstraint.constant = (self.view.bounds.size.height > self.view.bounds.size.width)? 44 : 32;
+    self.navigationBarHeightConstraint.constant = self.navigationBar.intrinsicContentSize.height;
     [self.view setNeedsLayout];
     [self.view updateConstraintsIfNeeded];
 }
