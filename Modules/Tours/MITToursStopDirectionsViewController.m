@@ -38,12 +38,18 @@ static CGFloat const kWebViewContentMargin = 8;
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
+   
+    // There is a bug with VCs presented as formsheets that prevents them from showing the right tint color unless you change it in viewDidAppear (and it has to be a change, not just re-setting it), so we're arbitrarily setting it to yellow, and then to the right color...
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.tiledMapView.mapView.tintColor = [UIColor yellowColor];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self setupWebView];
+    self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
 - (void)setupMapView
@@ -54,7 +60,6 @@ static CGFloat const kWebViewContentMargin = 8;
     self.tiledMapView.mapView.showsUserLocation = YES;
     [self.tiledMapView showRouteForStops:[self.currentStop.tour.stops array]];
     self.tiledMapView.userInteractionEnabled = NO;
-    self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.tiledMapViewHeightConstraint.constant = kIPadMapHeight;
@@ -62,6 +67,7 @@ static CGFloat const kWebViewContentMargin = 8;
     }
     
     [self setupAnnotations];
+    [self setupRegion];
 }
 
 - (void)setupAnnotations
@@ -69,7 +75,7 @@ static CGFloat const kWebViewContentMargin = 8;
     CLLocationCoordinate2D currentStopAnnotationCoordinate;
     CLLocationCoordinate2D nextStopAnnotationCoordinate;
     
-    if (self.nextStop.isMainLoopStop && [self.currentStop.directionsToNextStop.path count] > 1) {
+    if ([self areDirectionsOnMainLoop]) {
         currentStopAnnotationCoordinate = [self coordinateFromArray:self.currentStop.directionsToNextStop.path[1]];
         
         NSInteger coordinateIndex = [self.currentStop.directionsToNextStop.path count] - 2;
@@ -85,6 +91,21 @@ static CGFloat const kWebViewContentMargin = 8;
     MITToursStopDirectionAnnotation *nextStopAnnotation = [[MITToursStopDirectionAnnotation alloc] initWithStop:self.nextStop coordinate:nextStopAnnotationCoordinate isDestination:YES];
     
     [self.tiledMapView.mapView addAnnotations:@[currentStopAnnotation, nextStopAnnotation]];
+}
+
+- (void)setupRegion
+{
+    if ([self areDirectionsOnMainLoop]) {
+        [self.tiledMapView zoomToFitCoordinates:self.currentStop.directionsToNextStop.path];
+    }
+    else {
+        [self.tiledMapView zoomToFitCoordinates:@[self.currentStop.coordinates, self.nextStop.coordinates]];
+    }
+}
+
+- (BOOL)areDirectionsOnMainLoop
+{
+    return (self.nextStop.isMainLoopStop && [self.currentStop.directionsToNextStop.path count] > 1);
 }
 
 - (CLLocationCoordinate2D)coordinateFromArray:(NSArray *)array
