@@ -10,6 +10,7 @@
 #import "MITShuttleController.h"
 #import "MITShuttleStopPopoverViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLocationManager.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -307,7 +308,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (IBAction)currentLocationButtonTapped:(id)sender
 {
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+    if ([MITLocationManager locationServicesAuthorized]) {
         [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     } else {
         [[[UIAlertView alloc] initWithTitle:nil message:@"Turn on Location Services to Allow Shuttles to Determine Your Location." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
