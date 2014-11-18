@@ -73,6 +73,8 @@
 {
     [super viewWillAppear:animated];
 
+    self.bodyViewHeightConstraint.constant = CGRectGetHeight(self.scrollView.frame);
+    
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
@@ -117,21 +119,16 @@
 {
     [super updateViewConstraints];
 
-    if ([self.bodyView isLoading]) {
-        self.bodyViewHeightConstraint.constant = CGRectGetHeight(self.scrollView.frame);
-    } else {
-        
-        CGRect frame = self.bodyView.frame;
-        frame.size.height = 1;
-        self.bodyView.frame = frame;
-        CGSize fittingSize = [self.bodyView sizeThatFits:CGSizeZero];
-        frame.size = fittingSize;
-        self.bodyView.frame = frame;
-        
-        CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
-        self.bodyViewHeightConstraint.constant = size.height;
-    }
-
+    CGRect frame = self.bodyView.frame;
+    frame.size.height = 1;
+    self.bodyView.frame = frame;
+    CGSize fittingSize = [self.bodyView sizeThatFits:CGSizeZero];
+    frame.size = fittingSize;
+    self.bodyView.frame = frame;
+    
+    CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
+    self.bodyViewHeightConstraint.constant = size.height;
+    
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         if (self.coverImageView.image) {
             // Using 213 here because all the images from the News office should be around a
