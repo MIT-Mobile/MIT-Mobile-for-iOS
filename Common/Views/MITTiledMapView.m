@@ -270,6 +270,50 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
+- (void)zoomToFitCoordinates:(NSArray *)coordinates
+{
+    // Longitude ranges from -180 to 180...
+    CLLocationDegrees minLongitude = 181;
+    CLLocationDegrees maxLongitude = -181;
+    
+    // Lattitude ranges from -90 to 90...
+    CLLocationDegrees minLattitude = 91;
+    CLLocationDegrees maxLattitude = -91;
+    
+    for (NSArray *coordinateArray in coordinates) {
+        if (coordinateArray.count < 2) {
+            return;
+        }
+        CLLocationDegrees longitude = [coordinateArray[0] doubleValue];
+        CLLocationDegrees lattitude = [coordinateArray[1] doubleValue];
+    
+        if (longitude > maxLongitude) {
+            maxLongitude = longitude;
+        }
+        if (longitude < minLongitude) {
+            minLongitude = longitude;
+        }
+        
+        if (lattitude > maxLattitude) {
+            maxLattitude = lattitude;
+        }
+        if (lattitude < minLattitude) {
+            minLattitude = lattitude;
+        }
+    }
+    
+    if (minLongitude > 180 || maxLongitude < -181 ||
+        maxLattitude > 90 || maxLattitude < -90) {
+        return;
+    }
+    
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake((maxLattitude + minLattitude) / 2, (maxLongitude + minLongitude) / 2);
+    CLLocationDegrees padding = 0.0005;
+    MKCoordinateSpan span = MKCoordinateSpanMake(maxLattitude - minLattitude + padding, maxLongitude - minLongitude + padding);
+        
+    [self.mapView setRegion:MKCoordinateRegionMake(center, span) animated:NO];
+}
+
 #pragma mark - Tile Overlays
 
 - (void)setupTileOverlays
