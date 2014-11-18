@@ -81,7 +81,7 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
 
 + (BOOL)locationServicesAuthorized
 {
-    return [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized;
+    return [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse;
 }
 
 #pragma mark - CLLocationManagerDelegate

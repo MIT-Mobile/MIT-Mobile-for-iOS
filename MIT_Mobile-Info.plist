@@ -5,7 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MIT Mobile would like to use your current location.</string>
+	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
 	<key>CFBundleDisplayName</key>
 	<string>MIT Mobile</string>
 	<key>CFBundleDocumentTypes</key>

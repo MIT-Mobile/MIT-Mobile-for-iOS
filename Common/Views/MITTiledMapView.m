@@ -2,6 +2,7 @@
 #import "MITMapDelegateInterceptor.h"
 #import "MITToursStop.h"
 #import "MITToursDirectionsToStop.h"
+#import "MITLocationManager.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
@@ -112,7 +113,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 - (void)centerMapOnUserLocation
 {
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+    if ([MITLocationManager locationServicesAuthorized]) {
         [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     }
 }
