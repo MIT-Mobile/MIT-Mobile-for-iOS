@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITNewsSearchController.h"
 
-@interface MITNewsRecentSearchController : UIViewController
+@interface MITNewsRecentSearchController : UITableViewController
 
 @property MITNewsSearchController *searchController;
 @property (nonatomic, readonly) UIActionSheet *confirmSheet;

@@ -41,6 +41,9 @@
     if ([self.recentResults count] == 0) {
         self.clearButtonItem.enabled = NO;
     }
+    
+    self.navigationItem.leftBarButtonItem = self.clearButtonItem;
+    self.navigationItem.title = @"Recents";
 }
 
 - (void)viewWillAppear:(BOOL)animated

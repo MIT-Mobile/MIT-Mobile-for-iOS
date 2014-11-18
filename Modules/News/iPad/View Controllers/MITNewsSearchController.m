@@ -38,7 +38,7 @@
 #pragma mark - Dynamic Properties
 - (MITNewsRecentSearchController *)recentSearchController
 {
-    if(!_recentSearchController) {
+    if (!_recentSearchController) {
         MITNewsRecentSearchController *recentSearchController = [[MITNewsRecentSearchController alloc] init];
         recentSearchController.searchController = self;
         _recentSearchController = recentSearchController;
@@ -50,7 +50,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -72,12 +74,15 @@
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self hideSearchRecents];
-    if ([searchBar.text isEqualToString:@""]) {
-        [self changeToMainStories];
-    } else {
+    if (![searchBar.text isEqualToString:@""]) {
         [self changeToSearchStories];
     }
-    self.messageActivityView.alpha = 1;
+    if (self.messageView || self.messageActivityView) {
+        self.view.alpha = 1;
+        self.messageView.alpha = 1;
+    } else {
+        self.messageActivityView.alpha = 1;
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -97,29 +102,25 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if([searchBar.text isEqualToString:@""]) {
-        self.view.alpha = .5;
-    } else {
-        self.view.alpha = 0;
-    }
-    [self removeNoResultsView];
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self showSearchRecents];
+        self.view.alpha = .5;
+        self.messageView.alpha = .5;
+        self.messageActivityView.alpha = .5;
+    } else {
+        [self showTableSearchRecents];
+        self.view.alpha = 1;
     }
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([searchText isEqualToString:@""]) {
-        [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self changeToMainStories];
-        [self clearTable];
-        self.view.alpha = .5;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.view addGestureRecognizer:self.resignSearchTapGestureRecognizer];
+        }
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
-        [self changeToSearchStories];
-        self.view.alpha = 0;
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -163,10 +164,14 @@
         } else {
             DDLogVerbose(@"refreshed data source %@",self.dataSource);
             [strongSelf removeLoadingView];
-            strongSelf.view.alpha = 0;
+            if (!self.recentSearchPopoverController) {
+                strongSelf.view.alpha = 0;
+            }
             if ([strongSelf.dataSource.objects count] == 0) {
                 [strongSelf addNoResultsView];
-                strongSelf.view.alpha = 1;
+                if (!self.recentSearchPopoverController) {
+                    strongSelf.view.alpha = 1;
+                }
             }
             [strongSelf reloadData];
         }
@@ -182,6 +187,12 @@
         [self.recentSearchPopoverController dismissPopoverAnimated:YES];
         self.recentSearchPopoverController = nil;
     }
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        [self.recentSearchController willMoveToParentViewController:nil];
+        [self.recentSearchController.view removeFromSuperview];
+        [self.recentSearchController removeFromParentViewController];
+        self.recentSearchController = nil;
+    }
 }
 
 - (void)showSearchRecents
@@ -189,7 +200,11 @@
     if (self.recentSearchPopoverController) {
         return;
     }
-    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.recentSearchController];
+    // Wrapping recentSearchController in a UINavigationController to make the Clear button appear in the iPad popover.
+    // This is done so we can use the recentSearchController without a navgiation bar on the iPhone.
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.recentSearchController];
+    UIPopoverController *recentSearchPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
     recentSearchPopoverController.popoverContentSize = CGSizeMake(300, 350);
     recentSearchPopoverController.delegate = self;
     recentSearchPopoverController.passthroughViews = @[self.searchBar];
@@ -197,6 +212,13 @@
     [recentSearchPopoverController presentPopoverFromRect:[self.searchBar bounds] inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
     self.recentSearchPopoverController = recentSearchPopoverController;
+}
+
+- (void)showTableSearchRecents
+{
+    [self addChildViewController:self.recentSearchController];
+    [self.view addSubview:self.recentSearchController.view];
+    [self.recentSearchController didMoveToParentViewController:self];
 }
 
 - (void)hideSearchField
@@ -211,7 +233,13 @@
     if (self.dataSource == nil) {
         [self hideSearchField];
     } else {
-        self.view.alpha = 0;
+        if (self.messageActivityView || self.messageView) {
+            self.view.alpha = 1;
+            self.messageView.alpha = 1;
+            self.messageActivityView.alpha = 1;
+        } else {
+            self.view.alpha = 0;
+        }
     }
     return YES;
 }
