@@ -118,22 +118,23 @@
     [self configureBodyTextForStop:stop];
     [self configureImageForStop:stop];
     
+    // Set up "Main Loop" stops
     NSInteger index = [self.mainLoopStops indexOfObject:stop];
     if (index == NSNotFound) {
         index = 0;
     }
-    // We want the current stop to be the "center" of the array of stops.
+    // We want the current stop to be the first stop in display order
     NSMutableArray *sortedMainLoopStops = [[NSMutableArray alloc] init];
-    NSInteger offset = index - self.mainLoopStops.count / 2;
-    for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
-        NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
-        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
+    for (NSInteger i = index; i < self.mainLoopStops.count; i++) {
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:i]];
+    }
+    for (NSInteger i = 0; i < index; i++) {
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:i]];
     }
     self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
     self.mainLoopCollectionViewManager.stopsInDisplayOrder = sortedMainLoopStops;
     self.mainLoopCollectionViewManager.selectedStop = stop;
     [self.mainLoopCollectionView reloadData];
-    [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
     
     // Set up "Near Here" stops
     // Exclude the current stop from the "near here" list
