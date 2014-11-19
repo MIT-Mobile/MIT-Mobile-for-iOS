@@ -135,9 +135,14 @@
     [self.mainLoopCollectionView reloadData];
     [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
     
+    // Set up "Near Here" stops
+    // Exclude the current stop from the "near here" list
+    NSMutableArray *otherStops = [self.tour.stops mutableCopy];
+    [otherStops removeObject:stop];
+    
     // Order the stops by distance from the current stop
     CLLocation *currentStopLocation = [stop locationForStop];
-    NSArray *sortedStops = [self.tour.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    NSArray *sortedStops = [otherStops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         CLLocationDistance distance1 = [[((MITToursStop *)obj1) locationForStop] distanceFromLocation:currentStopLocation];
         CLLocationDistance distance2 = [[((MITToursStop *)obj2) locationForStop] distanceFromLocation:currentStopLocation];
         if (distance1 < distance2) {
