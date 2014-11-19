@@ -294,6 +294,15 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     CGSize targetPopoverSize = CGSizeMake(320, 320);
 
     MITDatePickerViewController *datePickerViewController = [MITDatePickerViewController new];
+    
+    if (self.currentCalendarListViewController == self.eventsPageViewController) {
+        datePickerViewController.startDate = self.dayPickerController.currentlyDisplayedDate;
+    } else if ([self.currentCalendarListViewController isKindOfClass:[MITAcademicCalendarViewController class]]) {
+        datePickerViewController.startDate = [(MITAcademicCalendarViewController *)self.currentCalendarListViewController currentlyDisplayedDate];
+    } else if ([self.currentCalendarListViewController isKindOfClass:[MITAcademicHolidaysCalendarViewController class]]) {
+        datePickerViewController.startDate = [(MITAcademicHolidaysCalendarViewController *)self.currentCalendarListViewController currentlyDisplayedDate];
+    }
+    
     datePickerViewController.delegate = self;
     datePickerViewController.shouldHideCancelButton = YES;
     UINavigationController *datePickerNavController = [[UINavigationController alloc] initWithRootViewController:datePickerViewController];
