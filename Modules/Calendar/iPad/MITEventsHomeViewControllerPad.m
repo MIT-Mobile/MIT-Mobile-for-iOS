@@ -191,7 +191,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     
     self.navigationSearchBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navigationSearchBar];
     
-    // TODO: Insert calendar selection drop down into bar button items
     self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, self.navigationSearchBarButtonItem, self.searchCategoryBarButtonItem];
 }
 
