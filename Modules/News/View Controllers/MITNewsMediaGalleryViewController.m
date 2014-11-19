@@ -24,6 +24,7 @@
 @property (nonatomic, strong) NSMutableArray *thumbnailImages;
 @property (strong, nonatomic) IBOutlet ThumbnailPickerView *thumbnailPickerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *navigationBarHeightConstraint;
+@property (nonatomic) BOOL isPhone;
 
 @end
 
@@ -51,6 +52,7 @@
     
 	// Do any additional setup after loading the view.
     self.title = nil;
+    self.isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
 
     self.toggleUIGesture.delegate = self;
     [self.toggleUIGesture requireGestureRecognizerToFail:self.resetZoomGesture];
@@ -70,12 +72,16 @@
     // for the first view controller
     [self didChangeSelectedIndex];
     [self.thumbnailPickerView setSelectedIndex:0];
-    [self setPhoneNavigationBarHeight:[UIApplication sharedApplication].statusBarOrientation];
+    if (self.isPhone) {
+        [self setPhoneNavigationBarHeight:[UIApplication sharedApplication].statusBarOrientation];
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self setPhoneNavigationBarHeight:toInterfaceOrientation];
+    if (self.isPhone) {
+        [self setPhoneNavigationBarHeight:toInterfaceOrientation];
+    }
 }
 
 - (void)viewWillLayoutSubviews
@@ -282,7 +288,8 @@
         
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         
-        if (UIInterfaceOrientationIsLandscape(orientation)) {
+        if (UIInterfaceOrientationIsLandscape(orientation) &&
+            self.isPhone) {
             _statusBarHidden = YES;
         } else {
             _statusBarHidden = interfaceHidden;
