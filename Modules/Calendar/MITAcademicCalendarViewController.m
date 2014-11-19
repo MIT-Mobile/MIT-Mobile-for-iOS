@@ -123,7 +123,9 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
 - (void)scrollToDate:(NSDate *)date
 {
     if (self.eventsDataSource.events.count > 0) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:[self.eventsDataSource sectionBeginningAtDate:date]];
+        NSInteger section = [self.eventsDataSource sectionBeginningAtDate:date];
+        self.currentlyDisplayedDate = [self.eventsDataSource dateForSection:section];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
         [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
     }
 }
