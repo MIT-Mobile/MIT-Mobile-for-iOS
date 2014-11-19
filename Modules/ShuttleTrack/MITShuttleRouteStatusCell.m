@@ -30,8 +30,7 @@
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
             self.statusLabel.text = @"Predictions unavailable";
-#warning TODO: question mark image
-            self.statusIconImageView.image = [UIImage imageNamed:@""];
+            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttlesUnknown"];
             break;
         default:
             break;
