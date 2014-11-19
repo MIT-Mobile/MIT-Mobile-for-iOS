@@ -1,6 +1,11 @@
 #import "MITToursStopCollectionViewCell.h"
 #import "UIImageView+WebCache.h"
 #import "UIFont+MITTours.h"
+#import "UIKit+MITAdditions.h"
+
+static const CGFloat kBaseWidth = 90;
+static const CGFloat kBaseHeight = 160;
+static const CGFloat kSelectedPadding = 10;
 
 @interface MITToursStopCollectionViewCell ()
 
@@ -15,12 +20,30 @@
 {
     [super awakeFromNib];
     self.titleLabel.font = [UIFont toursStopCollectionViewCellTitle];
+    
+    // If we do not do this, then the contentView will not resize to fit the cell.
+    self.contentView.frame = self.bounds;
+    self.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 }
 
-- (void)configureForImageURL:(NSURL *)imageURL title:(NSString *)title
+- (void)configureForImageURL:(NSURL *)imageURL title:(NSString *)title selected:(BOOL)selected
 {
     [self.imageView sd_setImageWithURL:imageURL];
     self.titleLabel.text = title;
+    
+    if (selected) {
+        self.backgroundColor = [UIColor mit_navBarColor];
+    } else {
+        self.backgroundColor = [UIColor clearColor];
+    }
+}
+
++ (CGSize)sizeForSelected:(BOOL)selected
+{
+    if (selected) {
+        return CGSizeMake(kBaseWidth + 2 * kSelectedPadding, kBaseHeight);
+    }
+    return CGSizeMake(kBaseWidth, kBaseHeight);
 }
 
 @end

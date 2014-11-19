@@ -1,6 +1,5 @@
 #import "MITToursStopCollectionViewManager.h"
 #import "MITToursStopCollectionViewCell.h"
-#import "UIKit+MITAdditions.h"
 
 @implementation MITToursStopCollectionViewManager
 
@@ -43,13 +42,8 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
     if (index != NSNotFound) {
         title = [NSString stringWithFormat:@"%d. %@", index + 1, stop.title];
     }
-    [cell configureForImageURL:imageURL title:title];
-    
-    if (stop == self.selectedStop) {
-        cell.backgroundColor = [UIColor mit_navBarColor];
-    } else {
-        cell.backgroundColor = [UIColor clearColor];
-    }
+    BOOL isSelected = (stop == self.selectedStop);
+    [cell configureForImageURL:imageURL title:title selected:isSelected];
     
     return cell;
 }
@@ -74,6 +68,15 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
         [self.delegate collectionView:self.collectionView didSelectItemForStop:stop];
     }
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayouer Methods
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITToursStop *stop = [self stopForIndexPath:indexPath];
+    BOOL isSelected = (stop == self.selectedStop);
+    return [MITToursStopCollectionViewCell sizeForSelected:isSelected];
 }
 
 @end
