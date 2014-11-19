@@ -88,7 +88,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.title = @"All MIT Events";
     [self setupViewControllers];
     [self setupRightBarButtonItems];
-    [self setupToolbar];
+    [self updateToolBar];
     [self setupExtendedNavBar];
     [self setupDayPickerController];
     [self constrainSplitViewToExtendedNavBar];
@@ -316,6 +316,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self hideSearchBar];
     [self showExtendedNavBarAndStandardDisplay];
     [self updateTitle];
+    [self updateToolBar];
 }
 
 - (void)beginSearch:(NSString *)searchString
@@ -330,6 +331,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
         self.currentSearchCategorySelectionViewController.shouldHideRegistrar = YES;
         self.currentSearchCategorySelectionViewController.delegate = self;
         [self enableSearchModeNavBar];
+        [self updateToolBar];
     }
     
     self.eventDetailViewController.event = nil;
@@ -461,11 +463,16 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.resultsViewController.currentCalendar = self.currentlySelectedCategory;
 }
 
-#pragma mark - ToolBar Setup
+#pragma mark - ToolBar
 
-- (void)setupToolbar
+- (void)updateToolBar
 {
-    [self setToolbarItems:@[[self todayToolbarItem], [self flexibleSpaceBarButtonItem], [self calendarsToolbarItem]]];
+    if (self.isInSearchMode) {
+        [self setToolbarItems:@[[self todayToolbarItem]]];
+    }
+    else {
+        [self setToolbarItems:@[[self todayToolbarItem], [self flexibleSpaceBarButtonItem], [self calendarsToolbarItem]]];
+    }
 }
 
 - (UIBarButtonItem *)todayToolbarItem
