@@ -3,7 +3,7 @@
 
 @protocol MITToursCollectionViewManagerDelegate;
 
-@interface MITToursStopCollectionViewManager : NSObject <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface MITToursStopCollectionViewManager : NSObject <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSArray *stops;
