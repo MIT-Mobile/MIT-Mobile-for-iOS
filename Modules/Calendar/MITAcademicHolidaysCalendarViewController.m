@@ -111,12 +111,12 @@ static NSString *const kMITHolidayCellName = @"kHolidayCellName";
 - (void)scrollToDate:(NSDate *)date
 {
     for (MITCalendarsEvent *event in self.events) {
-        if ([event.startAt compare:date] == NSOrderedDescending) {
+        if ([event.startAt isEqualToDateIgnoringTime:date] || [event.startAt compare:date] == NSOrderedDescending) {
             [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.events indexOfObject:event] inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            self.currentlyDisplayedDate = event.startAt;
             return;
         }
     }
-    
     // If we found nothing, scroll to the last one
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(self.events.count - 1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }

@@ -6,6 +6,8 @@ static CGFloat kMITAcademicCalendarEventCellEstimatedHeight = 44.0;
 @interface MITAcademicCalendarCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *eventDescription;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
 
 @end
 
@@ -15,7 +17,6 @@ static CGFloat kMITAcademicCalendarEventCellEstimatedHeight = 44.0;
 - (void)setEvent:(MITCalendarsEvent *)event
 {
     self.eventDescription.text = event.title;
-    
     [self layoutIfNeeded];
 }
 
@@ -34,8 +35,9 @@ static CGFloat kMITAcademicCalendarEventCellEstimatedHeight = 44.0;
     frame.size.width = width;
     cell.frame = frame;
     
-    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    ++height; // add pixel for cell separator
+    CGSize labelSize = [cell.eventDescription sizeThatFits:CGSizeMake(CGRectGetWidth(cell.eventDescription.bounds), CGFLOAT_MAX)];
+    CGFloat cellSeparatorHeight = 1.0;
+    CGFloat height = labelSize.height + cell.topConstraint.constant + cell.bottomConstraint.constant + cellSeparatorHeight;
     return MAX(kMITAcademicCalendarEventCellEstimatedHeight, height);
 }
 
