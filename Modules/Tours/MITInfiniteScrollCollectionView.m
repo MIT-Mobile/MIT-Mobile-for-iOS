@@ -26,11 +26,9 @@
     // 2. Our collection contains only 1 section.
     // 3. Our collection view scrolls horizontally.
     // 4. Our collection view uses a UICollectionViewFlowLayout (or a subclass of it).
-    // 5. All items in our collection view are the same size.
-    UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-    CGFloat cellWidth = flowLayout.itemSize.width + flowLayout.minimumInteritemSpacing;
-    CGFloat baseWidth = cellWidth * [self numberOfItemsInSection:0] / 3;
-    CGFloat baseOffset = flowLayout.sectionInset.left + baseWidth;
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
+    CGFloat baseWidth = (self.contentSize.width + layout.minimumInteritemSpacing) / 3;
+    CGFloat baseOffset = baseWidth;
     
     CGFloat offset = self.contentOffset.x;
     if (offset > baseOffset + baseWidth) {
