@@ -8,7 +8,7 @@ const CGFloat kStopCellDefaultSeparatorLeftInset = 42.0;
 NSString * const kMITShuttleStopCellNibName = @"MITShuttleStopCell";
 NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";
 
-static NSString * const kTimeUnavailableText = @"--";
+static NSString * const kTimeUnavailableText = @"—";
 
 @interface MITShuttleStopCell()
 
