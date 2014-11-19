@@ -92,6 +92,29 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     self.customAnchoredGestures = @[];
 }
 
+#pragma mark Overrides
+- (void)anchorTopViewToRightAnimated:(BOOL)animated onComplete:(void (^)())complete {
+    [super anchorTopViewToRightAnimated:animated onComplete:^{
+        [self _updateScrollsToTop];
+        
+        if (complete) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                complete();
+            }];
+        }
+    }];
+}
+
+- (void)resetTopViewAnimated:(BOOL)animated onComplete:(void(^)())complete {
+    [super resetTopViewAnimated:animated onComplete:^{
+        [self _updateScrollsToTop];
+        
+        if (complete) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                complete();
+            }];
+        }
+    }];
 }
 
 #pragma mark Properties
@@ -270,9 +293,46 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     return selectedModuleViewController;
 }
 
-- (BOOL)isSlidingViewControllerLoaded
+- (void)_updateScrollsToTop
 {
-    return (_slidingViewController != nil);
+    BOOL topViewNeedsScrollsToTop = NO;
+    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
+        topViewNeedsScrollsToTop = YES;
+    }
+    
+    BOOL stop = NO;
+    NSMutableOrderedSet *topSubviews = [NSMutableOrderedSet orderedSetWithObject:self.topViewController.view];
+    while ([topSubviews count] || !stop) {
+        UIView *view = [topSubviews firstObject];
+        [topSubviews removeObject:view];
+        
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *scrollView = (UIScrollView*)view;
+            scrollView.scrollsToTop = topViewNeedsScrollsToTop;
+            stop = YES;
+        } else if ([view.subviews count]) {
+            [topSubviews addObjectsFromArray:view.subviews];
+        } else {
+            stop = YES;
+        }
+    }
+    
+    stop = NO;
+    NSMutableArray *underLeftSubviews = [NSMutableArray arrayWithObject:self.underLeftViewController.view];
+    while ([underLeftSubviews count] || !stop) {
+        UIView *view = [underLeftSubviews firstObject];
+        [underLeftSubviews removeObject:view];
+        
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *scrollView = (UIScrollView*)view;
+            scrollView.scrollsToTop = !topViewNeedsScrollsToTop;
+            stop = YES;
+        } else if ([view.subviews count]) {
+            [underLeftSubviews addObjectsFromArray:view.subviews];
+        } else {
+            stop = YES;
+        }
+    }
 }
 
 #pragma mark Delegation
