@@ -18,7 +18,7 @@
 }
 
 - (void)cancelButtonTapped:(id)sender {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - View lifecycle
@@ -148,7 +148,7 @@
 
     if (location) {
         [self.overviewController selectAnnotationForSite:location.startSite];
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }
     
     return YES;

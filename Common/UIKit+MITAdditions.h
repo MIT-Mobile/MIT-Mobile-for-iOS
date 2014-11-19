@@ -77,12 +77,6 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @end
 
-@interface UIActionSheet (MITUIAdditions)
-
-- (void)showFromAppDelegate; // i don't like this name but can't think of a better one
-
-@end
-
 @interface UIAlertView (MITUIAdditions)
 + (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate;
 @end

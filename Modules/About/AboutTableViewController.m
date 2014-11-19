@@ -5,7 +5,6 @@
 #import "AboutCreditsVC.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "MITMailComposeController.h"
 #import "MITBuildInfo.h"
 #import  <QuartzCore/CALayer.h>
 #import "ExplanatorySectionLabel.h"

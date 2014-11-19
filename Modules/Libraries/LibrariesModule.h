@@ -1,7 +1,10 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
+#import "MITNavigationModule.h"
+#import "LibrariesViewController.h"
 
-@interface LibrariesModule : MITModule
-@property (strong) NSOperationQueue *requestQueue;
+@interface LibrariesModule : MITNavigationModule
+@property(nonatomic,weak) LibrariesViewController *rootViewController;
+@property(nonatomic,strong) NSOperationQueue *requestQueue;
 
+- (instancetype)init;
 @end

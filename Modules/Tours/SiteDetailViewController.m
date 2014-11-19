@@ -1,4 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
+#import <MessageUI/MessageUI.h>
+
 #import "SiteDetailViewController.h"
 #import "MITMapView.h"
 #import "CoreDataManager.h"
@@ -12,7 +14,6 @@
 #import "SuperThinProgressBar.h"
 #import "TourSiteMapAnnotation.h"
 #import "CampusTourHomeController.h"
-#import "MITMailComposeController.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
@@ -23,7 +24,7 @@
 #define END_TOUR_ALERT_TAG 878
 #define CONNECTION_FAILED_TAG 451
 
-@interface SiteDetailViewController ()
+@interface SiteDetailViewController () <MFMailComposeViewControllerDelegate>
 @property(nonatomic,strong) MITMapView *routeMapView;
 @property(nonatomic,strong) UIImageView *siteImageView;
 @property(nonatomic,strong) NSString *siteTemplate;
@@ -75,7 +76,11 @@
 - (void)feedbackButtonPressed:(id)sender {
     NSString *email = [[NSBundle mainBundle] infoDictionary][@"MITFeedbackAddress"];
     NSString *subject = [[ToursDataManager sharedManager] activeTour].feedbackSubject;
-    [MITMailComposeController presentMailControllerWithRecipient:email subject:subject body:nil];
+    
+    MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
+    [composeViewController setToRecipients:@[email]];
+    [composeViewController setSubject:subject];
+    [self presentViewController:composeViewController animated:YES completion:nil];
 }
 
 - (IBAction)previousButtonPressed:(id)sender {
@@ -112,8 +117,7 @@
     }
     vc.sideTrip = self.sideTrip;
     
-    [MITAppDelegate() presentAppModalViewController:vc
-                                           animated:YES];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 #pragma mark Audio
@@ -974,6 +978,14 @@
     double deltaY = endPoint.y - startPoint.y;
     
     return atan2(deltaY,deltaX) * 180 / M_PI;
+}
+
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    if ([self.presentedViewController isEqual:controller]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 @end
