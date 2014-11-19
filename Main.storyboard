@@ -1,34 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="NQ3-MW-P2V">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="VSF-i2-F9v">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
-        <!--Root View Controller-->
-        <scene sceneID="Zcy-y5-WMa">
-            <objects>
-                <viewController storyboardIdentifier="RootViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NQ3-MW-P2V" userLabel="Root View Controller" customClass="MITSlidingViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="OoY-LT-cGM"/>
-                        <viewControllerLayoutGuide type="bottom" id="fC8-ML-kob"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="LLS-BU-w7e">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="slidingViewControllerStoryboardId" value="SlidingViewController"/>
-                    </userDefinedRuntimeAttributes>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dTh-v6-a2D" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="61" y="347"/>
-        </scene>
         <!--Sliding View Controller-->
         <scene sceneID="90N-Vr-VVF">
             <objects>
-                <viewController storyboardIdentifier="SlidingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="VSF-i2-F9v" customClass="ECSlidingViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SlidingViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="VSF-i2-F9v" customClass="MITSlidingViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7qd-f2-T7a"/>
                         <viewControllerLayoutGuide type="bottom" id="sjx-Wx-oXu"/>
@@ -43,10 +22,14 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="underLeftViewControllerStoryboardId" value="DrawerNavigationController"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="topViewControllerStoryboardId" value="EmptyTopViewController"/>
                     </userDefinedRuntimeAttributes>
+                    <connections>
+                        <segue destination="Tuw-ux-HV6" kind="custom" identifier="MITSlidingViewControllerUnderLeftSegue" customClass="MITSlidingUnderLeftSegue" id="dkF-7G-29t"/>
+                        <segue destination="70A-yj-Cra" kind="custom" identifier="MITSlidingViewControllerTopSegue" customClass="MITSlidingTopSegue" id="FAS-Uf-8rP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ocN-Bb-a0i" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="436" y="347"/>
+            <point key="canvasLocation" x="436" y="302"/>
         </scene>
         <!--Drawer View Controller-->
         <scene sceneID="yUb-Nl-V4g">
@@ -99,7 +82,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6L5-7d-t3D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="904" y="944"/>
+            <point key="canvasLocation" x="1338" y="719"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="nm4-gs-6Yy">
@@ -115,7 +98,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JIZ-Kf-Pqb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="436" y="944"/>
+            <point key="canvasLocation" x="862" y="719"/>
         </scene>
         <!--Default Top View Controller-->
         <scene sceneID="yCb-yi-SR7">
@@ -141,7 +124,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yaZ-D7-Hx9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="436" y="-243"/>
+            <point key="canvasLocation" x="862" y="-281"/>
         </scene>
     </scenes>
     <resources>

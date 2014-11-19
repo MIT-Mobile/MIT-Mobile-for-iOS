@@ -5,8 +5,10 @@
 #import "MITAdditions.h"
 #import "MITSlidingAnimationController.h"
 
-static NSString* const MITDrawerNavigationControllerStoryboardId = @"DrawerNavigationController";
-static NSString* const MITDrawerTableViewControllerStoryboardId = @"DrawerTableViewController";
+NSString * const MITSlidingViewControllerModulePushSegueIdentifier = @"MITSlidingViewControllerModulePushSegue";
+NSString * const MITSlidingViewControllerUnderLeftSegueIdentifier = @"MITSlidingViewControllerUnderLeftSegue";
+NSString * const MITSlidingViewControllerTopSegueIdentifier = @"MITSlidingViewControllerTopSegue";
+
 static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPad = 270.;
 
 // This number was picked in order to have an equal amount of whitespace on either
@@ -37,29 +39,24 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self performSegueWithIdentifier:MITSlidingViewControllerUnderLeftSegueIdentifier sender:self];
+    [self performSegueWithIdentifier:MITSlidingViewControllerTopSegueIdentifier sender:self];
+    
+    self.delegate = self;
+    
+    self.topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
 
-    NSAssert(self.slidingViewControllerStoryboardId, @"slidingViewControllerStoryboardId may not be nil.");
+    NSAssert(self.underLeftViewController, @"slidingViewController does not have a valid underLeftViewController");
+    NSAssert([self.underLeftViewController isKindOfClass:[UINavigationController class]], @"underLeftViewController is a kind of %@, expected %@",NSStringFromClass([self.underLeftViewController class]),NSStringFromClass([UINavigationController class]));
 
-    ECSlidingViewController *slidingViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.slidingViewControllerStoryboardId];
-
-    NSAssert([slidingViewController isKindOfClass:[ECSlidingViewController class]],@"object with storyboard ID %@ is a kind of %@, expected %@", self.slidingViewControllerStoryboardId,NSStringFromClass([slidingViewController class]),NSStringFromClass([ECSlidingViewController class]));
-    NSAssert(slidingViewController.underLeftViewController, @"slidingViewController does not have a valid underLeftViewController");
-    NSAssert([slidingViewController.underLeftViewController isKindOfClass:[UINavigationController class]], @"underLeftViewController is a kind of %@, expected %@",NSStringFromClass([slidingViewController.underLeftViewController class]),NSStringFromClass([UINavigationController class]));
-
-    [self addChildViewController:slidingViewController];
-    slidingViewController.view.frame = self.view.bounds;
-    [self.view addSubview:slidingViewController.view];
-    [slidingViewController didMoveToParentViewController:self];
-
-    UINavigationController *drawerNavigationController = (UINavigationController*)slidingViewController.underLeftViewController;
+    UINavigationController *drawerNavigationController = (UINavigationController*)self.underLeftViewController;
     MITDrawerViewController *drawerTableViewController = (MITDrawerViewController*)[drawerNavigationController.viewControllers firstObject];
     NSAssert([drawerTableViewController isKindOfClass:[MITDrawerViewController class]], @"underLeftViewController's root view is a kind of %@, expected %@",NSStringFromClass([drawerTableViewController class]), NSStringFromClass([MITDrawerViewController class]));
-
-    self.slidingViewController = slidingViewController;
-    self.slidingViewController.delegate = self;
-
+    
+    drawerTableViewController.delegate = self;
     self.drawerViewController = drawerTableViewController;
-    self.drawerViewController.delegate = self;
+    [self.topViewController.view addGestureRecognizer:self.panGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -72,20 +69,17 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
     switch ([UIDevice currentDevice].userInterfaceIdiom) {
         case UIUserInterfaceIdiomPhone: {
-            self.slidingViewController.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone;
+            self.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone;
         } break;
 
         case UIUserInterfaceIdiomPad: {
-            self.slidingViewController.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPad;
+            self.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPad;
         } break;
 
         default: {
             // Leave it alone
         } break;
     }
-    
-    self.slidingViewController.delegate = self;
-    self.drawerViewController.delegate = self;
     
     [self _showInitialModuleIfNeeded];
 }
@@ -94,8 +88,10 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     [super viewDidAppear:animated];
 
-    self.slidingViewController.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
-    self.slidingViewController.customAnchoredGestures = @[];
+    self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping | ECSlidingViewControllerAnchoredGesturePanning;
+    self.customAnchoredGestures = @[];
+}
+
 }
 
 #pragma mark Properties
@@ -107,15 +103,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }
     
     return _leftBarButtonItem;
-}
-
-- (ECSlidingViewController*)slidingViewController
-{
-    if (![self isSlidingViewControllerLoaded]) {
-        NSAssert(_slidingViewController,@"failed to load slidingViewController");
-    }
-    
-    return _slidingViewController;
 }
 
 - (NSArray*)moduleItems
@@ -195,35 +182,42 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     
     self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
     
-    if (self.slidingViewController.topViewController != newVisibleViewController) {
-        [self.slidingViewController.topViewController.view removeGestureRecognizer:self.slidingViewController.panGesture];
-        self.slidingViewController.topViewController = newVisibleViewController;
-
-        newVisibleViewController.view.backgroundColor = [UIColor mit_backgroundColor];
-        newVisibleViewController.view.layer.shadowColor = [UIColor blackColor].CGColor;
-        newVisibleViewController.view.layer.shadowOpacity = 1.0;
-        oldVisibleViewController.view.layer.shadowOpacity = 0.0;
-    }
-
-    if (![self.slidingViewController.view.gestureRecognizers containsObject:self.slidingViewController.panGesture]) {
-        [newVisibleViewController.view addGestureRecognizer:self.slidingViewController.panGesture];
-    }
-    
-    // If the top view is a UINavigationController, automatically add a button to toggle the state
-    // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
-    // controller must do something itself.
-    if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
-        UIViewController *rootViewController = [navigationController.viewControllers firstObject];
-
-        if (!rootViewController.navigationItem.leftBarButtonItem) {
-            rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+    UIStoryboardSegue *modulePushSegue = [UIStoryboardSegue segueWithIdentifier:MITSlidingViewControllerModulePushSegueIdentifier source:self destination:newVisibleViewController performHandler:^{
+        UIViewController *fromViewController = self;
+        
+        NSAssert([fromViewController isKindOfClass:[ECSlidingViewController class]], @"sourceViewController is kind of %@, expected kind of %@",NSStringFromClass([fromViewController class]), NSStringFromClass([ECSlidingViewController class]));
+        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)fromViewController;
+        
+        // If the top view is a UINavigationController, automatically add a button to toggle the state
+        // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+        // controller must do something itself.
+        if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
+            UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+            
+            if (!rootViewController.navigationItem.leftBarButtonItem) {
+                rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+            }
         }
-    }
-
-    if (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
-        [self.slidingViewController resetTopViewAnimated:YES];
-    }
+        
+        UIViewController *topViewController = slidingViewController.topViewController;
+        newVisibleViewController.view.frame = topViewController.view.bounds;
+        
+        [oldVisibleViewController willMoveToParentViewController:nil];
+        [oldVisibleViewController.view removeFromSuperview];
+        [oldVisibleViewController removeFromParentViewController];
+        
+        [topViewController addChildViewController:newVisibleViewController];
+        [topViewController.view addSubview:newVisibleViewController.view];
+        [newVisibleViewController didMoveToParentViewController:topViewController];
+        
+        if (slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+            [slidingViewController resetTopViewAnimated:YES];
+        }
+    }];
+    
+    [self prepareForSegue:modulePushSegue sender:self];
+    [modulePushSegue perform];
 }
 
 - (void)setVisibleViewControllerWithModuleName:(NSString *)name
@@ -235,15 +229,15 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 - (void)showModuleSelector:(BOOL)animated completion:(void(^)(void))block
 {
-    if (self.slidingViewController.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
-        [self.slidingViewController anchorTopViewToRightAnimated:animated onComplete:block];
+    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
+        [self anchorTopViewToRightAnimated:animated onComplete:block];
     }
 }
 
 - (void)hideModuleSelector:(BOOL)animated completion:(void(^)(void))block
 {
-    if (self.slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
-        [self.slidingViewController resetTopViewAnimated:animated onComplete:block];
+    if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+        [self resetTopViewAnimated:animated onComplete:block];
     }
 }
 
