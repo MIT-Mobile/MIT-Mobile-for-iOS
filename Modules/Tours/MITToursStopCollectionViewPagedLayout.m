@@ -44,10 +44,10 @@
         
         // Clamp content offset based on content size. This prevents us from choosing a content offset
         // that would cause the collection view to bounce.
-        CGFloat maxOffsetX = self.collectionViewContentSize.width - CGRectGetWidth(self.collectionView.bounds);
-        CGFloat maxOffsetY = self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds);
-        newOffsetX = MAX(0, MIN(newOffsetX, maxOffsetX));
-        newOffsetY = MAX(0, MIN(newOffsetX, maxOffsetY));
+        CGFloat maxOffsetX = self.collectionViewContentSize.width - CGRectGetWidth(self.collectionView.bounds) + self.collectionView.contentInset.right;
+        CGFloat maxOffsetY = self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds) + self.collectionView.contentInset.bottom;
+        newOffsetX = MAX(-self.collectionView.contentInset.left, MIN(newOffsetX, maxOffsetX));
+        newOffsetY = MAX(-self.collectionView.contentInset.top, MIN(newOffsetX, maxOffsetY));
         
         return CGPointMake(newOffsetX, newOffsetY);
     }
