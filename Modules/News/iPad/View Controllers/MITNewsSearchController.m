@@ -109,6 +109,7 @@
         self.messageActivityView.alpha = .5;
     } else {
         [self showTableSearchRecents];
+        [self.recentSearchController filterResultsUsingString:searchBar.text];
         self.view.alpha = 1;
     }
 }
