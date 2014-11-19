@@ -41,6 +41,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 @property (nonatomic, strong) UIViewController *currentCalendarListViewController;
 
 @property (strong, nonatomic) UISearchBar *navigationSearchBar;
+@property (strong, nonatomic) UIBarButtonItem *navigationSearchBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchMagnifyingGlassBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *searchCancelBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *goToDateBarButtonItem;
@@ -139,14 +140,20 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     }
 }
 
-- (void)showSearchPopover
+- (void)showTypeAheadControllerFromBarButtonItem:(UIBarButtonItem *)barButtonItem includeSearchBar:(BOOL)includeSearchBar
 {
-    [self setupTypeAheadNavigationController];
-    self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadNavigationController];
-    self.typeAheadPopoverController.delegate = self;
-    [self.typeAheadPopoverController presentPopoverFromBarButtonItem:self.searchMagnifyingGlassBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-
-    [self.navigationSearchBar becomeFirstResponder];
+    [self setupTypeAheadViewController];
+    
+    if (includeSearchBar) {
+        [self setupTypeAheadNavigationController];
+        self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadNavigationController];
+        self.typeAheadPopoverController.delegate = self;
+    } else {
+        self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+        self.typeAheadPopoverController.delegate = self;
+    }
+    
+    [self.typeAheadPopoverController presentPopoverFromBarButtonItem:barButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 #pragma mark - Search Mode Nav Bar
@@ -182,10 +189,10 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
                                                                                        action:@selector(cancelButtonPressed:)];
     }
     
-    UIBarButtonItem *searchBarAsBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navigationSearchBar];
+    self.navigationSearchBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navigationSearchBar];
     
     // TODO: Insert calendar selection drop down into bar button items
-    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, searchBarAsBarButtonItem, self.searchCategoryBarButtonItem];
+    self.navigationItem.rightBarButtonItems = @[self.searchCancelBarButtonItem, self.navigationSearchBarButtonItem, self.searchCategoryBarButtonItem];
 }
 
 - (void)showGeneralRightBarButtonItems
@@ -212,9 +219,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)setupTypeAheadNavigationController
 {
     if (!self.typeAheadNavigationController) {
-        if (!self.typeAheadViewController) {
-            [self setupTypeAheadViewController];
-        }
         self.typeAheadNavigationController = [[UINavigationController alloc] initWithRootViewController:self.typeAheadViewController];
         self.typeAheadViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(typeAheadDoneButtonPressed:)];
         [self setupTypeAheadSearchBar];
@@ -303,7 +307,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)searchButtonPressed:(UIBarButtonItem *)barButtonItem
 {
-    [self showSearchPopover];
+    [self showTypeAheadControllerFromBarButtonItem:barButtonItem includeSearchBar:YES];
 }
 
 - (void)cancelButtonPressed:(UIBarButtonItem *)sender
@@ -380,8 +384,17 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if (!self.typeAheadPopoverController.isPopoverVisible && searchBar == self.typeAheadSearchBar) {
-        [self showSearchPopover];
+    if (!self.typeAheadPopoverController.isPopoverVisible) {
+        if (searchBar == self.navigationSearchBar) {
+            [self showTypeAheadControllerFromBarButtonItem:self.navigationSearchBarButtonItem includeSearchBar:NO];
+        }
+    }
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    if (self.typeAheadPopoverController.isPopoverVisible && searchBar == self.navigationSearchBar) {
+        [self.typeAheadPopoverController dismissPopoverAnimated:YES];
     }
 }
 
@@ -435,6 +448,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)setupTypeAheadViewController
 {
+    self.typeAheadNavigationController = nil;
     self.typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
     self.typeAheadViewController.delegate = self;
 }
