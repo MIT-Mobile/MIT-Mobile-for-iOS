@@ -4,7 +4,7 @@
 static NSString * const MITDeviceTypeKey = @"device_type";
 static NSString * const MITDeviceTypeApple = @"apple";
 
-static NSString* MITHexStringFromNSData(NSData*data) {
+static NSString* MITHexStringFromNSData(NSData* data) {
     if (!data) {
         return nil;
     }
@@ -160,6 +160,10 @@ static NSString* MITHexStringFromNSData(NSData*data) {
 @end
 
 
+// Class not currently in use by anything. This will be used to
+// help keep better track of the current device registration (both from the APNS
+// and our API server).
+// (bskinner - 2014.11.14)
 static NSString* const MITDeviceIdentityDeviceTokenKey = @"DeviceToken";
 static NSString* const MITDeviceIdentityDeviceIdentifierKey = @"DeviceIdentifier";
 static NSString* const MITDeviceIdentityPasscodeKey = @"Passcode";

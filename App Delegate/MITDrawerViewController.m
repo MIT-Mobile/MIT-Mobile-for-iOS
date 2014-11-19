@@ -70,7 +70,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
     
     [self.tableView beginUpdates];
     [self.tableView deleteRowsAtIndexPaths:deletedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
-    [self.tableView deleteRowsAtIndexPaths:insertedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+    [self.tableView insertRowsAtIndexPaths:insertedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)didSetModuleItems:(BOOL)animated
