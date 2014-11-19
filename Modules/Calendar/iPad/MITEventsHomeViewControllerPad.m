@@ -142,13 +142,13 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 
 - (void)showTypeAheadControllerFromBarButtonItem:(UIBarButtonItem *)barButtonItem includeSearchBar:(BOOL)includeSearchBar
 {
-    [self setupTypeAheadViewController];
-    
     if (includeSearchBar) {
-        [self setupTypeAheadNavigationController];
         self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadNavigationController];
         self.typeAheadPopoverController.delegate = self;
+        [self.typeAheadSearchBar becomeFirstResponder];
     } else {
+        self.typeAheadNavigationController = nil;
+        self.typeAheadViewController = nil;
         self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
         self.typeAheadPopoverController.delegate = self;
     }
@@ -214,27 +214,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 }
 
 #pragma mark - TypeAheadNavigationController
-
-- (void)setupTypeAheadNavigationController
-{
-    if (!self.typeAheadNavigationController) {
-        self.typeAheadNavigationController = [[UINavigationController alloc] initWithRootViewController:self.typeAheadViewController];
-        self.typeAheadViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(typeAheadDoneButtonPressed:)];
-        [self setupTypeAheadSearchBar];
-    }
-    
-    [self.typeAheadSearchBar becomeFirstResponder];
-}
-
-- (void)setupTypeAheadSearchBar
-{
-    self.typeAheadSearchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
-    self.typeAheadSearchBar.placeholder = @"Search All MIT Events";
-    self.typeAheadSearchBar.showsCancelButton = NO;
-    self.typeAheadSearchBar.delegate = self;
-    self.typeAheadViewController.navigationItem.titleView = self.typeAheadSearchBar;
-    [self.typeAheadNavigationController.navigationBar addSubview:self.typeAheadSearchBar];
-}
 
 - (void)typeAheadDoneButtonPressed:(UIBarButtonItem *)sender
 {
@@ -415,7 +394,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupEventsPageViewController];
     [self setupEventDetailViewController];
     [self setupSplitViewController];
-    [self setupTypeAheadViewController];
     [self setupResultsViewController];
 }
 
@@ -454,13 +432,6 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     self.splitViewController.view.frame = self.view.bounds;
     [self.view addSubview:self.splitViewController.view];
     [self.splitViewController didMoveToParentViewController:self];
-}
-
-- (void)setupTypeAheadViewController
-{
-    self.typeAheadNavigationController = nil;
-    self.typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
-    self.typeAheadViewController.delegate = self;
 }
 
 - (void)setupResultsViewController
@@ -749,5 +720,35 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
         _navigationSearchBar.delegate = self;
     }
     return _navigationSearchBar;
+}
+
+- (MITEventSearchTypeAheadViewController *)typeAheadViewController
+{
+    if (!_typeAheadViewController) {
+        _typeAheadViewController = [[MITEventSearchTypeAheadViewController alloc] initWithNibName:nil bundle:nil];
+        _typeAheadViewController.delegate = self;
+    }
+    return _typeAheadViewController;
+}
+
+- (UINavigationController *)typeAheadNavigationController
+{
+    if (!_typeAheadNavigationController) {
+        _typeAheadNavigationController = [[UINavigationController alloc] initWithRootViewController:self.typeAheadViewController];
+        self.typeAheadViewController.navigationItem.titleView = self.typeAheadSearchBar;
+        self.typeAheadViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(typeAheadDoneButtonPressed:)];
+    }
+    return _typeAheadNavigationController;
+}
+
+- (UISearchBar *)typeAheadSearchBar
+{
+    if (!_typeAheadSearchBar) {
+        _typeAheadSearchBar = [[UISearchBar alloc] initWithFrame:self.navigationController.navigationBar.bounds];
+        _typeAheadSearchBar.placeholder = @"Search All MIT Events";
+        _typeAheadSearchBar.showsCancelButton = NO;
+        _typeAheadSearchBar.delegate = self;
+    }
+    return _typeAheadSearchBar;
 }
 @end
