@@ -277,6 +277,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 - (void)presentDatePicker
 {
     MITDatePickerViewController *datePicker = [[MITDatePickerViewController alloc] initWithNibName:nil bundle:nil];
+    datePicker.startDate = self.dayPickerController.currentlyDisplayedDate;
     datePicker.delegate = self;
     UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:datePicker];
     [self presentViewController:navContainerController animated:YES completion:NULL];
