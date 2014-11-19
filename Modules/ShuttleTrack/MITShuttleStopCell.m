@@ -42,7 +42,13 @@ static NSString * const kTimeUnavailableText = @"—";
     self.nameLabel.text = stop.title;
     if (prediction) {
         NSInteger minutes = floor([prediction.seconds doubleValue] / 60);
-        self.timeLabel.text = [NSString stringWithFormat:@"%dm", minutes];
+        if (minutes > 0) {
+            self.timeLabel.text = [NSString stringWithFormat:@"%dm", minutes];
+            self.timeLabel.textColor = [UIColor darkTextColor];
+        } else {
+            self.timeLabel.text = @"now";
+            self.timeLabel.textColor = [UIColor mit_tintColor];
+        }
     } else {
         self.timeLabel.text = kTimeUnavailableText;
     }
