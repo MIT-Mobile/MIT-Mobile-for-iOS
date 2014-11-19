@@ -28,6 +28,8 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 @end
 
 @implementation MITSlidingViewController
+@dynamic leftBarButtonItem;
+
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {
     if (self) {
@@ -120,12 +122,9 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 #pragma mark Properties
 - (UIBarButtonItem*)leftBarButtonItem
 {
-    if (!_leftBarButtonItem) {
-        UIImage *image = [UIImage imageNamed:MITImageBarButtonMenu];
-        _leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_showModuleSelector:)];
-    }
-    
-    return _leftBarButtonItem;
+    UIImage *image = [UIImage imageNamed:MITImageBarButtonMenu];
+    UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_showModuleSelector:)];
+    return leftBarButtonItem;
 }
 
 - (NSArray*)moduleItems
