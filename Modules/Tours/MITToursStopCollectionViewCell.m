@@ -4,7 +4,7 @@
 #import "UIKit+MITAdditions.h"
 
 static const CGFloat kBaseWidth = 90;
-static const CGFloat kBaseHeight = 160;
+static const CGFloat kBaseHeight = 190;
 static const CGFloat kSelectedPadding = 10;
 
 @interface MITToursStopCollectionViewCell ()

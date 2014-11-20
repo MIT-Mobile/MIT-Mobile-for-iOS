@@ -59,13 +59,10 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7" customClass="MITInfiniteScrollCollectionView">
-                            <rect key="frame" x="0.0" y="272" width="320" height="228"/>
+                            <rect key="frame" x="0.0" y="272" width="320" height="258"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="228" id="MlK-yH-UTl"/>
-                            </constraints>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8di-sL-UAM" customClass="MITToursStopCollectionViewPagedLayout">
-                                <size key="itemSize" width="90" height="160"/>
+                                <size key="itemSize" width="90" height="190"/>
                                 <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                 <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -85,38 +82,41 @@
                             </constraints>
                         </view>
                         <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gBY-BI-hex" userLabel="Main Loop Content Spacer">
-                            <rect key="frame" x="20" y="325" width="280" height="160"/>
+                            <rect key="frame" x="20" y="325" width="280" height="190"/>
                             <color key="backgroundColor" red="1" green="0.30229143609999998" blue="0.99627353460000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="190" id="Yuc-8O-iHf"/>
+                            </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lK8-NE-OOH" userLabel="Near Here Stroke">
-                            <rect key="frame" x="20" y="519" width="280" height="1"/>
+                            <rect key="frame" x="20" y="549" width="280" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="oGD-e0-UxQ"/>
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Near Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vtL-EF-PNk" userLabel="Near Here">
-                            <rect key="frame" x="20" y="492" width="280" height="21"/>
+                            <rect key="frame" x="20" y="522" width="280" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="q74-8a-1TS">
-                            <rect key="frame" x="0.0" y="500" width="320" height="196"/>
+                            <rect key="frame" x="0.0" y="530" width="320" height="239"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="196" id="i72-2M-EGk"/>
-                            </constraints>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="d3u-7J-O6x" customClass="MITToursStopCollectionViewPagedLayout">
-                                <size key="itemSize" width="90" height="160"/>
+                                <size key="itemSize" width="90" height="190"/>
                                 <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                 <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </collectionViewFlowLayout>
                         </collectionView>
                         <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vN1-g5-bnm" userLabel="Near Here Content Spacer">
-                            <rect key="frame" x="20" y="529" width="280" height="162"/>
+                            <rect key="frame" x="20" y="559" width="280" height="190"/>
                             <color key="backgroundColor" red="1" green="0.30229143609999998" blue="0.99627353460000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="190" id="9Lc-8K-GPt"/>
+                            </constraints>
                         </view>
                     </subviews>
                     <constraints>
@@ -142,7 +142,7 @@
                         <constraint firstItem="bBh-II-3qI" firstAttribute="top" secondItem="z54-xP-Njy" secondAttribute="bottom" constant="6" id="aa7-Fx-6jT"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="ayj-H7-4wn"/>
                         <constraint firstItem="vtL-EF-PNk" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="bXB-Kv-3cj"/>
-                        <constraint firstItem="q74-8a-1TS" firstAttribute="bottom" secondItem="vN1-g5-bnm" secondAttribute="bottom" constant="5" id="cky-kA-0Xc"/>
+                        <constraint firstItem="q74-8a-1TS" firstAttribute="bottom" secondItem="vN1-g5-bnm" secondAttribute="bottom" constant="20" id="cky-kA-0Xc"/>
                         <constraint firstAttribute="bottom" secondItem="q74-8a-1TS" secondAttribute="bottom" priority="900" id="eTM-WQ-Ntm"/>
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="10" id="fWh-k0-JT3"/>
                         <constraint firstItem="utD-mE-rH7" firstAttribute="trailing" secondItem="gBY-BI-hex" secondAttribute="trailing" constant="20" id="h8q-Wv-CTf"/>
