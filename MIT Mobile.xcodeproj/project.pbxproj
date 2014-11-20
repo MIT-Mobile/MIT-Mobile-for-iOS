@@ -159,7 +159,6 @@
 		2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53431896A7D300D1F9B5 /* News.storyboard */; };
 		2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C53491896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib */; };
 		2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */; };
-		2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
 		2C3C5D8F191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D83191F076800D59D33 /* ECPercentDrivenInteractiveTransition.m */; };
 		2C3C5D91191F076800D59D33 /* ECSlidingInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D88191F076800D59D33 /* ECSlidingInteractiveTransition.m */; };
 		2C3C5D92191F076800D59D33 /* ECSlidingSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8A191F076800D59D33 /* ECSlidingSegue.m */; };
@@ -199,6 +198,9 @@
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C893ABF18BE3090002690CE /* MITNavigationController.m */; };
 		2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A074718BE690900284F8A /* MITImageScrollView.m */; };
+		2C8E045F1A1E602C00D762E8 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
+		2C8E04601A1E602C00D762E8 /* MITDiningMenuComparisonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib */; };
+		2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C920D641896C4E400A60BA6 /* MITNewsCategoryViewController.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
@@ -243,7 +245,6 @@
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE1B55218B6F89F00C5750B /* NewsCategoryHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */; };
 		2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */; };
-		2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib */; };
 		2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */; };
 		2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -303,7 +304,6 @@
 		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
 		48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96B17175B4000376BCF /* NSString+MD5.m */; };
 		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
-		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
@@ -3874,7 +3874,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0610;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = A35W4MM59Y;
@@ -3985,7 +3985,7 @@
 				229FFAC7199002E500ABF029 /* MITAcademicCalendarCell.xib in Resources */,
 				A5A30407198AD0FB00C9C273 /* MITEventSearchViewController.xib in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
-				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
+				2C8E04601A1E602C00D762E8 /* MITDiningMenuComparisonViewController.xib in Resources */,
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				224B337D19B10A000031817B /* MITDiningMenuItemCell.xib in Resources */,
@@ -3994,7 +3994,6 @@
 				A5BF26101969FCD500D73AF5 /* MITMapPlaceBottomButtonCell.xib in Resources */,
 				A544EF151965A7AF0046823E /* MITMapPlaceContentCell.xib in Resources */,
 				2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */,
-				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
@@ -4032,10 +4031,9 @@
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
-				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
+				2C8E045F1A1E602C00D762E8 /* NewsStoryTableCell.xib in Resources */,
 				A59A25A819A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.xib in Resources */,
 				80A7CBD0199E853300BFDD39 /* MITDiningMapsViewController.xib in Resources */,
-				2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */,
 				A59A259A19A142EB00AD7E3A /* MITDiningHouseHomeViewControllerPad.xib in Resources */,
 				5E06930B1948A86A009D1449 /* MITShuttleRouteViewController.xib in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
@@ -4500,11 +4498,10 @@
 				2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */,
 				2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */,
 				5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */,
-				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
+				2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */,
 				A51E20B2196F1B36005608C3 /* MITMapRecentsTableViewController.m in Sources */,
 				27B4FDD6199318D000DF36B1 /* PeopleRecentSearchTerm.m in Sources */,
 				A5A24B7019946EC400AA1CFC /* MITEventSearchResultsViewController.m in Sources */,
-				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 				22D9032B199BF54D00AEBC7D /* MITDiningRetailVenue.m in Sources */,
 				22C012B419B7A47E00879EF6 /* MITDiningMealSummary.m in Sources */,
 				A5A9A98319C89E480090BE4F /* MITDiningTappableDietaryFlagLabel.m in Sources */,
@@ -4588,8 +4585,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4600,7 +4595,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
@@ -4608,7 +4602,6 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "0dcd0c4e-42c2-4e96-b1d8-836c31232fce";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -4620,8 +4613,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4630,7 +4621,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/External/ZBarSDK",
@@ -4638,7 +4628,6 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -4771,7 +4760,7 @@
 			buildSettings = {
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_THUMB_SUPPORT = YES;
@@ -4782,13 +4771,12 @@
 					"\"${BUILT_PRODUCTS_DIR}/../../Headers\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "0975E861-99D0-4C64-AC49-D8144D6864B3";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -4814,7 +4802,6 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "8C4BE233-A853-4A07-BE4F-9847AC323378";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -4824,7 +4811,6 @@
 			buildSettings = {
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
@@ -4844,7 +4830,6 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PROVISIONING_PROFILE = "CB9BFAD5-B541-43BB-879B-7DD11DF670C2";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -4856,8 +4841,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4866,7 +4849,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/External/ZBarSDK",
@@ -4875,7 +4857,6 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = TestFlight;
