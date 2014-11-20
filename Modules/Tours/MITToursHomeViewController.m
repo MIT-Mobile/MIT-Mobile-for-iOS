@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 @interface MITToursHomeViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, MITToursLinksDataSourceDelegateDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) MITToursTour *selfGuidedTour;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) MITToursLinksDataSourceDelegate *linksDataSourceDelegate;
 
@@ -34,7 +33,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     [super viewDidLoad];
     self.title = @"Tours";
     
-    [self.activityIndicator startAnimating];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupTableView];
     
@@ -44,7 +43,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
             [MITToursWebservices getTourDetailForTour:tour completion:^(id object, NSError *error) {
                 if ([object isKindOfClass:[MITToursTour class]]) {
                     self.selfGuidedTour = object;
-                    [self updateDisplayedTour];
+                    [self.tableView reloadData];
                 }
             }];
         }
@@ -60,33 +59,17 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     self.linksDataSourceDelegate = [[MITToursLinksDataSourceDelegate alloc] init];
     self.linksDataSourceDelegate.delegate = self;
-    
-    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 110)];
-    UIImage *headerImage = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
-    UIImageView *headerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
 
-    [headerImageView setImage:headerImage];
-    [headerImageView setContentMode:UIViewContentModeScaleAspectFill];
-    [containerView addSubview:headerImageView];
-    
-    self.tableView.tableHeaderView = containerView;
-    [self.tableView sendSubviewToBack:self.tableView.tableHeaderView];
-    
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     UINib *cellNib = [UINib nibWithNibName:kMITSelfGuidedTourCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITSelfGuidedTourCell];
     
     cellNib = [UINib nibWithNibName:kMITInfoCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITInfoCell];
-}
-
-- (void)updateDisplayedTour
-{
-    [self.activityIndicator stopAnimating];
-    self.activityIndicator.hidden = YES;
-        
-    [self.tableView reloadData];
+    
+    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, -1, 1, 1)];
+    self.tableView.tableHeaderView = containerView;
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -94,7 +77,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     if (indexPath.section == MITToursTableViewSectionInfo) {
         switch (indexPath.row) {
             case 0:
-                return 106.0;
+                return 229.0;
                 break;
             case 1:
                 return [MITToursInfoCell heightForContent:[MITToursWebservices aboutGuidedToursText] tableViewWidth:self.tableView.frame.size.width];
@@ -111,22 +94,18 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (self.selfGuidedTour) {
-        return 2;
-    }
-    return 0;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (self.selfGuidedTour) {
-        if (section == MITToursTableViewSectionInfo) {
-            return 3;
-        }
-        else if (section == MITToursTableViewSectionLinks) {
-            return [self.linksDataSourceDelegate tableView:tableView numberOfRowsInSection:section];
-        }
+    if (section == MITToursTableViewSectionInfo) {
+        return 3;
     }
+    else if (section == MITToursTableViewSectionLinks) {
+        return [self.linksDataSourceDelegate tableView:tableView numberOfRowsInSection:section];
+    }
+    
     return 0;
 }
 
@@ -156,7 +135,9 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     MITToursSelfGuidedTourCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITSelfGuidedTourCell];
     
-    [cell setTour:self.selfGuidedTour];
+    if (self.selfGuidedTour) {
+        [cell setTour:self.selfGuidedTour];
+    }
     
     return cell;
 }

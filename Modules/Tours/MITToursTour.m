@@ -61,7 +61,7 @@ static NSString *const kMITToursSideTrip = @"Side Trip";
     NSInteger minutes = [self.estimatedDurationInMinutes integerValue] % 60;
     
     NSString *hoursString = (hours > 0) ? [NSString stringWithFormat:@"%d hour%@ ", hours, (hours != 1) ? @"s" : @""] : @"";
-    NSString *minutesString = (minutes > 0) ? [NSString stringWithFormat:@"%d minute%@", minutes, (minutes != 1) ? @"s" : @""] : @"";
+    NSString *minutesString = (minutes > 0) ? [NSString stringWithFormat:@"%@%d minute%@", hoursString.length > 0 ? @"and " : @"", minutes, (minutes != 1) ? @"s" : @""] : @"";
 
     return [hoursString stringByAppendingString:minutesString];
 }
