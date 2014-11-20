@@ -6,5 +6,6 @@
 
 + (NSString *)templatedHTMLForDirectionsToStop:(MITToursDirectionsToStop *)directionsToStop viewWidth:(CGFloat)viewWidth;
 + (NSString *)templatedHTMLForSideTripStop:(MITToursStop *)sideTripStop fromMainLoopStop:(MITToursStop *)mainLoopStop viewWidth:(CGFloat)viewWidth;
++ (NSString *)templatedHTMLForTourDetailsHTML:(NSString *)tourDetailsHTML viewWidth:(CGFloat)viewWidth;
 
 @end

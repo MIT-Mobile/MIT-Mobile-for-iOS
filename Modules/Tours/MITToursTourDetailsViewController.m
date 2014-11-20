@@ -1,11 +1,8 @@
-#import "MITToursSelfGuidedTourInfoViewController.h"
+#import "MITToursTourDetailsViewController.h"
 #import "MITToursTour.h"
+#import "MITToursHTMLTemplateInjector.h"
 
-@interface MITToursSelfGuidedTourInfoViewController ()
-
-@end
-
-@implementation MITToursSelfGuidedTourInfoViewController
+@implementation MITToursTourDetailsViewController
 
 - (void)viewDidLoad
 {
@@ -17,7 +14,9 @@
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webview.backgroundColor = [UIColor clearColor];
     [self.view addSubview:webview];
-    [webview loadHTMLString:self.tour.descriptionHTML baseURL:nil];
+    
+    NSString *templatedHTML = [MITToursHTMLTemplateInjector templatedHTMLForTourDetailsHTML:self.tour.descriptionHTML viewWidth:self.view.frame.size.width];
+    [webview loadHTMLString:templatedHTML baseURL:nil];
     
     [self.navigationController setToolbarHidden:YES];
 }

@@ -1,6 +1,6 @@
 #import "MITToursSelfGuidedTourContainerControllerPad.h"
 #import "MITToursSelfGuidedTourListViewController.h"
-#import "MITToursSelfGuidedTourInfoViewController.h"
+#import "MITToursTourDetailsViewController.h"
 #import "MITToursMapViewController.h"
 #import "MITToursStopDetailContainerViewController.h"
 
@@ -151,7 +151,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)selfGuidedTourListViewControllerDidPressInfoButton:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController
 {
-    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    MITToursTourDetailsViewController *infoVC = [[MITToursTourDetailsViewController alloc] init];
     infoVC.tour = self.selfGuidedTour;
     infoVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(tourInfoDoneButtonWasPressed:)];
     
