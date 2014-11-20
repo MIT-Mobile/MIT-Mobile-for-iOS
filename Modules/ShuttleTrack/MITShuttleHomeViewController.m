@@ -466,7 +466,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (NSInteger)numberOfRowsForRoute:(MITShuttleRoute *)route
 {
     NSInteger count = kMinimumNumberOfRowsForRoute;    // always show at least the route cell
-    if ([MITLocationManager locationServicesAuthorized] && [route.scheduled boolValue]) {
+    if ([MITLocationManager locationServicesAuthorized] && route.status == MITShuttleRouteStatusInService) {
         count += [self.nearestStops[route.identifier] count];
     }
     return count;
