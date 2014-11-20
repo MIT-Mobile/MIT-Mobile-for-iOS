@@ -3,6 +3,7 @@
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
 #import "MITToursStopCollectionViewManager.h"
+#import "MITToursStopCollectionViewPagedLayout.h"
 #import "MITToursStopInfiniteScrollCollectionViewManager.h"
 #import "MITInfiniteScrollCollectionView.h"
 #import "UIFont+MITTours.h"
@@ -51,6 +52,11 @@
     self.scrollView.delegate = self;
     
     [self setupLabels];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     [self setupCollectionViews];
     [self configureForStop:self.stop];
 }
@@ -88,6 +94,16 @@
     
     self.nearHereCollectionView.dataSource = self.nearHereCollectionViewManager;
     self.nearHereCollectionView.delegate = self.nearHereCollectionViewManager;
+    
+    MITToursStopCollectionViewPagedLayout *mainLoopLayout = (MITToursStopCollectionViewPagedLayout *)self.mainLoopCollectionView.collectionViewLayout;
+    mainLoopLayout.pagePosition = CGPointMake(CGRectGetWidth(self.mainLoopCollectionView.bounds) * 0.5,
+                                              CGRectGetHeight(self.mainLoopCollectionView.bounds) * 0.5);
+    mainLoopLayout.pageCellScrollPosition = UICollectionViewScrollPositionLeft | UICollectionViewScrollPositionCenteredVertically;
+    
+    MITToursStopCollectionViewPagedLayout *nearHereLayout = (MITToursStopCollectionViewPagedLayout *)self.nearHereCollectionView.collectionViewLayout;
+    nearHereLayout.pagePosition = CGPointMake(CGRectGetWidth(self.nearHereCollectionView.bounds) * 0.5,
+                                              CGRectGetHeight(self.nearHereCollectionView.bounds) * 0.5);
+    nearHereLayout.pageCellScrollPosition = UICollectionViewScrollPositionLeft | UICollectionViewScrollPositionCenteredVertically;
 }
 
 - (void)viewDidLayoutSubviews
