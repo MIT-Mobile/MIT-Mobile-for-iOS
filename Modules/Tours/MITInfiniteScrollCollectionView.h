@@ -2,6 +2,6 @@
 
 @interface MITInfiniteScrollCollectionView : UICollectionView
 
-- (void)scrollToCenterItemAnimated:(BOOL)animated;
+@property (nonatomic) NSInteger contentMultiple;
 
 @end

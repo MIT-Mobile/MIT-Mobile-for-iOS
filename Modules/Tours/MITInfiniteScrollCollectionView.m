@@ -9,6 +9,7 @@
         // By default we want this off, or else it becomes obvious when our content offset resets
         // during infinite scrolling.
         self.showsHorizontalScrollIndicator = NO;
+        self.contentMultiple = 5;
     }
     return self;
 }
@@ -22,13 +23,13 @@
 - (void)recenterIfNecessary
 {
     // Infinite-scrolling logic here makes the following assumptions:
-    // 1. Our datasource repeats its items 3 times, reporting 3 times as many items as actually exist.
+    // 1. Our datasource repeats its items self.contentMultiple times, reporting more items than actually exist.
     // 2. Our collection contains only 1 section.
     // 3. Our collection view scrolls horizontally.
     // 4. Our collection view uses a UICollectionViewFlowLayout (or a subclass of it).
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-    CGFloat baseWidth = (self.contentSize.width + layout.minimumInteritemSpacing) / 3;
-    CGFloat baseOffset = baseWidth;
+    CGFloat baseWidth = (self.contentSize.width + layout.minimumInteritemSpacing) / self.contentMultiple;
+    CGFloat baseOffset = baseWidth * (self.contentMultiple - 1) / 2;
     
     CGFloat offset = self.contentOffset.x;
     if (offset > baseOffset + baseWidth) {
@@ -42,13 +43,6 @@
         }
         self.contentOffset = CGPointMake(offset, self.contentOffset.y);
     }
-}
-
-- (void)scrollToCenterItemAnimated:(BOOL)animated
-{
-    NSInteger centerIndex = [self numberOfItemsInSection:0] / 2;
-    NSIndexPath *path = [NSIndexPath indexPathForItem:centerIndex inSection:0];
-    [self scrollToItemAtIndexPath:path atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:animated];
 }
 
 @end
