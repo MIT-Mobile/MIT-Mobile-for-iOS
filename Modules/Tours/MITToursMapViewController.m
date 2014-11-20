@@ -89,7 +89,7 @@ static NSInteger kAnnotationMarginRight = 50;
     calloutView.contentViewMargin = 0;
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     calloutView.constrainedInsets = UIEdgeInsetsMake(0, 0, 100, 0); // TODO: Make these accurate
     
     self.calloutView = calloutView;
