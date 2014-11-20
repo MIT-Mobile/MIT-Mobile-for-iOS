@@ -48,8 +48,6 @@ static CGFloat subtitleFontSize = 14;
     {
         [[EmergencyData sharedData] reloadContacts];
     }
-	
-	[[MIT_MobileAppDelegate applicationDelegate] moduleForTag:EmergencyTag].currentPath = @"contacts";
 }
 
 - (void)viewWillDisappear:(BOOL)animated

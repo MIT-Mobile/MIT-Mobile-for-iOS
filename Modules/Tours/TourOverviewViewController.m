@@ -120,11 +120,11 @@ enum {
 }
 
 - (void)dismiss:(id)sender {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)selectionDidComplete {
-    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)orientationChanged:(NSNotification *)notification {
@@ -239,7 +239,7 @@ enum {
     vc.overviewController = self;
     
     UINavigationController *dummyVC = [[MITNavigationController alloc] initWithRootViewController:vc];
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] presentAppModalViewController:dummyVC animated:YES];
+    [self presentViewController:dummyVC animated:YES completion:nil];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

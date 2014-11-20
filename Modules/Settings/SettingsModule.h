@@ -1,7 +1,5 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@interface SettingsModule : MITModule {
-    
-}
+@interface SettingsModule : MITNavigationModule
 
 @end

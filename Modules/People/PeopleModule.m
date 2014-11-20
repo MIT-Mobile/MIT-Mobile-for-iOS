@@ -1,11 +1,9 @@
 #import "PeopleModule.h"
-#import "MITModuleURL.h"
 #import "PeopleSearchViewController.h"
 #import "PeopleDetailsViewController.h"
 #import "PeopleRecentsData.h"
 #import "PersonDetails.h"
-
-
+#import "MITAdditions.h"
 
 static NSString * const PeopleStateSearchBegin = @"search-begin";
 static NSString * const PeopleStateSearchComplete = @"search-complete";
@@ -19,119 +17,76 @@ static NSString * const PeopleStateDetail = @"detail";
 @end
 
 @implementation PeopleModule
-
 @synthesize peopleController = _peopleController;
 
 - (id)init
 {
-    self = [super init];
+    self = [super initWithName:MITModuleTagDirectory title:@"Directory"];
     if (self) {
-        self.tag = DirectoryTag;
-        self.shortName = @"Directory";
-        self.longName = @"People Directory";
-        self.iconName = @"people";
+        self.longTitle = @"People Directory";
+        self.imageName = MITImagePeopleModuleIcon;
     }
+
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+- (void)loadRootViewController
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
-    NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    _peopleController = [storyboard instantiateInitialViewController];
-    
-    return _peopleController;
-}
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People_iPad" bundle:nil];
-    NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    _peopleController = [storyboard instantiateInitialViewController];
-    
-    return _peopleController;
-}
-
-- (void)applicationWillTerminate
-{
-	MITModuleURL *url = [[MITModuleURL alloc] initWithTag:DirectoryTag];
-	
-	UIViewController *visibleVC = self.peopleController.navigationController.visibleViewController;
-	if ([visibleVC isMemberOfClass:[PeopleSearchViewController class]]) {
-		PeopleSearchViewController *searchVC = (PeopleSearchViewController *)visibleVC;
-		if (searchVC.searchDisplayController.active) {
-            [url setPath:PeopleStateSearchBegin query:searchVC.searchBar.text];
-        } else if ([searchVC searchResults] != nil) {
-            [url setPath:PeopleStateSearchComplete query:searchVC.searchBar.text];
-		} else {
-			[url setPath:nil query:nil];
-		}
-
-	} else if ([visibleVC isMemberOfClass:[PeopleDetailsViewController class]]) {
-		PeopleDetailsViewController *detailVC = (PeopleDetailsViewController *)visibleVC;
-		[url setPath:PeopleStateDetail query:detailVC.personDetails.uid];
-	}
-	
-	[url setAsModulePath];
-}
-
-
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    BOOL didHandle = NO;
-    BOOL pushHomeController = YES;
-    
-    if (self.peopleController.view == nil) {
-        DDLogError(@"Failed to load view controller for tag %@ in '%@'", self.tag, NSStringFromSelector(_cmd));
+    UIStoryboard *storyboard = nil;
+    if (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
+    } else if (currentUserInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        storyboard = [UIStoryboard storyboardWithName:@"People_iPad" bundle:nil];
     }
- 
-	if (localPath == nil) {
-		didHandle = YES;
-	} 
-	else if ([localPath isEqualToString:PeopleStateSearchBegin])
-    {
-		if (query != nil) {
-			self.peopleController.searchBar.text = query;
-		}
 
-        [self.peopleController.searchDisplayController setActive:YES animated:NO];
-        didHandle = YES;
-	} else if (!query || [query length] == 0) {
-		// from this point forward we don't want to handle anything
-		// without proper query terms
-		didHandle = NO;
-	} else if ([localPath isEqualToString:PeopleStateSearchComplete]) {
-        [self.peopleController beginExternalSearch:query];
-		didHandle = YES;
-	} else if ([localPath isEqualToString:PeopleStateSearchExternal]) {
-		// this path is reserved for calling from other modules
-		// do not save state with this path       
-        [self.peopleController beginExternalSearch:query];
-        didHandle = YES;
-	} else if ([localPath isEqualToString:PeopleStateDetail]) {
-		PersonDetails *person = [PeopleRecentsData personWithUID:query];
-		if (person != nil) {
-			PeopleDetailsViewController *detailVC = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
-			detailVC.personDetails = person;
-			[[MITAppDelegate() rootNavigationController] pushViewController:detailVC
-                                                                   animated:NO];
-			didHandle = YES;
-            pushHomeController = NO;
-		}
-	}
-    
-    if (didHandle && pushHomeController) {
-        [[MIT_MobileAppDelegate applicationDelegate] showModuleForTag:self.tag];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    self.rootViewController = [storyboard instantiateInitialViewController];
+}
+
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    [super didReceiveRequestWithURL:url];
+
+    NSMutableArray *pathComponents = [NSMutableArray arrayWithArray:url.pathComponents];
+    if ([[pathComponents firstObject] isEqualToString:@"/"]) {
+
     }
-	
-    return didHandle;
+
+    NSString *action = [pathComponents firstObject];
+    if (!action) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        return;
+    }
+
+    NSString *query = [url.query urlDecodeUsingEncoding:NSUTF8StringEncoding];
+    if ([action isEqualToString:PeopleStateSearchBegin]) {
+        self.rootViewController.searchBar.text = query;
+        [self.rootViewController.searchDisplayController setActive:YES animated:NO];
+        return;
+    }
+
+    if ([query length]) {
+        if ([action isEqualToString:PeopleStateSearchComplete]) {
+            [self.peopleController beginExternalSearch:query];
+        } else if ([action isEqualToString:PeopleStateSearchExternal]) {
+            [self.rootViewController beginExternalSearch:query];
+        } else if ([action isEqualToString:PeopleStateDetail]) {
+            PersonDetails *person = [PeopleRecentsData personWithUID:query];
+            if (person) {
+                PeopleDetailsViewController *detailVC = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                detailVC.personDetails = person;
+
+                [self.navigationController pushViewController:detailVC animated:NO];
+            }
+        }
+    }
 }
 
 @end
-

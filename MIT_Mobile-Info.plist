@@ -57,7 +57,13 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<array>
 		<string>fetch</string>
 	</array>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIMainStoryboardFile~ipad</key>
+	<string>Main</string>
 	<key>UIPrerenderedIcon</key>
+	<true/>
+	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleDefault</string>

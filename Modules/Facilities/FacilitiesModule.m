@@ -2,24 +2,23 @@
 #import "MITConstants.h"
 #import "FacilitiesRootViewController.h"
 
-
-
 @implementation FacilitiesModule
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = FacilitiesTag;
-        self.shortName = @"Bldg Services";
-        self.longName = @"Building Services";
-        self.iconName = @"facilities";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagFacilities title:@"Bldg Services"];
+    if (self) {
+        self.longTitle = @"Building Services";
+        self.imageName = MITImageBuildingServicesModuleIcon;
     }
+    
     return self;
 }
 
-- (void)loadModuleHomeController
+- (void)loadRootViewController
 {
-    self.moduleHomeController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
-                                                                               bundle:nil];
+    FacilitiesRootViewController *rootViewController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController" bundle:nil];
+    
+    self.rootViewController = rootViewController;
 }
 
 @end

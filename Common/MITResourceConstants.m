@@ -203,8 +203,8 @@ NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 NSString * const MITImageLogoDarkContent = @"global-mit-logo-light";
 NSString * const MITImageLogoLightContent = @"global-mit-logo-dark";
 
-NSString * const UIPopoverViewBlurMaskBackgroundArrowDown = @"_UIPopoverViewBlurMaskBackgroundArrowDown@2x";
-NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverViewBlurMaskBackgroundArrowDownRight@2x";
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDown = @"_UIPopoverViewBlurMaskBackgroundArrowDown";
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverViewBlurMaskBackgroundArrowDownRight";
 
 #pragma mark UIBarButtonItem icons
 NSString * const MITImageBarButtonMenu = @"global-menu";

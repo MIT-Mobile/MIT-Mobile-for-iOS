@@ -1,5 +1,8 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
+#import "AboutTableViewController.h"
 
-@interface AboutModule : MITModule
+@interface AboutModule : MITNavigationModule
+@property(nonatomic,weak) AboutTableViewController *rootViewController;
 
+- (instancetype)init;
 @end
