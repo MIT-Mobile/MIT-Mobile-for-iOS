@@ -18,6 +18,6 @@
 @property (nonatomic) CGFloat distanceInMiles;
 @property (nonatomic) BOOL shouldDisplayDistance;
 
-- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation showDescription:(BOOL)showDescription;
+- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation;
 
 @end
