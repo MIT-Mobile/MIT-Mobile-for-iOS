@@ -49,8 +49,7 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible
             self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttle"];
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
-#warning TODO: question mark image
-            self.statusIconImageView.image = [UIImage imageNamed:@""];
+            self.statusIconImageView.image = [UIImage imageNamed:@"shuttle/shuttlesUnknown"];
             break;
         default:
             break;

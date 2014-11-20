@@ -328,7 +328,25 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self refreshNearestStops];
     
     NSMutableArray *mutableFlatRouteArray = [NSMutableArray array];
-    for (MITShuttleRoute *route in self.routes) {
+    
+    NSArray *sortedRoutes = [self.routes sortedArrayUsingComparator:^NSComparisonResult(MITShuttleRoute *left, MITShuttleRoute *right) {
+        MITShuttleRouteStatus leftStatus = [left status];
+        MITShuttleRouteStatus rightStatus = [right status];
+        if (leftStatus == rightStatus) {
+            return [left.order compare:right.order];
+        } else if (leftStatus == MITShuttleRouteStatusInService) {
+            return NSOrderedAscending;
+        } else if (rightStatus == MITShuttleRouteStatusInService) {
+            return NSOrderedDescending;
+        } else if (leftStatus == MITShuttleRouteStatusNotInService) {
+            return NSOrderedAscending;
+        } else if (rightStatus == MITShuttleRouteStatusNotInService) {
+            return NSOrderedDescending;
+        }
+        return [left.order compare:right.order];
+    }];
+    
+    for (MITShuttleRoute *route in sortedRoutes) {
         for (NSInteger indexInRoute = 0; indexInRoute < [self numberOfRowsForRoute:route]; ++indexInRoute) {
             if (indexInRoute == 0) {
                 [mutableFlatRouteArray addObject:route];
@@ -448,7 +466,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (NSInteger)numberOfRowsForRoute:(MITShuttleRoute *)route
 {
     NSInteger count = kMinimumNumberOfRowsForRoute;    // always show at least the route cell
-    if ([MITLocationManager locationServicesAuthorized] && [route.scheduled boolValue]) {
+    if ([MITLocationManager locationServicesAuthorized] && route.status == MITShuttleRouteStatusInService) {
         count += [self.nearestStops[route.identifier] count];
     }
     return count;

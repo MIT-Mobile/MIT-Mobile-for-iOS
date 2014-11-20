@@ -125,7 +125,8 @@
 - (void)resourceBarButtonItemTapped:(id)sender
 {
     MITShuttleResourceViewController *resourceViewController = [[MITShuttleResourceViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:resourceViewController];
+    UINavigationController *resourceNavController = [[UINavigationController alloc] initWithRootViewController:resourceViewController];
+    UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:resourceNavController];
     popoverController.backgroundColor = [UIColor whiteColor];
     [popoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
     self.resourcePopoverController = popoverController;
