@@ -86,8 +86,6 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [self hideSearchRecents];
-    [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
 }
 
@@ -142,6 +140,9 @@
 #pragma mark - search
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self hideSearchRecents];
+    [self.recentSearchController addRecentSearchItem:searchTerm];
+
     [self changeToSearchStories];
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
