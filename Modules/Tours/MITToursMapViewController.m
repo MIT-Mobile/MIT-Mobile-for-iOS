@@ -266,7 +266,7 @@ static NSInteger kAnnotationMarginRight = 50;
     MITToursStop *stop = ((MITToursStopAnnotation *)annotationView.annotation).stop;
     
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForStop:stop userLocation:mapView.userLocation.location showDescription:self.shouldShowStopDescriptions];
+    [contentView configureForStop:stop userLocation:mapView.userLocation.location];
     contentView.delegate = self;
     
     SMCalloutView *calloutView = self.calloutView;
