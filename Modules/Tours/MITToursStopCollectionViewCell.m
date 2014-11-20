@@ -32,7 +32,7 @@ static const CGFloat kSelectedPadding = 10;
     self.titleLabel.text = title;
     
     if (selected) {
-        self.backgroundColor = [UIColor mit_navBarColor];
+        self.backgroundColor = [UIColor mit_backgroundColor];
     } else {
         self.backgroundColor = [UIColor clearColor];
     }
