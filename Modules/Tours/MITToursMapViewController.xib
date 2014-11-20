@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursMapViewController">
             <connections>
                 <outlet property="tiledMapView" destination="jKD-aI-51I" id="ho0-fj-uEd"/>
+                <outlet property="tourDetailsHeightConstraint" destination="7IX-nf-XNj" id="Dqh-Nz-yz0"/>
                 <outlet property="tourDetailsView" destination="8LK-Y6-SF9" id="bzn-Ww-iNQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>

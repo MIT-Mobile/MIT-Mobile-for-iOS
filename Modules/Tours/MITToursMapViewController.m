@@ -27,6 +27,7 @@ static NSInteger kAnnotationMarginRight = 50;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
 @property (weak, nonatomic) IBOutlet UIView *tourDetailsView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tourDetailsHeightConstraint;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 @property (nonatomic) MKMapRect savedMapRect;
@@ -90,12 +91,24 @@ static NSInteger kAnnotationMarginRight = 50;
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-    calloutView.constrainedInsets = UIEdgeInsetsMake(0, 0, 100, 0); // TODO: Make these accurate
     
     self.calloutView = calloutView;
+    [self updateCalloutViewInsets];
     
     MITToursCalloutMapView *mapView = (MITToursCalloutMapView *)self.tiledMapView.mapView;
     mapView.calloutView = calloutView;
+}
+
+- (void)updateCalloutViewInsets
+{
+    if (!self.calloutView) {
+        return;
+    }
+    CGFloat topInset = 0;
+    if (self.shouldShowTourDetailsPanel) {
+        topInset = self.tourDetailsHeightConstraint.constant;
+    }
+    self.calloutView.constrainedInsets = UIEdgeInsetsMake(topInset, 0, 0, 0);
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -143,6 +156,7 @@ static NSInteger kAnnotationMarginRight = 50;
 {
     _shouldShowTourDetailsPanel = shouldShowTourDetailsPanel;
     self.tourDetailsView.hidden = !shouldShowTourDetailsPanel;
+    [self updateCalloutViewInsets];
 }
 
 - (void)tourDetailsViewWasTapped:(UITapGestureRecognizer *)sender
