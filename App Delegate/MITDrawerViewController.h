@@ -3,7 +3,7 @@
 @class MITModuleItem;
 @protocol MITDrawerViewControllerDelegate;
 
-@interface MITDrawerViewController : UIViewController
+@interface MITDrawerViewController : UITableViewController
 @property (nonatomic,weak) id<MITDrawerViewControllerDelegate> delegate;
 
 @property (nonatomic,copy) NSArray *moduleItems;

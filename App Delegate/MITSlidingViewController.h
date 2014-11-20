@@ -3,10 +3,7 @@
 @class MITNotification;
 @class MITModuleViewController;
 
-@interface MITSlidingViewController : UIViewController
-@property(nonatomic,weak) IBOutlet ECSlidingViewController *slidingViewController;
-@property(nonatomic,copy) NSString *slidingViewControllerStoryboardId;
-
+@interface MITSlidingViewController : ECSlidingViewController
 @property(nonatomic,readonly,strong) UIBarButtonItem *leftBarButtonItem;
 
 @property(nonatomic,copy) NSArray *viewControllers;

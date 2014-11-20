@@ -2,14 +2,10 @@
 #import "MITSlidingViewController.h"
 #import "MITModuleItem.h"
 
-static NSString* const MITDrawerReuseIdentifierItemCell = @"DrawerItemCellReuseIdentifier";
+static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 static NSUInteger const MITModuleSectionIndex = 0;
 
 @interface MITDrawerViewController ()
-@property(nonatomic,weak) IBOutlet UIView *logoContainer;
-@property(nonatomic,weak) IBOutlet UIImageView *logoView;
-@property(nonatomic,weak) IBOutlet UITableView *tableView;
-
 @property (nonatomic,strong) NSIndexPath *selectedIndexPath;
 @end
 
@@ -161,19 +157,17 @@ static NSUInteger const MITModuleSectionIndex = 0;
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITDrawerReuseIdentifierItemCell forIndexPath:indexPath];
     if ([cell isKindOfClass:[UITableViewCell class]]) {
-        MITModuleItem *moduleItem = [self _moduleItemForIndexPath:indexPath withModuleItems:_moduleItems];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        MITModuleItem *moduleItem = [self _moduleItemForIndexPath:indexPath withModuleItems:self.moduleItems];
         
         cell.imageView.image = moduleItem.image;
         cell.textLabel.text = moduleItem.title;
 
         if ([moduleItem isEqual:_selectedModuleItem]) {
-            cell.selected = YES;
             cell.contentView.backgroundColor = self.view.tintColor;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else {
-            cell.selected = NO;
-            cell.contentView.backgroundColor = [UIColor clearColor];
+            cell.contentView.backgroundColor = [UIColor whiteColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
 
