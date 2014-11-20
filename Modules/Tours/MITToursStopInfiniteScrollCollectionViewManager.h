@@ -2,6 +2,6 @@
 
 @interface MITToursStopInfiniteScrollCollectionViewManager : MITToursStopCollectionViewManager
 
-@property (nonatomic, strong) MITToursStop *centerStop;
+@property (nonatomic) NSInteger contentMultiple;
 
 @end
