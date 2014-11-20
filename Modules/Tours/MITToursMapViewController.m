@@ -6,7 +6,6 @@
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
 #import "SMCalloutView.h"
-#import "SMClassicCalloutView.h"
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
 #import "UIKit+MITAdditions.h"
@@ -86,16 +85,10 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)setupCalloutView
 {
-    SMCalloutDrawnBackgroundView *backgroundView = [[SMCalloutDrawnBackgroundView alloc] initWithFrame:CGRectZero];
-    backgroundView.fillBlack = [UIColor whiteColor];
-    backgroundView.outerStrokeColor = [UIColor grayColor];
-    backgroundView.alpha = 1.0;
-
     SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
     calloutView.contentViewMargin = 0;
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
-    calloutView.backgroundView = backgroundView;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;
     calloutView.constrainedInsets = UIEdgeInsetsMake(0, 0, 100, 0); // TODO: Make these accurate
     
