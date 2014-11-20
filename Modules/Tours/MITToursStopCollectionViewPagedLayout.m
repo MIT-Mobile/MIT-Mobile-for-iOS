@@ -2,6 +2,16 @@
 
 @implementation MITToursStopCollectionViewPagedLayout
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.pagePosition = CGPointZero;
+        self.pageCellScrollPosition = UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically;
+    }
+    return self;
+}
+
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity
 {
     NSArray *attributesArray = [self layoutAttributesForElementsInRect:self.collectionView.bounds];
@@ -9,14 +19,9 @@
         return proposedContentOffset;
     }
 
-    CGFloat halfWidth = self.collectionView.bounds.size.width * 0.5;
-    CGFloat halfHeight = self.collectionView.bounds.size.height * 0.5;
-    CGPoint proposedCenter = CGPointMake(proposedContentOffset.x + halfWidth,
-                                         proposedContentOffset.y + halfHeight);
-    CGPoint currentCenter = CGPointMake(self.collectionView.contentOffset.x + halfWidth,
-                                        self.collectionView.contentOffset.y + halfHeight);
-    
+    CGPoint currentOffset = self.collectionView.contentOffset;
     CGFloat shortestSquaredDistance = CGFLOAT_MAX;
+    CGPoint bestOffset = proposedContentOffset;
     
     UICollectionViewLayoutAttributes *closestAttributes = nil;
     for (UICollectionViewLayoutAttributes *attributes in attributesArray) {
@@ -24,32 +29,32 @@
             continue;
         }
         
+        CGPoint offset = [self contentOffsetFromAttributes:attributes alignToPoint:self.pagePosition scrollPosition:self.pageCellScrollPosition];
+        
         // Reject this element if it would force us to go backwards against velocity
-        CGFloat dx = attributes.center.x - currentCenter.x;
-        CGFloat dy = attributes.center.y - currentCenter.y;
+        CGFloat dx = offset.x - currentOffset.x;
+        CGFloat dy = offset.y - currentOffset.y;
         CGFloat dot = velocity.x * dx + velocity.y * dy;
         if (dot < 0) {
             continue;
         }
         
-        CGFloat squaredDistance = [self squaredDistanceFromPoint:proposedCenter toPoint:attributes.center];
+        CGFloat squaredDistance = [self squaredDistanceFromPoint:proposedContentOffset toPoint:offset];
         if (squaredDistance < shortestSquaredDistance) {
             closestAttributes = attributes;
             shortestSquaredDistance = squaredDistance;
+            bestOffset = offset;
         }
     }
     if (closestAttributes) {
-        CGFloat newOffsetX = closestAttributes.center.x - halfWidth;
-        CGFloat newOffsetY = closestAttributes.center.y - halfHeight;
-        
         // Clamp content offset based on content size. This prevents us from choosing a content offset
         // that would cause the collection view to bounce.
         CGFloat maxOffsetX = self.collectionViewContentSize.width - CGRectGetWidth(self.collectionView.bounds) + self.collectionView.contentInset.right;
         CGFloat maxOffsetY = self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds) + self.collectionView.contentInset.bottom;
-        newOffsetX = MAX(-self.collectionView.contentInset.left, MIN(newOffsetX, maxOffsetX));
-        newOffsetY = MAX(-self.collectionView.contentInset.top, MIN(newOffsetX, maxOffsetY));
+        bestOffset.x = MAX(-self.collectionView.contentInset.left, MIN(bestOffset.x, maxOffsetX));
+        bestOffset.y = MAX(-self.collectionView.contentInset.top, MIN(bestOffset.y, maxOffsetY));
         
-        return CGPointMake(newOffsetX, newOffsetY);
+        return bestOffset;
     }
     return proposedContentOffset;
 }
@@ -60,6 +65,25 @@
 }
 
 #pragma mark - Helpers
+
+// Compute what the content offset would need to be to align this element to the page position
+- (CGPoint)contentOffsetFromAttributes:(UICollectionViewLayoutAttributes *)attributes alignToPoint:(CGPoint)alignToPoint scrollPosition:(UICollectionViewScrollPosition)scrollPosition
+{
+    CGPoint offset = attributes.center;
+    if (scrollPosition & UICollectionViewScrollPositionLeft) {
+        offset.x = CGRectGetMinX(attributes.frame);
+    } else if (scrollPosition & UICollectionViewScrollPositionRight) {
+        offset.x = CGRectGetMaxX(attributes.frame);
+    }
+    if (scrollPosition & UICollectionViewScrollPositionTop) {
+        offset.y = CGRectGetMinY(attributes.frame);
+    } else if (scrollPosition & UICollectionViewScrollPositionBottom) {
+        offset.y = CGRectGetMaxY(attributes.frame);
+    }
+    offset.x -= alignToPoint.x;
+    offset.y -= alignToPoint.y;
+    return offset;
+}
 
 - (CGFloat)squaredDistanceFromPoint:(CGPoint)from toPoint:(CGPoint)to
 {
