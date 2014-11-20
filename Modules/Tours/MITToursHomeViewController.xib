@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursHomeViewController">
             <connections>
-                <outlet property="activityIndicator" destination="pKB-GF-FeL" id="Tgs-iW-yl1"/>
                 <outlet property="tableView" destination="6D5-FL-CdS" id="lIv-xQ-cYk"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -25,18 +24,13 @@
                         <outlet property="delegate" destination="-1" id="CWQ-pB-ai2"/>
                     </connections>
                 </tableView>
-                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="pKB-GF-FeL">
-                    <rect key="frame" x="150" y="310" width="20" height="20"/>
-                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="6D5-FL-CdS" secondAttribute="bottom" id="2s6-nz-XaO"/>
-                <constraint firstAttribute="bottom" secondItem="pKB-GF-FeL" secondAttribute="bottom" constant="174" id="Fyh-Rs-MI6"/>
                 <constraint firstAttribute="trailing" secondItem="6D5-FL-CdS" secondAttribute="trailing" id="Ib3-Vm-qbB"/>
                 <constraint firstItem="6D5-FL-CdS" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="SDw-bY-R3L"/>
                 <constraint firstItem="6D5-FL-CdS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="UlX-SH-v93"/>
-                <constraint firstAttribute="centerX" secondItem="pKB-GF-FeL" secondAttribute="centerX" id="xmi-FY-iIh"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <point key="canvasLocation" x="459" y="489"/>

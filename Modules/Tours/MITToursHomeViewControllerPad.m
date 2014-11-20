@@ -12,8 +12,6 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 
 @interface MITToursHomeViewControllerPad () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
-@property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
-
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
@@ -31,11 +29,11 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 
     self.title = @"Tours";
     
-    self.coverImageView.image = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
-    
     [self setupNavBar];
     [self setupTableView];
     [self setupCollectionView];
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
         if ([object isKindOfClass:[NSArray class]]) {
@@ -48,7 +46,6 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
             }];
         }
     }];
-
 }
 
 - (void)setupNavBar
@@ -73,24 +70,26 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return self.selfGuidedTour ? 1 : 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.selfGuidedTour ? 1 : 0;
+    return 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 106.0;
+    return 289.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITToursSelfGuidedTourCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITSelfGuidedTourCell];
     
-    [cell setTour:self.selfGuidedTour];
+    if (self.selfGuidedTour) {
+        [cell setTour:self.selfGuidedTour];
+    }
     
     return cell;
 }
@@ -102,14 +101,6 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
     MITToursSelfGuidedTourContainerControllerPad *containerController = [[MITToursSelfGuidedTourContainerControllerPad alloc] init];
     containerController.selfGuidedTour = self.selfGuidedTour;
     [self.navigationController pushViewController:containerController animated:YES];
-}
-
-// iOS 7 requires this to make the cell transparent for whatever reason
-- (void)tableView:(UITableView *)tableView
-  willDisplayCell:(UITableViewCell *)cell
-forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [cell setBackgroundColor:[UIColor clearColor]];
 }
 
 #pragma mark - CollectionView Delegate
@@ -220,7 +211,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:linksVC];
         _linksPopover = [[UIPopoverController alloc] initWithContentViewController:navVC];
         [_linksPopover setPopoverContentSize:CGSizeMake(320, 132 + navVC.navigationBar.frame.size.height)];
-
     }
     return _linksPopover;
 }
