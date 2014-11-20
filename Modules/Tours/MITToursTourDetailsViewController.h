@@ -2,7 +2,7 @@
 
 @class MITToursTour;
 
-@interface MITToursSelfGuidedTourInfoViewController : UIViewController
+@interface MITToursTourDetailsViewController : UIViewController
 
 @property (nonatomic, strong) MITToursTour *tour;
 
