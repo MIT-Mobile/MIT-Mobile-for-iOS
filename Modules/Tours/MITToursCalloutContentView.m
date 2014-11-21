@@ -6,7 +6,6 @@
 #define MILES_PER_METER 0.000621371
 
 static CGFloat const kDistanceLabelTopSpacing = 6;
-static CGFloat const kDescriptionLabelTopSpacing = 16;
 
 @interface MITToursCalloutContentView ()
 
@@ -15,11 +14,9 @@ static CGFloat const kDescriptionLabelTopSpacing = 16;
 @property (weak, nonatomic) IBOutlet UILabel *stopTypeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *stopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *distanceLabel;
-@property (weak, nonatomic) IBOutlet UILabel *stopDescriptionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *disclosureImage;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *distanceSpacingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionSpacingConstraint;
 
 @property (strong, nonatomic) UIGestureRecognizer *tapRecognizer;
 
@@ -59,12 +56,12 @@ static CGFloat const kDescriptionLabelTopSpacing = 16;
         self.containerView = view;
         [self addSubview:view];
         
-        self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(calloutWasTapped:)];
-        [view addGestureRecognizer:self.tapRecognizer];
+        self.userInteractionEnabled = NO;
+        self.exclusiveTouch = NO;
     }
 }
 
-- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation showDescription:(BOOL)showDescription
+- (void)configureForStop:(MITToursStop *)stop userLocation:(CLLocation *)userLocation
 {
     self.stop = stop;
     self.stopType = stop.stopType;
@@ -108,14 +105,6 @@ static CGFloat const kDescriptionLabelTopSpacing = 16;
     self.distanceLabel.textColor = [UIColor mit_greyTextColor];
     self.distanceLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
     
-    if (showDescription) {
-        self.stopDescriptionLabel.attributedText = [self attributedBodyTextForStop:stop];
-        self.descriptionSpacingConstraint.constant = kDescriptionLabelTopSpacing;
-    } else {
-        self.stopDescriptionLabel.attributedText = nil;
-        self.descriptionSpacingConstraint.constant = 0;
-    }
-    
     [self.disclosureImage setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]];
     
     [self.containerView setNeedsUpdateConstraints];
@@ -139,13 +128,6 @@ static CGFloat const kDescriptionLabelTopSpacing = 16;
     [bodyString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, bodyString.length)];
     
     return bodyString;
-}
-
-- (void)calloutWasTapped:(UIGestureRecognizer *)sender
-{
-    if ([self.delegate respondsToSelector:@selector(calloutWasTappedForStop:)]) {
-        [self.delegate calloutWasTappedForStop:self.stop];
-    }
 }
 
 - (CGSize)sizeThatFits:(CGSize)size

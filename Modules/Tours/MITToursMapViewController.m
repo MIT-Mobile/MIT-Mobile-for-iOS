@@ -6,7 +6,6 @@
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
 #import "SMCalloutView.h"
-#import "SMClassicCalloutView.h"
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
 #import "UIKit+MITAdditions.h"
@@ -20,7 +19,7 @@ static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
 
-@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate, MITTiledMapViewUserTrackingDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 @property (strong, nonatomic) SMCalloutView *calloutView;
@@ -28,6 +27,7 @@ static NSInteger kAnnotationMarginRight = 50;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
 @property (weak, nonatomic) IBOutlet UIView *tourDetailsView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tourDetailsHeightConstraint;
 
 @property (nonatomic, strong, readwrite) MITToursTour *tour;
 @property (nonatomic) MKMapRect savedMapRect;
@@ -86,23 +86,29 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)setupCalloutView
 {
-    SMCalloutDrawnBackgroundView *backgroundView = [[SMCalloutDrawnBackgroundView alloc] initWithFrame:CGRectZero];
-    backgroundView.fillBlack = [UIColor whiteColor];
-    backgroundView.outerStrokeColor = [UIColor grayColor];
-    backgroundView.alpha = 1.0;
-
     SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
     calloutView.contentViewMargin = 0;
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
-    calloutView.backgroundView = backgroundView;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionUp;
-    calloutView.constrainedInsets = UIEdgeInsetsMake(0, 0, 100, 0); // TODO: Make these accurate
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     
     self.calloutView = calloutView;
+    [self updateCalloutViewInsets];
     
     MITToursCalloutMapView *mapView = (MITToursCalloutMapView *)self.tiledMapView.mapView;
     mapView.calloutView = calloutView;
+}
+
+- (void)updateCalloutViewInsets
+{
+    if (!self.calloutView) {
+        return;
+    }
+    CGFloat topInset = 0;
+    if (self.shouldShowTourDetailsPanel) {
+        topInset = self.tourDetailsHeightConstraint.constant;
+    }
+    self.calloutView.constrainedInsets = UIEdgeInsetsMake(topInset, 0, 0, 0);
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -150,6 +156,7 @@ static NSInteger kAnnotationMarginRight = 50;
 {
     _shouldShowTourDetailsPanel = shouldShowTourDetailsPanel;
     self.tourDetailsView.hidden = !shouldShowTourDetailsPanel;
+    [self updateCalloutViewInsets];
 }
 
 - (void)tourDetailsViewWasTapped:(UITapGestureRecognizer *)sender
@@ -259,8 +266,7 @@ static NSInteger kAnnotationMarginRight = 50;
     MITToursStop *stop = ((MITToursStopAnnotation *)annotationView.annotation).stop;
     
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForStop:stop userLocation:mapView.userLocation.location showDescription:self.shouldShowStopDescriptions];
-    contentView.delegate = self;
+    [contentView configureForStop:stop userLocation:mapView.userLocation.location];
     
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = contentView;
@@ -286,12 +292,11 @@ static NSInteger kAnnotationMarginRight = 50;
     return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-#pragma mark - MITToursCalloutContentViewDelegate Methods
-
-- (void)calloutWasTappedForStop:(MITToursStop *)stop
+- (void)calloutViewClicked:(SMCalloutView *)calloutView
 {
+    MITToursCalloutContentView *contentView = (MITToursCalloutContentView *)calloutView.contentView;
     if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectCalloutForStop:)]) {
-        [self.delegate mapViewController:self didSelectCalloutForStop:stop];
+        [self.delegate mapViewController:self didSelectCalloutForStop:contentView.stop];
     }
 }
 
