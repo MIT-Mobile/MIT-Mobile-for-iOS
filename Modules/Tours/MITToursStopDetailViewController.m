@@ -3,6 +3,7 @@
 #import "MITToursImageRepresentation.h"
 #import "UIImageView+WebCache.h"
 #import "MITToursStopCollectionViewManager.h"
+#import "MITToursStopCollectionViewPagedLayout.h"
 #import "MITToursStopInfiniteScrollCollectionViewManager.h"
 #import "MITInfiniteScrollCollectionView.h"
 #import "UIFont+MITTours.h"
@@ -25,6 +26,16 @@
 @property (weak, nonatomic) IBOutlet UILabel *bodyTextLabel;
 
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainLoopLeftMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainLoopRightMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainLoopTopMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mainLoopBottomMarginConstraint;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nearHereLeftMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nearHereRightMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nearHereTopMarginConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nearHereBottomMarginConstraint;
 
 @property (nonatomic) BOOL isTitleVisible;
 @property (nonatomic) CGFloat titleBottom;
@@ -51,8 +62,19 @@
     self.scrollView.delegate = self;
     
     [self setupLabels];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     [self setupCollectionViews];
     [self configureForStop:self.stop];
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    [self setCollectionViewScrollInsets];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -90,6 +112,47 @@
     self.nearHereCollectionView.delegate = self.nearHereCollectionViewManager;
 }
 
+- (void)setCollectionViewScrollInsets
+{
+    // Set up content insets and page alignment for "Main Loop" collection view
+    CGFloat leftInset = self.mainLoopLeftMarginConstraint.constant;
+    CGFloat rightInset = self.mainLoopRightMarginConstraint.constant;
+    CGFloat topInset = self.mainLoopTopMarginConstraint.constant;
+    CGFloat bottomInset = self.mainLoopBottomMarginConstraint.constant;
+    CGFloat contentHeight = CGRectGetHeight(self.mainLoopCollectionView.bounds) - topInset - bottomInset;
+    CGFloat pageCenterY = topInset + contentHeight * 0.5;
+
+    MITToursStopCollectionViewPagedLayout *mainLoopLayout = (MITToursStopCollectionViewPagedLayout *)self.mainLoopCollectionView.collectionViewLayout;
+    mainLoopLayout.pagePosition = CGPointMake(leftInset, pageCenterY);
+    mainLoopLayout.pageCellScrollPosition = UICollectionViewScrollPositionLeft | UICollectionViewScrollPositionCenteredVertically;
+
+    self.mainLoopCollectionView.contentInset = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
+
+    // Set up content insets and page alignment for "Near Here" collection view
+    leftInset = self.nearHereLeftMarginConstraint.constant;
+    rightInset = self.nearHereRightMarginConstraint.constant;
+    topInset = self.nearHereTopMarginConstraint.constant;
+    bottomInset = self.nearHereBottomMarginConstraint.constant;
+    contentHeight = CGRectGetHeight(self.nearHereCollectionView.bounds) - topInset - bottomInset;
+    pageCenterY = topInset + contentHeight * 0.5;
+    
+    MITToursStopCollectionViewPagedLayout *nearHereLayout = (MITToursStopCollectionViewPagedLayout *)self.nearHereCollectionView.collectionViewLayout;
+    nearHereLayout.pagePosition = CGPointMake(leftInset, pageCenterY);
+    nearHereLayout.pageCellScrollPosition = UICollectionViewScrollPositionLeft | UICollectionViewScrollPositionCenteredVertically;
+    
+    // Adjust rightInset based on how many items will fit
+    // Note that we are making an assumption of uniform cell width, which currently holds true for the "Near Here" collection.
+    CGFloat contentWidth = CGRectGetWidth(self.view.bounds) - leftInset - rightInset;
+    CGFloat maxCellSize = nearHereLayout.itemSize.width + nearHereLayout.minimumInteritemSpacing;
+    NSInteger numberOfItemsThatWillFit = (contentWidth + nearHereLayout.minimumInteritemSpacing) / maxCellSize;
+    if (numberOfItemsThatWillFit > 0) {
+        CGFloat widthOfItems = numberOfItemsThatWillFit * maxCellSize - nearHereLayout.minimumInteritemSpacing;
+        rightInset += contentWidth - widthOfItems;
+    }
+    
+    self.nearHereCollectionView.contentInset = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
+}
+
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
@@ -118,26 +181,32 @@
     [self configureBodyTextForStop:stop];
     [self configureImageForStop:stop];
     
+    // Set up "Main Loop" stops
     NSInteger index = [self.mainLoopStops indexOfObject:stop];
     if (index == NSNotFound) {
         index = 0;
     }
-    // We want the current stop to be the "center" of the array of stops.
+    // We want the current stop to be the first stop in display order
     NSMutableArray *sortedMainLoopStops = [[NSMutableArray alloc] init];
-    NSInteger offset = index - self.mainLoopStops.count / 2;
-    for (NSInteger i = 0; i < self.mainLoopStops.count; i++) {
-        NSInteger nextIndex = (i + offset + self.mainLoopStops.count) % self.mainLoopStops.count;
-        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:nextIndex]];
+    for (NSInteger i = index; i < self.mainLoopStops.count; i++) {
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:i]];
+    }
+    for (NSInteger i = 0; i < index; i++) {
+        [sortedMainLoopStops addObject:[self.mainLoopStops objectAtIndex:i]];
     }
     self.mainLoopCollectionViewManager.stops = self.mainLoopStops;
     self.mainLoopCollectionViewManager.stopsInDisplayOrder = sortedMainLoopStops;
     self.mainLoopCollectionViewManager.selectedStop = stop;
     [self.mainLoopCollectionView reloadData];
-    [self.mainLoopCollectionView scrollToCenterItemAnimated:NO];
+    
+    // Set up "Near Here" stops
+    // Exclude the current stop from the "near here" list
+    NSMutableArray *otherStops = [self.tour.stops mutableCopy];
+    [otherStops removeObject:stop];
     
     // Order the stops by distance from the current stop
     CLLocation *currentStopLocation = [stop locationForStop];
-    NSArray *sortedStops = [self.tour.stops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    NSArray *sortedStops = [otherStops sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         CLLocationDistance distance1 = [[((MITToursStop *)obj1) locationForStop] distanceFromLocation:currentStopLocation];
         CLLocationDistance distance2 = [[((MITToursStop *)obj2) locationForStop] distanceFromLocation:currentStopLocation];
         if (distance1 < distance2) {
