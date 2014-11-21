@@ -124,6 +124,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self setupTableView];
     [self setupToolbar];
     [self setupResourceData];
+    
+    [self updateDisplayedRoutes];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -222,10 +224,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
         [self endRefreshing];
         if (!error) {
-            [self.routesFetchedResultsController performFetch:nil];
-            [self refreshFlatRouteArray];
-            
-            [self.tableView reloadDataAndMaintainSelection];
+            [self updateDisplayedRoutes];
             
             // Start refreshing predications if we are still in the view hierarchy
             if (!self.predictionsRefreshTimer.isValid && self.navigationController) {
@@ -233,6 +232,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             }
         }
     }];
+}
+
+- (void)updateDisplayedRoutes
+{
+    [self.routesFetchedResultsController performFetch:nil];
+    [self refreshFlatRouteArray];
+    [self.tableView reloadDataAndMaintainSelection];
 }
 
 - (void)loadPredictions
