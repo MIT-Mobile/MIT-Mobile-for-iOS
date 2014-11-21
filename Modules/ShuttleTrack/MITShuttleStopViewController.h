@@ -5,8 +5,8 @@
 @class MITShuttleStopPredictionLoader;
 
 typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
-    MITShuttleStopViewOptionSingleRoute,
-    MITShuttleStopViewOptionAllRoutes
+    MITShuttleStopViewOptionAll,
+    MITShuttleStopViewOptionIntersectingOnly
 };
 
 @interface MITShuttleStopViewController : UITableViewController
