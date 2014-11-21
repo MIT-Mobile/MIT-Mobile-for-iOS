@@ -226,14 +226,19 @@
 
 - (void)configureBodyTextForStop:(MITToursStop *)stop
 {
-    NSData *bodyTextData = [NSData dataWithBytes:[stop.bodyHTML cStringUsingEncoding:NSUTF8StringEncoding] length:stop.bodyHTML.length];
+    // Bit of a hack here: For some reason the UILabel is not being correctly sized to fit
+    // the last line of text, so we append a line break to account for this.
+    NSMutableString *htmlString = [stop.bodyHTML mutableCopy];
+    [htmlString appendString:@"<br/>"];
+    NSData *bodyTextData = [NSData dataWithBytes:[htmlString cStringUsingEncoding:NSUTF8StringEncoding] length:htmlString.length];
     NSMutableAttributedString *bodyString = [[NSMutableAttributedString alloc] initWithData:bodyTextData options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:NULL error:nil];
     
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.lineHeightMultiple = 1.0;
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineHeightMultiple = 1.2;
+    paragraphStyle.paragraphSpacing = 12.0;
 
     NSDictionary *attributes = @{ NSParagraphStyleAttributeName: paragraphStyle,
-                                  NSFontAttributeName: [UIFont toursTitle] };
+                                  NSFontAttributeName: [UIFont toursStopDetailBody] };
     [bodyString addAttributes:attributes range:NSMakeRange(0, bodyString.length)];
     
     [self.bodyTextLabel setAttributedText:bodyString];
