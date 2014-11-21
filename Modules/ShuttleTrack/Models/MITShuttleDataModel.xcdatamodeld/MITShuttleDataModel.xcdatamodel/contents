@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14B25" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="ShuttlePrediction" representedClassName="MITShuttlePrediction" syncable="YES">
         <attribute name="seconds" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="stopId" optional="YES" attributeType="String" syncable="YES"/>
@@ -21,6 +21,7 @@
     <entity name="ShuttleRoute" representedClassName="MITShuttleRoute" syncable="YES">
         <attribute name="agency" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastUpdatedTimestamp" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="order" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="pathBoundingBox" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="pathSegments" optional="YES" attributeType="Transformable" syncable="YES"/>
@@ -67,7 +68,7 @@
     <elements>
         <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="150"/>
         <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="148"/>
-        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="253"/>
+        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="270"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="195"/>
         <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
         <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="28"/>

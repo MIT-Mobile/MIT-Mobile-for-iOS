@@ -39,6 +39,10 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    for (MITShuttleRoute *route in result.array) {
+                                                        route.lastUpdatedTimestamp = [NSDate date];
+                                                    }
+                                                    [[[MITCoreDataController defaultController] mainQueueContext] save:nil];
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }

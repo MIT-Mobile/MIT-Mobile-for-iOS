@@ -21,6 +21,7 @@
 @dynamic vehiclesURL;
 @dynamic stops;
 @dynamic vehicles;
+@dynamic lastUpdatedTimestamp;
 
 + (RKMapping *)objectMapping
 {
@@ -72,6 +73,11 @@
 
 - (MITShuttleRouteStatus)status
 {
+    // Data over 1 minute old is considered unavailable
+    if ([[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
+        return MITShuttleRouteStatusPredictionsUnavailable;
+    }
+    
     if ([self.scheduled boolValue]) {
         return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
     } else {

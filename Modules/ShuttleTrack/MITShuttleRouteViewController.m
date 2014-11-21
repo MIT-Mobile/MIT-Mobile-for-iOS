@@ -271,9 +271,15 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
-        MITShuttlePrediction *prediction = [stop nextPredictionForRoute:self.route];
-        [cell setStop:stop prediction:prediction];
-        [cell setIsNextStop:(self.route.status == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
+        MITShuttleRouteStatus routeStatus = self.route.status;
+        if (routeStatus != MITShuttleRouteStatusPredictionsUnavailable) {
+            MITShuttlePrediction *prediction = [stop nextPredictionForRoute:self.route];
+            [cell setStop:stop prediction:prediction];
+            [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
+        } else {
+            [cell setStop:stop prediction:nil];
+            [cell setIsNextStop:NO];
+        }
         [cell setCellType:MITShuttleStopCellTypeRouteDetail];
         return cell;
     }
