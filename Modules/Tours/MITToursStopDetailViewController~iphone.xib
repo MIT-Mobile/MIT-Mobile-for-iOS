@@ -59,7 +59,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="utD-mE-rH7" customClass="MITInfiniteScrollCollectionView">
-                            <rect key="frame" x="0.0" y="272" width="320" height="258"/>
+                            <rect key="frame" x="0.0" y="256" width="320" height="250"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="8di-sL-UAM" customClass="MITToursStopCollectionViewPagedLayout">
                                 <size key="itemSize" width="90" height="190"/>
@@ -69,40 +69,40 @@
                             </collectionViewFlowLayout>
                         </collectionView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Loop" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z54-xP-Njy" userLabel="Main Loop">
-                            <rect key="frame" x="20" y="288" width="280" height="21"/>
+                            <rect key="frame" x="20" y="264" width="280" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bBh-II-3qI" userLabel="Main Loop Stroke">
-                            <rect key="frame" x="20" y="315" width="280" height="1"/>
+                            <rect key="frame" x="20" y="291" width="280" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="p0R-Dx-5H3"/>
                             </constraints>
                         </view>
                         <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gBY-BI-hex" userLabel="Main Loop Content Spacer">
-                            <rect key="frame" x="20" y="325" width="280" height="190"/>
+                            <rect key="frame" x="20" y="301" width="280" height="190"/>
                             <color key="backgroundColor" red="1" green="0.30229143609999998" blue="0.99627353460000001" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="190" id="Yuc-8O-iHf"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lK8-NE-OOH" userLabel="Near Here Stroke">
-                            <rect key="frame" x="20" y="549" width="280" height="1"/>
+                            <rect key="frame" x="20" y="525" width="280" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="oGD-e0-UxQ"/>
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Near Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vtL-EF-PNk" userLabel="Near Here">
-                            <rect key="frame" x="20" y="522" width="280" height="21"/>
+                            <rect key="frame" x="20" y="498" width="280" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="q74-8a-1TS">
-                            <rect key="frame" x="0.0" y="530" width="320" height="239"/>
+                            <rect key="frame" x="0.0" y="506" width="320" height="239"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="d3u-7J-O6x" customClass="MITToursStopCollectionViewPagedLayout">
                                 <size key="itemSize" width="90" height="190"/>
@@ -112,7 +112,7 @@
                             </collectionViewFlowLayout>
                         </collectionView>
                         <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vN1-g5-bnm" userLabel="Near Here Content Spacer">
-                            <rect key="frame" x="20" y="559" width="280" height="190"/>
+                            <rect key="frame" x="20" y="535" width="280" height="190"/>
                             <color key="backgroundColor" red="1" green="0.30229143609999998" blue="0.99627353460000001" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="190" id="9Lc-8K-GPt"/>
@@ -125,7 +125,7 @@
                         <constraint firstItem="gBY-BI-hex" firstAttribute="leading" secondItem="utD-mE-rH7" secondAttribute="leading" constant="20" id="3V2-jx-Axl"/>
                         <constraint firstItem="vtL-EF-PNk" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" constant="-8" id="6Vs-vZ-4GI"/>
                         <constraint firstItem="utD-mE-rH7" firstAttribute="bottom" secondItem="gBY-BI-hex" secondAttribute="bottom" constant="15" id="8SA-4f-fO2"/>
-                        <constraint firstItem="z54-xP-Njy" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="24" id="BB3-sx-8GF"/>
+                        <constraint firstItem="z54-xP-Njy" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" id="BB3-sx-8GF"/>
                         <constraint firstItem="vN1-g5-bnm" firstAttribute="top" secondItem="q74-8a-1TS" secondAttribute="top" constant="29" id="BYo-WK-Ukg"/>
                         <constraint firstAttribute="trailing" secondItem="q74-8a-1TS" secondAttribute="trailing" id="HUc-qU-wYj"/>
                         <constraint firstItem="q74-8a-1TS" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" id="Jg4-Mi-mhD"/>
@@ -133,7 +133,7 @@
                         <constraint firstItem="q74-8a-1TS" firstAttribute="trailing" secondItem="vN1-g5-bnm" secondAttribute="trailing" constant="20" id="PYv-nr-exN"/>
                         <constraint firstAttribute="trailing" secondItem="bBh-II-3qI" secondAttribute="trailing" constant="20" id="RKn-F4-vmg"/>
                         <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
-                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="8" id="RxB-i6-iql"/>
+                        <constraint firstItem="utD-mE-rH7" firstAttribute="top" secondItem="T2M-yO-r3b" secondAttribute="bottom" constant="-8" id="RxB-i6-iql"/>
                         <constraint firstItem="z54-xP-Njy" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="SKC-da-shw"/>
                         <constraint firstAttribute="trailing" secondItem="lK8-NE-OOH" secondAttribute="trailing" constant="20" id="Sok-0G-Fd6"/>
                         <constraint firstItem="vN1-g5-bnm" firstAttribute="leading" secondItem="q74-8a-1TS" secondAttribute="leading" constant="20" id="Wht-XN-ldl"/>
@@ -153,7 +153,7 @@
                         <constraint firstItem="3FI-m8-DDe" firstAttribute="top" secondItem="5Qq-dd-txi" secondAttribute="bottom" constant="10" id="wAb-5a-E76"/>
                         <constraint firstItem="lK8-NE-OOH" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" constant="20" id="wHj-6Z-w8i"/>
                         <constraint firstAttribute="trailing" secondItem="vtL-EF-PNk" secondAttribute="trailing" constant="20" id="wp8-JD-48o"/>
-                        <constraint firstItem="gBY-BI-hex" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="top" constant="53" id="xbe-Nu-Ug1"/>
+                        <constraint firstItem="gBY-BI-hex" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="top" constant="45" id="xbe-Nu-Ug1"/>
                         <constraint firstAttribute="trailing" secondItem="3FI-m8-DDe" secondAttribute="trailing" constant="10" id="xdF-bU-kIh"/>
                         <constraint firstItem="utD-mE-rH7" firstAttribute="leading" secondItem="w3V-59-ysb" secondAttribute="leading" id="zaB-3h-oty"/>
                     </constraints>
