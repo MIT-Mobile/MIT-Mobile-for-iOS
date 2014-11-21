@@ -123,11 +123,11 @@
     
     UIButton *upButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [upButton setImage:upButtonImage forState:UIControlStateNormal];
-    [upButton addTarget:self action:@selector(displayNextStop) forControlEvents:UIControlEventTouchUpInside];
+    [upButton addTarget:self action:@selector(displayPreviousStop) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *downButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [downButton setImage:downButtonImage forState:UIControlStateNormal];
-    [downButton addTarget:self action:@selector(displayPreviousStop) forControlEvents:UIControlEventTouchUpInside];
+    [downButton addTarget:self action:@selector(displayNextStop) forControlEvents:UIControlEventTouchUpInside];
     
     [parentView addSubview:upButton];
     [parentView addSubview:downButton];
