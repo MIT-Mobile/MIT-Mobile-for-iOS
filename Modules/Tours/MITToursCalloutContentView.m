@@ -56,8 +56,8 @@ static CGFloat const kDistanceLabelTopSpacing = 6;
         self.containerView = view;
         [self addSubview:view];
         
-        self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(calloutWasTapped:)];
-        [view addGestureRecognizer:self.tapRecognizer];
+        self.userInteractionEnabled = NO;
+        self.exclusiveTouch = NO;
     }
 }
 
@@ -128,13 +128,6 @@ static CGFloat const kDistanceLabelTopSpacing = 6;
     [bodyString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, bodyString.length)];
     
     return bodyString;
-}
-
-- (void)calloutWasTapped:(UIGestureRecognizer *)sender
-{
-    if ([self.delegate respondsToSelector:@selector(calloutWasTappedForStop:)]) {
-        [self.delegate calloutWasTappedForStop:self.stop];
-    }
 }
 
 - (CGSize)sizeThatFits:(CGSize)size

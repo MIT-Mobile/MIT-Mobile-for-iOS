@@ -19,7 +19,7 @@ static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
 
-@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITToursCalloutContentViewDelegate, MITTiledMapViewUserTrackingDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 @property (strong, nonatomic) SMCalloutView *calloutView;
@@ -267,7 +267,6 @@ static NSInteger kAnnotationMarginRight = 50;
     
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
     [contentView configureForStop:stop userLocation:mapView.userLocation.location];
-    contentView.delegate = self;
     
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = contentView;
@@ -293,12 +292,11 @@ static NSInteger kAnnotationMarginRight = 50;
     return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-#pragma mark - MITToursCalloutContentViewDelegate Methods
-
-- (void)calloutWasTappedForStop:(MITToursStop *)stop
+- (void)calloutViewClicked:(SMCalloutView *)calloutView
 {
+    MITToursCalloutContentView *contentView = (MITToursCalloutContentView *)calloutView.contentView;
     if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectCalloutForStop:)]) {
-        [self.delegate mapViewController:self didSelectCalloutForStop:stop];
+        [self.delegate mapViewController:self didSelectCalloutForStop:contentView.stop];
     }
 }
 
