@@ -4,7 +4,7 @@
 #import "FacilitiesRootViewController.h"
 
 @interface FacilitiesModule : MITNavigationModule
-@property(nonatomic,weak) FacilitiesRootViewController *rootViewController;
+@property(nonatomic,strong) FacilitiesRootViewController *rootViewController;
 
 - (instancetype)init;
 @end

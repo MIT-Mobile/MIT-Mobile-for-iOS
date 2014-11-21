@@ -2,7 +2,7 @@
 #import "EmergencyViewController.h"
 
 @interface EmergencyModule : MITNavigationModule <EmergencyViewControllerDelegate>
-@property(nonatomic,weak) EmergencyViewController *rootViewController;
+@property(nonatomic,strong) EmergencyViewController *rootViewController;
 
 - (instancetype)init;
 
