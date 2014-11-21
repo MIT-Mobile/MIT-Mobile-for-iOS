@@ -22,6 +22,11 @@
     return [UIFont fontWithName:@"HelveticaNeue" size:14];
 }
 
++ (UIFont *)toursStopDetailBody
+{
+    return [UIFont fontWithName:@"HelveticaNeue" size:15];
+}
+
 + (UIFont *)toursStopCollectionViewCellTitle
 {
     return [UIFont fontWithName:@"HelveticaNeue" size:12];
