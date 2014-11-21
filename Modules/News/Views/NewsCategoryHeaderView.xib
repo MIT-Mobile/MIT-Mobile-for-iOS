@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -18,7 +18,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="268" height="48"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                                    <rect key="frame" x="15" y="2" width="79" height="44"/>
+                                    <rect key="frame" x="15" y="1" width="79" height="46"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                                     </constraints>
@@ -27,13 +27,13 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global-disclosure_right" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
-                                    <rect key="frame" x="102" y="19" width="11" height="11"/>
+                                    <rect key="frame" x="102" y="16" width="14" height="17"/>
                                 </imageView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="09T-ah-XvT" userLabel="Separator">
-                                    <rect key="frame" x="15" y="46" width="253" height="2"/>
+                                    <rect key="frame" x="15" y="47" width="253" height="1"/>
                                     <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="2" id="OEj-rn-Bef"/>
+                                        <constraint firstAttribute="height" constant="1" id="OEj-rn-Bef"/>
                                     </constraints>
                                 </view>
                             </subviews>
@@ -77,7 +77,7 @@
         </view>
     </objects>
     <resources>
-        <image name="global-disclosure_right" width="11" height="11"/>
+        <image name="global-disclosure_right" width="14" height="17"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
