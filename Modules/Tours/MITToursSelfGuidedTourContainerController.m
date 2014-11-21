@@ -1,6 +1,6 @@
 #import "MITToursSelfGuidedTourContainerController.h"
 #import "MITToursSelfGuidedTourListViewController.h"
-#import "MITToursSelfGuidedTourInfoViewController.h"
+#import "MITToursTourDetailsViewController.h"
 #import "MITToursMapViewController.h"
 #import "MITToursStopDetailContainerViewController.h"
 
@@ -211,7 +211,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 - (void)transitionToTourInfo
 {
     [self.mapViewController saveCurrentMapRect];
-    MITToursSelfGuidedTourInfoViewController *infoVC = [[MITToursSelfGuidedTourInfoViewController alloc] init];
+    MITToursTourDetailsViewController *infoVC = [[MITToursTourDetailsViewController alloc] init];
     infoVC.tour = self.selfGuidedTour;
     [self.navigationController pushViewController:infoVC animated:YES];
 }
