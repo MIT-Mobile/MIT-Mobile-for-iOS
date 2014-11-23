@@ -53,12 +53,17 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    if (self.dataSource.isUpdating) {
+        self.storyUpdateInProgress = YES;
+    }
+    
     [super viewWillAppear:animated];
-
-    [self updateNavigationItem:YES];
-    if (self.dataSource.isUpdating || !self.lastUpdated) {
+    
+    if (self.dataSource.isUpdating) {
         [self setupFinishedUpdateNotification];
     }
+
+    [self updateNavigationItem:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -89,6 +94,7 @@
         if (!strongSelf) {
             return;
         }
+        strongSelf.storyUpdateInProgress = NO;
         [[NSNotificationCenter defaultCenter] removeObserver:strongSelf.dataSourceDidEndUpdatingToken
                                                         name:MITNewsDataSourceDidEndUpdatingNotification
                                                       object:strongSelf.dataSource];
@@ -97,12 +103,11 @@
         dispatch_after(popTime, dispatch_get_main_queue(), ^{
             [strongSelf.refreshControl endRefreshing];
         });
-        if (self.dataSource.refreshedAt) {
-            self.lastUpdated = [NSDate date];
+        if (strongSelf.dataSource.refreshedAt) {
+            strongSelf.lastUpdated = strongSelf.dataSource.refreshedAt;
             [strongSelf updateRefreshStatusWithLastUpdatedTime];
         }
     };
-    
     
     self.dataSourceDidEndUpdatingToken = [center addObserverForName:MITNewsDataSourceDidEndUpdatingNotification
                                                              object:self.dataSource
