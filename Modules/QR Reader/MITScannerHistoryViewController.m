@@ -5,9 +5,9 @@
 
 #import "MITScannerHistoryViewController.h"
 #import "QRReaderHistoryData.h"
-#import "QRReaderDetailViewController.h"
 #import "QRReaderResult.h"
 #import "CoreDataManager.h"
+#import "MITScannerDetailViewController.h"
 
 #import "UIImage+Resize.h"
 #import "UIKit+MITAdditions.h"
@@ -86,7 +86,6 @@
     // make navigation bar visible
     [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:nil];
-    [self.navigationController.navigationBar setTranslucent:NO];
     
     // setup tableview
     UITableView *historyView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
@@ -104,6 +103,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
+    self.navigationItem.title = @"History";
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.tableView.tintColor = [UIColor mit_tintColor];
 }
@@ -120,9 +120,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
-    // since we manually re-adding navigationBar in loadview, we need to adjust tableView contentSize
-    [self adjustScrollViewSize:self.tableView byAddingView:self.navigationController.navigationBar];;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -144,6 +141,17 @@
 - (void)applicationDidEnterBackground:(id)sender
 {
     [self saveDataModelChanges];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)saveDataModelChanges
@@ -284,10 +292,12 @@
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
-    QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
-    [self.navigationController pushViewController:detailView animated:YES];
+    
+    MITScannerDetailViewController *detailsVC = [[MITScannerDetailViewController alloc] init];
+    detailsVC.scanResult = result;
+    [self.navigationController pushViewController:detailsVC animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -383,12 +393,6 @@
     if( isHidden == NO ) {
         [self updateDeleteButtonTitle];
     }
-}
-
-- (void)adjustScrollViewSize:(UIScrollView *)scrollView byAddingView:(UIView *)view
-{
-    CGFloat updatedContentHeight = scrollView.contentSize.height + view.frame.size.height;
-    scrollView.contentSize = CGSizeMake( scrollView.contentSize.width, updatedContentHeight );
 }
 
 - (void)updateDeleteButtonTitle

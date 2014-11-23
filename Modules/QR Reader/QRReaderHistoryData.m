@@ -28,6 +28,8 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
 
 - (void)deleteScanResult:(QRReaderResult*)result {
     [self.context deleteObject:result];
+    
+    [self saveDataModelChanges];
 }
 
 - (void)deleteScanResults:(NSArray *)results
@@ -36,6 +38,8 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
     {
         [self deleteScanResult:result];
     }
+    
+    [self saveDataModelChanges];
 }
 
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
@@ -79,6 +83,8 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
                                interpolationQuality:kCGInterpolationDefault];
         }
     }
+    
+    [self saveDataModelChanges];
     
     return result;
 }

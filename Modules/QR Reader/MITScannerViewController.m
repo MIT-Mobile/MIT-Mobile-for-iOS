@@ -5,10 +5,10 @@
 #import "MITScannerHistoryViewController.h"
 #import "MITScannerOverlayView.h"
 #import "QRReaderHistoryData.h"
-#import "QRReaderDetailViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "QRReaderResult.h"
 #import "MITScannerHelpViewController.h"
+#import "MITScannerDetailViewController.h"
 #import "MITNavigationController.h"
 #import "MITScannerAdvancedMenuViewController.h"
 
@@ -236,7 +236,6 @@
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
     helpNavController.navigationBar.barStyle = UIBarStyleDefault;
-    helpNavController.navigationBar.translucent = NO;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 
@@ -251,14 +250,12 @@
 {
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
-    self.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)makeNavigationBarVisible
 {
     [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = nil;
-    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (void)menuButtonPressed
@@ -495,12 +492,12 @@
 
 - (void)showScanDetailsForScanResult:(QRReaderResult *)result
 {
-    QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
+    MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
+    viewController.scanResult = result;
     
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^{
-        [self.navigationController pushViewController:viewController
-                                             animated:YES];
+        [self.navigationController pushViewController:viewController animated:YES];
         
         self.navigationController.navigationBar.userInteractionEnabled = YES;
         self.overlayView.highlighted = NO;
