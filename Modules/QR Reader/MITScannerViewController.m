@@ -235,7 +235,6 @@
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
-    helpNavController.navigationBar.barStyle = UIBarStyleDefault;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 

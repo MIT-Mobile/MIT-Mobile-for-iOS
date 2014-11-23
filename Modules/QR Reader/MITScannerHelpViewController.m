@@ -10,8 +10,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:@"MITScannerHelpViewController"
-                           bundle:nil];
+    self = [super initWithNibName:@"MITScannerHelpViewController" bundle:nil];
     if (self) {
         // Custom initialization
     }
@@ -22,8 +21,8 @@
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.title = @"Scanner Help";
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"Info";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];
 }
 
