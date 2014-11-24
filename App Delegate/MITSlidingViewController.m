@@ -221,53 +221,55 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     NSParameterAssert(newVisibleViewController);
 
-    if (![self.viewControllers containsObject:newVisibleViewController]) {
-        MITModuleItem *moduleItem = newVisibleViewController.moduleItem;
-        NSString *reason = [NSString stringWithFormat:@"view controller does not have a module with tag '%@'",moduleItem.name];
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+    if (_visibleViewController != newVisibleViewController) {
+        if (![self.viewControllers containsObject:newVisibleViewController]) {
+            MITModuleItem *moduleItem = newVisibleViewController.moduleItem;
+            NSString *reason = [NSString stringWithFormat:@"view controller does not have a module with tag '%@'",moduleItem.name];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+        }
+
+        NSAssert(self.topViewController, @"failed to load top view controller");
+
+        UIViewController *oldVisibleViewController = _visibleViewController;
+        _visibleViewController = newVisibleViewController;
+        self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
+
+        if (oldVisibleViewController) {
+            [oldVisibleViewController willMoveToParentViewController:nil];
+
+            [oldVisibleViewController beginAppearanceTransition:NO animated:NO];
+            [oldVisibleViewController.view removeFromSuperview];
+            [oldVisibleViewController endAppearanceTransition];
+            
+            [oldVisibleViewController removeFromParentViewController];
+        }
+
+        if (_visibleViewController) {
+            // If the top view is a UINavigationController, automatically add a button to toggle the state
+            // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+            // controller must do something itself.
+            if ([_visibleViewController isKindOfClass:[UINavigationController class]]) {
+                UINavigationController *navigationController = (UINavigationController*)_visibleViewController;
+                UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+
+                if (!rootViewController.navigationItem.leftBarButtonItem) {
+                    rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+                }
+            }
+
+            [self.topViewController addChildViewController:_visibleViewController];
+
+            [_visibleViewController beginAppearanceTransition:YES animated:animated];
+            [self.topViewController.view addSubview:_visibleViewController.view];
+            [_visibleViewController endAppearanceTransition];
+
+            [_visibleViewController didMoveToParentViewController:self.topViewController];
+        }
     }
 
-    UIViewController *oldVisibleViewController = _visibleViewController;
-    _visibleViewController = newVisibleViewController;
-    
-    self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
-    
-    UIStoryboardSegue *modulePushSegue = [UIStoryboardSegue segueWithIdentifier:MITSlidingViewControllerModulePushSegueIdentifier source:self destination:newVisibleViewController performHandler:^{
-        UIViewController *fromViewController = self;
-        
-        NSAssert([fromViewController isKindOfClass:[ECSlidingViewController class]], @"sourceViewController is kind of %@, expected kind of %@",NSStringFromClass([fromViewController class]), NSStringFromClass([ECSlidingViewController class]));
-        ECSlidingViewController *slidingViewController = (ECSlidingViewController*)fromViewController;
-        
-        // If the top view is a UINavigationController, automatically add a button to toggle the state
-        // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
-        // controller must do something itself.
-        if ([newVisibleViewController isKindOfClass:[UINavigationController class]]) {
-            UINavigationController *navigationController = (UINavigationController*)newVisibleViewController;
-            UIViewController *rootViewController = [navigationController.viewControllers firstObject];
-            
-            if (!rootViewController.navigationItem.leftBarButtonItem) {
-                rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
-            }
-        }
-        
-        UIViewController *topViewController = slidingViewController.topViewController;
-        newVisibleViewController.view.frame = topViewController.view.bounds;
-        
-        [oldVisibleViewController willMoveToParentViewController:nil];
-        [oldVisibleViewController.view removeFromSuperview];
-        [oldVisibleViewController removeFromParentViewController];
-        
-        [topViewController addChildViewController:newVisibleViewController];
-        [topViewController.view addSubview:newVisibleViewController.view];
-        [newVisibleViewController didMoveToParentViewController:topViewController];
-        
-        if (slidingViewController.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
-            [slidingViewController resetTopViewAnimated:YES];
-        }
-    }];
-    
-    [self prepareForSegue:modulePushSegue sender:self];
-    [modulePushSegue perform];
+    if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+        [self resetTopViewAnimated:animated];
+    }
 }
 
 - (void)setVisibleViewControllerWithModuleName:(NSString *)name
