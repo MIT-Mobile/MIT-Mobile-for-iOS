@@ -73,7 +73,6 @@
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    [self hideSearchRecents];
     if (![searchBar.text isEqualToString:@""]) {
         [self changeToSearchStories];
     }
@@ -87,7 +86,6 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [self.recentSearchController addRecentSearchItem:searchBar.text];
     [self getResultsForString:searchBar.text];
 }
 
@@ -108,8 +106,10 @@
         self.messageView.alpha = .5;
         self.messageActivityView.alpha = .5;
     } else {
-        [self showTableSearchRecents];
-        self.view.alpha = 1;
+        if ([searchBar.text isEqualToString:@""]) {
+            [self showTableSearchRecents];
+            self.view.alpha = 1;
+        }
     }
 }
 
@@ -121,6 +121,10 @@
         }
     } else {
         [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            self.view.alpha = 1;
+            [self showTableSearchRecents];
+        }
     }
     [self.recentSearchController filterResultsUsingString:searchText];
 }
@@ -136,6 +140,9 @@
 #pragma mark - search
 - (void)getResultsForString:(NSString *)searchTerm
 {
+    [self hideSearchRecents];
+    [self.recentSearchController addRecentSearchItem:searchTerm];
+
     [self changeToSearchStories];
     [self.view removeGestureRecognizer:self.resignSearchTapGestureRecognizer];
     [self removeNoResultsView];
@@ -216,6 +223,10 @@
 
 - (void)showTableSearchRecents
 {
+    if ([self.recentSearchController.view isDescendantOfView:self.view]) {
+        return;
+    }
+    
     [self addChildViewController:self.recentSearchController];
     [self.view addSubview:self.recentSearchController.view];
     [self.recentSearchController didMoveToParentViewController:self];
