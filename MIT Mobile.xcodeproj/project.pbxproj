@@ -478,6 +478,7 @@
 		8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */; };
 		8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */; };
 		8011C4F5199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */; };
+		802579341A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json in Resources */ = {isa = PBXBuildFile; fileRef = 802579331A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json */; };
 		80598D981A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598D961A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.m */; };
 		80598D991A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80598D971A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.xib */; };
 		80598D9D1A0A71250095CEAA /* MITLibrariesConsultationFormSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598D9B1A0A71250095CEAA /* MITLibrariesConsultationFormSheetViewController.m */; };
@@ -1688,6 +1689,7 @@
 		8011C4F1199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailVenueDetailViewController.h; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.h; sourceTree = "<group>"; };
 		8011C4F2199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailVenueDetailViewController.m; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.m; sourceTree = "<group>"; };
 		8011C4F4199D50B600ED8F56 /* MITDiningRetailVenueDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningRetailVenueDetailViewController.xib; path = Dining/ViewControllers/MITDiningRetailVenueDetailViewController.xib; sourceTree = "<group>"; };
+		802579331A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MITShuttlesDefaultRoutesData.json; sourceTree = "<group>"; };
 		80598D951A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesAskUsHomeViewController.h; sourceTree = "<group>"; };
 		80598D961A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesAskUsHomeViewController.m; sourceTree = "<group>"; };
 		80598D971A0A708F0095CEAA /* MITLibrariesAskUsHomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesAskUsHomeViewController.xib; sourceTree = "<group>"; };
@@ -4800,6 +4802,7 @@
 		DE715449102FE468005E6111 /* Shuttles */ = {
 			isa = PBXGroup;
 			children = (
+				802579331A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json */,
 				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
 				DE6D32F510346D02008A5823 /* ShuttleModule.m */,
 				5EC89F5519264B6F00E06204 /* Models */,
@@ -5161,6 +5164,7 @@
 				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
+				802579341A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json in Resources */,
 				224B337D19B10A000031817B /* MITDiningMenuItemCell.xib in Resources */,
 				221C45001A129EF500FC5A92 /* MITToursTourDetailCell.xib in Resources */,
 				AF2F704D19FA991700EE6398 /* MITToursMapViewController.xib in Resources */,
