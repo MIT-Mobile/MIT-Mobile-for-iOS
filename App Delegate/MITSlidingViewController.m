@@ -41,25 +41,14 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
+    // Performing the segues before calling super's viewDidLoad because, otherwise, ECSlidingViewController
+    // will complain that the topViewController has not been loaded yet.
     [self performSegueWithIdentifier:MITSlidingViewControllerUnderLeftSegueIdentifier sender:self];
     [self performSegueWithIdentifier:MITSlidingViewControllerTopSegueIdentifier sender:self];
-    
+
+    [super viewDidLoad];
+
     self.delegate = self;
-    
-    self.topViewController.view.backgroundColor = [UIColor mit_backgroundColor];
-
-    NSAssert(self.underLeftViewController, @"slidingViewController does not have a valid underLeftViewController");
-    NSAssert([self.underLeftViewController isKindOfClass:[UINavigationController class]], @"underLeftViewController is a kind of %@, expected %@",NSStringFromClass([self.underLeftViewController class]),NSStringFromClass([UINavigationController class]));
-
-    UINavigationController *drawerNavigationController = (UINavigationController*)self.underLeftViewController;
-    MITDrawerViewController *drawerTableViewController = (MITDrawerViewController*)[drawerNavigationController.viewControllers firstObject];
-    NSAssert([drawerTableViewController isKindOfClass:[MITDrawerViewController class]], @"underLeftViewController's root view is a kind of %@, expected %@",NSStringFromClass([drawerTableViewController class]), NSStringFromClass([MITDrawerViewController class]));
-    
-    drawerTableViewController.delegate = self;
-    self.drawerViewController = drawerTableViewController;
-    [self.topViewController.view addGestureRecognizer:self.panGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated
