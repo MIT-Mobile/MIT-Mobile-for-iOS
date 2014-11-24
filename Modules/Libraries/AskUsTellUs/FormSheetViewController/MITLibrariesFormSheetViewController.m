@@ -6,6 +6,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITTouchstoneController.h"
 #import "MITLibrariesWebservices.h"
+#import "MITLibrariesMITIdentity.h"
 
 static NSString * const MITLibrariesFormSheetCellIdentifierOptions = @"MITLibrariesFormSheetCellIdentifierOptions";
 static NSString * const MITLibrariesFormSheetCellIdentifierSingleLineTextEntry = @"MITLibrariesFormSheetCellIdentifierSingleLineTextEntry";
@@ -164,17 +165,54 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 {
     self.tableView.hidden = YES;
     if (![[MITTouchstoneController sharedController] isLoggedIn]) {
+        [self showActivityIndicator];
         [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
+            [self hideActivityIndicator];
             if (error || !success) {
                 NSLog(@"Login Failed w/ Error: %@", error);
                 [self closeFormSheetViewController];
             } else {
-                [self setup];
+                [self verifyMITIdentity];
             }
         }];
     } else {
-        [self setup];
+        [self verifyMITIdentity];
     }
+}
+
+- (void)verifyMITIdentity
+{
+    [self showActivityIndicator];
+    [MITLibrariesWebservices getMITIdentityInBackgroundWithCompletion:^(MITLibrariesMITIdentity *identity, NSError *error) {
+        [self hideActivityIndicator];
+        if (error || !identity) {
+            [self showUnableToRetrieveMITIdentityAlert];
+            [self closeFormSheetViewController];
+        } else if (identity.isMITIdentity) {
+            [self setup];
+        } else {
+            [self showMITIdentityRequiredAlert];
+            [self closeFormSheetViewController];
+        }
+    }];
+}
+
+- (void)showUnableToRetrieveMITIdentityAlert
+{
+    NSString *title = @"Network Failure";
+    NSString *message = @"We were unable to fetch your MIT identity from the network.  Please check your connection and try again in a little bit.";
+    NSString *confirmation = @"Ok";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    [alert show];
+}
+
+- (void)showMITIdentityRequiredAlert
+{
+    NSString *title = @"MIT Identity Required";
+    NSString *message = @"This action requires a verified MIT identity to continue.";
+    NSString *confirmation = @"Ok";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    [alert show];
 }
 
 #pragma mark - Closing FormSheet View Controller

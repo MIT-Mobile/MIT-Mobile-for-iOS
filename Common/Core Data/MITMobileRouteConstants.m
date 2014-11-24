@@ -41,6 +41,10 @@ NSString* const MITLibrariesSearchPathPattern = @"apis/libraries/worldcat/";
 NSString* const MITLibrariesUserResourceName = @"MITLibrariesUserResourceName";
 NSString* const MITLibrariesUserPathPattern = @"apis/secure/libraries/account";
 
+#pragma mark libraries mit identity
+NSString* const MITLibrariesMITIdentityResourceName = @"MITLibrariesMITIdentityResourceName";
+NSString* const MITLibrariesMITIdentityPathPattern = @"apis/secure/user";
+
 #pragma mark libraries item detail
 NSString* const MITLibrariesItemDetailResourceName = @"MITLibrariesItemDetailResourceName";
 NSString* const MITLibrariesItemDetailPathPattern = @"apis/libraries/worldcat/:itemId";
