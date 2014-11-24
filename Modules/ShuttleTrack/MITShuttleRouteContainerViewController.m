@@ -185,7 +185,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
                                                                                               stop:stop
                                                                                              route:self.route];
         stopVC.predictionLoader.shouldRefreshPredictions = NO;
-        stopVC.viewOption = MITShuttleStopViewOptionAllRoutes;
+        stopVC.viewOption = MITShuttleStopViewOptionAll;
         [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];

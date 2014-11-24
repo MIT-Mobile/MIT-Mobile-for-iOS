@@ -75,7 +75,7 @@
                                                                                                           stop:self.stop
                                                                                                          route:route
                                                                                               predictionLoader:self.predictionLoader];
-        stopViewController.viewOption = MITShuttleStopViewOptionSingleRoute;
+        stopViewController.viewOption = MITShuttleStopViewOptionAll;
         [stopViewControllers addObject:stopViewController];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
