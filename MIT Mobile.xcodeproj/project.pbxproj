@@ -412,6 +412,7 @@
 		5EE17BF419633D0300F375B5 /* MITMapBrowseContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17BF219633D0300F375B5 /* MITMapBrowseContainerViewController.m */; };
 		5EE17BF519633D0300F375B5 /* MITMapBrowseContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */; };
 		5EE17C0119645CAC00F375B5 /* MITMapCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */; };
+		800819C21A238C42005B0021 /* MITLibrariesMITIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = 800819C11A238C42005B0021 /* MITLibrariesMITIdentity.m */; };
 		801062601A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8010625E1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m */; };
 		801062611A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8010625F1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib */; };
 		8011C4EF199D48CA00ED8F56 /* MITDiningPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011C4EE199D48CA00ED8F56 /* MITDiningPlace.m */; };
@@ -1523,6 +1524,8 @@
 		5EE17BF319633D0300F375B5 /* MITMapBrowseContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapBrowseContainerViewController.xib; sourceTree = "<group>"; };
 		5EE17BFF19645CAC00F375B5 /* MITMapCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesViewController.h; sourceTree = "<group>"; };
 		5EE17C0019645CAC00F375B5 /* MITMapCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesViewController.m; sourceTree = "<group>"; };
+		800819C01A238C42005B0021 /* MITLibrariesMITIdentity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesMITIdentity.h; sourceTree = "<group>"; };
+		800819C11A238C42005B0021 /* MITLibrariesMITIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesMITIdentity.m; sourceTree = "<group>"; };
 		8010625D1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesFormSheetOptionsSelectionViewController.h; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.h; sourceTree = "<group>"; };
 		8010625E1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetOptionsSelectionViewController.m; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.m; sourceTree = "<group>"; };
 		8010625F1A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITLibrariesFormSheetOptionsSelectionViewController.xib; path = AskUsTellUs/FormSheetViewController/OptionsSelectionVC/MITLibrariesFormSheetOptionsSelectionViewController.xib; sourceTree = "<group>"; };
@@ -2465,6 +2468,8 @@
 				224F6B2519D484EC0062D340 /* MITLibrariesCoverImage.m */,
 				221754911A081D19002AD787 /* MITLibrariesAskUsModel.h */,
 				221754921A081D19002AD787 /* MITLibrariesAskUsModel.m */,
+				800819C01A238C42005B0021 /* MITLibrariesMITIdentity.h */,
+				800819C11A238C42005B0021 /* MITLibrariesMITIdentity.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -5419,6 +5424,7 @@
 				80C5D9E61A111C3200E63FDD /* MITLibrariesFormSheetElementHowCanWeHelp.m in Sources */,
 				A50884E419D1E7020047A21B /* MITLibrariesItemLoanFineCell.m in Sources */,
 				DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */,
+				800819C21A238C42005B0021 /* MITLibrariesMITIdentity.m in Sources */,
 				DE65451C173D90A900562C20 /* SDImageCache.m in Sources */,
 				DE65451D173D90A900562C20 /* SDWebImageCompat.m in Sources */,
 				22E1809419DC49EA0017AC9A /* MITLibrariesHoursCell.m in Sources */,

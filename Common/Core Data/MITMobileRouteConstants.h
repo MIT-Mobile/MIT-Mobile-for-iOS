@@ -41,6 +41,10 @@ FOUNDATION_EXTERN NSString* const MITLibrariesSearchPathPattern;
 FOUNDATION_EXTERN NSString* const MITLibrariesUserResourceName;
 FOUNDATION_EXTERN NSString* const MITLibrariesUserPathPattern;
 
+#pragma mark libraries mit identity
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityPathPattern;
+
 #pragma mark libraries item detail
 FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailResourceName;
 FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailPathPattern;
