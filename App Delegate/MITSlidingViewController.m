@@ -29,6 +29,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 @implementation MITSlidingViewController
 @dynamic leftBarButtonItem;
+@dynamic drawerViewController;
 
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {
@@ -119,6 +120,27 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }];
 }
 
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    [super prepareForSegue:segue sender:sender];
+
+    if ([segue.identifier isEqualToString:MITSlidingViewControllerTopSegueIdentifier]) {
+        UIViewController *topViewController = segue.destinationViewController;
+        
+        self.topViewController = topViewController;
+        [self.topViewController.view addGestureRecognizer:self.panGesture];
+
+        self.topViewController.view.layer.shadowOpacity = 1.0;
+        self.topViewController.view.layer.shadowColor = [UIColor blackColor].CGColor;
+    } else if ([segue.identifier isEqualToString:MITSlidingViewControllerUnderLeftSegueIdentifier]) {
+        UIViewController *underLeftViewController = segue.destinationViewController;
+
+        self.underLeftViewController = underLeftViewController;
+        self.drawerViewController.delegate = self;
+    }
+}
+
 #pragma mark Properties
 - (UIBarButtonItem*)leftBarButtonItem
 {
@@ -138,6 +160,23 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }];
 
     return moduleItems;
+}
+
+- (MITDrawerViewController*)drawerViewController
+{
+    UIViewController *underLeftViewController = self.underLeftViewController;
+
+    if ([underLeftViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController*)underLeftViewController;
+        underLeftViewController = [navigationController.viewControllers firstObject];
+    }
+
+    if ([underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
+        return (MITDrawerViewController*)underLeftViewController;
+    } else {
+        return nil;
+    }
+
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers
