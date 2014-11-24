@@ -82,38 +82,15 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     NSArray *routes = [self.routesFetchedResultsController fetchedObjects];
     if (routes.count == 0) {
-        routes = [self loadDefaultRoutesAndPersistToCoreData];
+        routes = [self loadDefaultRoutes];
     }
     return routes;
 }
 
-- (NSArray *)loadDefaultRoutesAndPersistToCoreData
+- (NSArray *)loadDefaultRoutes
 {
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"MITShuttlesDefaultRoutesData" ofType:@"json"];
-    NSData *data = [NSData dataWithContentsOfFile:filePath];
-    NSArray *defaultRoutes;
-    if (data) {
-        NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        
-        NSString* MIMEType = @"application/json";
-        NSError* error;
-        NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-        id parsedData = [RKMIMETypeSerialization objectFromData:data MIMEType:MIMEType error:&error];
-        if (parsedData == nil && error) {
-            NSLog(@"Error parsing default shuttle routes! %@", error);
-        } else {
-            NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
-            NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMapping]};
-            RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
-            RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:nil];
-            mapper.mappingOperationDataSource = dataSource;
-            [mapper execute:nil];
-            [context saveToPersistentStore:nil];
-            [self.routesFetchedResultsController performFetch:nil];
-            defaultRoutes = mapper.mappingResult.array;
-        }
-    }
-    
+    NSArray *defaultRoutes = [MITShuttleController loadDefaultShuttleRoutes];
+    [self.routesFetchedResultsController performFetch:nil];
     return defaultRoutes;
 }
 
