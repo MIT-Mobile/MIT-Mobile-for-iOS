@@ -157,7 +157,6 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
         case MITShuttleStopViewOptionAll:
             switch (section) {
                 case 0: {
-                    return 1;
                     NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
                     return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
                 }
