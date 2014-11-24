@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="VSF-i2-F9v">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="VSF-i2-F9v">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
@@ -20,8 +20,8 @@
                         <color key="tintColor" red="0.63921568627450975" green="0.12156862745098039" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <segue destination="Tuw-ux-HV6" kind="custom" identifier="MITSlidingViewControllerUnderLeftSegue" id="dkF-7G-29t"/>
-                        <segue destination="70A-yj-Cra" kind="custom" identifier="MITSlidingViewControllerTopSegue" id="FAS-Uf-8rP"/>
+                        <segue destination="Tuw-ux-HV6" kind="custom" identifier="MITSlidingViewControllerUnderLeftSegue" customClass="ECSlidingSegue" id="dkF-7G-29t"/>
+                        <segue destination="70A-yj-Cra" kind="custom" identifier="MITSlidingViewControllerTopSegue" customClass="ECSlidingSegue" id="FAS-Uf-8rP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ocN-Bb-a0i" userLabel="First Responder" sceneMemberID="firstResponder"/>
