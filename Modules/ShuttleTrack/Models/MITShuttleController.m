@@ -4,6 +4,7 @@
 #import "MITAdditions.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
+#import <RestKit/RKManagedObjectMappingOperationDataSource.h>
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
@@ -124,6 +125,36 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             }
         }
     }];
+}
+
+#pragma mark - Default Routes Data
+
++ (NSArray *)loadDefaultShuttleRoutes
+{
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"MITShuttlesDefaultRoutesData" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    NSArray *defaultRoutes;
+    if (data) {
+        NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        
+        NSString* MIMEType = @"application/json";
+        NSError* error;
+        NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+        id parsedData = [RKMIMETypeSerialization objectFromData:data MIMEType:MIMEType error:&error];
+        if (parsedData == nil && error) {
+            NSLog(@"Error parsing default shuttle routes! %@", error);
+        } else {
+            NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
+            NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMapping]};
+            RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
+            RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:nil];
+            mapper.mappingOperationDataSource = dataSource;
+            [mapper execute:nil];
+            defaultRoutes = mapper.mappingResult.array;
+        }
+    }
+    
+    return defaultRoutes;
 }
 
 @end
