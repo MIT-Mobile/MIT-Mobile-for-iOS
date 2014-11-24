@@ -457,10 +457,14 @@ CGFloat const refreshControlTextHeight = 19;
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
-            self.navigationItem.leftBarButtonItem.enabled = NO;
         } else {
             self.searchBar.frame = CGRectMake(0, 0, 240, 44);
+        }
+        if (self.isSingleDataSource) {
             self.navigationItem.hidesBackButton = YES;
+        } else {
+            self.navigationItem.leftBarButtonItem.tintColor = [UIColor clearColor];
+            self.navigationItem.leftBarButtonItem.enabled = NO;
         }
         
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
@@ -472,17 +476,12 @@ CGFloat const refreshControlTextHeight = 19;
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+        self.navigationItem.leftBarButtonItem.tintColor = self.navigationController.navigationBar.tintColor;
         self.navigationItem.leftBarButtonItem.enabled = YES;
-        self.navigationItem.hidesBackButton = NO;
         [self.navigationItem setTitle:@"MIT News"];
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
-    
-    UIViewController *parentViewController = self.parentViewController.childViewControllers[0];
-    UIBarButtonItem *item = parentViewController.navigationItem.backBarButtonItem;
-    [parentViewController.navigationItem setBackBarButtonItem:nil];
-    [parentViewController.navigationItem setBackBarButtonItem:item];
 }
 
 #pragma mark Story Refreshing
