@@ -8,6 +8,7 @@
 #import "MITLibrariesAskUsModel.h"
 #import "MITLibrariesFormSheetGroup.h"
 #import "MITLibrariesFormSheetElement.h"
+#import "MITLibrariesMITIdentity.h"
 
 NSInteger const kMITLibrariesSearchResultsLimit = 20;
 
@@ -149,6 +150,15 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesUserResourceName
                                                     object:nil
+                                                parameters:nil
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    completion(result.array.firstObject, error);
+                                                }];
+}
+
++ (void)getMITIdentityInBackgroundWithCompletion:(void(^)(MITLibrariesMITIdentity *identity, NSError *error))completion
+{
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesMITIdentityResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     completion(result.array.firstObject, error);

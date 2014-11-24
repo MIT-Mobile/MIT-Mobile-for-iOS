@@ -5,6 +5,7 @@
 #import "MITLibrariesAskUsModel.h"
 #import "MITLibrariesWorldcatItem.h"
 #import "MITLibrariesUser.h"
+#import "MITLibrariesMITIdentity.h"
 
 @implementation MITLibrariesResource
 
@@ -88,6 +89,21 @@
     self = [super initWithName:MITLibrariesUserResourceName pathPattern:MITLibrariesUserPathPattern];
     if (self) {
         [self addMapping:[MITLibrariesUser objectMapping]
+               atKeyPath:nil
+        forRequestMethod:RKRequestMethodGET];
+    }
+    return self;
+}
+
+@end
+
+@implementation MITLibrariesMITIdentityResource
+
+- (instancetype)init
+{
+    self = [super initWithName:MITLibrariesMITIdentityResourceName pathPattern:MITLibrariesMITIdentityPathPattern];
+    if (self) {
+        [self addMapping:[MITLibrariesMITIdentity objectMapping]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
