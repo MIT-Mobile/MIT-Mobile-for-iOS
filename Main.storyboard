@@ -19,13 +19,9 @@
                         <color key="backgroundColor" red="0.84313725490196079" green="0.85490196078431369" blue="0.8784313725490196" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="0.63921568627450975" green="0.12156862745098039" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="underLeftViewControllerStoryboardId" value="DrawerNavigationController"/>
-                        <userDefinedRuntimeAttribute type="string" keyPath="topViewControllerStoryboardId" value="EmptyTopViewController"/>
-                    </userDefinedRuntimeAttributes>
                     <connections>
-                        <segue destination="Tuw-ux-HV6" kind="custom" identifier="MITSlidingViewControllerUnderLeftSegue" customClass="MITSlidingUnderLeftSegue" id="dkF-7G-29t"/>
-                        <segue destination="70A-yj-Cra" kind="custom" identifier="MITSlidingViewControllerTopSegue" customClass="MITSlidingTopSegue" id="FAS-Uf-8rP"/>
+                        <segue destination="Tuw-ux-HV6" kind="custom" identifier="MITSlidingViewControllerUnderLeftSegue" id="dkF-7G-29t"/>
+                        <segue destination="70A-yj-Cra" kind="custom" identifier="MITSlidingViewControllerTopSegue" id="FAS-Uf-8rP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ocN-Bb-a0i" userLabel="First Responder" sceneMemberID="firstResponder"/>
