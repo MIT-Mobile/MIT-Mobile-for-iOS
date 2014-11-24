@@ -13,6 +13,7 @@
 {
     [super awakeFromNib];
     self.separatorHeight.constant = 0.5;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)setContent:(id)content

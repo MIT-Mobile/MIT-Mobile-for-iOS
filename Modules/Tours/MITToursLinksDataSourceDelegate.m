@@ -1,5 +1,6 @@
 #import "MITToursLinksDataSourceDelegate.h"
 #import "UIKit+MITAdditions.h"
+#import "UIFont+MITTours.h"
 #import "MITMailComposeController.h"
 #import "MITBuildInfo.h"
 
@@ -28,6 +29,7 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITLinkCell];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITLinkCell];
+        cell.textLabel.font = [UIFont toursTitle];
     }
     
     switch (indexPath.row) {
