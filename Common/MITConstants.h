@@ -102,15 +102,14 @@ typedef enum {
 extern NSString * const MITBuildRevisionKey;
 extern NSString * const MITBuildDescriptionKey;
 
-
-// Touchstone* Identifier for keychain password
-extern NSString * const MobileWebErrorDomain;
-extern NSString * const MobileWebTouchstoneErrorDomain;
+// App-wide error domain
+extern NSString * const MITErrorDomain;
 
 enum {
-    MobileWebUnknownError = 0,
-    MobileWebTouchstoneError,
-    MobileWebInvalidLoginError = NSURLErrorUserAuthenticationRequired
+    MITMobileRequestUnknownError = 0,
+    MITMobileRequestTouchstoneError,
+    MITMobileRequestInvalidLoginError = NSURLErrorUserAuthenticationRequired,
+    MITRequestInProgressError
 };
 
 extern NSString * const MobileLoginKeychainIdentifier;

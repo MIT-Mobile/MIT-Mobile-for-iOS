@@ -375,36 +375,40 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
     }];
 }
 
-- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
+- (BOOL)performBackgroundUpdateAndWait:(BOOL (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
 {
     NSManagedObjectContext *backgroundContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
 
+    __block BOOL success = YES;
     __block NSError *localError = nil;
     [backgroundContext performBlockAndWait:^{
         if (update) {
-            update(backgroundContext, &localError);
+            success = update(backgroundContext, &localError);
         }
 
-        if (localError) {
+        if (!success) {
             DDLogError(@"Failed to complete update to context: %@",localError);
         } else {
-            if ([backgroundContext save:&localError]) {
-                [backgroundContext.parentContext performBlock:^{
-                    [backgroundContext.parentContext save:&localError];
+            success = [backgroundContext save:&localError];
 
-                    if (localError) {
-                        DDLogError(@"Failed to save root background context: %@", localError);
+            if (success) {
+                [backgroundContext.parentContext performBlock:^{
+                    NSError *parentError = nil;
+                    BOOL parentSuccess = [backgroundContext.parentContext save:&parentError];
+
+                    if (!parentSuccess) {
+                        DDLogError(@"Failed to save root background context: %@", parentError);
                     }
                 }];
             }
         }
     }];
 
-    if (localError && error) {
+    if (!success && error) {
         (*error) = localError;
     }
 
-    return !(localError);
+    return success;
 }
 
 @end

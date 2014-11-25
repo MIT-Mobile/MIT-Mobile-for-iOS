@@ -15,7 +15,7 @@
     NSInteger minutes = ([dateDiff second] / 60);
     NSInteger hours = (minutes / 60);
     if ([dateDiff second] < 60) {
-        [result appendString:@"less than 1 minute ago"];
+        [result appendString:@"Just Now"];
     } else if ([dateDiff second] < SECONDS_PER_HOUR) {
         [result appendFormat:@"%d minute%@ ago",
          ([dateDiff second] / 60) + 1,

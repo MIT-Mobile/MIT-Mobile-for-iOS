@@ -154,7 +154,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                                    relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
 
         RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
-        NSDictionary *queryParameters = [url queryDictionary];
+        NSDictionary *queryParameters = [url URLDecodedQueryDictionary];
         [objectManager getObjectsAtPath:path
                              parameters:queryParameters
                                 success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {

@@ -78,6 +78,13 @@ NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
 
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
+NSString * const MITImageNewsShowGridView = @"news-grid-view";
+// List bar button is used in both Map and News.
+// Asset need to be relocated to global folder and
+// the constants need to be updated with the global
+// identifier after News is merged into the main development branch
+// (mnovak - 2014.11.03)
+NSString * const MITImageNewsShowListView = @"global-barbutton-list";
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
@@ -195,6 +202,9 @@ NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 
 NSString * const MITImageLogoDarkContent = @"global-mit-logo-light";
 NSString * const MITImageLogoLightContent = @"global-mit-logo-dark";
+
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDown = @"_UIPopoverViewBlurMaskBackgroundArrowDown";
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverViewBlurMaskBackgroundArrowDownRight";
 
 #pragma mark UIBarButtonItem icons
 NSString * const MITImageBarButtonMenu = @"global-menu";

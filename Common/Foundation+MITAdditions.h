@@ -3,7 +3,18 @@
 #pragma mark Error Domains
 extern NSString * const MITXMLErrorDomain;
 
+#pragma mark Helper Functions
 BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
+
+/** Extracts the URLs and relation type for Link headers
+*   returned by the Mobile API. This is not a robust implementation
+*   of a Link header parser and will either fail or return spectacularly
+*   incorrect results if the headers are not properly formed or contain
+*   unknown parameters.
+*
+*   @returns a dictionary with relation-type to URL association for successfully parsed link headers
+*/
+NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
 
 @interface NSURL (MITAdditions)
 
@@ -19,6 +30,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
  * @see -[NSURL query]
  */
 - (NSDictionary*)queryDictionary;
+- (NSDictionary*)URLDecodedQueryDictionary;
 @end
 
 @interface NSArray (MITAdditions)

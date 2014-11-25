@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MITViewWithCenterText">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSD-Wl-z7Y">
+                    <rect key="frame" x="10" y="487" width="748" height="50"/>
+                    <subviews>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Results" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="748" translatesAutoresizingMaskIntoConstraints="NO" id="zQd-RX-6S5" customClass="MultiLineLabel">
+                            <rect key="frame" x="0.0" y="11" width="748" height="29"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                            <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="centerY" secondItem="zQd-RX-6S5" secondAttribute="centerY" id="Pqy-qy-27u"/>
+                        <constraint firstItem="zQd-RX-6S5" firstAttribute="leading" secondItem="OSD-Wl-z7Y" secondAttribute="leading" id="o4F-gm-4l3"/>
+                        <constraint firstAttribute="trailing" secondItem="zQd-RX-6S5" secondAttribute="trailing" id="oqA-PM-QHX"/>
+                        <constraint firstAttribute="height" constant="50" id="qme-d8-7oh"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <color key="tintColor" red="0.0" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="OSD-Wl-z7Y" secondAttribute="trailing" constant="10" id="VLW-Fc-KGt"/>
+                <constraint firstAttribute="centerX" secondItem="OSD-Wl-z7Y" secondAttribute="centerX" id="mMv-3t-5pf"/>
+                <constraint firstAttribute="centerY" secondItem="OSD-Wl-z7Y" secondAttribute="centerY" id="mbZ-Hr-w53"/>
+                <constraint firstItem="OSD-Wl-z7Y" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="ozn-Lv-KNR"/>
+            </constraints>
+            <connections>
+                <outlet property="overviewText" destination="zQd-RX-6S5" id="JrH-LA-RQY"/>
+            </connections>
+        </view>
+    </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+</document>
