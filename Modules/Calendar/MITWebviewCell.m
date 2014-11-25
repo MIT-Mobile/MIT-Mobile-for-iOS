@@ -1,6 +1,6 @@
 #import "MITWebviewCell.h"
 
-static CGFloat const kWebViewHorizontalPadding = 7.5;
+static CGFloat const kWebViewHorizontalPadding = 8.0;
 static CGFloat const kWebViewVerticalPadding = 6.0;
 
 @interface MITWebviewCell () <UIWebViewDelegate>
@@ -21,7 +21,10 @@ static CGFloat const kWebViewVerticalPadding = 6.0;
 - (void)recreateWebView
 {
     [self.webView removeFromSuperview];
-    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(kWebViewHorizontalPadding, kWebViewVerticalPadding, self.bounds.size.width - (2 * kWebViewHorizontalPadding), 32)];
+    
+    CGFloat newWebviewHeight = MAX(0, self.bounds.size.width - (2 * kWebViewHorizontalPadding));
+    
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(kWebViewHorizontalPadding, kWebViewVerticalPadding, newWebviewHeight, 32)];
     self.webView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:self.webView];
     
@@ -32,8 +35,8 @@ static CGFloat const kWebViewVerticalPadding = 6.0;
 
 - (void)addWebViewConstraints
 {
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-horizontalPadding-[webView]-horizontalPadding-|" options:0 metrics:@{@"horizontalPadding": [NSNumber numberWithFloat:kWebViewHorizontalPadding]} views:@{@"webView": self.webView}]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-verticalPadding-[webView]-verticalPadding-|" options:0 metrics:@{@"verticalPadding": [NSNumber numberWithFloat:kWebViewVerticalPadding]} views:@{@"webView": self.webView}]];
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(<=horizontalPadding)-[webView]-(<=horizontalPadding)-|" options:0 metrics:@{@"horizontalPadding": [NSNumber numberWithFloat:kWebViewHorizontalPadding]} views:@{@"webView": self.webView}]];
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(<=verticalPadding)-[webView]-(<=verticalPadding)-|" options:0 metrics:@{@"verticalPadding": [NSNumber numberWithFloat:kWebViewVerticalPadding]} views:@{@"webView": self.webView}]];
 }
 
 #pragma mark - Public Methods
@@ -63,7 +66,7 @@ static CGFloat const kWebViewVerticalPadding = 6.0;
     [self addWebViewConstraints];
     
     if (self.webView.frame.size.height != newHeight && [self.delegate respondsToSelector:@selector(webviewCellDidResize:toHeight:)]) {
-        [self.delegate webviewCellDidResize:self toHeight:(newHeight + 12)]; // Vertical padding
+        [self.delegate webviewCellDidResize:self toHeight:(newHeight + (2 * kWebViewVerticalPadding))];
     }
 }
 
