@@ -39,9 +39,9 @@ static CGFloat const kWebViewContentMargin = 8;
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES];
    
-    // There is a bug with VCs presented as formsheets that prevents them from showing the right tint color unless you change it in viewDidAppear (and it has to be a change, not just re-setting it), so we're arbitrarily setting it to yellow, and then to the right color...
+    // There is a bug with VCs presented as formsheets that prevents them from showing the right tint color unless you change it in viewDidAppear (and it has to be a change, not just re-setting it), so we're arbitrarily setting it to almost system blue, and then to the right color...
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.tiledMapView.mapView.tintColor = [UIColor yellowColor];
+        self.tiledMapView.mapView.tintColor = [UIColor colorWithRed:0 green:120.0/255.0 blue:1.0 alpha:1.0];
     }
 }
 
