@@ -211,6 +211,7 @@
 		2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8E191F076800D59D33 /* UIViewController+ECSlidingViewController.m */; };
 		2C3DD88E1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */; };
 		2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */; };
+		2C3E8C751A2516B100C36DF2 /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2C44DAA019B79F09001AA874 /* MITDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -4673,6 +4674,7 @@
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				0B394CE419E3355D00B48F17 /* UIImageView+WebCache.m in Sources */,
 				2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */,
+				2C3E8C751A2516B100C36DF2 /* MITTestFlightLogger.m in Sources */,
 				0B394CE019E3355D00B48F17 /* UIImage+GIF.m in Sources */,
 				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
 				22D90311199BA90E00AEBC7D /* MITDiningLocation.m in Sources */,
