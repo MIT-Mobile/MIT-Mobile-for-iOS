@@ -127,7 +127,12 @@ static CGFloat const kBottomButtonYPadding = 20;
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
         if (self.mapView.userTrackingMode == MKUserTrackingModeNone) {
-            [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+            // We need to wrap the user tracking enabling like this to prevent an unwanted zoom when we start tracking
+            [UIView animateWithDuration:0.333 animations:^{
+               self.mapView.centerCoordinate = self.mapView.userLocation.location.coordinate;
+           } completion:^(BOOL finished) {
+               [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:NO];
+           }];
         }
         else {
             [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
