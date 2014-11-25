@@ -116,17 +116,23 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
     if ([segue.identifier isEqualToString:MITSlidingViewControllerTopSegueIdentifier]) {
         UIViewController *topViewController = segue.destinationViewController;
-        
-        self.topViewController = topViewController;
-        [self.topViewController.view addGestureRecognizer:self.panGesture];
 
-        self.topViewController.view.layer.shadowOpacity = 1.0;
-        self.topViewController.view.layer.shadowColor = [UIColor blackColor].CGColor;
+        [topViewController.view addGestureRecognizer:self.panGesture];
+
+        topViewController.view.layer.shadowOpacity = 1.0;
+        topViewController.view.layer.shadowColor = [UIColor blackColor].CGColor;
     } else if ([segue.identifier isEqualToString:MITSlidingViewControllerUnderLeftSegueIdentifier]) {
         UIViewController *underLeftViewController = segue.destinationViewController;
 
-        self.underLeftViewController = underLeftViewController;
-        self.drawerViewController.delegate = self;
+        if ([underLeftViewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController*)underLeftViewController;
+            underLeftViewController = [navigationController.viewControllers firstObject];
+        }
+
+        if ([underLeftViewController isKindOfClass:[MITDrawerViewController class]]) {
+            MITDrawerViewController *drawerViewController = (MITDrawerViewController*)underLeftViewController;
+            drawerViewController.delegate = self;
+        }
     }
 }
 
