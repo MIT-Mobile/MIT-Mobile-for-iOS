@@ -5,6 +5,9 @@
 #import "MITAdditions.h"
 #import "MITSlidingAnimationController.h"
 
+#import "MIT_MobileAppDelegate.h"
+#import "MITConstants.h"
+
 NSString * const MITSlidingViewControllerModulePushSegueIdentifier = @"MITSlidingViewControllerModulePushSegue";
 NSString * const MITSlidingViewControllerUnderLeftSegueIdentifier = @"MITSlidingViewControllerUnderLeftSegue";
 NSString * const MITSlidingViewControllerTopSegueIdentifier = @"MITSlidingViewControllerTopSegue";
