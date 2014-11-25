@@ -3,6 +3,7 @@
 #import "MITToursStop.h"
 #import "MITToursDirectionsToStop.h"
 #import "MITLocationManager.h"
+#import "UIKit+MITAdditions.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
@@ -64,6 +65,8 @@ static CGFloat const kBottomButtonYPadding = 20;
     NSDictionary *viewDictionary = @{@"mapView": self.mapView};
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mapView]|" options:0 metrics:nil views:viewDictionary]];
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]|" options:0 metrics:nil views:viewDictionary]];
+    
+    self.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
 #pragma mark - Public Methods
