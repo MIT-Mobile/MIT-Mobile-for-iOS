@@ -7,6 +7,8 @@
 
 @implementation MITShuttleRoute
 
+@synthesize lastUpdatedTimestamp;
+
 @dynamic agency;
 @dynamic identifier;
 @dynamic order;
@@ -21,7 +23,6 @@
 @dynamic vehiclesURL;
 @dynamic stops;
 @dynamic vehicles;
-@dynamic lastUpdatedTimestamp;
 
 + (RKMapping *)objectMapping
 {
@@ -74,7 +75,7 @@
 - (MITShuttleRouteStatus)status
 {
     // Data over 1 minute old is considered unavailable
-    if ([[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
+    if (!self.lastUpdatedTimestamp || [[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
         return MITShuttleRouteStatusPredictionsUnavailable;
     }
     

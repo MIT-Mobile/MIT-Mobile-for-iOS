@@ -260,6 +260,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 if (!error) {
                     [self.predictionListsFetchedResultsController performFetch:nil];
                     [self.tableView reloadDataAndMaintainSelection];
+                    [self refreshFlatRouteArray];
                 }
             }];
         }
