@@ -27,6 +27,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
 @property (nonatomic, retain) NSString * vehiclesURL;
 @property (nonatomic, retain) NSOrderedSet *stops;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
+
+// Not persisted to core data!
 @property (nonatomic, retain) NSDate *lastUpdatedTimestamp;
 
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
