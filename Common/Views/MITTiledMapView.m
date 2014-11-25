@@ -3,6 +3,7 @@
 #import "MITToursStop.h"
 #import "MITToursDirectionsToStop.h"
 #import "MITLocationManager.h"
+#import "UIKit+MITAdditions.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
@@ -64,6 +65,8 @@ static CGFloat const kBottomButtonYPadding = 20;
     NSDictionary *viewDictionary = @{@"mapView": self.mapView};
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mapView]|" options:0 metrics:nil views:viewDictionary]];
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]|" options:0 metrics:nil views:viewDictionary]];
+    
+    self.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
 #pragma mark - Public Methods
@@ -127,7 +130,12 @@ static CGFloat const kBottomButtonYPadding = 20;
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
         if (self.mapView.userTrackingMode == MKUserTrackingModeNone) {
-            [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+            // We need to wrap the user tracking enabling like this to prevent an unwanted zoom when we start tracking
+            [UIView animateWithDuration:0.333 animations:^{
+               self.mapView.centerCoordinate = self.mapView.userLocation.location.coordinate;
+           } completion:^(BOOL finished) {
+               [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:NO];
+           }];
         }
         else {
             [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
