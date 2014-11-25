@@ -7,7 +7,6 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleController.h"
 #import "MITShuttleVehicleList.h"
-#import "MITShuttleRouteNoDataCell.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITShuttleStopNotificationManager.h"
 #import "MITShuttleStopPredictionLoader.h"
@@ -15,7 +14,6 @@
 #import "MITShuttleRouteContainerViewController.h"
 
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
-NSString * const kMITShuttleStopViewControllerNoDataCellReuseIdentifier = @"kMITShuttleStopViewControllerNoDataCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITShuttleStopViewControllerRouteCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMITShuttleStopViewControllerDefaultCellReuseIdentifier";
 
@@ -100,7 +98,7 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 - (void)setupTableView
 {
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleStopAlarmCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteNoDataCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerRouteCellReuseIdentifier];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -206,13 +204,9 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
     NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
     MITShuttlePrediction *prediction = nil;
     
-    if (![self.route.scheduled boolValue]) {
-        MITShuttleRouteNoDataCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
-        [cell setNotInService:self.route];
-        return cell;
-    } else if (![self.route.predictable boolValue] || !predictionsArray) {
-        MITShuttleRouteNoDataCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerNoDataCellReuseIdentifier forIndexPath:indexPath];
-        [cell setNoPredictions:self.route];
+    if (!predictionsArray) {
+        UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
+        cell.textLabel.text = @"No current predictions";
         return cell;
     } else {
         MITShuttleStopAlarmCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
@@ -226,10 +220,7 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 - (UITableViewCell *)intersectingRouteCellAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.intersectingRoutes.count < 1) {
-        UITableViewCell *noIntersectionsCell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
-        if (!noIntersectionsCell) {
-            noIntersectionsCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
-        }
+        UITableViewCell *noIntersectionsCell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
         noIntersectionsCell.textLabel.text = @"No intersecting routes";
         return noIntersectionsCell;
     }
@@ -272,7 +263,12 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
         case MITShuttleStopViewOptionAll: {
             switch (section) {
                 case 0: {
-                    return @"Tap bell to be notified 5 minutes before arrival.";
+                    NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
+                    if (predictionsArray) {
+                        return @"Tap bell to be notified 5 minutes before arrival.";
+                    } else {
+                        return nil;
+                    }
                 }
                 case 1: {
                     return @"Other routes stopping at or near this stop.";

@@ -476,7 +476,6 @@
 		A50884EF19D1EA820047A21B /* UIKit+MITLibraries.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884EE19D1EA820047A21B /* UIKit+MITLibraries.m */; };
 		A51E20A0196C68D9005608C3 /* MITMapTypeAheadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */; };
 		A51E20B2196F1B36005608C3 /* MITMapRecentsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A51E20B1196F1B36005608C3 /* MITMapRecentsTableViewController.m */; };
-		A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */; };
 		A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */; };
 		A526FA5F19CB65C800CD1518 /* ECSlidingAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D85191F076800D59D33 /* ECSlidingAnimationController.m */; };
 		A52E0CF019B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A52E0CEE19B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m */; };
@@ -1641,8 +1640,6 @@
 		A51E209F196C68D9005608C3 /* MITMapTypeAheadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapTypeAheadTableViewController.m; sourceTree = "<group>"; };
 		A51E20B0196F1B36005608C3 /* MITMapRecentsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapRecentsTableViewController.h; sourceTree = "<group>"; };
 		A51E20B1196F1B36005608C3 /* MITMapRecentsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRecentsTableViewController.m; sourceTree = "<group>"; };
-		A51EBA641937B7F9000F41EE /* MITShuttleRouteNoDataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRouteNoDataCell.h; sourceTree = "<group>"; };
-		A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRouteNoDataCell.m; sourceTree = "<group>"; };
 		A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleRouteNoDataCell.xib; sourceTree = "<group>"; };
 		A52E0CED19B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningHomeContainerViewControllerPad.h; path = Dining/MITDiningHomeContainerViewControllerPad.h; sourceTree = "<group>"; };
 		A52E0CEE19B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningHomeContainerViewControllerPad.m; path = Dining/MITDiningHomeContainerViewControllerPad.m; sourceTree = "<group>"; };
@@ -3800,8 +3797,6 @@
 				A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */,
 				A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */,
 				A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */,
-				A51EBA641937B7F9000F41EE /* MITShuttleRouteNoDataCell.h */,
-				A51EBA651937B7F9000F41EE /* MITShuttleRouteNoDataCell.m */,
 				A51EBA661937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib */,
 				A5960A101940B98D0028E86C /* MITShuttleMapBusAnnotationView.h */,
 				A5960A111940B98D0028E86C /* MITShuttleMapBusAnnotationView.m */,
@@ -5390,7 +5385,6 @@
 				A5FA03A819D5D6940063FF2C /* UIImage+GIF.m in Sources */,
 				80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */,
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
-				A51EBA671937B7F9000F41EE /* MITShuttleRouteNoDataCell.m in Sources */,
 				22830A3E1A018A6400B514D1 /* MITToursStopCellModel.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				A563910D19E2F1A2001DE763 /* MITLibrariesCitationCell.m in Sources */,
