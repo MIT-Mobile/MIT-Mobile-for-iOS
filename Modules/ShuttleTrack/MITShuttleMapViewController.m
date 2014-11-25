@@ -24,7 +24,6 @@ static const NSTimeInterval kMapContractingAnimationDuration = 0.4;
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
 static const CGFloat kMapAnnotationAlphaDefault = 1.0;
-static const CGFloat kMapAnnotationAlphaTransparent = 0.5;
 
 typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateDefault  = 0,
@@ -49,7 +48,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) NSArray *routeSegmentPolylines;
-@property (nonatomic, strong) NSArray *secondaryRouteSegmentPolylines;
 
 @property (nonatomic) BOOL shouldAnimateBusUpdate;
 @property (nonatomic) BOOL shouldRepositionPopover;
@@ -327,10 +325,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)routesFetchedResultsController
 {
     if (!_routesFetchedResultsController) {
-        NSPredicate *predicate;
-        if (self.secondaryRoute) {
-            predicate = [NSPredicate predicateWithFormat:@"SELF = %@ OR SELF = %@", self.route, self.secondaryRoute];
-        } else {
+        NSPredicate *predicate = nil;
+        if (self.route) {
             predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
         }
         _routesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleRoute" predicate:predicate];
@@ -341,13 +337,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)stopsFetchedResultsController
 {
     if (!_stopsFetchedResultsController) {
-        NSPredicate *predicate;
+        NSPredicate *predicate = nil;
         if (self.route) {
-            if (self.secondaryRoute) {
-                predicate = [NSPredicate predicateWithFormat:@"routes contains %@ OR routes contains %@", self.route, self.secondaryRoute];
-            } else {
-                predicate = [NSPredicate predicateWithFormat:@"routes contains %@", self.route];
-            }
+            predicate = [NSPredicate predicateWithFormat:@"routes contains %@", self.route];
         }
         _stopsFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleStop" predicate:predicate];
     }
@@ -357,13 +349,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (NSFetchedResultsController *)vehiclesFetchedResultsController
 {
     if (!_vehiclesFetchedResultsController) {
-        NSPredicate *predicate;
+        NSPredicate *predicate = nil;
         if (self.route) {
-            if (self.secondaryRoute) {
-                predicate = [NSPredicate predicateWithFormat:@"route = %@ OR route = %@", self.route, self.secondaryRoute];
-            } else {
-                predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
-            }
+            predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
         }
         _vehiclesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleVehicle" predicate:predicate];
     }
@@ -436,7 +424,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([anObject conformsToProtocol:@protocol(MKAnnotation)]) {
         [self.mapView addAnnotation:anObject];
     } else if ([anObject isKindOfClass:[MITShuttleRoute class]]) {
-        [self refreshRoutes];
+        [self refreshRoute];
     }
 }
 
@@ -445,7 +433,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([anObject conformsToProtocol:@protocol(MKAnnotation)]) {
         [self.mapView removeAnnotation:anObject];
     } else if ([anObject isKindOfClass:[MITShuttleRoute class]]) {
-        [self refreshRoutes];
+        [self refreshRoute];
     }
 }
 
@@ -466,7 +454,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self addObject:anObject];
         }
     } else if ([anObject isKindOfClass:[MITShuttleRoute class]]) {
-        [self refreshRoutes];
+        [self refreshRoute];
     }
 }
 
@@ -507,7 +495,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     MKCoordinateRegion region;
-    MITShuttleRoute *route = self.secondaryRoute ? self.secondaryRoute : self.route;
+    MITShuttleRoute *route = self.route;
     if ([route.pathBoundingBox isKindOfClass:[NSArray class]] && [route.pathBoundingBox count] > 3) {
         region = [route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
     } else {
@@ -560,18 +548,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)refreshAll
 {
-    [self refreshRoutes];
+    [self refreshRoute];
     [self refreshStops];
     [self refreshVehicles];
 }
 
-- (void)refreshRoutes
-{
-    [self refreshPrimaryRoute];
-    [self refreshSecondaryRoute];
-}
-
-- (void)refreshPrimaryRoute
+- (void)refreshRoute
 {
     if (self.route && ![self.route pathSegmentsAreValid]) {
         return;
@@ -582,20 +564,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.routeSegmentPolylines = [self.route pathSegmentPolylines];
     if ([self.routeSegmentPolylines count] > 0) {
         [self.mapView addOverlays:self.routeSegmentPolylines];
-    }
-}
-
-- (void)refreshSecondaryRoute
-{
-    if (self.secondaryRoute && ![self.secondaryRoute pathSegmentsAreValid]) {
-        return;
-    }
-    
-    [self.mapView removeOverlays:self.secondaryRouteSegmentPolylines];
-    
-    self.secondaryRouteSegmentPolylines = [self.secondaryRoute pathSegmentPolylines];
-    if ([self.secondaryRouteSegmentPolylines count] > 0) {
-        [self.mapView addOverlays:self.secondaryRouteSegmentPolylines];
     }
 }
 
@@ -660,29 +628,17 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (CGFloat)annotationViewAlphaForStop:(MITShuttleStop *)stop
 {
-    if (self.secondaryRoute && [self.route.stops containsObject:stop] && ![self.secondaryRoute.stops containsObject:stop]) {
-        return kMapAnnotationAlphaTransparent;
-    } else {
-        return kMapAnnotationAlphaDefault;
-    }
+    return kMapAnnotationAlphaDefault;
 }
 
 - (CGFloat)annotationViewAlphaForVehicle:(MITShuttleVehicle *)vehicle
 {
-    if (self.secondaryRoute && vehicle.route == self.route) {
-        return kMapAnnotationAlphaTransparent;
-    } else {
-        return kMapAnnotationAlphaDefault;
-    }
+    return kMapAnnotationAlphaDefault;
 }
 
 - (CGFloat)overlayAlphaForPolyline:(MKPolyline *)polyline
 {
-    if (self.secondaryRoute && [self.routeSegmentPolylines containsObject:polyline]) {
-        return kMapAnnotationAlphaTransparent;
-    } else {
-        return kMapAnnotationAlphaDefault;
-    }
+    return kMapAnnotationAlphaDefault;
 }
 
 #pragma mark - Bus Annotation Animations
@@ -838,11 +794,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    if (self.secondaryRoute) {
-        self.secondaryRoute = nil;
-        [self resetFetchedResults];
-        [self setupMapBoundingBoxAnimated:YES];
-    }
     [self.mapView deselectAnnotation:self.stop animated:YES];
     self.stop = nil;
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
@@ -861,11 +812,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didScrollToRoute:(MITShuttleRoute *)route
 {
-    if (route == self.route) {
-        self.secondaryRoute = nil;
-    } else {
-        self.secondaryRoute = route;
-    }
     [self resetFetchedResults];
     [self setupMapBoundingBoxAnimated:YES];
 }
@@ -873,7 +819,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)stopPopoverViewController:(MITShuttleStopPopoverViewController *)viewController didSelectRoute:(MITShuttleRoute *)route
 {
     self.route = route;
-    self.secondaryRoute = nil;
     [self resetFetchedResults];
     [self setupMapBoundingBoxAnimated:YES];
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
