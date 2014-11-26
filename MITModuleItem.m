@@ -10,6 +10,7 @@
         _title = [title copy];
         _name = [name copy];
         _image = image;
+        _type = MITModuleTypePrimary;
     }
 
     return self;
@@ -17,12 +18,8 @@
 
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title image:(UIImage*)image selectedImage:(UIImage*)selectedImage
 {
-    self = [super init];
+    self = [self initWithName:name title:title image:image];
     if (self) {
-        _title = [title copy];
-        _name = [name copy];
-
-        _image = image;
         _selectedImage = selectedImage;
     }
 
