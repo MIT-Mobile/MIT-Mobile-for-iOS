@@ -10,6 +10,11 @@
 
     self.title = @"Tour Details";
     
+    [self.navigationController setToolbarHidden:YES];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
     UIWebView *webview = [[UIWebView alloc] initWithFrame:self.view.bounds];
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webview.backgroundColor = [UIColor clearColor];
@@ -17,8 +22,6 @@
     
     NSString *templatedHTML = [MITToursHTMLTemplateInjector templatedHTMLForTourDetailsHTML:self.tour.descriptionHTML viewWidth:self.view.frame.size.width];
     [webview loadHTMLString:templatedHTML baseURL:nil];
-    
-    [self.navigationController setToolbarHidden:YES];
 }
 
 @end

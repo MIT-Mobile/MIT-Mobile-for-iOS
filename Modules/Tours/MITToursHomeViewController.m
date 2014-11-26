@@ -198,7 +198,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
     if (indexPath.section == MITToursTableViewSectionInfo) {
-        if (indexPath.row == 0) {
+        if (indexPath.row == 0 && self.selfGuidedTour) {
             MITToursSelfGuidedTourContainerController *tourVC = [[MITToursSelfGuidedTourContainerController alloc] init];
             tourVC.selfGuidedTour = self.selfGuidedTour;
             [self.navigationController pushViewController:tourVC animated:YES];
