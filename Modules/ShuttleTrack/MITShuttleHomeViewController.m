@@ -14,8 +14,7 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "UITableView+MITAdditions.h"
 
-static const NSTimeInterval kRoutesRefreshInterval = 60.0;
-static const NSTimeInterval kPredictionsRefreshInterval = 10.0;
+static const NSTimeInterval kRoutesAndPredictionsGlobalRefreshInterval = 10.0;
 
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
 static NSString * const kMITShuttleURLCellIdentifier = @"MITURLCell";
@@ -52,8 +51,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (nonatomic, getter = isUpdating) BOOL updating;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 
-@property (strong, nonatomic) NSTimer *routesRefreshTimer;
-@property (strong, nonatomic) NSTimer *predictionsRefreshTimer;
+@property (strong, nonatomic) NSTimer *routesAndPredictionsRefreshTimer;
 
 @property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
@@ -136,7 +134,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self setupToolbar];
     [self setupResourceData];
     
-    [self updateDisplayedRoutes];
+    [self updateRoutesData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -144,7 +142,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
     [[MITLocationManager sharedManager] startUpdatingLocation];
-    [self startRefreshingRoutes];
+    [self startRefreshingRoutesAndPredictions];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
@@ -191,79 +189,103 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self stopRefreshingData];
-    [self startRefreshingRoutes];
+    [self startRefreshingRoutesAndPredictions];
 }
 
 #pragma mark - Data Refresh Timers
 
-- (void)startRefreshingRoutes
-{
-    [self loadRoutes];
-    NSTimer *routesRefreshTimer = [NSTimer timerWithTimeInterval:kRoutesRefreshInterval
-                                                          target:self
-                                                        selector:@selector(loadRoutes)
-                                                        userInfo:nil
-                                                         repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:routesRefreshTimer forMode:NSRunLoopCommonModes];
-    self.routesRefreshTimer = routesRefreshTimer;
-}
-
-- (void)startRefreshingPredictions
-{
-    [self loadPredictions];
-    NSTimer *predictionsRefreshTimer = [NSTimer timerWithTimeInterval:kPredictionsRefreshInterval
-                                                               target:self
-                                                             selector:@selector(loadPredictions)
-                                                             userInfo:nil
-                                                              repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:predictionsRefreshTimer forMode:NSRunLoopCommonModes];
-    self.predictionsRefreshTimer = predictionsRefreshTimer;
-}
-
 - (void)stopRefreshingData
 {
-    [self.routesRefreshTimer invalidate];
-    [self.predictionsRefreshTimer invalidate];
+    [self.routesAndPredictionsRefreshTimer invalidate];
 }
 
 #pragma mark - Data Refresh
 
-- (void)loadRoutes
+- (void)startRefreshingRoutesAndPredictions
 {
-    [self beginRefreshing];
-    [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
-        [self endRefreshing];
-        if (!error) {
-            [self updateDisplayedRoutes];
-            
-            // Start refreshing predications if we are still in the view hierarchy
-            if (!self.predictionsRefreshTimer.isValid && self.navigationController) {
-                [self startRefreshingPredictions];
-            }
-        }
-    }];
+    [self loadRoutesAndPredictions];
+    NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kRoutesAndPredictionsGlobalRefreshInterval
+                                                                 target:self
+                                                               selector:@selector(loadRoutesAndPredictions)
+                                                               userInfo:nil
+                                                                repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
+    self.routesAndPredictionsRefreshTimer = routesAndPredictionsTimer;
+    
 }
 
-- (void)updateDisplayedRoutes
+- (void)loadRoutesAndPredictions
+{
+    // Make sure we are still in the view hierarchy
+    if (self.navigationController) {
+        static int runCount = 0;
+        
+        if (runCount == 0) {
+            [self beginRefreshing];
+            [self loadRoutesWithCompletion:^(NSArray *routes, NSError *error) {
+                if (!error) {
+                    [self updateRoutesData];
+                    [self loadPredictionsWithCompletion:^(NSError *error) {
+                        [self updatePredictionsData];
+                        [self endRefreshing];
+                    }];
+                } else {
+                    [self endRefreshing];
+                }
+            }];
+        } else {
+            [self loadPredictionsWithCompletion:^(NSError *error) {
+                [self updatePredictionsData];
+                [self endRefreshing];
+            }];
+        }
+        
+        if (runCount < 5) {
+            runCount++;
+        } else {
+            runCount = 0;
+        }
+    }
+}
+
+- (void)loadRoutesWithCompletion:(void(^)(NSArray *routes, NSError *error))completion
+{
+    [[MITShuttleController sharedController] getRoutes:completion];
+}
+
+- (void)updateRoutesData
 {
     [self.routesFetchedResultsController performFetch:nil];
     [self refreshFlatRouteArray];
     [self.tableView reloadDataAndMaintainSelection];
 }
 
-- (void)loadPredictions
+- (void)loadPredictionsWithCompletion:(void(^)(NSError *error))completion
 {
+    dispatch_group_t group = dispatch_group_create();
+
+    __block NSError *anyError;
     for (MITShuttleRoute *route in self.routes) {
         if ([route.scheduled boolValue] && [route.predictable boolValue]) {
+            
+            dispatch_group_enter(group);
             [[MITShuttleController sharedController] getPredictionsForRoute:route completion:^(NSArray *predictions, NSError *error) {
-                if (!error) {
-                    [self.predictionListsFetchedResultsController performFetch:nil];
-                    [self.tableView reloadDataAndMaintainSelection];
-                }
+                if (error) anyError = error;
+                dispatch_group_leave(group);
             }];
         }
     }
+    
+    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        completion(anyError);
+    });
+}
+
+- (void)updatePredictionsData
+{
+    [self.predictionListsFetchedResultsController performFetch:nil];
+    [self refreshFlatRouteArray];
+    [self.tableView reloadDataAndMaintainSelection];
 }
 
 - (void)beginRefreshing

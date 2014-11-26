@@ -8,6 +8,11 @@
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
+@interface MITShuttleController ()
+@property (strong, nonatomic) NSMutableDictionary *lastUpdatedPredictionDataRecord;
+@property (strong, nonatomic) NSMutableArray *retrievedShuttleRoutes;
+@end
+
 @implementation MITShuttleController
 
 #pragma mark - Singleton Instance
@@ -40,10 +45,12 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    for (MITShuttleRoute *route in result.array) {
-                                                        route.lastUpdatedTimestamp = [NSDate date];
+                                                    if (!error) {
+                                                        self.retrievedShuttleRoutes = [result.array mutableCopy];
+                                                        for (MITShuttleRoute *shuttleRoute in self.retrievedShuttleRoutes) {
+                                                            shuttleRoute.lastUpdatedTimestamp = self.lastUpdatedPredictionDataRecord[shuttleRoute.identifier];
+                                                        }
                                                     }
-                                                    [[[MITCoreDataController defaultController] mainQueueContext] save:nil];
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
@@ -62,7 +69,15 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 - (void)getPredictionsForRoute:(MITShuttleRoute *)route completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:completion];
+    [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:^(id object, NSError *error) {
+        if (!error) {
+            if (route.identifier) {
+                route.lastUpdatedTimestamp = [NSDate date];
+                self.lastUpdatedPredictionDataRecord[route.identifier] = route.lastUpdatedTimestamp;
+            }
+        }
+        completion(object, error);
+    }];
 }
 
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion
@@ -155,6 +170,24 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     }
     
     return defaultRoutes;
+}
+
+#pragma mark - Getters | Setters
+
+- (NSMutableDictionary *)lastUpdatedPredictionDataRecord
+{
+    if (!_lastUpdatedPredictionDataRecord) {
+        _lastUpdatedPredictionDataRecord = [NSMutableDictionary dictionary];
+    }
+    return _lastUpdatedPredictionDataRecord;
+}
+
+- (NSMutableArray *)retrievedShuttleRoutes
+{
+    if (!_retrievedShuttleRoutes) {
+        _retrievedShuttleRoutes = [NSMutableArray array];
+    }
+    return _retrievedShuttleRoutes;
 }
 
 @end

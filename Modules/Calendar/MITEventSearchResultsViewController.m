@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 @property (nonatomic, strong) MITCalendarEventDateGroupedDataSource *resultsDataSource;
 @property (nonatomic) MITEventSearchViewControllerResultsTimeframe resultsTimeframe;
 @property (nonatomic, strong) NSString *currentQuery;
-
+@property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 @end
 
 @implementation MITEventSearchResultsViewController
@@ -148,9 +148,15 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.shouldIndicateCellSelectedState) {
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    if (self.shouldIndicateCellSelectedState) {
+        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
+        self.selectedIndexPath = indexPath;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if ([self.resultsDataSource allSections].count > indexPath.section) {
         if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didSelectEvent:)]) {
@@ -207,6 +213,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
         MITCalendarEventCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarEventCellIdentifier forIndexPath:indexPath];
         MITCalendarsEvent *event = [self.resultsDataSource eventForIndexPath:indexPath];
         [cell setEvent:event withNumberPrefix:nil];
+        if (self.shouldIndicateCellSelectedState) {
+            [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
+        }
         return cell;
     } else {
         if (indexPath.row == 0) {
@@ -240,10 +249,13 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)selectFirstRow
 {
-    if (self.resultsDataSource.events.count > 0) {
-        NSIndexPath *firstRowIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        if ([self.resultsDataSource eventForIndexPath:firstRowIndexPath]) {
-            [self.tableView selectRowAtIndexPath:firstRowIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+    if (self.shouldIndicateCellSelectedState) {
+        if (self.resultsDataSource.events.count > 0) {
+            NSIndexPath *firstRowIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            if ([self.resultsDataSource eventForIndexPath:firstRowIndexPath]) {
+                self.selectedIndexPath = firstRowIndexPath;
+                [self.tableView selectRowAtIndexPath:firstRowIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet UILabel *noResultsFoundLabel;
 
 @property (strong, nonatomic) NSMutableArray *indexesOfHolidayEvents;
+@property (strong, nonatomic) NSIndexPath *selectedIndexPath;
 @end
 
 @implementation MITEventsTableViewController
@@ -79,16 +80,24 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     MITCalendarsEvent *event = self.events[indexPath.row];
     NSString *numberPrefix = event.isHoliday ? nil : [self numberPrefixForIndexPath:indexPath];
     [cell setEvent:event withNumberPrefix:numberPrefix];
-    
+    if (self.shouldIndicateCellSelectedState) {
+        [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
+    }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.shouldIndicateCellSelectedState) {
-        [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    if (self.shouldIndicateCellSelectedState) {
+        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
+        self.selectedIndexPath = indexPath;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
     }
+    
     [self.delegate eventsTableView:self didSelectEvent:self.events[indexPath.row]];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (NSString *)numberPrefixForIndexPath:(NSIndexPath *)indexPath {
@@ -121,8 +130,13 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 
 - (void)selectFirstRow
 {
-    if (self.events.count > 0) {
-        [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:YES scrollPosition:UITableViewRowAnimationTop];
+    if (self.shouldIndicateCellSelectedState) {
+        if (self.events.count > 0) {
+            NSIndexPath *firstIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            self.selectedIndexPath = firstIndexPath;
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:firstIndexPath];
+            [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
+        }
     }
 }
 
