@@ -71,8 +71,10 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 {
     [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:^(id object, NSError *error) {
         if (!error) {
-            route.lastUpdatedTimestamp = [NSDate date];
-            self.lastUpdatedPredictionDataRecord[route.identifier] = route.lastUpdatedTimestamp;
+            if (route.identifier) {
+                route.lastUpdatedTimestamp = [NSDate date];
+                self.lastUpdatedPredictionDataRecord[route.identifier] = route.lastUpdatedTimestamp;
+            }
         }
         completion(object, error);
     }];
