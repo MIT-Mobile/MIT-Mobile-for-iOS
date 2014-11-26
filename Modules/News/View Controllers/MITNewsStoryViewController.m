@@ -52,6 +52,13 @@
     self.bodyView.scrollView.bounces = NO;
     self.bodyView.delegate = self;
     [self updateNavigationItem:YES];
+    
+    //Clearing placeholders on NEXT STORY
+    self.nextStoryImageView.image = nil;
+    self.nextStoryTitleLabel.text = nil;
+    self.nextStoryDekLabel.text = nil;
+    self.nextStoryDateLabel.text = nil;
+    self.nextStoryNextStoryLabel.text = nil;
 }
 
 - (void)updateNavigationItem:(BOOL)animated
@@ -97,14 +104,9 @@
                                            [self.view setNeedsUpdateConstraints];
                                        }];
         }
-        self.nextStoryImageView.image = nil;
-        self.nextStoryTitleLabel.text = nil;
-        self.nextStoryDekLabel.text = nil;
-        self.nextStoryDateLabel.text = nil;
-        self.nextStoryNextStoryLabel.text = nil;
-    } else {
-        [self setupNextStory];
+
     }
+    
     self.weakMITNewsMediaGalleryViewController = nil;
     [self setNeedsStatusBarAppearanceUpdate];
 }
@@ -370,8 +372,12 @@
     frame.size.height = 1;
     webView.frame = frame;
     
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
+
     [self.view setNeedsUpdateConstraints];
     [self.view updateConstraintsIfNeeded];
+    
+    [self setupNextStory];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -418,11 +424,8 @@
             
             [self setStory:nextStory];
             
-            [self setupNextStory];
-            
             [self.bodyView loadHTMLString:[self htmlBody]
                                   baseURL:nil];
-            [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
         }
     }];
 }
