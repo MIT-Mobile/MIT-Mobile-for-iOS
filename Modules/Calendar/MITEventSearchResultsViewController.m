@@ -151,10 +151,10 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
     if (self.shouldIndicateCellSelectedState) {
         UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
-        [(MITCalendarEventCell *)oldCell updateForSelected:NO];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
         self.selectedIndexPath = indexPath;
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        [(MITCalendarEventCell *)cell updateForSelected:YES];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
@@ -214,7 +214,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
         MITCalendarsEvent *event = [self.resultsDataSource eventForIndexPath:indexPath];
         [cell setEvent:event withNumberPrefix:nil];
         if (self.shouldIndicateCellSelectedState) {
-            [cell updateForSelected:[indexPath isEqual:self.selectedIndexPath]];
+            [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
         }
         return cell;
     } else {

@@ -81,7 +81,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     NSString *numberPrefix = event.isHoliday ? nil : [self numberPrefixForIndexPath:indexPath];
     [cell setEvent:event withNumberPrefix:numberPrefix];
     if (self.shouldIndicateCellSelectedState) {
-        [cell updateForSelected:[indexPath isEqual:self.selectedIndexPath]];
+        [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
     }
     return cell;
 }
@@ -90,10 +90,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 {
     if (self.shouldIndicateCellSelectedState) {
         UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
-        [(MITCalendarEventCell *)oldCell updateForSelected:NO];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
         self.selectedIndexPath = indexPath;
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        [(MITCalendarEventCell *)cell updateForSelected:YES];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
     }
     
     [self.delegate eventsTableView:self didSelectEvent:self.events[indexPath.row]];
@@ -135,7 +135,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
             NSIndexPath *firstIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
             self.selectedIndexPath = firstIndexPath;
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:firstIndexPath];
-            [(MITCalendarEventCell *)cell updateForSelected:YES];
+            [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
         }
     }
 }
