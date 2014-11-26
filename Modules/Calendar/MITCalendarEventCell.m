@@ -88,7 +88,7 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 #pragma mark - Selection
 
 // Manually controlling selected appearance because if you use highlight, on scroll, cells deselect.
-- (void)updateForSelected:(BOOL)selected
+- (void)setBackgroundSelected:(BOOL)selected
 {
     if (selected) {
         self.backgroundColor = [UIColor colorWithRed:200/255.0 green:199/255.0 blue:204/255.0 alpha:1.0];
