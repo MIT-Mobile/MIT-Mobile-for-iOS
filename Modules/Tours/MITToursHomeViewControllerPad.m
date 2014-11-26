@@ -98,9 +98,11 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    MITToursSelfGuidedTourContainerControllerPad *containerController = [[MITToursSelfGuidedTourContainerControllerPad alloc] init];
-    containerController.selfGuidedTour = self.selfGuidedTour;
-    [self.navigationController pushViewController:containerController animated:YES];
+    if (self.selfGuidedTour) {
+        MITToursSelfGuidedTourContainerControllerPad *containerController = [[MITToursSelfGuidedTourContainerControllerPad alloc] init];
+        containerController.selfGuidedTour = self.selfGuidedTour;
+        [self.navigationController pushViewController:containerController animated:YES];
+    }
 }
 
 #pragma mark - CollectionView Delegate
