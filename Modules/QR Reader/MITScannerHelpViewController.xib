@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6221" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6213"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITScannerHelpViewController">
@@ -13,14 +13,13 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="1">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9">
-                    <rect key="frame" x="20" y="86" width="280" height="168"/>
+                    <rect key="frame" x="300" y="86" width="280" height="168"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="280" id="AXy-C4-guo"/>
-                        <constraint firstAttribute="height" constant="168" id="nAU-hR-YtC"/>
+                        <constraint firstAttribute="height" constant="168" id="CpA-ax-qKx"/>
                     </constraints>
                     <string key="text">Many groups at MIT use QR codes and barcodes to tag objects with extra information, such as URLs, phone numbers, and other data.
 
@@ -28,35 +27,87 @@ MIT Mobile's Scanner can recognize those codes and can provide special functiona
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="CpA-ax-qKx"/>
+                        </mask>
+                    </variation>
+                    <variation key="widthClass=compact">
+                        <mask key="constraints">
+                            <include reference="CpA-ax-qKx"/>
+                        </mask>
+                    </variation>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="scanner-sample-qr" translatesAutoresizingMaskIntoConstraints="NO" id="15">
-                    <rect key="frame" x="20" y="274" width="93" height="93"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" ambiguous="YES" image="scanner-sample-qr" translatesAutoresizingMaskIntoConstraints="NO" id="15">
+                    <rect key="frame" x="20" y="274" width="373" height="125"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="88" id="m0h-s4-G1j"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="m0h-s4-G1j"/>
+                        </mask>
+                    </variation>
+                    <variation key="widthClass=compact">
+                        <mask key="constraints">
+                            <include reference="m0h-s4-G1j"/>
+                        </mask>
+                    </variation>
                 </imageView>
-                <imageView userInteractionEnabled="NO" contentMode="center" image="scanner-sample-barcode" translatesAutoresizingMaskIntoConstraints="NO" id="16">
-                    <rect key="frame" x="151" y="292" width="149" height="57"/>
+                <imageView userInteractionEnabled="NO" contentMode="center" ambiguous="YES" image="scanner-sample-barcode" translatesAutoresizingMaskIntoConstraints="NO" id="16">
+                    <rect key="frame" x="431" y="324" width="149" height="57"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="125" id="tpP-o7-IW0"/>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="tpP-o7-IW0"/>
+                        </mask>
+                    </variation>
+                    <variation key="widthClass=compact">
+                        <mask key="constraints">
+                            <include reference="tpP-o7-IW0"/>
+                        </mask>
+                    </variation>
                 </imageView>
             </subviews>
             <constraints>
-                <constraint firstItem="16" firstAttribute="leading" secondItem="15" secondAttribute="trailing" constant="38" id="9qm-0t-hzS"/>
-                <constraint firstAttribute="trailing" secondItem="16" secondAttribute="trailing" constant="20" id="InS-Yh-ru9"/>
-                <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" id="K8G-HD-oYu"/>
-                <constraint firstAttribute="bottom" secondItem="15" secondAttribute="bottom" constant="201" id="PlH-Zg-LiQ"/>
-                <constraint firstItem="15" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="20" id="YCU-oX-4PB"/>
-                <constraint firstItem="15" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="20" id="Z4f-gg-crH"/>
-                <constraint firstAttribute="centerX" secondItem="9" secondAttribute="centerX" id="g67-zB-ACP"/>
-                <constraint firstAttribute="bottom" secondItem="16" secondAttribute="bottom" constant="219" id="sR9-Fh-GAi"/>
-                <constraint firstItem="9" firstAttribute="top" secondItem="1" secondAttribute="top" constant="86" id="xn2-cq-QmF"/>
+                <constraint firstItem="16" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="51" id="161-P5-Jmj"/>
+                <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" id="dR9-u8-Iuo"/>
+                <constraint firstItem="9" firstAttribute="top" secondItem="1" secondAttribute="top" constant="88" id="hbT-pN-VfN"/>
+                <constraint firstItem="9" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="20" id="k5Q-WK-Ase"/>
+                <constraint firstItem="15" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="36" id="kdb-pJ-iaw"/>
+                <constraint firstItem="15" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="31" id="rHG-k2-Nlq"/>
+                <constraint firstAttribute="trailing" secondItem="16" secondAttribute="trailing" constant="31" id="tEV-sY-tNr"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="dR9-u8-Iuo"/>
+                    <exclude reference="hbT-pN-VfN"/>
+                    <exclude reference="k5Q-WK-Ase"/>
+                    <exclude reference="kdb-pJ-iaw"/>
+                    <exclude reference="rHG-k2-Nlq"/>
+                    <exclude reference="161-P5-Jmj"/>
+                    <exclude reference="tEV-sY-tNr"/>
+                </mask>
+            </variation>
+            <variation key="widthClass=compact">
+                <mask key="constraints">
+                    <include reference="dR9-u8-Iuo"/>
+                    <include reference="hbT-pN-VfN"/>
+                    <include reference="k5Q-WK-Ase"/>
+                    <include reference="kdb-pJ-iaw"/>
+                    <include reference="rHG-k2-Nlq"/>
+                    <include reference="161-P5-Jmj"/>
+                    <include reference="tEV-sY-tNr"/>
+                </mask>
+            </variation>
+            <point key="canvasLocation" x="428" y="288"/>
         </view>
     </objects>
     <resources>
         <image name="scanner-sample-barcode" width="149" height="57"/>
         <image name="scanner-sample-qr" width="93" height="93"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>
