@@ -26,7 +26,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "NewsModule.h"
 #import "PeopleModule.h"
-#import "QRReaderModule.h"
+#import "MITScannerModule.h"
 #import "SettingsModule.h"
 #import "ShuttleModule.h"
 #import "ToursModule.h"
@@ -561,8 +561,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DiningModule *diningModule = [[DiningModule alloc] init];
     [self registerModule:diningModule];
     
-    QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
-    [self registerModule:qrReaderModule];
+    MITScannerModule *mitScannerModule = [[MITScannerModule alloc] init];
+    [self registerModule:mitScannerModule];
     
     LinksModule *linksModule = [[LinksModule alloc] init];
     [self registerModule:linksModule];

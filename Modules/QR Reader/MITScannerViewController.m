@@ -181,6 +181,8 @@
         toolbarItem.tintColor = [UIColor whiteColor];
         self.navigationItem.rightBarButtonItem = toolbarItem;
     }
+    
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -227,14 +229,38 @@
 {
     [self.scannerHistory persistLastTimeHistoryWasOpened];
     
+    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
+    {
+        [self showHistoryOnIpad];
+        
+        return;
+    }
+    
+    [self showHistoryOnIphone];
+}
+
+- (void)showHistoryOnIphone
+{
+    
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
     [self.navigationController pushViewController:[MITScannerHistoryViewController new] animated:YES];
+}
+
+- (void)showHistoryOnIpad
+{
+    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
+    UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [popoverController setPopoverContentSize:CGSizeMake(320, 480) animated:NO];
+    [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                              permittedArrowDirections:UIPopoverArrowDirectionUp
+                                              animated:YES];
 }
 
 - (IBAction)showHelp:(id)sender
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
+    helpNavController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 
