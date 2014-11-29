@@ -23,7 +23,7 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"Info";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];    
 }
 
 - (void)viewDidUnload
