@@ -22,4 +22,11 @@
     self.rootViewController = rootViewController;
 }
 
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+
+    self.viewController.moduleItem.type = MITModuleTypeSecondary;
+}
+
 @end
