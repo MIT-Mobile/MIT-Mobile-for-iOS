@@ -331,44 +331,71 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     return selectedModuleViewController;
 }
 
+// Toggles the scrollsToTop state for the ECSlidingViewController.
+// Since there may only be a single UIScrollView in the hierarchy and there
+//   may be up to 3 UIViewController present in an ECSlidingViewController
+//   (Top, Under-left, Under-right), whenever we update the top-most UIScrollView
+//   (if one exists) in each view so that the active UIViewController has it's
+//   top-most UIScrollView's scrollsToTop setting enabled, and the rest disabled.
+//  If this is not done and there are multiple scroll views present, the scrollsToTop
+//   is disabled for all the visible views.
+// (bskinner - 2014.11.30)
 - (void)_updateScrollsToTop
 {
-    BOOL topViewNeedsScrollsToTop = NO;
-    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
-        topViewNeedsScrollsToTop = YES;
-    }
-    
-    BOOL stop = NO;
-    NSMutableOrderedSet *topSubviews = [NSMutableOrderedSet orderedSetWithObject:self.topViewController.view];
-    while ([topSubviews count] || !stop) {
-        UIView *view = [topSubviews firstObject];
-        [topSubviews removeObject:view];
-        
-        if ([view isKindOfClass:[UIScrollView class]]) {
-            UIScrollView *scrollView = (UIScrollView*)view;
-            scrollView.scrollsToTop = topViewNeedsScrollsToTop;
-            stop = YES;
-        } else if ([view.subviews count]) {
-            [topSubviews addObjectsFromArray:view.subviews];
-        } else {
-            stop = YES;
+    UIViewController *scrollsToTopViewController = nil;
+
+    switch (self.currentTopViewPosition) {
+        case ECSlidingViewControllerTopViewPositionCentered: {
+            scrollsToTopViewController = self.visibleViewController;
+        } break;
+
+        case ECSlidingViewControllerTopViewPositionAnchoredLeft: {
+            scrollsToTopViewController = self.underRightViewController;
+        } break;
+
+        case ECSlidingViewControllerTopViewPositionAnchoredRight: {
+            scrollsToTopViewController = self.underLeftViewController;
         }
     }
-    
-    stop = NO;
-    NSMutableArray *underLeftSubviews = [NSMutableArray arrayWithObject:self.underLeftViewController.view];
-    while ([underLeftSubviews count] || !stop) {
-        UIView *view = [underLeftSubviews firstObject];
-        [underLeftSubviews removeObject:view];
-        
-        if ([view isKindOfClass:[UIScrollView class]]) {
-            UIScrollView *scrollView = (UIScrollView*)view;
-            scrollView.scrollsToTop = !topViewNeedsScrollsToTop;
-            stop = YES;
-        } else if ([view.subviews count]) {
-            [underLeftSubviews addObjectsFromArray:view.subviews];
-        } else {
-            stop = YES;
+
+    void (^setScrollsToTop)(UIViewController *viewController, BOOL scrollsToTop) = ^(UIViewController *viewController, BOOL scrollsToTop) {
+        BOOL stop = NO;
+        NSMutableOrderedSet *subviews = [NSMutableOrderedSet orderedSetWithObject:viewController.view];
+        while ([subviews count] && !stop) {
+            UIView *view = [subviews firstObject];
+            [subviews removeObject:view];
+
+            if ([view isKindOfClass:[UIScrollView class]]) {
+                UIScrollView *scrollView = (UIScrollView*)view;
+                scrollView.scrollsToTop = scrollsToTop;
+                stop = YES;
+            } else if ([view.subviews count]) {
+                [subviews addObjectsFromArray:view.subviews];
+            }
+        }
+    };
+
+    setScrollsToTop(scrollsToTopViewController,YES);
+
+    NSMutableSet *scrollToTopDisabledViewControllers = [[NSMutableSet alloc] init];
+    if (self.topViewController) {
+        [scrollToTopDisabledViewControllers addObject:self.topViewController];
+    }
+
+    if (self.underLeftViewController) {
+        [scrollToTopDisabledViewControllers addObject:self.underLeftViewController];
+    }
+
+    if (self.underRightViewController) {
+        [scrollToTopDisabledViewControllers addObject:self.underRightViewController];
+    }
+
+    [scrollToTopDisabledViewControllers removeObject:scrollsToTopViewController];
+    [scrollToTopDisabledViewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, BOOL *stop) {
+        setScrollsToTop(viewController, NO);
+    }];
+
+}
         }
     }
 }
