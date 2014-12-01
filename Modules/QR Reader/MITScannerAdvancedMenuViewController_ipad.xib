@@ -7,30 +7,30 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITScannerAdvancedMenuViewController">
             <connections>
-                <outlet property="tableView" destination="2Zt-qJ-rUF" id="iqg-4R-9eW"/>
-                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="tableView" destination="cfn-EF-w6n" id="BQw-oz-Xyi"/>
+                <outlet property="view" destination="iN0-l3-epB" id="BKV-gH-eYp"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="2Zt-qJ-rUF">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="cfn-EF-w6n">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="aFO-YX-b8w"/>
-                        <outlet property="delegate" destination="-1" id="YoX-CF-VqX"/>
+                        <outlet property="dataSource" destination="-1" id="LUm-A8-ie5"/>
+                        <outlet property="delegate" destination="-1" id="Cf2-Vy-ij6"/>
                     </connections>
                 </tableView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="2Zt-qJ-rUF" secondAttribute="bottom" id="blA-Fs-ugd"/>
-                <constraint firstAttribute="trailing" secondItem="2Zt-qJ-rUF" secondAttribute="trailing" id="dji-AJ-HSQ"/>
-                <constraint firstItem="2Zt-qJ-rUF" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lsO-cN-zok"/>
-                <constraint firstItem="2Zt-qJ-rUF" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="xuh-1A-bMF"/>
+                <constraint firstItem="cfn-EF-w6n" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="0h0-hY-Qqu"/>
+                <constraint firstAttribute="bottom" secondItem="cfn-EF-w6n" secondAttribute="bottom" id="eo0-FE-pyu"/>
+                <constraint firstAttribute="trailing" secondItem="cfn-EF-w6n" secondAttribute="trailing" id="nbx-0i-f4I"/>
+                <constraint firstItem="cfn-EF-w6n" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="qSE-e2-bHH"/>
             </constraints>
         </view>
     </objects>

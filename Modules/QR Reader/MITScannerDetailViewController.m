@@ -54,8 +54,10 @@ NSString * const kActionURL = @"kActionUrl";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     
     self.navigationItem.title = @"Scan Detail";
+
     UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
-    self.navigationItem.rightBarButtonItem = shareItem;
+    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonTapped:)];
+    [self setUpNavBarWithShareButton:shareItem andDoneItem:doneItem];
     
     [self tableViewHeaderDidLoad];
 }
@@ -79,6 +81,19 @@ NSString * const kActionURL = @"kActionUrl";
     [self.urlMappingOperation cancel];
 }
 
+- (void)setUpNavBarWithShareButton:(UIBarButtonItem *)shareItem andDoneItem:(UIBarButtonItem *)doneItem
+{
+    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
+    {
+        self.navigationItem.rightBarButtonItem = doneItem;
+        self.navigationItem.leftBarButtonItem = shareItem;
+    }
+    else
+    {
+        self.navigationItem.rightBarButtonItem = shareItem;
+    }
+}
+
 - (void)tableViewHeaderDidLoad
 {
     UIImageView *headerView = (UIImageView *)[self.tableView tableHeaderView];
@@ -88,11 +103,6 @@ NSString * const kActionURL = @"kActionUrl";
     } else {
         headerView.image = [UIImage imageNamed:MITImageScannerMissingImage];
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)shareButtonTapped:(id)sender
@@ -113,7 +123,23 @@ NSString * const kActionURL = @"kActionUrl";
                                                                                         applicationActivities:nil];
     sharingViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeAssignToContact];
     
-    [self presentViewController:sharingViewController animated:YES completion:nil];
+    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
+    {
+        UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:sharingViewController];
+        [popoverController setPopoverContentSize:CGSizeMake(100, 100)];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    }
+    else
+    {
+        [self presentViewController:sharingViewController animated:YES completion:nil];
+    }
+}
+
+- (void)doneButtonTapped:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate detailFormSheetViewDidDisappear];
+    }];
 }
 
 @end

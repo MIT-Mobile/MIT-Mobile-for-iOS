@@ -34,10 +34,14 @@
 @property (weak) UIButton *advancedButton;
 
 @property (nonatomic,assign) BOOL isCaptureActive;
+@property (nonatomic,assign) BOOL isScanDetailsPresented;
 @property (readonly) BOOL isScanningSupported;
 
 #pragma mark - History Properties
 @property (strong) QRReaderHistoryData *scannerHistory;
+
+#pragma mark - popovers
+@property (nonatomic, strong) UIPopoverController *advancedMenuPopover;
 
 #pragma mark - Private methods
 - (IBAction)showHistory:(id)sender;
@@ -46,6 +50,11 @@
 - (void)startSessionCapture;
 - (void)stopSessionCapture;
 @end
+
+
+@interface MITScannerViewController(ScanDetailViewDelegate) <MITScannerDetailViewControllerDelegate>
+@end
+
 #pragma mark -
 
 @implementation MITScannerViewController
@@ -229,7 +238,7 @@
 {
     [self.scannerHistory persistLastTimeHistoryWasOpened];
     
-    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
+    if( [self isOnIpad] )
     {
         [self showHistoryOnIpad];
         
@@ -266,9 +275,32 @@
 
 - (void)showAdvancedMenu:(id)sender
 {
+    if( [self isOnIpad] )
+    {
+        [self showAdvancedMenuOnIpad:sender];
+        
+        return;
+    }
+    
+    [self showAdvancedMenuOnIphone:sender];
+}
+
+- (void)showAdvancedMenuOnIphone:(id)sender
+{
     MITScannerAdvancedMenuViewController *vc = [MITScannerAdvancedMenuViewController new];
     UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:vc];
     [self.navigationController presentViewController:navController animated:YES completion:NULL];
+}
+
+- (void)showAdvancedMenuOnIpad:(id)sender
+{
+    MITScannerAdvancedMenuViewController *advancedMenuVC = [MITScannerAdvancedMenuViewController new];
+    self.advancedMenuPopover = [[UIPopoverController alloc] initWithContentViewController:advancedMenuVC];
+    [self.advancedMenuPopover setPopoverContentSize:CGSizeMake(320, advancedMenuVC.menuViewHeight) animated:NO];    
+    [self.advancedMenuPopover presentPopoverFromRect:[sender frame]
+                                       inView:self.view
+                     permittedArrowDirections:UIPopoverArrowDirectionDown
+                                     animated:YES];
 }
 
 - (void)makeNavigationBarTransparent
@@ -410,6 +442,11 @@
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
+    if( self.isScanDetailsPresented )
+    {
+        return;
+    }
+    
     [metadataObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if( [obj isKindOfClass:[AVMetadataMachineReadableCodeObject class]] )
         {
@@ -517,6 +554,13 @@
 
 - (void)showScanDetailsForScanResult:(QRReaderResult *)result
 {
+    if( [self isOnIpad] )
+    {
+        [self ipad_showScanDetailsForScanResult:result];
+        
+        return;
+    }
+    
     MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
     viewController.scanResult = result;
     
@@ -527,6 +571,45 @@
         self.navigationController.navigationBar.userInteractionEnabled = YES;
         self.overlayView.highlighted = NO;
     });
+}
+
+- (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result
+{
+    MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
+    viewController.delegate = self;
+    viewController.scanResult = result;
+    
+    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:viewController];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        [self.navigationController presentViewController:navController animated:YES completion:^{
+            self.navigationController.navigationBar.userInteractionEnabled = YES;
+            self.overlayView.highlighted = NO;
+            self.overlayView.hidden = YES;
+            
+            self.isScanDetailsPresented = YES;
+            [self startSessionCapture];
+        }];
+    });
+}
+
+- (BOOL)isOnIpad
+{
+    return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
+}
+
+@end
+
+#pragma mark - ScanDetailViewDelegate
+
+@implementation MITScannerViewController(ScanDetailViewDelegate)
+
+- (void)detailFormSheetViewDidDisappear
+{
+    self.overlayView.hidden = NO;
+    self.isScanDetailsPresented = NO;
 }
 
 @end

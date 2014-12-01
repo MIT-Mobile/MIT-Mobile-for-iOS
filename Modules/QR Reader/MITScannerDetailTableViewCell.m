@@ -29,7 +29,7 @@
 
 - (void) removeLineSeparator
 {
-    self.separatorInset = UIEdgeInsetsMake(0, self.bounds.size.width, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0, 1000.0, 0, 0);
 }
 
 @end

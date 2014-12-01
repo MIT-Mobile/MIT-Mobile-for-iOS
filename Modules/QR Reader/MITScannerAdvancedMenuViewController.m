@@ -20,7 +20,26 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 
 @end
 
+CGFloat const rowHeight = 100;
+
 @implementation MITScannerAdvancedMenuViewController
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    NSString *nibName = @"MITScannerAdvancedMenuViewController";
+    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
+    {
+        nibName = @"MITScannerAdvancedMenuViewController_ipad";
+    }
+    
+    self = [super initWithNibName:nibName bundle:nibBundleOrNil];
+    if( self )
+    {
+        
+    }
+    
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -60,7 +79,7 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 100.;
+    return rowHeight;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -76,6 +95,11 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     [cell updateSettingDescriptionWithText:settingDescText];
     
     return cell;
+}
+
+- (CGFloat)menuViewHeight
+{
+    return rowHeight;
 }
 
 @end

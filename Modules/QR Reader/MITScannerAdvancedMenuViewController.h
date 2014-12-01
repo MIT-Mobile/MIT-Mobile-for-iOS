@@ -12,4 +12,6 @@ extern NSString * const kBatchScanningSettingKey;
 
 @interface MITScannerAdvancedMenuViewController : UIViewController
 
+- (CGFloat)menuViewHeight;
+
 @end

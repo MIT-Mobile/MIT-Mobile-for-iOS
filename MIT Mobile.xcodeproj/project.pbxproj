@@ -86,6 +86,7 @@
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
+		274B39D01A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274B39CF1A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
 		277B3DD3194DC8450032229E /* MITPeopleRecentResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277B3DD2194DC8450032229E /* MITPeopleRecentResultsViewController.m */; };
 		279CCA0F197A1ABB0002209F /* MITPeopleModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CCA0E197A1ABB0002209F /* MITPeopleModelController.m */; };
@@ -756,6 +757,7 @@
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
 		274887321933ABCC00414552 /* MITPeopleSearchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchHandler.h; sourceTree = "<group>"; };
 		274887331933ABCC00414552 /* MITPeopleSearchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchHandler.m; sourceTree = "<group>"; };
+		274B39CF1A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITScannerAdvancedMenuViewController_ipad.xib; sourceTree = "<group>"; };
 		277493C81971C88100EB7904 /* MITPeopleSearchRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchRootViewController.h; sourceTree = "<group>"; };
 		277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchRootViewController.m; sourceTree = "<group>"; };
 		277B3DD1194DC8450032229E /* MITPeopleRecentResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleRecentResultsViewController.h; sourceTree = "<group>"; };
@@ -2074,6 +2076,7 @@
 				27CBE98F1A17B77D00B85F67 /* MITScannerAdvancedMenuViewController.h */,
 				27CBE9901A17B77D00B85F67 /* MITScannerAdvancedMenuViewController.m */,
 				27CBE9911A17B77D00B85F67 /* MITScannerAdvancedMenuViewController.xib */,
+				274B39CF1A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib */,
 				27CBE9951A17E6D600B85F67 /* MITBatchScanningCell.h */,
 				27CBE9961A17E6D600B85F67 /* MITBatchScanningCell.m */,
 				27CBE9971A17E6D600B85F67 /* MITBatchScanningCell.xib */,
@@ -3940,6 +3943,7 @@
 				A5A30407198AD0FB00C9C273 /* MITEventSearchViewController.xib in Resources */,
 				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
+				274B39D01A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				224B337D19B10A000031817B /* MITDiningMenuItemCell.xib in Resources */,
 				A5BF26031969E24400D73AF5 /* MITMapPlacePhotoCell.xib in Resources */,
