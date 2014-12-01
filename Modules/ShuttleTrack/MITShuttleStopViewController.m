@@ -118,7 +118,9 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
     NSMutableOrderedSet *mutableRoutes = [self.stop.routes mutableCopy];
     if (self.route) {
         NSInteger index = [mutableRoutes indexOfObject:self.route];
-        [mutableRoutes removeObjectAtIndex:index];
+        if (index < mutableRoutes.count) {
+            [mutableRoutes removeObjectAtIndex:index];
+        }
     }
     self.intersectingRoutes = [mutableRoutes array];
 }
