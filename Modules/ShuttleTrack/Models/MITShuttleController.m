@@ -5,6 +5,7 @@
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 #import <RestKit/RKManagedObjectMappingOperationDataSource.h>
+#import <RestKit/RKManagedObjectStore.h>
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
@@ -162,7 +163,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
             NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMapping]};
             RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
-            RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:nil];
+            RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:[MITMobile defaultManager].managedObjectStore.managedObjectCache];
             mapper.mappingOperationDataSource = dataSource;
             [mapper execute:nil];
             defaultRoutes = mapper.mappingResult.array;
