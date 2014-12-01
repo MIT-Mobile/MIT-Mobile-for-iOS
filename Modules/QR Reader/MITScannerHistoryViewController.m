@@ -23,7 +23,7 @@
 
 @property (strong) QRReaderHistoryData *scannerHistory;
 
-@property (nonatomic, weak) UITableView *tableView;
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, weak) UIToolbar *multiEditToolbar;
 @property (nonatomic, weak) UIBarButtonItem *deleteButton;
 
@@ -70,42 +70,20 @@
     [self.renderingQueue cancelAllOperations];
 }
 
-- (void)loadView
-{
-    UIView *controllerView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
-    controllerView.backgroundColor = [UIColor whiteColor];
-    controllerView.autoresizesSubviews = YES;
-    controllerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth);
-    self.view = controllerView;
-    
-    if ([self.view respondsToSelector:@selector(setTintColor:)]) {
-        self.view.tintColor = [UIColor whiteColor];
-    }
-    
-    // make navigation bar visible
-    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    [self.navigationController.navigationBar setShadowImage:nil];
-    
-    // setup tableview
-    UITableView *historyView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    historyView.delegate = self;
-    historyView.dataSource = self;
-    historyView.rowHeight = [QRReaderResult defaultThumbnailSize].height;
-    
-    [self.view addSubview:historyView];
-    self.tableView = historyView;
-    
-    self.tableView.allowsMultipleSelectionDuringEditing = YES;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
+    // make navigation bar visible
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:nil];
+    
     self.navigationItem.title = @"History";
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
     self.tableView.tintColor = [UIColor mit_tintColor];
+    self.tableView.rowHeight = [QRReaderResult defaultThumbnailSize].height;
+    self.tableView.allowsMultipleSelectionDuringEditing = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -363,14 +341,15 @@
         toolbar.tintColor = [UIColor mit_tintColor];
         
         UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didTapDelete:)];
-        UIBarButtonItem *flexiableItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         
-        toolbar.items = @[flexiableItem, deleteItem, flexiableItem];
+        toolbar.items = @[flexibleItem, deleteItem, flexibleItem];
         
         [toolbar sizeToFit];
         
         CGRect toolbarFrame = toolbar.frame;
         toolbarFrame.origin.y = self.view.frame.size.height - toolbarFrame.size.height;
+        toolbarFrame.size.width = self.view.frame.size.width;
         toolbar.frame = toolbarFrame;
         
         [self.view addSubview:toolbar];

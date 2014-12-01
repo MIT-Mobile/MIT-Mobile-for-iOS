@@ -1,6 +1,13 @@
 #import "MITScannerHelpViewController.h"
 #import "UIKit+MITAdditions.h"
 
+@interface MITScannerHelpViewController()
+
+// private methods
+- (void)dismissHelp:(id)sender;
+
+@end
+
 @implementation MITScannerHelpViewController
 - (id)init
 {
@@ -30,7 +37,6 @@
 {
     [super viewDidUnload];
     self.helpTextView = nil;
-    self.doneButton = nil;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -44,7 +50,7 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (IBAction)dismissHelp:(id)sender
+- (void)dismissHelp:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:NULL];
 }

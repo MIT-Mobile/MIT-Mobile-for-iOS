@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6221" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6213"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITScannerHelpViewController">
             <connections>
                 <outlet property="helpTextView" destination="9" id="13"/>
+                <outlet property="sampleImagesContainerView" destination="dBo-g7-gdM" id="qi4-Js-v56"/>
                 <outlet property="view" destination="1" id="14"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="1">
-            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9">
-                    <rect key="frame" x="300" y="86" width="280" height="168"/>
+                    <rect key="frame" x="10" y="79" width="300" height="134"/>
                     <constraints>
-                        <constraint firstAttribute="height" priority="750" constant="189" id="mDL-Iq-Nvd"/>
+                        <constraint firstAttribute="height" priority="750" constant="143.5" id="mDL-Iq-Nvd"/>
                     </constraints>
                     <string key="text">Many groups at MIT use QR codes and barcodes to tag objects with extra information, such as URLs, phone numbers, and other data.
 
@@ -27,121 +28,39 @@ MIT Mobile's Scanner can recognize those codes and can provide special functiona
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
-                    <variation key="default">
-                        <mask key="constraints">
-                            <exclude reference="mDL-Iq-Nvd"/>
-                        </mask>
-                    </variation>
-                    <variation key="heightClass=regular" ambiguous="YES" misplaced="YES">
-                        <rect key="frame" x="113" y="77" width="375" height="168"/>
-                    </variation>
-                    <variation key="widthClass=compact">
-                        <mask key="constraints">
-                            <include reference="mDL-Iq-Nvd"/>
-                        </mask>
-                    </variation>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dBo-g7-gdM">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                    <rect key="frame" x="10" y="221.5" width="300" height="109.5"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scanner-sample-qr" translatesAutoresizingMaskIntoConstraints="NO" id="Ztt-ya-ed8">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                            <variation key="widthClass=compact" fixedFrame="YES">
-                                <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
-                            </variation>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="scanner-sample-qr" translatesAutoresizingMaskIntoConstraints="NO" id="Ztt-ya-ed8">
+                            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="scanner-sample-barcode" translatesAutoresizingMaskIntoConstraints="NO" id="dWL-O8-dh5">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                            <rect key="frame" x="130" y="14" width="180" height="72"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="72" id="FCC-8L-ODI"/>
                                 <constraint firstAttribute="width" constant="180" id="KjF-0G-4MD"/>
                             </constraints>
-                            <variation key="default">
-                                <mask key="constraints">
-                                    <exclude reference="FCC-8L-ODI"/>
-                                    <exclude reference="KjF-0G-4MD"/>
-                                </mask>
-                            </variation>
-                            <variation key="widthClass=compact">
-                                <mask key="constraints">
-                                    <include reference="FCC-8L-ODI"/>
-                                    <include reference="KjF-0G-4MD"/>
-                                </mask>
-                            </variation>
                         </imageView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="width" priority="750" constant="370" id="TYk-W3-j7O"/>
+                        <constraint firstAttribute="width" priority="750" constant="300" id="TYk-W3-j7O"/>
                         <constraint firstItem="dWL-O8-dh5" firstAttribute="top" secondItem="dBo-g7-gdM" secondAttribute="top" constant="14" id="UvO-uZ-T2E"/>
-                        <constraint firstAttribute="trailing" secondItem="dWL-O8-dh5" secondAttribute="trailing" id="bRM-LI-0TK">
-                            <variation key="widthClass=compact" constant="-10"/>
-                        </constraint>
+                        <constraint firstAttribute="trailing" secondItem="dWL-O8-dh5" secondAttribute="trailing" constant="-10" id="bRM-LI-0TK"/>
                     </constraints>
-                    <variation key="default">
-                        <mask key="subviews">
-                            <exclude reference="Ztt-ya-ed8"/>
-                            <exclude reference="dWL-O8-dh5"/>
-                        </mask>
-                        <mask key="constraints">
-                            <exclude reference="TYk-W3-j7O"/>
-                            <exclude reference="UvO-uZ-T2E"/>
-                            <exclude reference="bRM-LI-0TK"/>
-                        </mask>
-                    </variation>
-                    <variation key="widthClass=compact">
-                        <mask key="subviews">
-                            <include reference="Ztt-ya-ed8"/>
-                            <include reference="dWL-O8-dh5"/>
-                        </mask>
-                        <mask key="constraints">
-                            <include reference="TYk-W3-j7O"/>
-                            <include reference="UvO-uZ-T2E"/>
-                            <include reference="bRM-LI-0TK"/>
-                        </mask>
-                    </variation>
                 </view>
             </subviews>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="dBo-g7-gdM" secondAttribute="bottom" constant="302" id="0Cp-x3-ace"/>
+                <constraint firstAttribute="bottom" secondItem="dBo-g7-gdM" secondAttribute="bottom" constant="237" id="0Cp-x3-ace"/>
                 <constraint firstItem="dBo-g7-gdM" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1" secondAttribute="leading" constant="10" id="KV9-Xk-WnQ"/>
                 <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="10" id="WNf-Xn-yHS"/>
                 <constraint firstAttribute="centerX" secondItem="dBo-g7-gdM" secondAttribute="centerX" id="YxI-8w-fxu"/>
-                <constraint firstItem="dBo-g7-gdM" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="15" id="nto-p4-iku"/>
+                <constraint firstItem="dBo-g7-gdM" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8.5" id="nto-p4-iku"/>
                 <constraint firstAttribute="centerX" secondItem="9" secondAttribute="centerX" id="usH-rl-fV5"/>
                 <constraint firstItem="9" firstAttribute="top" secondItem="1" secondAttribute="top" constant="79" id="vH3-SH-mit"/>
                 <constraint firstItem="9" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="10" id="xrP-4n-0CQ"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-            <variation key="default">
-                <mask key="subviews">
-                    <exclude reference="dBo-g7-gdM"/>
-                </mask>
-                <mask key="constraints">
-                    <exclude reference="WNf-Xn-yHS"/>
-                    <exclude reference="usH-rl-fV5"/>
-                    <exclude reference="vH3-SH-mit"/>
-                    <exclude reference="xrP-4n-0CQ"/>
-                    <exclude reference="0Cp-x3-ace"/>
-                    <exclude reference="KV9-Xk-WnQ"/>
-                    <exclude reference="YxI-8w-fxu"/>
-                    <exclude reference="nto-p4-iku"/>
-                </mask>
-            </variation>
-            <variation key="widthClass=compact">
-                <mask key="subviews">
-                    <include reference="dBo-g7-gdM"/>
-                </mask>
-                <mask key="constraints">
-                    <include reference="WNf-Xn-yHS"/>
-                    <include reference="usH-rl-fV5"/>
-                    <include reference="vH3-SH-mit"/>
-                    <include reference="xrP-4n-0CQ"/>
-                    <include reference="0Cp-x3-ace"/>
-                    <include reference="KV9-Xk-WnQ"/>
-                    <include reference="YxI-8w-fxu"/>
-                    <include reference="nto-p4-iku"/>
-                </mask>
-            </variation>
             <point key="canvasLocation" x="428" y="288"/>
         </view>
     </objects>
@@ -149,4 +68,9 @@ MIT Mobile's Scanner can recognize those codes and can provide special functiona
         <image name="scanner-sample-barcode" width="149" height="57"/>
         <image name="scanner-sample-qr" width="93" height="93"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

@@ -201,12 +201,14 @@
     [self makeNavigationBarTransparent];
     
     [self updateHistoryButtonTitle];
+    
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
+    
     [self startSessionCapture];
 }
 
@@ -250,7 +252,7 @@
 
 - (void)showHistoryOnIphone
 {
-    
+    [self.navigationItem.rightBarButtonItem setEnabled:NO];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
     [self.navigationController pushViewController:[MITScannerHistoryViewController new] animated:YES];
 }
