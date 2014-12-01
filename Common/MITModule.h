@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@class MITModuleItem;
+#import "MITModuleItem.h"
 
 @interface MITModule : NSObject
 @property(nonatomic,readonly,copy) NSString *name;
