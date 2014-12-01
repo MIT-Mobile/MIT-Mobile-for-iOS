@@ -20,7 +20,8 @@
 
 - (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    return NO;
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    return (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
 
 - (BOOL)isViewControllerLoaded
