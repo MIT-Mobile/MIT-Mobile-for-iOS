@@ -443,25 +443,30 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
             MITModuleItem *primaryModuleItem = _primaryVisibleViewController.moduleItem;
             _primaryVisibleViewController = nil;
             
-            [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:primaryModuleItem.name animated:YES];
-            self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
+            [self _showModuleWithModuleItem:primaryModuleItem animated:YES];
         }];
     }
+}
+
+- (void)_showModuleWithModuleItem:(MITModuleItem*)moduleItem animated:(BOOL)animated
+{
+    NSParameterAssert(moduleItem);
+
+    // Call the application delegate directly to change the module so we follow the same
+    // event handling as everything else. This is only needed at this point because this class
+    // only deals with view controllers, while the actual module contents exist outside of the
+    // view controller lifecycle. This needs to be reworked.
+    // (bskinner - 2014.11.07, updated 2014.12.01)
+    UIViewController *moduleViewController = [self _moduleViewControllerWithName:moduleItem.name];
+    NSAssert(moduleViewController,@"module with name %@ does not have an associated view controller.",moduleItem.name);
+
+    [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:animated];
 }
 
 #pragma mark Delegation
 - (void)drawerViewController:(MITDrawerViewController *)drawerViewController didSelectModuleItem:(MITModuleItem *)moduleItem
 {
-    UIViewController *moduleViewController = [self _moduleViewControllerWithName:moduleItem.name];
-    
-    if (moduleViewController) {
-        // Call the application delegate directly to change the module so we follow the same
-        // event handling as everything else. This is only needed at this point because this class
-        // only deals with view controllers, while the actual module contents exist outside of the
-        // view controller lifecycle. This needs to be reworked.
-        // (bskinner - 2014.11.07, updated 2014.12.01)
-        [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:YES];
-    }
+    [self _showModuleWithModuleItem:moduleItem animated:YES];
 }
 
 #pragma mark ECSlidingViewControllerLayoutDelegate
