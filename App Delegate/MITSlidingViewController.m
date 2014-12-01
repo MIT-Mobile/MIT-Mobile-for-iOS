@@ -21,7 +21,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPad = 2
 static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone = 54.;
 
 
-@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate, MITDrawerViewControllerDelegate>
+@interface MITSlidingViewController () <ECSlidingViewControllerDelegate,UINavigationControllerDelegate,MITDrawerViewControllerDelegate,UIGestureRecognizerDelegate>
 @property(nonatomic,weak) MITDrawerViewController *drawerViewController;
 @property(nonatomic,strong) UIBarButtonItem *leftBarButtonItem;
 
@@ -30,7 +30,13 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (NSArray*)moduleItems;
 @end
 
-@implementation MITSlidingViewController
+@implementation MITSlidingViewController {
+    // Used to keep track of the view controller visible in the topViewController
+    // when 
+    __weak UIViewController *_primaryVisibleViewController;
+    __weak UIGestureRecognizer *_modalDismissGestureRecognizer;
+}
+
 @dynamic leftBarButtonItem;
 @dynamic drawerViewController;
 
@@ -174,7 +180,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     } else {
         return nil;
     }
-
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers
@@ -243,41 +248,60 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         _visibleViewController = newVisibleViewController;
         self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
 
-        if (oldVisibleViewController) {
-            [oldVisibleViewController willMoveToParentViewController:nil];
-
-            [oldVisibleViewController beginAppearanceTransition:NO animated:NO];
-            [oldVisibleViewController.view removeFromSuperview];
-            [oldVisibleViewController endAppearanceTransition];
-            
-            [oldVisibleViewController removeFromParentViewController];
+        if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+            [self resetTopViewAnimated:animated];
         }
 
         if (_visibleViewController) {
-            // If the top view is a UINavigationController, automatically add a button to toggle the state
-            // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
-            // controller must do something itself.
-            if ([_visibleViewController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navigationController = (UINavigationController*)_visibleViewController;
-                UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+            if (([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) && _visibleViewController.moduleItem.type == MITModuleTypeSecondary) {
+                _primaryVisibleViewController = oldVisibleViewController;
+                _visibleViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+                _visibleViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                [self presentViewController:_visibleViewController animated:animated completion:^{
+                    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+                    [tapGestureRecognizer addTarget:self action:@selector(_handleModalDismissGesture:)];
+                    tapGestureRecognizer.cancelsTouchesInView = NO;
+                    tapGestureRecognizer.delegate = self;
+                    _modalDismissGestureRecognizer = tapGestureRecognizer;
 
-                if (!rootViewController.navigationItem.leftBarButtonItem) {
-                    rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+                    [_visibleViewController.view.window addGestureRecognizer:tapGestureRecognizer];
+                }];
+            } else {
+                if (oldVisibleViewController) {
+                    if (oldVisibleViewController.presentingViewController == self) {
+                        [oldVisibleViewController dismissViewControllerAnimated:animated completion:nil];
+                    } else {
+                        [oldVisibleViewController willMoveToParentViewController:nil];
+
+                        [oldVisibleViewController beginAppearanceTransition:NO animated:NO];
+                        [oldVisibleViewController.view removeFromSuperview];
+                        [oldVisibleViewController endAppearanceTransition];
+
+                        [oldVisibleViewController removeFromParentViewController];
+                    }
                 }
+
+                // If the top view is a UINavigationController, automatically add a button to toggle the state
+                // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+                // controller must do something itself.
+                if ([_visibleViewController isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navigationController = (UINavigationController*)_visibleViewController;
+                    UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+
+                    if (!rootViewController.navigationItem.leftBarButtonItem) {
+                        rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+                    }
+                }
+
+                [self.topViewController addChildViewController:_visibleViewController];
+
+                [_visibleViewController beginAppearanceTransition:YES animated:animated];
+                [self.topViewController.view addSubview:_visibleViewController.view];
+                [_visibleViewController endAppearanceTransition];
+
+                [_visibleViewController didMoveToParentViewController:self.topViewController];
             }
-
-            [self.topViewController addChildViewController:_visibleViewController];
-
-            [_visibleViewController beginAppearanceTransition:YES animated:animated];
-            [self.topViewController.view addSubview:_visibleViewController.view];
-            [_visibleViewController endAppearanceTransition];
-
-            [_visibleViewController didMoveToParentViewController:self.topViewController];
         }
-    }
-
-    if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
-        [self resetTopViewAnimated:animated];
     }
 }
 
@@ -396,7 +420,30 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }];
 
 }
+
+- (IBAction)_handleModalDismissGesture:(UIGestureRecognizer*)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint point = [sender locationInView:self.view];
+        CGRect modalFrame = [self.view convertRect:_visibleViewController.view.bounds fromView:_visibleViewController.view];
+
+        if (!CGRectContainsPoint(modalFrame, point)) {
+            [self _dismissOverlayModule];
         }
+    }
+}
+
+- (void)_dismissOverlayModule
+{
+    if (_primaryVisibleViewController) {
+        [_visibleViewController.view.window removeGestureRecognizer:_modalDismissGestureRecognizer];
+        _modalDismissGestureRecognizer = nil;
+
+        [self dismissViewControllerAnimated:YES completion:^{
+            _visibleViewController = _primaryVisibleViewController;
+            _primaryVisibleViewController = nil;
+            self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
+        }];
     }
 }
 
@@ -407,12 +454,15 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     
     if (moduleViewController) {
         // Call the application delegate directly to change the module so we follow the same
-        // event handling as everything else.
-        // May need to rework this once we see how it functions.
-        // (bskinner - 2014.11.07
+        // event handling as everything else. This is only needed at this point because this class
+        // only deals with view controllers, while the actual module contents exist outside of the
+        // view controller lifecycle. This needs to be reworked.
+        // (bskinner - 2014.11.07, updated 2014.12.01)
         [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:YES];
     }
 }
+
+#pragma mark ECSlidingViewControllerLayoutDelegate
 
 - (id<ECSlidingViewControllerLayout>)slidingViewController:(ECSlidingViewController *)slidingViewController
                         layoutControllerForTopViewPosition:(ECSlidingViewControllerTopViewPosition)topViewPosition
@@ -420,6 +470,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     return self.animationController;
 }
 
+#pragma mark ECSlidingViewControllerDelegate
 - (id<UIViewControllerAnimatedTransitioning>)slidingViewController:(ECSlidingViewController *)slidingViewController
                                    animationControllerForOperation:(ECSlidingViewControllerOperation)operation
                                                  topViewController:(UIViewController *)topViewController
@@ -430,4 +481,25 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     return self.animationController;
 }
 
+#pragma mark UIGestureRecognizerDelegate
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if (gestureRecognizer == _modalDismissGestureRecognizer) {
+        CGRect modalFrame = [self.view convertRect:_visibleViewController.view.bounds fromView:_visibleViewController.view];
+        CGPoint touchLocation = [touch locationInView:self.view];
+        return !CGRectContainsPoint(modalFrame, touchLocation) && !_visibleViewController.presentedViewController;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return (gestureRecognizer == _modalDismissGestureRecognizer);
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    return (gestureRecognizer == _modalDismissGestureRecognizer);
+}
 @end
