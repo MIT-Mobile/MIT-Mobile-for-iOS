@@ -24,6 +24,11 @@
     return (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
 
+- (BOOL)pushNotificationSupported
+{
+    return YES;
+}
+
 - (BOOL)isViewControllerLoaded
 {
     return (_viewController != nil);
