@@ -440,8 +440,10 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         _modalDismissGestureRecognizer = nil;
 
         [self dismissViewControllerAnimated:YES completion:^{
-            _visibleViewController = _primaryVisibleViewController;
+            MITModuleItem *primaryModuleItem = _primaryVisibleViewController.moduleItem;
             _primaryVisibleViewController = nil;
+            
+            [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:primaryModuleItem.name animated:YES];
             self.drawerViewController.selectedModuleItem = _visibleViewController.moduleItem;
         }];
     }
