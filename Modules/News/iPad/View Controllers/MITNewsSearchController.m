@@ -198,7 +198,6 @@
         [self.recentSearchController willMoveToParentViewController:nil];
         [self.recentSearchController.view removeFromSuperview];
         [self.recentSearchController removeFromParentViewController];
-        self.recentSearchController = nil;
     }
 }
 
