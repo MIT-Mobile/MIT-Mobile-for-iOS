@@ -738,6 +738,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         size = CGSizeMake(320, 320);
     } else {
         stopViewController.viewOption = MITShuttleStopViewOptionIntersectingOnly;
+        stopViewController.shouldHideFooter = YES;
         size = CGSizeMake(320, [stopViewController preferredContentHeight]);
     }
     [stopViewController setFixedContentSize:size];
