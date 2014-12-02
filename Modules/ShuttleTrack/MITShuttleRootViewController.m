@@ -249,7 +249,8 @@
     if (navigationController == self.masterNavigationController) {
         // If popping back to home view controller, clear route and stop state from map
         if (viewController == self.homeViewController) {
-            [self setMapViewControllerRoute:nil stop:nil];
+            self.selectedRoute = nil;
+            [self setMapViewControllerRoute:nil stop:self.selectedStop];
         }
     }
 }
