@@ -12,6 +12,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITLocationManager.h"
 #import "MITShuttleStopViewController.h"
+#import "MITCalloutMapView.h"
 #import "SMCalloutView.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
@@ -35,7 +36,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate, MITShuttleStopPopoverViewControllerDelegate, SMCalloutViewDelegate>
 
-@property (nonatomic, weak) IBOutlet MKMapView *mapView;
+@property (nonatomic, weak) IBOutlet MITCalloutMapView *mapView;
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
 @property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 
@@ -722,6 +723,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     
     self.calloutView = calloutView;
+    self.mapView.calloutView = calloutView;
 }
 
 - (void)presentCalloutForStop:(MITShuttleStop *)stop
