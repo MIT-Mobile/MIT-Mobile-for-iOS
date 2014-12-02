@@ -444,8 +444,6 @@
 		5E617F11192688E700091656 /* MITShuttlesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E617F10192688E700091656 /* MITShuttlesResource.m */; };
 		5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9AA194A275900C0B76C /* MITShuttleResourceData.m */; };
 		5E62A9B1194A28DF00C0B76C /* MITShuttleResourceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */; };
-		5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */; };
-		5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */; };
 		5E6DEDE21923B82800BA54BE /* MITShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE01923B82800BA54BE /* MITShuttleStopCell.m */; };
 		5E6DEDE31923B82800BA54BE /* MITShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */; };
 		5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E6DEDF21924F49100BA54BE /* MITLocationManager.m */; };
@@ -1625,9 +1623,6 @@
 		5E62A9AA194A275900C0B76C /* MITShuttleResourceData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleResourceData.m; sourceTree = "<group>"; };
 		5E62A9AF194A28DF00C0B76C /* MITShuttleResourceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleResourceViewController.h; sourceTree = "<group>"; };
 		5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleResourceViewController.m; sourceTree = "<group>"; };
-		5E62A9B2194A405A00C0B76C /* MITShuttleStopPopoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPopoverViewController.h; sourceTree = "<group>"; };
-		5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPopoverViewController.m; sourceTree = "<group>"; };
-		5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopPopoverViewController.xib; sourceTree = "<group>"; };
 		5E62A9B7194B6F1200C0B76C /* MITShuttleStopPredictionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopPredictionLoader.h; sourceTree = "<group>"; };
 		5E62A9B8194B6F1200C0B76C /* MITShuttleStopPredictionLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopPredictionLoader.m; sourceTree = "<group>"; };
 		5E6DEDDF1923B82800BA54BE /* MITShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopCell.h; sourceTree = "<group>"; };
@@ -4092,9 +4087,6 @@
 			children = (
 				5E0693011947522A009D1449 /* MITShuttleRootViewController.h */,
 				5E0693021947522A009D1449 /* MITShuttleRootViewController.m */,
-				5E62A9B2194A405A00C0B76C /* MITShuttleStopPopoverViewController.h */,
-				5E62A9B3194A405A00C0B76C /* MITShuttleStopPopoverViewController.m */,
-				5E62A9B4194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib */,
 				5E62A9AF194A28DF00C0B76C /* MITShuttleResourceViewController.h */,
 				5E62A9B0194A28DF00C0B76C /* MITShuttleResourceViewController.m */,
 			);
@@ -5220,7 +5212,6 @@
 				22830A511A03D12C00B514D1 /* MITToursHomeViewControllerPad.xib in Resources */,
 				80F021B1199272C50056CA06 /* MITEventsMapViewController.xib in Resources */,
 				A5A303DB1982041200C9C273 /* MITWebviewCell.xib in Resources */,
-				5E62A9B6194A405A00C0B76C /* MITShuttleStopPopoverViewController.xib in Resources */,
 				80598DA91A0A74160095CEAA /* MITLibrariesFormSheetViewController.xib in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				22C012BC19B7BA6000879EF6 /* MITDiningScheduleCell.xib in Resources */,
@@ -5765,7 +5756,6 @@
 				4869CE77170380D800A3662B /* MITDiningMenuComparisonViewController.m in Sources */,
 				48A372ED170F47B800C95573 /* MGSLayerController.m in Sources */,
 				A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */,
-				5E62A9B5194A405A00C0B76C /* MITShuttleStopPopoverViewController.m in Sources */,
 				22D9BBB519D21DBD0065A2E7 /* MITTouchstoneRequestOperation+MITMobileV3.m in Sources */,
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
