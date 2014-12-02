@@ -93,6 +93,29 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
     [self.tableView reloadData];
 }
 
+#pragma mark - Content Height
+
+// Returns an estimated preferred height for the table, or 0 if no such height exists.
+- (CGFloat)preferredContentHeight
+{
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        return 0;
+    }
+    CGFloat rowHeight = 44; // TODO: Shouldn't hard-code this
+    NSInteger numberOfRows = MAX(1, self.intersectingRoutes.count);
+    return numberOfRows * rowHeight;
+}
+
+- (void)setFixedContentSize:(CGSize)size
+{
+    NSDictionary *views = @{@"tableView": self.tableView};
+    NSDictionary *metrics = @{@"width": @(size.width),
+                              @"height": @(size.height)};
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[tableView(width)]" options:0 metrics:metrics views:views]];
+    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[tableView(height)]" options:0 metrics:metrics views:views]];
+}
+
 #pragma mark - Private Methods
 
 - (void)setupTableView

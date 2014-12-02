@@ -23,4 +23,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 - (void)beginRefreshing;
 - (void)endRefreshing;
 
+- (CGFloat)preferredContentHeight;
+- (void)setFixedContentSize:(CGSize)size;
+
 @end
