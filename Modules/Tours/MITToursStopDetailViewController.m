@@ -62,12 +62,12 @@
     self.scrollView.delegate = self;
     
     [self setupLabels];
+    [self setupCollectionViews];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setupCollectionViews];
     [self configureForStop:self.stop];
 }
 
@@ -286,12 +286,6 @@
     if ([self.delegate respondsToSelector:@selector(stopDetailViewController:didSelectStop:)]) {
         [self.delegate stopDetailViewController:self didSelectStop:stop];
     }
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    self.mainLoopCollectionView.contentOffset = [self.mainLoopCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.mainLoopCollectionView.contentOffset];
-    self.nearHereCollectionView.contentOffset = [self.nearHereCollectionView.collectionViewLayout targetContentOffsetForProposedContentOffset:self.nearHereCollectionView.contentOffset];
 }
 
 @end
