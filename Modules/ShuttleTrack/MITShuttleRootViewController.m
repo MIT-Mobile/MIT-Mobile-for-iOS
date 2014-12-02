@@ -13,6 +13,9 @@
 
 @property (nonatomic, readonly) UIViewController *masterViewController;
 
+@property (nonatomic, strong) MITShuttleRoute *selectedRoute;
+@property (nonatomic, strong) MITShuttleStop *selectedStop;
+
 @property (nonatomic, strong) MITShuttleHomeViewController *homeViewController;
 @property (nonatomic, weak) MITShuttleRouteViewController *routeViewController;
 @property (nonatomic, strong) MITShuttleMapViewController *mapViewController;
@@ -167,10 +170,20 @@
 
 - (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
-    if (!stop) {
-        [self pushRouteViewControllerWithRoute:route];
+    if (stop) {
+        // Selected a stop cell
+        if (self.selectedStop == stop) {
+            return;
+        }
+        self.selectedStop = stop;
+        [self setMapViewControllerRoute:nil stop:stop];
+    } else {
+        // Deselected a cell, or selected a route cell
+        if (route) {
+            [self pushRouteViewControllerWithRoute:route];
+        }
+        [self setMapViewControllerRoute:route stop:stop];
     }
-    [self setMapViewControllerRoute:route stop:stop];
 }
 
 #pragma mark - MITShuttleRouteViewControllerDelegate
@@ -184,20 +197,41 @@
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop
 {
+    if (self.selectedStop == stop) {
+        return;
+    }
+    self.selectedStop = stop;
+    
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
         [self.homeViewController highlightStop:stop];
-        if (!stop) {
-            // clear map selection if stop was selected from home view controller
-            [self setMapViewControllerRoute:nil stop:nil];
-        }
     } else if (masterViewController == self.routeViewController) {
         [self.routeViewController highlightStop:stop];
     }
 }
 
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didDeselectStop:(MITShuttleStop *)stop
+{
+    if (self.selectedStop != stop) {
+        return;
+    }
+    self.selectedStop = nil;
+    
+    UIViewController *masterViewController = self.masterViewController;
+    if (masterViewController == self.homeViewController) {
+        [self.homeViewController highlightStop:nil];
+    } else if (masterViewController == self.routeViewController) {
+        [self.routeViewController highlightStop:nil];
+    }
+}
+
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route
 {
+    if (self.selectedRoute == route) {
+        return;
+    }
+    self.selectedRoute = route;
+    
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
         [self pushRouteViewControllerWithRoute:route];
