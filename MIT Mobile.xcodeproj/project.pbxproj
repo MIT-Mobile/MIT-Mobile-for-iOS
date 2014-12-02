@@ -4094,13 +4094,6 @@
 			path = Location;
 			sourceTree = "<group>";
 		};
-		5E6DEDF41925646100BA54BE /* Old */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Old;
-			sourceTree = "<group>";
-		};
 		5E70E397192F7FA400165B41 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -4780,7 +4773,6 @@
 				5E6DEDE11923B82800BA54BE /* MITShuttleStopCell.xib */,
 				5E70E397192F7FA400165B41 /* View Controllers */,
 				5E70E398192F7FBF00165B41 /* Views */,
-				5E6DEDF41925646100BA54BE /* Old */,
 			);
 			name = Shuttles;
 			path = ShuttleTrack;
