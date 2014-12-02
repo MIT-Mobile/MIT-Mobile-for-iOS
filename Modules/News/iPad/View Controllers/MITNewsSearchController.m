@@ -106,9 +106,11 @@
         self.messageView.alpha = .5;
         self.messageActivityView.alpha = .5;
     } else {
-        if ([searchBar.text isEqualToString:@""]) {
-            [self showTableSearchRecents];
-            self.view.alpha = 1;
+        if (!self.dataSource.isUpdating && ![self.dataSource.objects count]) {
+            if ([searchBar.text isEqualToString:@""]) {
+                [self showTableSearchRecents];
+                self.view.alpha = 1;
+            }
         }
     }
 }
@@ -198,7 +200,6 @@
         [self.recentSearchController willMoveToParentViewController:nil];
         [self.recentSearchController.view removeFromSuperview];
         [self.recentSearchController removeFromParentViewController];
-        self.recentSearchController = nil;
     }
 }
 
