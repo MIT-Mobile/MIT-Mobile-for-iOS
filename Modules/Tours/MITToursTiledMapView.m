@@ -1,11 +1,11 @@
 #import "MITToursTiledMapView.h"
-#import "MITToursCalloutMapView.h"
+#import "MITCalloutMapView.h"
 
 @implementation MITToursTiledMapView
 
 - (MKMapView *)createMapView
 {
-    return [[MITToursCalloutMapView alloc] initWithFrame:self.frame];
+    return [[MITCalloutMapView alloc] initWithFrame:self.frame];
 }
 
 @end
