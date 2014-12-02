@@ -276,7 +276,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         }
     }
     
-    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         completion(anyError);
     });
 }
