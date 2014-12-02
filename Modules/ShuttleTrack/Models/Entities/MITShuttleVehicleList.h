@@ -11,6 +11,8 @@
 @property (nonatomic, retain) NSString * routeId;
 @property (nonatomic, retain) NSString * routeURL;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
+@property (nonatomic) BOOL scheduled;
+@property (nonatomic) BOOL predictable;
 @end
 
 @interface MITShuttleVehicleList (CoreDataGeneratedAccessors)

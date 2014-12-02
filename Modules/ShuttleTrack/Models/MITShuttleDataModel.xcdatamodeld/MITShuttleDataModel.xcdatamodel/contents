@@ -61,8 +61,10 @@
     </entity>
     <entity name="ShuttleVehicleList" representedClassName="MITShuttleVehicleList" syncable="YES">
         <attribute name="agency" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="predictable" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="routeId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="routeURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="scheduled" optional="YES" attributeType="Boolean" syncable="YES"/>
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="vehicleList" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <elements>
@@ -71,6 +73,6 @@
         <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="270"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="195"/>
         <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
-        <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="28"/>
+        <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="135"/>
     </elements>
 </model>
