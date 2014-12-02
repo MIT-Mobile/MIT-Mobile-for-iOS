@@ -18,6 +18,7 @@ NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITS
 NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMITShuttleStopViewControllerDefaultCellReuseIdentifier";
 
 typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
+    MITShuttleStopViewControllerSectionTypeTitle,
     MITShuttleStopViewControllerSectionTypePredictions,
     MITShuttleStopViewControllerSectionTypeRoutes
 };
@@ -112,6 +113,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     }
     CGFloat rowHeight = 44; // TODO: Shouldn't hard-code this
     NSInteger numberOfRows = MAX(1, self.intersectingRoutes.count);
+    if (self.tableTitle) {
+        numberOfRows++;
+    }
     return numberOfRows * rowHeight;
 }
 
@@ -143,6 +147,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 - (void)configureTableSections
 {
     NSMutableArray *sectionTypes = [[NSMutableArray alloc] init];
+    if (self.tableTitle) {
+        [sectionTypes addObject:@(MITShuttleStopViewControllerSectionTypeTitle)];
+    }
     if (self.viewOption == MITShuttleStopViewOptionAll) {
         [sectionTypes addObject:@(MITShuttleStopViewControllerSectionTypePredictions)];
     }
@@ -196,6 +203,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 {
     MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
     switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return 1;
+        }
         case MITShuttleStopViewControllerSectionTypePredictions: {
             NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
             return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
@@ -213,6 +223,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 {
     MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:indexPath.section] integerValue];
     switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return [self tableTitleCellForIndexPath:indexPath];
+        }
         case MITShuttleStopViewControllerSectionTypePredictions: {
             return [self selectedRoutePredictionCellAtIndexPath:indexPath];
         }
@@ -226,6 +239,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 }
 
 #pragma mark - UITableViewDataSource Helpers
+
+- (UITableViewCell *)tableTitleCellForIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
+    cell.textLabel.text = self.tableTitle;
+    return cell;
+}
 
 - (UITableViewCell *)selectedRoutePredictionCellAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -267,6 +287,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     switch (self.viewOption) {
         case MITShuttleStopViewOptionAll: {
             switch (sectionType) {
+                case MITShuttleStopViewControllerSectionTypeTitle: {
+                    return @" ";
+                }
                 case MITShuttleStopViewControllerSectionTypePredictions: {
                     return @" ";
                 }
@@ -294,6 +317,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     
     MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
     switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return @" ";
+        }
         case MITShuttleStopViewControllerSectionTypePredictions: {
             NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
             if (predictionsArray) {
