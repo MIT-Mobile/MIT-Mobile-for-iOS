@@ -17,6 +17,12 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
 NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITShuttleStopViewControllerRouteCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMITShuttleStopViewControllerDefaultCellReuseIdentifier";
 
+typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
+    MITShuttleStopViewControllerSectionTypeTitle,
+    MITShuttleStopViewControllerSectionTypePredictions,
+    MITShuttleStopViewControllerSectionTypeRoutes
+};
+
 @interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate, MITShuttleStopAlarmCellDelegate>
 
 @property (nonatomic, strong) NSArray *intersectingRoutes;
@@ -24,6 +30,8 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 @property (nonatomic, strong) UILabel *helpLabel;
 @property (nonatomic, strong) UILabel *statusFooterLabel;
 @property (nonatomic, strong) NSDate *lastUpdatedDate;
+
+@property (nonatomic, strong) NSArray *sectionTypes;
 
 @end
 
@@ -41,6 +49,7 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
         _stop = stop;
         _route = route;
         _predictionLoader = predictionLoader;
+        _shouldHideFooter = NO;
         [self refreshIntersectingRoutes];
         
         // default to using one prediction loader per view controller
@@ -90,7 +99,34 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 {
     [self.refreshControl endRefreshing];
     self.lastUpdatedDate = [NSDate date];
+    [self configureTableSections];
     [self.tableView reloadData];
+}
+
+#pragma mark - Content Height
+
+// Returns an estimated preferred height for the table, or 0 if no such height exists.
+- (CGFloat)preferredContentHeight
+{
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        return 0;
+    }
+    CGFloat rowHeight = 44; // TODO: Shouldn't hard-code this
+    NSInteger numberOfRows = MAX(1, self.intersectingRoutes.count);
+    if (self.tableTitle) {
+        numberOfRows++;
+    }
+    return numberOfRows * rowHeight;
+}
+
+- (void)setFixedContentSize:(CGSize)size
+{
+    NSDictionary *views = @{@"tableView": self.tableView};
+    NSDictionary *metrics = @{@"width": @(size.width),
+                              @"height": @(size.height)};
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[tableView(width)]" options:0 metrics:metrics views:views]];
+    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[tableView(height)]" options:0 metrics:metrics views:views]];
 }
 
 #pragma mark - Private Methods
@@ -101,9 +137,24 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerRouteCellReuseIdentifier];
     
+    [self configureTableSections];
+    
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
+}
+
+- (void)configureTableSections
+{
+    NSMutableArray *sectionTypes = [[NSMutableArray alloc] init];
+    if (self.tableTitle) {
+        [sectionTypes addObject:@(MITShuttleStopViewControllerSectionTypeTitle)];
+    }
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        [sectionTypes addObject:@(MITShuttleStopViewControllerSectionTypePredictions)];
+    }
+    [sectionTypes addObject:@(MITShuttleStopViewControllerSectionTypeRoutes)];
+    self.sectionTypes = [sectionTypes copy];
 }
 
 - (void)setupPredictionLoader
@@ -129,68 +180,56 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 
 - (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
 {
-    [self beginRefreshing];
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        [self beginRefreshing];
+    }
 }
 
 - (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
 {
-    [self endRefreshing];
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        [self endRefreshing];
+    }
 }
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    switch (self.viewOption) {
-        case MITShuttleStopViewOptionAll:
-            return 2;
-        case MITShuttleStopViewOptionIntersectingOnly:
-            return 1;
-        default:
-            return 0;
-    }
+    return self.sectionTypes.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (self.viewOption) {
-        case MITShuttleStopViewOptionAll:
-            switch (section) {
-                case 0: {
-                    NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
-                    return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
-                }
-                case 1: {
-                    return self.intersectingRoutes.count > 0 ? self.intersectingRoutes.count : 1;
-                }
-                default: {
-                    return 0;
-                }
-            }
-        case MITShuttleStopViewOptionIntersectingOnly:
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
+    switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return 1;
+        }
+        case MITShuttleStopViewControllerSectionTypePredictions: {
+            NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
+            return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
+        }
+        case MITShuttleStopViewControllerSectionTypeRoutes: {
             return self.intersectingRoutes.count > 0 ? self.intersectingRoutes.count : 1;
-        default:
+        }
+        default: {
             return 0;
+        }
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (self.viewOption) {
-        case MITShuttleStopViewOptionAll: {
-            switch (indexPath.section) {
-                case 0: {
-                    return [self selectedRoutePredictionCellAtIndexPath:indexPath];
-                }
-                case 1: {
-                    return [self intersectingRouteCellAtIndexPath:indexPath];
-                }
-                default: {
-                    return [UITableViewCell new];
-                }
-            }
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:indexPath.section] integerValue];
+    switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return [self tableTitleCellForIndexPath:indexPath];
         }
-        case MITShuttleStopViewOptionIntersectingOnly: {
+        case MITShuttleStopViewControllerSectionTypePredictions: {
+            return [self selectedRoutePredictionCellAtIndexPath:indexPath];
+        }
+        case MITShuttleStopViewControllerSectionTypeRoutes: {
             return [self intersectingRouteCellAtIndexPath:indexPath];
         }
         default: {
@@ -200,6 +239,13 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 }
 
 #pragma mark - UITableViewDataSource Helpers
+
+- (UITableViewCell *)tableTitleCellForIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
+    cell.textLabel.text = self.tableTitle;
+    return cell;
+}
 
 - (UITableViewCell *)selectedRoutePredictionCellAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -237,13 +283,17 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
     switch (self.viewOption) {
         case MITShuttleStopViewOptionAll: {
-            switch (section) {
-                case 0: {
+            switch (sectionType) {
+                case MITShuttleStopViewControllerSectionTypeTitle: {
                     return @" ";
                 }
-                case 1: {
+                case MITShuttleStopViewControllerSectionTypePredictions: {
+                    return @" ";
+                }
+                case MITShuttleStopViewControllerSectionTypeRoutes: {
                     return @"INTERSECTING ROUTES";
                 }
                 default: {
@@ -261,49 +311,46 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
-    switch (self.viewOption) {
-        case MITShuttleStopViewOptionAll: {
-            switch (section) {
-                case 0: {
-                    NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
-                    if (predictionsArray) {
-                        return @"Tap bell to be notified 5 minutes before arrival.";
-                    } else {
-                        return nil;
-                    }
-                }
-                case 1: {
-                    return @"Other routes stopping at or near this stop.";
-                }
-                default: {
-                    return nil;
-                }
+    if (self.shouldHideFooter) {
+        return nil;
+    }
+    
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
+    switch (sectionType) {
+        case MITShuttleStopViewControllerSectionTypeTitle: {
+            return @" ";
+        }
+        case MITShuttleStopViewControllerSectionTypePredictions: {
+            NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
+            if (predictionsArray) {
+                return @"Tap bell to be notified 5 minutes before arrival.";
+            } else {
+                return nil;
             }
         }
-        case MITShuttleStopViewOptionIntersectingOnly: {
+        case MITShuttleStopViewControllerSectionTypeRoutes: {
             return @"Other routes stopping at or near this stop.";
         }
-        default:
+        default: {
             return nil;
+        }
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (self.viewOption) {
-        case MITShuttleStopViewOptionAll: {
-            if (indexPath.section == 1) {
-                MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:self.intersectingRoutes[indexPath.row] stop:nil];
-                [self.navigationController pushViewController:routeVC animated:YES];
-            }
-            break;
-        }
-        case MITShuttleStopViewOptionIntersectingOnly: {
-            MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:self.intersectingRoutes[indexPath.row] stop:nil];
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:indexPath.section] integerValue];
+    if (sectionType == MITShuttleStopViewControllerSectionTypeRoutes) {
+        MITShuttleRoute *route = self.intersectingRoutes[indexPath.row];
+        if ([self.delegate respondsToSelector:@selector(shuttleStopViewController:didSelectRoute:)]) {
+            [self.delegate shuttleStopViewController:self didSelectRoute:route];
+        } else {
+            // Default behavior
+            MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:nil];
             [self.navigationController pushViewController:routeVC animated:YES];
-            break;
         }
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - MITShuttleStopAlarmCellDelegate

@@ -1,7 +1,7 @@
 #import "MITToursMapViewController.h"
 #import "MITToursStop.h"
 #import "MITToursTiledMapView.h"
-#import "MITToursCalloutMapView.h"
+#import "MITCalloutMapView.h"
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
@@ -95,7 +95,7 @@ static NSInteger kAnnotationMarginRight = 50;
     self.calloutView = calloutView;
     [self updateCalloutViewInsets];
     
-    MITToursCalloutMapView *mapView = (MITToursCalloutMapView *)self.tiledMapView.mapView;
+    MITCalloutMapView *mapView = (MITCalloutMapView *)self.tiledMapView.mapView;
     mapView.calloutView = calloutView;
 }
 
