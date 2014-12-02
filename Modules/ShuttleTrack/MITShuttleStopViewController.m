@@ -41,6 +41,7 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
         _stop = stop;
         _route = route;
         _predictionLoader = predictionLoader;
+        _shouldHideFooter = NO;
         [self refreshIntersectingRoutes];
         
         // default to using one prediction loader per view controller
@@ -288,6 +289,9 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
+    if (self.shouldHideFooter) {
+        return nil;
+    }
     switch (self.viewOption) {
         case MITShuttleStopViewOptionAll: {
             switch (section) {

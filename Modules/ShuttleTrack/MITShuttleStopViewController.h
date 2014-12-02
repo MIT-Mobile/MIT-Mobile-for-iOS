@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 
 @property (nonatomic, strong) MITShuttleStopPredictionLoader *predictionLoader;
 @property (nonatomic) MITShuttleStopViewOption viewOption;
+@property (nonatomic) BOOL shouldHideFooter;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader;
