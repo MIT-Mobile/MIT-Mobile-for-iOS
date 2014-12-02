@@ -3,6 +3,8 @@
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
 #import "MITShuttleResourceViewController.h"
+#import "MITShuttleRoute.h"
+#import "MITShuttleStop.h"
 
 @interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate, UINavigationControllerDelegate>
 
@@ -172,7 +174,7 @@
 {
     if (stop) {
         // Selected a stop cell
-        if (self.selectedStop == stop) {
+        if ([self.selectedStop isEqual:stop]) {
             return;
         }
         self.selectedStop = stop;
@@ -197,7 +199,7 @@
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop
 {
-    if (self.selectedStop == stop) {
+    if ([self.selectedStop isEqual:stop]) {
         return;
     }
     self.selectedStop = stop;
@@ -212,7 +214,7 @@
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didDeselectStop:(MITShuttleStop *)stop
 {
-    if (self.selectedStop != stop) {
+    if (![self.selectedStop isEqual:stop]) {
         return;
     }
     self.selectedStop = nil;
@@ -227,7 +229,7 @@
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route
 {
-    if (self.selectedRoute == route) {
+    if ([self.selectedRoute isEqual:route]) {
         return;
     }
     self.selectedRoute = route;

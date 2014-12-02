@@ -466,8 +466,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)setRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
     // Are we actually changing routes?
-    BOOL needsRouteChange = (self.route != route);
-    BOOL needsStopChange = (self.stop != stop);
+    BOOL needsRouteChange = ![self.route isEqual:route];
+    BOOL needsStopChange = ![self.stop isEqual:stop];
     
     id<MKAnnotation> selectedAnnotation = nil;
     if (self.mapView.selectedAnnotations.count > 0) {
@@ -640,7 +640,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([self.route.nextStops containsObject:stop]) {
         state = state | MITShuttleStopStateNext;
     }
-    if (self.stop == stop) {
+    if ([self.stop isEqual:stop]) {
         state = state | MITShuttleStopStateSelected;
     }
 
