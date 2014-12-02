@@ -68,6 +68,27 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 - (void)scheduleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
 {
+    MITShuttlePrediction *rootPrediction = [predictionGroup firstObject];
+    NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:[rootPrediction.timestamp doubleValue] + kMITShuttleStopNotificationInterval];
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[rootPrediction.timestamp doubleValue]];
+    
+    NSString *alertBody = [self alertBodyForPredictionGroup:predictionGroup withRouteTitle:routeTitle];
+    
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.fireDate = fireDate;
+    notification.alertBody = alertBody;
+    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         rootPrediction.stopId,
+                              kMITShuttleStopNotificationVehicleIdKey:      rootPrediction.vehicleId,
+                              kMITShuttleStopNotificationPredictionDateKey: predictionDate};
+    UIApplication *application = [UIApplication sharedApplication];
+    [application scheduleLocalNotification:notification];
+    if (application.backgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    }
+}
+
+- (NSString *)alertBodyForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
+{
     MITShuttlePrediction *rootPrediction = predictionGroup.firstObject;
     NSMutableString *alertBody = [NSMutableString string];
     [alertBody appendString:routeTitle];
@@ -93,27 +114,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
         }
     }
     [alertBody appendString:@"."];
-    
-    NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:fireDateTimestamp];
-    [self scheduleNotificationForRootPrediction:rootPrediction andAlertBody:alertBody atFireDate:fireDate];
-}
-
-- (void)scheduleNotificationForRootPrediction:(MITShuttlePrediction *)rootPrediction andAlertBody:(NSString *)alertBody atFireDate:(NSDate *)fireDate
-{
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[rootPrediction.timestamp doubleValue]];
-    
-    UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.fireDate = fireDate;
-    notification.alertBody = alertBody;
-    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         rootPrediction.stopId,
-                              kMITShuttleStopNotificationVehicleIdKey:      rootPrediction.vehicleId,
-                              kMITShuttleStopNotificationPredictionDateKey: predictionDate,
-															MITNotificationModuleTagKey: MITModuleTagShuttle};
-    UIApplication *application = [UIApplication sharedApplication];
-    [application scheduleLocalNotification:notification];
-    if (application.backgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {
-        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-    }
+    return alertBody;
 }
 
 - (void)updateNotificationsForPredictionList:(MITShuttlePredictionList *)predictionList

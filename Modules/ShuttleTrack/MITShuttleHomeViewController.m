@@ -56,6 +56,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
 @property (nonatomic) BOOL hasFetchedRoutes;
+
 @end
 
 @implementation MITShuttleHomeViewController
@@ -226,6 +227,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     // Make sure we are still in the view hierarchy
     if (self.navigationController) {
+        /*
+         Timer runs every 10 seconds.  Every 6th time (1 minute), we fetch vehicles as well.  This will eventually be replaced by a single api call when server is updated.  At that point, this can be removed and replaced with the single call.
+         */
         static int runCount = 0;
         
         if (runCount == 0) {
