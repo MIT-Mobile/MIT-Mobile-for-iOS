@@ -13,13 +13,12 @@
 
 - (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
-    return (UIUserInterfaceIdiomPhone == currentUserInterfaceIdiom);
+    return YES;
 }
 
 - (void)loadRootViewController
 {
-    LinksViewController *rootViewController = [[LinksViewController alloc] init];
+    LinksViewController *rootViewController = [[LinksViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.rootViewController = rootViewController;
 }
 
@@ -28,6 +27,13 @@
 {
     [super didReceiveRequestWithURL:url];
     [self.navigationController popToViewController:self.rootViewController animated:NO];
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+    
+    self.viewController.moduleItem.type = MITModuleTypeSecondary;
 }
 
 @end
