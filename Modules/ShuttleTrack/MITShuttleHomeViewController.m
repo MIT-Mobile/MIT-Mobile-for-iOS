@@ -55,6 +55,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 @property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
+@property (nonatomic) BOOL hasFetchedRoutes;
+
 @end
 
 @implementation MITShuttleHomeViewController
@@ -87,7 +89,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (NSArray *)loadDefaultRoutes
 {
-    NSArray *defaultRoutes = [MITShuttleController loadDefaultShuttleRoutes];
+    NSArray *defaultRoutes = [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
     [self.routesFetchedResultsController performFetch:nil];
     return defaultRoutes;
 }
@@ -133,8 +135,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self setupTableView];
     [self setupToolbar];
     [self setupResourceData];
-    
     [self updateRoutesData];
+    
+    [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
+        self.hasFetchedRoutes = YES;
+        [self startRefreshingRoutesAndPredictions];
+    }];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -142,7 +149,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:animated];
     [[MITLocationManager sharedManager] startUpdatingLocation];
-    [self startRefreshingRoutesAndPredictions];
+    if (self.hasFetchedRoutes) {
+        [self startRefreshingRoutesAndPredictions];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
@@ -203,7 +212,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)startRefreshingRoutesAndPredictions
 {
-    [self loadRoutesAndPredictions];
+    [self fetchRouteVehiclesAndPredictions];
     NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kRoutesAndPredictionsGlobalRefreshInterval
                                                                  target:self
                                                                selector:@selector(loadRoutesAndPredictions)
@@ -214,18 +223,21 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     
 }
 
-- (void)loadRoutesAndPredictions
+- (void)fetchRouteVehiclesAndPredictions
 {
     // Make sure we are still in the view hierarchy
     if (self.navigationController) {
+        /*
+         Timer runs every 10 seconds.  Every 6th time (1 minute), we fetch vehicles as well.  This will eventually be replaced by a single api call when server is updated.  At that point, this can be removed and replaced with the single call.
+         */
         static int runCount = 0;
         
         if (runCount == 0) {
             [self beginRefreshing];
-            [self loadRoutesWithCompletion:^(NSArray *routes, NSError *error) {
+            [self fetchVehiclesWithCompletion:^(NSArray *routes, NSError *error) {
                 if (!error) {
                     [self updateRoutesData];
-                    [self loadPredictionsWithCompletion:^(NSError *error) {
+                    [self fetchPredictionsWithCompletion:^(NSError *error) {
                         [self updatePredictionsData];
                         [self endRefreshing];
                     }];
@@ -234,7 +246,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 }
             }];
         } else {
-            [self loadPredictionsWithCompletion:^(NSError *error) {
+            [self fetchPredictionsWithCompletion:^(NSError *error) {
                 [self updatePredictionsData];
                 [self endRefreshing];
             }];
@@ -248,9 +260,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     }
 }
 
-- (void)loadRoutesWithCompletion:(void(^)(NSArray *routes, NSError *error))completion
+- (void)fetchVehiclesWithCompletion:(void(^)(NSArray *routes, NSError *error))completion
 {
-    [[MITShuttleController sharedController] getRoutes:completion];
+    [[MITShuttleController sharedController] getVehicles:completion];
 }
 
 - (void)updateRoutesData
@@ -260,7 +272,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self.tableView reloadDataAndMaintainSelection];
 }
 
-- (void)loadPredictionsWithCompletion:(void(^)(NSError *error))completion
+- (void)fetchPredictionsWithCompletion:(void(^)(NSError *error))completion
 {
     dispatch_group_t group = dispatch_group_create();
 
@@ -276,7 +288,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         }
     }
     
-    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         completion(anyError);
     });
 }

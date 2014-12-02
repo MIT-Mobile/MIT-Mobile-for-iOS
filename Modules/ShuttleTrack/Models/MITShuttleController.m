@@ -4,6 +4,7 @@
 #import "MITAdditions.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
+#import "MITShuttleVehicleList.h"
 #import <RestKit/RKManagedObjectMappingOperationDataSource.h>
 #import <RestKit/RKManagedObjectStore.h>
 
@@ -97,6 +98,13 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    for (MITShuttleVehicleList *vehicleList in result.array) {
+                                                        MITShuttleRoute *route = [self routeForRouteId:vehicleList.routeId];
+                                                        if (route) {
+                                                            route.predictable = @(vehicleList.predictable);
+                                                            route.scheduled = @(vehicleList.scheduled);
+                                                        }
+                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
@@ -107,6 +115,18 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 }
 
 #pragma mark - Helper Methods
+
+- (MITShuttleRoute *)routeForRouteId:(NSString *)routeId
+{
+    MITShuttleRoute *returnRoute;
+    for (MITShuttleRoute *route in self.retrievedShuttleRoutes) {
+        if ([route.identifier isEqualToString:routeId]) {
+            returnRoute = route;
+            break;
+        }
+    }
+    return returnRoute;
+}
 
 - (void)getObjectForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
@@ -145,7 +165,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 #pragma mark - Default Routes Data
 
-+ (NSArray *)loadDefaultShuttleRoutes
+- (NSArray *)loadDefaultShuttleRoutes
 {
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"MITShuttlesDefaultRoutesData" ofType:@"json"];
     NSData *data = [NSData dataWithContentsOfFile:filePath];
@@ -167,6 +187,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             mapper.mappingOperationDataSource = dataSource;
             [mapper execute:nil];
             defaultRoutes = mapper.mappingResult.array;
+            self.retrievedShuttleRoutes = [defaultRoutes mutableCopy];
         }
     }
     
