@@ -1,4 +1,4 @@
-#import "MITToursCalloutMapView.h"
+#import "MITCalloutMapView.h"
 
 @interface MKMapView (UIGestureRecognizer)
 
@@ -7,7 +7,7 @@
 
 @end
 
-@implementation MITToursCalloutMapView
+@implementation MITCalloutMapView
 
 // override UIGestureRecognizer's delegate method so we can prevent MKMapView's recognizer from firing
 // when we interact with UIControl subclasses inside our callout view.
