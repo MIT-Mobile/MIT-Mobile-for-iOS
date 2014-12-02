@@ -1,7 +1,6 @@
 #import "MITEventsHomeViewControllerPad.h"
 #import "MITCalendarSelectionViewController.h"
 #import "MITCalendarPageViewController.h"
-#import "MITEventsMapViewController.h"
 #import "MITDatePickerViewController.h"
 #import "MITCalendarManager.h"
 #import "MITEventsSplitViewController.h"

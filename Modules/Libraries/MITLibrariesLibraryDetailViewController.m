@@ -54,7 +54,6 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (void)setupTableHeader
 {
     self.mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
-    [self.mapView setButtonsHidden:YES animated:NO];
     self.mapView.mapView.showsUserLocation = YES;
     self.mapView.userInteractionEnabled = NO;
     self.tableView.tableHeaderView = self.mapView;

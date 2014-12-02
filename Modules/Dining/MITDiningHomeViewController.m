@@ -93,6 +93,8 @@
     self.retailListViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
     
+    [self.mapViewController setToolBarHidden:NO];
+    
     [self addChildViewController:self.houseListViewController];
     [self addChildViewController:self.retailListViewController];
     [self addChildViewController:self.mapViewController];

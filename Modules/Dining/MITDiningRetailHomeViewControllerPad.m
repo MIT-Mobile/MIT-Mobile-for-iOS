@@ -8,7 +8,6 @@
 @interface MITDiningRetailHomeViewControllerPad () <MKMapViewDelegate, MITDiningRetailVenueListViewControllerDelegate, MITDiningMapsViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningRetailVenueListViewController *listViewController;
-@property (nonatomic, strong) MITDiningMapsViewController *mapsViewController;
 
 @end
 

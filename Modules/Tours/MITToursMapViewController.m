@@ -68,7 +68,6 @@ static NSInteger kAnnotationMarginRight = 50;
 {
     [self.tiledMapView setMapDelegate:self];
     [self.tiledMapView setUserTrackingDelegate:self];
-    [self.tiledMapView setButtonsHidden:YES animated:NO];
     
     MKMapView *mapView = self.tiledMapView.mapView;
     mapView.showsUserLocation = YES;

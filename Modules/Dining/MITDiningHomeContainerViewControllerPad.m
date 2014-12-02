@@ -10,6 +10,8 @@
 #import "MITDiningVenues.h"
 #import "MITDiningFilterViewController.h"
 #import "UINavigationBar+ExtensionPrep.h"
+#import "MITDiningMapsViewController.h"
+#import "MITTiledMapView.h"
 
 @interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate, MITSingleWebViewCellTableViewControllerDelegate>
 
@@ -78,11 +80,18 @@
     self.linksBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Links" style:UIBarButtonItemStylePlain target:self action:@selector(linksButtonPressed:)];
     self.filtersBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Filters" style:UIBarButtonItemStylePlain target:self action:@selector(filtersButtonPressed:)];
     
-    CGSize announcementsSize = [self.announcementsBarButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
-    CGSize filtersSize = [self.filtersBarButton.title sizeWithAttributes:[self.announcementsBarButton titleTextAttributesForState:UIControlStateNormal]];
+    [self updateToolbarForHouseDining];
+}
+
+- (void)updateToolbarForHouseDining
+{
+    // Yes, I know this is a bit wonky. If necessary, we could refactor the bar buttons to contain UIButtons with the appropriate titles as customViews (as the userLocationButton does with an image)
+    // It seems like accessing the view size is necessary to add the appropriate padding  in order to get a centered "Links" button in the middle
+    UIView *filterView = [self.filtersBarButton valueForKey:@"view"];
+    UIView *announcementsView = [self.announcementsBarButton valueForKey:@"view"];
     
     UIBarButtonItem *evenPaddingButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    evenPaddingButton.width = announcementsSize.width - filtersSize.width;
+    evenPaddingButton.width = announcementsView.bounds.size.width - filterView.bounds.size.width;
     
     self.toolbarItems = @[self.announcementsBarButton,
                           [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
@@ -90,6 +99,23 @@
                           [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                           evenPaddingButton,
                           self.filtersBarButton];
+}
+
+- (void)updateToolbarForRetailDining
+{
+    UIView *announcementsView = [self.announcementsBarButton valueForKey:@"view"];
+    
+    UIBarButtonItem *evenPaddingButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    
+    UIView *buttonView = self.diningRetailViewController.mapsViewController.tiledMapView.userLocationButton.customView;
+    evenPaddingButton.width = announcementsView.bounds.size.width - buttonView.bounds.size.width;
+    
+    self.toolbarItems = @[self.announcementsBarButton,
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          self.linksBarButton,
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          evenPaddingButton,
+                          self.diningRetailViewController.mapsViewController.tiledMapView.userLocationButton];
 }
 
 - (void)setupDiningHouseViewController
@@ -115,6 +141,8 @@
     
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[houseView]-0-|" options:0 metrics:nil views:@{@"houseView": self.diningHouseViewController.view}]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[houseView]-0-|" options:0 metrics:nil views:@{@"houseView": self.diningHouseViewController.view}]];
+    
+    [self updateToolbarForHouseDining];
 }
 
 - (void)showDiningRetailViewController
@@ -130,6 +158,8 @@
     
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[retailView]-0-|" options:0 metrics:nil views:@{@"retailView": self.diningRetailViewController.view}]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[retailView]-0-|" options:0 metrics:nil views:@{@"retailView": self.diningRetailViewController.view}]];
+    
+    [self updateToolbarForRetailDining];
 }
 
 - (void)diningSegmentedControlChanged
