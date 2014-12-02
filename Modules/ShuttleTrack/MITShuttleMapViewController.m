@@ -731,7 +731,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     // TODO: Correctly initialize this
     // TODO: Figure out how to correctly add the VC as a child VC
     MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain stop:stop route:self.route predictionLoader:nil];
-
+    stopViewController.tableTitle = stop.title;
+    
     CGSize size = CGSizeZero;
     if (self.route) {
         stopViewController.viewOption = MITShuttleStopViewOptionAll;
