@@ -3,16 +3,12 @@
 #import "MITModuleItem.h"
 
 static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
-static NSUInteger const MITModuleSectionIndex = 0;
-
-@interface MITDrawerViewController ()
-@property(nonatomic,strong) NSIndexPath *selectedIndexPath;
-@end
 
 @implementation MITDrawerViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.clearsSelectionOnViewWillAppear = NO;
 
     // Do any additional setup after loading the view from its nib.
 }
@@ -20,7 +16,6 @@ static NSUInteger const MITModuleSectionIndex = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -56,7 +51,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
     [self.tableView reloadData];
 }
 
-- (void)setSelectedModuleItems:(MITModuleItem*)selectedModuleItem
+- (void)setSelectedModuleItem:(MITModuleItem*)selectedModuleItem
 {
     [self setSelectedModuleItem:selectedModuleItem animated:NO];
 }
@@ -74,9 +69,7 @@ static NSUInteger const MITModuleSectionIndex = 0;
 
 - (void)willSetSelectedModuleItem:(MITModuleItem*)newSelectedModuleItem animated:(BOOL)animated
 {
-    NSIndexPath *oldSelectedIndexPath = [self _indexPathForModuleItem:newSelectedModuleItem];
-
-    [self.tableView beginUpdates];
+    NSIndexPath *oldSelectedIndexPath = [self _indexPathForModuleItem:self.selectedModuleItem];
 
     if (oldSelectedIndexPath) {
         [self.tableView deselectRowAtIndexPath:oldSelectedIndexPath animated:animated];
@@ -90,8 +83,6 @@ static NSUInteger const MITModuleSectionIndex = 0;
     if (newSelectedIndexPath) {
         [self.tableView selectRowAtIndexPath:newSelectedIndexPath animated:animated scrollPosition:UITableViewScrollPositionNone];
     }
-
-    [self.tableView endUpdates];
 }
 
 #pragma mark Private
@@ -175,11 +166,6 @@ static NSUInteger const MITModuleSectionIndex = 0;
 }
 
 #pragma mark UITableViewDelegate
-- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
