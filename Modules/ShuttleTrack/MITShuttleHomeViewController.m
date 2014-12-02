@@ -215,7 +215,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self fetchRouteVehiclesAndPredictions];
     NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kRoutesAndPredictionsGlobalRefreshInterval
                                                                  target:self
-                                                               selector:@selector(loadRoutesAndPredictions)
+                                                               selector:@selector(fetchRouteVehiclesAndPredictions)
                                                                userInfo:nil
                                                                 repeats:YES];
     [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
