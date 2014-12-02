@@ -34,7 +34,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateNext     = 1 << 1,
 };
 
-@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate, MITShuttleStopPopoverViewControllerDelegate, SMCalloutViewDelegate>
+@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, UIPopoverControllerDelegate, MITShuttleStopPopoverViewControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
 @property (nonatomic, weak) IBOutlet MITCalloutMapView *mapView;
 @property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
@@ -734,6 +734,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     // TODO: Figure out how to correctly add the VC as a child VC
     MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain stop:stop route:self.route predictionLoader:nil];
     stopViewController.tableTitle = stop.title;
+    stopViewController.delegate = self;
     
     CGSize size = CGSizeZero;
     if (self.route) {
@@ -924,6 +925,15 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.route = route;
     [self resetFetchedResults];
     [self setupMapBoundingBoxAnimated:YES];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
+        [self.delegate shuttleMapViewController:self didSelectRoute:route];
+    }
+}
+
+#pragma mark - MITShuttleStopViewControllerDelegate
+
+- (void)shuttleStopViewController:(MITShuttleStopViewController *)shuttleStopViewController didSelectRoute:(MITShuttleRoute *)route
+{
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
         [self.delegate shuttleMapViewController:self didSelectRoute:route];
     }

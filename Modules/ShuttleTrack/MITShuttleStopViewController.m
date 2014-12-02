@@ -341,8 +341,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 {
     MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:indexPath.section] integerValue];
     if (sectionType == MITShuttleStopViewControllerSectionTypeRoutes) {
-        MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:self.intersectingRoutes[indexPath.row] stop:nil];
-        [self.navigationController pushViewController:routeVC animated:YES];
+        MITShuttleRoute *route = self.intersectingRoutes[indexPath.row];
+        if ([self.delegate respondsToSelector:@selector(shuttleStopViewController:didSelectRoute:)]) {
+            [self.delegate shuttleStopViewController:self didSelectRoute:route];
+        } else {
+            // Default behavior
+            MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:nil];
+            [self.navigationController pushViewController:routeVC animated:YES];
+        }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

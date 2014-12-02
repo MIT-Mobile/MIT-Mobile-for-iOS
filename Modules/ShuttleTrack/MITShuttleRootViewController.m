@@ -232,6 +232,8 @@
     }
     self.selectedRoute = route;
     
+    [self.mapViewController setRoute:route stop:self.selectedStop];
+    
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
         [self pushRouteViewControllerWithRoute:route];
