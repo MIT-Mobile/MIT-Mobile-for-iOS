@@ -129,12 +129,16 @@ NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMI
 
 - (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
 {
-    [self beginRefreshing];
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        [self beginRefreshing];
+    }
 }
 
 - (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
 {
-    [self endRefreshing];
+    if (self.viewOption == MITShuttleStopViewOptionAll) {
+        [self endRefreshing];
+    }
 }
 
 #pragma mark - UITableViewDataSource
