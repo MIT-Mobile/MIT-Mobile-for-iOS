@@ -55,7 +55,7 @@ static CGFloat const kWebViewContentMargin = 8;
 - (void)setupMapView
 {
     [self.tiledMapView setMapDelegate:self];
-    [self.tiledMapView setButtonsHidden:YES animated:NO];
+    
     [self.tiledMapView.mapView setRegion:kMITToursDefaultMapRegion animated:NO];
     self.tiledMapView.mapView.showsUserLocation = YES;
     [self.tiledMapView showRouteForStops:[self.currentStop.tour.stops array]];

@@ -14,8 +14,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 @interface MITTiledMapView() <UIAlertViewDelegate, MKMapViewDelegate>
 
-@property (nonatomic, strong) UIButton *leftButton;
-@property (nonatomic, strong) UIButton *rightButton;
+@property (nonatomic, strong) UIBarButtonItem *userLocationButton;
 
 @property (nonatomic, strong) MITMapDelegateInterceptor *delegateInterceptor;
 
@@ -46,7 +45,6 @@ static CGFloat const kBottomButtonYPadding = 20;
 {
     [self setupMapView];
     [self setupTileOverlays];
-    [self setupButtons];
     
     [self setMapDelegate:nil]; // Ensures that we're at least intercepting delegate calls we want to, even if the user never sets a proper delegate
 }
@@ -69,50 +67,12 @@ static CGFloat const kBottomButtonYPadding = 20;
     self.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
+- (void)userLocationButtonPressed:(UIBarButtonItem *)userLocationButton
+{
+    [self toggleUserTrackingMode];
+}
+
 #pragma mark - Public Methods
-
-- (void)setButtonsHidden:(BOOL)hidden animated:(BOOL)animated
-{
-    void (^hideButtonsBlock)(void) = ^{
-        self.leftButton.alpha = hidden ? 0 : 1;
-        self.rightButton.alpha = hidden ? 0 : 1;
-    };
-    
-    [self bringSubviewToFront:self.leftButton];
-    [self bringSubviewToFront:self.rightButton];
-    
-    if (animated) {
-        [UIView animateWithDuration:0.5 animations:hideButtonsBlock];
-    } else {
-        hideButtonsBlock();
-    }
-}
-
-- (void)setLeftButtonHidden:(BOOL)hidden animated:(BOOL)animated
-{
-    void (^hideButtonBlock)(void) = ^{
-        self.leftButton.alpha = hidden ? 0 : 1;
-    };
-    
-    if (animated) {
-        [UIView animateWithDuration:0.5 animations:hideButtonBlock];
-    } else {
-        hideButtonBlock();
-    }
-}
-
-- (void)setRightButtonHidden:(BOOL)hidden animated:(BOOL)animated
-{
-    void (^hideButtonBlock)(void) = ^{
-        self.rightButton.alpha = hidden ? 0 : 1;
-    };
-    
-    if (animated) {
-        [UIView animateWithDuration:0.5 animations:hideButtonBlock];
-    } else {
-        hideButtonBlock();
-    }
-}
 
 - (void)centerMapOnUserLocation
 {
@@ -141,7 +101,7 @@ static CGFloat const kBottomButtonYPadding = 20;
             [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
         }
             
-        [self updateLeftButtonForCurrentUserTrackingMode];
+        [self updateUserLocationButtonForTrackingMode];
     }
     else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted ||
              [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
@@ -150,13 +110,14 @@ static CGFloat const kBottomButtonYPadding = 20;
     }
 }
 
-- (void)updateLeftButtonForCurrentUserTrackingMode
+- (void)updateUserLocationButtonForTrackingMode
 {
     if (self.mapView.userTrackingMode == MKUserTrackingModeFollow) {
-        self.leftButton.selected = YES;
-    }
-    else {
-        self.leftButton.selected = NO;
+        UIButton *userLocationCustomButton = (UIButton *)self.userLocationButton.customView;
+        [userLocationCustomButton setSelected:YES];
+    } else {
+        UIButton *userLocationCustomButton = (UIButton *)self.userLocationButton.customView;
+        [userLocationCustomButton setSelected:NO];
     }
 }
 
@@ -188,58 +149,20 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 #pragma mark - Buttons
 
-- (void)setupButtons
+- (UIBarButtonItem *)userLocationButton
 {
-    [self setupLeftButton];
-    [self setupRightButton];
-}
-
-- (void)setupLeftButton
-{
-    self.leftButton = [[UIButton alloc] initWithFrame:CGRectMake(kBottomButtonXPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonYPadding, kBottomButtonSize, kBottomButtonSize)];
-    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location"] forState:UIControlStateNormal];
-    [self.leftButton setImage:[UIImage imageNamed:@"map/map_location_selected"] forState:UIControlStateSelected];
-
-    [self.leftButton addTarget:self action:@selector(leftButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    self.leftButton.layer.borderWidth = 1;
-    self.leftButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.leftButton.layer.cornerRadius = 4;
-    self.leftButton.backgroundColor = [UIColor colorWithWhite:0.88 alpha:1];
-    self.leftButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:self.leftButton];
-    
-    NSDictionary *viewsDictionary = @{@"leftButton": self.leftButton};
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%f-[leftButton(==%f)]", kBottomButtonXPadding, kBottomButtonSize] options:0 metrics:nil views:viewsDictionary]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:[leftButton(==%f)]-%f-|", kBottomButtonSize, kBottomButtonYPadding] options:0 metrics:nil views:viewsDictionary]];
-}
-
-- (void)setupRightButton
-{
-    self.rightButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - kBottomButtonSize - kBottomButtonXPadding, self.frame.size.height - kBottomButtonSize - kBottomButtonYPadding, kBottomButtonSize, kBottomButtonSize)];
-    [self.rightButton setImage:[UIImage imageNamed:@"map/map_list"] forState:UIControlStateNormal];
-    [self.rightButton addTarget:self action:@selector(rightButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    self.rightButton.layer.borderWidth = 1;
-    self.rightButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.rightButton.layer.cornerRadius = 4;
-    self.rightButton.backgroundColor = [UIColor colorWithWhite:0.88 alpha:1];
-    self.rightButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:self.rightButton];
-    
-    NSDictionary *viewsDictionary = @{@"rightButton": self.rightButton};
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:[rightButton(==%f)]-%f-|", kBottomButtonSize, kBottomButtonXPadding] options:0 metrics:nil views:viewsDictionary]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:[rightButton(==%f)]-%f-|", kBottomButtonSize, kBottomButtonYPadding] options:0 metrics:nil views:viewsDictionary]];
-}
-
-- (void)leftButtonTapped:(id)sender
-{
-    [self toggleUserTrackingMode];
-}
-
-- (void)rightButtonTapped:(id)sender
-{
-    if ([self.buttonDelegate respondsToSelector:@selector(mitTiledMapViewRightButtonPressed:)]) {
-        [self.buttonDelegate mitTiledMapViewRightButtonPressed:self];
+    if (!_userLocationButton) {
+        UIButton *userLocationCustomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *normalImage = [UIImage imageNamed:@"map/map_location"];
+        UIImage *selectedImage = [UIImage imageNamed:@"map/map_location_selected"];
+        userLocationCustomButton.frame = CGRectMake(0, 0, normalImage.size.width, normalImage.size.height);
+        [userLocationCustomButton addTarget:self action:@selector(userLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [userLocationCustomButton setImage:normalImage forState:UIControlStateNormal];
+        [userLocationCustomButton setImage:selectedImage forState:UIControlStateSelected];
+        _userLocationButton = [[UIBarButtonItem alloc] initWithCustomView:userLocationCustomButton];
     }
+    
+    return _userLocationButton;
 }
 
 #pragma mark - Route drawing
@@ -355,7 +278,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 - (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
 {
-    [self updateLeftButtonForCurrentUserTrackingMode];
+    [self updateUserLocationButtonForTrackingMode];
     [self.userTrackingDelegate mitTiledMapView:self didChangeUserTrackingMode:mode animated:animated];
 }
 
