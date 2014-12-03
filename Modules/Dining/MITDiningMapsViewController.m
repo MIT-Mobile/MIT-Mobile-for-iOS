@@ -67,10 +67,12 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     } else {
         self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 44, self.view.bounds.size.width, 44)];
         [self.toolbar setItems:@[self.tiledMapView.userLocationButton] animated:NO];
+        self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
         [self.view addSubview:self.toolbar];
+        
         NSMutableArray *newToolbarConstraints = [NSMutableArray array];
         [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
-        [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
+        [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
         self.toolbarConstraints = [NSArray arrayWithArray:newToolbarConstraints];
         [self.view addConstraints:self.toolbarConstraints];
         
