@@ -56,7 +56,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
 
-@property (nonatomic) MITShuttleRouteContainerState previousState;
 @property (nonatomic, getter = isRotating) BOOL rotating;
 
 @end
@@ -408,7 +407,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)setState:(MITShuttleRouteContainerState)state animated:(BOOL)animated
 {
     [self configureLayoutForState:state animated:animated];
-    _previousState = _state;
     _state = state;
 }
 
@@ -709,7 +707,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController
 {
     if (self.state == MITShuttleRouteContainerStateMap) {
-        [self setState:self.previousState animated:YES];
+        // Always return to route state listing the stops regardless of previous state.
+        [self setState:MITShuttleRouteContainerStateRoute animated:YES];
     }
 }
 
