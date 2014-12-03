@@ -3,11 +3,12 @@
 extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 
+@class MITCalloutMapView;
 @protocol MITTiledMapViewUserTrackingDelegate;
 
 @interface MITTiledMapView : UIView
 
-@property (nonatomic, strong) MKMapView *mapView;
+@property (nonatomic, strong) MITCalloutMapView *mapView;
 @property (nonatomic, readonly) UIBarButtonItem *userLocationButton;
 
 @property (nonatomic, weak) id<MITTiledMapViewUserTrackingDelegate> userTrackingDelegate;
@@ -24,7 +25,7 @@ extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 - (void)toggleUserTrackingMode;
 
 // protected
-- (MKMapView *)createMapView;
+- (MITCalloutMapView *)createMapView;
 
 @end
 

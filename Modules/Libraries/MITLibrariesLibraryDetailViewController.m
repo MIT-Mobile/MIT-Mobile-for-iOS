@@ -5,6 +5,7 @@
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 #import "MITTiledMapView.h"
+#import "MITCalloutMapView.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";

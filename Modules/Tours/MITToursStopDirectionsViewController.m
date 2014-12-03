@@ -7,6 +7,7 @@
 #import "MITToursStopDirectionAnnotation.h"
 #import "MITToursStopDirectionsAnnotationView.h"
 #import "UIKit+MITAdditions.h"
+#import "MITCalloutMapView.h"
 
 static CGFloat const kIPadMapHeight = 300;
 static CGFloat const kWebViewContentMargin = 8;

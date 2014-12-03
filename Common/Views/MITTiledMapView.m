@@ -4,8 +4,9 @@
 #import "MITToursDirectionsToStop.h"
 #import "MITLocationManager.h"
 #import "UIKit+MITAdditions.h"
+#import "MITCalloutMapView.h"
 
-const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.015, 0.015}};
+const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
 
 static CGFloat const kBottomButtonSize = 44;
@@ -49,9 +50,9 @@ static CGFloat const kBottomButtonYPadding = 20;
     [self setMapDelegate:nil]; // Ensures that we're at least intercepting delegate calls we want to, even if the user never sets a proper delegate
 }
 
-- (MKMapView *)createMapView
+- (MITCalloutMapView *)createMapView
 {
-    return [[MKMapView alloc] initWithFrame:self.frame];
+    return [[MITCalloutMapView alloc] initWithFrame:self.frame];
 }
 
 - (void)setupMapView
