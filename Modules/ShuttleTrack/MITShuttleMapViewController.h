@@ -17,6 +17,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
 - (void)setRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop;
 - (void)routeUpdated;
+- (void)setMapToolBarHidden:(BOOL)hidden;
 
 @property (strong, nonatomic) MITShuttleRoute *route;
 @property (strong, nonatomic) MITShuttleStop *stop;
@@ -28,11 +29,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 @protocol MITShuttleMapViewControllerDelegate <NSObject>
 
 @optional
-- (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController;
 
+- (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController;
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didDeselectStop:(MITShuttleStop *)stop;
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop;
-
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route;
 
 @end
