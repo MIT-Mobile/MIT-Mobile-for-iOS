@@ -707,6 +707,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController
 {
     if (self.state == MITShuttleRouteContainerStateMap) {
+        self.mapViewController.stop = nil;
         // Always return to route state listing the stops regardless of previous state.
         [self setState:MITShuttleRouteContainerStateRoute animated:YES];
     }
