@@ -71,6 +71,8 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
         NSMutableArray *newToolbarConstraints = [NSMutableArray array];
         [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
         [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
+        self.toolbarConstraints = [NSArray arrayWithArray:newToolbarConstraints];
+        [self.view addConstraints:self.toolbarConstraints];
         
         [self.view removeConstraint:self.mapBottomConstraint];
         self.mapBottomConstraint = [NSLayoutConstraint constraintWithItem:self.tiledMapView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeTop multiplier:1 constant:0];
