@@ -137,6 +137,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self setupResourceData];
     [self updateRoutesData];
     
+    [self beginRefreshing];
     [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
         self.hasFetchedRoutes = YES;
         [self startRefreshingRoutesAndPredictions];
@@ -414,7 +415,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     NSMutableDictionary *mutableStopsDictionary = [NSMutableDictionary dictionary];
     for (MITShuttleRoute *route in self.routes) {
-        mutableStopsDictionary[route.identifier] = [route nearestStopsWithCount:kNearestStopDisplayCount];
+        if (route.identifier) {
+            mutableStopsDictionary[route.identifier] = [route nearestStopsWithCount:kNearestStopDisplayCount];
+        }
     }
     self.nearestStops = [NSDictionary dictionaryWithDictionary:mutableStopsDictionary];
 }
@@ -558,6 +561,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     }
     NSDictionary *resource = self.resourceData.contactInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
+    cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     cell.detailTextLabel.text = resource[kResourceFormattedPhoneNumberKey];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
     cell.detailTextLabel.textColor = [UIColor mit_greyTextColor];
@@ -572,6 +576,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     }
     NSDictionary *resource = self.resourceData.mbtaInformation[indexPath.row];
     cell.textLabel.text = resource[kResourceDescriptionKey];
+    cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     return cell;
 }

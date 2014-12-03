@@ -5,10 +5,8 @@ NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
 NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
 
 static const CGFloat kCellHeightNoAlert = 45.0;
-static const CGFloat kCellHeightAlert = 62.0;
 
 static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden = 1000;
-static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible = 1;
 
 @interface MITShuttleRouteCell()
 
@@ -25,6 +23,7 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityVisible
 - (void)awakeFromNib
 {
     self.alertContainerViewHeightConstraint.priority = kAlertContainerViewHeightConstraintPriorityHidden;
+    self.textLabel.font = [UIFont systemFontOfSize:17.0];
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated

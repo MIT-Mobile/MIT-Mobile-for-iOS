@@ -74,6 +74,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
     NSString *alertBody = [self alertBodyForPredictionGroup:predictionGroup withRouteTitle:routeTitle];
     
     UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.alertAction = @"View";
     notification.fireDate = fireDate;
     notification.alertBody = alertBody;
     notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         rootPrediction.stopId,
