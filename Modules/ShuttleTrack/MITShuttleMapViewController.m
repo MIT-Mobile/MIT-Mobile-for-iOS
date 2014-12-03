@@ -274,7 +274,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
             
         case MITShuttleMapStateContracted: {
-            [self setupMapBoundingBoxAnimated:animated];
+            if (!self.stop) {
+                [self setupMapBoundingBoxAnimated:animated];
+            }
             break;
         }
         case MITShuttleMapStateExpanded: {
@@ -288,6 +290,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     _stop = stop;
     [self refreshStopAnnotationImages];
+    [self centerToShuttleStop:stop animated:YES];
 }
 
 - (NSArray *)routes
@@ -321,6 +324,14 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
         [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
     }
+}
+
+#pragma mark - Stop Centering
+
+- (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated
+{
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(stop.coordinate, 50, 50);
+    [self.mapView setRegion:region animated:animated];
 }
 
 #pragma mark - NSFetchedResultsController
@@ -524,18 +535,21 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
-    MKCoordinateRegion region;
-    MITShuttleRoute *route = self.route;
-    if ([route.pathBoundingBox isKindOfClass:[NSArray class]] && [route.pathBoundingBox count] > 3) {
-        region = [route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
+    if (!self.stop) {
+        MKCoordinateRegion region;
+        MITShuttleRoute *route = self.route;
+        if ([route.pathBoundingBox isKindOfClass:[NSArray class]] && [route.pathBoundingBox count] > 3) {
+            region = [route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
+        } else {
+            // Center on the MIT Campus with custom map tiles
+            region = kMITShuttleDefaultMapRegion;
+        }
+        
+        [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
+        [self.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
     } else {
-        // Center on the MIT Campus with custom map tiles
-        region = kMITShuttleDefaultMapRegion;
+        [self centerToShuttleStop:self.stop animated:animated];
     }
-    
-    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-    
-    [self.mapView setRegion:region animated:animated];
 }
 
 - (CGRect)rectForAnnotationView:(MKAnnotationView *)annotationView inView:(UIView *)view

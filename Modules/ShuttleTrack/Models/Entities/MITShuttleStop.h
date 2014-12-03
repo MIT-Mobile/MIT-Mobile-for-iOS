@@ -19,6 +19,9 @@
 @property (nonatomic, retain) NSOrderedSet *predictions;
 @property (nonatomic, retain) NSOrderedSet *routes;
 
+// Computed
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
+
 - (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route;
 - (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle;
 
