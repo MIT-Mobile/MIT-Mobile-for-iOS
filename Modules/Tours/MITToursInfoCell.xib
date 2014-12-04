@@ -20,9 +20,9 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p0l-KH-9eg">
-                        <rect key="frame" x="-8" y="70" width="336" height="1"/>
-                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p0l-KH-9eg">
+                        <rect key="frame" x="0.0" y="64" width="320" height="1"/>
+                        <color key="backgroundColor" red="0.8901960784313725" green="0.8901960784313725" blue="0.89803921568627454" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="QD0-rC-6d1"/>
                         </constraints>
@@ -46,11 +46,11 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="kQG-ha-oug" firstAttribute="top" secondItem="o6Z-ks-diT" secondAttribute="bottom" constant="8" symbolic="YES" id="Nvi-ak-edf"/>
-                    <constraint firstAttribute="bottom" secondItem="p0l-KH-9eg" secondAttribute="bottom" constant="-0.5" id="Pec-fR-sSP"/>
+                    <constraint firstAttribute="bottom" secondItem="p0l-KH-9eg" secondAttribute="bottom" id="Pec-fR-sSP"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="trailing" secondItem="kQG-ha-oug" secondAttribute="trailing" id="Sbm-m6-0TA"/>
-                    <constraint firstAttribute="trailing" secondItem="p0l-KH-9eg" secondAttribute="trailing" constant="-8" id="UtJ-yv-Jye"/>
+                    <constraint firstAttribute="trailing" secondItem="p0l-KH-9eg" secondAttribute="trailing" id="UtJ-yv-Jye"/>
                     <constraint firstItem="kQG-ha-oug" firstAttribute="trailing" secondItem="o6Z-ks-diT" secondAttribute="trailing" id="V9N-Rn-3r7"/>
-                    <constraint firstItem="p0l-KH-9eg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="-8" id="WY0-hO-8pD"/>
+                    <constraint firstItem="p0l-KH-9eg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="WY0-hO-8pD"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="ePo-T4-bKn"/>
                     <constraint firstItem="p0l-KH-9eg" firstAttribute="top" secondItem="kQG-ha-oug" secondAttribute="bottom" constant="6" id="hAn-0D-zi2"/>
                     <constraint firstItem="o6Z-ks-diT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="hlI-6E-NOh"/>

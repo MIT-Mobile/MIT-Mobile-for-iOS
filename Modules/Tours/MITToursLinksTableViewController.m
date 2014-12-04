@@ -1,6 +1,7 @@
 #import "MITToursLinksTableViewController.h"
 #import "MITToursLinksDataSourceDelegate.h"
 #import "MITMailComposeController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITToursLinksTableViewController () <MITToursLinksDataSourceDelegateDelegate, MFMailComposeViewControllerDelegate>
 
@@ -18,6 +19,8 @@
     
     self.tableView.scrollEnabled = NO;
     
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
     [self setupDataSourceDelegate];
 }
 

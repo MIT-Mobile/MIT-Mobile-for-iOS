@@ -10,6 +10,7 @@
 @property (weak, nonatomic) IBOutlet UIView *tourView;
 @property (weak, nonatomic) IBOutlet UIImageView *toursImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *arrowImageView;
+@property (weak, nonatomic) IBOutlet UIView *highlightView;
 
 @end
 
@@ -22,6 +23,7 @@
     self.toursImageView.image = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
     self.arrowImageView.image = [UIImage imageNamed:@"global/action-arrow-white"];
     self.tourView.hidden = YES;
+    self.highlightView.hidden = YES;
     
     self.contentView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
 }
@@ -34,6 +36,11 @@
     self.tourDurationLabel.text = tour.durationString;
     
     self.tourView.hidden = NO;
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
+{
+    self.highlightView.hidden = !highlighted;
 }
 
 @end

@@ -37,11 +37,13 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
         {
             cell.textLabel.text = @"Send Feedback";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-            UIView *topSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 0.5)];
-            topSeparator.backgroundColor = [UIColor lightGrayColor];
-            [cell addSubview:topSeparator];
+            if (self.isIphoneTableView) {
+                UIView *topSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, cell.frame.size.width, 0.5)];
+                topSeparator.backgroundColor = [UIColor mit_cellSeparatorColor];
+                [cell addSubview:topSeparator];
+            }
             UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(15, cell.frame.size.height - 1, cell.frame.size.width - 15, 0.5)];
-            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
+            bottomSeparator.backgroundColor = [UIColor mit_cellSeparatorColor];
             [cell addSubview:bottomSeparator];
             break;
         }
@@ -50,7 +52,7 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
             cell.textLabel.text = @"MIT Information Center";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(15, cell.frame.size.height - 1, cell.frame.size.width - 15, 0.5)];
-            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
+            bottomSeparator.backgroundColor = [UIColor mit_cellSeparatorColor];
             [cell addSubview:bottomSeparator];
             break;
         }
@@ -58,9 +60,11 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
         {
             cell.textLabel.text = @"MIT Admissions";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-            UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, cell.frame.size.height - 1, cell.frame.size.width, 0.5)];
-            bottomSeparator.backgroundColor = [UIColor lightGrayColor];
-            [cell addSubview:bottomSeparator];
+            if (self.isIphoneTableView) {
+                UIView *bottomSeparator = [[UIView alloc] initWithFrame:CGRectMake(0, cell.frame.size.height - 0.5, cell.frame.size.width, 0.5)];
+                bottomSeparator.backgroundColor = [UIColor mit_cellSeparatorColor];
+                [cell addSubview:bottomSeparator];
+            }
             break;
         }
         default:
