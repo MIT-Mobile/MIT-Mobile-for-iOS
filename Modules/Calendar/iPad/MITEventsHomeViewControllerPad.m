@@ -196,7 +196,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)showGeneralRightBarButtonItems
 {
     if (!self.searchMagnifyingGlassBarButtonItem) {
-        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search"]
+        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/search_magnifier"]
                                                                                    style:UIBarButtonItemStylePlain
                                                                                   target:self
                                                                                   action:@selector(searchButtonPressed:)];
