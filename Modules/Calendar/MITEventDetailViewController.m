@@ -24,6 +24,24 @@ static NSInteger const kMITEventDetailsSection = 0;
 static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 
+#pragma mark - EKEventEditViewController - PreferredContentSize
+/*
+ In iOS 8, when presenting this controller in a form sheet.  
+ Setting preferred content size does nothing as well as attempting to set the view bounds.  
+ This is the least invasive way I found to size the formsheet presentation appropriately.
+ */
+@interface EKEventEditViewController (ModalFormSheetSizing)
+@end
+
+@implementation EKEventEditViewController (ModalFormSheetSizing)
+- (CGSize)preferredContentSize
+{
+    return CGSizeMake(540, 620);
+}
+@end
+
+#pragma mark - MITEventDetailViewController
+
 @interface MITEventDetailViewController () <MITWebviewCellDelegate, EKEventEditViewDelegate, UIAlertViewDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *rowTypes;
@@ -221,7 +239,14 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
         eventViewController.event = event;
         eventViewController.eventStore = eventStore;
         eventViewController.editViewDelegate = self;
-        [self presentViewController:eventViewController animated:YES completion:NULL];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            eventViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+            // Setting animated to YES causes the view controller to jump towards the bottom of the iPad after presenting in landscape.
+            [self presentViewController:eventViewController animated:NO completion:nil];
+        } else {
+            [self presentViewController:eventViewController animated:YES completion:nil];
+        }
+        
     };
     
     if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)]) {
