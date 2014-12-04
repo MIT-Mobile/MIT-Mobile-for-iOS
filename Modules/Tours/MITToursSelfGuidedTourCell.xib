@@ -35,8 +35,8 @@
                             <constraint firstItem="ebY-oE-wxy" firstAttribute="width" relation="lessThanOrEqual" secondItem="mue-5w-tGz" secondAttribute="width" id="hmv-CY-64p"/>
                         </constraints>
                     </view>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Di-1E-C1k">
-                        <rect key="frame" x="0.0" y="132" width="320" height="98"/>
+                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Di-1E-C1k">
+                        <rect key="frame" x="0.0" y="133" width="320" height="98"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Tour Short Description" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xuZ-nd-xfL">
                                 <rect key="frame" x="15" y="33" width="271" height="21"/>
@@ -77,21 +77,30 @@
                             <constraint firstAttribute="trailing" secondItem="lKu-Hu-OpQ" secondAttribute="trailing" constant="8" id="lv8-fY-Ah7"/>
                         </constraints>
                     </view>
+                    <view alpha="0.69999999999999973" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pbG-uM-sFd">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="230"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="mue-5w-tGz" secondAttribute="bottom" constant="-4.5" id="6al-s2-UqR"/>
+                    <constraint firstItem="pbG-uM-sFd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="9Nb-7c-4f2"/>
                     <constraint firstItem="mue-5w-tGz" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="GZu-Yy-5XP"/>
                     <constraint firstItem="5Di-1E-C1k" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="REz-Aw-Qid"/>
                     <constraint firstAttribute="trailing" secondItem="5Di-1E-C1k" secondAttribute="trailing" id="aRf-8M-FBa"/>
+                    <constraint firstAttribute="bottom" secondItem="pbG-uM-sFd" secondAttribute="bottom" constant="-2" id="cQo-hY-IEd"/>
                     <constraint firstAttribute="bottom" secondItem="5Di-1E-C1k" secondAttribute="bottom" constant="-1.5" id="ckv-xt-KS0"/>
                     <constraint firstAttribute="trailing" secondItem="mue-5w-tGz" secondAttribute="trailing" id="iT9-TA-yeJ"/>
+                    <constraint firstAttribute="trailing" secondItem="pbG-uM-sFd" secondAttribute="trailing" id="jyu-WI-hRk"/>
                     <constraint firstItem="mue-5w-tGz" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="-1" id="lr7-3I-x3o"/>
+                    <constraint firstItem="pbG-uM-sFd" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="xKe-2U-05d"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <connections>
                 <outlet property="arrowImageView" destination="lKu-Hu-OpQ" id="Vzv-mR-9Db"/>
+                <outlet property="highlightView" destination="pbG-uM-sFd" id="eo8-gM-Jhe"/>
                 <outlet property="tourDistanceLabel" destination="yNq-8p-MyG" id="I1B-Oo-5UT"/>
                 <outlet property="tourDurationLabel" destination="h5f-8K-6oI" id="2gu-O7-gZY"/>
                 <outlet property="tourShortDescriptionLabel" destination="xuZ-nd-xfL" id="ur2-RF-5oD"/>
