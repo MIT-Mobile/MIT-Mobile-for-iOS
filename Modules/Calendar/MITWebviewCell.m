@@ -1,6 +1,6 @@
 #import "MITWebviewCell.h"
 
-static CGFloat const kWebViewHorizontalPadding = 8.0;
+static CGFloat const kWebViewHorizontalPadding = 6.0;
 static CGFloat const kWebViewVerticalPadding = 6.0;
 
 static int const kAlertViewTagShouldOpenLink = 12323;
