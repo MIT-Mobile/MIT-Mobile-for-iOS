@@ -81,7 +81,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     self.hasSetUpMapRect = NO;
     [self.tiledMapView setMapDelegate:self];
-    self.tiledMapView.mapView.delegate = self;
     self.tiledMapView.mapView.showsUserLocation = YES;
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
