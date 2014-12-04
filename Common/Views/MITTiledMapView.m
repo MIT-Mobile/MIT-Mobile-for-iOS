@@ -9,10 +9,6 @@
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
 
-static CGFloat const kBottomButtonSize = 44;
-static CGFloat const kBottomButtonXPadding = 8;
-static CGFloat const kBottomButtonYPadding = 20;
-
 @interface MITTiledMapView() <UIAlertViewDelegate, MKMapViewDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *userLocationButton;
@@ -57,6 +53,8 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 - (void)setupMapView
 {
+    [MITLocationManager sharedManager]; // This forces the creation of the shared manager, which will enable location services whenever a map is show.
+    
     self.mapView = [self createMapView];
     self.mapView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.mapView];
@@ -89,7 +87,7 @@ static CGFloat const kBottomButtonYPadding = 20;
 
 - (void)toggleUserTrackingMode
 {
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized) {
+    if ([MITLocationManager locationServicesAuthorized]) {
         if (self.mapView.userTrackingMode == MKUserTrackingModeNone) {
             // We need to wrap the user tracking enabling like this to prevent an unwanted zoom when we start tracking
             [UIView animateWithDuration:0.333 animations:^{
@@ -104,8 +102,7 @@ static CGFloat const kBottomButtonYPadding = 20;
             
         [self updateUserLocationButtonForTrackingMode];
     }
-    else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusRestricted ||
-             [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+    else {
         [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
         [self showLocationServicesAlert];
     }
