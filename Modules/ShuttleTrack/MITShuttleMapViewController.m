@@ -13,11 +13,11 @@
 #import "MITShuttleStopViewController.h"
 #import "MITCalloutMapView.h"
 #import "SMCalloutView.h"
+#import "MITTiledMapView.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
-static const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
 
 static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
@@ -34,10 +34,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 };
 
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
-
-@property (nonatomic, weak) IBOutlet MITCalloutMapView *mapView;
-@property (nonatomic, weak) IBOutlet UIButton *currentLocationButton;
-@property (nonatomic, weak) IBOutlet UIButton *exitMapStateButton;
 
 @property (nonatomic, strong) NSFetchedResultsController *routesFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *stopsFetchedResultsController;
@@ -58,8 +54,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) SMCalloutView *calloutView;
 @property (nonatomic, strong) MITShuttleStopViewController *calloutStopViewController;
 
-- (IBAction)currentLocationButtonTapped:(id)sender;
-- (IBAction)exitMapStateButtonTapped:(id)sender;
+@property (nonatomic, strong) UIToolbar *toolbar;
+@property (nonatomic, strong) NSLayoutConstraint *toolbarBottomConstraint;
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *mapBottomConstraint;
 
 @end
 
@@ -83,24 +80,14 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [super viewDidLoad];
     
     self.hasSetUpMapRect = NO;
-    self.mapView.delegate = self;
-    self.mapView.showsUserLocation = YES;
-    self.mapView.tintColor = [UIColor mit_systemTintColor];
-    
-    self.currentLocationButton.layer.borderWidth = 1;
-    self.currentLocationButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.currentLocationButton.layer.cornerRadius = 4;
-    self.currentLocationButton.backgroundColor = [UIColor colorWithWhite:0.88 alpha:1];
-    
-    self.exitMapStateButton.layer.borderWidth = 1;
-    self.exitMapStateButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.exitMapStateButton.layer.cornerRadius = 4;
-    self.exitMapStateButton.backgroundColor = [UIColor colorWithWhite:0.88 alpha:1];
+    [self.tiledMapView setMapDelegate:self];
+    self.tiledMapView.mapView.showsUserLocation = YES;
+    self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self setState:self.state animated:NO];
+        [self setupToolbar];
     } else {
-        self.exitMapStateButton.alpha = 0;
         [self setupCalloutView];
     }
 }
@@ -149,7 +136,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)prepareForViewDisappearance
 {
     // This seems to prevent a crash with a VKRasterOverlayTileSource being deallocated and sent messages
-    [self.mapView removeOverlays:self.mapView.overlays];
+    [self.tiledMapView.mapView removeOverlays:self.tiledMapView.mapView.overlays];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self stopRefreshingVehicles];
@@ -239,36 +226,14 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     switch (state) {
         case MITShuttleMapStateContracting: {
-            dispatch_block_t animationBlock = ^{
-                self.currentLocationButton.alpha = 0;
-                self.exitMapStateButton.alpha = 0;
-            };
-            
-            if (animated) {
-                [UIView animateWithDuration:kMapContractingAnimationDuration animations:animationBlock];
-            } else {
-                animationBlock();
-            }
-            
-            self.mapView.scrollEnabled = NO;
-            self.mapView.zoomEnabled = NO;
+            self.tiledMapView.mapView.scrollEnabled = NO;
+            self.tiledMapView.mapView.zoomEnabled = NO;
             
             break;
         }
         case MITShuttleMapStateExpanding: {
-            dispatch_block_t animationBlock = ^{
-                self.currentLocationButton.alpha = 1;
-                self.exitMapStateButton.alpha = 1;
-            };
-            
-            if (animated) {
-                [UIView animateWithDuration:kMapExpandingAnimationDuration animations:animationBlock];
-            } else {
-                animationBlock();
-            }
-            
-            self.mapView.scrollEnabled = YES;
-            self.mapView.zoomEnabled = YES;
+            self.tiledMapView.mapView.scrollEnabled = YES;
+            self.tiledMapView.mapView.zoomEnabled = YES;
             
             break;
         }
@@ -308,30 +273,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     return [self.vehiclesFetchedResultsController fetchedObjects];
 }
 
-#pragma mark - IBActions
-
-- (IBAction)currentLocationButtonTapped:(id)sender
-{
-    if ([MITLocationManager locationServicesAuthorized]) {
-        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
-    } else {
-        [[[UIAlertView alloc] initWithTitle:nil message:@"Turn on Location Services to Allow Shuttles to Determine Your Location." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }
-}
-
-- (IBAction)exitMapStateButtonTapped:(id)sender
-{
-    if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
-        [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
-    }
-}
-
 #pragma mark - Stop Centering
 
 - (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(stop.coordinate, 50, 50);
-    [self.mapView setRegion:region animated:animated];
+    [self.tiledMapView.mapView setRegion:region animated:animated];
 }
 
 #pragma mark - NSFetchedResultsController
@@ -436,7 +383,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)addObject:(id)anObject
 {
     if ([anObject conformsToProtocol:@protocol(MKAnnotation)]) {
-        [self.mapView addAnnotation:anObject];
+        [self.tiledMapView.mapView addAnnotation:anObject];
     } else if ([anObject isKindOfClass:[MITShuttleRoute class]]) {
         [self refreshRoute];
     }
@@ -445,7 +392,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)removeObject:(id)anObject
 {
     if ([anObject conformsToProtocol:@protocol(MKAnnotation)]) {
-        [self.mapView removeAnnotation:anObject];
+        [self.tiledMapView.mapView removeAnnotation:anObject];
     } else if ([anObject isKindOfClass:[MITShuttleRoute class]]) {
         [self refreshRoute];
     }
@@ -481,13 +428,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     BOOL needsStopChange = ![self.stop isEqual:stop];
     
     id<MKAnnotation> selectedAnnotation = nil;
-    if (self.mapView.selectedAnnotations.count > 0) {
-        selectedAnnotation = self.mapView.selectedAnnotations[0];
+    if (self.tiledMapView.mapView.selectedAnnotations.count > 0) {
+        selectedAnnotation = self.tiledMapView.mapView.selectedAnnotations[0];
     }
     
     if (needsRouteChange) {
         if (needsStopChange && selectedAnnotation) {
-            [self.mapView deselectAnnotation:selectedAnnotation animated:YES];
+            [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
 
         // TODO: Wait until deselect is complete
@@ -504,15 +451,15 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             // wait until map region change animation completes
             // TODO: Fix this to make it robust and less hacky! E.g. what happens if we mash multiple annotations?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.mapView selectAnnotation:stop animated:YES];
+                [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
             });
         }
     } else if (needsStopChange) {
         if (selectedAnnotation) {
-            [self.mapView deselectAnnotation:selectedAnnotation animated:YES];
+            [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
         if (stop) {
-            [self.mapView selectAnnotation:stop animated:YES];
+            [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
         }
     }
 }
@@ -521,6 +468,15 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     [self refreshStopAnnotationImages];
     self.shouldAnimateBusUpdate = YES;
+}
+
+- (void)setMapToolBarHidden:(BOOL)hidden
+{
+    if (hidden) {
+        self.toolbarBottomConstraint.constant = self.toolbar.bounds.size.height;
+    } else {
+        self.toolbarBottomConstraint.constant = 0;
+    }
 }
 
 #pragma mark - Private Methods
@@ -546,7 +502,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         
         [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-        [self.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
+        [self.tiledMapView.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
     } else {
         [self centerToShuttleStop:self.stop animated:animated];
     }
@@ -554,10 +510,46 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (CGRect)rectForAnnotationView:(MKAnnotationView *)annotationView inView:(UIView *)view
 {
-    CGPoint center = [self.mapView convertCoordinate:annotationView.annotation.coordinate toPointToView:self.mapView];
+    CGPoint center = [self.tiledMapView.mapView convertCoordinate:annotationView.annotation.coordinate toPointToView:self.tiledMapView.mapView];
     CGSize size = annotationView.frame.size;
     CGRect mapViewRect = CGRectMake(center.x - size.width / 2, center.y - size.height / 2, size.width, size.height);
-    return [self.mapView convertRect:mapViewRect toView:view];
+    return [self.tiledMapView.mapView convertRect:mapViewRect toView:view];
+}
+
+- (void)exitMapStateButtonTapped:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
+        [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
+    }
+}
+
+- (void)setupToolbar
+{
+    self.toolbar = [[UIToolbar alloc] init];
+    self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIButton *exitMapStateButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *exitMapStateImage = [UIImage imageNamed:@"global/menu.png"];
+    [exitMapStateButton setImage:exitMapStateImage forState:UIControlStateNormal];
+    [exitMapStateButton addTarget:self action:@selector(exitMapStateButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    exitMapStateButton.frame = CGRectMake(0, 0, exitMapStateImage.size.width, exitMapStateImage.size.height);
+    [self.toolbar setItems:@[self.tiledMapView.userLocationButton,
+                             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                             [[UIBarButtonItem alloc] initWithCustomView:exitMapStateButton]] animated:NO];
+    [self.view addSubview:self.toolbar];
+    
+    NSArray *horizontalToolbarConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}];
+    [self.view addConstraints:horizontalToolbarConstraints];
+    
+    NSLayoutConstraint *toolbarHeightConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:44];
+    [self.view addConstraint:toolbarHeightConstraint];
+    
+    [self.view removeConstraint:self.mapBottomConstraint];
+    self.mapBottomConstraint = [NSLayoutConstraint constraintWithItem:self.tiledMapView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    [self.view addConstraint:self.mapBottomConstraint];
+    
+    self.toolbarBottomConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:self.toolbar.bounds.size.height];
+    [self.view addConstraint:self.toolbarBottomConstraint];
 }
 
 #pragma mark - Tile Overlays
@@ -575,7 +567,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MKTileOverlay *MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
     MITTileOverlay.canReplaceMapContent = YES;
     
-    [self.mapView addOverlay:MITTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.tiledMapView.mapView addOverlay:MITTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 - (void)setupBaseTileOverlay
@@ -585,7 +577,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MKTileOverlay *baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
     baseTileOverlay.canReplaceMapContent = YES;
     
-    [self.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.tiledMapView.mapView addOverlay:baseTileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 #pragma mark - Overlays/Annotations
@@ -603,11 +595,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return;
     }
     
-    [self.mapView removeOverlays:self.routeSegmentPolylines];
+    [self.tiledMapView.mapView removeOverlays:self.routeSegmentPolylines];
     
     self.routeSegmentPolylines = [self.route pathSegmentPolylines];
     if ([self.routeSegmentPolylines count] > 0) {
-        [self.mapView addOverlays:self.routeSegmentPolylines];
+        [self.tiledMapView.mapView addOverlays:self.routeSegmentPolylines];
     }
 }
 
@@ -630,18 +622,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)removeMapAnnotationsForClass:(Class)class
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+    for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:class] && annotation != self.stop) {
             [annotationsToRemove addObject:annotation];
         }
     }
-    [self.mapView removeAnnotations:annotationsToRemove];
+    [self.tiledMapView.mapView removeAnnotations:annotationsToRemove];
 }
 
 - (void)refreshStopAnnotationImages
 {
     for (MITShuttleStop *stop in self.stops) {
-        MKAnnotationView *annotationView = [self.mapView viewForAnnotation:stop];
+        MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
         [UIView transitionWithView:annotationView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
             annotationView.image = [self annotationViewImageForStop:stop];
         } completion:nil];
@@ -689,18 +681,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)startAnimatingBusAnnotations
 {
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+    for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] startAnimating];
+            [(MITShuttleMapBusAnnotationView *)[self.tiledMapView.mapView viewForAnnotation:annotation] startAnimating];
         }
     }
 }
 
 - (void)stopAnimatingBusAnnotations
 {
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+    for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [(MITShuttleMapBusAnnotationView *)[self.mapView viewForAnnotation:annotation] stopAnimating];
+            [(MITShuttleMapBusAnnotationView *)[self.tiledMapView.mapView viewForAnnotation:annotation] stopAnimating];
         }
     }
 }
@@ -716,12 +708,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     
     self.calloutView = calloutView;
-    self.mapView.calloutView = calloutView;
+    self.tiledMapView.mapView.calloutView = calloutView;
 }
 
 - (void)presentCalloutForStop:(MITShuttleStop *)stop
 {
-    MKAnnotationView *stopAnnotationView = [self.mapView viewForAnnotation:stop];
+    MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
     // TODO: Correctly initialize this
     // TODO: Figure out how to correctly add the VC as a child VC
@@ -752,7 +744,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     calloutView.contentView = stopViewController.view;
     calloutView.calloutOffset = stopAnnotationView.calloutOffset;
     
-    [calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.mapView animated:YES];
+    [calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
 - (void)dismissCurrentCallout
@@ -767,10 +759,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
 {
-    CGPoint adjustedCenter = CGPointMake(-offset.width + self.mapView.bounds.size.width * 0.5,
-                                         -offset.height + self.mapView.bounds.size.height * 0.5);
-    CLLocationCoordinate2D newCenter = [self.mapView convertPoint:adjustedCenter toCoordinateFromView:self.mapView];
-    [self.mapView setCenterCoordinate:newCenter animated:YES];
+    CGPoint adjustedCenter = CGPointMake(-offset.width + self.tiledMapView.mapView.bounds.size.width * 0.5,
+                                         -offset.height + self.tiledMapView.mapView.bounds.size.height * 0.5);
+    CLLocationCoordinate2D newCenter = [self.tiledMapView.mapView convertPoint:adjustedCenter toCoordinateFromView:self.tiledMapView.mapView];
+    [self.tiledMapView.mapView setCenterCoordinate:newCenter animated:YES];
     return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 

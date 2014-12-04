@@ -3,23 +3,19 @@
 extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 
-@protocol MITTiledMapViewButtonDelegate;
+@class MITCalloutMapView;
 @protocol MITTiledMapViewUserTrackingDelegate;
 
 @interface MITTiledMapView : UIView
 
-@property (nonatomic, strong) MKMapView *mapView;
+@property (nonatomic, strong) MITCalloutMapView *mapView;
+@property (nonatomic, readonly) UIBarButtonItem *userLocationButton;
 
-@property (nonatomic, weak) id<MITTiledMapViewButtonDelegate> buttonDelegate;
 @property (nonatomic, weak) id<MITTiledMapViewUserTrackingDelegate> userTrackingDelegate;
 
 @property (nonatomic, readonly) BOOL isTrackingUser;
 
 - (void)setMapDelegate:(id<MKMapViewDelegate>) mapDelegate;
-
-- (void)setButtonsHidden:(BOOL)hidden animated:(BOOL)animated;
-- (void)setLeftButtonHidden:(BOOL)hidden animated:(BOOL)animated;
-- (void)setRightButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 
 - (void)centerMapOnUserLocation;
 
@@ -29,13 +25,7 @@ extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 - (void)toggleUserTrackingMode;
 
 // protected
-- (MKMapView *)createMapView;
-
-@end
-
-@protocol MITTiledMapViewButtonDelegate <NSObject>
-
-- (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView;
+- (MITCalloutMapView *)createMapView;
 
 @end
 

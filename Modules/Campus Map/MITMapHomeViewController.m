@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -75,15 +75,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO];
-        [self.tiledMapView setButtonsHidden:YES animated:NO];
         
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
-        UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/location"] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
     } else {
-        [self.navigationController setToolbarHidden:YES];
-        [self.tiledMapView setButtonsHidden:NO animated:NO];
+        [self.navigationController setToolbarHidden:NO];
+        
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
     }
 }
 
@@ -138,8 +141,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupMapView
 {
-    self.tiledMapView.buttonDelegate = self;
-    
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = YES;
     
@@ -243,9 +244,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
-- (void)ipadCurrentLocationButtonPressed
+- (void)iphoneListButtonPressed
 {
-    [self.tiledMapView centerMapOnUserLocation];
+    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
+    [self presentViewController:resultsListNavigationController animated:YES completion:nil];
 }
 
 #pragma mark - Search Bar
@@ -539,14 +541,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([searchBar.text length] == 0) {
         [self clearPlacesAnimated:YES];
     }
-}
-
-#pragma mark - MITTiledMapViewButtonDelegate
-
-- (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView
-{
-    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
-    [self presentViewController:resultsListNavigationController animated:YES completion:nil];
 }
 
 #pragma mark - MKMapViewDelegate
