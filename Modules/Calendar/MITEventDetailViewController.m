@@ -305,7 +305,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeSponsors: {
-            [detailCell setTitle:@"sponsor(s)"];
+            [detailCell setTitle:@"sponsor"];
             NSString *detailText = [[self.event.sponsors.allObjects valueForKey:@"name"] componentsJoinedByString:@"\n"];
             [detailCell setDetailText:detailText];
             detailCell.accessoryView = nil;
