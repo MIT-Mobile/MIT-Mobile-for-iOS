@@ -17,6 +17,7 @@ static int const kAlertViewTagShouldOpenLink = 12323;
 {
     // Initialization code
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self recreateWebView];
 }
 

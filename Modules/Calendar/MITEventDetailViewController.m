@@ -251,11 +251,13 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 
 - (void)configureDetailCell:(MITEventDetailCell *)detailCell ofType:(MITEventDetailRowType)type
 {
+    detailCell.selectionStyle = UITableViewCellSelectionStyleDefault;
     switch (type) {
         case MITEventDetailRowTypeSpeaker: {
             [detailCell setTitle:@"speaker"];
             [detailCell setDetailText:self.event.lecturer];
             detailCell.accessoryView = nil;
+            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
         case MITEventDetailRowTypeTime: {
@@ -271,14 +273,12 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             [detailCell setTitle:@"location"];
             [detailCell setDetailText:[self.event.location locationString]];
             detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-            
             break;
         }
         case MITEventDetailRowTypePhone: {
             [detailCell setTitle:@"phone"];
             [detailCell setDetailText:self.event.contact.phone];
             detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-            
             break;
         }
         case MITEventDetailRowTypeDescription: {
@@ -295,6 +295,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             [detailCell setTitle:@"open to"];
             [detailCell setDetailText:self.event.openTo];
             detailCell.accessoryView = nil;
+            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
         case MITEventDetailRowTypeCost: {
@@ -302,6 +303,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             NSString *costString = self.event.cost;
             [detailCell setDetailText:costString];
             detailCell.accessoryView = nil;
+            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
         case MITEventDetailRowTypeSponsors: {
@@ -309,6 +311,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             NSString *detailText = [[self.event.sponsors.allObjects valueForKey:@"name"] componentsJoinedByString:@"\n"];
             [detailCell setDetailText:detailText];
             detailCell.accessoryView = nil;
+            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
         case MITEventDetailRowTypeContact: {
