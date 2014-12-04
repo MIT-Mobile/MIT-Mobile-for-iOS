@@ -39,6 +39,9 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if ([self.dict count] == 0) {
+        return 1;
+    }
     return 2;
 }
 
@@ -99,7 +102,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 
     self.dict[[NSNumber numberWithInt:webView.tag]] = [NSNumber numberWithFloat:size.height];
 
-    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:webView.tag inSection:0]] withRowAnimation:(UITableViewRowAnimationAutomatic)];
+    [self.tableView reloadData];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
