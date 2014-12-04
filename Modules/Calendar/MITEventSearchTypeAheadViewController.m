@@ -78,8 +78,10 @@ static NSString *const kMITCalendarTypeAheadSuggestionCellIdentifier = @"kMITCal
     }
     
     NSMutableArray *filteredRecents = [NSMutableArray array];
+    NSString *lowercaseTypeAheadText = [typeAheadText lowercaseString];
     for (NSString *recent in [MITEventsRecentSearches recentSearches]) {
-        if ([recent hasPrefix:typeAheadText]) {
+        NSString *lowercaseRecent = [recent lowercaseString];
+        if ([lowercaseRecent hasPrefix:lowercaseTypeAheadText]) {
             [filteredRecents addObject:recent];
         }
     }
