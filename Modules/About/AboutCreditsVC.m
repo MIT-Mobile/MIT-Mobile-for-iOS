@@ -18,9 +18,9 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [UIColor mit_backgroundColor];
     self.navigationItem.title = @"Credits";
-
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
     [self.tableView registerNib:[UINib nibWithNibName:AboutCreditsTableViewCellNibName bundle:nil] forCellReuseIdentifier:AboutCreditsTableViewCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:AboutCreditsViewOlderTableViewNibName bundle:nil] forCellReuseIdentifier:AboutCreditsViewOlderTableViewIdentifier];
     
