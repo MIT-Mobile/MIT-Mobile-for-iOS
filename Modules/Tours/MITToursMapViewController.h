@@ -1,10 +1,13 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import "MITToursTour.h"
+#import "MITToursTiledMapView.h"
 
 @protocol MITToursMapViewControllerDelegate;
 
 @interface MITToursMapViewController : UIViewController
+
+@property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 
 @property (nonatomic, strong, readonly) MITToursTour *tour;
 @property (nonatomic) BOOL shouldShowStopDescriptions;

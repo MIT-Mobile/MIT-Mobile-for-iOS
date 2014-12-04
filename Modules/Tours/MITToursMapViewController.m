@@ -1,6 +1,5 @@
 #import "MITToursMapViewController.h"
 #import "MITToursStop.h"
-#import "MITToursTiledMapView.h"
 #import "MITCalloutMapView.h"
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
@@ -21,7 +20,6 @@ static NSInteger kAnnotationMarginRight = 50;
 
 @interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
-@property (weak, nonatomic) IBOutlet MITToursTiledMapView *tiledMapView;
 @property (strong, nonatomic) SMCalloutView *calloutView;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;

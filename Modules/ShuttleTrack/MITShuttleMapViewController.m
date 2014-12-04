@@ -9,7 +9,6 @@
 #import "MITCoreDataController.h"
 #import "MITShuttleController.h"
 #import "UIKit+MITAdditions.h"
-#import "MITLocationManager.h"
 #import "MITShuttleStopViewController.h"
 #import "MITCalloutMapView.h"
 #import "SMCalloutView.h"
@@ -19,9 +18,6 @@ NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapA
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
 static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
-
-static const NSTimeInterval kMapExpandingAnimationDuration = 0.5;
-static const NSTimeInterval kMapContractingAnimationDuration = 0.4;
 
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
