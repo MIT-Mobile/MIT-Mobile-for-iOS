@@ -35,8 +35,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
-@property (nonatomic, weak) IBOutlet MITTiledMapView *tiledMapView;
-
 @property (nonatomic, strong) NSFetchedResultsController *routesFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *stopsFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *vehiclesFetchedResultsController;
@@ -281,7 +279,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(stop.coordinate, 50, 50);
-    [self.mapView setRegion:region animated:animated];
+    [self.tiledMapView.mapView setRegion:region animated:animated];
 }
 
 #pragma mark - NSFetchedResultsController
@@ -505,7 +503,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         
         [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-        [self.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
+        [self.tiledMapView.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
     } else {
         [self centerToShuttleStop:self.stop animated:animated];
     }
