@@ -5,6 +5,7 @@
 #import "MITShuttleResourceViewController.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
+#import "MITTiledMapView.h"
 
 @interface MITShuttleRootViewController () <MITShuttleHomeViewControllerDelegate, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate, UINavigationControllerDelegate>
 
@@ -58,12 +59,6 @@
     [self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (BOOL)hidesBottomBarWhenPushed
 {
     return YES;
@@ -98,6 +93,9 @@
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithNibName:nil bundle:nil];
     self.mapViewController.delegate = self;
     self.detailNavigationController = [[UINavigationController alloc] initWithRootViewController:self.mapViewController];
+    if (self.mapViewController.view) { // Make sure the view is loaded so the mapview (and its button) has been created
+        self.toolbarItems = @[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil], self.mapViewController.tiledMapView.userLocationButton];
+    }
 }
 
 - (void)setupSplitViewController

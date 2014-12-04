@@ -120,7 +120,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"Shuttles";
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+            self.title = @"Shuttles";
+        } else {
+            self.title = nil;
+        }
         self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStyleBordered target:nil action:nil];
     }
     return self;
@@ -148,7 +152,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setToolbarHidden:NO animated:animated];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+    }
+    
     [[MITLocationManager sharedManager] startUpdatingLocation];
     if (self.hasFetchedRoutes) {
         [self startRefreshingRoutesAndPredictions];

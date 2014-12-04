@@ -2,6 +2,7 @@
 
 @class MITShuttleRoute;
 @class MITShuttleStop;
+@class MITTiledMapView;
 
 @protocol MITShuttleMapViewControllerDelegate;
 
@@ -19,6 +20,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 - (void)routeUpdated;
 - (void)setMapToolBarHidden:(BOOL)hidden;
 
+@property (nonatomic, weak) IBOutlet MITTiledMapView *tiledMapView;
 @property (strong, nonatomic) MITShuttleRoute *route;
 @property (strong, nonatomic) MITShuttleStop *stop;
 @property (nonatomic) MITShuttleMapState state;
