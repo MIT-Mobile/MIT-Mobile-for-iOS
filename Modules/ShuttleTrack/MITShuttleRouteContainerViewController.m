@@ -104,7 +104,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self configureLayoutForState:self.state animated:NO];
         [self layoutStopViews];
-        [self selectStop:self.stop];
         [self configureStopViewControllerRefreshing];
     }
 }
@@ -312,6 +311,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 {
     _stop = stop;
     self.mapViewController.stop = stop;
+    
+    if (self.state == MITShuttleRouteContainerStateStop) {
+        [self.mapViewController centerToShuttleStop:stop animated:YES];
+    }
 }
 
 - (void)layoutStopViews
@@ -325,15 +328,15 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     self.stopsScrollView.contentSize = CGSizeMake(xOffset, stopViewSize.height);
     
     if (self.stop) {
-        [self selectStop:self.stop];
+        [self scrollToStop:self.stop animated:NO];
     }
 }
 
-- (void)selectStop:(MITShuttleStop *)stop
+- (void)scrollToStop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
     NSInteger index = [self.route.stops indexOfObject:stop];
     CGFloat offset = self.stopsScrollView.frame.size.width * index;
-    [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:NO];
+    [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:animated];
 }
 
 - (void)didScrollToStop:(MITShuttleStop *)stop
@@ -472,7 +475,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
 {
     [self setTitleForRoute:self.route stop:self.stop animated:animated];
-    [self selectStop:self.stop];
     [self setStopViewHidden:NO];
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
@@ -515,6 +517,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         animationBlock();
         completionBlock(YES);
     }
+    
+    [self.mapViewController centerToShuttleStop:self.stop animated:animated];
     
     [self configureStopViewControllerRefreshing];
 }
@@ -705,6 +709,12 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         // Always return to route state listing the stops regardless of previous state.
         [self setState:MITShuttleRouteContainerStateRoute animated:YES];
     }
+}
+
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didClickCalloutForStop:(MITShuttleStop *)stop
+{
+    self.stop = stop;
+    [self setState:MITShuttleRouteContainerStateStop animated:YES];
 }
 
 @end

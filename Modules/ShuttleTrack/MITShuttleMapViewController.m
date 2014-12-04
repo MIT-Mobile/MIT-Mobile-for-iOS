@@ -80,11 +80,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.tiledMapView.mapView.showsUserLocation = YES;
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
+    [self setupCalloutView];
+    
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self setState:self.state animated:NO];
         [self setupToolbar];
-    } else {
-        [self setupCalloutView];
     }
 }
 
@@ -249,9 +249,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setStop:(MITShuttleStop *)stop
 {
+    if ([_stop isEqual:stop]) {
+        return;
+    }
+    
     _stop = stop;
     [self refreshStopAnnotationImages];
-    [self centerToShuttleStop:stop animated:YES];
 }
 
 - (NSArray *)routes
@@ -707,7 +710,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.tiledMapView.mapView.calloutView = calloutView;
 }
 
-- (void)presentCalloutForStop:(MITShuttleStop *)stop
+- (void)presentPadCalloutForStop:(MITShuttleStop *)stop
 {
     MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
@@ -743,6 +746,57 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
+- (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
+{
+    MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
+    
+    self.calloutView.contentView = nil;
+    self.calloutView.title = stop.title;
+    
+    NSString *calloutSubtitle = nil;
+    switch ([self.route status]) {
+        case MITShuttleRouteStatusNotInService: {
+            calloutSubtitle = @"Not in service";
+            break;
+        }
+        case MITShuttleRouteStatusInService: {
+            MITShuttlePrediction *nextPrediction = [stop nextPredictionForRoute:self.route];
+            
+            if (nextPrediction == nil) {
+                calloutSubtitle = @"No current predictions";
+                break;
+            }
+            
+            NSString *arrivalTime = nil;
+            NSInteger minutesLeft = floor([nextPrediction.seconds doubleValue] / 60);
+            if (minutesLeft < 1) {
+                arrivalTime = @"now";
+            } else {
+                arrivalTime = [NSString stringWithFormat:@"in %i minutes", minutesLeft];
+            }
+            calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
+            break;
+        }
+        case MITShuttleRouteStatusPredictionsUnavailable: {
+            calloutSubtitle = @"No current predictions";
+            break;
+        }
+        default: {
+            calloutSubtitle = @"No current predictions";
+            break;
+        }
+    }
+    
+    self.calloutView.subtitle = calloutSubtitle;
+    
+    UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-right"]];
+    chevronImageView.bounds = CGRectMake(0, 0, 30, 30);
+    self.calloutView.rightAccessoryView = chevronImageView;
+    
+    self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
+    [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+}
+
 - (void)dismissCurrentCallout
 {
     [self.calloutView dismissCalloutAnimated:YES];
@@ -760,6 +814,14 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     CLLocationCoordinate2D newCenter = [self.tiledMapView.mapView convertPoint:adjustedCenter toCoordinateFromView:self.tiledMapView.mapView];
     [self.tiledMapView.mapView setCenterCoordinate:newCenter animated:YES];
     return kSMCalloutViewRepositionDelayForUIScrollView;
+}
+
+- (void)calloutViewClicked:(SMCalloutView *)calloutView
+{
+    [self dismissCurrentCallout];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didClickCalloutForStop:)]) {
+        [self.delegate shuttleMapViewController:self didClickCalloutForStop:self.stop];
+    }
 }
 
 #pragma mark - MKMapViewDelegate Methods
@@ -813,7 +875,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         self.stop = stop;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            [self presentCalloutForStop:stop];
+            [self presentPadCalloutForStop:stop];
+        } else {
+            [self presentPhoneCalloutForStop:stop];
         }
         
         if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectStop:)]) {
@@ -827,9 +891,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStop *stop = self.stop;
     self.stop = nil;
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self dismissCurrentCallout];
-    }
+    [self dismissCurrentCallout];
     
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didDeselectStop:)]) {
         [self.delegate shuttleMapViewController:self didDeselectStop:stop];
