@@ -95,7 +95,6 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 {
     for (UIView *v in view.subviews) {
         if ([v isKindOfClass:[UIScrollView class]]) {
-            NSLog(@"Setting no for v: %@", v);
             [(UIScrollView *)v setScrollsToTop:NO];
         }
         [self setScrollsToTopNoForAllScrollViewsInHierarchyOfView:v];
