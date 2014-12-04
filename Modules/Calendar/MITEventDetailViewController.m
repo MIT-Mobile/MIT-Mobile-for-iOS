@@ -142,6 +142,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 	UIFont *titleFont = [UIFont boldSystemFontOfSize:20.0];
 	CGSize titleSize = [self.event.title sizeWithFont:titleFont
 									constrainedToSize:CGSizeMake(titleWidth, 2010.0)];
+    titleSize = CGSizeMake(ceil(titleSize.width), ceil(titleSize.height));
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titlePadding, titlePadding, titleSize.width, titleSize.height)];
 	titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	titleLabel.numberOfLines = 0;
@@ -159,7 +160,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
         partOfSeriesLabel.text = @"This event is part of a series";
         
         headerFrame.size.height += 5 + partOfSeriesLabel.bounds.size.height;
-        headerView.frame = headerFrame;
+        headerView.frame = CGRectIntegral(headerFrame);
         [headerView addSubview:partOfSeriesLabel];
     }
     
@@ -382,7 +383,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     switch (indexPath.section) {
         case kMITEventDetailsSection: {
             MITEventDetailRowType rowType = [self.rowTypes[indexPath.row] integerValue];
-            CGFloat h = [self heightForDetailCellOfType:rowType];
+            CGFloat h = ceil([self heightForDetailCellOfType:rowType]);
             return h;
             break;
         }

@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MITEventDetailCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="54"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="60" id="KGk-i7-Jjw" customClass="MITEventDetailCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="53"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lr0-Da-oFT">
-                        <rect key="frame" x="15" y="6" width="290" height="19"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lr0-Da-oFT">
+                        <rect key="frame" x="15" y="10" width="290" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="C3S-Dp-Xn7">
-                        <rect key="frame" x="15" y="26" width="290" height="21"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="C3S-Dp-Xn7">
+                        <rect key="frame" x="15" y="32" width="290" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="C3S-Dp-Xn7" secondAttribute="bottom" constant="6" id="0qu-F1-IAj"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="C3S-Dp-Xn7" secondAttribute="bottom" constant="7" id="0qu-F1-IAj"/>
                     <constraint firstAttribute="trailing" secondItem="C3S-Dp-Xn7" secondAttribute="trailing" constant="15" id="2Gc-eW-JD7"/>
                     <constraint firstItem="C3S-Dp-Xn7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="2pC-0j-AoZ"/>
                     <constraint firstItem="lr0-Da-oFT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="TJO-EK-VzB"/>
-                    <constraint firstItem="lr0-Da-oFT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="aez-mZ-CqN"/>
-                    <constraint firstItem="C3S-Dp-Xn7" firstAttribute="top" secondItem="lr0-Da-oFT" secondAttribute="bottom" constant="1" id="ekW-qg-bG7"/>
+                    <constraint firstItem="lr0-Da-oFT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="aez-mZ-CqN"/>
+                    <constraint firstItem="C3S-Dp-Xn7" firstAttribute="top" secondItem="lr0-Da-oFT" secondAttribute="bottom" constant="4" id="ekW-qg-bG7"/>
                     <constraint firstAttribute="trailing" secondItem="lr0-Da-oFT" secondAttribute="trailing" constant="15" id="jmV-8s-hRd"/>
                 </constraints>
             </tableViewCellContentView>
@@ -42,6 +40,12 @@
                 <outlet property="detailsLabel" destination="C3S-Dp-Xn7" id="Ra8-IO-LAp"/>
                 <outlet property="titleLabel" destination="lr0-Da-oFT" id="LRw-xq-xjy"/>
             </connections>
+            <point key="canvasLocation" x="350" y="347"/>
         </tableViewCell>
     </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>
