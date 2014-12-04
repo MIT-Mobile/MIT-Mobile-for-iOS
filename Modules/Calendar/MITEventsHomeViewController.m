@@ -87,6 +87,19 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 {
     [super viewWillAppear:animated];
     [self setupExtendedNavBar]; // Coming back from another vc messes up nav bar
+    [self setScrollsToTopNoForAllScrollViewsInHierarchyOfView:self.view];
+}
+
+// If more than one scrollView in the view hierarchy has scrollsToTop set to YES, then none of them will work.  Because there are secret scrollviews in UIPageViewController as well as multiple collectionViews on screen,  this is the best way to ensure that all of the scrollsToTop values are set to NO.  scrollsToTop is set individually within MITEventsTableViewController
+- (void)setScrollsToTopNoForAllScrollViewsInHierarchyOfView:(UIView *)view
+{
+    for (UIView *v in view.subviews) {
+        if ([v isKindOfClass:[UIScrollView class]]) {
+            NSLog(@"Setting no for v: %@", v);
+            [(UIScrollView *)v setScrollsToTop:NO];
+        }
+        [self setScrollsToTopNoForAllScrollViewsInHierarchyOfView:v];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated

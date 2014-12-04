@@ -28,11 +28,23 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.tableView.scrollsToTop = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    // PageViewController holds views in its hierarchy.  Must set scrollsToTop to NO here so that other instances can scroll to top when they are the top of the view hierarchy.
+    self.tableView.scrollsToTop = NO;
+}
+
 - (void)setupTableView
 {
     UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
-    self.tableView.scrollsToTop = YES;
 }
 
 - (void)showLoadingIndicator
