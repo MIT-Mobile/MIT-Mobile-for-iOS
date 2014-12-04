@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 - (void)setupTableView
 {
     self.linksDataSourceDelegate = [[MITToursLinksDataSourceDelegate alloc] init];
+    self.linksDataSourceDelegate.isIphoneTableView = YES;
     self.linksDataSourceDelegate.delegate = self;
 
     UINib *cellNib = [UINib nibWithNibName:kMITSelfGuidedTourCell bundle:nil];

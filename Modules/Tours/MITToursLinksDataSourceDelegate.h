@@ -11,5 +11,6 @@
 @interface MITToursLinksDataSourceDelegate : NSObject <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) id<MITToursLinksDataSourceDelegateDelegate> delegate;
+@property (nonatomic) BOOL isIphoneTableView;
 
 @end

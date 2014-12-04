@@ -211,6 +211,7 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
     if (!_linksPopover) {
         MITToursLinksTableViewController *linksVC = [[MITToursLinksTableViewController alloc] init];
         UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:linksVC];
+        navVC.navigationBar.opaque = YES;
         _linksPopover = [[UIPopoverController alloc] initWithContentViewController:navVC];
         [_linksPopover setPopoverContentSize:CGSizeMake(320, 132 + navVC.navigationBar.frame.size.height)];
     }
