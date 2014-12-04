@@ -37,6 +37,8 @@
 		0B73117E1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B73117C1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib */; };
 		0B73118B1A30FF3C00C1CA01 /* credits_current.html in Resources */ = {isa = PBXBuildFile; fileRef = 0B7311891A30FF3C00C1CA01 /* credits_current.html */; };
 		0B73118C1A30FF3C00C1CA01 /* credits_past.html in Resources */ = {isa = PBXBuildFile; fileRef = 0B73118A1A30FF3C00C1CA01 /* credits_past.html */; };
+		0B7311931A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7311911A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m */; };
+		0B7311941A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B7311921A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib */; };
 		0B893A3F197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0BB48BF21976EDB700C7E920 /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */; };
@@ -711,6 +713,9 @@
 		0B73117C1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutCreditsTableViewCell.xib; sourceTree = "<group>"; };
 		0B7311891A30FF3C00C1CA01 /* credits_current.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits_current.html; path = Resources/credits_current.html; sourceTree = "<group>"; };
 		0B73118A1A30FF3C00C1CA01 /* credits_past.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits_past.html; path = Resources/credits_past.html; sourceTree = "<group>"; };
+		0B7311901A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsViewOlderTableViewCell.h; sourceTree = "<group>"; };
+		0B7311911A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsViewOlderTableViewCell.m; sourceTree = "<group>"; };
+		0B7311921A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutCreditsViewOlderTableViewCell.xib; sourceTree = "<group>"; };
 		0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryLoadMoreCollectionViewCell.xib; path = XIBs/NewsStoryLoadMoreCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
@@ -3868,6 +3873,9 @@
 				0B73117A1A30F38600C1CA01 /* AboutCreditsTableViewCell.h */,
 				0B73117B1A30F38600C1CA01 /* AboutCreditsTableViewCell.m */,
 				0B73117C1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib */,
+				0B7311901A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.h */,
+				0B7311911A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m */,
+				0B7311921A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -4264,6 +4272,7 @@
 				2C3C534A1896B1FE00D1F9B5 /* NewsStoryNoDekTableCell.xib in Resources */,
 				EB4C34FA1281FCBD00058748 /* tours in Resources */,
 				A52E0CF619B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib in Resources */,
+				0B7311941A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib in Resources */,
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */,
 				A5A24B691994307A00AA1CFC /* MITEventSearchTypeAheadViewController.xib in Resources */,
@@ -4436,6 +4445,7 @@
 				2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */,
 				2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */,
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
+				0B7311931A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
