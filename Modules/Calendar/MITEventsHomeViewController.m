@@ -303,7 +303,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 - (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
 {
-    [self updateDisplayedCalendar:nil category:nil date:date animated:NO];
+    self.dayPickerController.currentlyDisplayedDate = date;
     [self dismissViewControllerAnimated:datePicker completion:NULL];
 }
 
