@@ -29,17 +29,6 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     return _sharedController;
 }
 
-#pragma mark - Init
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
-}
-
 #pragma mark - Routes/Stops
 
 - (void)getRoutes:(MITShuttleRoutesCompletionBlock)completion
