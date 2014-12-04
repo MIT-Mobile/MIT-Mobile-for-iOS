@@ -5,7 +5,6 @@
 
 NSString* const AboutCreditsViewOlderTableViewNibName = @"AboutCreditsViewOlderTableViewCell";
 NSString* const AboutCreditsViewOlderTableViewIdentifier = @"AboutCreditsViewOlder";
-
 NSString* const AboutCreditsTableViewCellNibName = @"AboutCreditsTableViewCell";
 NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 
@@ -13,7 +12,6 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 @property (nonatomic, strong) NSMutableDictionary *dict;
 @property (nonatomic) BOOL showOlderCredits;
 @end
-
 
 @implementation AboutCreditsVC
 
@@ -76,6 +74,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
         [cell.webView loadHTMLString:htmlString baseURL:nil];
         
         return cell;
+        
     } else {
         AboutCreditsViewOlderTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AboutCreditsViewOlderTableViewIdentifier];
         return cell;
