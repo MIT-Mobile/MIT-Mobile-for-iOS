@@ -239,11 +239,17 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
         eventViewController.event = event;
         eventViewController.eventStore = eventStore;
         eventViewController.editViewDelegate = self;
+        
+        
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             eventViewController.modalPresentationStyle = UIModalPresentationFormSheet;
             // Setting animated to YES causes the view controller to jump towards the bottom of the iPad after presenting in landscape.
             [self presentViewController:eventViewController animated:NO completion:nil];
         } else {
+            if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
+                // Necessary for scrollsToStop functionality in eventViewController in iPhone.  Otherwise the textView must be overriding it. Only available in iOS 8
+                [[UITextView appearanceWhenContainedIn:[EKEventEditViewController class], nil] setScrollsToTop:NO];
+            }
             [self presentViewController:eventViewController animated:YES completion:nil];
         }
         
