@@ -16,7 +16,6 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 @property (nonatomic, strong) UISegmentedControl *mapListSegmentedControl;
 @property (nonatomic, strong) UIBarButtonItem *userLocationBarButtonItem;
-//@property (nonatomic, strong) UIButton *userLocationButton;
 
 @end
 
