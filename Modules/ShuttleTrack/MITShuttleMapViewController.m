@@ -249,6 +249,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setStop:(MITShuttleStop *)stop
 {
+    if ([_stop isEqual:stop]) {
+        return;
+    }
+    
     _stop = stop;
     [self refreshStopAnnotationImages];
 }
@@ -814,7 +818,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)calloutViewClicked:(SMCalloutView *)calloutView
 {
-    // Show stop detail list
+    [self dismissCurrentCallout];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didClickCalloutForStop:)]) {
+        [self.delegate shuttleMapViewController:self didClickCalloutForStop:self.stop];
+    }
 }
 
 #pragma mark - MKMapViewDelegate Methods
