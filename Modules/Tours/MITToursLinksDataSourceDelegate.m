@@ -1,8 +1,8 @@
 #import "MITToursLinksDataSourceDelegate.h"
 #import "UIKit+MITAdditions.h"
 #import "UIFont+MITTours.h"
-#import "MITMailComposeController.h"
 #import "MITBuildInfo.h"
+#import <MessageUI/MessageUI.h>
 
 typedef NS_ENUM(NSInteger, MITToursLinksCell) {
     MITToursLinksCellFeedback,

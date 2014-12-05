@@ -1,6 +1,6 @@
 #import "MITToursLinksTableViewController.h"
 #import "MITToursLinksDataSourceDelegate.h"
-#import "MITMailComposeController.h"
+#import <MessageUI/MessageUI.h>
 #import "UIKit+MITAdditions.h"
 
 @interface MITToursLinksTableViewController () <MITToursLinksDataSourceDelegateDelegate, MFMailComposeViewControllerDelegate>

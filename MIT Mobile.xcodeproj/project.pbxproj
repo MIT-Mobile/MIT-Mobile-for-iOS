@@ -21,21 +21,16 @@
 		0B394CD619E3355D00B48F17 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CB619E3355D00B48F17 /* MKAnnotationView+WebCache.m */; };
 		0B394CDD19E3355D00B48F17 /* SDWebImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC419E3355D00B48F17 /* SDWebImageManager.m */; };
 		0B394CDF19E3355D00B48F17 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC919E3355D00B48F17 /* UIButton+WebCache.m */; };
-		0B394CE019E3355D00B48F17 /* UIImage+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCB19E3355D00B48F17 /* UIImage+GIF.m */; };
 		0B394CE119E3355D00B48F17 /* UIImage+MultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCD19E3355D00B48F17 /* UIImage+MultiFormat.m */; };
-		0B394CE419E3355D00B48F17 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD319E3355D00B48F17 /* UIImageView+WebCache.m */; };
 		0B394CE519E3355D00B48F17 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD519E3355D00B48F17 /* UIView+WebCacheOperation.m */; };
 		0B394CE819E3358B00B48F17 /* MITNewsRecentSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */; };
 		0B4F9D9119912A3F0047354E /* MITNewsiPadCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4F9D9019912A3F0047354E /* MITNewsiPadCategoryViewController.m */; };
-		0B59ECE9199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B59ECE8199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m */; };
 		0B5D71231A08261800F60120 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CD119E3355D00B48F17 /* UIImageView+HighlightedWebCache.m */; };
 		0B5D71241A08261B00F60120 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CCF19E3355D00B48F17 /* UIImage+WebP.m */; };
-		0B5D71251A08262200F60120 /* SDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CC719E3355D00B48F17 /* SDWebImagePrefetcher.m */; };
 		0B5D71261A08263800F60120 /* SDWebImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CBE19E3355D00B48F17 /* SDWebImageDecoder.m */; };
 		0B5D71271A08264000F60120 /* NSData+ImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CB819E3355D00B48F17 /* NSData+ImageContentType.m */; };
 		0B893A3F197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
-		0BB48BF21976EDB700C7E920 /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */; };
 		0BCC90C11963188900440544 /* MITNewsRecentSearchList.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BCC90C01963188900440544 /* MITNewsRecentSearchList.m */; };
 		0BCC90C71963188A00440544 /* MITNewsRecentSearchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BCC90C61963188A00440544 /* MITNewsRecentSearchQuery.m */; };
 		0BCC90D519631C2C00440544 /* MITNewsRecentSearchController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BCC90D419631C2C00440544 /* MITNewsRecentSearchController.xib */; };
@@ -262,7 +257,6 @@
 		2C2AA892191C2BEC0013050C /* MITThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2523127A0E8F00058748 /* MITThumbnailView.m */; };
 		2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
-		2C2F779D196DBA6500284AE7 /* MITCollectionViewGridDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2F779C196DBA6500284AE7 /* MITCollectionViewGridDividerView.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348F162DCF2600BBB312 /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -282,7 +276,6 @@
 		2C3C5D94191F076800D59D33 /* UIViewController+ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3C5D8E191F076800D59D33 /* UIViewController+ECSlidingViewController.m */; };
 		2C3DD88E1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */; };
 		2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */; };
-		2C3E8C751A2516B100C36DF2 /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2C44DAA019B79F09001AA874 /* MITDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -315,11 +308,9 @@
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
 		2C7F8DFC197EE1C600F92894 /* MITNewsGridHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
-		2C85957C19D34605002895CC /* MITCollectionViewCellSizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C85957B19D34605002895CC /* MITCollectionViewCellSizer.m */; };
 		2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C893ABF18BE3090002690CE /* MITNavigationController.m */; };
 		2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A074718BE690900284F8A /* MITImageScrollView.m */; };
 		2C8E045F1A1E602C00D762E8 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
-		2C8E04601A1E602C00D762E8 /* MITDiningMenuComparisonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib */; };
 		2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		2C920D651896C4E400A60BA6 /* MITNewsCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C920D641896C4E400A60BA6 /* MITNewsCategoryViewController.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
@@ -521,7 +512,6 @@
 		80C5DA021A1121F700E63FDD /* MITLibrariesFormSheetGroupTellUsBottomGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C5DA011A1121F700E63FDD /* MITLibrariesFormSheetGroupTellUsBottomGroup.m */; };
 		80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */; };
 		80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */; };
-		80EC3C291A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */; };
 		80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */; };
 		A50884DF19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */; };
 		A50884E019D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */; };
@@ -540,6 +530,13 @@
 		A52E0CF619B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */; };
 		A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */; };
 		A53856CD19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */; };
+		A541EB7E1A314C2300FA7349 /* MITNavigationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB7D1A314C2300FA7349 /* MITNavigationModule.m */; };
+		A541EB841A314CFF00FA7349 /* MITModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB831A314CFF00FA7349 /* MITModule.m */; };
+		A541EB871A314D3B00FA7349 /* MITNewsStoriesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB861A314D3B00FA7349 /* MITNewsStoriesDataSource.m */; };
+		A541EB8A1A314D5C00FA7349 /* MITNewsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB891A314D5C00FA7349 /* MITNewsDataSource.m */; };
+		A541EB8D1A314E8600FA7349 /* MITModuleItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB8C1A314E8600FA7349 /* MITModuleItem.m */; };
+		A541EB901A31503A00FA7349 /* MITCollectionViewCellSizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB8F1A31503A00FA7349 /* MITCollectionViewCellSizer.m */; };
+		A541EB931A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB921A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
 		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
@@ -723,10 +720,6 @@
 		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; };
 		EBF1120712A495170002D751 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = EBF1120412A495170002D751 /* en.lproj */; };
 		EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */; };
-		EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8AB1112B197FC00D39AE6 /* TourComponent.m */; };
-		EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B5F212B5CAF600D39AE6 /* IntroToMITController.m */; };
-		EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B8C312B6B8B400D39AE6 /* TourStartLocation.m */; };
-		EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */; };
 		EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -826,8 +819,6 @@
 		0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsRecentSearchController.m; sourceTree = "<group>"; };
 		0B4F9D8F19912A3F0047354E /* MITNewsiPadCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsiPadCategoryViewController.h; sourceTree = "<group>"; };
 		0B4F9D9019912A3F0047354E /* MITNewsiPadCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsiPadCategoryViewController.m; sourceTree = "<group>"; };
-		0B59ECE7199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsLoadMoreCollectionViewCell.h; path = "Collection View Cells/MITNewsLoadMoreCollectionViewCell.h"; sourceTree = "<group>"; };
-		0B59ECE8199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsLoadMoreCollectionViewCell.m; path = "Collection View Cells/MITNewsLoadMoreCollectionViewCell.m"; sourceTree = "<group>"; };
 		0B893A3E197EEE5500609A38 /* NewsStoryLoadMoreCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsStoryLoadMoreCollectionViewCell.xib; path = XIBs/NewsStoryLoadMoreCollectionViewCell.xib; sourceTree = "<group>"; };
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
@@ -1353,8 +1344,6 @@
 		2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsGridHeaderView.m; path = "Collection View Cells/MITNewsGridHeaderView.m"; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
-		2C85957A19D34605002895CC /* MITCollectionViewCellSizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITCollectionViewCellSizer.h; path = Categories/MITCollectionViewCellSizer.h; sourceTree = "<group>"; };
-		2C85957B19D34605002895CC /* MITCollectionViewCellSizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITCollectionViewCellSizer.m; path = Categories/MITCollectionViewCellSizer.m; sourceTree = "<group>"; };
 		2C868B0616D52D81000B2414 /* MGSAnnotationTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MGSAnnotationTypes.h; sourceTree = "<group>"; };
 		2C893ABE18BE3090002690CE /* MITNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationController.h; sourceTree = "<group>"; };
 		2C893ABF18BE3090002690CE /* MITNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNavigationController.m; sourceTree = "<group>"; };
@@ -1562,12 +1551,6 @@
 		48EDC96D17175B4000376BCF /* PDFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDFView.m; sourceTree = "<group>"; };
 		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
 		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
-		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
-		4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSideTripMapAnnotation.h; sourceTree = "<group>"; };
-		4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSideTripMapAnnotation.m; sourceTree = "<group>"; };
-		4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourMapAnnotation.h; sourceTree = "<group>"; };
-		4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourMapAnnotation.m; sourceTree = "<group>"; };
-		4B53F2AE1355062D0081EA38 /* TourGeoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourGeoLocation.h; sourceTree = "<group>"; };
 		4B667065140330CD00714C6A /* LibrariesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesModule.h; sourceTree = "<group>"; };
 		4B667066140330CD00714C6A /* LibrariesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesModule.m; sourceTree = "<group>"; };
 		4B837221157E5B5C004CBC49 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
@@ -1798,6 +1781,20 @@
 		A53F6DB11935077D0018E66C /* MITShuttleStopAlarmCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopAlarmCell.h; sourceTree = "<group>"; };
 		A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopAlarmCell.m; sourceTree = "<group>"; };
 		A53F6DB31935077D0018E66C /* MITShuttleStopAlarmCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITShuttleStopAlarmCell.xib; sourceTree = "<group>"; };
+		A541EB7C1A314C2300FA7349 /* MITNavigationModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNavigationModule.h; path = "App Delegate/MITNavigationModule.h"; sourceTree = "<group>"; };
+		A541EB7D1A314C2300FA7349 /* MITNavigationModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNavigationModule.m; path = "App Delegate/MITNavigationModule.m"; sourceTree = "<group>"; };
+		A541EB821A314CFF00FA7349 /* MITModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITModule.h; path = Common/MITModule.h; sourceTree = "<group>"; };
+		A541EB831A314CFF00FA7349 /* MITModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITModule.m; path = Common/MITModule.m; sourceTree = "<group>"; };
+		A541EB851A314D3B00FA7349 /* MITNewsStoriesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsStoriesDataSource.h; path = Model/MITNewsStoriesDataSource.h; sourceTree = "<group>"; };
+		A541EB861A314D3B00FA7349 /* MITNewsStoriesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsStoriesDataSource.m; path = Model/MITNewsStoriesDataSource.m; sourceTree = "<group>"; };
+		A541EB881A314D5C00FA7349 /* MITNewsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsDataSource.h; path = Model/MITNewsDataSource.h; sourceTree = "<group>"; };
+		A541EB891A314D5C00FA7349 /* MITNewsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsDataSource.m; path = Model/MITNewsDataSource.m; sourceTree = "<group>"; };
+		A541EB8B1A314E8600FA7349 /* MITModuleItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITModuleItem.h; sourceTree = "<group>"; };
+		A541EB8C1A314E8600FA7349 /* MITModuleItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleItem.m; sourceTree = "<group>"; };
+		A541EB8E1A31503A00FA7349 /* MITCollectionViewCellSizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITCollectionViewCellSizer.h; path = Categories/MITCollectionViewCellSizer.h; sourceTree = "<group>"; };
+		A541EB8F1A31503A00FA7349 /* MITCollectionViewCellSizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITCollectionViewCellSizer.m; path = Categories/MITCollectionViewCellSizer.m; sourceTree = "<group>"; };
+		A541EB911A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsLoadMoreCollectionViewCell.h; path = "Collection View Cells/MITNewsLoadMoreCollectionViewCell.h"; sourceTree = "<group>"; };
+		A541EB921A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsLoadMoreCollectionViewCell.m; path = "Collection View Cells/MITNewsLoadMoreCollectionViewCell.m"; sourceTree = "<group>"; };
 		A544EEFE1961D1B60046823E /* MITTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTiledMapView.h; sourceTree = "<group>"; };
 		A544EEFF1961D1B60046823E /* MITTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTiledMapView.m; sourceTree = "<group>"; };
 		A544EF0819647FA30046823E /* MITMapPlaceDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceDetailViewController.h; sourceTree = "<group>"; };
@@ -2083,8 +2080,6 @@
 		EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyContactsViewController.m; sourceTree = "<group>"; };
 		EBF1120412A495170002D751 /* en.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en.lproj; path = Resources/en.lproj; sourceTree = "<group>"; };
 		EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMailComposeController.h; sourceTree = "<group>"; };
-		EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMailComposeController.m; sourceTree = "<group>"; };
 		EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreLocation+MITAdditions.h"; sourceTree = "<group>"; };
 		EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CoreLocation+MITAdditions.m"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextEntryTableViewCell.m; path = "Text Entry Cell/TextEntryTableViewCell.m"; sourceTree = "<group>"; };
@@ -2306,12 +2301,12 @@
 		0BD7B96A194A36BC00B0EDBD /* Collection View Cells */ = {
 			isa = PBXGroup;
 			children = (
+				A541EB911A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.h */,
+				A541EB921A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.m */,
 				0BD7B970194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.h */,
 				0BD7B971194A36D900B0EDBD /* MITNewsStoryCollectionViewCell.m */,
 				2C7F8DFA197EE1C600F92894 /* MITNewsGridHeaderView.h */,
 				2C7F8DFB197EE1C600F92894 /* MITNewsGridHeaderView.m */,
-				0B59ECE7199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.h */,
-				0B59ECE8199ABC1300FE53BE /* MITNewsLoadMoreCollectionViewCell.m */,
 			);
 			name = "Collection View Cells";
 			sourceTree = "<group>";
@@ -3287,6 +3282,8 @@
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				A541EB8E1A31503A00FA7349 /* MITCollectionViewCellSizer.h */,
+				A541EB8F1A31503A00FA7349 /* MITCollectionViewCellSizer.m */,
 				2C2C6F8B18CF58AC00E15D62 /* UITableView+DynamicSizing.h */,
 				2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
@@ -3314,8 +3311,6 @@
 				5ED47247194F2419001D6B78 /* UITableView+MITAdditions.m */,
 				A5A9A98E19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.h */,
 				A5A9A98F19CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m */,
-				2C85957A19D34605002895CC /* MITCollectionViewCellSizer.h */,
-				2C85957B19D34605002895CC /* MITCollectionViewCellSizer.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -3408,6 +3403,12 @@
 		2C5D78791918191E00ECB388 /* Module Launcher */ = {
 			isa = PBXGroup;
 			children = (
+				A541EB8B1A314E8600FA7349 /* MITModuleItem.h */,
+				A541EB8C1A314E8600FA7349 /* MITModuleItem.m */,
+				A541EB821A314CFF00FA7349 /* MITModule.h */,
+				A541EB831A314CFF00FA7349 /* MITModule.m */,
+				A541EB7C1A314C2300FA7349 /* MITNavigationModule.h */,
+				A541EB7D1A314C2300FA7349 /* MITNavigationModule.m */,
 				2C3DD88C1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.h */,
 				2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */,
 				2C3DD8921A1CF68200D0A061 /* MITSlidingTopSegue.h */,
@@ -3416,12 +3417,6 @@
 				2C717AAE1A13E49C000419CE /* MITSlidingAnimationController.m */,
 				2C44DA9D19B79F09001AA874 /* MITDrawerViewController.h */,
 				2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */,
-				2CB4861E19E6D9D300FAE102 /* MITModule.h */,
-				2CB4861F19E6D9D300FAE102 /* MITModule.m */,
-				2CB4862119E6E54700FAE102 /* MITNavigationModule.h */,
-				2CB4862219E6E54700FAE102 /* MITNavigationModule.m */,
-				2CB4861819E6D6AE00FAE102 /* MITModuleItem.h */,
-				2CB4861919E6D6AE00FAE102 /* MITModuleItem.m */,
 				2C5CA5C319AE3B6B004C6FC6 /* MITSlidingViewController.h */,
 				2C5CA5C419AE3B6B004C6FC6 /* MITSlidingViewController.m */,
 			);
@@ -3466,6 +3461,8 @@
 		2C698F4B18650BDD0010B0C0 /* Entities (v3) */ = {
 			isa = PBXGroup;
 			children = (
+				A541EB851A314D3B00FA7349 /* MITNewsStoriesDataSource.h */,
+				A541EB861A314D3B00FA7349 /* MITNewsStoriesDataSource.m */,
 				2CF61DD51889C9DF00D43381 /* MITNewsStory.h */,
 				2CF61DD61889C9DF00D43381 /* MITNewsStory.m */,
 				2CF61DCF1889C9DE00D43381 /* MITNewsCategory.h */,
@@ -4634,14 +4631,12 @@
 		DE4AAFAC10ED4E63007476D9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A541EB881A314D5C00FA7349 /* MITNewsDataSource.h */,
+				A541EB891A314D5C00FA7349 /* MITNewsDataSource.m */,
 				DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */,
 				2C698F4B18650BDD0010B0C0 /* Entities (v3) */,
 				2CF61DC818898C7E00D43381 /* MITNewsModelController.h */,
 				2CF61DC918898C7E00D43381 /* MITNewsModelController.m */,
-				2C2700EE1964E020006616D6 /* MITNewsDataSource.h */,
-				2C2700EF1964E020006616D6 /* MITNewsDataSource.m */,
-				2C2700F01964E020006616D6 /* MITNewsStoriesDataSource.h */,
-				2C2700F11964E020006616D6 /* MITNewsStoriesDataSource.m */,
 				2C7F752D19B0E14F00DF3AFC /* MITNewsCategoryDataSource.h */,
 				2C7F752E19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m */,
 			);
@@ -4672,27 +4667,6 @@
 				A5FA03A419D5D6940063FF2C /* UIImageView+HighlightedWebCache.m */,
 				A5FA03A519D5D6940063FF2C /* UIView+WebCacheOperation.h */,
 				A5FA03A619D5D6940063FF2C /* UIView+WebCacheOperation.m */,
-				DE654506173D90A900562C20 /* MKAnnotationView+WebCache.h */,
-				DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */,
-				DE654508173D90A900562C20 /* SDImageCache.h */,
-				DE654509173D90A900562C20 /* SDImageCache.m */,
-				DE65450A173D90A900562C20 /* SDWebImageCompat.h */,
-				DE65450B173D90A900562C20 /* SDWebImageCompat.m */,
-				DE65450C173D90A900562C20 /* SDWebImageDecoder.h */,
-				DE65450D173D90A900562C20 /* SDWebImageDecoder.m */,
-				DE65450E173D90A900562C20 /* SDWebImageDownloader.h */,
-				DE65450F173D90A900562C20 /* SDWebImageDownloader.m */,
-				DE654510173D90A900562C20 /* SDWebImageDownloaderOperation.h */,
-				DE654511173D90A900562C20 /* SDWebImageDownloaderOperation.m */,
-				DE654512173D90A900562C20 /* SDWebImageManager.h */,
-				DE654513173D90A900562C20 /* SDWebImageManager.m */,
-				DE654514173D90A900562C20 /* SDWebImageOperation.h */,
-				DE654515173D90A900562C20 /* SDWebImagePrefetcher.h */,
-				DE654516173D90A900562C20 /* SDWebImagePrefetcher.m */,
-				DE654517173D90A900562C20 /* UIButton+WebCache.h */,
-				DE654518173D90A900562C20 /* UIButton+WebCache.m */,
-				DE654519173D90A900562C20 /* UIImageView+WebCache.h */,
-				DE65451A173D90A900562C20 /* UIImageView+WebCache.m */,
 			);
 			name = SDWebImage;
 			path = External/SDWebImage/SDWebImage;
@@ -5062,7 +5036,6 @@
 				A59E409319CB676900CF9213 /* MITShuttleStopAlarmCell.xib in Resources */,
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */,
-				80EC3C091A02B88A0051F417 /* MITPadDayOfTheWeekCell.xib in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				2CEC6A5F1A01461800867A66 /* dining-meal-farm_to_fork.pdf in Resources */,
 				22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */,
@@ -5116,7 +5089,6 @@
 				A563905A19D9E7CC001DE763 /* MITLibrariesHoldingLibraryHeaderCopyInfoCell.xib in Resources */,
 				A59D4C9719F6A0870074E392 /* MITLibrariesWorldcatItemCollectionCell.xib in Resources */,
 				A564FA8C19F82B9C00967F08 /* MITLibrariesYourAccountGridViewControllerPad.xib in Resources */,
-				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				22D90328199BF0E000AEBC7D /* MITDiningHomeViewController.xib in Resources */,
 				5EE17BEE1962FC8300F375B5 /* MITMapPlaceCell.xib in Resources */,
 				802579341A1FB4E600183C38 /* MITShuttlesDefaultRoutesData.json in Resources */,
@@ -5133,7 +5105,6 @@
 				0B378671194F904600A8D7E3 /* NewsStoryImageCollectionViewCell.xib in Resources */,
 				2CC710DD1986EA2C006C339C /* GridDividerView.xib in Resources */,
 				0B3786761950CFE100A8D7E3 /* NewsStoryDekCollectionViewCell.xib in Resources */,
-				2CE1C89C18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib in Resources */,
 				22E180A919DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib in Resources */,
 				2258CBDB19CA1E450067E35C /* MITLibrariesHomeViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
@@ -5144,7 +5115,7 @@
 				225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */,
 				224E1A8819FE8E7000913D99 /* MITToursSelfGuidedTourCell.xib in Resources */,
 				22E1809519DC49EA0017AC9A /* MITLibrariesHoursCell.xib in Resources */,
-				225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */,
+				225F2197197D9AE000F34DE9 /* MITPhoneDayOfTheWeekCell.xib in Resources */,
 				2CEC6A621A01461800867A66 /* dining-meal-humane.pdf in Resources */,
 				2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */,
 				0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */,
@@ -5198,7 +5169,6 @@
 				5E8CE40F1922BBE900703920 /* MITShuttleRouteCell.xib in Resources */,
 				225819DF19D9C95800BE42E4 /* MITLibrariesLibraryCell.xib in Resources */,
 				A5FA039019D362FE0063FF2C /* MITLibrariesSearchResultsListViewController.xib in Resources */,
-				48EDC97417175C3100376BCF /* dining in Resources */,
 				A5A24B7119946EC400AA1CFC /* MITEventSearchResultsViewController.xib in Resources */,
 				A563905519D9C0C4001DE763 /* MITLibrariesItemDetailLineCell.xib in Resources */,
 				A5A303CB19804F0B00C9C273 /* MITEventDetailViewController.xib in Resources */,
@@ -5308,7 +5278,6 @@
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
 				80C5D9CF1A11155200E63FDD /* MITLibrariesFormSheetElementAskUsSubject.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
-				2CB4861A19E6D6AE00FAE102 /* MITModuleItem.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */,
 				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
@@ -5316,6 +5285,7 @@
 				2C717AAF1A13E49C000419CE /* MITSlidingAnimationController.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				5E70E38C192E81CF00165B41 /* MITShuttleRouteContainerViewController.m in Sources */,
+				A541EB901A31503A00FA7349 /* MITCollectionViewCellSizer.m in Sources */,
 				A5FD262519C384FC0057CE9D /* MITDiningDietaryFlagListCell.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
 				22E1D3331A0FD8DA004696A4 /* MITToursStopDirectionAnnotation.m in Sources */,
@@ -5338,7 +5308,6 @@
 				22D9BB9C19D1CC280065A2E7 /* MITLibrariesCitation.m in Sources */,
 				AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
-				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				0B34E4281A081EC1002CF7F1 /* MITNewsiPadViewController.m in Sources */,
 				801062601A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.m in Sources */,
 				27D2CC3E1953E3B8003F447F /* PeopleFavoriteData.m in Sources */,
@@ -5448,6 +5417,7 @@
 				5EC89F6B1926517200E06204 /* MITShuttlePredictionList.m in Sources */,
 				223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
+				A541EB8D1A314E8600FA7349 /* MITModuleItem.m in Sources */,
 				5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
 				5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */,
@@ -5465,7 +5435,6 @@
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,
 				2C189A991819D26900653DF6 /* CoreData+MITAdditions.m in Sources */,
-				2C2700F31964E020006616D6 /* MITNewsDataSource.m in Sources */,
 				EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */,
 				EB7F328110CD6C5B00188BCD /* PersonDetails.m in Sources */,
 				2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */,
@@ -5553,6 +5522,7 @@
 				A56390D919DDDD56001DE763 /* MITLibrariesAvailabilityDetailViewController.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
 				225AC09619B8F5AC008854BC /* MITDiningAggregatedMeal.m in Sources */,
+				A541EB931A31505700FA7349 /* MITNewsLoadMoreCollectionViewCell.m in Sources */,
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				2CF61DD11889C9DE00D43381 /* MITNewsCategory.m in Sources */,
 				DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */,
@@ -5563,7 +5533,6 @@
 				DEA4C65718BD8F4400A60657 /* PeopleRecentsData.m in Sources */,
 				0BFBCA20195DD6940064D02C /* MITNewsSearchController.m in Sources */,
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
-				2CB4862319E6E54700FAE102 /* MITNavigationModule.m in Sources */,
 				5E4C6609192CFC470091282A /* MITShuttleStop.m in Sources */,
 				AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */,
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
@@ -5586,6 +5555,7 @@
 				22E6BCA319E321A2003E278C /* MITLibrariesFinesViewController.m in Sources */,
 				A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */,
 				A5FA03A719D5D6940063FF2C /* NSData+ImageContentType.m in Sources */,
+				A541EB841A314CFF00FA7349 /* MITModule.m in Sources */,
 				80598DD71A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m in Sources */,
 				22D90311199BA90E00AEBC7D /* MITDiningLocation.m in Sources */,
 				2C3C5D93191F076800D59D33 /* ECSlidingViewController.m in Sources */,
@@ -5625,6 +5595,7 @@
 				22CE600A1A11182E00C0E24B /* MITToursLinksDataSourceDelegate.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
+				A541EB7E1A314C2300FA7349 /* MITNavigationModule.m in Sources */,
 				22D830A71A092C4B00B780E0 /* MITToursStopDirectionsViewController.m in Sources */,
 				22D9BBA219D1CC380065A2E7 /* MITLibrariesHolding.m in Sources */,
 				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
@@ -5711,6 +5682,7 @@
 				48327CE016F74F19003A2F23 /* DiningModule.m in Sources */,
 				A59D4C8E19F68BA50074E392 /* MITLibrariesSearchResultsGridViewController.m in Sources */,
 				2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */,
+				A541EB871A314D3B00FA7349 /* MITNewsStoriesDataSource.m in Sources */,
 				2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */,
 				80598DC61A0A8A5E0095CEAA /* MITLibrariesFormSheetCellWebLink.m in Sources */,
 				4869CE77170380D800A3662B /* MITDiningMenuComparisonViewController.m in Sources */,
@@ -5761,16 +5733,12 @@
 				0BE0C4101975B42B00961025 /* MITViewWithCenterTextAndIndicator.m in Sources */,
 				80598DA81A0A74160095CEAA /* MITLibrariesFormSheetViewController.m in Sources */,
 				5EC89F5F1926517200E06204 /* MITShuttleVehicle.m in Sources */,
-				2C2700F41964E020006616D6 /* MITNewsStoriesDataSource.m in Sources */,
 				484748BF173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m in Sources */,
 				80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */,
 				22589D7F19AFC0040007966A /* MITDiningHouseMealSelectionView.m in Sources */,
 				80C5D9E61A111C3200E63FDD /* MITLibrariesFormSheetElementHowCanWeHelp.m in Sources */,
 				A50884E419D1E7020047A21B /* MITLibrariesItemLoanFineCell.m in Sources */,
-				DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */,
 				800819C21A238C42005B0021 /* MITLibrariesMITIdentity.m in Sources */,
-				DE65451C173D90A900562C20 /* SDImageCache.m in Sources */,
-				DE65451D173D90A900562C20 /* SDWebImageCompat.m in Sources */,
 				22E1809419DC49EA0017AC9A /* MITLibrariesHoursCell.m in Sources */,
 				A544EF141965A7AF0046823E /* MITMapPlaceContentCell.m in Sources */,
 				A56390E619E07F67001DE763 /* MITLibrariesAvailabilityDetailCell.m in Sources */,
@@ -5778,16 +5746,10 @@
 				224F6B2619D484EC0062D340 /* MITLibrariesCoverImage.m in Sources */,
 				80C5D9C31A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m in Sources */,
 				224BAC3819F00B96004A6477 /* MITLibrariesSearchResultsContainerViewControllerPad.m in Sources */,
-				DE65451E173D90A900562C20 /* SDWebImageDecoder.m in Sources */,
 				2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */,
-				DE65451F173D90A900562C20 /* SDWebImageDownloader.m in Sources */,
-				DE654520173D90A900562C20 /* SDWebImageDownloaderOperation.m in Sources */,
-				DE654521173D90A900562C20 /* SDWebImageManager.m in Sources */,
-				DE654522173D90A900562C20 /* SDWebImagePrefetcher.m in Sources */,
-				DE654523173D90A900562C20 /* UIButton+WebCache.m in Sources */,
+				A541EB8A1A314D5C00FA7349 /* MITNewsDataSource.m in Sources */,
 				224B337C19B10A000031817B /* MITDiningMenuItemCell.m in Sources */,
 				0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */,
-				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
 				225819E819D9F73700BE42E4 /* MITLibrariesExceptionsTerm.m in Sources */,
 				27AB921619737B2C0086C5FD /* MITPeopleSearchSplitContainerViewController.m in Sources */,
 				AF2F704C19FA991700EE6398 /* MITToursMapViewController.m in Sources */,

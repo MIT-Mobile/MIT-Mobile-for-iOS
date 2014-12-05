@@ -8,7 +8,7 @@
 #import "MITToursAboutMITViewController.h"
 #import "MITToursSelfGuidedTourContainerController.h"
 #import "MITToursLinksDataSourceDelegate.h"
-#import "MITMailComposeController.h"
+#import <MessageUI/MessageUI.h>
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITInfoCell = @"MITToursInfoCell";

@@ -20,14 +20,18 @@
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+- (void)loadRootViewController
 {
-    return [[MITToursHomeViewController alloc] initWithNibName:nil bundle:nil];
-}
-
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    return [[MITToursHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+    
+    self.rootViewController = rootViewController;
 }
 
 @end
