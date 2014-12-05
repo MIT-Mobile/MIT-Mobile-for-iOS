@@ -110,7 +110,7 @@ NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesRouteInService = @"shuttles-shuttle";
 NSString * const MITImageShuttlesRouteNotInService = @"shuttles-shuttle-off";
-NSString * const MITImageShuttlesRoutePredictionsUnavailable = nil;
+NSString * const MITImageShuttlesRoutePredictionsUnavailable = @"shuttles-unavailable";
 NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
