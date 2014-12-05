@@ -88,7 +88,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupToolbar
 {
-    self.navigationController.toolbar.translucent = NO;
+    [self.navigationController setToolbarHidden:NO];
     
     // We use actual UIButtons so that we can easily change the selected state
     UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
