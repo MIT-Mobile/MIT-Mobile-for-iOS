@@ -528,7 +528,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
     UIButton *exitMapStateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *exitMapStateImage = [UIImage imageNamed:@"global/menu.png"];
+    UIImage *exitMapStateImage = [UIImage imageNamed:MITImageBarButtonList];
     [exitMapStateButton setImage:exitMapStateImage forState:UIControlStateNormal];
     [exitMapStateButton addTarget:self action:@selector(exitMapStateButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     exitMapStateButton.frame = CGRectMake(0, 0, exitMapStateImage.size.width, exitMapStateImage.size.height);
@@ -789,8 +789,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     self.calloutView.subtitle = calloutSubtitle;
     
-    UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-right"]];
-    chevronImageView.bounds = CGRectMake(0, 0, 30, 30);
+    UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
+    chevronImageView.contentMode = UIViewContentModeRight;
     self.calloutView.rightAccessoryView = chevronImageView;
     
     self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
