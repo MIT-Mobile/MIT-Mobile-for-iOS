@@ -175,7 +175,18 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 #pragma mark - UITableViewDataSource Methods
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+{
+    [[(UITableViewHeaderFooterView *)view textLabel] setFont:[UIFont boldSystemFontOfSize:14.0]];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 26.0;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     if ([self.resultsDataSource allSections].count > section) {
         return [self.resultsDataSource headerForSection:section];
     } else {
