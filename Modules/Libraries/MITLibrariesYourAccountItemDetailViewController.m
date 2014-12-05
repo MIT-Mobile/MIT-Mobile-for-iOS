@@ -115,11 +115,13 @@ typedef NS_ENUM(NSInteger, MITLibrariesItemType) {
             case MITLibrariesItemTypeFine: {
                 MITLibrariesItemLoanFineCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemLoanFineCellIdentifier];
                 [cell setContent:self.item];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 return cell;
             }
             case MITLibrariesItemTypeHold: {
                 MITLibrariesItemHoldCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITLibrariesItemHoldCellIdentifier];
                 [cell setContent:self.item];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 return cell;
             }
         }
