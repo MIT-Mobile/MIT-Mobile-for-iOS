@@ -12,6 +12,7 @@
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesConsultationFormSheetViewController.h"
 #import "MITLibrariesTellUsFormSheetViewController.h"
+#import "MITLibrariesSearchResultsViewController.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeAccount,
@@ -20,7 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize = {480,400};
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate>
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate, MITLibrariesSearchResultsViewControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -65,6 +66,8 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self setupToolbar];
     [self loadLinks];
 }
+
+#pragma mark - View Setup
 
 - (void)setupNavBar
 {
@@ -119,6 +122,54 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
                                                                constant:0]];
 }
 
+- (void)setupViewControllers
+{
+    [self setupYourAccountViewController];
+    [self setupSearchResultsViewController];
+    [self setupRecentSearchesViewController];
+    [self setupQuickLinksPopover];
+    self.displayMode = MITLibrariesPadDisplayModeAccount;
+}
+
+- (void)setupYourAccountViewController
+{
+    self.accountViewController = [[MITLibrariesYourAccountViewControllerPad alloc] init];
+    self.accountViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    self.accountViewController.view.frame = self.view.bounds;
+    
+    [self addChildViewController:self.accountViewController];
+    
+    [self.view addSubview:self.accountViewController.view];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
+}
+
+- (void)setupSearchResultsViewController
+{
+    self.searchViewController = [[MITLibrariesSearchResultsContainerViewControllerPad alloc] init];
+    self.searchViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.searchViewController.view.frame = self.view.bounds;
+    self.searchViewController.delegate = self;
+    
+    [self addChildViewController:self.searchViewController];
+    
+    [self.view addSubview:self.searchViewController.view];
+    
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
+}
+
+- (void)setupQuickLinksPopover
+{
+    self.quickLinksViewController = [[MITLibrariesQuickLinksViewController alloc] initWithStyle:UITableViewStylePlain];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.quickLinksViewController];
+    
+    self.quickLinksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    [self.quickLinksPopoverController setPopoverContentSize:CGSizeMake(320, 132 + navController.navigationBar.frame.size.height)];
+}
+
 - (void)setupRecentSearchesViewController
 {
     self.recentSearchesViewController = [[MITLibrariesRecentSearchesViewController alloc] init];
@@ -149,14 +200,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
                           self.quickLinksButton];
 }
 
-- (void)loadLinks
-{
-    [MITLibrariesWebservices getLinksWithCompletion:^(NSArray *links, NSError *error) {
-        if (links) {
-            self.links = links;
-        }
-    }];
-}
+#pragma mark - Toolbar Button Presses
 
 - (void)locationsAndHoursPressed:(id)sender
 {
@@ -168,19 +212,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     self.locationsAndHoursPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     [self.locationsAndHoursPopoverController setPopoverContentSize:CGSizeMake(320, 568)];
     [self.locationsAndHoursPopoverController presentPopoverFromBarButtonItem:self.locationsAndHoursButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-}
-
-- (void)showLibraryDetailForLibrary:(MITLibrariesLibrary *)library
-{
-    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] init];
-    detailVC.library = library;
-    detailVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:detailVC action:@selector(dismiss)];
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
-    navController.modalPresentationStyle = UIModalPresentationFormSheet;
-    
-    [self.locationsAndHoursPopoverController dismissPopoverAnimated:YES];
-    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)askUsTellUsPressed:(id)sender
@@ -201,52 +232,15 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self.quickLinksPopoverController presentPopoverFromBarButtonItem:self.quickLinksButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
-- (void)setupViewControllers
-{
-    [self setupYourAccountViewController];
-    [self setupSearchResultsViewController];
-    [self setupRecentSearchesViewController];
-    [self setupQuickLinksPopover];
-    self.displayMode = MITLibrariesPadDisplayModeAccount;
-}
+#pragma mark - Links
 
-- (void)setupYourAccountViewController
+- (void)loadLinks
 {
-    self.accountViewController = [[MITLibrariesYourAccountViewControllerPad alloc] init];
-    self.accountViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    self.accountViewController.view.frame = self.view.bounds;
-    
-    [self addChildViewController:self.accountViewController];
-    
-    [self.view addSubview:self.accountViewController.view];
-    
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[accountView]-0-|" options:0 metrics:nil views:@{@"accountView": self.accountViewController.view}]];
-}
-
-- (void)setupSearchResultsViewController
-{
-    self.searchViewController = [[MITLibrariesSearchResultsContainerViewControllerPad alloc] init];
-    self.searchViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    self.searchViewController.view.frame = self.view.bounds;
-    
-    [self addChildViewController:self.searchViewController];
-    
-    [self.view addSubview:self.searchViewController.view];
-    
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[searchView]-0-|" options:0 metrics:nil views:@{@"searchView": self.searchViewController.view}]];
-}
-
-- (void)setupQuickLinksPopover
-{
-    self.quickLinksViewController = [[MITLibrariesQuickLinksViewController alloc] initWithStyle:UITableViewStylePlain];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.quickLinksViewController];
-    
-    self.quickLinksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
-    [self.quickLinksPopoverController setPopoverContentSize:CGSizeMake(320, 132 + navController.navigationBar.frame.size.height)];
+    [MITLibrariesWebservices getLinksWithCompletion:^(NSArray *links, NSError *error) {
+        if (links) {
+            self.links = links;
+        }
+    }];
 }
 
 - (void)setLinks:(NSArray *)links
@@ -256,6 +250,8 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
         self.quickLinksViewController.links = links;
     }
 }
+
+#pragma mark - Layout/Display Modes
 
 - (void)setLayoutMode:(MITLibrariesLayoutMode)layoutMode
 {
@@ -293,6 +289,21 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
         self.accountViewController.view.hidden = YES;
         self.searchViewController.view.hidden = NO;
     }
+}
+
+#pragma mark - MITLibrariesLocationsIPadDelegate
+
+- (void)showLibraryDetailForLibrary:(MITLibrariesLibrary *)library
+{
+    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] init];
+    detailVC.library = library;
+    detailVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:detailVC action:@selector(dismiss)];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    [self.locationsAndHoursPopoverController dismissPopoverAnimated:YES];
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 #pragma mark - Search Bar Delegate
@@ -375,6 +386,13 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 - (void)presentedFormSheetViewControllerCancelButtonPressed:(UIBarButtonItem *)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - MITLibrariesSearchResultsViewControllerDelegate
+
+- (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item
+{
+    [self.searchBar resignFirstResponder];
 }
 
 @end

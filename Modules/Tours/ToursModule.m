@@ -15,7 +15,7 @@
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }

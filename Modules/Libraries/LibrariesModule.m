@@ -16,17 +16,7 @@
     return self;
 }
 
-//- (void) dealloc
-//{
-//    [self.requestQueue cancelAllOperations];
-//}
-//
-//- (void)loadModuleHomeController
-//{
-//    self.moduleHomeController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
-//}
-
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }

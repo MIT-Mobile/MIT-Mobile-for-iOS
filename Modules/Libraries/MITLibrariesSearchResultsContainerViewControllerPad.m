@@ -106,6 +106,10 @@
 
 - (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item
 {
+    if ([self.delegate respondsToSelector:@selector(librariesSearchResultsViewController:didSelectItem:)]) {
+        [self.delegate librariesSearchResultsViewController:searchResultsViewController didSelectItem:item];
+    }
+    
     MITLibrariesSearchResultDetailViewController *detailVC = [[MITLibrariesSearchResultDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.worldcatItem = item;
     [detailVC hydrateCurrentItem];
