@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "map_location_selected.png"
+      "filename" : "map-location-highlighted.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "map_location_selected@2x.png"
+      "filename" : "map-location-highlighted@2x.png"
     },
     {
       "idiom" : "universal",

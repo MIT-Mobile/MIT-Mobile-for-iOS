@@ -88,7 +88,7 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 - (void)setupToolbar
 {
-    self.navigationController.toolbar.translucent = NO;
+    [self.navigationController setToolbarHidden:NO];
     
     // We use actual UIButtons so that we can easily change the selected state
     UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
@@ -100,17 +100,8 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     [self.listViewToggleButton addTarget:self action:@selector(listButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *listButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
     
-    UIImage *userLocationImageNormal = [UIImage imageNamed:@"tours/track-user_disabled"];
-    UIImage *userLocationImageSelected = [UIImage imageNamed:@"tours/track-user_active"];
-    CGSize userLocationImageSize = userLocationImageNormal.size;
-    self.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, userLocationImageSize.width, userLocationImageSize.height)];
-    [self.userLocationButton setImage:userLocationImageNormal forState:UIControlStateNormal];
-    [self.userLocationButton setImage:userLocationImageSelected forState:UIControlStateSelected];
-    [self.userLocationButton addTarget:self action:@selector(currentLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *currentLocationButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.userLocationButton];
-
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[listButtonItem, flexibleSpace, currentLocationButtonItem];
+    self.toolbarItems = @[listButtonItem, flexibleSpace, self.mapViewController.tiledMapView.userLocationButton];
 }
 
 #pragma mark - List View Panel

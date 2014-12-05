@@ -122,6 +122,9 @@ static NSInteger kAnnotationMarginRight = 50;
         MKMapRect zoomRect = MKMapRectNull;
         for (id <MKAnnotation> annotation in mapView.annotations)
         {
+            if (![annotation isKindOfClass:[MITToursStopAnnotation class]]) {
+                continue;
+            }
             MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
             MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
             zoomRect = MKMapRectUnion(zoomRect, pointRect);
