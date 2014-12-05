@@ -54,6 +54,15 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // UIViewController apprently only "automatically adjusts scrollview insets" for the first subview. Set the other two here.
+    self.holdsViewController.tableView.contentInset =
+    self.finesViewController.tableView.contentInset = self.loansViewController.tableView.contentInset;
+}
+
 - (void)applicationDidBecomeActive
 {
     [self refreshUserData];
@@ -107,9 +116,13 @@ typedef NS_ENUM(NSInteger, MITLibrariesYourAccountSection) {
     [self addChildViewController:self.holdsViewController];
     [self addChildViewController:self.finesViewController];
     
+    [self.view addSubview:self.loansViewController.view];
     [self.view addSubview:self.finesViewController.view];
     [self.view addSubview:self.holdsViewController.view];
-    [self.view addSubview:self.loansViewController.view];
+    
+    [self.loansViewController didMoveToParentViewController:self];
+    [self.holdsViewController didMoveToParentViewController:self];
+    [self.finesViewController didMoveToParentViewController:self];
 }
 
 - (void)showSelectedViewController
