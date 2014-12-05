@@ -9,13 +9,15 @@ NSString* const AboutCreditsTableViewCellNibName = @"AboutCreditsTableViewCell";
 NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 
 @interface AboutCreditsVC () <UIWebViewDelegate>
-@property (nonatomic, strong) NSMutableDictionary *dict;
+@property (nonatomic, strong) NSMutableDictionary *webViewHeightsDictionary;
 @property (nonatomic) BOOL showOlderCredits;
 @end
 
 @implementation AboutCreditsVC
 
-- (void)viewDidLoad {
+#pragma mark - View lifecycle
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     self.navigationItem.title = @"Credits";
@@ -23,23 +25,28 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
     
     [self.tableView registerNib:[UINib nibWithNibName:AboutCreditsTableViewCellNibName bundle:nil] forCellReuseIdentifier:AboutCreditsTableViewCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:AboutCreditsViewOlderTableViewNibName bundle:nil] forCellReuseIdentifier:AboutCreditsViewOlderTableViewIdentifier];
-    
-    self.dict = [[NSMutableDictionary alloc] init];
 }
 
+- (NSMutableDictionary *)webViewHeightsDictionary
+{
+    if(!_webViewHeightsDictionary) {
+        NSMutableDictionary *webViewHeightsDictionary = [[NSMutableDictionary alloc] init];
+        _webViewHeightsDictionary = webViewHeightsDictionary;
+    }
+    return _webViewHeightsDictionary;
+}
+
+#pragma mark - UITableView Methods
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.dict[[NSNumber numberWithInt:indexPath.row]]) {
-        return [self.dict[[NSNumber numberWithInt:indexPath.row]] floatValue];
+    if (self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]]) {
+        return [self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]] floatValue];
     }
     return 44;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if ([self.dict count] == 0) {
-        return 1;
-    }
     return 2;
 }
 
@@ -66,7 +73,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
         AboutCreditsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AboutCreditsTableViewCellIdentifier];
         cell.webView.scrollView.scrollEnabled = NO;
         cell.webView.tag = indexPath.row;
-        if (!self.dict[[NSNumber numberWithInt:indexPath.row]]) {
+        if (!self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]]) {
             cell.webView.delegate = self;
         } else {
             cell.webView.delegate = nil;
@@ -81,7 +88,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
     }
 }
 
-#pragma mark UIWebViewDelegate
+#pragma mark - UIWebViewDelegate
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
 }
@@ -99,14 +106,14 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
     webView.frame = frame;
     CGSize size = [webView sizeThatFits:CGSizeZero];
 
-    self.dict[[NSNumber numberWithInt:webView.tag]] = [NSNumber numberWithFloat:size.height];
+    self.webViewHeightsDictionary[[NSNumber numberWithInt:webView.tag]] = [NSNumber numberWithFloat:size.height];
 
     [self.tableView reloadData];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    DDLogWarn(@"story view failed to load: %@", error);
+    DDLogWarn(@"credits view at index %d failed to load: %@",webView.tag, error);
 }
 @end
 
