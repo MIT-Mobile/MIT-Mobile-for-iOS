@@ -151,8 +151,8 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 {
     if (!_userLocationButton) {
         UIButton *userLocationCustomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *normalImage = [UIImage imageNamed:@"map/map_location"];
-        UIImage *selectedImage = [UIImage imageNamed:@"map/map_location_selected"];
+        UIImage *normalImage = [UIImage imageNamed:MITImageMapLocation];
+        UIImage *selectedImage = [UIImage imageNamed:MITImageMapLocationHighlighted];
         userLocationCustomButton.frame = CGRectMake(0, 0, normalImage.size.width, normalImage.size.height);
         [userLocationCustomButton addTarget:self action:@selector(userLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         [userLocationCustomButton setImage:normalImage forState:UIControlStateNormal];

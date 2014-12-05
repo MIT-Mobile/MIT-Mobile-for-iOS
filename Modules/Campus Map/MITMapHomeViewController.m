@@ -77,14 +77,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO];
         
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
         UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
     } else {
         [self.navigationController setToolbarHidden:NO];
         
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/menu.png"] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
         UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
