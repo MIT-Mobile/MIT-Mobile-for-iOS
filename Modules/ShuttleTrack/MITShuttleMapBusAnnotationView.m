@@ -34,7 +34,7 @@
 - (void)setupBusImageView
 {
     self.busImageLayer = [[CALayer alloc] init];
-    UIImage *busImage = [UIImage imageNamed:@"shuttle/bus_annotation"];
+    UIImage *busImage = [UIImage imageNamed:MITImageShuttlesAnnotationBus];
     self.busImageLayer.bounds = CGRectMake(0, 0, busImage.size.width, busImage.size.height);
     self.busImageLayer.contents = (__bridge id)busImage.CGImage;
     [self.layer addSublayer:self.busImageLayer];
