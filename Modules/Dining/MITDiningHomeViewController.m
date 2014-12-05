@@ -103,6 +103,10 @@
     [self.view addSubview:self.retailListViewController.view];
     [self.view addSubview:self.mapViewController.view];
     
+    [self.houseListViewController didMoveToParentViewController:self];
+    [self.retailListViewController didMoveToParentViewController:self];
+    [self.mapViewController didMoveToParentViewController:self];
+    
     [self showHouseVenueList];
 }
 
