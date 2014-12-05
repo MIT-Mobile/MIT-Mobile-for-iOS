@@ -28,7 +28,7 @@ static NSString *const kMITToursHTMLDetailsTemplateFilePath = @"tours/tours_tour
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", viewWidth];
     [templatedHtml replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, [templatedHtml length])];
     [templatedHtml replaceOccurrencesOfString:@"__TITLE__" withString:titleString options:NSLiteralSearch range:NSMakeRange(0, [templatedHtml length])];
-    [templatedHtml replaceOccurrencesOfString:@"__BODY__" withString:@"Directions are not availiable for Side Trips" options:NSLiteralSearch range:NSMakeRange(0, [templatedHtml length])];
+    [templatedHtml replaceOccurrencesOfString:@"__BODY__" withString:@"Step by step directions are not available for side trips." options:NSLiteralSearch range:NSMakeRange(0, [templatedHtml length])];
     
     return templatedHtml;
 }
