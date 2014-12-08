@@ -540,6 +540,7 @@
 		A541EBC41A31557900FA7349 /* UIImageView+HighlightedWebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EBB21A31557900FA7349 /* UIImageView+HighlightedWebCache.m */; };
 		A541EBC51A31557900FA7349 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EBB41A31557900FA7349 /* UIImageView+WebCache.m */; };
 		A541EBC61A31557900FA7349 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EBB61A31557900FA7349 /* UIView+WebCacheOperation.m */; };
+		A5444EAC1A35FCD5006932CF /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
 		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
@@ -5389,6 +5390,7 @@
 				A5A24B7419946FA400AA1CFC /* MITEventsRecentSearches.m in Sources */,
 				22CFC1A819AE623F003BD72A /* MITDiningVenueInfoCell.m in Sources */,
 				80598DA21A0A71370095CEAA /* MITLibrariesAskUsFormSheetViewController.m in Sources */,
+				A5444EAC1A35FCD5006932CF /* MultiLineLabel.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */,
