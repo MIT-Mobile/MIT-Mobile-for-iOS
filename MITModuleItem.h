@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSUInteger, MITModuleType) {
-    MITModuleTypePrimary = 0,
-    MITModuleTypeSecondary
+typedef NS_ENUM(NSUInteger, MITModulePresentationStyle) {
+    MITModulePresentationFullScreen = 0,
+    MITModulePresentationModal
 };
 
 @interface MITModuleItem : NSObject
@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, MITModuleType) {
 @property(nonatomic,strong) UIImage *selectedImage;
 
 @property(nonatomic,copy) NSString *badgeValue;
-@property(nonatomic) MITModuleType type;
+@property(nonatomic) MITModulePresentationStyle type;
 
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title image:(UIImage*)image;
 - (instancetype)initWithName:(NSString*)name title:(NSString*)title image:(UIImage*)image selectedImage:(UIImage*)selectedImage;

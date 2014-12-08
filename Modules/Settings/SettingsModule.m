@@ -22,7 +22,7 @@
 {
     [super viewControllerDidLoad];
 
-    self.viewController.moduleItem.type = MITModuleTypeSecondary;
+    self.viewController.moduleItem.type = MITModulePresentationModal;
 }
 
 - (void)didReceiveRequestWithURL:(NSURL*)url

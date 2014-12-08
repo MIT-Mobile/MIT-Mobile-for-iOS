@@ -281,9 +281,9 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     if (_currentVisibleViewController != self.visibleViewController) {
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            if (self.visibleViewController.moduleItem.type == MITModuleTypePrimary) {
+            if (self.visibleViewController.moduleItem.type == MITModulePresentationFullScreen) {
                 [self _presentTopVisibleViewController:animated completion:nil];
-            } else if (self.visibleViewController.moduleItem.type == MITModuleTypeSecondary) {
+            } else if (self.visibleViewController.moduleItem.type == MITModulePresentationModal) {
                 [self _presentModalVisibleViewController:animated completion:nil];
             }
         } else if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {

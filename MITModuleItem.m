@@ -10,7 +10,7 @@
         _title = [title copy];
         _name = [name copy];
         _image = image;
-        _type = MITModuleTypePrimary;
+        _type = MITModulePresentationFullScreen;
     }
 
     return self;

@@ -86,7 +86,7 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 }
 
 #pragma mark Private
-- (NSUInteger)_numberOfModuleItemsWithType:(MITModuleType)type
+- (NSUInteger)_numberOfModuleItemsWithType:(MITModulePresentationStyle)type
 {
     __block NSUInteger numberOfModuleItems = 0;
     [self.moduleItems enumerateObjectsUsingBlock:^(MITModuleItem *moduleItem, NSUInteger idx, BOOL *stop) {
@@ -98,7 +98,7 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
     return numberOfModuleItems;
 }
 
-- (NSArray*)_moduleItemsWithType:(MITModuleType)type
+- (NSArray*)_moduleItemsWithType:(MITModulePresentationStyle)type
 {
     NSMutableArray *moduleItems = [[NSMutableArray alloc] init];
     [self.moduleItems enumerateObjectsUsingBlock:^(MITModuleItem *moduleItem, NSUInteger idx, BOOL *stop) {
@@ -125,7 +125,7 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 
 - (MITModuleItem*)_moduleItemForIndexPath:(NSIndexPath*)indexPath
 {
-    MITModuleType type = (MITModuleType)indexPath.section;
+    MITModulePresentationStyle type = (MITModulePresentationStyle)indexPath.section;
     NSArray *moduleItems = [self _moduleItemsWithType:type];
     return moduleItems[indexPath.row];
 }
@@ -139,7 +139,7 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    MITModuleType type = (MITModuleType)section;
+    MITModulePresentationStyle type = (MITModulePresentationStyle)section;
     return [[self _moduleItemsWithType:type] count];
 }
 
@@ -154,7 +154,7 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
     if ([cell isKindOfClass:[UITableViewCell class]]) {
         MITModuleItem *moduleItem = [self _moduleItemForIndexPath:indexPath];
 
-        if (moduleItem.type == MITModuleTypePrimary) {
+        if (moduleItem.type == MITModulePresentationFullScreen) {
             cell.imageView.image = moduleItem.image;
         }
 
