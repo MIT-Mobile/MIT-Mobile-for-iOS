@@ -11,6 +11,7 @@ static const CGFloat kSelectedPadding = 10;
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UIView *highlightView;
 
 @end
 
@@ -20,7 +21,6 @@ static const CGFloat kSelectedPadding = 10;
 {
     [super awakeFromNib];
     self.titleLabel.font = [UIFont toursStopCollectionViewCellTitle];
-    
     // If we do not do this, then the contentView will not resize to fit the cell.
     self.contentView.frame = self.bounds;
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -30,12 +30,18 @@ static const CGFloat kSelectedPadding = 10;
 {
     [self.imageView sd_setImageWithURL:imageURL];
     self.titleLabel.text = title;
-    
+    self.highlightView.hidden = YES;
+
     if (selected) {
         self.backgroundColor = [UIColor mit_backgroundColor];
     } else {
         self.backgroundColor = [UIColor clearColor];
     }
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+    self.highlightView.hidden = !highlighted;
 }
 
 + (CGSize)sizeForSelected:(BOOL)selected
