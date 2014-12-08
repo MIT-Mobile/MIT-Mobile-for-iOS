@@ -395,11 +395,9 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         }
     };
 
-    setScrollsToTop(scrollsToTopViewController,YES);
-
     NSMutableSet *scrollToTopDisabledViewControllers = [[NSMutableSet alloc] init];
-    if (self.topViewController) {
-        [scrollToTopDisabledViewControllers addObject:self.topViewController];
+    if (self.visibleViewController) {
+        [scrollToTopDisabledViewControllers addObject:self.visibleViewController];
     }
 
     if (self.underLeftViewController) {
@@ -414,6 +412,8 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     [scrollToTopDisabledViewControllers enumerateObjectsUsingBlock:^(UIViewController *viewController, BOOL *stop) {
         setScrollsToTop(viewController, NO);
     }];
+
+    setScrollsToTop(scrollsToTopViewController,YES);
 
 }
 
