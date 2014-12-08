@@ -33,7 +33,7 @@
 {
     [super viewControllerDidLoad];
     
-    self.viewController.moduleItem.type = MITModuleTypeSecondary;
+    self.viewController.moduleItem.type = MITModulePresentationModal;
 }
 
 @end
