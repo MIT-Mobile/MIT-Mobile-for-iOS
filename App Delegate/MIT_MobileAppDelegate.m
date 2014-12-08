@@ -35,6 +35,7 @@
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
 #import "MITShuttleStopNotificationManager.h"
+#import "MITShuttleController.h"
 
 static NSString* const MITMobileButtonTitleView = @"View";
 
@@ -132,6 +133,8 @@ static NSString* const MITMobileButtonTitleView = @"View";
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+    
+    [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
     [MITUnreadNotifications updateUI];
     [MITUnreadNotifications synchronizeWithMIT];

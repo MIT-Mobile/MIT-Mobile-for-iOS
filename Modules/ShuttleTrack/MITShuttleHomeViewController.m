@@ -81,17 +81,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (NSArray *)routes
 {
     NSArray *routes = [self.routesFetchedResultsController fetchedObjects];
-    if (routes.count == 0) {
-        routes = [self loadDefaultRoutes];
-    }
     return routes;
-}
-
-- (NSArray *)loadDefaultRoutes
-{
-    NSArray *defaultRoutes = [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
-    [self.routesFetchedResultsController performFetch:nil];
-    return defaultRoutes;
 }
 
 - (NSFetchedResultsController *)predictionListsFetchedResultsController
@@ -217,20 +207,23 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)stopRefreshingData
 {
     [self.routesAndPredictionsRefreshTimer invalidate];
+    self.routesAndPredictionsRefreshTimer = nil;
 }
 
 #pragma mark - Data Refresh
 
 - (void)startRefreshingRoutesAndPredictions
 {
-    [self fetchRouteVehiclesAndPredictions];
-    NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kRoutesAndPredictionsGlobalRefreshInterval
-                                                                 target:self
-                                                               selector:@selector(fetchRouteVehiclesAndPredictions)
-                                                               userInfo:nil
-                                                                repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
-    self.routesAndPredictionsRefreshTimer = routesAndPredictionsTimer;
+    if (!self.routesAndPredictionsRefreshTimer) {
+        [self fetchRouteVehiclesAndPredictions];
+        NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kRoutesAndPredictionsGlobalRefreshInterval
+                                                                     target:self
+                                                                   selector:@selector(fetchRouteVehiclesAndPredictions)
+                                                                   userInfo:nil
+                                                                    repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
+        self.routesAndPredictionsRefreshTimer = routesAndPredictionsTimer;
+    }
     
 }
 
