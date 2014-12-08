@@ -136,6 +136,43 @@
     return NO;
 }
 
+- (BOOL)isOpenOnDayOfDate:(NSDate *)date
+{
+    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    
+    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
+    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+    
+    // Check to see if the date even falls within the term
+    if (![date dateFallsBetweenStartDate:startDate endDate:endDate])
+    {
+        return NO;
+    }
+    
+    // Check to see if the date falls within an exception
+    for (MITLibrariesExceptionsTerm *term in self.exceptionsTerm) {
+        if ([term isOpenOnDayOfDate:date]) {
+            return YES;
+        }
+    }
+    
+    // Check to see if the library is explicitly closed
+    for (MITLibrariesClosingsTerm *term in self.closingsTerm) {
+        if ([term isClosedOnDate:date]) {
+            return NO;
+        }
+    }
+    
+    // Check to see if the library is open for the day of the week
+    for (MITLibrariesRegularTerm *term in self.regularTerm) {
+        if ([term isOpenOnDayOfDate:date]) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 - (NSDateFormatter *)dateFormatter
 {
     static NSDateFormatter *dateFormatter;

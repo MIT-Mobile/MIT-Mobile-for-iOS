@@ -21,8 +21,16 @@
 - (void)setContent:(MITLibrariesLibrary *)library
 {
     self.libraryNameLabel.text = library.name;
-    self.libraryHoursLabel.text = [library hoursStringForDate:[NSDate date]];
-    if ([library isOpenAtDate:[NSDate date]]) {
+    
+    NSDate *currentDate = [[NSDate date] dateByAddingTimeInterval:(60*60*9)];
+    
+    if ([library isOpenOnDayOfDate:currentDate]) {
+        self.libraryHoursLabel.text = [NSString stringWithFormat:@"Open today %@", [library hoursStringForDate:[NSDate date]]];
+    } else {
+        self.libraryHoursLabel.text = [library hoursStringForDate:currentDate];
+    }
+    
+    if ([library isOpenAtDate:currentDate]) {
         self.openClosedLabel.text = @"Open";
         self.openClosedLabel.textColor = [UIColor mit_openGreenColor];
     }
