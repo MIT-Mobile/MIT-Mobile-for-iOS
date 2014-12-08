@@ -210,6 +210,7 @@ NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverVie
 NSString * const MITImageBarButtonMenu = @"global-menu";
 NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
+NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";

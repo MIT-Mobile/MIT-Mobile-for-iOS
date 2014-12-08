@@ -3,6 +3,7 @@
 #import "MITToursTourDetailsViewController.h"
 #import "MITToursMapViewController.h"
 #import "MITToursStopDetailContainerViewController.h"
+#import "MITResourceConstants.h"
 
 @interface MITToursSelfGuidedTourContainerControllerPad () <MITToursSelfGuidedTourListViewControllerDelegate, MITToursMapViewControllerDelegate>
 
@@ -91,13 +92,14 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     [self.navigationController setToolbarHidden:NO];
     
     // We use actual UIButtons so that we can easily change the selected state
-    UIImage *listToggleImageNormal = [UIImage imageNamed:@"tours/list-view"];
-    UIImage *listToggleImageSelected = [UIImage imageNamed:@"tours/list-view"];
+    UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
+    UIImage *listToggleImageSelected = [UIImage imageNamed:MITImageBarButtonListSelected];
     CGSize listToggleImageSize = listToggleImageNormal.size;
     self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
     [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
     [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
     [self.listViewToggleButton addTarget:self action:@selector(listButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.listViewToggleButton.selected = YES;
     UIBarButtonItem *listButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
     
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
