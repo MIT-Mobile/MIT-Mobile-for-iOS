@@ -112,24 +112,6 @@ static CGFloat const kDistanceLabelTopSpacing = 6;
     [self sizeToFit];
 }
 
-- (NSAttributedString *)attributedBodyTextForStop:(MITToursStop *)stop
-{
-    // Mostly copied from MITToursStopDetailViewController
-    // TODO: Should move this somewhere shared to keep things DRY
-    NSData *bodyTextData = [NSData dataWithBytes:[stop.bodyHTML cStringUsingEncoding:NSUTF8StringEncoding] length:stop.bodyHTML.length];
-    NSMutableAttributedString *bodyString = [[NSMutableAttributedString alloc] initWithData:bodyTextData options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType} documentAttributes:NULL error:nil];
-    
-    [bodyString setAttributes:@{NSFontAttributeName: [UIFont toursMapCalloutSubtitle]}
-                        range:NSMakeRange(0, bodyString.length)];
-    
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    [paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
-    paragraphStyle.lineHeightMultiple = 1.0;
-    [bodyString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, bodyString.length)];
-    
-    return bodyString;
-}
-
 - (CGSize)sizeThatFits:(CGSize)size
 {
     return self.intrinsicContentSize;
