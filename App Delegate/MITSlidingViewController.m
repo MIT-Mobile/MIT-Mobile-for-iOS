@@ -269,39 +269,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
         _visibleViewController = newVisibleViewController;
         self.drawerViewController.selectedModuleItem = self.visibleViewController.moduleItem;
-
-        if (oldVisibleViewController) {
-            [oldVisibleViewController willMoveToParentViewController:nil];
-
-            [oldVisibleViewController beginAppearanceTransition:NO animated:NO];
-            [oldVisibleViewController.view removeFromSuperview];
-            [oldVisibleViewController endAppearanceTransition];
-
-            [oldVisibleViewController removeFromParentViewController];
-        }
-
-        if (_visibleViewController) {
-            // If the top view is a UINavigationController, automatically add a button to toggle the state
-            // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
-            // controller must do something itself.
-            if ([_visibleViewController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navigationController = (UINavigationController*)_visibleViewController;
-                UIViewController *rootViewController = [navigationController.viewControllers firstObject];
-
-                if (!rootViewController.navigationItem.leftBarButtonItem) {
-                    rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
-                }
-            }
-
-            [self.topViewController addChildViewController:_visibleViewController];
-
-            [_visibleViewController beginAppearanceTransition:YES animated:animated];
-            _visibleViewController.view.frame = self.topViewController.view.bounds;
-            [self.topViewController.view addSubview:_visibleViewController.view];
-            [_visibleViewController endAppearanceTransition];
-
-            [_visibleViewController didMoveToParentViewController:self.topViewController];
-        }
     }
 
     [self presentVisibleViewControllerIfNeeded:animated];
@@ -370,7 +337,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     __block UIViewController *selectedModuleViewController = nil;
     [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController *moduleViewController, NSUInteger idx, BOOL *stop) {
         MITModuleItem *moduleItem = moduleViewController.moduleItem;
-
+        
         if ([moduleItem.name isEqualToString:name]) {
             selectedModuleViewController = moduleViewController;
             (*stop) = YES;
