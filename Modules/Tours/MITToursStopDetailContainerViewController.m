@@ -12,6 +12,9 @@
 
 @property (strong, nonatomic) MITToursStop *mostRecentMainLoopStop;
 
+@property (nonatomic) BOOL isTransitioning;
+@property (nonatomic, strong) NSMutableArray *inputViews;
+
 @end
 
 @implementation MITToursStopDetailContainerViewController
@@ -111,6 +114,8 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
     pageView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.inputViews addObject:self.pageViewController.view];
 }
 
 - (void)setupMainLoopCycleButtons
@@ -147,6 +152,27 @@
     UIBarButtonItem *buttonContainerItem = [[UIBarButtonItem alloc] initWithCustomView:parentView];
     
     self.mainLoopCycleButtons = @[buttonContainerItem];
+    
+    [self.inputViews addObject:upButton];
+    [self.inputViews addObject:downButton];
+}
+
+#pragma mark - Transition
+
+- (NSMutableArray *)inputViews {
+    if (_inputViews == nil) {
+        _inputViews = [[NSMutableArray alloc] init];
+    }
+    return _inputViews;
+}
+
+- (void)setIsTransitioning:(BOOL)isTransitioning {
+    if (isTransitioning != _isTransitioning) {
+        _isTransitioning = isTransitioning;
+        for (UIView *view in self.inputViews) {
+            view.userInteractionEnabled = !isTransitioning;
+        }
+    }
 }
 
 #pragma mark - Configuration for Stop
@@ -210,6 +236,10 @@
 
 #pragma mark - UIPageViewControllerDelegateMethods
 
+- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers {
+    self.isTransitioning = YES;
+}
+
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
 {
     if (completed) {
@@ -217,6 +247,7 @@
         MITToursStop *newStop = [self stopForViewController:currentViewController];
         [self configureForStop:newStop];
     }
+    self.isTransitioning = NO;
 }
 
 #pragma mark - Detail View Controllers
@@ -260,6 +291,11 @@
 
 - (void)transitionToStop:(MITToursStop *)stop
 {
+    if (self.isTransitioning) {
+        return;
+    }
+    self.isTransitioning = YES;
+    
     if ([stop isMainLoopStop]) {
         self.mostRecentMainLoopStop = stop;
     }
@@ -287,6 +323,7 @@
     [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
         // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new stop after we are done.
         [weakSelf configureForStop:stop];
+        weakSelf.isTransitioning = NO;
     }];
 }
 

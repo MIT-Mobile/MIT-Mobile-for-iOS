@@ -668,7 +668,6 @@
 		AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09AFE1A07CF2600C6D337 /* MITToursStopDetailViewController.m */; };
 		AFB09B011A07CF2600C6D337 /* MITToursStopDetailViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController~iphone.xib */; };
 		AFB09B0E1A08320500C6D337 /* MITToursStopDetailContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */; };
-		AFB09B0F1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */; };
 		AFECAE1C1A06D32B00562B97 /* MITToursTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */; };
 		AFECAE221A06D37300562B97 /* MITCalloutMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECAE211A06D37300562B97 /* MITCalloutMapView.m */; };
 		AFECC2C21A0A856600B59442 /* MITToursStopCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECC2C01A0A856600B59442 /* MITToursStopCollectionViewCell.m */; };
@@ -1977,7 +1976,6 @@
 		AFB09AFF1A07CF2600C6D337 /* MITToursStopDetailViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MITToursStopDetailViewController~iphone.xib"; sourceTree = "<group>"; };
 		AFB09B0B1A08320500C6D337 /* MITToursStopDetailContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopDetailContainerViewController.h; sourceTree = "<group>"; };
 		AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailContainerViewController.m; sourceTree = "<group>"; };
-		AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopDetailContainerViewController.xib; sourceTree = "<group>"; };
 		AFECAE1A1A06D32B00562B97 /* MITToursTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursTiledMapView.h; sourceTree = "<group>"; };
 		AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursTiledMapView.m; sourceTree = "<group>"; };
 		AFECAE201A06D37300562B97 /* MITCalloutMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalloutMapView.h; sourceTree = "<group>"; };
@@ -4590,7 +4588,6 @@
 				221C45041A12B8DD00FC5A92 /* MITToursStopDetailViewController~ipad.xib */,
 				AFB09B0B1A08320500C6D337 /* MITToursStopDetailContainerViewController.h */,
 				AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */,
-				AFB09B0D1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib */,
 			);
 			name = "Stop Detail";
 			sourceTree = "<group>";
@@ -5121,7 +5118,6 @@
 				2CEC6A661A01461800867A66 /* dining-meal-seafood_watch.pdf in Resources */,
 				0BD7B96F194A36D200B0EDBD /* NewsStoryJumboCollectionViewCell.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITPhoneDayOfTheWeekCell.xib in Resources */,
-				AFB09B0F1A08320500C6D337 /* MITToursStopDetailContainerViewController.xib in Resources */,
 				225481F419FAA256007BEE62 /* MITToursHomeViewController.xib in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				274886991930286C00414552 /* People_iPad.storyboard in Resources */,
