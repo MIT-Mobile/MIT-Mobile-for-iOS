@@ -144,7 +144,8 @@ NSString* const MITNotificationModuleTagKey = @"tag";
 
 // method adds a notification to the phone (from an APNS dictionary)
 + (MITNotification *) addNotification: (NSDictionary *)apnsDictionary {
-	MITNotification *notification = [MITNotification fromString:[apnsDictionary objectForKey:@"tag"]];
+	MITNotification *notification = [MITNotification notificationWithString:[apnsDictionary objectForKey:MITNotificationModuleTagKey]];
+    notification.userInfo = apnsDictionary;
 	
 	if(![apnsDictionary objectForKey:@"noBadge"]) {
 		if(![self hasUnreadNotification:notification]) {

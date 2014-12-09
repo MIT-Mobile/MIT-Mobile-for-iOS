@@ -4,8 +4,9 @@
 extern NSString* const MITNotificationModuleTagKey;
 
 @interface MITNotification : NSObject <NSSecureCoding>
-@property (nonatomic,readonly,copy) NSString *tag;
-@property (nonatomic,readonly,copy) NSString *identifier;
+@property(nonatomic,readonly,copy) NSString *tag;
+@property(nonatomic,readonly,copy) NSString *identifier;
+@property(nonatomic,copy) NSDictionary *userInfo;
 
 + (instancetype)notificationWithString:(NSString*)string;
 - (instancetype)initWithModuleTag:(NSString*)tag noticeIdentifier:(NSString*)identifier;
