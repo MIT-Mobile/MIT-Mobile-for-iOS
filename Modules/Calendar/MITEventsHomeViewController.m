@@ -12,6 +12,7 @@
 #import "UINavigationBar+ExtensionPrep.h"
 #import "MITExtendedNavBarView.h"
 #import "MITDayPickerViewController.h"
+#import "MITNavigationController.h"
 
 typedef NS_ENUM(NSInteger, MITSlidingAnimationType){
     MITSlidingAnimationTypeNone,
@@ -88,6 +89,22 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     [super viewWillAppear:animated];
     [self setupExtendedNavBar]; // Coming back from another vc messes up nav bar
     [self setScrollsToTopNoForAllScrollViewsInHierarchyOfView:self.view];
+    if ([[UIApplication sharedApplication] statusBarOrientation] != UIInterfaceOrientationPortrait) {
+        [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationPortrait];
+        
+        //will re-rotate view according to statusbar -- Apparently this is necessary ...
+        UIViewController *c = [[UIViewController alloc]init];
+        [self presentViewController:c animated:NO completion:nil];
+        [c dismissViewControllerAnimated:NO completion:nil];
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    CGFloat containerWidth = CGRectGetWidth(self.dayPickerContainerView.bounds);
+    self.dayPickerController.view.frame = CGRectMake(0, 0, containerWidth, MITDayPickerControllerHeight);
+    [self.dayPickerController reloadCollectionView];
 }
 
 // If more than one scrollView in the view hierarchy has scrollsToTop set to YES, then none of them will work.  Because there are secret scrollviews in UIPageViewController as well as multiple collectionViews on screen,  this is the best way to ensure that all of the scrollsToTop values are set to NO.  scrollsToTop is set individually within MITEventsTableViewController
@@ -204,7 +221,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 - (void)searchButtonPressed
 {
     MITEventSearchViewController *searchVC = [[MITEventSearchViewController alloc] initWithCategory:self.currentlySelectedCategory];
-    UINavigationController *searchNavController = [[UINavigationController alloc] initWithRootViewController:searchVC];
+    MITNavigationController *searchNavController = [[MITNavigationController alloc] initWithRootViewController:searchVC];
     [self presentViewController:searchNavController animated:NO completion:nil];
 }
 
@@ -291,7 +308,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     MITDatePickerViewController *datePicker = [[MITDatePickerViewController alloc] initWithNibName:nil bundle:nil];
     datePicker.startDate = self.dayPickerController.currentlyDisplayedDate;
     datePicker.delegate = self;
-    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:datePicker];
+    MITNavigationController *navContainerController = [[MITNavigationController alloc] initWithRootViewController:datePicker];
     [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
@@ -309,7 +326,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 #pragma mark - Calendar Selection
 - (IBAction)presentCalendarSelectionPressed:(id)sender
 {
-    UINavigationController *navContainerController = [[UINavigationController alloc] initWithRootViewController:self.calendarSelectionViewController];
+    MITNavigationController *navContainerController = [[MITNavigationController alloc] initWithRootViewController:self.calendarSelectionViewController];
     [self presentViewController:navContainerController animated:YES completion:NULL];
 }
 
@@ -397,6 +414,23 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     }
     
     [self setDateLabelWithDate:newDate animationType:labelSlidingAnimationType];
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
 }
 
 @end

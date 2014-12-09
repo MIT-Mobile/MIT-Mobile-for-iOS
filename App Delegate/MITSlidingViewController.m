@@ -114,7 +114,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)anchorTopViewToRightAnimated:(BOOL)animated onComplete:(void (^)())complete {
     [super anchorTopViewToRightAnimated:animated onComplete:^{
         [self _updateScrollsToTop];
-        
+
         if (complete) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 complete();
@@ -126,7 +126,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)resetTopViewAnimated:(BOOL)animated onComplete:(void(^)())complete {
     [super resetTopViewAnimated:animated onComplete:^{
         [self _updateScrollsToTop];
-        
+
         if (complete) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 complete();
@@ -269,6 +269,39 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
         _visibleViewController = newVisibleViewController;
         self.drawerViewController.selectedModuleItem = self.visibleViewController.moduleItem;
+
+        if (oldVisibleViewController) {
+            [oldVisibleViewController willMoveToParentViewController:nil];
+
+            [oldVisibleViewController beginAppearanceTransition:NO animated:NO];
+            [oldVisibleViewController.view removeFromSuperview];
+            [oldVisibleViewController endAppearanceTransition];
+
+            [oldVisibleViewController removeFromParentViewController];
+        }
+
+        if (_visibleViewController) {
+            // If the top view is a UINavigationController, automatically add a button to toggle the state
+            // of the sliding view controller. Otherwise, the user must either use the pan gesture or the view
+            // controller must do something itself.
+            if ([_visibleViewController isKindOfClass:[UINavigationController class]]) {
+                UINavigationController *navigationController = (UINavigationController*)_visibleViewController;
+                UIViewController *rootViewController = [navigationController.viewControllers firstObject];
+
+                if (!rootViewController.navigationItem.leftBarButtonItem) {
+                    rootViewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+                }
+            }
+
+            [self.topViewController addChildViewController:_visibleViewController];
+
+            [_visibleViewController beginAppearanceTransition:YES animated:animated];
+            _visibleViewController.view.frame = self.topViewController.view.bounds;
+            [self.topViewController.view addSubview:_visibleViewController.view];
+            [_visibleViewController endAppearanceTransition];
+
+            [_visibleViewController didMoveToParentViewController:self.topViewController];
+        }
     }
 
     [self presentVisibleViewControllerIfNeeded:animated];
@@ -337,7 +370,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     __block UIViewController *selectedModuleViewController = nil;
     [self.viewControllers enumerateObjectsUsingBlock:^(UIViewController *moduleViewController, NSUInteger idx, BOOL *stop) {
         MITModuleItem *moduleItem = moduleViewController.moduleItem;
-        
+
         if ([moduleItem.name isEqualToString:name]) {
             selectedModuleViewController = moduleViewController;
             (*stop) = YES;
@@ -565,6 +598,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 }
 
 #pragma mark UIGestureRecognizerDelegate
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     if (gestureRecognizer == _modalDismissGestureRecognizer) {
@@ -584,6 +618,49 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     return (gestureRecognizer == _modalDismissGestureRecognizer);
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] preferredInterfaceOrientationForPresentation];
+    } else {
+        return [super preferredInterfaceOrientationForPresentation];
+    }
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] supportedInterfaceOrientations];
+    } else {
+        return [super supportedInterfaceOrientations];
+    }
+}
+
+- (BOOL)shouldAutorotate
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] shouldAutorotate];
+    } else {
+        return [self shouldAutorotate];
+    }
+}
+
+- (UIViewController *)actualTopVC
+{
+    UIViewController *vc = self.visibleViewController;
+    if (vc) {
+        if ([vc isKindOfClass:[UINavigationController class]]) {
+            return [(UINavigationController *)vc topViewController];
+        } else {
+            return vc;
+        }
+    } else {
+        return nil;
+    }
 }
 
 @end
