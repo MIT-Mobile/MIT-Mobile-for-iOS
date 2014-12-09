@@ -144,9 +144,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [super viewWillAppear:animated];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    } else {
         [self.navigationController setToolbarHidden:YES animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
     [[MITLocationManager sharedManager] startUpdatingLocation];
@@ -308,6 +308,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     self.updating = YES;
     [self.refreshControl beginRefreshing];
+    // Necessary because tableview doesn't automatically scroll to show refreshControl
+    [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
     [self refreshLastUpdatedLabel];
 }
 
