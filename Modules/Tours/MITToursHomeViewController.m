@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     if (indexPath.section == MITToursTableViewSectionInfo) {
         switch (indexPath.row) {
             case 0:
-                return 229.0;
+                return (tableView.frame.size.width / 320.0) * 229.0; // Sizes image properly for iPhone 6
                 break;
             case 1:
                 return [MITToursInfoCell heightForContent:[MITToursWebservices aboutGuidedToursText] tableViewWidth:self.tableView.frame.size.width];
