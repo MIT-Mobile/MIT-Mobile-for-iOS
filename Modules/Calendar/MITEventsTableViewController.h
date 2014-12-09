@@ -15,5 +15,6 @@
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id<MITEventsTableViewControllerDelegate> delegate;
 @property (nonatomic) BOOL shouldIncludeNumberedPrefixes;
-
+@property (nonatomic) BOOL shouldIndicateCellSelectedState;
+- (void)selectFirstRow;
 @end

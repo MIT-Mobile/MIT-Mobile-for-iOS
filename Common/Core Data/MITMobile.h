@@ -10,6 +10,7 @@ typedef NS_ENUM(NSInteger, MITMobileErrorCode) {
 };
 @interface MITMobile : NSObject
 @property (nonatomic,readonly) NSDictionary *resources;
+@property (nonatomic,strong) RKManagedObjectStore *managedObjectStore;
 
 /** Returns the default object manager instance
 

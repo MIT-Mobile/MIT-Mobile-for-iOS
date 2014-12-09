@@ -110,7 +110,7 @@ NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesRouteInService = @"shuttles-shuttle";
 NSString * const MITImageShuttlesRouteNotInService = @"shuttles-shuttle-off";
-NSString * const MITImageShuttlesRoutePredictionsUnavailable = nil;
+NSString * const MITImageShuttlesRoutePredictionsUnavailable = @"shuttles-unavailable";
 NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
@@ -210,6 +210,7 @@ NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverVie
 NSString * const MITImageBarButtonMenu = @"global-menu";
 NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
+NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";

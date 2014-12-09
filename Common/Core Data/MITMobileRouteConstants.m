@@ -21,6 +21,34 @@ NSString* const MITCalendarEventPathPattern = @"apis/calendars/:calendar/events/
 NSString* const MITDiningResourceName = @"MITDiningResourceName";
 NSString* const MITDiningPathPattern = @"apis/dining/";
 
+#pragma mark libraries
+NSString* const MITLibrariesResourceName = @"MITLibrariesResourceName";
+NSString* const MITLibrariesPathPattern = @"apis/libraries/locations";
+
+#pragma mark libraries links
+NSString* const MITLibrariesLinksResourceName = @"MITLibrariesLinksResourceName";
+NSString* const MITLibrariesLinksPathPattern = @"apis/libraries/links";
+
+#pragma mark libraries Ask Us
+NSString* const MITLibrariesAskUsResourceName = @"MITLibrariesAskUsResourceName";
+NSString* const MITLibrariesAskUsPathPattern = @"apis/secure/libraries/forms/askUs";
+
+#pragma mark libraries search
+NSString* const MITLibrariesSearchResourceName = @"MITLibrariesSearchResourceName";
+NSString* const MITLibrariesSearchPathPattern = @"apis/libraries/worldcat/";
+
+#pragma mark libraries user
+NSString* const MITLibrariesUserResourceName = @"MITLibrariesUserResourceName";
+NSString* const MITLibrariesUserPathPattern = @"apis/secure/libraries/account";
+
+#pragma mark libraries mit identity
+NSString* const MITLibrariesMITIdentityResourceName = @"MITLibrariesMITIdentityResourceName";
+NSString* const MITLibrariesMITIdentityPathPattern = @"apis/secure/user";
+
+#pragma mark libraries item detail
+NSString* const MITLibrariesItemDetailResourceName = @"MITLibrariesItemDetailResourceName";
+NSString* const MITLibrariesItemDetailPathPattern = @"apis/libraries/worldcat/:itemId";
+
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";
 NSString* const MITDiningVenueIconPathPattern = @"apis/dining/venues/:type/:venue/icon";
@@ -108,3 +136,10 @@ NSString* const MITTechcashAccountsPathPattern = @"apis/techcash/accounts";
 #pragma mark techcash/accounts/:account
 NSString* const MITTechcashAccountResourceName = @"MITTechcashAccountResourceName";
 NSString* const MITTechcashAccountPathPattern = @"apis/techcash/accounts/:account";
+
+#pragma mark tours
+NSString* const MITToursResourceName = @"MITToursResourceName";
+NSString* const MITToursPathPattern = @"apis/tours/";
+
+NSString* const MITToursTourResourceName = @"MITToursTourResourceName";
+NSString* const MITToursTourPathPattern = @"apis/tours/:tour";

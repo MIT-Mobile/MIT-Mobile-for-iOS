@@ -29,7 +29,7 @@
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteInService];
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
-            self.statusLabel.text = @"Predictions unavailable";
+						self.statusLabel.text = @"No current predictions";
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
             break;
         default:

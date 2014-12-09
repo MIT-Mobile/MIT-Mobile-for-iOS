@@ -1,5 +1,7 @@
 #import "ToursModule.h"
-#import "CampusTourHomeController.h"
+#import "MITModule.h"
+#import "MITToursHomeViewController.h"
+#import "MITToursHomeViewControllerPad.h"
 
 @implementation ToursModule
 - (instancetype)init
@@ -13,9 +15,22 @@
     return self;
 }
 
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
+}
+
 - (void)loadRootViewController
 {
-    CampusTourHomeController *rootViewController = [[CampusTourHomeController alloc] init];
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+    
     self.rootViewController = rootViewController;
 }
 

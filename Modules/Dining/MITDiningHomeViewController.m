@@ -93,6 +93,8 @@
     self.retailListViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
     
+    [self.mapViewController setToolBarHidden:NO];
+    
     [self addChildViewController:self.houseListViewController];
     [self addChildViewController:self.retailListViewController];
     [self addChildViewController:self.mapViewController];
@@ -100,6 +102,10 @@
     [self.view addSubview:self.houseListViewController.view];
     [self.view addSubview:self.retailListViewController.view];
     [self.view addSubview:self.mapViewController.view];
+    
+    [self.houseListViewController didMoveToParentViewController:self];
+    [self.retailListViewController didMoveToParentViewController:self];
+    [self.mapViewController didMoveToParentViewController:self];
     
     [self showHouseVenueList];
 }

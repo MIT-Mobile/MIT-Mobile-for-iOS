@@ -18,3 +18,7 @@
 #import "MITCalendarsResource.h"
 
 #import "MITDiningResource.h"
+
+#import "MITLibrariesResource.h"
+
+#import "MITToursResource.h"

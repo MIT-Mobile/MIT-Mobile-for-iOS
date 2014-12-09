@@ -39,7 +39,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleResourceSection) {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"Resources";
+    // Must set explicitly for weird navController in popover issue
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.scrollEnabled = NO;
     self.tableView.sectionFooterHeight = 0.0;
     self.contentSizeForViewInPopover = kPopoverContentSize;
@@ -136,6 +138,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleResourceSection) {
         default:
             return nil;
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 44.0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

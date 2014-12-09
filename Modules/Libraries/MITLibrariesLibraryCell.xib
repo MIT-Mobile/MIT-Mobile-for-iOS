@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="67" id="KGk-i7-Jjw" customClass="MITLibrariesLibraryCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="67"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Library Name" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sD0-mL-hVt">
+                        <rect key="frame" x="15" y="14" width="241" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="241" id="Vn7-bu-lNj"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hours" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9hh-Ji-FY7">
+                        <rect key="frame" x="15" y="42" width="241" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Closed" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zB2-SZ-y8N">
+                        <rect key="frame" x="261" y="25" width="51" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="51" id="LTM-xy-BPb"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="sD0-mL-hVt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="665-tf-LMv"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="trailing" secondItem="sD0-mL-hVt" secondAttribute="trailing" id="7dq-GR-Rhb"/>
+                    <constraint firstAttribute="centerY" secondItem="zB2-SZ-y8N" secondAttribute="centerY" constant="-0.5" id="fec-JY-4bf"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="leading" secondItem="sD0-mL-hVt" secondAttribute="leading" id="lTe-WT-agv"/>
+                    <constraint firstItem="zB2-SZ-y8N" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="nT7-3M-9mm"/>
+                    <constraint firstItem="9hh-Ji-FY7" firstAttribute="top" secondItem="sD0-mL-hVt" secondAttribute="bottom" constant="7" id="pc5-QH-FtI"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="9hh-Ji-FY7" secondAttribute="bottom" constant="-1" id="utA-qh-axu"/>
+                    <constraint firstItem="sD0-mL-hVt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="ykb-NB-RGE"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="libraryHoursLabel" destination="9hh-Ji-FY7" id="eOR-D6-yIZ"/>
+                <outlet property="libraryNameLabel" destination="sD0-mL-hVt" id="62y-HI-N2Z"/>
+                <outlet property="openClosedLabel" destination="zB2-SZ-y8N" id="q9U-fp-ncA"/>
+            </connections>
+            <point key="canvasLocation" x="464" y="729.5"/>
+        </tableViewCell>
+    </objects>
+</document>
