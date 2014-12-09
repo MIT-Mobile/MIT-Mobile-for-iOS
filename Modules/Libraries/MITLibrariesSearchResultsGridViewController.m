@@ -117,7 +117,7 @@ static CGFloat const kMITLibrariesSearchGridCollectionViewSectionHorizontalPaddi
     }
     
     cellWidth = (collectionView.bounds.size.width - (2 * kMITLibrariesSearchGridCollectionViewSectionHorizontalPadding) - ((numberOfColumns - 1) * interItemSpacing)) / numberOfColumns;
-    NSLog(@"cell width: %f", cellWidth);
+    
     CGFloat cellHeight = [MITLibrariesWorldcatItemCollectionCell heightForContent:self.searchController.results[indexPath.row] width:cellWidth];
     
     return CGSizeMake(floor(cellWidth), cellHeight);
