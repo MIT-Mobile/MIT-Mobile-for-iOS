@@ -5,9 +5,10 @@
 
 @interface MITShuttleMapBusAnnotationView()
 
-@property (nonatomic, strong) UIImageView *busImageView;
 @property (nonatomic, strong) UIView *bubbleContainerView;
 @property (nonatomic, strong) UILabel *routeTitleLabel;
+@property (nonatomic, strong) CALayer *busImageLayer;
+@property (nonatomic, strong) CALayer *bubbleLayer;
 
 @end
 
@@ -32,10 +33,11 @@
 
 - (void)setupBusImageView
 {
-    self.busImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageShuttlesAnnotationBus]];
-    self.busImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.busImageView.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
-    [self addSubview:self.busImageView];
+    self.busImageLayer = [[CALayer alloc] init];
+    UIImage *busImage = [UIImage imageNamed:MITImageShuttlesAnnotationBus];
+    self.busImageLayer.bounds = CGRectMake(0, 0, busImage.size.width, busImage.size.height);
+    self.busImageLayer.contents = (__bridge id)busImage.CGImage;
+    [self.layer addSublayer:self.busImageLayer];
 }
 
 #pragma mark - Bubble View
@@ -49,25 +51,42 @@
     }
 
     self.routeTitleLabel = [self labelForRouteTitle:routeTitle];
+    
     self.bubbleContainerView = [self bubbleContainerViewWithFrame:self.routeTitleLabel.bounds];
+    CGRect bubbleContainerFrame = self.bubbleContainerView.frame;
+    bubbleContainerFrame.size.width += 21; // Padding for title, 6 on left, 15 on right
+    bubbleContainerFrame.size.height += 6; // Padding for title, 1 on top, 5 on bottom
+    if (bubbleContainerFrame.size.height < 24) {
+        bubbleContainerFrame.size.height = 24;
+    }
+    self.bubbleContainerView.frame = bubbleContainerFrame;
+    
+    
     UIImageView *bubbleImageView = [self bubbleImageView];
     
     [self.bubbleContainerView addSubview:bubbleImageView];
     [self.bubbleContainerView addSubview:self.routeTitleLabel];
-    [self addSubview:self.bubbleContainerView];
-
+    
     [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
     [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[bubbleImageView]|" options:0 metrics:nil views:@{@"bubbleImageView": bubbleImageView}]];
-
-    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[routeTitleLabel]-15-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
+    
+    [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-6-[routeTitleLabel]-15-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
     [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-1-[routeTitleLabel]-5-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
     
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bubbleContainerView]-(-8)-[busImageView]" options:0 metrics:nil views:@{@"bubbleContainerView": self.bubbleContainerView, @"busImageView": self.busImageView}]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.busImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.bubbleContainerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:self.bubbleContainerView.frame.size.height]];
+    [self.bubbleContainerView setNeedsLayout];
+    [self.bubbleContainerView layoutIfNeeded];
     
-    [self layoutIfNeeded];
+    UIGraphicsBeginImageContextWithOptions(self.bubbleContainerView.bounds.size, NO, 0.0);
+    [self.bubbleContainerView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *bubbleImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
     
-    self.centerOffset = CGPointMake(-self.busImageView.center.x, -self.busImageView.center.y);
+    self.bubbleLayer = [[CALayer alloc] init];
+    self.bubbleLayer.bounds = CGRectMake(0, 0, bubbleImage.size.width, bubbleImage.size.height);
+    self.bubbleLayer.contents = (__bridge id)bubbleImage.CGImage;
+    self.bubbleLayer.position = CGPointMake(-((self.bubbleLayer.bounds.size.width / 2) + 8), -(self.bubbleLayer.bounds.size.height / 2));
+    
+    [self.layer addSublayer:self.bubbleLayer];
 }
 
 - (UILabel *)labelForRouteTitle:(NSString *)routeTitle
@@ -104,8 +123,6 @@
     self.routeTitleLabel.text = routeTitle;
     [self.routeTitleLabel sizeToFit];
     [self layoutIfNeeded];
-    
-    self.centerOffset = CGPointMake(-self.busImageView.center.x, -self.busImageView.center.y);
 }
 
 #pragma mark - Animations
@@ -160,14 +177,14 @@
         if (MKMapRectContainsPoint(self.mapView.visibleMapRect, mapPoint)) {
             if (animated) {
                 [UIView animateWithDuration:4.0 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-                    self.busImageView.transform = CGAffineTransformMakeRotation(heading);
+                    self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(heading);
                 } completion:nil];
                 
                 [UIView animateWithDuration:8.0 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
                     self.center = destinationPoint;
                 } completion:nil];
             } else {
-                self.busImageView.transform = CGAffineTransformMakeRotation(heading);
+                self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(heading);
                 self.center = destinationPoint;
             }
         }
@@ -178,6 +195,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self.layer removeAllAnimations];
+    [self.busImageLayer removeAllAnimations];
 }
 
 #pragma mark - Dealloc

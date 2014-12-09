@@ -7,5 +7,5 @@
 + (CGFloat)heightForEvent:(MITCalendarsEvent *)event
          withNumberPrefix:(NSString *)numberPrefix
            tableViewWidth:(CGFloat)width;
-
+- (void)setBackgroundSelected:(BOOL)selected;
 @end

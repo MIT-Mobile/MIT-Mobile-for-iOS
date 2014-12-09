@@ -35,6 +35,7 @@
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
 #import "MITShuttleStopNotificationManager.h"
+#import "MITShuttleController.h"
 
 static NSString* const MITMobileButtonTitleView = @"View";
 
@@ -132,6 +133,8 @@ static NSString* const MITMobileButtonTitleView = @"View";
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+    
+    [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
     [MITUnreadNotifications updateUI];
     [MITUnreadNotifications synchronizeWithMIT];
@@ -426,12 +429,11 @@ static NSString* const MITMobileButtonTitleView = @"View";
                             @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
-                            @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
-                            @"Tours",
-                            @"PeopleDataModel"];
+                            @"PeopleDataModel",
+                            @"MITToursDataModel"];
     
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
@@ -548,6 +550,33 @@ static NSString* const MITMobileButtonTitleView = @"View";
     MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:diningResource];
     
+    MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
+    [remoteObjectManager addResource:librariesResource];
+    
+    MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
+    [remoteObjectManager addResource:librariesLinksResource];
+    
+    MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
+    [remoteObjectManager addResource:librariesAskUsResource];
+    
+    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
+    [remoteObjectManager addResource:librariesSearchResource];
+    
+    MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
+    [remoteObjectManager addResource:librariesUserResource];
+    
+    MITMobileResource *librariesMITIdentityResource = [[MITLibrariesMITIdentityResource alloc] init];
+    [remoteObjectManager addResource:librariesMITIdentityResource];
+    
+    MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
+    [remoteObjectManager addResource:librariesItemDetailResource];
+    
+    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursToursResource];
+    
+    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursTourResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 
@@ -606,12 +635,24 @@ static NSString* const MITMobileButtonTitleView = @"View";
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
 {
-    [self.rootViewController presentViewController:viewController animated:YES completion:nil];
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+    if (presented) {
+        [presented presentViewController:viewController animated:YES completion:nil];
+    } else {
+        [rootViewController presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 - (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
 {
-    [self.rootViewController dismissViewControllerAnimated:YES completion:completion];
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+    if (presented) {
+        [presented dismissViewControllerAnimated:NO completion:nil];
+    } else {
+        [rootViewController dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 #pragma mark UIAlertViewDelegate

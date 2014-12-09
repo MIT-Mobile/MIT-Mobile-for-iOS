@@ -980,6 +980,70 @@ typedef struct {
 	return [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
 }
 
+- (NSString *)MITDateCode
+{
+    static NSDateComponents *dateComponents;
+    if (!dateComponents) {
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        dateComponents = [calendar components:(NSDayCalendarUnit |
+                                               NSWeekdayCalendarUnit)
+                                      fromDate:self];
+    }
+ 
+    switch (dateComponents.weekday) {
+        case 0:
+            return @"U";
+            break;
+        case 1:
+            return @"M";
+            break;
+        case 2:
+            return @"T";
+            break;
+        case 3:
+            return @"W";
+            break;
+        case 4:
+            return @"R";
+            break;
+        case 5:
+            return @"F";
+            break;
+        case 6:
+            return @"S";
+            break;
+        default:
+            return @"";
+            break;
+    }
+}
+
++ (NSNumber *)numberForDateCode:(NSString *)dateCode
+{
+    if ([dateCode isEqualToString:@"U"]) {
+        return @0;
+    }
+    else if ([dateCode isEqualToString:@"M"]) {
+        return @1;
+    }
+    else if ([dateCode isEqualToString:@"T"]) {
+        return @2;
+    }
+    else if ([dateCode isEqualToString:@"W"]) {
+        return @3;
+    }
+    else if ([dateCode isEqualToString:@"R"]) {
+        return @4;
+    }
+    else if ([dateCode isEqualToString:@"F"]) {
+        return @5;
+    }
+    else if ([dateCode isEqualToString:@"S"]) {
+        return @6;
+    }
+    return @0;
+}
+
 @end
 
 @implementation NSCalendar (MITAdditions)

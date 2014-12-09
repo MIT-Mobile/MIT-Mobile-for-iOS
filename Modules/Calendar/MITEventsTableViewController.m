@@ -11,6 +11,7 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
 @property (weak, nonatomic) IBOutlet UILabel *noResultsFoundLabel;
 
 @property (strong, nonatomic) NSMutableArray *indexesOfHolidayEvents;
+@property (strong, nonatomic) NSIndexPath *selectedIndexPath;
 @end
 
 @implementation MITEventsTableViewController
@@ -27,34 +28,23 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self setupTableViewInsetsForIPad];
-    }
+    [super viewDidAppear:animated];
+    self.tableView.scrollsToTop = YES;
 }
 
-- (void)didReceiveMemoryWarning
+- (void)viewWillDisappear:(BOOL)animated
 {
-    [super didReceiveMemoryWarning];
-}
-
-- (void)setupTableViewInsetsForIPad
-{
-    CGFloat statusBarWidth = CGRectGetWidth([UIApplication sharedApplication].statusBarFrame);
-    CGFloat statusBarHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
-    CGFloat statusBarOffset = statusBarWidth < statusBarHeight ? statusBarWidth : statusBarHeight;
-    CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
-    CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-    self.tableView.contentInset = UIEdgeInsetsMake(statusBarOffset + navBarHeight, 0, toolbarHeight, 0);
+    [super viewWillDisappear:animated];
+    // PageViewController holds views in its hierarchy.  Must set scrollsToTop to NO here so that other instances can scroll to top when they are the top of the view hierarchy.
+    self.tableView.scrollsToTop = NO;
 }
 
 - (void)setupTableView
 {
     UINib *cellNib = [UINib nibWithNibName:kMITCalendarEventCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITCalendarEventCell];
-    self.tableView.scrollsToTop = YES;
 }
 
 - (void)showLoadingIndicator
@@ -102,14 +92,24 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
     MITCalendarsEvent *event = self.events[indexPath.row];
     NSString *numberPrefix = event.isHoliday ? nil : [self numberPrefixForIndexPath:indexPath];
     [cell setEvent:event withNumberPrefix:numberPrefix];
-    
+    if (self.shouldIndicateCellSelectedState) {
+        [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
+    }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    if (self.shouldIndicateCellSelectedState) {
+        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
+        self.selectedIndexPath = indexPath;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
+    }
+    
     [self.delegate eventsTableView:self didSelectEvent:self.events[indexPath.row]];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (NSString *)numberPrefixForIndexPath:(NSIndexPath *)indexPath {
@@ -135,6 +135,20 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
         int actualOffset = defaultOffset - holidayEventsOffset;
         
         return [NSString stringWithFormat:@"%i", actualOffset];
+    }
+}
+
+#pragma mark - Initial Selection
+
+- (void)selectFirstRow
+{
+    if (self.shouldIndicateCellSelectedState) {
+        if (self.events.count > 0) {
+            NSIndexPath *firstIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            self.selectedIndexPath = firstIndexPath;
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:firstIndexPath];
+            [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
+        }
     }
 }
 

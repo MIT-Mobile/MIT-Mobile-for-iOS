@@ -7,6 +7,8 @@
 
 @implementation MITShuttleRoute
 
+@synthesize lastUpdatedTimestamp;
+
 @dynamic agency;
 @dynamic identifier;
 @dynamic order;
@@ -72,6 +74,11 @@
 
 - (MITShuttleRouteStatus)status
 {
+    // Data over 1 minute old is considered unavailable
+    if (!self.lastUpdatedTimestamp || [[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
+        return MITShuttleRouteStatusPredictionsUnavailable;
+    }
+    
     if ([self.scheduled boolValue]) {
         return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
     } else {

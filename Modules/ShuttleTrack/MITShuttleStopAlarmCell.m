@@ -1,12 +1,13 @@
 #import "MITShuttleStopAlarmCell.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStopNotificationManager.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITShuttleStopAlarmCell ()
 
 @property (nonatomic, weak) IBOutlet UILabel *timeRemainingLabel;
-@property (nonatomic, weak) IBOutlet UILabel *clockTimeLabel;
 @property (nonatomic, weak) IBOutlet UIButton *alertButton;
+@property (weak, nonatomic) IBOutlet UILabel *alarmSetLabel;
 
 - (IBAction)notificationButtonPressed:(id)sender;
 
@@ -37,22 +38,17 @@
 {
     if (!prediction) {
         self.timeRemainingLabel.text = @"";
-        self.clockTimeLabel.text = @"";
-        
         return;
     }
     
     NSInteger minutesLeft = floor([prediction.seconds doubleValue] / 60);
-    self.timeRemainingLabel.text = [NSString stringWithFormat:@"%im", minutesLeft];
-    
-    static NSDateFormatter *formatter = nil;
-    if (!formatter) {
-        formatter = [[NSDateFormatter alloc] init];
-        [formatter setTimeStyle:NSDateFormatterShortStyle];
+    if (minutesLeft < 1) {
+        self.timeRemainingLabel.text = @"now";
+        self.timeRemainingLabel.textColor = [UIColor mit_tintColor];
+    } else {
+        self.timeRemainingLabel.text = [NSString stringWithFormat:@"%im", minutesLeft];
+        self.timeRemainingLabel.textColor = [UIColor darkTextColor];
     }
-    
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
-    self.clockTimeLabel.text = [formatter stringFromDate:predictionDate];
     
     [self updateNotificationButtonWithPrediction:prediction];
 }
@@ -64,11 +60,14 @@
     if (scheduledNotification) {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
+        self.alarmSetLabel.hidden = NO;
     } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
         self.alertButton.hidden = YES;
+        self.alarmSetLabel.hidden = YES;
     } else {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOff] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
+        self.alarmSetLabel.hidden = YES;
     }
 }
 

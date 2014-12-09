@@ -13,6 +13,10 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 @property (nonatomic) BOOL showOlderCredits;
 @end
 
+@interface AboutCreditsVC ()
+@property(nonatomic,weak) UIWebView *webView;
+@end
+
 @implementation AboutCreditsVC
 
 #pragma mark - View lifecycle

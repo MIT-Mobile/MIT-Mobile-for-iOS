@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, MITTiledMapViewButtonDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -76,15 +76,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO];
-        [self.tiledMapView setButtonsHidden:YES animated:NO];
         
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
-        UIBarButtonItem *currentLocationBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonLocation] style:UIBarButtonItemStylePlain target:self action:@selector(ipadCurrentLocationButtonPressed)];
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
     } else {
-        [self.navigationController setToolbarHidden:YES];
-        [self.tiledMapView setButtonsHidden:NO animated:NO];
+        [self.navigationController setToolbarHidden:NO];
+        
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
+        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
     }
 }
 
@@ -133,17 +136,16 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+    
+    // Menu button set from MIT_MobileAppDelegate -- Capturing reference for search mode.
+    self.menuBarButton = self.navigationItem.leftBarButtonItem;
 }
 
 - (void)setupMapView
 {
-    self.tiledMapView.buttonDelegate = self;
-    
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = YES;
     
-    // This sets the color of the current location pin, which is otherwise inherited from the main window's MIT tint color...
-    self.mapView.tintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     [self setupMapBoundingBoxAnimated:NO];
 }
 
@@ -244,9 +246,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
-- (void)ipadCurrentLocationButtonPressed
+- (void)iphoneListButtonPressed
 {
-    [self.tiledMapView centerMapOnUserLocation];
+    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
+    [self presentViewController:resultsListNavigationController animated:YES completion:nil];
 }
 
 #pragma mark - Search Bar
@@ -256,7 +259,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
-    
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
@@ -543,14 +545,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
-#pragma mark - MITTiledMapViewButtonDelegate
-
-- (void)mitTiledMapViewRightButtonPressed:(MITTiledMapView *)mitTiledMapView
-{
-    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
-    [self presentViewController:resultsListNavigationController animated:YES completion:nil];
-}
-
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -582,6 +576,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
         detailVC.place = place;
         self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
+        self.currentPlacePopoverController.delegate = self;
         UIView *annotationView = [self.mapView viewForAnnotation:place];
         
         CGFloat tableHeight = 0;
@@ -719,6 +714,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
         [self setPlacesWithQuery:query];
+    }
+}
+
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    if (popoverController == self.currentPlacePopoverController) {
+        for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
+            [self.mapView deselectAnnotation:annotation animated:NO];
+        }
     }
 }
 

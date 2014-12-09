@@ -24,4 +24,6 @@ typedef void(^MITShuttleVehiclesCompletionBlock)(NSArray *vehicles, NSError *err
 - (void)getVehicles:(MITShuttleVehiclesCompletionBlock)completion;
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion;
 
+- (NSArray *)loadDefaultShuttleRoutes;
+
 @end

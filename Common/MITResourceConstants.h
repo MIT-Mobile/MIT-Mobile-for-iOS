@@ -204,6 +204,7 @@ extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight;
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
 extern NSString * const MITImageBarButtonList;
+extern NSString * const MITImageBarButtonListSelected;
 
 // TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;

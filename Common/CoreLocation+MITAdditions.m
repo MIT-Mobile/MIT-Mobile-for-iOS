@@ -46,4 +46,9 @@ FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCo
     return [self distanceFromCenterOfCampus] <= WAY_OUT_OF_BOUNDS_DISTANCE;
 }
 
++ (CLLocationSmootsDistance)smootsForDistance:(CLLocationDistance)distance
+{
+    return distance * METERS_PER_SMOOT;
+}
+
 @end

@@ -23,6 +23,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 + (UIColor *)mit_closedRedColor;
 + (UIColor *)mit_cellSeparatorColor;
 + (UIColor *)mit_systemTintColor;
++ (UIColor *)mit_navBarColor;
 
 /*!
  * Creates and returns a color object using the specified hexadecimal string.

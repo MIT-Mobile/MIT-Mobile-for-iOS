@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 @property (nonatomic, strong) MITCalendarEventDateGroupedDataSource *resultsDataSource;
 @property (nonatomic) MITEventSearchViewControllerResultsTimeframe resultsTimeframe;
 @property (nonatomic, strong) NSString *currentQuery;
-
+@property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 @end
 
 @implementation MITEventSearchResultsViewController
@@ -46,6 +46,11 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     [self setupTableView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self setupTableViewInsetsForIPad];
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -57,6 +62,14 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
     [self.tableView registerNib:[UINib nibWithNibName:kMITCalendarEventCellNibName bundle:nil] forCellReuseIdentifier:kMITCalendarEventCellIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarResultsCountCellIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITCalendarContinueSearchingCellIdentifier];
+}
+
+- (void)setupTableViewInsetsForIPad
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, toolbarHeight, 0);
+    }
 }
 
 - (void)showLoadingSpinner
@@ -95,6 +108,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
             }
             [self hideLoadingSpinner];
             [self.tableView reloadData];
+            if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didLoadResults:)]) {
+                [self.delegate eventSearchResultsViewController:self didLoadResults:self.resultsDataSource.events];
+            }
         }];
     }];
 }
@@ -109,6 +125,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
                 // Do nothing. The user already has results for the next month and so we will just keep displaying them and reload the "x results in next year" cell so it looks like 0 more results were found
             } else {
                 self.resultsDataSource = [[MITCalendarEventDateGroupedDataSource alloc] initWithEvents:events];
+                if ([self.delegate respondsToSelector:@selector(eventSearchResultsViewController:didLoadResults:)]) {
+                    [self.delegate eventSearchResultsViewController:self didLoadResults:self.resultsDataSource.events];
+                }
             }
             [self.tableView reloadData];
         }];
@@ -129,6 +148,14 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+
+    if (self.shouldIndicateCellSelectedState) {
+        UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
+        [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
+        self.selectedIndexPath = indexPath;
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if ([self.resultsDataSource allSections].count > indexPath.section) {
@@ -148,7 +175,18 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 #pragma mark - UITableViewDataSource Methods
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+{
+    [[(UITableViewHeaderFooterView *)view textLabel] setFont:[UIFont boldSystemFontOfSize:14.0]];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 26.0;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     if ([self.resultsDataSource allSections].count > section) {
         return [self.resultsDataSource headerForSection:section];
     } else {
@@ -186,6 +224,9 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
         MITCalendarEventCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITCalendarEventCellIdentifier forIndexPath:indexPath];
         MITCalendarsEvent *event = [self.resultsDataSource eventForIndexPath:indexPath];
         [cell setEvent:event withNumberPrefix:nil];
+        if (self.shouldIndicateCellSelectedState) {
+            [cell setBackgroundSelected:[indexPath isEqual:self.selectedIndexPath]];
+        }
         return cell;
     } else {
         if (indexPath.row == 0) {
@@ -212,6 +253,34 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
         } else {
             return [UITableViewCell new];
         }
+    }
+}
+
+#pragma mark - Initial Row Selection
+
+- (void)selectFirstRow
+{
+    if (self.shouldIndicateCellSelectedState) {
+        if (self.resultsDataSource.events.count > 0) {
+            NSIndexPath *firstRowIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            if ([self.resultsDataSource eventForIndexPath:firstRowIndexPath]) {
+                self.selectedIndexPath = firstRowIndexPath;
+                [self.tableView selectRowAtIndexPath:firstRowIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+            }
+        }
+    }
+}
+
+#pragma mark - Today Scrolling
+
+- (void)scrollToToday
+{
+    NSInteger todaySection = [self.resultsDataSource sectionBeginningAtDate:[NSDate date]];
+    NSIndexPath *todayIndexPath = [NSIndexPath indexPathForRow:0 inSection:todaySection];
+    MITCalendarsEvent *eventForIndexPath = [self.resultsDataSource eventForIndexPath:todayIndexPath];
+    if (eventForIndexPath) {
+        [self.tableView selectRowAtIndexPath:todayIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+        [self tableView:self.tableView didSelectRowAtIndexPath:todayIndexPath];
     }
 }
 

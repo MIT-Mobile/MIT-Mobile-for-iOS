@@ -1,5 +1,6 @@
 #import "LibrariesModule.h"
-#import "LibrariesViewController.h"
+#import "MITLibrariesHomeViewController.h"
+#import "MITLibrariesHomeViewControllerPad.h"
 
 @implementation LibrariesModule
 @dynamic rootViewController;
@@ -17,19 +18,21 @@
 
 - (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
-    return (UIUserInterfaceIdiomPhone == currentUserInterfaceIdiom);
+    return YES;
 }
 
 - (void)loadRootViewController
 {
-    LibrariesViewController *rootViewController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITLibrariesHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITLibrariesHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+    
     self.rootViewController = rootViewController;
-}
-
-- (void)dealloc
-{
-    [self.requestQueue cancelAllOperations];
 }
 
 @end

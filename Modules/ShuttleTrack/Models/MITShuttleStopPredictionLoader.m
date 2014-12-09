@@ -88,9 +88,7 @@ static const NSTimeInterval kStopPredictionDefaultRefreshInterval = 10.0;
 {
     MITShuttleStopNotificationManager *notificationManager = [MITShuttleStopNotificationManager sharedManager];
     for (MITShuttlePredictionList *predictionList in predictions) {
-        for (MITShuttlePrediction *prediction in predictionList.predictions) {
-            [notificationManager updateNotificationForPrediction:prediction];
-        }
+        [notificationManager updateNotificationsForPredictionList:predictionList];
     }
 }
 
