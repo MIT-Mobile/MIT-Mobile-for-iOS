@@ -187,9 +187,9 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 {
     if ([overlay isKindOfClass:[MKPolyline class]]) {
         MKPolylineRenderer *renderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
-        renderer.lineWidth = 2.5;
-        renderer.fillColor = [UIColor redColor];
-        renderer.strokeColor = [UIColor redColor];
+        renderer.lineWidth = 4.0;
+        renderer.fillColor = [UIColor colorWithRed:0.0 green:140.0/255.0 blue:255.0/255.0 alpha:0.80];
+        renderer.strokeColor = [UIColor colorWithRed:0.0 green:140.0/255.0 blue:255.0/255.0 alpha:0.80];
         renderer.alpha = 1.0;
         return renderer;
     } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
