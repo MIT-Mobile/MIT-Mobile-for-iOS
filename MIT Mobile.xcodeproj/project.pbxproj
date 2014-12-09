@@ -498,6 +498,7 @@
 		80C5D9FF1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C5D9FE1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m */; };
 		80C5DA021A1121F700E63FDD /* MITLibrariesFormSheetGroupTellUsBottomGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C5DA011A1121F700E63FDD /* MITLibrariesFormSheetGroupTellUsBottomGroup.m */; };
 		80D1C6A51993E7370073F1FD /* MITEventsSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1C6A41993E7370073F1FD /* MITEventsSplitViewController.m */; };
+		80EAE4071A35ED4E00F1A566 /* MITPadDayOfTheWeekCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */; };
 		80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */; };
 		80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */; };
 		A50884DF19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */; };
@@ -4997,6 +4998,7 @@
 			files = (
 				A59E409119CB676900CF9213 /* MITShuttleRouteContainerViewController.xib in Resources */,
 				A59E409219CB676900CF9213 /* MITShuttleRouteStatusCell.xib in Resources */,
+				80EAE4071A35ED4E00F1A566 /* MITPadDayOfTheWeekCell.xib in Resources */,
 				2CEC6A651A01461800867A66 /* dining-meal-organic.pdf in Resources */,
 				A59E409319CB676900CF9213 /* MITShuttleStopAlarmCell.xib in Resources */,
 				EBF1120712A495170002D751 /* en.lproj in Resources */,

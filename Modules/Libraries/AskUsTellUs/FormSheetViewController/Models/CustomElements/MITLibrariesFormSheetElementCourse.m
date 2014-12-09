@@ -8,7 +8,6 @@
         self.type = MITLibrariesFormSheetElementTypeSingleLineTextEntry;
         self.title = @"Course";
         self.htmlParameterKey = @"course";
-        self.optional = YES;
     }
     return self;
 }
