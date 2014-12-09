@@ -1,5 +1,4 @@
 #import "SettingsModule.h"
-
 #import "SettingsTableViewController.h"
 
 @implementation SettingsModule
@@ -17,6 +16,13 @@
 {
     SettingsTableViewController *rootViewController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.rootViewController = rootViewController;
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+
+    self.viewController.moduleItem.type = MITModulePresentationModal;
 }
 
 - (void)didReceiveRequestWithURL:(NSURL*)url

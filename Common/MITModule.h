@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@class MITModuleItem;
+#import "MITModuleItem.h"
 
 @interface MITModule : NSObject
 @property(nonatomic,readonly,copy) NSString *name;
@@ -10,6 +10,7 @@
 
 @property(nonatomic,strong) UIImage *image;
 @property(nonatomic,copy) NSString *imageName;
+@property(nonatomic,readonly) BOOL pushNotificationSupported;
 
 @property(nonatomic,strong) IBOutlet UIViewController *viewController;
 
