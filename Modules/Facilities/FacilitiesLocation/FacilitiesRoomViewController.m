@@ -9,6 +9,8 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
+#import "UINavigationController+MITAdditions.h"
+#import "MITBuildingServicesReportForm.h"
 
 @interface FacilitiesRoomViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -21,6 +23,10 @@
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,copy) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
+
+@property (nonatomic, strong) NSMutableDictionary *floors;
+
+@property (nonatomic, assign) BOOL hasZeroFloor;
 
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -58,18 +64,17 @@
         tableRect.origin = CGPointMake(0, searchBarFrame.size.height);
         tableRect.size.height -= searchBarFrame.size.height;
         
-        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped];
+        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect style:UITableViewStylePlain];
         tableView.backgroundView = nil;
         tableView.backgroundColor = [UIColor clearColor];
         
-        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                           UIViewAutoresizingFlexibleWidth);
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
         tableView.dataSource = self;
         tableView.hidden = YES;
         tableView.scrollEnabled = YES;
         tableView.autoresizesSubviews = YES;
+        [tableView setBackgroundColor:[UIColor whiteColor]];
         
         self.tableView = tableView;
         [mainView addSubview:tableView];
@@ -78,9 +83,6 @@
     {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            searchBar.barStyle = UIBarStyleBlackOpaque;
-        }
         
         UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
                                                                                         contentsController:self];
@@ -89,9 +91,14 @@
         searchController.searchResultsDelegate = self;
         self.strongSearchDisplayController = searchController;
         
-        [searchBar sizeToFit];
-        searchBarFrame = searchBar.frame;
-        self.tableView.tableHeaderView = searchBar;
+        // while we still need to initialize searchController for both iPhone and iPad,
+        // we only need add search bar to the view for the iPhone case
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+        {
+            [searchBar sizeToFit];
+            searchBarFrame = searchBar.frame;
+            self.tableView.tableHeaderView = searchBar;
+        }
     }
     
     {
@@ -127,6 +134,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(customRoomTextDidChange:)
+                                                 name:MITBuildingServicesLocationCustomTextNotification
+                                               object:nil];
+    
     if (self.observerToken == nil) {
         __weak FacilitiesRoomViewController *weakSelf = self;
         self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
@@ -154,6 +166,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     if (self.observerToken) {
         [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
@@ -184,7 +198,30 @@
         return [s1 caseInsensitiveCompare:s2];
     }];
     
+    [self populateFloorsWithRooms:data];
+    
     return data;
+}
+
+- (void)populateFloorsWithRooms:(NSArray *)data
+{
+    self.floors = [NSMutableDictionary new];
+    for( FacilitiesRoom *room in data )
+    {
+        if( !self.hasZeroFloor && [room.floor isEqualToString:@"0"] )
+        {
+            self.hasZeroFloor = YES;
+        }
+        
+        NSMutableArray *rooms = self.floors[room.floor];
+        if( rooms == nil )
+        {
+            rooms = [NSMutableArray new];
+        }
+        
+        [rooms addObject:room];
+        [self.floors setObject:rooms forKey:room.floor];
+    }
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
@@ -223,15 +260,17 @@
 - (void)configureMainTableCell:(UITableViewCell *)cell
                   forIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
+    if( indexPath.section == 0 && indexPath.row == 0 )
+    {
         cell.textLabel.text = @"Outside";
-    } else {
-        if ([self.cachedData count] == 0) {
-            cell.textLabel.text = @"Inside";
-        } else {
-            FacilitiesRoom *room = [self.cachedData objectAtIndex:indexPath.row];
-            cell.textLabel.text = [room displayString];
-        }
+    }
+    else if( indexPath.section == 0 && indexPath.row == 1 )
+    {
+        cell.textLabel.text = @"Inside";
+    }
+    else
+    {
+        cell.textLabel.text = [[self roomAtIndexPath:indexPath] displayString];
     }
 }
 
@@ -270,20 +309,29 @@
 
 
 #pragma mark - UITableViewDelegate Methods
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     FacilitiesRoom *room = nil;
     NSString *altName = nil;
     
-    if (tableView == self.tableView) {
-        if (indexPath.section == 0) {
+    if (tableView == self.tableView)
+    {
+        if( indexPath.section == 0 && indexPath.row == 0 )
+        {
             altName = @"Outside";
-        } else if ([self.cachedData count] == 0) {
-            altName = @"Inside";
-        } else {
-            room = [self.cachedData objectAtIndex:indexPath.row];
         }
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+        else if( indexPath.section == 0 && indexPath.row == 1 )
+        {
+            altName = @"Inside";
+        }
+        else
+        {
+            room = [self roomAtIndexPath:indexPath];
+        }
+    }
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
         if (indexPath.row == 0) {
             altName = self.searchString;
         } else {
@@ -291,42 +339,97 @@
         }
     }
     
-    FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (room) {
-        dict[FacilitiesRequestLocationRoomKey] = room;
-    } else if (altName) {
-        dict[FacilitiesRequestLocationUserRoomKey] = altName;
+    [MITBuildingServicesReportForm sharedServiceReport].room = room;
+    [MITBuildingServicesReportForm sharedServiceReport].roomAltName = altName;
+    
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
     }
-    
-    dict[FacilitiesRequestLocationBuildingKey] = self.location;
-    
-    vc.userData = dict;
-    
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
-    
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    else
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
+    }
 }
 
 #pragma mark - UITableViewDataSource Methods
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    NSArray *allKeys = [self.floors allKeys];
+    
+    NSArray *sortedFloors = [allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSString *room1 = (NSString *)obj1;
+        NSString *room2 = (NSString *)obj2;
+        
+        return [room1 caseInsensitiveCompare:room2];
+    }];
+    
+    int counter = 0;
+    
+    NSMutableArray *mSortedFloors = [NSMutableArray array];
+    for( NSString *floor in sortedFloors )
+    {
+        [mSortedFloors addObject:floor];
+        
+        if( counter < [sortedFloors count] - 1 )
+        {
+            [mSortedFloors addObject:@"•"];
+        }
+        
+        counter++;
+    }
+    
+    return mSortedFloors;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    return 1 + index/2;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if( section == 0 )
+    {
+        return nil;
+    }
+    
+    return [NSString stringWithFormat:@"FLOOR %d", [self floorBasedOnSection:section]];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView) {
-        return 2;
-    } else {
+    if (tableView == self.tableView)
+    {
+        if( self.cachedData == nil )
+        {
+            return 1;
+        }
+        
+        return 1 + [self.floors count];
+    }
+    else
+    {
         return 1;
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView) {
-        if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
-            return 1;
-        } else {
-            return (section == 0) ? 1 : [self.cachedData count];
+    if (tableView == self.tableView)
+    {
+        if ((self.cachedData == nil) || ([self.cachedData count] == 0))
+        {
+            return 2;
+        }
+        else
+        {
+            return (section == 0) ? 2 : [[self roomsOnFloor:section] count];
         } 
-    } else {
+    }
+    else
+    {
         return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;
     }
 }
@@ -336,52 +439,102 @@
     static NSString *facilitiesIdentifier = @"facilitiesCell";
     static NSString *searchIdentifier = @"searchCell";
     
-    if (tableView == self.tableView) {
-        UITableViewCell *cell = nil;
-        cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
+    if (tableView == self.tableView)
+    {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                          reuseIdentifier:facilitiesIdentifier];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        if (cell == nil)
+        {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:facilitiesIdentifier];
         }
         
-        [self configureMainTableCell:cell 
-                        forIndexPath:indexPath];
-        return cell;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        HighlightTableViewCell *hlCell = nil;
-        hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
+        [self configureMainTableCell:cell forIndexPath:indexPath];
         
-        if (hlCell == nil) {
-            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                    reuseIdentifier:searchIdentifier];
+        return cell;
+    }
+    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    {
+        HighlightTableViewCell *hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
+        
+        if (hlCell == nil)
+        {
+            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
-            hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
-        if (indexPath.row == 0) {
+        if (indexPath.row == 0)
+        {
             hlCell.highlightLabel.searchString = nil;
             hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
-        } else {
-            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
-                                                   inSection:indexPath.section];
-            [self configureSearchCell:hlCell
-                         forIndexPath:path];
+        }
+        else
+        {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1) inSection:indexPath.section];
+            [self configureSearchCell:hlCell forIndexPath:path];
         }
         
-        
         return hlCell;
-    } else {
+    }
+    else
+    {
         return nil;
     }
 }
 
+#pragma mark - notifications
+
+// on iPad manually set searchText and add searchResultsTableView to the view hierarchy
+// in order to show the filtered list.
+- (void)customRoomTextDidChange:(NSNotification *)senderNotification
+{
+    // make sure this logic only occurs for the iPad.
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    NSDictionary *userInfo = senderNotification.userInfo;
+    
+    if( userInfo == nil || userInfo[@"customText"] == nil )
+    {
+        return;
+    }
+    
+    NSString *customLocationText = userInfo[@"customText"];
+    
+    [self handleUpdatedSearchText:customLocationText];
+    
+    if( customLocationText.length == 0 )
+    {
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+        [self.strongSearchDisplayController.searchResultsTableView removeFromSuperview];
+    }
+    else
+    {
+        if( [self.strongSearchDisplayController.searchResultsTableView superview] == nil )
+        {
+            [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
+            [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
+            [self.strongSearchDisplayController.searchResultsTableView setBackgroundColor:[UIColor whiteColor]];
+        }
+        
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+    }
+}
+
 #pragma mark - UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self handleUpdatedSearchText:searchText];
+}
+
+
+- (void)handleUpdatedSearchText:(NSString *)searchText
+{
     self.trimmedString = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![self.searchString isEqualToString:self.trimmedString]) {
+    if (![self.searchString isEqualToString:self.trimmedString])
+    {
         self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }
@@ -402,6 +555,29 @@
     // using willUnload because willHide strangely doesn't get called when the "Cancel" button is clicked
     tableView.scrollsToTop = NO;
     self.tableView.scrollsToTop = YES;
+}
+
+#pragma mark - utils
+
+- (FacilitiesRoom *)roomAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:indexPath.section]];
+    
+    NSArray *rooms = self.floors[floorStr];
+    
+    return rooms[indexPath.row];
+}
+
+- (NSArray *)roomsOnFloor:(NSInteger)floor
+{
+    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:floor]];
+    
+    return self.floors[floorStr];
+}
+
+- (NSInteger)floorBasedOnSection:(NSInteger)section
+{
+    return self.hasZeroFloor ? (section - 1) : section;
 }
 
 @end

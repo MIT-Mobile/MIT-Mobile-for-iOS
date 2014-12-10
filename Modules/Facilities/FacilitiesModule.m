@@ -1,6 +1,7 @@
 #import "FacilitiesModule.h"
 #import "MITConstants.h"
 #import "FacilitiesRootViewController.h"
+#import "MITFacilitiesHomeViewController.h"
 
 @implementation FacilitiesModule
 - (instancetype)init
@@ -14,11 +15,24 @@
     return self;
 }
 
-- (void)loadRootViewController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    FacilitiesRootViewController *rootViewController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController" bundle:nil];
-    
-    self.rootViewController = rootViewController;
+    return YES;
+}
+
+- (void)loadViewController
+{
+    UIStoryboard *storyboard = nil;
+
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+   		storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_iphone" bundle:nil];
+	} else {
+   		storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_ipad" bundle:nil];
+	}
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+
+    UIViewController *controller = [storyboard instantiateInitialViewController];
+    self.viewController = controller;
 }
 
 @end
