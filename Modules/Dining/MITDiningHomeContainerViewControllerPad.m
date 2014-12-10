@@ -130,6 +130,7 @@
 
 - (void)showDiningHouseViewController
 {
+    [self.diningRetailViewController willMoveToParentViewController:nil];
     [self.diningRetailViewController.view removeFromSuperview];
     [self.diningRetailViewController removeFromParentViewController];
     
@@ -147,6 +148,7 @@
 
 - (void)showDiningRetailViewController
 {
+    [self.diningHouseViewController willMoveToParentViewController:nil];
     [self.diningHouseViewController.view removeFromSuperview];
     [self.diningHouseViewController removeFromParentViewController];
     

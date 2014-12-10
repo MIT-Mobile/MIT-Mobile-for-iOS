@@ -39,4 +39,14 @@ NSString *const kMITLibraryClosedMessageString = @"Closed Today";
     return NO;
 }
 
+- (BOOL)isOpenOnDayOfDate:(NSDate *)date
+{
+    for (MITLibrariesTerm *term in self.terms) {
+        if ([term isOpenOnDayOfDate:date]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

@@ -14,5 +14,6 @@ extern NSString *const kMITLibraryClosedMessageString;
 
 - (NSString *)hoursStringForDate:(NSDate *)date;
 - (BOOL)isOpenAtDate:(NSDate *)date;
+- (BOOL)isOpenOnDayOfDate:(NSDate *)date;
 
 @end

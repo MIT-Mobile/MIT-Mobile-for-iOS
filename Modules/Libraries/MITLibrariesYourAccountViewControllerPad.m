@@ -22,7 +22,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        
+
     [self setupViewControllers];
     [self setupLoginView];
     
@@ -38,7 +38,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];  
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)applicationDidBecomeActive
@@ -66,6 +66,9 @@
     
     [self.view addSubview:self.listViewController.view];
     [self.view addSubview:self.gridViewController.view];
+    
+    [self.listViewController didMoveToParentViewController:self];
+    [self.gridViewController didMoveToParentViewController:self];
 }
 
 - (void)setLayoutMode:(MITLibrariesLayoutMode)layoutMode
