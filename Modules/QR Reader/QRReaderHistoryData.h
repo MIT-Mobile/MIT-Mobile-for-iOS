@@ -20,5 +20,14 @@
             shouldGenerateThumbnail:(BOOL)generateThumbnail;
 
 - (void)deleteScanResult:(QRReaderResult*)result;
+- (void)deleteScanResults:(NSArray *)results;
+
+- (NSArray *)fetchRecentScans;
+
+- (void)persistLastTimeHistoryWasOpened;
+
+- (NSDate *)lastTimeHistoryWasOpened;
+
+- (void)saveDataModelChanges;
 
 @end

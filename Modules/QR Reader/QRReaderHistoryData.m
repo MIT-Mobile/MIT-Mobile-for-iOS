@@ -5,9 +5,11 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 
+NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKey";
+
 @implementation QRReaderHistoryData
 - (id)init {
-    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     return [self initWithManagedContext:context];
@@ -26,6 +28,18 @@
 
 - (void)deleteScanResult:(QRReaderResult*)result {
     [self.context deleteObject:result];
+    
+    [self saveDataModelChanges];
+}
+
+- (void)deleteScanResults:(NSArray *)results
+{
+    for( QRReaderResult *result in results )
+    {
+        [self deleteScanResult:result];
+    }
+    
+    [self saveDataModelChanges];
 }
 
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
@@ -70,6 +84,50 @@
         }
     }
     
+    [self saveDataModelChanges];
+    
     return result;
 }
+
+- (NSArray *)fetchRecentScans
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"QRReaderResult"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date >= %@", [self lastTimeHistoryWasOpened]];
+    
+    NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date"
+                                                                   ascending:NO];
+    fetchRequest.sortDescriptors = @[dateDescriptor];
+    
+    return[self.context executeFetchRequest:fetchRequest error:NULL];
+}
+
+- (void)persistLastTimeHistoryWasOpened
+{
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kScannerHistoryLastOpenDateKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSDate *)lastTimeHistoryWasOpened
+{
+    NSDate *lastTimeHistoryWasOpened = [[NSUserDefaults standardUserDefaults] objectForKey:kScannerHistoryLastOpenDateKey];
+    if ( lastTimeHistoryWasOpened == nil )
+    {
+        [self persistLastTimeHistoryWasOpened];
+        
+        return [NSDate date];
+    }
+    
+    return lastTimeHistoryWasOpened;
+}
+
+- (void)saveDataModelChanges
+{
+    NSError *saveError = nil;
+    [self.context save:&saveError];
+    if (saveError)
+    {
+        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
+    }
+}
+
 @end

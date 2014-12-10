@@ -27,7 +27,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "NewsModule.h"
 #import "PeopleModule.h"
-#import "QRReaderModule.h"
+#import "MITScannerModule.h"
 #import "SettingsModule.h"
 #import "ShuttleModule.h"
 #import "ToursModule.h"
@@ -482,8 +482,8 @@ static NSString* const MITMobileButtonTitleView = @"View";
     DiningModule *diningModule = [[DiningModule alloc] init];
     [modules addObject:diningModule];
     
-    QRReaderModule *qrReaderModule = [[QRReaderModule alloc] init];
-    [modules addObject:qrReaderModule];
+    MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
+    [modules addObject:scannerModule];
     
     LinksModule *linksModule = [[LinksModule alloc] init];
     [modules addObject:linksModule];
