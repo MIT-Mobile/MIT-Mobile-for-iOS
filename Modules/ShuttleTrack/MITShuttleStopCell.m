@@ -51,6 +51,7 @@ static NSString * const kTimeUnavailableText = @"—";
         }
     } else {
         self.timeLabel.text = kTimeUnavailableText;
+        self.timeLabel.textColor = [UIColor darkTextColor];
     }
 }
 
