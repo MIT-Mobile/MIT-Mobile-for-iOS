@@ -20,5 +20,6 @@ extern NSString * const kLocationManagerAuthorizationStatusKey;
 
 + (BOOL)hasRequestedLocationPermissions;
 + (BOOL)locationServicesAuthorized;
+- (void)requestLocationAuthorization;
 
 @end

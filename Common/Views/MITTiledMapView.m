@@ -76,7 +76,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     if ([MITLocationManager locationServicesAuthorized]) {
         [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
     } else if (![MITLocationManager hasRequestedLocationPermissions]) {
-        [[MITLocationManager sharedManager] startUpdatingLocation];
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
     }
 }
 
@@ -106,7 +106,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
         [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
         [self showLocationServicesAlert];
     } else {
-        [[MITLocationManager sharedManager] startUpdatingLocation];
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
     }
 }
 

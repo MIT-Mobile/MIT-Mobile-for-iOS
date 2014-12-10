@@ -153,6 +153,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [self startRefreshingRoutesAndPredictions];
     }
     
+    if ([MITLocationManager locationServicesAuthorized]) {
+        [[MITLocationManager sharedManager] startUpdatingLocation];
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
 }
@@ -160,18 +164,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if ([MITLocationManager locationServicesAuthorized]) {
-        [self beginLocationServices];
-    } else if (![MITLocationManager hasRequestedLocationPermissions]) {
-        // Wants to wait to display the location services request until the view is fully loaded on the screen so this is offset slightly.
+    if (![MITLocationManager locationServicesAuthorized]) {
         [self performSelector:@selector(beginLocationServices) withObject:nil afterDelay:0.75];
     }
 }
 
-- (void)beginLocationServices
+- (void)requestLocationServicesAuthorization
 {
-    // Will prompt for authorization if not yet requested.
-    [[MITLocationManager sharedManager] startUpdatingLocation];
+    [[MITLocationManager sharedManager] requestLocationAuthorization];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

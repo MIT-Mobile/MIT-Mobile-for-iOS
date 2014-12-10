@@ -53,10 +53,13 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
 
 - (void)requestLocationAuthorization
 {
-    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.locationManager requestWhenInUseAuthorization];
-    } else {
-        [self.locationManager startUpdatingLocation];
+    if (![MITLocationManager locationServicesAuthorized]) {
+        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.locationManager requestWhenInUseAuthorization];
+        } else {
+            [self.locationManager startUpdatingLocation];
+            [self.locationManager stopUpdatingLocation];
+        }
     }
 }
 
@@ -125,7 +128,6 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-    [self startUpdatingLocation];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil userInfo:@{kLocationManagerAuthorizationStatusKey: @(status)}];
 }
 
