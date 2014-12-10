@@ -148,14 +148,14 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
-    if (self.shouldIndicateCellSelectedState) {
+    if ([self.resultsDataSource allSections].count > indexPath.section && self.shouldIndicateCellSelectedState) {
         UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.selectedIndexPath];
         [(MITCalendarEventCell *)oldCell setBackgroundSelected:NO];
         self.selectedIndexPath = indexPath;
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         [(MITCalendarEventCell *)cell setBackgroundSelected:YES];
     }
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if ([self.resultsDataSource allSections].count > indexPath.section) {
