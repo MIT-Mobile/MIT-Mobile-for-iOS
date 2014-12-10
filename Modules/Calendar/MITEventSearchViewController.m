@@ -309,4 +309,22 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 @end
