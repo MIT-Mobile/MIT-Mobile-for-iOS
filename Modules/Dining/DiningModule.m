@@ -5,30 +5,42 @@
 
 @implementation DiningModule
 
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag        = DiningTag;
-        self.shortName  = @"Dining";
-        self.longName   = @"Dining";
-        self.iconName   = @"dining";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagDining title:@"Dining"];
+    if (self) {
+        self.imageName = MITImageDiningModuleIcon;
     }
+
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+- (void)loadRootViewController
 {
-    return [[MITDiningHomeViewController alloc] initWithNibName:nil bundle:nil];
-}
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    return [[MITDiningHomeContainerViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    UIViewController *rootViewController = nil;
+    switch (currentUserInterfaceIdiom) {
+        case UIUserInterfaceIdiomPad:
+            rootViewController = [[MITDiningHomeContainerViewControllerPad alloc] initWithNibName:nil bundle:nil];
+            break;
+
+        case UIUserInterfaceIdiomPhone:
+            rootViewController = [[MITDiningHomeViewController alloc] initWithNibName:nil bundle:nil];
+            break;
+
+        default: {
+            NSString *reason = [NSString stringWithFormat:@"unsupported user interface idiom %d",currentUserInterfaceIdiom];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
+        } break;
+    }
+
+    self.rootViewController = rootViewController;
 }
 
 @end

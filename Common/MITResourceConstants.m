@@ -78,6 +78,13 @@ NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
 
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
+NSString * const MITImageNewsShowGridView = @"news-grid-view";
+// List bar button is used in both Map and News.
+// Asset need to be relocated to global folder and
+// the constants need to be updated with the global
+// identifier after News is merged into the main development branch
+// (mnovak - 2014.11.03)
+NSString * const MITImageNewsShowListView = @"global-barbutton-list";
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
@@ -103,7 +110,7 @@ NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesRouteInService = @"shuttles-shuttle";
 NSString * const MITImageShuttlesRouteNotInService = @"shuttles-shuttle-off";
-NSString * const MITImageShuttlesRoutePredictionsUnavailable = nil;
+NSString * const MITImageShuttlesRoutePredictionsUnavailable = @"shuttles-unavailable";
 NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
@@ -161,6 +168,7 @@ NSString * const MITImageToursAnnotationArrowStart = @"tours-annotation-arrow-st
 NSString * const MITImageToursMapLegendOverlay = @"tours-map-legend-overlay";
 
 NSString * const MITImageToursTemplateButtonExternalLink = @"tours-template-extlink";
+NSString * const MITImageToursTemplateWhiteActionArrow = @"tours-template-action-arrow-white";
 
 
 #pragma mark - Global Assets
@@ -196,10 +204,14 @@ NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 NSString * const MITImageLogoDarkContent = @"global-mit-logo-light";
 NSString * const MITImageLogoLightContent = @"global-mit-logo-dark";
 
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDown = @"_UIPopoverViewBlurMaskBackgroundArrowDown";
+NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverViewBlurMaskBackgroundArrowDownRight";
+
 #pragma mark UIBarButtonItem icons
 NSString * const MITImageBarButtonMenu = @"global-menu";
 NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
+NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";

@@ -50,7 +50,11 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     
     __block NSManagedObjectID *searchObjectID = nil;
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-    [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
+    NSError *updateError = nil;
+    BOOL success = [dataController performBackgroundUpdateAndWait:^BOOL(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+
+        BOOL blockSuccess = NO;
+
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapSearch entityName]];
         if ([query isKindOfClass:[NSString class]]) {
             fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", query];
@@ -84,14 +88,19 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
         [context save:error];
         
         if (!*error) {
-            [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
+            blockSuccess = [context obtainPermanentIDsForObjects:@[mapSearch] error:error];
 
             if (!*error) {
                 searchObjectID = [mapSearch objectID];
             }
         }
+        return blockSuccess;
     } error:nil];
-
+    
+    if (!success) {
+        DDLogWarn(@"failed to add recent search': %@",updateError);
+    }
+    
     return searchObjectID;
 }
 

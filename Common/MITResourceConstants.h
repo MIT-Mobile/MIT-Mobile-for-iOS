@@ -76,6 +76,9 @@ extern NSString * const MITImageMapAnnotationPlacePin;
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
+extern NSString * const MITImageNewsShowGridView;
+extern NSString * const MITImageNewsShowListView;
+
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
@@ -123,6 +126,8 @@ extern NSString * const MITImageToursScrimNotSureTop;
 extern NSString * const MITImageToursWallpaperKillian;
 extern NSString * const MITImageToursWallpaperStata;
 extern NSString * const MITImageToursWallpaperGreatSail;
+
+extern NSString * const MITImageToursTemplateWhiteActionArrow;
 
 #pragma mark Current Tour Progress Bar
 extern NSString * const MITImageToursProgressBarBackground;
@@ -194,10 +199,14 @@ extern NSString * const MITImageTransparentPixel;
 extern NSString * const MITImageLogoDarkContent;
 extern NSString * const MITImageLogoLightContent;
 
+extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDown;
+extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight;
+
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
 extern NSString * const MITImageBarButtonList;
+extern NSString * const MITImageBarButtonListSelected;
 
 // TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;

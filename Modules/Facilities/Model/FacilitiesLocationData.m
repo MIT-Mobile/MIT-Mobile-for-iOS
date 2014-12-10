@@ -81,7 +81,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 - (NSArray*)allCategories {
     [self updateCategoryData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesCategory"
-                                             matchingPredicate:[NSPredicate predicateWithValue:YES]];
+                                             matchingPredicate:nil];
 }
 
 - (NSArray*)allLocations {
@@ -377,29 +377,46 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
         NSString *command = operation.command;
 
         [blockSelf.updateQueue addOperationWithBlock:^{
-            if (!blockSelf) {
+            if (!blockSelf)
+            {
                 return;
-            } else if ([responseObject isKindOfClass:[NSArray class]]) {
+            }
+           
+            if( [command isEqualToString:FacilitiesCategoriesKey] )
+            {
+                // TODO: figure out what's server is supposed to send back
+                // array or dictionary
+                [self loadCategoriesWithArray:responseObject];
+            }
+            else if ([responseObject isKindOfClass:[NSArray class]])
+            {
                 NSArray *content = (NSArray*)responseObject;
 
-                if ([command isEqualToString:FacilitiesCategoriesKey]) {
-                    [self loadCategoriesWithArray:(NSArray*)content];
-                } else if ([command isEqualToString:FacilitiesLocationsKey]) {
+                if ([command isEqualToString:FacilitiesLocationsKey])
+                {
                     [self loadLocationsWithArray:(NSArray*)content];
-                } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
+                }
+                else if ([command isEqualToString:FacilitiesRepairTypesKey])
+                {
                     [self loadRepairTypesWithArray:(NSArray*)content];
                 }
-            } else if ([responseObject isKindOfClass:[NSDictionary class]]) {
+            }
+            else if ([responseObject isKindOfClass:[NSDictionary class]])
+            {
                 NSDictionary *jsonObject = (NSDictionary*)responseObject;
 
-                if ([command isEqualToString:FacilitiesRoomsKey]) {
+                if ([command isEqualToString:FacilitiesRoomsKey])
+                {
                     NSDictionary *roomData = (NSDictionary*)responseObject;
                     NSString *requestedId = operation.parameters[@"building"];
 
-                    if (requestedId) {
+                    if (requestedId)
+                    {
                         roomData = [NSDictionary dictionaryWithObject:jsonObject[requestedId]
                                                                forKey:requestedId];
-                    } else {
+                    }
+                    else
+                    {
                         roomData = jsonObject;
                     }
 
@@ -581,7 +598,17 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
             location.uid = [loc objectForKey:@"id"];
         }
         
-        location.name = [loc objectForKey:@"name"];
+        // TODO: occasionally server would return a dictionary here as opposed to a string.
+        // making sure app doesn't crash in that case.
+        if( [[loc objectForKey:@"name"] isKindOfClass:[NSString class]] )
+        {
+            location.name = [loc objectForKey:@"name"];
+        }
+        else
+        {
+            location.name = @"";
+        }
+
         location.number = [loc objectForKey:@"bldgnum"];
         
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];

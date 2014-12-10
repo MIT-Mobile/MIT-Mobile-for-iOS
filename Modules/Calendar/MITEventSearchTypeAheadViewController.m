@@ -78,8 +78,10 @@ static NSString *const kMITCalendarTypeAheadSuggestionCellIdentifier = @"kMITCal
     }
     
     NSMutableArray *filteredRecents = [NSMutableArray array];
+    NSString *lowercaseTypeAheadText = [typeAheadText lowercaseString];
     for (NSString *recent in [MITEventsRecentSearches recentSearches]) {
-        if ([recent hasPrefix:typeAheadText]) {
+        NSString *lowercaseRecent = [recent lowercaseString];
+        if ([lowercaseRecent hasPrefix:lowercaseTypeAheadText]) {
             [filteredRecents addObject:recent];
         }
     }
@@ -125,7 +127,34 @@ static NSString *const kMITCalendarTypeAheadSuggestionCellIdentifier = @"kMITCal
 
 #pragma mark - UITableViewDataSource Methods
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
+{
+    [[(UITableViewHeaderFooterView *)view textLabel] setFont:[UIFont boldSystemFontOfSize:14.0]];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case kMITCalendarEventSearchTypeAheadSectionFilters: {
+            if (self.filtersArray.count > 0) {
+                return 26.0;
+            } else {
+                return 0;
+            }
+            break;
+        }
+        case kMITCalendarEventSearchTypeAheadSectionSuggestions: {
+            return 26.0;
+            break;
+        }
+        default: {
+            return 0;
+        }
+    }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
     switch (section) {
         case kMITCalendarEventSearchTypeAheadSectionFilters: {
             if (self.filtersArray.count > 0) {
@@ -194,6 +223,23 @@ static NSString *const kMITCalendarTypeAheadSuggestionCellIdentifier = @"kMITCal
             return [UITableViewCell new];
         }
     }
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
 }
 
 @end

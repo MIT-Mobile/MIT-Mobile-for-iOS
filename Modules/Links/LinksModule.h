@@ -1,6 +1,9 @@
+#import <UIKit/UIKit.h>
+#import "MITNavigationModule.h"
+#import "LinksViewController.h"
 
-#import "MITModule.h"
+@interface LinksModule : MITNavigationModule
+@property(nonatomic,strong) LinksViewController *rootViewController;
 
-@interface LinksModule : MITModule
-
+- (instancetype)init;
 @end

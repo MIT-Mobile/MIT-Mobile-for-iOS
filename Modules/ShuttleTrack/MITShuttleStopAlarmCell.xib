@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,20 +15,12 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="162m" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="elj-Ma-Fxe">
-                        <rect key="frame" x="15" y="12" width="42" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <rect key="frame" x="8" y="12" width="42" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="42" id="SGP-sQ-kVx"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12:51 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owX-ab-drq">
-                        <rect key="frame" x="80" y="11" width="70" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="84" placeholderIntrinsicHeight="30" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYB-G0-uer">
@@ -41,24 +33,38 @@
                             <action selector="notificationButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="NOv-yX-p4d"/>
                         </connections>
                     </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Alarm Set" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h1b-kf-J2F">
+                        <rect key="frame" x="217" y="7" width="59" height="30"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.6549019814" green="0.66666668650000005" blue="0.66274511810000003" alpha="1" colorSpace="deviceRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" constant="0.5" id="8aa-h7-OYe"/>
-                    <constraint firstAttribute="centerY" secondItem="elj-Ma-Fxe" secondAttribute="centerY" id="QjR-MB-tcl"/>
-                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="ZTz-4P-8Eo"/>
-                    <constraint firstItem="owX-ab-drq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="80" id="fhq-VL-gIm"/>
-                    <constraint firstAttribute="trailing" secondItem="fYB-G0-uer" secondAttribute="trailing" constant="7" id="s53-Ld-bbm"/>
-                    <constraint firstItem="fYB-G0-uer" firstAttribute="centerY" secondItem="owX-ab-drq" secondAttribute="centerY" id="yUW-bK-Ugs"/>
+                    <constraint firstAttribute="trailing" secondItem="fYB-G0-uer" secondAttribute="trailing" id="0iW-oP-z71"/>
+                    <constraint firstAttribute="centerY" secondItem="fYB-G0-uer" secondAttribute="centerY" id="NcE-he-0sS"/>
+                    <constraint firstItem="fYB-G0-uer" firstAttribute="leading" secondItem="h1b-kf-J2F" secondAttribute="trailing" id="a1B-Yh-d13"/>
+                    <constraint firstAttribute="bottom" secondItem="elj-Ma-Fxe" secondAttribute="bottom" constant="12" id="aA6-i3-icU"/>
+                    <constraint firstAttribute="bottom" secondItem="h1b-kf-J2F" secondAttribute="bottom" constant="7" id="rLJ-Ty-8us"/>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="sqe-Lk-4N3"/>
+                    <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="tQI-q3-vZH"/>
+                    <constraint firstItem="h1b-kf-J2F" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="7" id="yTl-9P-CDI"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="alarmSetLabel" destination="h1b-kf-J2F" id="3Wy-LX-srT"/>
                 <outlet property="alertButton" destination="fYB-G0-uer" id="hkg-f4-Raf"/>
-                <outlet property="clockTimeLabel" destination="owX-ab-drq" id="vea-z5-pkc"/>
                 <outlet property="timeRemainingLabel" destination="elj-Ma-Fxe" id="RNI-Ri-qZa"/>
             </connections>
+            <point key="canvasLocation" x="821" y="397"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="shuttles-alert_off" width="84" height="30"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

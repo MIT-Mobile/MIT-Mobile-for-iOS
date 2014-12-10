@@ -30,6 +30,10 @@
     
     UIBarButtonItem *goButton = [[UIBarButtonItem alloc] initWithTitle:@"Go" style:UIBarButtonItemStylePlain target:self action:@selector(goPressed)];
     self.navigationItem.rightBarButtonItem = goButton;
+    
+    if (self.startDate) {
+        self.datePickerView.date = self.startDate;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,6 +50,33 @@
 - (void)goPressed
 {
     [self.delegate datePicker:self didSelectDate:self.datePickerView.date];
+}
+
+#pragma mark - Start Date
+
+- (void)setStartDate:(NSDate *)startDate
+{
+    _startDate = startDate;
+    if (self.datePickerView) {
+        self.datePickerView.date = startDate;
+    }
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
 }
 
 @end

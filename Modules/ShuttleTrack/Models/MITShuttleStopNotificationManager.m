@@ -1,9 +1,12 @@
 #import "MITShuttleStopNotificationManager.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStop.h"
+#import "MITShuttleRoute.h"
 #import "MITShuttleStopPredictionLoader.h"
 #import "MITCoreDataController.h"
 #import "CoreData+MITAdditions.h"
+#import "MITUnreadNotifications.h"
+#import "MITShuttlePredictionList.h"
 
 static NSString * const kMITShuttleStopNotificationStopIdKey = @"kMITShuttleStopNotificationStopIdKey";
 static NSString * const kMITShuttleStopNotificationVehicleIdKey = @"kMITShuttleStopNotificationVehicleIdKey";
@@ -47,24 +50,36 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 #pragma mark - Notifications
 
-- (void)toggleNotifcationForPrediction:(MITShuttlePrediction *)prediction
+- (void)toggleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
 {
-    UILocalNotification *scheduledNotification = [self notificationForPrediction:prediction];
-    if (scheduledNotification) {
-        [[UIApplication sharedApplication] cancelLocalNotification:scheduledNotification];
+    MITShuttlePrediction *corePrediction = [predictionGroup firstObject];
+    UILocalNotification *scheduledNote = [self notificationForPrediction:corePrediction];
+    if (scheduledNote) {
+        [[UIApplication sharedApplication] cancelLocalNotification:scheduledNote];
     } else {
-        [self scheduleNotificationForPrediction:prediction];
+        [self scheduleNotificationForPredictionGroup:predictionGroup withRouteTitle:routeTitle];
     }
 }
 
-- (void)scheduleNotificationForPrediction:(MITShuttlePrediction *)prediction
+- (void)scheduleNotificationForPredictionGroup:(NSArray *)predictionGroup withRoute:(MITShuttleRoute *)route
 {
+    [self scheduleNotificationForPredictionGroup:predictionGroup withRouteTitle:route.title];
+}
+
+- (void)scheduleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
+{
+    MITShuttlePrediction *rootPrediction = [predictionGroup firstObject];
+    NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:[rootPrediction.timestamp doubleValue] + kMITShuttleStopNotificationInterval];
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[rootPrediction.timestamp doubleValue]];
+    
+    NSString *alertBody = [self alertBodyForPredictionGroup:predictionGroup withRouteTitle:routeTitle];
+    
     UILocalNotification *notification = [[UILocalNotification alloc] init];
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
-    notification.fireDate = [predictionDate dateByAddingTimeInterval:kMITShuttleStopNotificationInterval]; // 5 minutes earlier than predicted time
-    notification.alertBody = [NSString stringWithFormat:@"The shuttle is arriving at %@ in %d minutes", prediction.stop.title, abs(kMITShuttleStopNotificationInterval / 60)];
-    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         prediction.stopId,
-                              kMITShuttleStopNotificationVehicleIdKey:      prediction.vehicleId,
+    notification.alertAction = @"View";
+    notification.fireDate = fireDate;
+    notification.alertBody = alertBody;
+    notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         rootPrediction.stopId,
+                              kMITShuttleStopNotificationVehicleIdKey:      rootPrediction.vehicleId,
                               kMITShuttleStopNotificationPredictionDateKey: predictionDate};
     UIApplication *application = [UIApplication sharedApplication];
     [application scheduleLocalNotification:notification];
@@ -73,14 +88,50 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
     }
 }
 
-- (void)updateNotificationForPrediction:(MITShuttlePrediction *)prediction
+- (NSString *)alertBodyForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
 {
-    UILocalNotification *notification = [self notificationForPrediction:prediction];
-    if (notification) {
-        [[UIApplication sharedApplication] cancelLocalNotification:notification];
-        NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
-        notification.fireDate = [predictionDate dateByAddingTimeInterval:kMITShuttleStopNotificationInterval];
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    MITShuttlePrediction *rootPrediction = predictionGroup.firstObject;
+    NSMutableString *alertBody = [NSMutableString string];
+    [alertBody appendString:routeTitle];
+    [alertBody appendString:@" arriving at "];
+    [alertBody appendString:rootPrediction.stop.title];
+    [alertBody appendString:@" in "];
+    NSTimeInterval fireDateTimestamp = [rootPrediction.timestamp doubleValue] + kMITShuttleStopNotificationInterval; // 5 minutes earlier than predicted time
+    for (int i = 0; i < predictionGroup.count; i++) {
+        MITShuttlePrediction *pred = predictionGroup[i];
+        NSTimeInterval secondsToPredictionAtTimeOfFire = [pred.timestamp doubleValue] - fireDateTimestamp;
+        int minutesToPredictionAtTimeOfFire = secondsToPredictionAtTimeOfFire / 60;
+        if (i == predictionGroup.count - 1) {
+            if (predictionGroup.count > 1) {
+                [alertBody appendString:@"and "];
+            }
+            [alertBody appendFormat:@"%i %@", minutesToPredictionAtTimeOfFire, minutesToPredictionAtTimeOfFire > 1 ? @"minutes" : @"minute"];
+        } else {
+            if (predictionGroup.count > 2) {
+                [alertBody appendFormat:@"%i, ", minutesToPredictionAtTimeOfFire];
+            } else {
+                [alertBody appendFormat:@"%i ", minutesToPredictionAtTimeOfFire];
+            }
+        }
+    }
+    [alertBody appendString:@"."];
+    return alertBody;
+}
+
+- (void)updateNotificationsForPredictionList:(MITShuttlePredictionList *)predictionList
+{
+    for (int i = 0; i < predictionList.predictions.count; i++) {
+        MITShuttlePrediction *prediction = predictionList.predictions[i];
+        UILocalNotification *note = [self notificationForPrediction:prediction];
+        if (note) {
+            [[UIApplication sharedApplication] cancelLocalNotification:note];
+            
+            NSMutableArray *predictionsToInclude = [NSMutableArray array];
+            for (int j = i; j < predictionList.predictions.count && predictionsToInclude.count < 3; j++) {
+                [predictionsToInclude addObject:predictionList.predictions[j]];
+            }
+            [self scheduleNotificationForPredictionGroup:predictionsToInclude withRouteTitle:predictionList.routeTitle];
+        }
     }
 }
 

@@ -45,13 +45,13 @@
 {
     if( !searchTermText ) return;
     
-    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **updateError) {
         
         PeopleRecentSearchTermList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         
         PeopleRecentSearchTerm *recentSearchItem = [[PeopleRecentSearchTerm alloc] initWithEntity:[PeopleRecentSearchTerm entityDescription] insertIntoManagedObjectContext:context];
         
-        if( recentSearchItem == nil ) return;
+        if( recentSearchItem == nil ) return NO;
         
         NSArray *recentSearchItemsArray = [recentSearchList.recentSearchTermList array];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"recentSearchTerm = %@", searchTermText ];
@@ -67,7 +67,7 @@
         
         recentSearchItem.recentSearchTerm = searchTermText;
         recentSearchItem.listOfRecentSearchTerms = recentSearchList;
-        
+        return YES;
     } error:&error];
 }
 
@@ -77,7 +77,7 @@
         
         PeopleRecentSearchTermList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         [context deleteObject:recentSearchList];
-        
+        return YES;
     } error:&error];
 }
 

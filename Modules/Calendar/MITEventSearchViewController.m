@@ -268,6 +268,13 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
 
 #pragma mark - UISearchBarDelegate Methods
 
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    if (self.state != MITEventSearchViewControllerStateTypeAhead) {
+        self.state = MITEventSearchViewControllerStateTypeAhead;
+    }
+}
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if (self.state != MITEventSearchViewControllerStateTypeAhead) {
@@ -300,6 +307,24 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     MITEventDetailViewController *detailVC = [[MITEventDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.event = event;
     [self.navigationController pushViewController:detailVC animated:YES];
+}
+
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
 }
 
 @end

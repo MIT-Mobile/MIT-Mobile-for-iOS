@@ -1,186 +1,97 @@
+#import <objc/runtime.h>
+
 #import "MITModule.h"
-
-#import "Foundation+MITAdditions.h"
-#import "MITTouchstoneRequestOperation+MITMobileV2.h"
-
-@interface MITModule ()
-
-@end
+#import "MITModuleItem.h"
 
 @implementation MITModule
-@synthesize moduleHomeController = _moduleHomeController;
-@synthesize homeViewController = _homeViewController;
-
-#pragma mark -
-- (instancetype)init
+- (instancetype)initWithName:(NSString*)name title:(NSString*)title
 {
-    return [self initWithTag:nil];
-}
-
-- (instancetype)initWithTag:(NSString *)tag
-{
+    NSParameterAssert(name);
+    NSParameterAssert(title);
+    
     self = [super init];
     if (self) {
-        _tag = [tag copy];
+        _name = [name copy];
+        _title = [title copy];
     }
-
+    
     return self;
 }
 
-#pragma mark Setting up the module's main view controller
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    if (idiom == UIUserInterfaceIdiomPhone) {
-        if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
-            return YES;
-        }
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+    return (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone);
+}
+
+- (BOOL)pushNotificationSupported
+{
+    return YES;
+}
+
+- (BOOL)isViewControllerLoaded
+{
+    return (_viewController != nil);
+}
+
+- (UIViewController*)viewController
+{
+    if (![self isViewControllerLoaded]) {
+        [self loadViewController];
+        NSAssert(_viewController, @"failed to load view controller");
+        [self viewControllerDidLoad];
     }
     
-    return NO;
+    return _viewController;
 }
 
-- (UIViewController*)homeViewController
+- (void)loadViewController
 {
-    return [self homeViewControllerForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
-}
-
-- (UIViewController*)homeViewControllerForUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
-{
-    UIViewController *viewController = nil;
-    if (idiom == UIUserInterfaceIdiomPad) {
-        viewController = [self createHomeViewControllerForPadIdiom];
-    } else if (idiom == UIUserInterfaceIdiomPhone) {
-        viewController = [self createHomeViewControllerForPhoneIdiom];
-    }
+    UIView *view = [[UIView alloc] init];
+    view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+    view.backgroundColor = [UIColor whiteColor];
     
-    _homeViewController = viewController;
-    return viewController;
+    UIViewController *viewController = [[UIViewController alloc] init];
+    viewController.view = view;
+    
+    self.viewController = viewController;
 }
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
+- (void)viewControllerDidLoad
 {
-    return nil;
+    self.viewController.moduleItem = [[MITModuleItem alloc] initWithName:self.name title:self.title image:self.image];
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+
+- (void)didReceiveNotification:(NSDictionary*)userInfo
 {
-    if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
-        return self.moduleHomeController;
+    // Do Nothing
+}
+
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    NSAssert([url.scheme isEqualToString:MITInternalURLScheme],@"malformed internal URL: expected scheme %@ but got %@.",MITInternalURLScheme,url.scheme);
+    NSAssert([url.host isEqualToString:self.name], @"malformed internal URL: expected host %@ but got %@",self.name,url.host);
+}
+
+- (NSString*)longTitle
+{
+    if (!_longTitle) {
+        return self.title;
+    } else {
+        return _longTitle;
+    }
+}
+
+- (UIImage*)image
+{
+    if (_image) {
+        return _image;
+    } else if (self.imageName) {
+        return [UIImage imageNamed:self.imageName];
     } else {
         return nil;
     }
-}
-
-- (UIViewController*)moduleHomeController
-{
-    if (!_moduleHomeController) {
-        if ([self respondsToSelector:@selector(loadModuleHomeController)]) {
-            [self loadModuleHomeController];
-        } else {
-            UIUserInterfaceIdiom const userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
-            _moduleHomeController = [self homeViewControllerForUserInterfaceIdiom:userInterfaceIdiom];
-        }
-        
-        NSAssert(_moduleHomeController,@"failed to create home UIViewController for module %@",self.tag);
-    }
-
-    return _moduleHomeController;
-}
-
-- (void)loadModuleHomeController
-{
-    _moduleHomeController = nil;
-    return;
-}
-
-#pragma mark Handling Notifications
-// all notifications are enabled by default
-// so we just store which modules are disabled
-- (void)setPushNotificationEnabled:(BOOL)enabled; {
-	NSMutableDictionary *pushDisabledSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:PushNotificationSettingsKey] mutableCopy];
-	if (!pushDisabledSettings) {
-        pushDisabledSettings = [[NSMutableDictionary alloc] init];
-    }
-    
-    _pushNotificationEnabled = enabled;
-    
-	if(enabled) {
-		[pushDisabledSettings removeObjectForKey:self.tag];
-	} else {
-		[pushDisabledSettings setObject:@"disabled" forKey:self.tag];
-	}
-    
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-	[userDefaults setObject:pushDisabledSettings forKey:PushNotificationSettingsKey];
-    [userDefaults synchronize];
-}
-
-
-#pragma mark
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"%@ <%@>",self.tag,_homeViewController];
-}
-
-- (void)applicationDidFinishLaunching
-{
-    // Override in subclass to perform tasks after app is setup and all modules have been instantiated.
-    // Make sure to call [super applicationDidFinishLaunching]!
-    // Avoid using this if possible. Use -init instead, and remember to do time consuming things in a non-blocking way.
-    
-    // load from disk on app start
-    NSDictionary *pushDisabledSettings = [[NSUserDefaults standardUserDefaults] objectForKey:PushNotificationSettingsKey];
-    self.pushNotificationEnabled = ([pushDisabledSettings objectForKey:self.tag] == nil) ? YES : NO; // enabled by default
-}
-
-- (void)applicationWillTerminate {
-    // Save state if needed.
-    // Don't do anything time-consuming in here.
-    // Keep in mind -[MIT_MobileAppDelegate applicationWillTerminate] already writes NSUserDefaults to disk.
-}
-
-- (void)applicationDidEnterBackground {
-    // stop all url loading, video playing, animations etc.
-}
-
-- (void)applicationWillEnterForeground {
-    // resume interaction if needed.
-}
-
-- (void)didAppear {
-    // Called whenever a module is made visible: tab tapped or entry tapped in More list.
-    // If your module needs to do something whenever it appears and it doesn't make sense to do so in a view controller, override this.
-}
-
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    DDLogWarn(@"%@ not handling localPath: %@ query: %@", NSStringFromClass([self class]), localPath, query);
-    return NO;
-}
-
-- (void)resetURL {
-	self.currentPath = @"";
-	self.currentQuery = @"";
-}
-
-- (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
-	DDLogWarn(@"%@ can not handle notification %@", NSStringFromClass([self class]), notification);
-	return NO;
-}
-
-- (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications {
-}
-
-#pragma mark Internals
-- (UIImage *)icon
-{
-    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/module-", self.iconName, @".png"];
-    return [UIImage imageNamed:iconPath];
-}
-
-- (UIImage *)springboardIcon
-{
-    NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/home-", self.iconName, @".png"];
-    return [UIImage imageNamed:iconPath];
 }
 
 @end

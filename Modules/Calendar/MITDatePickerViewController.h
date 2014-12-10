@@ -13,5 +13,5 @@
 
 @property (nonatomic, weak) id<MITDatePickerViewControllerDelegate> delegate;
 @property (nonatomic) BOOL shouldHideCancelButton;
-
+@property (strong, nonatomic) NSDate *startDate;
 @end

@@ -10,5 +10,6 @@
 #import "NSMutableAttributedString+MITAdditions.h"
 #import "NSTimer+MITBlockTimer.h"
 #import "CoreData+MITAdditions.h"
+#import "UINavigationController+MITAdditions.h"
 
 #endif

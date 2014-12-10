@@ -1,38 +1,39 @@
-
 #import "LinksModule.h"
 #import "LinksViewController.h"
 
-
-
 @implementation LinksModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = LinksTag;
-        self.shortName = @"Links";
-        self.longName = @"Links";
-        self.iconName = @"webmitedu";
+- (instancetype)init {
+    self = [super initWithName:MITModuleTagLinks title:@"Links"];
+    if (self) {
+        self.imageName = MITImageLinksModuleIcon;
     }
     
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    self.moduleHomeController = [[LinksViewController alloc] init];
-}
-
-#pragma mark Handle Url
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
-{
-    UIViewController *moduleHomeController = self.moduleHomeController;
-    
-    [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-    [[MITAppDelegate() rootNavigationController] pushViewController:moduleHomeController
-                                                           animated:YES];
     return YES;
 }
 
+- (void)loadRootViewController
+{
+    LinksViewController *rootViewController = [[LinksViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.rootViewController = rootViewController;
+}
+
+#pragma mark URL Request handling
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    [super didReceiveRequestWithURL:url];
+    [self.navigationController popToViewController:self.rootViewController animated:NO];
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+    
+    self.viewController.moduleItem.type = MITModulePresentationModal;
+}
 
 @end

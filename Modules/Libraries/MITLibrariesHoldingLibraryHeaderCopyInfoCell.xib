@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="38" id="KGk-i7-Jjw" customClass="MITLibrariesHoldingLibraryHeaderCopyInfoCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="38"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G3S-E0-59F">
+                        <rect key="frame" x="36" y="19" width="276" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TUy-7M-TH7">
+                        <rect key="frame" x="36" y="2" width="276" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="TUy-7M-TH7" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="Bn9-iv-xq6"/>
+                    <constraint firstAttribute="trailing" secondItem="G3S-E0-59F" secondAttribute="trailing" constant="8" id="Kfc-IM-mz6"/>
+                    <constraint firstAttribute="bottom" secondItem="G3S-E0-59F" secondAttribute="bottom" constant="2" id="MdR-AG-SbU"/>
+                    <constraint firstItem="TUy-7M-TH7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="aLK-Om-q2c"/>
+                    <constraint firstItem="G3S-E0-59F" firstAttribute="top" secondItem="TUy-7M-TH7" secondAttribute="bottom" id="eJb-d1-Xmx"/>
+                    <constraint firstItem="G3S-E0-59F" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="nSC-lQ-dFL"/>
+                    <constraint firstAttribute="trailing" secondItem="TUy-7M-TH7" secondAttribute="trailing" constant="8" id="wHk-KB-KKG"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="callNumberLabel" destination="TUy-7M-TH7" id="gMv-FY-W8N"/>
+                <outlet property="extraInfoLabel" destination="G3S-E0-59F" id="wq6-hQ-ob0"/>
+            </connections>
+            <point key="canvasLocation" x="681" y="350"/>
+        </tableViewCell>
+    </objects>
+</document>

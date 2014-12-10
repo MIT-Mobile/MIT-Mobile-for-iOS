@@ -1,36 +1,29 @@
 #import "MITScannerModule.h"
-
-
 #import "MITScannerViewController.h"
-
 
 @implementation MITScannerModule
 
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = QRReaderTag;
-        self.shortName = @"Scanner";
-        self.longName = @"Scanner";
-        self.iconName = @"qrreader";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagQRReader title:@"Scanner"];
+    if (self) {
+        self.longTitle = @"Scanner";
+        self.imageName = MITImageScannerModuleIcon;
     }
     
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+- (void)loadRootViewController
 {
-    return [[MITScannerViewController alloc] init];
-}
-
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    return [[MITScannerViewController alloc] init];
+    UIViewController *rootViewController = [[MITScannerViewController alloc] initWithNibName:nil bundle:nil];
+    
+    self.rootViewController = rootViewController;
 }
 
 @end

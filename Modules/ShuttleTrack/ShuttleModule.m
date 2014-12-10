@@ -4,32 +4,31 @@
 
 
 @implementation ShuttleModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = ShuttleTag;
-        self.shortName = @"Shuttles";
-        self.longName = @"ShuttleTrack";
-        self.iconName = @"shuttle";
-        self.pushNotificationSupported = YES;
+- (instancetype)init {
+    self = [super initWithName:MITModuleTagShuttle title:@"Shuttles"];
+    if (self) {
+        self.longTitle = @"ShuttleTrack";
+        self.imageName = MITImageShuttlesModuleIcon;
     }
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
+- (void)loadRootViewController
 {
-    return [[MITShuttleRootViewController alloc] initWithNibName:nil bundle:nil];
-}
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom currentUserInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    if (UIUserInterfaceIdiomPhone == currentUserInterfaceIdiom) {
+        rootViewController = [[MITShuttleHomeViewController alloc] init];
+    } else if (UIUserInterfaceIdiomPad == currentUserInterfaceIdiom) {
+        rootViewController = [[MITShuttleRootViewController alloc] init];
+    }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
-{
-    return [[MITShuttleHomeViewController alloc] initWithNibName:nil bundle:nil];
+    self.rootViewController = rootViewController;
 }
 	
 @end

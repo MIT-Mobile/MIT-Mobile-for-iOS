@@ -1,5 +1,5 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@interface MITScannerModule : MITModule
+@interface MITScannerModule : MITNavigationModule
 
 @end

@@ -1,11 +1,3 @@
-//
-//  MITLocationManager.h
-//  MIT Mobile
-//
-//  Created by Mark Daigneault on 5/15/14.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 

@@ -1,5 +1,7 @@
 #import "FacilitiesUserLocationViewController.h"
 
+#import "MITBuildingServicesReportForm.h"
+
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLeasedViewController.h"
@@ -203,38 +205,43 @@ static const NSUInteger kMaxResultCount = 10;
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:reuseIdentifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
     FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
+    
     cell.textLabel.text = [location displayString];
     
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     FacilitiesLocation *location = nil;
     
-    if (tableView == self.tableView) {
+    if (tableView == self.tableView)
+    {
         location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    if ([location.isLeased boolValue]) {
-        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
-    } else {    
-        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-        controller.location = location;
-        
-        [self.navigationController pushViewController:controller
-                                             animated:YES];
+    [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:![location.isLeased boolValue]];
+    
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    }
+    else
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
     }
     
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 

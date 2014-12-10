@@ -24,4 +24,6 @@
     show the highlighted calendar disclosure/check mark. */
 @property (nonatomic, strong) NSMutableArray *categoriesPath;
 
+@property (nonatomic, assign) BOOL shouldHideRegistrar;
+
 @end

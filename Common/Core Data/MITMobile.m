@@ -6,6 +6,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "MITTouchstoneRequestOperation.h"
 #import "MITAdditions.h"
+#import "MIT_MobileAppDelegate.h"
 
 typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error);
 
@@ -15,7 +16,6 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 @interface MITMobile ()
 @property (nonatomic,strong) NSMutableDictionary *objectManagers;
 @property (nonatomic,strong) NSMutableDictionary *mutableResources;
-@property (nonatomic,strong) RKManagedObjectStore *managedObjectStore;
 
 - (RKObjectManager*)objectManagerForURL:(NSURL*)url;
 @end
@@ -154,7 +154,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                                    relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
 
         RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
-        NSDictionary *queryParameters = [url queryDictionary];
+        NSDictionary *queryParameters = [url URLDecodedQueryDictionary];
         [objectManager getObjectsAtPath:path
                              parameters:queryParameters
                                 success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {

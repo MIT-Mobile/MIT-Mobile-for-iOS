@@ -1,9 +1,5 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@class CampusTourHomeController;
-
-@interface ToursModule : MITModule
-
-@property (nonatomic, strong) CampusTourHomeController *homeController;
+@interface ToursModule : MITNavigationModule
 
 @end

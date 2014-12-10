@@ -16,3 +16,9 @@
 [submodule "External/ECSlidingViewController"]
 	path = External/ECSlidingViewController
 	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
+[submodule "External/SVProgressHUD"]
+	path = External/SVProgressHUD
+	url = git@github.com:TransitApp/SVProgressHUD.git
+[submodule "SVProgressHUD"]
+	path = SVProgressHUD
+	url = git@github.com:TransitApp/SVProgressHUD.git
