@@ -104,9 +104,7 @@ static CGFloat const kDistanceLabelTopSpacing = 6;
     self.distanceLabel.font = [UIFont toursMapCalloutSubtitle];
     self.distanceLabel.textColor = [UIColor mit_greyTextColor];
     self.distanceLabel.preferredMaxLayoutWidth = [self maxLabelWidth];
-    
-    [self.disclosureImage setImage:[UIImage imageNamed:@"map/map_disclosure_arrow"]];
-    
+        
     [self.containerView setNeedsUpdateConstraints];
     [self.containerView setNeedsLayout];
     [self sizeToFit];
