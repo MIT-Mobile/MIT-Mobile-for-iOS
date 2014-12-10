@@ -127,6 +127,8 @@ extern NSString * const MITImageToursWallpaperKillian;
 extern NSString * const MITImageToursWallpaperStata;
 extern NSString * const MITImageToursWallpaperGreatSail;
 
+extern NSString * const MITImageToursTemplateWhiteActionArrow;
+
 #pragma mark Current Tour Progress Bar
 extern NSString * const MITImageToursProgressBarBackground;
 extern NSString * const MITImageToursProgressBarCurrent;
