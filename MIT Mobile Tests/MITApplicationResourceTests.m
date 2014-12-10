@@ -112,6 +112,8 @@
 
 #pragma mark - News
     MITCheckAsset(MITImageNewsImagePlaceholder);
+    MITCheckAsset(MITImageNewsShowGridView);
+    MITCheckAsset(MITImageNewsShowListView);
 
     MITCheckAsset(MITImageNewsTemplateButtonBookmark);
     MITCheckAsset(MITImageNewsTemplateButtonShare);

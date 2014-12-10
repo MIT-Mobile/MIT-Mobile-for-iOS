@@ -4,6 +4,22 @@
 static NSString * const MITDeviceTypeKey = @"device_type";
 static NSString * const MITDeviceTypeApple = @"apple";
 
+static NSString* MITHexStringFromNSData(NSData* data) {
+    if (!data) {
+        return nil;
+    }
+
+    NSMutableString *hexString = [[NSMutableString alloc] init];
+    NSUInteger numberOfBytes = data.length;
+    const char *bytes = (const char*)data.bytes;
+
+    for (NSUInteger index = 0; index < numberOfBytes; ++index) {
+        [hexString appendFormat:@"%02hhx",bytes[index]];
+    }
+
+    return hexString;
+}
+
 @implementation MITIdentity
 - (id)initWithDeviceId:(NSString *)aDeviceId passKey:(NSString *)aPassKey {
 	self = [super init];
@@ -141,4 +157,227 @@ static NSString * const MITDeviceTypeApple = @"apple";
 		return nil;
 	}
 }
+@end
+
+
+// Class not currently in use by anything. This will be used to
+// help keep better track of the current device registration (both from the APNS
+// and our API server).
+// (bskinner - 2014.11.14)
+static NSString* const MITDeviceIdentityDeviceTokenKey = @"DeviceToken";
+static NSString* const MITDeviceIdentityDeviceIdentifierKey = @"DeviceIdentifier";
+static NSString* const MITDeviceIdentityPasscodeKey = @"Passcode";
+
+@implementation MITDeviceIdentity
+@dynamic isRegistered;
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+
+    if (self) {
+        _deviceToken = [[NSUserDefaults standardUserDefaults] dataForKey:DeviceTokenKey];
+        _deviceIdentifier = [[NSUserDefaults standardUserDefaults] stringForKey:MITDeviceIdKey];
+        _passcode = [[NSUserDefaults standardUserDefaults] stringForKey:MITPassCodeKey];
+    }
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        if (aDecoder.allowsKeyedCoding) {
+            _deviceToken = [aDecoder decodeObjectOfClass:[NSData class] forKey:MITDeviceIdentityDeviceTokenKey];
+            _deviceIdentifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITDeviceIdentityDeviceIdentifierKey];
+            _passcode = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITDeviceIdentityPasscodeKey];
+        }
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    if (aCoder.allowsKeyedCoding) {
+        [aCoder encodeObject:self.deviceToken forKey:MITDeviceIdentityDeviceTokenKey];
+        [aCoder encodeObject:self.deviceIdentifier forKey:MITDeviceIdentityDeviceIdentifierKey];
+        [aCoder encodeObject:self.passcode forKey:MITDeviceIdentityPasscodeKey];
+    }
+}
+
+#pragma mark properties
+- (BOOL)isRegistered
+{
+    return (self.deviceToken != nil);
+}
+
+- (BOOL)isEnabled
+{
+    return (BOOL)(self.isRegistered && self.passcode);
+}
+
+- (void)setDeviceToken:(NSData *)deviceToken
+{
+    [self setDeviceToken:deviceToken completion:nil];
+}
+
+- (void)setDeviceToken:(NSData *)deviceToken completion:(void(^)(NSError *error))block
+{
+    if (![_deviceToken isEqualToData:deviceToken]) {
+        NSData *oldToken = _deviceToken;
+        _deviceToken = [deviceToken copy];
+
+        [self registerDeviceWithToken:self.deviceToken oldToken:oldToken completion:^(NSError* error) {
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    block(error);
+                }];
+            }
+        }];
+    }
+}
+
+- (void)registerDevice:(void (^)(NSError *))completion
+{
+    [self registerDeviceWithToken:self.deviceToken oldToken:nil completion:completion];
+}
+
+- (void)registerDeviceWithToken:(NSData*)newToken oldToken:(NSData*)oldToken completion:(void(^)(NSError *error))block
+{
+    __weak MITDeviceIdentity *weakSelf = self;
+
+    if (!newToken) {
+        self.passcode = nil;
+        self.deviceIdentifier = nil;
+    } else if (oldToken && self.passcode) {
+        [self updateRegisteredDeviceToken:newToken oldToken:oldToken completion:^(NSString *deviceIdentifier, NSString *passcode) {
+            MITDeviceIdentity *blockSelf = weakSelf;
+            blockSelf.deviceIdentifier = passcode;
+            blockSelf.passcode = deviceIdentifier;
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    block(nil);
+                }];
+            }
+        } error:^(NSError *error) {
+            MITDeviceIdentity *blockSelf = weakSelf;
+            blockSelf.passcode = nil;
+            blockSelf.deviceIdentifier = nil;
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    block(error);
+                }];
+            }
+        }];
+    } else {
+        [self registerNewDeviceWithToken:newToken completion:^(NSString *deviceIdentifier, NSString *passcode) {
+            MITDeviceIdentity *blockSelf = weakSelf;
+            blockSelf.deviceIdentifier = passcode;
+            blockSelf.passcode = deviceIdentifier;
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    block(nil);
+                }];
+            }
+        } error:^(NSError *error) {
+            MITDeviceIdentity *blockSelf = weakSelf;
+            blockSelf.passcode = nil;
+            blockSelf.deviceIdentifier = nil;
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    block(error);
+                }];
+            }
+        }];
+    }
+}
+
+- (void)updateRegisteredDeviceToken:(NSData*)newToken oldToken:(NSData*)oldToken completion:(void(^)(NSString *deviceIdentifier, NSString *passcode))successBlock error:(void(^)(NSError *error))failureBlock
+{
+    NSParameterAssert(oldToken);
+    NSAssert(self.deviceToken, @"deviceToken is nil, a valid token is required for device registration");
+
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{MITDeviceIdKey : self.deviceIdentifier,
+                                                                                      MITPassCodeKey : self.passcode,
+                                                                                      MITDeviceTypeKey : MITDeviceTypeApple}];
+    parameters[@"device_token"] = MITHexStringFromNSData(self.deviceToken);
+    parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleIdentifierKey];
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"newDeviceToken" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak MITDeviceIdentity *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *deviceRegistration) {
+        MITDeviceIdentity *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (![deviceRegistration isKindOfClass:[NSDictionary class]]) {
+            DDLogWarn(@"received invalid response for newDeviceToken command. Expected response object of type %@, got %@",NSStringFromClass([NSDictionary class]),NSStringFromClass([deviceRegistration class]));
+            return;
+        } else if (successBlock) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                successBlock(deviceRegistration[MITDeviceIdKey],deviceRegistration[MITPassCodeKey]);
+            }];
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogWarn(@"device registration failed: %@", [error localizedDescription]);
+        if (failureBlock) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                failureBlock(error);
+            }];
+        }
+    }];
+    
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
+}
+
+- (void)registerNewDeviceWithToken:(NSData*)newToken completion:(void(^)(NSString *deviceIdentifier,NSString *passcode))successBlock error:(void(^)(NSError *error))failureBlock
+{
+    NSAssert(self.deviceToken, @"deviceToken is nil, a valid token is required for device registration");
+
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{MITDeviceIdKey : self.deviceIdentifier,
+                                                                                      MITPassCodeKey : self.passcode,
+                                                                                      MITDeviceTypeKey : MITDeviceTypeApple}];
+    parameters[@"device_token"] = MITHexStringFromNSData(self.deviceToken);
+    parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleIdentifierKey];
+
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"register" parameters:parameters];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak MITDeviceIdentity *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *deviceRegistration) {
+        MITDeviceIdentity *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (![deviceRegistration isKindOfClass:[NSDictionary class]]) {
+            DDLogWarn(@"received invalid response for newDeviceToken command. Expected response object of type %@, got %@",NSStringFromClass([NSDictionary class]),NSStringFromClass([deviceRegistration class]));
+            return;
+        } else if (successBlock) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                successBlock(deviceRegistration[MITDeviceIdKey],deviceRegistration[MITPassCodeKey]);
+            }];
+        }
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogWarn(@"device registration failed: %@", [error localizedDescription]);
+        if (failureBlock) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                failureBlock(error);
+            }];
+        }
+    }];
+
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
+}
+
 @end

@@ -56,7 +56,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
 @property (nonatomic) UIInterfaceOrientation nibInterfaceOrientation;
 
-@property (nonatomic) MITShuttleRouteContainerState previousState;
 @property (nonatomic, getter = isRotating) BOOL rotating;
 
 @end
@@ -92,7 +91,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     [self setupNavBar];
     [self displayAllChildViewControllers];
     [self layoutStopViews];
-    [self setupToolbar];
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
     }
@@ -101,11 +99,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+    
     if (self.state == MITShuttleRouteContainerStateStop) {
-        [self.navigationController setToolbarHidden:YES animated:animated];
         [self configureLayoutForState:self.state animated:NO];
         [self layoutStopViews];
-        [self selectStop:self.stop];
         [self configureStopViewControllerRefreshing];
     }
 }
@@ -185,18 +183,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
                                                                                               stop:stop
                                                                                              route:self.route];
         stopVC.predictionLoader.shouldRefreshPredictions = NO;
-        stopVC.viewOption = MITShuttleStopViewOptionAllRoutes;
+        stopVC.viewOption = MITShuttleStopViewOptionAll;
         [stopViewControllers addObject:stopVC];
     }
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
-}
-
-- (void)setupToolbar
-{
-    if ([self.toolbarItems count] == 0) {
-        UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.routeViewController.toolbarLabelView];
-        [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
-    }
 }
 
 #pragma mark - Child View Controllers
@@ -321,6 +311,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 {
     _stop = stop;
     self.mapViewController.stop = stop;
+    
+    if (self.state == MITShuttleRouteContainerStateStop) {
+        [self.mapViewController centerToShuttleStop:stop animated:YES];
+    }
 }
 
 - (void)layoutStopViews
@@ -334,15 +328,15 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     self.stopsScrollView.contentSize = CGSizeMake(xOffset, stopViewSize.height);
     
     if (self.stop) {
-        [self selectStop:self.stop];
+        [self scrollToStop:self.stop animated:NO];
     }
 }
 
-- (void)selectStop:(MITShuttleStop *)stop
+- (void)scrollToStop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
     NSInteger index = [self.route.stops indexOfObject:stop];
     CGFloat offset = self.stopsScrollView.frame.size.width * index;
-    [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:NO];
+    [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:animated];
 }
 
 - (void)didScrollToStop:(MITShuttleStop *)stop
@@ -408,7 +402,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)setState:(MITShuttleRouteContainerState)state animated:(BOOL)animated
 {
     [self configureLayoutForState:state animated:animated];
-    _previousState = _state;
     _state = state;
 }
 
@@ -453,6 +446,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 
     dispatch_block_t animationBlock = ^{
         [self setNavigationBarExtended:NO];
+        [self.mapViewController setMapToolBarHidden:YES];
         [self.view layoutIfNeeded];
     };
     
@@ -462,9 +456,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         [self.routeViewController.tableView reloadData];
     };
     
-    [self.navigationController setToolbarHidden:NO animated:animated];
+    
     self.routeViewController.tableView.contentOffset = CGPointZero;
     [self.mapViewController setState:MITShuttleMapStateContracting];
+    
     if (animated) {
         [UIView animateWithDuration:[self stateTransitionDuration]
                               delay:0
@@ -480,8 +475,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
 {
     [self setTitleForRoute:self.route stop:self.stop animated:animated];
-    [self selectStop:self.stop];
-    [self.navigationController setToolbarHidden:YES animated:animated];
     [self setStopViewHidden:NO];
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
@@ -500,6 +493,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     
     dispatch_block_t animationBlock = ^{
         [self setNavigationBarExtended:YES];
+        [self.mapViewController setMapToolBarHidden:YES];
         [self.view layoutIfNeeded];
     };
     
@@ -524,12 +518,13 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         completionBlock(YES);
     }
     
+    [self.mapViewController centerToShuttleStop:self.stop animated:animated];
+    
     [self configureStopViewControllerRefreshing];
 }
 
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
 {
-    [self.navigationController setToolbarHidden:YES animated:animated];
     [self.view bringSubviewToFront:self.mapContainerView];
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
@@ -551,6 +546,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
         if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
             self.mapContainerViewPortraitHeightConstraint.constant = CGRectGetHeight(self.view.frame);
         }
+        [self.mapViewController setMapToolBarHidden:NO];
         [self.view layoutIfNeeded];
     };
     
@@ -709,8 +705,16 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController
 {
     if (self.state == MITShuttleRouteContainerStateMap) {
-        [self setState:self.previousState animated:YES];
+        self.mapViewController.stop = nil;
+        // Always return to route state listing the stops regardless of previous state.
+        [self setState:MITShuttleRouteContainerStateRoute animated:YES];
     }
+}
+
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didClickCalloutForStop:(MITShuttleStop *)stop
+{
+    self.stop = stop;
+    [self setState:MITShuttleRouteContainerStateStop animated:YES];
 }
 
 @end

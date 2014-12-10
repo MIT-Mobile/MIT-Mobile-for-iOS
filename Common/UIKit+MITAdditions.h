@@ -23,6 +23,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 + (UIColor *)mit_closedRedColor;
 + (UIColor *)mit_cellSeparatorColor;
 + (UIColor *)mit_systemTintColor;
++ (UIColor *)mit_navBarColor;
 
 /*!
  * Creates and returns a color object using the specified hexadecimal string.
@@ -74,12 +75,6 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 - (void)applyStandardCellHeight;
 + (UIView *)groupedSectionHeaderWithTitle:(NSString *)title;
 + (UIView *)ungroupedSectionHeaderWithTitle:(NSString *)title;
-
-@end
-
-@interface UIActionSheet (MITUIAdditions)
-
-- (void)showFromAppDelegate; // i don't like this name but can't think of a better one
 
 @end
 

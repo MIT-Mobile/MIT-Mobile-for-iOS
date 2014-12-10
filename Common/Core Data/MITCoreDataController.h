@@ -51,7 +51,7 @@
  *  the main queue context. If the block's context is not saved prior to returning
  *  its changes will be discarded.
  */
-- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))updateBlock error:(NSError**)error;
+- (BOOL)performBackgroundUpdateAndWait:(BOOL (^)(NSManagedObjectContext *context, NSError **error))updateBlock error:(NSError**)error;
 
 /** Flushes any un-persisted data in the background context to the persistent store.
  *  Once the save is completed, the passed block will be called on the main queue.

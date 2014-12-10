@@ -425,7 +425,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
     [self beginUpdatingAnimated:YES];
     
     __weak MITNewsCategoryViewController *weakSelf = self;
-    void (^requestCompletionBlock)(NSArray*, MITResultsPager*, NSError*error) = ^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+    void (^requestCompletionBlock)(NSArray*, NSDictionary*, NSError*error) = ^(NSArray *stories, NSDictionary* pagingMetadata, NSError *error) {
         MITNewsCategoryViewController *blockSelf = weakSelf;
         if (blockSelf) {
             BOOL isSameRequestToken = (blockSelf->_storyUpdateInProgressToken == requestUUID);
@@ -506,7 +506,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 
@@ -690,11 +690,9 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         }
 
         if (needsActivityIndicatorAccessory) {
-            if (!cell.accessoryView) {
-                UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [view startAnimating];
-                cell.accessoryView = view;
-            }
+            UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [view startAnimating];
+            cell.accessoryView = view;
         } else {
             cell.accessoryView = nil;
         }
@@ -845,7 +843,7 @@ static NSString* const MITNewsCachedLayoutCellsAssociatedObjectKey = @"MITNewsCa
         [self willLoadSearchResultsAnimated:YES];
 
         __weak MITNewsCategoryViewController *weakSelf = self;
-        [[MITNewsModelController sharedController] storiesInCategory:nil query:query offset:offset limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+        [[MITNewsModelController sharedController] storiesInCategory:nil query:query offset:offset limit:20 completion:^(NSArray *stories, NSDictionary* pagingMetadata, NSError *error) {
             MITNewsCategoryViewController *blockSelf = weakSelf;
             if (blockSelf) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{

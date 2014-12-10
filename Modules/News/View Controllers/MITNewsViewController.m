@@ -462,7 +462,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
             [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
             [modelController featuredStoriesWithOffset:0
                                                  limit:MITNewsDefaultNumberOfFeaturedStories
-                                            completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                            completion:^(NSArray* stories, NSDictionary* pagingMetadata, NSError* error) {
                                                 requestCompleted(MITNewsStoryFeaturedStoriesRequestToken,error);
                                             }];
         }
@@ -478,7 +478,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
                                              query:nil
                                             offset:0
                                              limit:self.numberOfStoriesPerCategory
-                                        completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                        completion:^(NSArray* stories, NSDictionary* pagingMetadata, NSError* error) {
                                             [self invalidateStoriesInCategories:@[category]];
                                             requestCompleted(objectID,error);
                                         }];
@@ -663,7 +663,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
 {
     if ([cell isKindOfClass:[MITNewsStoryCell class]]) {
         MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-        [storyCell.storyImageView cancelCurrentImageLoad];
+        [storyCell.storyImageView sd_cancelCurrentImageLoad];
     }
 }
 
@@ -1002,7 +1002,7 @@ static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsStoryF
         [self willLoadSearchResultsAnimated:YES];
 
         __weak MITNewsViewController *weakSelf = self;
-        [[MITNewsModelController sharedController] storiesInCategory:nil query:query offset:offset limit:20 completion:^(NSArray *stories, MITResultsPager *pager, NSError *error) {
+        [[MITNewsModelController sharedController] storiesInCategory:nil query:query offset:offset limit:20 completion:^(NSArray *stories, NSDictionary* pagingMetadata, NSError *error) {
             MITNewsViewController *blockSelf = weakSelf;
             if (blockSelf) {
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{

@@ -21,6 +21,34 @@ FOUNDATION_EXTERN NSString* const MITCalendarEventPathPattern;
 FOUNDATION_EXTERN NSString* const MITDiningResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningPathPattern;
 
+#pragma mark libraries
+FOUNDATION_EXTERN NSString* const MITLibrariesResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesPathPattern;
+
+#pragma mark libraries links
+FOUNDATION_EXTERN NSString* const MITLibrariesLinksResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesLinksPathPattern;
+
+#pragma mark libraries Ask Us
+FOUNDATION_EXTERN NSString* const MITLibrariesAskUsResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesAskUsPathPattern;
+
+#pragma mark libraries search
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchPathPattern;
+
+#pragma mark libraries user
+FOUNDATION_EXTERN NSString* const MITLibrariesUserResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesUserPathPattern;
+
+#pragma mark libraries mit identity
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityPathPattern;
+
+#pragma mark libraries item detail
+FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailPathPattern;
+
 #pragma mark dining/venues/:type/:venue/icon
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconPathPattern;
@@ -108,3 +136,10 @@ FOUNDATION_EXTERN NSString* const MITTechcashAccountsPathPattern;
 #pragma mark techcash/accounts/:account
 FOUNDATION_EXTERN NSString* const MITTechcashAccountResourceName;
 FOUNDATION_EXTERN NSString* const MITTechcashAccountPathPattern;
+
+#pragma mark tours
+FOUNDATION_EXTERN NSString* const MITToursResourceName;
+FOUNDATION_EXTERN NSString* const MITToursPathPattern;
+
+FOUNDATION_EXTERN NSString* const MITToursTourResourceName;
+FOUNDATION_EXTERN NSString* const MITToursTourPathPattern;

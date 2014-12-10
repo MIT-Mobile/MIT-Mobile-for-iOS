@@ -1,37 +1,36 @@
 #import "CalendarModule.h"
-#import "MITModuleURL.h"
 
 #import "MITEventsHomeViewController.h"
 #import "MITEventsHomeViewControllerPad.h"
 
 @implementation CalendarModule
-@dynamic calendarVC;
-
 - (id) init {
-    self = [super init];
+    self = [super initWithName:MITModuleTagCalendar title:@"Events"];
     if (self != nil) {
-        self.tag = CalendarTag;
-        self.shortName = @"Events";
-        self.longName = @"Events Calendar";
-        self.iconName = @"calendar";
-        
+        self.longTitle = @"Events Calendar";
+        self.imageName = MITImageEventsModuleIcon;
     }
+
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
     return YES;
 }
 
-- (UIViewController*)createHomeViewControllerForPhoneIdiom
+- (void)loadRootViewController
 {
-    return [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
-}
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    return [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+
+    self.rootViewController = rootViewController;
 }
 
 @end

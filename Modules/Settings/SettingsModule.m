@@ -1,33 +1,33 @@
 #import "SettingsModule.h"
-
-#import "MITModule.h"
-
 #import "SettingsTableViewController.h"
 
 @implementation SettingsModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = SettingsTag;
-        self.shortName = @"Settings";
-        self.longName = @"Settings";
-        self.iconName = @"settings";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagSettings title:@"Settings"];
+    if (self) {
+        self.imageName = MITImageSettingsModuleIcon;
     }
+
     return self;
 }
 
-- (void)loadModuleHomeController
+- (void)loadRootViewController
 {
-    self.moduleHomeController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    SettingsTableViewController *rootViewController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.rootViewController = rootViewController;
 }
 
-- (BOOL)handleLocalPath:(NSString *)localPath
-                  query:(NSString *)query
+- (void)viewControllerDidLoad
 {
-    [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController
-                                                           animated:YES];
-	return YES;
+    [super viewControllerDidLoad];
+
+    self.viewController.moduleItem.type = MITModulePresentationModal;
+}
+
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    [self.navigationController popToViewController:self.rootViewController animated:NO];
 }
 
 @end

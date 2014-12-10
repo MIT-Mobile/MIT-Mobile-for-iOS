@@ -2,6 +2,7 @@
 
 extern NSString* const MITNewsLoadMoreCellIdentifier;
 extern NSString* const MITNewsLoadMoreCellNibName;
+extern CGFloat const MITNewsLoadMoreTableViewCellHeight;
 
 // Regular stories consist of an optional image,
 // an optional dek, and a title
@@ -22,3 +23,14 @@ extern NSString* const MITNewsStoryExternalNoImageCellNibName;
 
 extern NSString* const MITNewsCategoryHeaderIdentifier;
 extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;
+extern CGFloat const MITNewsRefreshControlHangTime;
+
+#pragma mark iPad stories
+
+extern NSString* const MITNewsCellIdentifierStoryJumbo;
+extern NSString* const MITNewsCellIdentifierStoryDek;
+extern NSString* const MITNewsCellIdentifierStoryClip;
+extern NSString* const MITNewsCellIdentifierStoryWithImage;
+extern NSString* const MITNewsCellIdentifierStoryLoadMore;
+extern NSString* const MITNewsReusableViewIdentifierSectionHeader;
+extern NSString* const MITNewsReusableViewIdentifierDivider;

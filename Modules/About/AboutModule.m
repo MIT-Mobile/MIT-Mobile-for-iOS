@@ -2,22 +2,31 @@
 #import "AboutTableViewController.h"
 
 @implementation AboutModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = AboutTag;
-        self.shortName = @"About";
-        self.longName = @"About";
-        self.iconName = @"about";
+- (instancetype) init {
+    self = [super initWithName:MITModuleTagAbout title:@"About"];
+    if (self) {
+        self.imageName = MITImageAboutModuleIcon;
     }
     
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    self.moduleHomeController = [[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    return YES;
+}
+
+- (void)loadRootViewController
+{
+    AboutTableViewController *rootViewController = [[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.rootViewController = rootViewController;
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+
+    self.viewController.moduleItem.type = MITModulePresentationModal;
 }
 
 @end

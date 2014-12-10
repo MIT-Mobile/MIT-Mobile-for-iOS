@@ -16,7 +16,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 
 @interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate>
 
-@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MKMapView *mapView;
 @property (strong, nonatomic) NSArray *places;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
@@ -24,6 +23,9 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 @property (nonatomic, copy) NSString *currentlyDisplayedEntityName;
 @property (nonatomic, strong) UIPopoverController *detailPopoverController;
 @property (nonatomic, strong) MKAnnotationView *annotationViewForPopoverAfterRegionChange;
+@property (nonatomic, strong) UIToolbar *toolbar;
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *mapBottomConstraint;
+@property (nonatomic, strong) NSArray *toolbarConstraints;
 
 @end
 
@@ -51,16 +53,44 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     // Dispose of any resources that can be recreated.
 }
 
+- (void)setToolBarHidden:(BOOL)hidden
+{
+    if (hidden) {
+        if (self.toolbarConstraints) {
+            [self.view removeConstraints:self.toolbarConstraints];
+            [self.toolbar removeFromSuperview];
+            self.toolbarConstraints = nil;
+            [self.view removeConstraint:self.mapBottomConstraint];
+            self.mapBottomConstraint = [NSLayoutConstraint constraintWithItem:self.tiledMapView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
+            [self.view addConstraint:self.mapBottomConstraint];
+        }
+    } else {
+        self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 44, self.view.bounds.size.width, 44)];
+        [self.toolbar setItems:@[self.tiledMapView.userLocationButton] animated:NO];
+        self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.view addSubview:self.toolbar];
+        
+        NSMutableArray *newToolbarConstraints = [NSMutableArray array];
+        [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
+        [newToolbarConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}]];
+        self.toolbarConstraints = [NSArray arrayWithArray:newToolbarConstraints];
+        [self.view addConstraints:self.toolbarConstraints];
+        
+        [self.view removeConstraint:self.mapBottomConstraint];
+        self.mapBottomConstraint = [NSLayoutConstraint constraintWithItem:self.tiledMapView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+        [self.view addConstraint:self.mapBottomConstraint];
+    }
+    
+    [self.view setNeedsUpdateConstraints];
+    [self.view updateConstraintsIfNeeded];
+}
+
 #pragma mark - MapView Methods
 
 - (void)setupTiledMapView
 {
-    [self.tiledMapView setLeftButtonHidden:NO animated:NO];
-    [self.tiledMapView setRightButtonHidden:YES animated:NO];
-    //self.mapView.delegate = self;
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = YES;
-    self.mapView.tintColor =self.mapView.tintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     [self setupMapBoundingBoxAnimated:NO];
 }
 

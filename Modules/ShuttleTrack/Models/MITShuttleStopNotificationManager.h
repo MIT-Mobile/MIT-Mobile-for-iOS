@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@class MITShuttlePrediction;
+@class MITShuttlePrediction, MITShuttlePredictionList, MITShuttleRoute;
 
 extern const NSTimeInterval kMITShuttleStopNotificationVariance;
 extern const NSTimeInterval kMITShuttleStopNotificationInterval;
@@ -10,10 +10,13 @@ typedef void(^MITShuttleStopNotificationBackgroundFetchCompletionBlock)(NSError 
 @interface MITShuttleStopNotificationManager : NSObject
 
 + (MITShuttleStopNotificationManager *)sharedManager;
-- (void)toggleNotifcationForPrediction:(MITShuttlePrediction *)prediction;
-- (void)scheduleNotificationForPrediction:(MITShuttlePrediction *)prediction;
-- (void)updateNotificationForPrediction:(MITShuttlePrediction *)prediction;
+
 - (UILocalNotification *)notificationForPrediction:(MITShuttlePrediction *)prediction;
+
+- (void)toggleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle;
+- (void)scheduleNotificationForPredictionGroup:(NSArray *)predictionGroup withRoute:(MITShuttleRoute *)route;
+- (void)scheduleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle;
+- (void)updateNotificationsForPredictionList:(MITShuttlePredictionList *)predictionList;
 
 - (void)performBackgroundNotificationUpdatesWithCompletion:(MITShuttleStopNotificationBackgroundFetchCompletionBlock)completion;
 

@@ -3,48 +3,31 @@
 #import "FacilitiesRootViewController.h"
 #import "MITFacilitiesHomeViewController.h"
 
-@interface FacilitiesModule()
-@end
-
 @implementation FacilitiesModule
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = FacilitiesTag;
-        self.shortName = @"Bldg Services";
-        self.longName = @"Building Services";
-        self.iconName = @"facilities";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagFacilities title:@"Bldg Services"];
+    if (self) {
+        self.longTitle = @"Building Services";
+        self.imageName = MITImageBuildingServicesModuleIcon;
     }
+    
     return self;
 }
 
-- (BOOL)supportsUserInterfaceIdiom:(UIUserInterfaceIdiom)idiom
+- (void)loadRootViewController
 {
-    return YES;
-}
+    UIStoryboard *storyboard = nil;
 
-- (UIViewController *)createHomeViewControllerForPhoneIdiom
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_iphone" bundle:nil];
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+   		storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_iphone" bundle:nil];
+	} else {
+   		storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_ipad" bundle:nil];
+	}
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    return [storyboard instantiateInitialViewController];
-}
 
-- (UIViewController*)createHomeViewControllerForPadIdiom
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MITFacilities_ipad" bundle:nil];
-    NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    return [storyboard instantiateInitialViewController];
+    UIViewController *controller = [storyboard instantiateInitialViewController];
+    self.viewController = controller;
 }
-
-/*
-- (void)loadModuleHomeController
-{
-    self.moduleHomeController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
-                                                                               bundle:nil];
-}
-*/
 
 @end

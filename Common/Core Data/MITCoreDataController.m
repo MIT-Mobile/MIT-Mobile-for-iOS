@@ -131,6 +131,17 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
         NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
         if (![model isConfiguration:nil compatibleWithStoreMetadata:storeMeta]) {
             NSManagedObjectModel *oldModel = [NSManagedObjectModel mergedModelFromBundles:nil forStoreMetadata:storeMeta];
+            
+            if (!oldModel) {
+                if (error) {
+                    (*error) = [NSError errorWithDomain:NSCocoaErrorDomain
+                                                   code:NSCoreDataError
+                                               userInfo:@{NSLocalizedDescriptionKey:@"Cannot create an inferred NSMappingModel with a nil source model"}];
+                }
+                
+                return NO;
+            }
+            
             NSMappingModel *mapping = [NSMappingModel inferredMappingModelForSourceModel:oldModel destinationModel:model error:error];
             if (mapping) {
                 NSURL *storeBackupURL = [storeURL URLByAppendingPathExtension:@"backup"];
@@ -364,36 +375,40 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
     }];
 }
 
-- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
+- (BOOL)performBackgroundUpdateAndWait:(BOOL (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
 {
     NSManagedObjectContext *backgroundContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
 
+    __block BOOL success = YES;
     __block NSError *localError = nil;
     [backgroundContext performBlockAndWait:^{
         if (update) {
-            update(backgroundContext, &localError);
+            success = update(backgroundContext, &localError);
         }
 
-        if (localError) {
+        if (!success) {
             DDLogError(@"Failed to complete update to context: %@",localError);
         } else {
-            if ([backgroundContext save:&localError]) {
-                [backgroundContext.parentContext performBlock:^{
-                    [backgroundContext.parentContext save:&localError];
+            success = [backgroundContext save:&localError];
 
-                    if (localError) {
-                        DDLogError(@"Failed to save root background context: %@", localError);
+            if (success) {
+                [backgroundContext.parentContext performBlock:^{
+                    NSError *parentError = nil;
+                    BOOL parentSuccess = [backgroundContext.parentContext save:&parentError];
+
+                    if (!parentSuccess) {
+                        DDLogError(@"Failed to save root background context: %@", parentError);
                     }
                 }];
             }
         }
     }];
 
-    if (localError && error) {
+    if (!success && error) {
         (*error) = localError;
     }
 
-    return !(localError);
+    return success;
 }
 
 @end
