@@ -48,11 +48,17 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = kDistanceFilterMeters;
     
-    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [locationManager requestWhenInUseAuthorization];
-    }
-    
     self.locationManager = locationManager;
+}
+
+- (void)requestLocationAuthorization
+{
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    } else {
+        [self.locationManager startUpdatingLocation];
+        [self.locationManager stopUpdatingLocation];
+    }
 }
 
 #pragma mark - Public Methods
@@ -77,6 +83,11 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     CLLocation *currentLocation = [self currentLocation];
     CLLocation *targetLocation = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
     return kMilesPerMeter * [currentLocation distanceFromLocation:targetLocation];
+}
+
++ (BOOL)hasRequestedLocationPermissions
+{
+    return [CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined;
 }
 
 + (BOOL)locationServicesAuthorized
