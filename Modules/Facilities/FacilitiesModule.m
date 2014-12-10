@@ -15,7 +15,12 @@
     return self;
 }
 
-- (void)loadRootViewController
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
+}
+
+- (void)loadViewController
 {
     UIStoryboard *storyboard = nil;
 
