@@ -3,6 +3,7 @@
 #import "MITLibrariesMITFineItem.h"
 #import "UIImageView+WebCache.h"
 #import "UIKit+MITAdditions.h"
+#import "MITResourceConstants.h"
 
 @interface MITLibrariesItemLoanFineCollectionCell ()
 
@@ -11,12 +12,17 @@
 @property (weak, nonatomic) IBOutlet UILabel *itemTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *authorAndPublicationDateLabel;
 
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *dueDateLabelTrailingConstraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *itemTitleLabelTrailingConstraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *authorAndPublicationDateLabelTrailingConstraint;
+
 @end
 
 @implementation MITLibrariesItemLoanFineCollectionCell
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
     self.dueDateLabel.textColor =
     self.authorAndPublicationDateLabel.textColor = [UIColor mit_greyTextColor];
@@ -25,9 +31,10 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.itemTitleLabel.preferredMaxLayoutWidth = self.itemTitleLabel.bounds.size.width;
-    self.dueDateLabel.preferredMaxLayoutWidth = self.dueDateLabel.bounds.size.width;
-    self.authorAndPublicationDateLabel.preferredMaxLayoutWidth = self.authorAndPublicationDateLabel.bounds.size.width;
+    
+    self.itemTitleLabel.preferredMaxLayoutWidth = self.contentView.bounds.size.width - self.itemTitleLabel.frame.origin.x - self.itemTitleLabelTrailingConstraint.constant;
+    self.dueDateLabel.preferredMaxLayoutWidth = self.contentView.bounds.size.width - self.dueDateLabel.frame.origin.x - self.dueDateLabelTrailingConstraint.constant;
+    self.authorAndPublicationDateLabel.preferredMaxLayoutWidth = self.contentView.bounds.size.width - self.authorAndPublicationDateLabel.frame.origin.x - self.authorAndPublicationDateLabelTrailingConstraint.constant;
 }
 
 - (void)setContent:(MITLibrariesMITItem *)item
@@ -77,7 +84,7 @@
 {
     static NSMutableAttributedString *warningSignString;
     if (!warningSignString) {
-        UIImage *warningSign = [UIImage imageNamed:@"libraries/status-alert"];
+        UIImage *warningSign = [UIImage imageNamed:MITImageLibrariesStatusAlert];
         NSTextAttachment *warningSignAttachment = [[NSTextAttachment alloc] init];
         warningSignAttachment.image = warningSign;
         warningSignAttachment.bounds = CGRectMake(0, -2, warningSign.size.width, warningSign.size.height);
@@ -99,17 +106,14 @@
 
 + (CGFloat)heightForCell:(MITLibrariesItemLoanFineCollectionCell *)cell width:(CGFloat)width
 {
-    [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];
-    
     CGRect frame = cell.frame;
-    frame.size.width = floor(width);
+    frame.size.width = floorf(width);
     cell.frame = frame;
     
     [cell setNeedsLayout];
     [cell layoutIfNeeded];
     
-    CGFloat height = ceil([cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height);
+    CGFloat height = ceilf([cell systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height);
     return MAX(44, height);
 }
 

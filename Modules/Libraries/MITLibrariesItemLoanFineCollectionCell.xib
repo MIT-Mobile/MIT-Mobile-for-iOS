@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -26,7 +27,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Item Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1XV-oA-rod">
-                        <rect key="frame" x="71" y="29" width="241" height="20.5"/>
+                        <rect key="frame" x="71" y="29" width="241" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
@@ -43,7 +44,6 @@
             <constraints>
                 <constraint firstItem="llP-Jy-4CB" firstAttribute="leading" secondItem="cu3-8g-Mbh" secondAttribute="trailing" constant="8" id="7JG-5w-BSL"/>
                 <constraint firstItem="5yd-0j-55X" firstAttribute="top" secondItem="1XV-oA-rod" secondAttribute="bottom" constant="5" id="DCV-QN-kiw"/>
-                <constraint firstItem="llP-Jy-4CB" firstAttribute="trailing" secondItem="1XV-oA-rod" secondAttribute="trailing" id="DVA-Q2-BCh"/>
                 <constraint firstItem="llP-Jy-4CB" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="9" id="ELK-O9-FGc"/>
                 <constraint firstItem="cu3-8g-Mbh" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="KME-fE-17E"/>
                 <constraint firstAttribute="trailing" secondItem="llP-Jy-4CB" secondAttribute="trailing" constant="8" id="Qym-85-ZFa"/>
@@ -51,16 +51,20 @@
                 <constraint firstItem="1XV-oA-rod" firstAttribute="top" secondItem="llP-Jy-4CB" secondAttribute="bottom" constant="3" id="Xpv-2a-6Ql"/>
                 <constraint firstItem="cu3-8g-Mbh" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="bB1-wD-Rwp"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cu3-8g-Mbh" secondAttribute="bottom" constant="10" id="eSo-9W-I3V"/>
-                <constraint firstItem="1XV-oA-rod" firstAttribute="trailing" secondItem="5yd-0j-55X" secondAttribute="trailing" id="hc1-Dv-07p"/>
+                <constraint firstAttribute="trailing" secondItem="1XV-oA-rod" secondAttribute="trailing" constant="8" id="jFp-LN-BL0"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="5yd-0j-55X" secondAttribute="bottom" constant="9" id="nvJ-Sd-bv0"/>
                 <constraint firstItem="llP-Jy-4CB" firstAttribute="leading" secondItem="1XV-oA-rod" secondAttribute="leading" id="oT9-vN-BYR"/>
+                <constraint firstAttribute="trailing" secondItem="5yd-0j-55X" secondAttribute="trailing" constant="8" id="xHb-oK-o0e"/>
             </constraints>
             <size key="customSize" width="320" height="105"/>
             <connections>
                 <outlet property="authorAndPublicationDateLabel" destination="5yd-0j-55X" id="Nt0-ug-Zkq"/>
+                <outlet property="authorAndPublicationDateLabelTrailingConstraint" destination="xHb-oK-o0e" id="WGd-F2-nvt"/>
                 <outlet property="bookCoverImageView" destination="cu3-8g-Mbh" id="bFE-Zr-f6h"/>
                 <outlet property="dueDateLabel" destination="llP-Jy-4CB" id="ZKd-J9-l9m"/>
+                <outlet property="dueDateLabelTrailingConstraint" destination="Qym-85-ZFa" id="Tzf-Bf-PV3"/>
                 <outlet property="itemTitleLabel" destination="1XV-oA-rod" id="TvF-Yu-2aC"/>
+                <outlet property="itemTitleLabelTrailingConstraint" destination="jFp-LN-BL0" id="qdd-3M-mFI"/>
             </connections>
             <point key="canvasLocation" x="275" y="181.5"/>
         </collectionViewCell>
