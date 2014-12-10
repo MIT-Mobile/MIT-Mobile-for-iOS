@@ -177,17 +177,12 @@
 {
     [super viewDidLoad];
     
-    UIBarButtonItem *menuBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonMenu] style:UIBarButtonItemStylePlain target:self action:@selector(menuButtonPressed)];
-    menuBarButton.tintColor = [UIColor whiteColor];
-    [self.navigationItem setLeftBarButtonItem:menuBarButton];
-    
     if (self.isScanningSupported)
     {
         UIBarButtonItem *toolbarItem = [[UIBarButtonItem alloc] initWithTitle:@"History"
                                                                         style:UIBarButtonItemStyleBordered
                                                                        target:self
                                                                        action:@selector(showHistory:)];
-        toolbarItem.tintColor = [UIColor whiteColor];
         self.navigationItem.rightBarButtonItem = toolbarItem;
     }
     
@@ -307,21 +302,11 @@
 
 - (void)makeNavigationBarTransparent
 {
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = [UIImage new];
-}
-
-- (void)makeNavigationBarVisible
-{
-    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = nil;
-}
-
-- (void)menuButtonPressed
-{
-    [self.navigationController popViewControllerAnimated:YES];
-    
-    [self makeNavigationBarVisible];
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        self.navigationController.navigationBar.shadowImage = [UIImage new];
+    }
 }
 
 - (NSString *)historyTitleWithNumberOfRecentScans:(NSInteger)numberOfRecentScans
