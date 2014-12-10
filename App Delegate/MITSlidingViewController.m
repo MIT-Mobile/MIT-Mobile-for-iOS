@@ -114,7 +114,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)anchorTopViewToRightAnimated:(BOOL)animated onComplete:(void (^)())complete {
     [super anchorTopViewToRightAnimated:animated onComplete:^{
         [self _updateScrollsToTop];
-        
+
         if (complete) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 complete();
@@ -126,7 +126,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)resetTopViewAnimated:(BOOL)animated onComplete:(void(^)())complete {
     [super resetTopViewAnimated:animated onComplete:^{
         [self _updateScrollsToTop];
-        
+
         if (complete) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 complete();
@@ -565,6 +565,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 }
 
 #pragma mark UIGestureRecognizerDelegate
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     if (gestureRecognizer == _modalDismissGestureRecognizer) {
@@ -584,6 +585,49 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     return (gestureRecognizer == _modalDismissGestureRecognizer);
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] preferredInterfaceOrientationForPresentation];
+    } else {
+        return [super preferredInterfaceOrientationForPresentation];
+    }
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] supportedInterfaceOrientations];
+    } else {
+        return [super supportedInterfaceOrientations];
+    }
+}
+
+- (BOOL)shouldAutorotate
+{
+    if ([self actualTopVC]) {
+        return [[self actualTopVC] shouldAutorotate];
+    } else {
+        return [self shouldAutorotate];
+    }
+}
+
+- (UIViewController *)actualTopVC
+{
+    UIViewController *vc = self.visibleViewController;
+    if (vc) {
+        if ([vc isKindOfClass:[UINavigationController class]]) {
+            return [(UINavigationController *)vc topViewController];
+        } else {
+            return vc;
+        }
+    } else {
+        return nil;
+    }
 }
 
 @end

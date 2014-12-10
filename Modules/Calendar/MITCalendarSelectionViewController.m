@@ -356,6 +356,23 @@ static NSString *const kMITCalendarCell = @"kMITCalendarCell";
     return NO;
 }
 
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 @end
 
 #pragma mark -
