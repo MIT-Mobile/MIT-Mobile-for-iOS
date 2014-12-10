@@ -61,7 +61,7 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="action-arrow-white.png" translatesAutoresizingMaskIntoConstraints="NO" id="lKu-Hu-OpQ">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tours-template-action-arrow-white" translatesAutoresizingMaskIntoConstraints="NO" id="lKu-Hu-OpQ">
                                 <rect key="frame" x="298" y="41" width="14" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="14" id="08b-a1-bey"/>
@@ -111,7 +111,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="action-arrow-white.png" width="14" height="17"/>
+        <image name="tours-template-action-arrow-white" width="14" height="17"/>
         <image name="tours_cover_image.jpg" width="1000" height="721"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

@@ -168,6 +168,7 @@ NSString * const MITImageToursAnnotationArrowStart = @"tours-annotation-arrow-st
 NSString * const MITImageToursMapLegendOverlay = @"tours-map-legend-overlay";
 
 NSString * const MITImageToursTemplateButtonExternalLink = @"tours-template-extlink";
+NSString * const MITImageToursTemplateWhiteActionArrow = @"tours-template-action-arrow-white";
 
 
 #pragma mark - Global Assets
