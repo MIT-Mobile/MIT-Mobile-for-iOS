@@ -22,6 +22,15 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
 
 @implementation MITToursSelfGuidedTourContainerControllerPad
 
+- (instancetype)initWithTour:(MITToursTour *)tour
+{
+    self = [super init];
+    if (self) {
+        self.selfGuidedTour = tour;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

@@ -35,22 +35,29 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
     [self setupTableView];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.tableView reloadData];
-}
-
 - (void)setupTableView
 {
-    // Keep a local copy, since these are calculated properties
-    self.mainLoopStops = self.tour.mainLoopStops;
-    self.sideTripsStops = self.tour.sideTripsStops;
-
     UINib *cellNib = [UINib nibWithNibName:kMITToursTourDetailCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITToursTourDetailCell];
     
     cellNib = [UINib nibWithNibName:kMITToursStopCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITToursStopCell];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self updateTableViewData];
+}
+
+// We do this here to speed up the loading of this view controller and make UI transitions smoother
+- (void)updateTableViewData
+{
+    // Keep a local copy, since these are calculated properties
+    self.mainLoopStops = self.tour.mainLoopStops;
+    self.sideTripsStops = self.tour.sideTripsStops;
+    
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source

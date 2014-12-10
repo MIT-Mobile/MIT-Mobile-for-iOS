@@ -21,6 +21,15 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 @implementation MITToursSelfGuidedTourContainerController
 
+- (instancetype)initWithTour:(MITToursTour *)tour
+{
+    self = [super init];
+    if (self) {
+        self.selfGuidedTour = tour;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -48,7 +57,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
     self.mapViewController = [[MITToursMapViewController alloc] initWithTour:self.selfGuidedTour nibName:nil bundle:nil];
     self.mapViewController.delegate = self;
-        
+    
     self.listViewController.view.frame =
     self.mapViewController.view.frame = self.view.bounds;
     
