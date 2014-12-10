@@ -172,6 +172,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+        self.tableView.layoutMargins = UIEdgeInsetsZero;
+    }
+}
+
 #pragma mark - Setup
 
 - (void)setupTableView
@@ -493,22 +501,30 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell *cell;
     switch (indexPath.section) {
         case MITShuttleSectionRoutes: {
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                return [self tableView:tableView routeCellForRowAtIndexPath:indexPath];
+                cell = [self tableView:tableView routeCellForRowAtIndexPath:indexPath];
             } else {
-                return [self tableView:tableView stopCellForRowAtIndexPath:indexPath];
+                cell = [self tableView:tableView stopCellForRowAtIndexPath:indexPath];
             }
+            break;
         }
         case MITShuttleSectionContactInformation:
-            return [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
+            cell = [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
+            break;
         case MITShuttleSectionMBTAInformation:
-            return [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
-        default:
-            return nil;
+            cell = [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
+            break;
+     }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        cell.layoutMargins = UIEdgeInsetsZero;
     }
+    
+    return cell;
 }
 
 #pragma mark - UITableViewDataSource Helpers
