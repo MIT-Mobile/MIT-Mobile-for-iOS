@@ -18,6 +18,8 @@ extern NSString * const kLocationManagerAuthorizationStatusKey;
 - (CLLocation *)currentLocation;
 - (double)milesFromCoordinate:(CLLocationCoordinate2D)coordinate;
 
++ (BOOL)hasRequestedLocationPermissions;
 + (BOOL)locationServicesAuthorized;
+- (void)requestLocationAuthorization;
 
 @end

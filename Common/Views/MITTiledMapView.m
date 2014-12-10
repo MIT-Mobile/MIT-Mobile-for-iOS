@@ -53,8 +53,6 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (void)setupMapView
 {
-    [MITLocationManager sharedManager]; // This forces the creation of the shared manager, which will enable location services whenever a map is show.
-    
     self.mapView = [self createMapView];
     self.mapView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.mapView];
@@ -77,6 +75,8 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 {
     if ([MITLocationManager locationServicesAuthorized]) {
         [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
+    } else {
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
     }
 }
 
@@ -102,9 +102,11 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
             
         [self updateUserLocationButtonForTrackingMode];
     }
-    else {
+    else if ([MITLocationManager hasRequestedLocationPermissions]) {
         [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
         [self showLocationServicesAlert];
+    } else {
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
     }
 }
 

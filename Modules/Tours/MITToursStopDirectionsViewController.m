@@ -8,6 +8,7 @@
 #import "MITToursStopDirectionsAnnotationView.h"
 #import "UIKit+MITAdditions.h"
 #import "MITCalloutMapView.h"
+#import "MITLocationManager.h"
 
 static CGFloat const kIPadMapHeight = 300;
 static CGFloat const kWebViewContentMargin = 8;
@@ -38,6 +39,7 @@ static CGFloat const kWebViewContentMargin = 8;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationController setToolbarHidden:YES];
    
     // There is a bug with VCs presented as formsheets that prevents them from showing the right tint color unless you change it in viewDidAppear (and it has to be a change, not just re-setting it), so we're arbitrarily setting it to almost system blue, and then to the right color...
@@ -53,12 +55,18 @@ static CGFloat const kWebViewContentMargin = 8;
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)setupMapView
 {
     [self.tiledMapView setMapDelegate:self];
     
     [self.tiledMapView.mapView setRegion:kMITToursDefaultMapRegion animated:NO];
-    self.tiledMapView.mapView.showsUserLocation = YES;
+    self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     [self.tiledMapView showRouteForStops:[self.currentStop.tour.stops array]];
     self.tiledMapView.userInteractionEnabled = NO;
     
@@ -165,6 +173,13 @@ static CGFloat const kWebViewContentMargin = 8;
     MITToursStopDirectionsAnnotationView *annotationView = [[MITToursStopDirectionsAnnotationView alloc] initWithStopDirectionAnnotation:stopAnnotation];
 
     return annotationView;
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end

@@ -149,12 +149,29 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
-    [[MITLocationManager sharedManager] startUpdatingLocation];
+    if ([MITLocationManager locationServicesAuthorized]) {
+        [[MITLocationManager sharedManager] startUpdatingLocation];
+    }
+    
     if (self.hasFetchedRoutes) {
         [self startRefreshingRoutesAndPredictions];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if (![MITLocationManager locationServicesAuthorized]) {
+        // Wants to wait to display the location services request until the view is fully loaded on the screen so this is offset slightly.
+        [self performSelector:@selector(requestLocationAuthorization) withObject:nil afterDelay:0.75];
+    }
+}
+
+- (void)requestLocationAuthorization
+{
+    [[MITLocationManager sharedManager] requestLocationAuthorization];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -360,6 +377,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     if ([MITLocationManager locationServicesAuthorized]) {
+        [[MITLocationManager sharedManager] startUpdatingLocation];
         [self refreshFlatRouteArray];
     }
     [self refreshLocationStatusLabel];
