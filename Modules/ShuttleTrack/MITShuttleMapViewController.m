@@ -81,8 +81,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
-    [self setupCalloutView];
-    
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self setState:self.state animated:NO];
         [self setupToolbar];
@@ -742,11 +740,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self addChildViewController:stopViewController];
     [stopViewController didMoveToParentViewController:self];
     
-    SMCalloutView *calloutView = self.calloutView;
-    calloutView.contentView = stopViewController.view;
-    calloutView.calloutOffset = stopAnnotationView.calloutOffset;
+    [self setupCalloutView];
     
-    [calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    self.calloutView.contentView = stopViewController.view;
+    self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
+    
+    [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
 - (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
