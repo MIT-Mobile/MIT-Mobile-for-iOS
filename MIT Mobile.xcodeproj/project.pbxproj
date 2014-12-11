@@ -83,6 +83,8 @@
 		22D90342199D497100AEBC7D /* MITDiningVenueCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22D90340199D497100AEBC7D /* MITDiningVenueCell.xib */; };
 		22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADAF198C00A4003AEF43 /* MITMasterCalendar.m */; };
 		22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */; };
+		2737F34C1A333EC200E728C3 /* MITBatchScanningAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */; };
+		2737F3511A333EF400E728C3 /* MITBatchScanningAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
 		274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */; };
 		274887341933ABCC00414552 /* MITPeopleSearchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 274887331933ABCC00414552 /* MITPeopleSearchHandler.m */; };
@@ -753,6 +755,9 @@
 		22DDADAF198C00A4003AEF43 /* MITMasterCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMasterCalendar.m; sourceTree = "<group>"; };
 		22DDADB8198C0A9B003AEF43 /* MITCalendarSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarSelectionViewController.h; sourceTree = "<group>"; };
 		22DDADB9198C0A9B003AEF43 /* MITCalendarSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarSelectionViewController.m; sourceTree = "<group>"; };
+		2737F34A1A333EC200E728C3 /* MITBatchScanningAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBatchScanningAlertView.h; sourceTree = "<group>"; };
+		2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBatchScanningAlertView.m; sourceTree = "<group>"; };
+		2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITBatchScanningAlertView.xib; sourceTree = "<group>"; };
 		274886981930286C00414552 /* People_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People_iPad.storyboard; sourceTree = "<group>"; };
 		2748872E1933A61900414552 /* MITPeopleSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchResultsViewController.h; sourceTree = "<group>"; };
 		2748872F1933A61900414552 /* MITPeopleSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchResultsViewController.m; sourceTree = "<group>"; };
@@ -2667,6 +2672,9 @@
 				27CBE98B1A17B73900B85F67 /* MITScannerAdvancedMenu */,
 				2CB64604134CF10700E85E64 /* MITScannerOverlayView */,
 				2C927AD913561A41008A8A36 /* QRReaderHelpView */,
+				2737F34A1A333EC200E728C3 /* MITBatchScanningAlertView.h */,
+				2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */,
+				2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */,
 			);
 			name = Scanner;
 			path = "QR Reader";
@@ -3962,6 +3970,7 @@
 				EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */,
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */,
+				2737F3511A333EF400E728C3 /* MITBatchScanningAlertView.xib in Resources */,
 				225F2191197D5AD500F34DE9 /* MITEventsHomeViewController.xib in Resources */,
 				225AC0A419BA132B008854BC /* MITDiningHouseVenueDetailViewController.xib in Resources */,
 				225F2197197D9AE000F34DE9 /* MITDayOfTheWeekCell.xib in Resources */,
@@ -4352,6 +4361,7 @@
 				225F21A5197EBB6D00F34DE9 /* MITCalendarsResource.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 				22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */,
+				2737F34C1A333EC200E728C3 /* MITBatchScanningAlertView.m in Sources */,
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
 				2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */,
 				DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */,
