@@ -149,12 +149,29 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
-    [[MITLocationManager sharedManager] startUpdatingLocation];
     if (self.hasFetchedRoutes) {
         [self startRefreshingRoutesAndPredictions];
     }
+    
+    if ([MITLocationManager locationServicesAuthorized]) {
+        [[MITLocationManager sharedManager] startUpdatingLocation];
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if (![MITLocationManager locationServicesAuthorized]) {
+        [self performSelector:@selector(beginLocationServices) withObject:nil afterDelay:0.75];
+    }
+}
+
+- (void)requestLocationServicesAuthorization
+{
+    [[MITLocationManager sharedManager] requestLocationAuthorization];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -170,6 +187,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+        self.tableView.layoutMargins = UIEdgeInsetsZero;
+    }
 }
 
 #pragma mark - Setup
@@ -352,6 +377,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     if ([MITLocationManager locationServicesAuthorized]) {
+        [[MITLocationManager sharedManager] startUpdatingLocation];
         [self refreshFlatRouteArray];
     }
     [self refreshLocationStatusLabel];
@@ -493,22 +519,30 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell *cell;
     switch (indexPath.section) {
         case MITShuttleSectionRoutes: {
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                return [self tableView:tableView routeCellForRowAtIndexPath:indexPath];
+                cell = [self tableView:tableView routeCellForRowAtIndexPath:indexPath];
             } else {
-                return [self tableView:tableView stopCellForRowAtIndexPath:indexPath];
+                cell = [self tableView:tableView stopCellForRowAtIndexPath:indexPath];
             }
+            break;
         }
         case MITShuttleSectionContactInformation:
-            return [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
+            cell = [self tableView:tableView phoneNumberCellForRowAtIndexPath:indexPath];
+            break;
         case MITShuttleSectionMBTAInformation:
-            return [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
-        default:
-            return nil;
+            cell = [self tableView:tableView URLCellForRowAtIndexPath:indexPath];
+            break;
+     }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        cell.layoutMargins = UIEdgeInsetsZero;
     }
+    
+    return cell;
 }
 
 #pragma mark - UITableViewDataSource Helpers

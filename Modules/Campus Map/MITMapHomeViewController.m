@@ -11,6 +11,7 @@
 #import "MITMapPlaceSelector.h"
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
+#import "MITLocationManager.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -94,6 +95,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self registerForKeyboardNotifications];
 }
@@ -101,6 +103,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self unregisterForKeyboardNotifications];
 }
 
@@ -144,7 +147,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)setupMapView
 {
     [self.tiledMapView setMapDelegate:self];
-    self.mapView.showsUserLocation = YES;
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
     [self setupMapBoundingBoxAnimated:NO];
 }
@@ -726,6 +729,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             [self.mapView deselectAnnotation:annotation animated:NO];
         }
     }
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end

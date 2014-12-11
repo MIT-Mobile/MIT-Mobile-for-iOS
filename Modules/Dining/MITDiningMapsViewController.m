@@ -8,6 +8,7 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningRetailVenueDetailViewController.h"
 #import "MITDiningHouseVenueDetailViewController.h"
+#import "MITLocationManager.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -45,6 +46,18 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self setupTiledMapView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,7 +103,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 - (void)setupTiledMapView
 {
     [self.tiledMapView setMapDelegate:self];
-    self.mapView.showsUserLocation = YES;
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     [self setupMapBoundingBoxAnimated:NO];
 }
 
@@ -387,6 +400,13 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 - (CGFloat)minPopoverHeight
 {
     return 360.0;
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end

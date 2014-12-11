@@ -48,18 +48,30 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = kDistanceFilterMeters;
     
-    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [locationManager requestWhenInUseAuthorization];
-    }
-    
     self.locationManager = locationManager;
+}
+
+- (void)requestLocationAuthorization
+{
+    if (![MITLocationManager locationServicesAuthorized]) {
+        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.locationManager requestWhenInUseAuthorization];
+        } else {
+            [self.locationManager startUpdatingLocation];
+            [self.locationManager stopUpdatingLocation];
+        }
+    }
 }
 
 #pragma mark - Public Methods
 
 - (void)startUpdatingLocation
 {
-    [self.locationManager startUpdatingLocation];
+    if ([MITLocationManager locationServicesAuthorized]) {
+        [self.locationManager startUpdatingLocation];
+    } else {
+        [self requestLocationAuthorization];
+    }
 }
 
 - (void)stopUpdatingLocation
@@ -79,9 +91,27 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
     return kMilesPerMeter * [currentLocation distanceFromLocation:targetLocation];
 }
 
++ (BOOL)hasRequestedLocationPermissions
+{
+    return [CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined;
+}
+
 + (BOOL)locationServicesAuthorized
 {
-    return [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse;
+    CLAuthorizationStatus auth = [CLLocationManager authorizationStatus];
+    BOOL authorized;
+    switch (auth) {
+        case kCLAuthorizationStatusNotDetermined:
+        case kCLAuthorizationStatusDenied:
+        case kCLAuthorizationStatusRestricted:
+            authorized = NO;
+            break;
+        case kCLAuthorizationStatusAuthorized:
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            authorized = YES;
+            break;
+    }
+    return authorized;
 }
 
 #pragma mark - CLLocationManagerDelegate
