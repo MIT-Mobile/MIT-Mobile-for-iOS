@@ -165,7 +165,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     [super viewDidAppear:animated];
     if (![MITLocationManager locationServicesAuthorized]) {
-        [self performSelector:@selector(beginLocationServices) withObject:nil afterDelay:0.75];
+        [self performSelector:@selector(requestLocationServicesAuthorization) withObject:nil afterDelay:0.75];
     }
 }
 
