@@ -123,10 +123,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupNavigationBar
 {
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
-    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.searchBar.placeholder = @"Search MIT Campus";
     // Insert the correct clear button image and uncomment the next line when ready
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
@@ -548,6 +544,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+#pragma mark - In App Linking
+
+- (void)handleURLQuery:(NSString *)query forQueryParameter:(NSString *)queryParameter
+{
+    if ([queryParameter isEqualToString:@"search"]) {
+        query = [query stringByReplacingOccurrencesOfString:@"%20" withString:@" "];
+        [self performSearchWithQuery:query];
+        self.searchBar.text = query;
+    }
+}
+
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -736,6 +743,19 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
+}
+
+#pragma mark - Getters | Setters
+
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+        _searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        _searchBar.placeholder = @"Search MIT Campus";
+    }
+    return _searchBar;
 }
 
 @end

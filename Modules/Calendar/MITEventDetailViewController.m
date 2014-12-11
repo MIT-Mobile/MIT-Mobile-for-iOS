@@ -4,6 +4,7 @@
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITWebviewCell.h"
 #import "MITCalendarWebservices.h"
+#import "MITConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import <EventKit/EventKit.h>
@@ -442,9 +443,13 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeLocation: {
-#warning Location details aren't yet implemented
-            // Will need to somehow pop to MITMapPlace? Discussion about how to do this was not conclusive
-            // Depends on how we are setting up the hamburger menu navigation and such
+            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap,[self.event.location buildingNumberOrBestDescription]];
+            NSURL *url = [NSURL URLWithString:urlString];
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            } else {
+                NSLog(@"Unable to open url: %@", urlString);
+            }
             break;
         }
         case MITEventDetailRowTypePhone: {
