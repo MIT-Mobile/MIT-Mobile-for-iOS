@@ -1,11 +1,9 @@
-#import <UIKit/UIKit.h>
-#import "MITFetchedResultsTableViewController.h"
+#import "MITNewsViewController.h"
+#import "MITNewsDataSource.h"
 
-@class MITNewsCategory;
+@interface MITNewsCategoryViewController : MITNewsViewController
 
-@interface MITNewsCategoryViewController : UITableViewController
-@property (nonatomic,readonly) MITNewsCategory *category;
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-
-- (void)setCategoryWithObjectID:(NSManagedObjectID*)objectID;
+@property (nonatomic, retain) MITNewsDataSource *dataSource;
+@property (nonatomic, strong) NSString *categoryTitle;
+@property (nonatomic) MITNewsPresentationStyle previousPresentationStyle;
 @end
