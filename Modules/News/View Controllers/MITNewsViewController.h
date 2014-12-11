@@ -10,7 +10,7 @@ typedef NS_ENUM(NSInteger, MITNewsPresentationStyle) {
     MITNewsPresentationStyleList
 };
 
-@interface MITNewsiPadViewController : UIViewController
+@interface MITNewsViewController : UIViewController
 
 @property (nonatomic, weak) IBOutlet MITNewsGridViewController *gridViewController;
 @property (nonatomic, weak) IBOutlet MITNewsListViewController *listViewController;

@@ -1,11 +1,11 @@
-#import "MITNewsiPadCategoryViewController.h"
+#import "MITNewsCategoryViewController.h"
 #import "MITCoreData.h"
 #import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesDataSource.h"
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
 
-@interface MITNewsiPadCategoryViewController ()
+@interface MITNewsCategoryViewController ()
 
 @property (nonatomic, getter=isSearching) BOOL searching;
 @property (nonatomic, strong) NSDate *lastUpdated;
@@ -17,7 +17,7 @@
 @property (nonatomic) BOOL loadingMoreStories;
 @end
 
-@implementation MITNewsiPadCategoryViewController
+@implementation MITNewsCategoryViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -86,11 +86,11 @@
 #pragma mark Datasource Notification
 - (void)setupFinishedUpdateNotification
 {
-    __weak MITNewsiPadCategoryViewController *weakSelf = self;
+    __weak MITNewsCategoryViewController *weakSelf = self;
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     
     void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
-        MITNewsiPadCategoryViewController *strongSelf = weakSelf;
+        MITNewsCategoryViewController *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
         }

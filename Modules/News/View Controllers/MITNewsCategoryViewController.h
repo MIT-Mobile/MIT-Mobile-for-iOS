@@ -1,7 +1,7 @@
-#import "MITNewsiPadViewController.h"
+#import "MITNewsViewController.h"
 #import "MITNewsDataSource.h"
 
-@interface MITNewsiPadCategoryViewController : MITNewsiPadViewController
+@interface MITNewsCategoryViewController : MITNewsViewController
 
 @property (nonatomic, retain) MITNewsDataSource *dataSource;
 @property (nonatomic, strong) NSString *categoryTitle;

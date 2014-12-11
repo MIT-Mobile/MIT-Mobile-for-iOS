@@ -1,4 +1,4 @@
-#import "MITNewsiPadViewController.h"
+#import "MITNewsViewController.h"
 
 #import "MITNewsConstants.h"
 #import "MIT_MobileAppDelegate.h"
@@ -17,7 +17,7 @@
 #import "MITNewsGridViewController.h"
 #import "MITNewsStoryViewController.h"
 #import "MITNewsSearchController.h"
-#import "MITNewsiPadCategoryViewController.h"
+#import "MITNewsCategoryViewController.h"
 
 #import "MITViewWithCenterText.h"
 #import "Reachability.h"
@@ -26,22 +26,22 @@
 
 CGFloat const refreshControlTextHeight = 19;
 
-@interface MITNewsiPadViewController (NewsDataSource) <MITNewsStoryDataSource, MITNewsListDelegate, MITNewsGridDelegate>
+@interface MITNewsViewController (NewsDataSource) <MITNewsStoryDataSource, MITNewsListDelegate, MITNewsGridDelegate>
 - (void)reloadItems:(void(^)(NSError *error))block;
 - (void)loadDataSources:(void(^)(NSError*))completion;
 @end
 
-@interface MITNewsiPadViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
+@interface MITNewsViewController (NewsDelegate) <MITNewsStoryDelegate, MITNewsSearchDelegate, MITNewsStoryViewControllerDelegate>
 @end
 
-@interface MITNewsiPadViewController ()
+@interface MITNewsViewController ()
 @property (nonatomic, strong) MITNewsSearchController *searchController;
 @property (nonatomic, strong) UISearchBar *searchBar;
 
 @property (nonatomic, weak) MITViewWithCenterText *messageView;
 @property (nonatomic) Reachability *internetReachability;
 
-@property (nonatomic, weak) MITNewsiPadCategoryViewController *weakiPadCategoryViewController;
+@property (nonatomic, weak) MITNewsCategoryViewController *weakCategoryViewController;
 @property (nonatomic, weak) MITNewsStoryViewController *weakStoryDetailViewController;
 
 #pragma mark Data Source
@@ -60,7 +60,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 @end
 
-@implementation MITNewsiPadViewController
+@implementation MITNewsViewController
 
 @synthesize activeViewController = _activeViewController;
 @synthesize gridViewController = _gridViewController;
@@ -150,9 +150,9 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (BOOL)isCategoryControllerDifferentThanHome
 {
-    if (self.weakiPadCategoryViewController != NULL &&
-        self.weakiPadCategoryViewController.presentationStyle != self.presentationStyle) {
-        self.presentationStyle = self.weakiPadCategoryViewController.presentationStyle;
+    if (self.weakCategoryViewController != NULL &&
+        self.weakCategoryViewController.presentationStyle != self.presentationStyle) {
+        self.presentationStyle = self.weakCategoryViewController.presentationStyle;
         return YES;
     }
     return NO;
@@ -501,14 +501,14 @@ CGFloat const refreshControlTextHeight = 19;
         [self removeNoResultsView];
     }
     
-    __weak MITNewsiPadViewController *weakSelf = self;
+    __weak MITNewsViewController *weakSelf = self;
     __weak UIRefreshControl *weakRefresh = refreshControl;
     if (refreshControl.refreshing) {
         [self updateRefreshStatusWithText:@"Updating..."];
     }
     [self reloadItems:^(NSError *error) {
         self.storyUpdateInProgress = NO;
-        MITNewsiPadViewController *strongSelf = weakSelf;
+        MITNewsViewController *strongSelf = weakSelf;
         UIRefreshControl *strongRefresh = weakRefresh;
         
         if (!strongSelf) {
@@ -642,11 +642,11 @@ CGFloat const refreshControlTextHeight = 19;
     [self updateLoadingCellWithError:nil];
     self.loadingMoreStories = YES;
     
-    __weak MITNewsiPadViewController *weakSelf = self;
+    __weak MITNewsViewController *weakSelf = self;
     [self loadMoreItemsForCategoryInSection:section
                                  completion:^(NSError *error) {
                                      
-                                     MITNewsiPadViewController *strongSelf = weakSelf;
+                                     MITNewsViewController *strongSelf = weakSelf;
                                      if (!strongSelf) {
                                          return;
                                      }
@@ -725,7 +725,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 @end
 
-@implementation MITNewsiPadViewController (NewsDataSource)
+@implementation MITNewsViewController (NewsDataSource)
 
 - (void)loadDataSources:(void (^)(NSError*))completion
 {
@@ -749,9 +749,9 @@ CGFloat const refreshControlTextHeight = 19;
     [self reloadData];
 
     // TODO: Rework the update process; this is incredibly awkward
-    __weak MITNewsiPadViewController *weakSelf = self;
+    __weak MITNewsViewController *weakSelf = self;
     [self.categoriesDataSource refresh:^(NSError *error) {
-        MITNewsiPadViewController *blockSelf = weakSelf;
+        MITNewsViewController *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
         }
@@ -947,7 +947,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 #pragma mark MITNewsStoryDetailPagingDelegate
 
-@implementation MITNewsiPadViewController (NewsDelegate)
+@implementation MITNewsViewController (NewsDelegate)
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {
@@ -1009,15 +1009,15 @@ CGFloat const refreshControlTextHeight = 19;
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     } else if ([segue.identifier isEqualToString:@"showCategory"]) {
-        if ([destinationViewController isKindOfClass:[MITNewsiPadCategoryViewController class]]) {
+        if ([destinationViewController isKindOfClass:[MITNewsCategoryViewController class]]) {
             
             NSIndexPath *indexPath = sender;
             
-            MITNewsiPadCategoryViewController *iPadCategoryViewController  = (MITNewsiPadCategoryViewController*)destinationViewController;
-            iPadCategoryViewController.previousPresentationStyle = _presentationStyle;
-            iPadCategoryViewController.dataSource = self.dataSources[indexPath.section];
-            iPadCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
-            self.weakiPadCategoryViewController = iPadCategoryViewController;
+            MITNewsCategoryViewController *newsCategoryViewController  = (MITNewsCategoryViewController*)destinationViewController;
+            newsCategoryViewController.previousPresentationStyle = _presentationStyle;
+            newsCategoryViewController.dataSource = self.dataSources[indexPath.section];
+            newsCategoryViewController.categoryTitle = [self viewController:self titleForCategoryInSection:indexPath.section];
+            self.weakCategoryViewController = newsCategoryViewController;
         
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,

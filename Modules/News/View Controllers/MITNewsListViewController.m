@@ -16,7 +16,7 @@
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
 #import "UITableView+DynamicSizing.h"
-#import "MITNewsiPadViewController.h"
+#import "MITNewsViewController.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 
 static NSUInteger MITNewsDefaultNumberOfFeaturedStories = 5;
