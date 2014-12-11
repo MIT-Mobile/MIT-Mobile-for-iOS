@@ -583,7 +583,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
 #pragma mark Private
 - (void)_didRecieveNotification:(NSDictionary*)userInfo withAlert:(NSString*)alertBody
 {
-    [MITUnreadNotifications addNotification:userInfo];
+    MITNotification *notification = [MITUnreadNotifications addNotification:userInfo];
     [MITUnreadNotifications updateUI];
 
     NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
@@ -591,6 +591,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
         applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
     }
 
+    [self.pendingNotifications addObject:notification];
     UIAlertView *notificationView = [[UIAlertView alloc] initWithTitle:applicationName
                                                                message:alertBody
                                                               delegate:self
@@ -658,12 +659,11 @@ static NSString* const MITMobileButtonTitleView = @"View";
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    NSDictionary *remoteNotification = [self.pendingNotifications lastObject];
+    MITNotification *notification = [self.pendingNotifications lastObject];
     [self.pendingNotifications removeLastObject];
 
-    MITNotification *notification = [MITUnreadNotifications addNotification:remoteNotification];
     MITModule *module = [self moduleWithTag:notification.moduleName];
-    [module didReceiveNotification:remoteNotification];
+    [module didReceiveNotification:notification.userInfo];
 
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
     if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
