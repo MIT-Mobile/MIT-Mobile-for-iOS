@@ -60,6 +60,8 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 @property (nonatomic, strong) UIPopoverController *advancedMenuPopover;
 
 #pragma mark - Private methods
+- (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result;
+
 - (IBAction)showHistory:(id)sender;
 - (IBAction)showHelp:(id)sender;
 
@@ -74,7 +76,7 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 
 @end
 
-@interface MITScannerViewController(BatchScanAlertHandler)
+@interface MITScannerViewController(BatchScanAlertHandler) <MITBatchScanningAlertViewDelegate>
 
 - (void)showAlertForScanResult:(QRReaderResult *)result;
 
@@ -201,8 +203,6 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    
-    NSLog(@"");
 }
 
 - (void)viewDidLoad
@@ -600,20 +600,31 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 
 - (void)proccessBarcode:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
 {
-    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue
-                                                          withDate:[NSDate date]
-                                                         withImage:screenshot];
-    
     runAsyncOnMainThread(^{
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         self.overlayView.highlighted = YES;
-        [self updateHistoryButtonTitle];
     });
     
     BOOL doBatchScanning = [[NSUserDefaults standardUserDefaults] boolForKey:kBatchScanningSettingKey];
+    
+    BOOL shouldGenerateThumbnail = [self isOnIpad] && doBatchScanning;
+    
+    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue
+                                                          withDate:[NSDate date]
+                                                         withImage:screenshot
+                                           shouldGenerateThumbnail:shouldGenerateThumbnail];
+    
+    runAsyncOnMainThread(^{
+        [self updateHistoryButtonTitle];
+    });
+    
     if ( doBatchScanning )
     {
-        [self showAlertForScanResult:result];
+        if( [self isOnIpad] )
+        {
+            [self showAlertForScanResult:result];
+        }
+        
         [self continueBatchScanning];
     }
     else
@@ -655,6 +666,8 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 
 - (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result
 {
+    self.isScanDetailsPresented = YES;
+    
     MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
     viewController.delegate = self;
     viewController.scanResult = result;
@@ -669,7 +682,6 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
             self.overlayView.highlighted = NO;
             self.overlayView.hidden = YES;
             
-            self.isScanDetailsPresented = YES;
             [self startSessionCapture];
         }];
     });
@@ -721,10 +733,25 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
         topAlert = [nib instantiateWithOwner:nil options:nil][0];
         topAlert.scanCodeLabel.text = result.text;
         topAlert.ScanThumbnailView.image = result.thumbnail;
+        topAlert.scanId = result.objectID;
+        topAlert.delegate = self;
         [self.view addSubview:topAlert];
         
         [topAlert fadeOutWithDuration:7.0 andWait:0.0];
     });
+}
+
+- (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView
+{
+    if( self.isScanDetailsPresented )
+    {
+        return;
+    }
+    
+    NSManagedObjectID *scanId = alertView.scanId;
+    QRReaderResult *scanResult = [self.scannerHistory fetchScanResult:scanId];
+    
+    [self ipad_showScanDetailsForScanResult:scanResult];
 }
 
 @end

@@ -89,13 +89,17 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
     return result;
 }
 
+- (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId
+{
+   return (QRReaderResult *)[self.context objectWithID:scanId];
+}
+
 - (NSArray *)fetchRecentScans
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"QRReaderResult"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date >= %@", [self lastTimeHistoryWasOpened]];
     
-    NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date"
-                                                                   ascending:NO];
+    NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
     fetchRequest.sortDescriptors = @[dateDescriptor];
     
     return[self.context executeFetchRequest:fetchRequest error:NULL];
