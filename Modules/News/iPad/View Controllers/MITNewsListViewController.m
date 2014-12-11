@@ -8,7 +8,6 @@
 #import "MITNewsImageRepresentation.h"
 
 #import "MITNewsStoryViewController.h"
-#import "MITNewsCategoryViewController.h"
 #import "MITNewsStoryCell.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 #import "MITDisclosureHeaderView.h"
