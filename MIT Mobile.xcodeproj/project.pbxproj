@@ -1513,7 +1513,7 @@
 		2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "MIT-Mobile-for-iPhone-Private"; path = "External/MIT-Mobile-for-iPhone-Private"; sourceTree = "<group>"; };
 		2CFF6C2817E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScrollingNavigationBarCell.h; sourceTree = "<group>"; };
 		2CFF6C2917E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScrollingNavigationBarCell.m; sourceTree = "<group>"; };
-		2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITNewsImageViewController.xib; path = ../Views/MITNewsImageViewController.xib; sourceTree = "<group>"; };
+		2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITNewsImageViewController.xib; path = Views/MITNewsImageViewController.xib; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -2311,6 +2311,7 @@
 		0BF44ED81A3A1DEF00D0C49C /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
+				2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */,
 				0BCC90D419631C2C00440544 /* MITNewsRecentSearchController.xib */,
 				0BE0C4121975B95900961025 /* MITNewsSearchController.xib */,
 			);
@@ -3408,7 +3409,6 @@
 				2CF89EA618A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m */,
 				2CF89EAB18A41A6A00ABFE03 /* MITNewsImageViewController.h */,
 				2CF89EAC18A41A6A00ABFE03 /* MITNewsImageViewController.m */,
-				2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
