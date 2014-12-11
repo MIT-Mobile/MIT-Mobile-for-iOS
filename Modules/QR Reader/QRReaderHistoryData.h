@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 @class QRReaderResult;
 
@@ -18,6 +19,8 @@
                            withDate:(NSDate*)date
                           withImage:(UIImage*)image
             shouldGenerateThumbnail:(BOOL)generateThumbnail;
+
+- (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId;
 
 - (void)deleteScanResult:(QRReaderResult*)result;
 - (void)deleteScanResults:(NSArray *)results;
