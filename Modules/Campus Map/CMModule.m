@@ -35,9 +35,9 @@
             NSLog(@"Invalid number of components in url: %@. If you would like to use more components, this method should be revisited.", queryString);
             return;
         }
-        NSString *queryParameter = queryComponents.firstObject;
+        NSString *queryEndpoint = queryComponents.firstObject;
         NSString *query = queryComponents.lastObject;
-        [self.rootViewController handleURLQuery:query forQueryParameter:queryParameter];
+        [self.rootViewController handleInternalURLQuery:query forQueryEndpoint:queryEndpoint];
     }
 }
 

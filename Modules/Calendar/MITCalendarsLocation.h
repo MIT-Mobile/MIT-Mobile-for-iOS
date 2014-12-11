@@ -13,7 +13,7 @@
 @property (nonatomic, retain) NSSet *events;
 
 - (NSString *)locationString;
-- (NSString *)buildingNumberOrBestDescription;
+- (NSString *)bestMapsSearchDescription;
 
 @end
 

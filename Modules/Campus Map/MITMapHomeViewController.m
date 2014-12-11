@@ -546,9 +546,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - In App Linking
 
-- (void)handleURLQuery:(NSString *)query forQueryParameter:(NSString *)queryParameter
+- (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
 {
-    if ([queryParameter isEqualToString:@"search"]) {
+    if ([queryEndpoint isEqualToString:@"search"]) {
         query = [query stringByReplacingOccurrencesOfString:@"%20" withString:@" "];
         [self performSearchWithQuery:query];
         self.searchBar.text = query;

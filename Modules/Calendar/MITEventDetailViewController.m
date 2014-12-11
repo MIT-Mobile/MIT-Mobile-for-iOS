@@ -443,7 +443,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeLocation: {
-            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap,[self.event.location buildingNumberOrBestDescription]];
+            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap,[self.event.location bestMapsSearchDescription]];
             NSURL *url = [NSURL URLWithString:urlString];
             if ([[UIApplication sharedApplication] canOpenURL:url]) {
                 [[UIApplication sharedApplication] openURL:url];

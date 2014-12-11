@@ -36,7 +36,7 @@
     return locationString;
 }
 
-- (NSString *)buildingNumberOrBestDescription
+- (NSString *)bestMapsSearchDescription
 {
     NSString *buildingNumber;
     NSString *roomNumber = self.roomNumber;
@@ -61,11 +61,7 @@
         buildingNumber = self.locationDescription;
     }
     
-    // Removing leading whitespace
-    while ([buildingNumber hasPrefix:@" "]) {
-        buildingNumber = [buildingNumber substringFromIndex:1];
-    }
-    
+    buildingNumber = [buildingNumber stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     buildingNumber = [buildingNumber stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
     return buildingNumber;
 }
