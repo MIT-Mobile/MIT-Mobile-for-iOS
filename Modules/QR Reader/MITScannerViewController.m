@@ -11,6 +11,17 @@
 #import "MITScannerDetailViewController.h"
 #import "MITNavigationController.h"
 #import "MITScannerAdvancedMenuViewController.h"
+#import "MITBatchScanningAlertView.h"
+
+FOUNDATION_STATIC_INLINE void runAsyncOnMainThread( dispatch_block_t blockToRun )
+{
+    dispatch_async(dispatch_get_main_queue(), blockToRun);
+}
+
+FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t blockToRun )
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), blockToRun );
+}
 
 @interface MITScannerViewController () <AVCaptureMetadataOutputObjectsDelegate>
 
@@ -33,8 +44,13 @@
 @property (weak) UIButton *infoButton;
 @property (weak) UIButton *advancedButton;
 
+// boolean flag to check whether scan session is currently active or stopped
 @property (nonatomic,assign) BOOL isCaptureActive;
+// boolean flag that acts as a guard against processing more then one code at once
+@property (nonatomic, assign) BOOL isBarcodeProcessingAlreadyInProgress;
+// on ipad the scan details show up as a form sheet.
 @property (nonatomic,assign) BOOL isScanDetailsPresented;
+// scanning is only supported on devices with camera
 @property (readonly) BOOL isScanningSupported;
 
 #pragma mark - History Properties
@@ -53,6 +69,15 @@
 
 
 @interface MITScannerViewController(ScanDetailViewDelegate) <MITScannerDetailViewControllerDelegate>
+
+- (void)detailFormSheetViewDidDisappear;
+
+@end
+
+@interface MITScannerViewController(BatchScanAlertHandler)
+
+- (void)showAlertForScanResult:(QRReaderResult *)result;
+
 @end
 
 #pragma mark -
@@ -173,6 +198,13 @@
     }
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    
+    NSLog(@"");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -229,6 +261,10 @@
 - (NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self setVideoOrientation];
 }
 
 - (IBAction)showHistory:(id)sender
@@ -338,6 +374,7 @@
     if (self.isCaptureActive == NO)
     {
         self.isCaptureActive = YES;
+        self.isBarcodeProcessingAlreadyInProgress = NO;
         
         [self.captureSession startRunning];
         self.metadataOutput.metadataObjectTypes = self.metadataOutput.availableMetadataObjectTypes;
@@ -403,10 +440,12 @@
     {
         [self.captureSession addInput:self.deviceInput];
     }
+    
 
     // 5.
     self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureSession];
     self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    [self setVideoOrientation];
     
     // 6.
     self.metadataOutput = [[AVCaptureMetadataOutput alloc] init];
@@ -427,12 +466,49 @@
     }
 }
 
+- (AVCaptureVideoOrientation)videoOrientationFromDeviceOrientation
+{
+    AVCaptureVideoOrientation videoOrientation;
+    
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:
+            videoOrientation = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            // Not clear why but the landscape orientations are reversed
+            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
+            videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            // Not clear why but the landscape orientations are reversed
+            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
+            videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        default:
+            videoOrientation = AVCaptureVideoOrientationPortrait;
+    }
+    
+    return videoOrientation;
+}
+
+- (void)setVideoOrientation
+{
+    AVCaptureVideoOrientation newOrientation = [self videoOrientationFromDeviceOrientation];
+    [self.previewLayer.connection setVideoOrientation:newOrientation];
+}
+
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
-    if( self.isScanDetailsPresented )
+    if( self.isScanDetailsPresented || self.isBarcodeProcessingAlreadyInProgress )
     {
         return;
     }
+    
+    self.isBarcodeProcessingAlreadyInProgress = YES;
     
     [metadataObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if( [obj isKindOfClass:[AVMetadataMachineReadableCodeObject class]] )
@@ -450,6 +526,9 @@
                 }
             }
         }
+        
+        // didn't find a code to process
+        self.isBarcodeProcessingAlreadyInProgress = NO;
     }];
 }
 
@@ -462,12 +541,11 @@
         if( image == nil )
         {
             // do not proceed and wait for a new scan which should be almost immediately.
+            self.isBarcodeProcessingAlreadyInProgress = NO;
             return;
         }
         else
         {
-            NSLog(@"code found and image captured");
-            
             [weakSelf stopSessionCapture];
             [weakSelf proccessBarcode:code screenshot:image];
         }
@@ -478,49 +556,49 @@
 {
     __block UIImage *image;
     
-    __weak MITScannerViewController *weakSelf = self;
+    if( !self.isCaptureActive )
+    {
+        // TODO: how come capturing image happens after session is stopped capturing?
+        // how to stop it? couldn't find 'close' method for connection.
+        return;
+    }
     
     [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo]
                                                        completionHandler:^(CMSampleBufferRef imageSampleBuffer, NSError *error)
-     {
-         NSLog(@"capturing still image");
-         
-         if( !weakSelf.isCaptureActive )
-         {
-             // TODO: how come capturing image happens after session is stopped capturing?
-             // how to stop it? couldn't find 'close' method for connection.
-             return;
-         }
-         
-         if( imageSampleBuffer != nil )
-         {
-             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-             image = [[UIImage alloc] initWithData:imageData];
-         }
-         
-         if( image == nil )
-         {
-             NSLog(@"missing screenshot");
-         }
-         
-         if( completionBlock ) completionBlock( image );
-     }];
+    {
+        if( CMSampleBufferIsValid( imageSampleBuffer ) )
+        {
+            NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+            image = [[UIImage alloc] initWithData:imageData];
+        }
+        
+        if( image == nil )
+        {
+            NSLog(@"warning: missing screenshot");
+        }
+        
+        runAsyncOnBackgroundThread(^{
+            if( completionBlock ) completionBlock( image );
+        });
+    }];
 }
 
 - (void)proccessBarcode:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
 {
-    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-    self.overlayView.highlighted = YES;
-    
     QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue
                                                           withDate:[NSDate date]
                                                          withImage:screenshot];
     
-    [self updateHistoryButtonTitle];
+    runAsyncOnMainThread(^{
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+        self.overlayView.highlighted = YES;
+        [self updateHistoryButtonTitle];
+    });
     
     BOOL doBatchScanning = [[NSUserDefaults standardUserDefaults] boolForKey:kBatchScanningSettingKey];
     if ( doBatchScanning )
     {
+        [self showAlertForScanResult:result];
         [self continueBatchScanning];
     }
     else
@@ -597,6 +675,41 @@
 {
     self.overlayView.hidden = NO;
     self.isScanDetailsPresented = NO;
+}
+
+@end
+
+@implementation MITScannerViewController(BatchScanAlertHandler)
+
+- (void)showAlertForScanResult:(QRReaderResult *)result
+{
+    runAsyncOnMainThread(^{
+        static MITBatchScanningAlertView *topAlert;
+        static MITBatchScanningAlertView *bottomAlert;
+        
+        if( topAlert != nil )
+        {
+            if( bottomAlert != nil )
+            {
+                [bottomAlert removeFromSuperview];
+                bottomAlert = nil;
+            }
+            
+            CGRect topAlertFrame = topAlert.frame;
+            topAlertFrame.origin.y += topAlertFrame.size.height + 5;
+            topAlert.frame = topAlertFrame;
+            bottomAlert = topAlert;
+            topAlert = nil;
+        }
+        
+        UINib *nib = [UINib nibWithNibName:NSStringFromClass([MITBatchScanningAlertView class]) bundle:nil];
+        topAlert = [nib instantiateWithOwner:nil options:nil][0];
+        topAlert.scanCodeLabel.text = result.text;
+        topAlert.ScanThumbnailView.image = result.thumbnail;
+        [self.view addSubview:topAlert];
+        
+        [topAlert fadeOutWithDuration:7.0 andWait:0.0];
+    });
 }
 
 @end
