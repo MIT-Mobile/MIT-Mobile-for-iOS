@@ -549,7 +549,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
 {
     if ([queryEndpoint isEqualToString:@"search"]) {
-        query = [query stringByReplacingOccurrencesOfString:@"%20" withString:@" "];
+        query = [query stringByRemovingPercentEncoding];
         [self performSearchWithQuery:query];
         self.searchBar.text = query;
     }

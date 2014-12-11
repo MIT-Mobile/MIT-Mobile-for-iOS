@@ -62,7 +62,7 @@
     }
     
     buildingNumber = [buildingNumber stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    buildingNumber = [buildingNumber stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+    buildingNumber = [buildingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return buildingNumber;
 }
 
