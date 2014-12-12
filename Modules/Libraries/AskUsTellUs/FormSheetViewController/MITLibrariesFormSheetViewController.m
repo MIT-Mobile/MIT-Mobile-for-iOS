@@ -289,8 +289,8 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         }
     }
     
-    NSString *title = @"Success!";
-    NSString *confirmation = @"Ok";
+    NSString *title = @"Submitted";
+    NSString *confirmation = @"OK";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
     [alert show];
 }
