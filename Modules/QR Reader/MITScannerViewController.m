@@ -13,16 +13,6 @@
 #import "MITScannerAdvancedMenuViewController.h"
 #import "MITBatchScanningAlertView.h"
 
-FOUNDATION_STATIC_INLINE void runAsyncOnMainThread( dispatch_block_t blockToRun )
-{
-    dispatch_async(dispatch_get_main_queue(), blockToRun);
-}
-
-FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t blockToRun )
-{
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), blockToRun );
-}
-
 @interface MITScannerViewController () <AVCaptureMetadataOutputObjectsDelegate>
 
 #pragma mark - Scanner AVFoundation properties
@@ -349,7 +339,7 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 {
     if( numberOfRecentScans > 0 )
     {
-        return [NSString stringWithFormat:@"History (%i)", numberOfRecentScans];
+        return [NSString stringWithFormat:@"History (%li)", (long)numberOfRecentScans];
     }
     
     return @"History";
@@ -375,9 +365,15 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
     {
         self.isCaptureActive = YES;
         self.isBarcodeProcessingAlreadyInProgress = NO;
-        
-        [self.captureSession startRunning];
+    
         self.metadataOutput.metadataObjectTypes = self.metadataOutput.availableMetadataObjectTypes;
+        
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)),
+            dispatch_get_main_queue(),
+        ^{
+            [self.captureSession startRunning];
+        });
     }
 }
 
@@ -520,7 +516,9 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
             {
                 if( [code.type isEqualToString:allowedCodeType] )
                 {
-                    [self codeFound:code];
+                    [self runAsyncOnMainThread:^{
+                        [self codeFound:code];
+                    }];
                     
                     return;
                 }
@@ -574,43 +572,54 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
         
         if( image == nil )
         {
-            NSLog(@"warning: missing screenshot");
+            NSLog(@"warn: missing screenshot");
         }
         
-        runAsyncOnBackgroundThread(^{
+        [self runAsyncOnBackgroundThread:^{
             if( completionBlock ) completionBlock( image );
-        });
+        }];
     }];
 }
 
 - (void)proccessBarcode:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
 {
-    runAsyncOnMainThread(^{
+    [self runAsyncOnMainThread:^{
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         self.overlayView.highlighted = YES;
-    });
+    }];
     
     BOOL doBatchScanning = [[NSUserDefaults standardUserDefaults] boolForKey:kBatchScanningSettingKey];
     
     BOOL shouldGenerateThumbnail = [self isOnIpad] && doBatchScanning;
     
-    QRReaderResult *result = [self.scannerHistory insertScanResult:code.stringValue
-                                                          withDate:[NSDate date]
-                                                         withImage:screenshot
-                                           shouldGenerateThumbnail:shouldGenerateThumbnail];
-    
-    runAsyncOnMainThread(^{
-        [self updateHistoryButtonTitle];
-    });
-    
-    if ( doBatchScanning )
+    [self.scannerHistory insertScanResult:code.stringValue
+                                 withDate:[NSDate date]
+                                withImage:screenshot
+                  shouldGenerateThumbnail:shouldGenerateThumbnail
+                               completion:^(QRReaderResult *result, NSError *error) {
+                                   [self postInsertOfResult:result isBatchScanning:doBatchScanning];
+                               }];
+}
+
+- (void)postInsertOfResult:(QRReaderResult *)result isBatchScanning:(BOOL)isBatchScanning
+{
+    if( result == nil )
     {
+        return;
+    }
+    
+    [self runAsyncOnMainThread:^{
+        [self updateHistoryButtonTitle];
+    }];
+    
+    if ( isBatchScanning )
+    {
+        [self continueBatchScanning];
+        
         if( [self isOnIpad] )
         {
             [self showAlertForScanResult:result];
         }
-        
-        [self continueBatchScanning];
     }
     else
     {
@@ -620,7 +629,7 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 
 - (void)continueBatchScanning
 {
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^{
         self.overlayView.highlighted = NO;
         
@@ -677,6 +686,16 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
     return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
 }
 
+- (void)runAsyncOnMainThread:(dispatch_block_t) blockToRun
+{
+    dispatch_async(dispatch_get_main_queue(), blockToRun);
+}
+
+- (void)runAsyncOnBackgroundThread:(dispatch_block_t) blockToRun
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), blockToRun );
+}
+
 @end
 
 #pragma mark - ScanDetailViewDelegate
@@ -695,7 +714,7 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 
 - (void)showAlertForScanResult:(QRReaderResult *)result
 {
-    runAsyncOnMainThread(^{
+    [self runAsyncOnMainThread:^{
         static MITBatchScanningAlertView *topAlert;
         static MITBatchScanningAlertView *bottomAlert;
         
@@ -722,8 +741,8 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
         topAlert.delegate = self;
         [self.view addSubview:topAlert];
         
-        [topAlert fadeOutWithDuration:7.0 andWait:0.0];
-    });
+        [topAlert fadeOutWithDuration:1.0 andWait:4.0];
+    }];
 }
 
 - (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView

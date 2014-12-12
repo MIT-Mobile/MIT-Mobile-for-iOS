@@ -3,6 +3,7 @@
 #import "MITScannerImage.h"
 #import "UIImage+Resize.h"
 #import "CoreDataManager.h"
+#import "MITCoreDataController.h"
 #import "UIKit+MITAdditions.h"
 
 NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKey";
@@ -26,67 +27,100 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
     return self;
 }
 
-- (void)deleteScanResult:(QRReaderResult*)result {
-    [self.context deleteObject:result];
-    
-    [self saveDataModelChanges];
-}
-
-- (void)deleteScanResults:(NSArray *)results
+- (void)deleteScanResult:(QRReaderResult*)result completion:(void (^)(NSError* error))block
 {
-    for( QRReaderResult *result in results )
-    {
-        [self deleteScanResult:result];
-    }
-    
-    [self saveDataModelChanges];
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+        [context deleteObject:[context objectWithID:result.objectID]];
+        [context save:error];
+    } completion:^(NSError *error) {
+        if( block ) {
+            block( error );
+        }
+    }];
 }
 
-- (QRReaderResult*)insertScanResult:(NSString *)scanResult
-                           withDate:(NSDate *)date {
-    return [self insertScanResult:scanResult
-                         withDate:date
-                        withImage:nil];
-}
-
-
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
-                           withDate:(NSDate*)date
-                          withImage:(UIImage*)image
+- (void)deleteScanResults:(NSArray *)results completion:(void (^)(NSError* error))block
 {
-    return [self insertScanResult:scanResult
-                         withDate:date
-                        withImage:image
-          shouldGenerateThumbnail:NO];
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+        for( QRReaderResult *result in results )
+        {
+            [context deleteObject:[context objectWithID:result.objectID]];
+        }
+        
+        [context save:error];
+        
+    } completion:^(NSError *error) {
+        if( block ) {
+            block( error );
+        }
+    }];
 }
 
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
+- (void)insertScanResult:(NSString *)scanResult
+                withDate:(NSDate *)date
+              completion:(void (^)(QRReaderResult* result, NSError *error))block
+{
+     [self insertScanResult:scanResult
+                   withDate:date
+                  withImage:nil
+                 completion:block];
+}
+
+
+- (void)insertScanResult:(NSString*)scanResult
+                withDate:(NSDate*)date
+               withImage:(UIImage*)image
+              completion:(void (^)(QRReaderResult *, NSError *))block
+{
+    [self insertScanResult:scanResult
+                  withDate:date
+                 withImage:image
+   shouldGenerateThumbnail:NO
+                completion:block];
+}
+
+- (void)insertScanResult:(NSString*)scanResult
                            withDate:(NSDate*)date
                           withImage:(UIImage*)image
             shouldGenerateThumbnail:(BOOL)generateThumbnail
+                         completion:(void (^)(QRReaderResult* result, NSError *error))block
 {
-    QRReaderResult *result = (QRReaderResult*)[NSEntityDescription insertNewObjectForEntityForName:@"QRReaderResult"
-                                                                            inManagedObjectContext:self.context];
-    result.text = scanResult;
-    result.date = date;
+    __block UIImage *blockImage = image;
     
-    if (image)
-    {
-        image = [[UIImage imageWithCGImage:image.CGImage
-                                    scale:1.0
-                              orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
-        result.scanImage = image;
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
         
-        if (generateThumbnail)
+        QRReaderResult *result = (QRReaderResult*)[NSEntityDescription insertNewObjectForEntityForName:@"QRReaderResult"
+                                                                                inManagedObjectContext:context];
+        result.text = scanResult;
+        result.date = date;
+        
+        if( blockImage )
         {
-            result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
-                               interpolationQuality:kCGInterpolationDefault];
+            blockImage = [[UIImage imageWithCGImage:blockImage.CGImage
+                                              scale:1.0
+                                        orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
+            result.scanImage = blockImage;
+            
+            if (generateThumbnail)
+            {
+                result.thumbnail =  [blockImage resizedImage:[QRReaderResult defaultThumbnailSize]
+                                        interpolationQuality:kCGInterpolationDefault];
+            }
         }
-    }
-    
-    [self saveDataModelChanges];
-    
-    return result;
+        
+        [context save:error];
+        
+        if( block )
+        {
+            block( result, *error );
+        }
+
+    } completion:^(NSError *error) {
+        if( block )
+        {
+            block( nil, error );
+        }
+    }];
 }
 
 - (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId

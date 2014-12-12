@@ -2,9 +2,6 @@
 //  MITFacilitiesHomeViewController.m
 //  MIT Mobile
 //
-//  Created by Yev Motov on 9/1/14.
-//
-//
 
 #import "MITFacilitiesHomeViewController.h"
 #import "MITBuildingServicesReportForm.h"
