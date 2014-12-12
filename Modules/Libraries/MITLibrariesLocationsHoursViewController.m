@@ -28,6 +28,7 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
             [self.tableView reloadData];
         }
         [self.refreshControl endRefreshing];
+        self.refreshControl = nil;
     }];
 }
 
