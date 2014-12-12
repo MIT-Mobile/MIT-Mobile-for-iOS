@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     MITLibraryDetailCellOther
 };
 
-@interface MITLibrariesLibraryDetailViewController ()
+@interface MITLibrariesLibraryDetailViewController () <UIAlertViewDelegate>
 
 @property (nonatomic, strong) MITTiledMapView *mapView;
 
@@ -61,10 +61,9 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 {
     UINib *cellNib = [UINib nibWithNibName:kMITHoursCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITHoursCell];
-    
-    self.tableView.allowsSelection = NO;
 }
 
+// We're not getting a coordinate back for the library, so this function isn't currently called
 - (void)setupTableHeader
 {
     self.mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
@@ -112,12 +111,43 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    switch (indexPath.row) {
+        case MITLibraryDetailCellPhone:
+        {
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", self.library.phoneNumber] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+                [alert show];
+            }
+        }
+            break;
+        case MITLibraryDetailCellLocation:
+            break;
+        case MITLibraryDetailCellHoursToday:
+        case MITLibraryDetailCellOther:
+        default:
+            break;
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1) {
+        NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", self.library.phoneNumber]];
+        [[UIApplication sharedApplication] openURL:phoneURL];
+    }
+}
+
 - (UITableViewCell *)phoneNumberCell
 {
     UITableViewCell *cell = [self defaultCell];
     cell.textLabel.text = @"phone";
     cell.detailTextLabel.text = self.library.phoneNumber;
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;
 }
 
@@ -127,6 +157,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     cell.textLabel.text = @"location";
     cell.detailTextLabel.text = self.library.location;
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;
 }
 
@@ -142,6 +173,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (UITableViewCell *)termHoursCellForIndexPath:(NSIndexPath *)indexPath
 {
     MITLibrariesHoursCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITHoursCell forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     [cell setContent:[self termForIndexPath:indexPath]];
     
@@ -157,6 +189,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
         cell.textLabel.font = [UIFont librariesSubtitleStyleFont];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:17.0];
     }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
