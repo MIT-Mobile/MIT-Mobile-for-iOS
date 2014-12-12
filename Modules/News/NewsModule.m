@@ -1,7 +1,5 @@
 #import "NewsModule.h"
 
-#import "MITNewsViewController.h"
-
 @implementation NewsModule
 - (instancetype)init
 {

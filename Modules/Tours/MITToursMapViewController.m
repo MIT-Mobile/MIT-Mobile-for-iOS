@@ -8,6 +8,7 @@
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLocationManager.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -56,10 +57,22 @@ static NSInteger kAnnotationMarginRight = 50;
     [self setupTourDetailsView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self setupMapBoundingBoxAnimated:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setupTiledMapView
@@ -68,7 +81,7 @@ static NSInteger kAnnotationMarginRight = 50;
     [self.tiledMapView setUserTrackingDelegate:self];
     
     MKMapView *mapView = self.tiledMapView.mapView;
-    mapView.showsUserLocation = YES;
+    mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     mapView.tintColor = [UIColor mit_systemTintColor];
     
     // Set up annotations from stops
@@ -315,6 +328,13 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)toggleUserTrackingMode
 {
     [self.tiledMapView toggleUserTrackingMode];
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end

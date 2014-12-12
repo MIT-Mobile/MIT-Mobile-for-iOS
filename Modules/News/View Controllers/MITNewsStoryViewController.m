@@ -253,7 +253,7 @@
         [dateFormatter setDateFormat:@"MMM dd, y"];
     });
     
-    NSURL *templateURL;
+    NSURL *templateURL = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
@@ -512,7 +512,13 @@
                 [dateFormatter setDateFormat:@"MMM dd, y"];
             });
             
-            NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+            NSURL *templateURL = nil;
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_iPad_template" withExtension:@"html"];
+            } else {
+                templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];
+            }
             
             NSError *error = nil;
             NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];

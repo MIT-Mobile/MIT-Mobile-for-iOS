@@ -35,6 +35,19 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
     [self setupTableView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateLocation:) name:kLocationManagerDidUpdateLocationNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)setupTableView
 {
     UINib *cellNib = [UINib nibWithNibName:kMITToursTourDetailCell bundle:nil];
@@ -228,6 +241,18 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 
     }
     return _sideTripsSectionHeaderView;
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateLocation:(NSNotification *)notification
+{
+    [self.tableView reloadData];
+}
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    [self.tableView reloadData];
 }
 
 @end

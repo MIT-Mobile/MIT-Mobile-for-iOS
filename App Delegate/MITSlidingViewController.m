@@ -12,7 +12,7 @@ NSString * const MITSlidingViewControllerModulePushSegueIdentifier = @"MITSlidin
 NSString * const MITSlidingViewControllerUnderLeftSegueIdentifier = @"MITSlidingViewControllerUnderLeftSegue";
 NSString * const MITSlidingViewControllerTopSegueIdentifier = @"MITSlidingViewControllerTopSegue";
 
-static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPad = 270.;
+static CGFloat const MITSlidingViewControllerDefaultAnchorLeftRevealAmountPad = 270.;
 
 // This number was picked in order to have an equal amount of whitespace on either
 // side of the leftBarButtonIcon. 54pt results in having 14pt of whitespace on either side.
@@ -87,7 +87,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         } break;
 
         case UIUserInterfaceIdiomPad: {
-            self.anchorRightPeekAmount = MITSlidingViewControllerDefaultAnchorRightPeekAmountPad;
+            self.anchorLeftRevealAmount = MITSlidingViewControllerDefaultAnchorLeftRevealAmountPad;
         } break;
 
         default: {

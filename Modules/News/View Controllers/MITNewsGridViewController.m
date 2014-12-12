@@ -7,7 +7,7 @@
 #import "MITNewsStory.h"
 #import "MITNewsConstants.h"
 #import "MITNewsStoryCollectionViewCell.h"
-#import "MITNewsiPadViewController.h"
+#import "MITNewsViewController.h"
 #import "MITNewsGridHeaderView.h"
 #import "MITAdditions.h"
 #import "MITNewsStoryCollectionViewCell.h"

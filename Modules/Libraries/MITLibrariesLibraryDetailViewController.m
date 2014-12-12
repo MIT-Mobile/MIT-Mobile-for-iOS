@@ -6,6 +6,7 @@
 #import "UIKit+MITLibraries.h"
 #import "MITTiledMapView.h"
 #import "MITCalloutMapView.h"
+#import "MITLocationManager.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
@@ -38,6 +39,18 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -55,7 +68,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (void)setupTableHeader
 {
     self.mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
-    self.mapView.mapView.showsUserLocation = YES;
+    self.mapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.mapView.userInteractionEnabled = NO;
     self.tableView.tableHeaderView = self.mapView;
 }
@@ -156,6 +169,13 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (void)dismiss
 {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.mapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end

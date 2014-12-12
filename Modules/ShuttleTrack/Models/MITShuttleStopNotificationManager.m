@@ -80,7 +80,8 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
     notification.alertBody = alertBody;
     notification.userInfo = @{kMITShuttleStopNotificationStopIdKey:         rootPrediction.stopId,
                               kMITShuttleStopNotificationVehicleIdKey:      rootPrediction.vehicleId,
-                              kMITShuttleStopNotificationPredictionDateKey: predictionDate};
+                              kMITShuttleStopNotificationPredictionDateKey: predictionDate,
+                              MITNotificationModuleTagKey : MITModuleTagShuttle};
     UIApplication *application = [UIApplication sharedApplication];
     [application scheduleLocalNotification:notification];
     if (application.backgroundRefreshStatus == UIBackgroundRefreshStatusAvailable) {

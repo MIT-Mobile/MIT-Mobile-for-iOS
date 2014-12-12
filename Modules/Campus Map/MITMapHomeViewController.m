@@ -11,6 +11,7 @@
 #import "MITMapPlaceSelector.h"
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
+#import "MITLocationManager.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -94,6 +95,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self registerForKeyboardNotifications];
 }
@@ -101,6 +103,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self unregisterForKeyboardNotifications];
 }
 
@@ -120,10 +123,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupNavigationBar
 {
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
-    self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.searchBar.placeholder = @"Search MIT Campus";
     // Insert the correct clear button image and uncomment the next line when ready
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
@@ -144,7 +143,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)setupMapView
 {
     [self.tiledMapView setMapDelegate:self];
-    self.mapView.showsUserLocation = YES;
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
     [self setupMapBoundingBoxAnimated:NO];
 }
@@ -545,6 +544,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+#pragma mark - In App Linking
+
+- (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
+{
+    if ([queryEndpoint isEqualToString:@"search"]) {
+        query = [query stringByRemovingPercentEncoding];
+        [self performSearchWithQuery:query];
+        self.searchBar.text = query;
+    }
+}
+
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -726,6 +736,26 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             [self.mapView deselectAnnotation:annotation animated:NO];
         }
     }
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
+}
+
+#pragma mark - Getters | Setters
+
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+        _searchBar.searchBarStyle = UISearchBarStyleMinimal;
+        _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        _searchBar.placeholder = @"Search MIT Campus";
+    }
+    return _searchBar;
 }
 
 @end

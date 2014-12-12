@@ -13,6 +13,7 @@
 #import "MITCalloutMapView.h"
 #import "SMCalloutView.h"
 #import "MITTiledMapView.h"
+#import "MITLocationManager.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -77,7 +78,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     self.hasSetUpMapRect = NO;
     [self.tiledMapView setMapDelegate:self];
-    self.tiledMapView.mapView.showsUserLocation = YES;
+    self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
     [self setupCalloutView];
@@ -92,6 +93,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     [super viewWillAppear:animated];
     [self prepareForViewAppearance];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
@@ -108,6 +110,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self prepareForViewDisappearance];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [super viewWillDisappear:animated];
@@ -935,6 +938,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
         [self.delegate shuttleMapViewController:self didSelectRoute:route];
     }
+}
+
+#pragma mark - Location Notifications
+
+- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
+{
+    self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
 @end
