@@ -15,7 +15,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
 
-@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetTextEntryCellDelegate>
+@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetTextEntryCellDelegate, UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
@@ -187,12 +187,10 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         [self hideActivityIndicator];
         if (error || !identity) {
             [self showUnableToRetrieveMITIdentityAlert];
-            [self closeFormSheetViewController];
         } else if (identity.isMITIdentity) {
             [self setup];
         } else {
             [self showMITIdentityRequiredAlert];
-            [self closeFormSheetViewController];
         }
     }];
 }
@@ -202,7 +200,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     NSString *title = @"Network Failure";
     NSString *message = @"We were unable to fetch your MIT identity from the network.  Please check your connection and try again in a little bit.";
     NSString *confirmation = @"Ok";
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
     [alert show];
 }
 
@@ -211,7 +209,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     NSString *title = @"MIT Identity Required";
     NSString *message = @"This action requires a verified MIT identity to continue.";
     NSString *confirmation = @"Ok";
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
     [alert show];
 }
 
@@ -457,6 +455,13 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 {
     [self.navigationController popViewControllerAnimated:YES];
     [self reloadTableView];
+}
+
+#pragma mark - UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    [self closeFormSheetViewController];
 }
 
 @end
