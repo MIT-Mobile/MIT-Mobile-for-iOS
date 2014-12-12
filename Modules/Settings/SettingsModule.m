@@ -1,5 +1,5 @@
 #import "SettingsModule.h"
-#import "SettingsTableViewController.h"
+#import "SettingsTouchstoneViewController.h"
 
 @implementation SettingsModule
 - (instancetype)init
@@ -14,7 +14,7 @@
 
 - (void)loadRootViewController
 {
-    SettingsTableViewController *rootViewController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    SettingsTouchstoneViewController *rootViewController = [[SettingsTouchstoneViewController alloc] init];
     self.rootViewController = rootViewController;
 }
 
