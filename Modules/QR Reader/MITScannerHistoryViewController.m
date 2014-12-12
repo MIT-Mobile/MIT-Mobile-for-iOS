@@ -91,6 +91,10 @@
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(managedObjectContextDidSave:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:nil];
     
     [self.fetchController performFetch:nil];
 }
@@ -105,6 +109,7 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:nil];
     
     [self.renderingQueue cancelAllOperations];
     
@@ -188,7 +193,7 @@
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.scannerHistory deleteScanResult:result];
+        [self.scannerHistory deleteScanResult:result completion:nil];
     }
 }
 
@@ -329,6 +334,11 @@
     [self updateDeleteButtonTitle];
 }
 
+- (void)managedObjectContextDidSave:(NSNotification *)notification
+{
+    [self.fetchContext mergeChangesFromContextDidSaveNotification:notification];
+}
+
 #pragma mark - multi edit logic
 
 - (UIToolbar *)multiEditToolbar
@@ -409,7 +419,7 @@
 {
     for( NSIndexPath *indexPath in indexPaths )
     {
-        [self.scannerHistory deleteScanResult:[self.fetchController objectAtIndexPath:indexPath]];
+        [self.scannerHistory deleteScanResult:[self.fetchController objectAtIndexPath:indexPath] completion:nil];
     }
 }
 
@@ -421,7 +431,7 @@
 {
     if( buttonIndex != actionSheet.cancelButtonIndex )
     {
-        [self.scannerHistory deleteScanResults:[self.fetchController fetchedObjects]];
+        [self.scannerHistory deleteScanResults:[self.fetchController fetchedObjects] completion:nil];
     }
 }
 
