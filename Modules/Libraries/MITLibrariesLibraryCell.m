@@ -44,7 +44,7 @@
 
 + (CGFloat)estimatedCellHeight
 {
-    return 67.0;
+    return 60.0;
 }
 
 @end
