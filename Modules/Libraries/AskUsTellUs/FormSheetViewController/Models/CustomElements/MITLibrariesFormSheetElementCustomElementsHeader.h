@@ -3,7 +3,7 @@
 
 #import "MITLibrariesFormSheetElementStatus.h"
 #import "MITLibrariesFormSheetElementTopic.h"
-#import "MITLibrariesFormSheetElementAskUsSubject.h"
+#import "MITLibrariesFormSheetElementSubject.h"
 #import "MITLibrariesFormSheetElementDetailedQuestion.h"
 #import "MITLibrariesFormSheetElementPhoneNumber.h"
 #import "MITLibrariesFormSheetElementDepartment.h"
@@ -11,7 +11,6 @@
 #import "MITLibrariesFormSheetElementHowCanWeHelp.h"
 #import "MITLibrariesFormSheetElementPurpose.h"
 #import "MITLibrariesFormSheetElementCourse.h"
-#import "MITLibrariesFormSheetElementConsultationSubject.h"
 #import "MITLibrariesFormSheetElementFeedback.h"
 #import "MITLibrariesFormSheetElementSuggestedPurchaseForm.h"
 

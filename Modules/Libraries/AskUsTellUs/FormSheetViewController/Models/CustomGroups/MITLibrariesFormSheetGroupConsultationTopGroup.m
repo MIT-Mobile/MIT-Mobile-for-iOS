@@ -20,7 +20,7 @@
             MITLibrariesFormSheetElement *howCanWeHelp = [MITLibrariesFormSheetElementHowCanWeHelp new];
             MITLibrariesFormSheetElement *purpose = [MITLibrariesFormSheetElementPurpose new];
             MITLibrariesFormSheetElement *course = [MITLibrariesFormSheetElementCourse new];
-            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementConsultationSubject new];
+            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementSubject new];
             
             MITLibrariesFormSheetGroupConsultationTopGroup *topGroup = [MITLibrariesFormSheetGroupConsultationTopGroup new];
             topGroup.elements = @[topicElement, timeframe, howCanWeHelp, purpose, course, subject];

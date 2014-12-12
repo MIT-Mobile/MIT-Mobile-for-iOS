@@ -7,7 +7,7 @@
 {
     [MITLibrariesFormSheetElementTopic getAskUsTopicFormSheetElementInBackgroundWithCompletion:^(MITLibrariesFormSheetElementTopic *topicElement, NSError *error) {
         if (!error) {
-            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementAskUsSubject new];
+            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementSubject new];
             MITLibrariesFormSheetElement *detailedQuestion = [MITLibrariesFormSheetElementDetailedQuestion new];
             
             MITLibrariesFormSheetGroupAskUsTopGroup *topGroup = [MITLibrariesFormSheetGroupAskUsTopGroup new];
