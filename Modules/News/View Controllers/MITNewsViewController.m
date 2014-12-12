@@ -491,10 +491,12 @@ CGFloat const refreshControlTextHeight = 19;
     // This width is set here because we do not know the position of
     // the searchbar until we add it to the navigationbar
     // Mark Novak 12-11-14
-    CGRect rect = self.searchBar.frame;
-    rect.size.width = rect.size.width + self.searchBar.frame.origin.x;
-    rect.origin.x = 0;
-    self.searchBar.frame = rect;
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        CGRect rect = self.searchBar.frame;
+        rect.size.width = rect.size.width + self.searchBar.frame.origin.x;
+        rect.origin.x = 0;
+        self.searchBar.frame = rect;
+    }
 }
 
 #pragma mark Story Refreshing
