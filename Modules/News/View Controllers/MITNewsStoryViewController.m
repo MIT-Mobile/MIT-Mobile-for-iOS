@@ -393,7 +393,7 @@
     BOOL result = YES;
     if (navigationType == UIWebViewNavigationTypeOther) {
         NSURL *url = [request URL];
-        if ([[url relativeString] isEqualToString:@"mitmobile://opengallery"])
+        if ([[url relativeString] isEqualToString:@"mitmobilenews://opengallery"])
         {
             [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
             return NO;
