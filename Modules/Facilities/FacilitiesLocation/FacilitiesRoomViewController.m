@@ -397,7 +397,7 @@
         return nil;
     }
     
-    return [NSString stringWithFormat:@"FLOOR %d", [self floorBasedOnSection:section]];
+    return [NSString stringWithFormat:@"FLOOR %ld", (long)[self floorBasedOnSection:section]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -561,7 +561,7 @@
 
 - (FacilitiesRoom *)roomAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:indexPath.section]];
+    NSString *floorStr = [NSString stringWithFormat:@"%ld", (long)[self floorBasedOnSection:indexPath.section]];
     
     NSArray *rooms = self.floors[floorStr];
     
@@ -570,7 +570,7 @@
 
 - (NSArray *)roomsOnFloor:(NSInteger)floor
 {
-    NSString *floorStr = [NSString stringWithFormat:@"%d", [self floorBasedOnSection:floor]];
+    NSString *floorStr = [NSString stringWithFormat:@"%ld", (long)[self floorBasedOnSection:floor]];
     
     return self.floors[floorStr];
 }

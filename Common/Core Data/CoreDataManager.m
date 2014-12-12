@@ -232,7 +232,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 
         NSArray *detailedErrors = [error userInfo][NSDetailedErrorsKey];
         [detailedErrors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [message appendFormat:@"\n\terror %d: %@", idx, obj];
+            [message appendFormat:@"\n\terror %lu: %@", (unsigned long)idx, obj];
         }];
 
         DDLogError(@"%@",message);
@@ -367,7 +367,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 																							error:&error];
 
 	if (sourceMetadata == nil) {
-		DDLogError(@"Failed to fetch metadata with error %d: %@", [error code], [error userInfo]);
+		DDLogError(@"Failed to fetch metadata with error %ld: %@", (long)[error code], [error userInfo]);
 		return NO;
 	}
 
@@ -419,12 +419,12 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 
 	if (![manager migrateStoreFromURL:sourceURL type:NSSQLiteStoreType options:nil withMappingModel:mappingModel
 					 toDestinationURL:destURL destinationType:NSSQLiteStoreType destinationOptions:nil error:&error]) {
-		DDLogError(@"Migration failed with error %d: %@", [error code], [error userInfo]);
+		DDLogError(@"Migration failed with error %ld: %@", (long)[error code], [error userInfo]);
 		return NO;
 	}
 
 	if (![[NSFileManager defaultManager] removeItemAtPath:sourcePath error:&error]) {
-		DDLogWarn(@"Failed to remove old store with error %d: %@", [error code], [error userInfo]);
+		DDLogWarn(@"Failed to remove old store with error %ld: %@", (long)[error code], [error userInfo]);
 	}
     
 	DDLogVerbose(@"Migration complete!");

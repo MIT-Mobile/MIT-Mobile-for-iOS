@@ -102,7 +102,7 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
 - (void)setDayOfTheMonth:(NSInteger)dayOfTheMonth
 {
     _dayOfTheMonth = dayOfTheMonth;
-    self.dayOfTheMonthLabel.text = [NSString stringWithFormat:@"%d", dayOfTheMonth];
+    self.dayOfTheMonthLabel.text = [NSString stringWithFormat:@"%ld", (long)dayOfTheMonth];
 }
 
 #pragma mark - Lighter Text Color

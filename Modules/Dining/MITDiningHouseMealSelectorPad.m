@@ -345,11 +345,11 @@
     NSDateComponents *inputDateComps = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:date];
     
     if ([[date dateWithoutTime] isEqualToDate:currentDateWithoutTime]) {
-        return [NSString stringWithFormat:@"Today %i", inputDateComps.day];
+        return [NSString stringWithFormat:@"Today %li", (long)inputDateComps.day];
     } else if ([[date dateWithoutTime] timeIntervalSince1970] == ([currentDateWithoutTime timeIntervalSince1970] - 60 * 60 * 24)) {
-        return [NSString stringWithFormat:@"Yesterday %i", inputDateComps.day];
+        return [NSString stringWithFormat:@"Yesterday %li", (long)inputDateComps.day];
     } else if ([[date dateWithoutTime] timeIntervalSince1970] == ([currentDateWithoutTime timeIntervalSince1970] + 60 * 60 * 24)) {
-        return [NSString stringWithFormat:@"Tomorrow %i", inputDateComps.day];
+        return [NSString stringWithFormat:@"Tomorrow %li", (long)inputDateComps.day];
     } else {
         return [mealDateFormatter stringFromDate:date];
     }

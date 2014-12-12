@@ -43,8 +43,8 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 #pragma mark - UITableView Methods
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]]) {
-        return [self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]] floatValue];
+    if (self.webViewHeightsDictionary[@(indexPath.row)]) {
+        return [self.webViewHeightsDictionary[@(indexPath.row)] floatValue];
     }
     return 44;
 }
@@ -77,7 +77,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
         AboutCreditsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:AboutCreditsTableViewCellIdentifier];
         cell.webView.scrollView.scrollEnabled = NO;
         cell.webView.tag = indexPath.row;
-        if (!self.webViewHeightsDictionary[[NSNumber numberWithInt:indexPath.row]]) {
+        if (!self.webViewHeightsDictionary[@(indexPath.row)]) {
             cell.webView.delegate = self;
         } else {
             cell.webView.delegate = nil;
@@ -117,7 +117,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    DDLogWarn(@"credits view at index %d failed to load: %@",webView.tag, error);
+    DDLogWarn(@"credits view at index %ld failed to load: %@", (long)webView.tag, error);
 }
 @end
 

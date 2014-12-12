@@ -349,7 +349,7 @@ FOUNDATION_STATIC_INLINE void runAsyncOnBackgroundThread( dispatch_block_t block
 {
     if( numberOfRecentScans > 0 )
     {
-        return [NSString stringWithFormat:@"History (%i)", numberOfRecentScans];
+        return [NSString stringWithFormat:@"History (%li)", (long)numberOfRecentScans];
     }
     
     return @"History";

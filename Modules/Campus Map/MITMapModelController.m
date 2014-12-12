@@ -447,7 +447,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
                 [context save:error];
 
                 if (error) {
-                    DDLogWarn(@"Failed to move bookmark for '%@' to index %d with error %@", localPlace.identifier,index,*error);
+                    DDLogWarn(@"Failed to move bookmark for '%@' to index %ld with error %@", localPlace.identifier, (unsigned long)index, *error);
                 }
             }
         }

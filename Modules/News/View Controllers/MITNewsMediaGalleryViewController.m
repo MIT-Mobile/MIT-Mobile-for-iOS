@@ -317,7 +317,7 @@
 {
     if (self.selectedIndex != NSNotFound) {
         UINavigationItem *navigationItem = [[self.navigationBar items] lastObject];
-        navigationItem.title = [NSString stringWithFormat:@"%d of %d",self.selectedIndex + 1,[_galleryImages count]];
+        navigationItem.title = [NSString stringWithFormat:@"%ld of %d", (unsigned long)self.selectedIndex + 1, [_galleryImages count]];
         
         __block NSString *description = nil;
         __block NSString *credits = nil;
