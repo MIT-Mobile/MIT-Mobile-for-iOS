@@ -7,6 +7,8 @@
 #import "MITTiledMapView.h"
 #import "MITCalloutMapView.h"
 #import "MITLocationManager.h"
+#import "MITMapModelController.h"
+#import "MITConstants.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
@@ -125,6 +127,13 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
         }
             break;
         case MITLibraryDetailCellLocation:
+        {
+            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme, MITModuleTagCampusMap, [MITMapModelController sanitizeMapSearchString:self.library.location]];
+            NSURL *url = [NSURL URLWithString:urlString];
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+        }
             break;
         case MITLibraryDetailCellHoursToday:
         case MITLibraryDetailCellOther:

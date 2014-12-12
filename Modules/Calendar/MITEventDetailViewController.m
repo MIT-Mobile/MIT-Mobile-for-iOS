@@ -7,6 +7,7 @@
 #import "MITConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
+#import "MITMapModelController.h"
 #import <EventKit/EventKit.h>
 #import <EventKitUI/EventKitUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
@@ -443,12 +444,11 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeLocation: {
-            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap,[self.event.location bestMapsSearchDescription]];
+            NSString *searchString = self.event.location.roomNumber ? [MITMapModelController sanitizeMapSearchString:self.event.location.roomNumber] : self.event.location.locationDescription;
+            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
             NSURL *url = [NSURL URLWithString:urlString];
             if ([[UIApplication sharedApplication] canOpenURL:url]) {
                 [[UIApplication sharedApplication] openURL:url];
-            } else {
-                NSLog(@"Unable to open url: %@", urlString);
             }
             break;
         }
