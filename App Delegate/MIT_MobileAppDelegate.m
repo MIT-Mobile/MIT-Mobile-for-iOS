@@ -149,6 +149,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     if(apnsDict) {
         [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:apnsDict];
     }
+
     return YES;
 }
 
@@ -263,13 +264,31 @@ static NSString* const MITMobileButtonTitleView = @"View";
     
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
-		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken];
+		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken completion:^(BOOL success) {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                }
+            }];
+        }];
 	} else {
 		NSData *oldToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 		
 		if(![oldToken isEqualToData:deviceToken]) {
-			[MITDeviceRegistration newDeviceToken:deviceToken];
-		}
+			[MITDeviceRegistration newDeviceToken:deviceToken completion:^(BOOL success) {
+                [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                    if (module.pushNotificationSupported) {
+                        [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                    }
+                }];
+            }];
+        } else {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:YES completed:nil];
+                }
+            }];
+        }
 	}
 }
 
