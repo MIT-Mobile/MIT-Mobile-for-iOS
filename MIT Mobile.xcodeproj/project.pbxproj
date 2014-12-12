@@ -676,7 +676,6 @@
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
-		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; };
 		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; };
 		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
 		DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE70549A103FB79D003B5F41 /* EmergencyViewController.m */; };
@@ -1965,8 +1964,6 @@
 		DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Foundation+MITAdditions.m"; sourceTree = "<group>"; };
 		DE6D32F410346D02008A5823 /* ShuttleModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleModule.h; sourceTree = "<group>"; };
 		DE6D32F510346D02008A5823 /* ShuttleModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleModule.m; sourceTree = "<group>"; };
-		DE6D9318110A8EFA00DAF213 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsTableViewController.h; path = Settings/SettingsTableViewController.h; sourceTree = "<group>"; };
-		DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsTableViewController.m; path = Settings/SettingsTableViewController.m; sourceTree = "<group>"; };
 		DE705495103FB79D003B5F41 /* EmergencyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmergencyData.h; sourceTree = "<group>"; };
 		DE705496103FB79D003B5F41 /* EmergencyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyData.m; sourceTree = "<group>"; };
 		DE705497103FB79D003B5F41 /* EmergencyModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmergencyModule.h; sourceTree = "<group>"; };
@@ -4641,8 +4638,6 @@
 				DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */,
 				DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */,
 				2C63A1E2143204B90068333F /* Touchstone Settings */,
-				DE6D9318110A8EFA00DAF213 /* SettingsTableViewController.h */,
-				DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -5298,7 +5293,6 @@
 				22E6BCBB19E46949003E278C /* MITLibrariesHomeViewControllerPad.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */,
-				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,
 				A59D4C9619F6A0870074E392 /* MITLibrariesWorldcatItemCollectionCell.m in Sources */,
 				A5A24B5D198F255500AA1CFC /* MITCalendarEventDateParser.m in Sources */,
 				225481F319FAA256007BEE62 /* MITToursHomeViewController.m in Sources */,

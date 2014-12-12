@@ -13,6 +13,7 @@
     if (self) {
         _name = [name copy];
         _title = [title copy];
+        _pushNotificationSupported = NO;
     }
     
     return self;
@@ -22,11 +23,6 @@
 {
     UIUserInterfaceIdiom currentUserInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
     return (currentUserInterfaceIdiom == UIUserInterfaceIdiomPhone);
-}
-
-- (BOOL)pushNotificationSupported
-{
-    return YES;
 }
 
 - (BOOL)isViewControllerLoaded
