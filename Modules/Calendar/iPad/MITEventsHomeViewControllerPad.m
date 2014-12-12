@@ -104,7 +104,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    self.navigationController.toolbarHidden = NO;
     [self alignExtendedNavBarAndDayPickerCollectionView];
 }
 
