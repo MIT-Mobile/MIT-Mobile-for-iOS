@@ -17,6 +17,7 @@
     if (self) {
         self.longTitle = @"Emergency Info";
         self.imageName = MITImageEmergencyModuleIcon;
+        self.pushNotificationSupported = YES;
     }
     
     return self;
