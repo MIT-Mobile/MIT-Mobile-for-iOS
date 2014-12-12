@@ -40,7 +40,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
     [self needsUpdateConstraints];
     [self updateConstraintsIfNeeded];
     
-    [self.storyImageView cancelCurrentImageLoad];
+    [self.storyImageView sd_cancelCurrentImageLoad];
 }
 
 - (void)updateConstraints
@@ -76,7 +76,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 - (void)setStory:(MITNewsStory *)story
 {
     _story = story;
-    [self.storyImageView cancelCurrentImageLoad];
+    [self.storyImageView sd_cancelCurrentImageLoad];
 
     if (_story) {
         __block NSString *title = nil;
@@ -134,7 +134,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
         if (imageURL) {
             MITNewsStory *currentStory = self.story;
             __weak MITNewsStoryCollectionViewCell *weakSelf = self;
-            [self.storyImageView setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [self.storyImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 MITNewsStoryCollectionViewCell *blockSelf = weakSelf;
                 // If we still exist...
                 if (blockSelf) {
@@ -170,6 +170,7 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
 {
     if (self = [super initWithCoder:coder]) {
         [self commonInit];
+        [self loadHiglightView];
     }
     return self;
 }
@@ -180,6 +181,48 @@ static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .
         [self commonInit];
     }
     return self;
+}
+
+- (void)loadHiglightView
+{
+    self.highlightView = [[UIView alloc] init];
+    [self.highlightView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.highlightView.backgroundColor = [UIColor blackColor];
+    self.highlightView.alpha = .16;
+    [self.contentView addSubview:self.highlightView];
+    
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.highlightView
+                                                          attribute:NSLayoutAttributeWidth
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.contentView
+                                                          attribute:NSLayoutAttributeWidth
+                                                         multiplier:1.0
+                                                           constant:0]];
+    
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.highlightView
+                                                          attribute:NSLayoutAttributeHeight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.contentView
+                                                          attribute:NSLayoutAttributeHeight
+                                                         multiplier:1.0
+                                                           constant:0]];
+    
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.highlightView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.contentView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1.0
+                                                           constant:0.0]];
+    
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.highlightView
+                                                          attribute:NSLayoutAttributeCenterY
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.contentView
+                                                          attribute:NSLayoutAttributeCenterY
+                                                         multiplier:1.0
+                                                           constant:0.0]];
+    self.highlightView.hidden = YES;
 }
 
 @end
