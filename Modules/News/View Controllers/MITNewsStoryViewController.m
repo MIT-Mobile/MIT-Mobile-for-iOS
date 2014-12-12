@@ -133,12 +133,15 @@
     
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         if (self.coverImageView.image) {
-            // Using 213 here because all the images from the News office should be around a
-            // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
-            // a point or two.
-            // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
-            // (bskinner - 2014.02.07)
-            self.coverImageViewHeightConstraint.constant = 213.;
+            
+            CGFloat imageRatio = self.coverImageView.image.size.width / self.coverImageView.image.size.height;
+            
+            CGRect screenRect = [[UIScreen mainScreen] bounds];
+            CGFloat screenWidth = screenRect.size.width;
+            CGFloat screenHeight = screenRect.size.height;
+            CGFloat maxWidth = screenHeight < screenWidth ? screenHeight : screenWidth;
+            
+            self.coverImageViewHeightConstraint.constant = maxWidth / imageRatio;
         } else {
             self.coverImageViewHeightConstraint.constant = 0;
         }
