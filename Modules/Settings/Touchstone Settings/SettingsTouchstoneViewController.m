@@ -4,9 +4,11 @@
 #import "MITTouchstoneOperation.h"
 #import "MITTouchstoneController.h"
 
+#import "MITMobileServerConfiguration.h"
 #import "ExplanatorySectionLabel.h"
 #import "MITNavigationActivityView.h"
 #import "MITAdditions.h"
+#import "MITDeviceRegistration.h"
 
 typedef NS_ENUM(NSInteger, MITTouchstoneSettingsViewTag) {
     MITTouchstoneSettingsViewUserTag = 0x49485400,
@@ -17,7 +19,8 @@ typedef NS_ENUM(NSInteger, MITTouchstoneSettingsViewTag) {
 
 typedef NS_ENUM(NSInteger, MITTouchstoneSettingsSectionIndex) {
     MITTouchstoneSettingsCredentialsSectionIndex = 0,
-    MITTouchstoneSettingsLogInSectionIndex
+    MITTouchstoneSettingsLogInSectionIndex,
+    MITTouchstoneSettingsServerSettingsSectionIndex
 };
 
 static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock icon will appear next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
@@ -32,6 +35,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 
 @property (nonatomic,getter=isAuthenticating) BOOL authenticating;
 @property (nonatomic) BOOL needsToValidateCredentials;
+@property BOOL advancedSettingsAreVisible;
 
 - (void)setNeedsToValidateCredentials;
 - (void)validateCredentialsIfNeeded;
@@ -125,10 +129,14 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
     [super viewDidLoad];
     
     self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
     self.tableView.scrollEnabled = NO;
-    
     self.title = @"Touchstone";
+
+    UISwipeGestureRecognizer *showGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                      action:@selector(didRecognizeAdvancedSettingsGesture:)];
+    showGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+    showGesture.numberOfTouchesRequired = 2;
+    [self.tableView addGestureRecognizer:showGesture];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -151,6 +159,23 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 }
 
 #pragma mark IBAction Methods
+- (IBAction)didRecognizeAdvancedSettingsGesture:(UISwipeGestureRecognizer*)swipeGesture
+{
+    if (swipeGesture.state == UIGestureRecognizerStateEnded) {
+        if (self.advancedSettingsAreVisible) {
+            swipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+            self.advancedSettingsAreVisible = NO;
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:MITTouchstoneSettingsServerSettingsSectionIndex]
+                          withRowAnimation:UITableViewRowAnimationRight];
+        } else {
+            swipeGesture.direction = UISwipeGestureRecognizerDirectionRight;
+            self.advancedSettingsAreVisible = YES;
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:MITTouchstoneSettingsServerSettingsSectionIndex]
+                          withRowAnimation:UITableViewRowAnimationRight];
+        }
+    }
+}
+
 - (IBAction)saveItemWasTapped:(UIBarButtonItem*)sender
 {
     [self validateCredentialsIfNeeded];
@@ -382,9 +407,6 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
     switch (indexPath.section) {
         case MITTouchstoneSettingsCredentialsSectionIndex: {
             UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
-            if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-                textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
-            }
             
             NSString *identifier = nil;
             if (indexPath.row == 0) {
@@ -452,6 +474,33 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
             
             return cell;
         }
+
+        case MITTouchstoneSettingsServerSettingsSectionIndex: {
+            NSString *identifier = @"MITSettingsCellIdentifierAPIServer";
+
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            }
+
+            cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+            cell.textLabel.backgroundColor = [UIColor clearColor];
+
+            NSArray *servers = MITMobileWebGetAPIServerList();
+            cell.textLabel.text = [servers[indexPath.row] host];
+
+            NSURL *currentServer = MITMobileWebGetCurrentServerURL();
+            cell.accessoryView = nil;
+
+            if ([servers indexOfObject:currentServer] == indexPath.row) {
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+            }
+
+            return cell;
+        }
     }
     
     return nil;
@@ -459,7 +508,11 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    if (self.advancedSettingsAreVisible) {
+        return 3;
+    } else {
+        return 2;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -469,6 +522,8 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
             return 2;
         case MITTouchstoneSettingsLogInSectionIndex:
             return 1;
+        case MITTouchstoneSettingsServerSettingsSectionIndex:
+            return [MITMobileWebGetAPIServerList() count];
     }
     
     return 0;
@@ -481,6 +536,8 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
         if (indexPath.row == 0) {
             return [[MITTouchstoneController sharedController] isLoggedIn];
         }
+    } else if (indexPath.section == MITTouchstoneSettingsServerSettingsSectionIndex) {
+        return YES;
     }
 
     return NO;
@@ -501,6 +558,33 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
                 [self refreshNavigationBarItems];
             }
         }
+    } else if (indexPath.section == MITTouchstoneSettingsServerSettingsSectionIndex) {
+        NSArray *serverURLs = MITMobileWebGetAPIServerList();
+        NSURL *currentServerURL = MITMobileWebGetCurrentServerURL();
+        NSURL *newServerURL = serverURLs[indexPath.row];
+
+        NSUInteger indexOfCurrentURL = [serverURLs indexOfObject:currentServerURL];
+        NSIndexPath *indexPathOfCurrentURL = [NSIndexPath indexPathForRow:indexOfCurrentURL inSection:MITTouchstoneSettingsServerSettingsSectionIndex];
+
+        if ([serverURLs[indexPath.row] isEqual:MITMobileWebGetCurrentServerURL()]) {
+            [tableView reloadRowsAtIndexPaths:@[indexPathOfCurrentURL] withRowAnimation:UITableViewRowAnimationNone];
+            return;
+        }
+
+        MITMobileWebSetCurrentServerURL(serverURLs[indexPath.row]);
+
+        NSUInteger indexOfNewURL = [serverURLs indexOfObject:newServerURL];
+        NSIndexPath *indexPathOfNewURL = [NSIndexPath indexPathForRow:indexOfNewURL inSection:MITTouchstoneSettingsServerSettingsSectionIndex];
+        [tableView reloadRowsAtIndexPaths:@[indexPathOfCurrentURL,indexPathOfNewURL] withRowAnimation:UITableViewRowAnimationNone];
+
+        [MITDeviceRegistration clearIdentity];
+
+        UIApplication *application = [UIApplication sharedApplication];
+        if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+            [application registerForRemoteNotifications];
+        } else {
+            [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+        }
     }
 }
 
@@ -508,7 +592,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
     if (section == MITTouchstoneSettingsLogInSectionIndex) {
         ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
         footerLabel.text = MITTouchstoneSettingsLockIconExplanationText;
-        footerLabel.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];;
+        footerLabel.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
         return footerLabel;
     } else {
         return nil;
@@ -521,10 +605,15 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
                                                            width:CGRectGetWidth(tableView.bounds)
                                                             type:ExplanatorySectionFooter
                                                    accessoryView:[UIImageView accessoryViewWithMITType:MITAccessoryViewSecure]];
-        return height;
+        return height + 8;
     }
     
-    return 0;
+    return UITableViewAutomaticDimension;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewAutomaticDimension;
 }
 
 @end
