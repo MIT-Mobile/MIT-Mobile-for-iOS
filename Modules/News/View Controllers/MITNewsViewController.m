@@ -493,7 +493,7 @@ CGFloat const refreshControlTextHeight = 19;
     // Mark Novak 12-11-14
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         CGRect rect = self.searchBar.frame;
-        rect.size.width = rect.size.width + self.searchBar.frame.origin.x;
+        rect.size.width = rect.size.width + self.searchBar.frame.origin.x - 8;
         rect.origin.x = 0;
         self.searchBar.frame = rect;
     }
