@@ -327,8 +327,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
-    if ([cell class] == [MITNewsStoryCollectionViewCell class]) {
-        MITNewsStoryCollectionViewCell *collectionViewCell =(MITNewsStoryCollectionViewCell *)cell;
+    if ([cell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
+        MITNewsStoryCollectionViewCell *collectionViewCell = (MITNewsStoryCollectionViewCell *)cell;
         collectionViewCell.highlightView.hidden = NO;
     }
 }
@@ -336,8 +336,8 @@
 - (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell* cell = [collectionView cellForItemAtIndexPath:indexPath];
-    if ([cell class] == [MITNewsStoryCollectionViewCell class]) {
-        MITNewsStoryCollectionViewCell *collectionViewCell =(MITNewsStoryCollectionViewCell *)cell;
+    if ([cell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
+        MITNewsStoryCollectionViewCell *collectionViewCell = (MITNewsStoryCollectionViewCell *)cell;
         collectionViewCell.highlightView.hidden = YES;
     }}
 
