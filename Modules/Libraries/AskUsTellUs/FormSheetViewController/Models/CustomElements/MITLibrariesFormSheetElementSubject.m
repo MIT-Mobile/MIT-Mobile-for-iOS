@@ -1,6 +1,6 @@
-#import "MITLibrariesFormSheetElementAskUsSubject.h"
+#import "MITLibrariesFormSheetElementSubject.h"
 
-@implementation MITLibrariesFormSheetElementAskUsSubject
+@implementation MITLibrariesFormSheetElementSubject
 - (instancetype)init
 {
     self = [super init];
