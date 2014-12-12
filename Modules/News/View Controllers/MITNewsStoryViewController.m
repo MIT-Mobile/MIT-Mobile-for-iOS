@@ -388,16 +388,19 @@
     DDLogWarn(@"story view failed to load: %@", error);
 }
 
-- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-	BOOL result = YES;
-    
-	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-		NSURL *url = [request URL];
+- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    BOOL result = YES;
+    if (navigationType == UIWebViewNavigationTypeOther) {
+        NSURL *url = [request URL];
         if ([[url relativeString] isEqualToString:@"mitmobile://opengallery"])
         {
             [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
             return NO;
         }
+        
+    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        NSURL *url = [request URL];
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]];
         
         if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
@@ -407,9 +410,9 @@
             
             result = NO;
         }
-	}
+    }
     
-	return result;
+    return result;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
