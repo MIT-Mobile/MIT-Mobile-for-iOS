@@ -87,6 +87,11 @@ CGFloat const refreshControlTextHeight = 19;
     [self reloadData];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self updateNavigationItem:NO];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -359,7 +364,7 @@ CGFloat const refreshControlTextHeight = 19;
     self.isPreviousStateASingleDataSource = self.isSingleDataSource;
     self.searching = YES;
     self.mainLastUpdated = self.lastUpdated;
-    [self updateNavigationItem:YES];
+    [self updateNavigationItem:NO];
     [self addChildViewController:self.searchController];
     [self.containerView addSubview:self.searchController.view];
     [self.searchController didMoveToParentViewController:self];
@@ -458,7 +463,7 @@ CGFloat const refreshControlTextHeight = 19;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, 240, 44);
+            self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
         }
         if (self.isSingleDataSource) {
             self.navigationItem.hidesBackButton = YES;
@@ -482,6 +487,14 @@ CGFloat const refreshControlTextHeight = 19;
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+   
+    // This width is set here because we do not know the position of
+    // the searchbar until we add it to the navigationbar
+    // Mark Novak 12-11-14
+    CGRect rect = self.searchBar.frame;
+    rect.size.width = rect.size.width + self.searchBar.frame.origin.x;
+    rect.origin.x = 0;
+    self.searchBar.frame = rect;
 }
 
 #pragma mark Story Refreshing
@@ -1089,7 +1102,7 @@ CGFloat const refreshControlTextHeight = 19;
     [self.searchController removeFromParentViewController];
     self.searchController = nil;
     self.searching = NO;
-    [self updateNavigationItem:YES];
+    [self updateNavigationItem:NO];
     [self changeToMainStories];
 }
 
