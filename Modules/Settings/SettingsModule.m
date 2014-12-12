@@ -12,6 +12,11 @@
     return self;
 }
 
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
+}
+
 - (void)loadRootViewController
 {
     SettingsTouchstoneViewController *rootViewController = [[SettingsTouchstoneViewController alloc] init];
