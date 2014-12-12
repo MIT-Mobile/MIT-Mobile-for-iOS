@@ -6,16 +6,24 @@
 
 @implementation MITLibrariesAskUsFormSheetViewController
 
+#pragma mark - Lifecycle
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self updateFormSheetGroupsForTechnicalHelpAndReloadData];
+}
+
 #pragma mark - Setup
 
 - (void)setup
 {
     [super setup];
     self.title = @"Ask Us!";
-    [self setupFormSheetGroups];
+    [self fetchFormSheetGroups];
 }
 
-- (void)setupFormSheetGroups
+- (void)fetchFormSheetGroups
 {
     [self showActivityIndicator];
     [MITLibrariesFormSheetGroupAskUsTopGroup loadAskUsTopGroupInBackgroundWithCompletion:^(MITLibrariesFormSheetGroupAskUsTopGroup *askUsTopGroup, NSError *error) {
@@ -23,6 +31,7 @@
         if (!error) {
             MITLibrariesFormSheetGroupAskUsBottomGroup *bottomGroup = [MITLibrariesFormSheetGroupAskUsBottomGroup new];
             self.formSheetGroups = @[askUsTopGroup, bottomGroup];
+            [self updateFormSheetGroupsForTechnicalHelpAndReloadData];
             [self reloadTableView];
         }
         else {
@@ -50,18 +59,30 @@
     }];
 }
 
-#pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
+#pragma mark - TechnicalHelp Modifications
 
-- (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
+- (void)updateFormSheetGroupsForTechnicalHelpAndReloadData
 {
-    [super formSheetOptionsSelectionViewController:optionsSelectionViewController didFinishUpdatingElement:element];
-    if ([element.title isEqualToString:@"Topic"]) {
-        if ([element.value isEqualToString:@"Technical Help"]) {
-            [self showTechnicalFormGroup];
-        } else {
-            [self hideTechnicalFormGroup];
+    for (MITLibrariesFormSheetGroup *group in self.formSheetGroups) {
+        BOOL shouldBreak = NO;
+        for (MITLibrariesFormSheetElement *element in group.elements) {
+            if ([element.title isEqualToString:@"Topic"]) {
+                if ([element.value isEqualToString:@"Technical Help"]) {
+                    [self showTechnicalFormGroup];
+                } else {
+                    [self hideTechnicalFormGroup];
+                }
+                
+                shouldBreak = YES;
+                break;
+            }
+        }
+        if (shouldBreak) {
+            break;
         }
     }
+    
+    [self reloadTableView];
 }
 
 - (void)showTechnicalFormGroup
@@ -75,7 +96,6 @@
             [formSheetGroups addObject:[MITLibrariesFormSheetGroupTechnicalHelp new]];
         }
         self.formSheetGroups = formSheetGroups;
-        [self reloadTableView];
     }
 }
 
@@ -86,7 +106,6 @@
         NSMutableArray *formSheetGroups = [self.formSheetGroups mutableCopy];
         [formSheetGroups removeObject:technicalHelpGroup];
         self.formSheetGroups = formSheetGroups;
-        [self reloadTableView];
     }
 }
 

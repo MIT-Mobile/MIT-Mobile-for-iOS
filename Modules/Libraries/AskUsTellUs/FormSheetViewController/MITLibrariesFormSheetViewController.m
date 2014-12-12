@@ -43,6 +43,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 {
     [super viewWillAppear:animated];
     [self registerKeyboardListeners];
+    [self reloadTableView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -418,7 +419,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     switch (elementForRow.type) {
         case MITLibrariesFormSheetElementTypeOptions: {
             MITLibrariesFormSheetOptionsSelectionViewController *optionsSelectorVC = [MITLibrariesFormSheetOptionsSelectionViewController new];
-            optionsSelectorVC.delegate = self;
             optionsSelectorVC.element = elementForRow;
             [self.navigationController pushViewController:optionsSelectorVC animated:YES];
             break;
@@ -447,14 +447,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         elementForRow.value = value;
         [self updateSubmitButton];
     }
-}
-
-#pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
-
-- (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
-{
-    [self.navigationController popViewControllerAnimated:YES];
-    [self reloadTableView];
 }
 
 #pragma mark - UIAlertViewDelegate
