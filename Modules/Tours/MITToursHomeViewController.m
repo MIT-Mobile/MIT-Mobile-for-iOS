@@ -52,7 +52,18 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = YES;
+    
+    if ([[UIApplication sharedApplication] statusBarOrientation] != UIInterfaceOrientationPortrait) {
+        [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationPortrait];
+        
+        //will re-rotate view according to statusbar -- Apparently this is necessary ...
+        UIViewController *c = [[UIViewController alloc]init];
+        [self presentViewController:c animated:NO completion:nil];
+        [c dismissViewControllerAnimated:NO completion:nil];
+        [self.tableView reloadData];
+    }
 }
 
 - (void)setupTableView
@@ -218,6 +229,23 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
     [controller dismissViewControllerAnimated:YES completion:NULL];
+}
+
+#pragma mark - Rotation
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
 }
 
 @end

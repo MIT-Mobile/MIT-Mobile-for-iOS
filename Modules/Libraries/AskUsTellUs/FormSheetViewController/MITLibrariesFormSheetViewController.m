@@ -15,7 +15,7 @@ static NSString * const MITLibrariesFormSheetCellIdentifierWebLink = @"MITLibrar
 
 static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrariesFormSheetViewController";
 
-@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetTextEntryCellDelegate>
+@interface MITLibrariesFormSheetViewController () <UITableViewDataSource, UITableViewDelegate, MITLibrariesFormSheetTextEntryCellDelegate, UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
@@ -35,6 +35,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setupActivityIndicator];
     [self verifyAuthorization];
 }
 
@@ -42,6 +43,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 {
     [super viewWillAppear:animated];
     [self registerKeyboardListeners];
+    [self reloadTableView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -54,7 +56,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 
 - (void)setup
 {
-    [self setupActivityIndicator];
     [self setupTableView];
     [self setupNavigationBar];
 }
@@ -187,12 +188,10 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
         [self hideActivityIndicator];
         if (error || !identity) {
             [self showUnableToRetrieveMITIdentityAlert];
-            [self closeFormSheetViewController];
         } else if (identity.isMITIdentity) {
             [self setup];
         } else {
             [self showMITIdentityRequiredAlert];
-            [self closeFormSheetViewController];
         }
     }];
 }
@@ -202,7 +201,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     NSString *title = @"Network Failure";
     NSString *message = @"We were unable to fetch your MIT identity from the network.  Please check your connection and try again in a little bit.";
     NSString *confirmation = @"Ok";
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
     [alert show];
 }
 
@@ -211,7 +210,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     NSString *title = @"MIT Identity Required";
     NSString *message = @"This action requires a verified MIT identity to continue.";
     NSString *confirmation = @"Ok";
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:nil otherButtonTitles:confirmation, nil];
     [alert show];
 }
 
@@ -420,7 +419,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     switch (elementForRow.type) {
         case MITLibrariesFormSheetElementTypeOptions: {
             MITLibrariesFormSheetOptionsSelectionViewController *optionsSelectorVC = [MITLibrariesFormSheetOptionsSelectionViewController new];
-            optionsSelectorVC.delegate = self;
             optionsSelectorVC.element = elementForRow;
             [self.navigationController pushViewController:optionsSelectorVC animated:YES];
             break;
@@ -451,12 +449,11 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     }
 }
 
-#pragma mark - MITLibrariesFormSheetOptionsSelectionViewControllerDelegate
+#pragma mark - UIAlertViewDelegate
 
-- (void)formSheetOptionsSelectionViewController:(MITLibrariesFormSheetOptionsSelectionViewController *)optionsSelectionViewController didFinishUpdatingElement:(MITLibrariesFormSheetElement *)element
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    [self.navigationController popViewControllerAnimated:YES];
-    [self reloadTableView];
+    [self closeFormSheetViewController];
 }
 
 @end

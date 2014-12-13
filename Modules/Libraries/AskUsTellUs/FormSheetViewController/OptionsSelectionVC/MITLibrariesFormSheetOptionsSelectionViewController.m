@@ -20,25 +20,12 @@ static NSString * const MITLibrariesFormSheetOptionsSelectionViewControllerCellI
 - (void)setup
 {
     [self setupTableView];
-    [self setupNavigationBar];
 }
 
 - (void)setupTableView
 {
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITLibrariesFormSheetOptionsSelectionViewControllerCellIdentifier];
     self.tableView.tableFooterView = [UIView new];
-}
-
-- (void)setupNavigationBar
-{
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonPressed:)];
-}
-
-#pragma mark - Button Presses
-
-- (void)saveButtonPressed:(UIBarButtonItem *)sender
-{
-    [self.delegate formSheetOptionsSelectionViewController:self didFinishUpdatingElement:self.element];
 }
 
 #pragma mark - UITableViewDataSource

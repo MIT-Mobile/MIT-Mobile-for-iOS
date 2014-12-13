@@ -20,10 +20,18 @@
             MITLibrariesFormSheetElement *howCanWeHelp = [MITLibrariesFormSheetElementHowCanWeHelp new];
             MITLibrariesFormSheetElement *purpose = [MITLibrariesFormSheetElementPurpose new];
             MITLibrariesFormSheetElement *course = [MITLibrariesFormSheetElementCourse new];
-            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementConsultationSubject new];
+            MITLibrariesFormSheetElement *subject = [MITLibrariesFormSheetElementSubject new];
+            
+            // Consultation Flips Subject & Topic
+            NSString *topicHTMLParameter = topicElement.htmlParameterKey;
+            NSString *subjectHTMLParameter = subject.htmlParameterKey;
+            topicElement.title = @"Subject";
+            topicElement.htmlParameterKey = subjectHTMLParameter;
+            subject.title = @"Topic";
+            subject.htmlParameterKey = topicHTMLParameter;
             
             MITLibrariesFormSheetGroupConsultationTopGroup *topGroup = [MITLibrariesFormSheetGroupConsultationTopGroup new];
-            topGroup.elements = @[topicElement, timeframe, howCanWeHelp, purpose, course, subject];
+            topGroup.elements = @[subject, timeframe, howCanWeHelp, purpose, course, topicElement];
             
             completion(topGroup, nil);
         } else {

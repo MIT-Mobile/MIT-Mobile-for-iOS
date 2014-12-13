@@ -43,7 +43,10 @@
     CGRect frame = cell.frame;
     frame.size.width = width;
     cell.frame = frame;
-    
+    // Call again to force proper layout -- otherwise, on iOS 7 some cells size improperly.  If target == iOS 8.0+ you can remove this
+    [cell layoutIfNeeded];
+    [cell refreshLabelLayoutWidths];
+    //
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
     ++height; // add pixel for cell separator
     return MAX([self estimatedCellHeight], height);

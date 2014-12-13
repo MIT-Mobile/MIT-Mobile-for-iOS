@@ -4,7 +4,7 @@
 #import "MITLibrariesFormSheetElement.h"
 #import "MITLibrariesFormSheetOptionsSelectionViewController.h"
 
-@interface MITLibrariesFormSheetViewController : UIViewController <MITLibrariesFormSheetOptionsSelectionViewControllerDelegate>
+@interface MITLibrariesFormSheetViewController : UIViewController
 @property (nonatomic, strong) NSArray *formSheetGroups;
 - (void)reloadTableView;
 - (void)setup;
