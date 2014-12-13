@@ -1,4 +1,3 @@
-
 #import "TabViewControl.h"
 
 #define kTabFontSize 15
@@ -22,7 +21,7 @@
 
 @interface TabViewControl(Private) 
 
--(int) tabIndexAtLocation:(CGPoint)point;
+- (int)tabIndexAtLocation:(CGPoint)point;
 
 @end
 
@@ -44,7 +43,7 @@
     return self;
 }
 
--(id) initWithCoder:(NSCoder *)aDecoder
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
 	self = [super initWithCoder:aDecoder];
 	if (self) {
@@ -167,7 +166,7 @@
 	
 }
 
--(int) tabIndexAtLocation:(CGPoint)point
+- (int)tabIndexAtLocation:(CGPoint)point
 {
 	
 	int tabIndex = -1;
@@ -238,7 +237,7 @@
 		
 }
 
--(int) addTab:(NSString*) tabName
+- (int)addTab:(NSString*) tabName
 {
 	if(nil == self.tabs)
 	{
@@ -250,7 +249,7 @@
 		self.tabs = [NSArray arrayWithArray:tabs];
 	}
 	
-	return self.tabs.count - 1;
+	return (int)self.tabs.count - 1;
 
 }
 

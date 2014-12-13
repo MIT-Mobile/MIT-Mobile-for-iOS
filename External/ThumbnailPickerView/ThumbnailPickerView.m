@@ -191,7 +191,7 @@ static const NSUInteger kBigThumbnailTagOffset = 1000;
     } else {
         
         [self.contentView.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if (![indices containsObject:[NSNumber numberWithInt:[obj tag]-kTagOffset]]) {
+            if (![indices containsObject:[NSNumber numberWithInt:(int)[obj tag]-kTagOffset]]) {
                 [self _prepareImageViewForReuse:obj];
             }
         }];

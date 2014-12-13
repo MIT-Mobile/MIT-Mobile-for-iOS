@@ -82,7 +82,7 @@
 	{
 		CGPDFDocumentRef pdf = CGPDFDocumentCreateWithURL( (__bridge CFURLRef) resourceURL );
 		
-		pageCount = CGPDFDocumentGetNumberOfPages( pdf );
+		pageCount = (int)CGPDFDocumentGetNumberOfPages( pdf );
 		
 		CGPDFDocumentRelease( pdf );
 	}
