@@ -210,7 +210,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
         NSInteger count = self.networkActivityCounter + 1;
         
         if (count < 1) {
-            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %d",count);
+            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %ld", (long)count);
         }
         
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;

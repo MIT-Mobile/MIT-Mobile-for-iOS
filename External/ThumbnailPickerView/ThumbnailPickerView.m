@@ -166,7 +166,7 @@ static const NSUInteger kBigThumbnailTagOffset = 1000;
     CGFloat contentsWidth = totalItemsCount * kThumbnailSize.width + (totalItemsCount-1) * kThumbnailSpacing; // cw = i*w + (i-1)*s
     if (contentsWidth > self.bounds.size.width) {
         self.visibleThumbnailsCount = floor((self.bounds.size.width+kThumbnailSpacing)/(kThumbnailSize.width+kThumbnailSpacing)); // i = (c+s)/(w+s)
-        NSLog(@"items count: %d, new items count: %d, width: %.0f", totalItemsCount, self.visibleThumbnailsCount, self.bounds.size.width);
+        NSLog(@"items count: %lu, new items count: %lu, width: %.0f", (unsigned long)totalItemsCount, (unsigned long)self.visibleThumbnailsCount, self.bounds.size.width);
         contentsWidth = self.visibleThumbnailsCount * kThumbnailSize.width + (self.visibleThumbnailsCount-1) * kThumbnailSpacing;
     } else {
         self.visibleThumbnailsCount = totalItemsCount;

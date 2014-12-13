@@ -17,8 +17,8 @@
     if ([dateDiff second] < 60) {
         [result appendString:@"Just Now"];
     } else if ([dateDiff second] < SECONDS_PER_HOUR) {
-        [result appendFormat:@"%ld minute%@ ago",
-         ([dateDiff second] / 60) + 1,
+        [result appendFormat:@"%ldminute%@ ago",
+         (long)([dateDiff second] / 60) + 1,
          ([dateDiff minute] < 2) ? @"" : @"s"];
     } else if ([dateDiff second] < (SECONDS_PER_HOUR * 6)) {
         [result appendFormat:@"%ld hour%@ ago",

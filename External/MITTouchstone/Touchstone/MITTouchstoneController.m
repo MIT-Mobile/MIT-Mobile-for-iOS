@@ -168,7 +168,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
         NSDictionary *credentials = [sharedCredentialStorage credentialsForProtectionSpace:identityProvider.protectionSpace];
         
         if ([credentials count] > 1) {
-            DDLogWarn(@"expected to find zero or one credetials, found %d",[credentials count]);
+            DDLogWarn(@"expected to find zero or one credetials, found %lu",(unsigned long)[credentials count]);
         }
         
         if (lastLoggedInUser && credentials[lastLoggedInUser]) {
@@ -179,7 +179,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
                 fallbackCredential = [NSURLCredential credentialWithUser:lastLoggedInUser password:nil persistence:NSURLCredentialPersistenceNone];
             }
         } else if ([credentials count] > 0) {
-            DDLogWarn(@"found %d credentials but missing a value for %@",[credentials count],MITTouchstoneLastLoggedInUserKey);
+            DDLogWarn(@"found %lu credentials but missing a value for %@",(unsigned long)[credentials count],MITTouchstoneLastLoggedInUserKey);
         }
     }];
     
