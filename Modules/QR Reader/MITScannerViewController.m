@@ -26,9 +26,6 @@
 @property (weak) UIButton *infoButton;
 @property (weak) UIButton *advancedButton;
 
-// on ipad the scan details show up as a form sheet.
-@property (nonatomic,assign) BOOL isScanDetailsPresented;
-
 @property (nonatomic, strong) MITScannerMgr *scannerMgr;
 
 #pragma mark - History Properties
@@ -39,8 +36,6 @@
 @property (nonatomic, strong) UIPopoverController *historyPopoverController;
 
 #pragma mark - Private methods
-- (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result;
-
 - (IBAction)showHistory:(id)sender;
 - (IBAction)showHelp:(id)sender;
 @end
@@ -271,8 +266,6 @@
 
 - (void)showHistoryOnIpad
 {
-    [self.scannerMgr stopSessionCapture];
-    
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
     self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     self.historyPopoverController.delegate = self;
@@ -280,14 +273,13 @@
     [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
                                           permittedArrowDirections:UIPopoverArrowDirectionUp
                                                           animated:YES];
+    [self.scannerMgr stopSessionCapture];
 }
 
-- (void)showDetailsThroughHistory
-{
-    [self.scannerMgr stopSessionCapture];
-    
+- (void)showDetailsThroughHistoryForItemWithIndex:(NSInteger)itemIndex
+{    
     MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
-    historyVC.openFirstItemOnLoad = YES;
+    historyVC.itemToOpenOnLoadIndex = itemIndex;
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:historyVC];
     self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     self.historyPopoverController.delegate = self;
@@ -296,6 +288,7 @@
                                           permittedArrowDirections:UIPopoverArrowDirectionUp
                                                           animated:YES];
 
+    [self.scannerMgr stopSessionCapture];
 }
 
 - (IBAction)showHelp:(id)sender
@@ -371,7 +364,7 @@
 {
     if( [self isOnIpad] )
     {
-        [self showDetailsThroughHistory];
+        [self showDetailsThroughHistoryForItemWithIndex:0];
         
         return;
     }
@@ -386,24 +379,6 @@
         self.navigationController.navigationBar.userInteractionEnabled = YES;
         self.overlayView.highlighted = NO;
     });
-}
-
-- (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result
-{
-    self.isScanDetailsPresented = YES;
-    
-    MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
-    viewController.delegate = self;
-    viewController.scanResult = result;
-    
-    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:viewController];
-    navController.modalPresentationStyle = UIModalPresentationFormSheet;
-    
-    [self.navigationController presentViewController:navController animated:YES completion:^{
-        self.navigationController.navigationBar.userInteractionEnabled = YES;
-        self.overlayView.highlighted = NO;
-        self.overlayView.hidden = NO;
-    }];
 }
 
 - (BOOL)isOnIpad
@@ -431,7 +406,6 @@
 {
     [self.scannerMgr startSessionCapture];
     self.overlayView.hidden = NO;
-    self.isScanDetailsPresented = NO;
 }
 
 @end
@@ -503,15 +477,16 @@
 
 - (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView
 {
-    if( self.isScanDetailsPresented )
-    {
-        return;
-    }
+    MITBatchScanningAlertView *firstAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:FIRST_ALERT_POSITION_TAG];
+    [firstAlert removeFromSuperview];
+    firstAlert = nil;
     
-    NSManagedObjectID *scanId = alertView.scanId;
-    QRReaderResult *scanResult = [self.scannerHistory fetchScanResult:scanId];
+    MITBatchScanningAlertView *secondAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:SECOND_ALERT_POSITION_TAG];
+    [secondAlert removeFromSuperview];
+    secondAlert = nil;
     
-    [self ipad_showScanDetailsForScanResult:scanResult];
+    NSInteger index = (alertView.tag == FIRST_ALERT_POSITION_TAG) ? 0 : 1;
+    [self showDetailsThroughHistoryForItemWithIndex:index];
 }
 
 @end
@@ -566,7 +541,10 @@
     dispatch_after(popTime, dispatch_get_main_queue(), ^{
         self.overlayView.highlighted = NO;
         
-        [self.scannerMgr startSessionCapture];
+        if( ![self.historyPopoverController isPopoverVisible] )
+        {
+            [self.scannerMgr startSessionCapture];
+        }
     });
 }
 

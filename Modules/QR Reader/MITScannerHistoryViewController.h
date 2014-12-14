@@ -10,6 +10,6 @@
 
 @interface MITScannerHistoryViewController : UIViewController
 
-@property (assign) BOOL openFirstItemOnLoad;
+@property (assign) NSInteger itemToOpenOnLoadIndex;
 
 @end
