@@ -298,6 +298,8 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
              completionBlock( image );
          }
      }];
+    
+    [self stopSessionCapture];
 }
 
 
