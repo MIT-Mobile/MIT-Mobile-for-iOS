@@ -42,6 +42,11 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     return self;
 }
 
+- (void)dealloc
+{
+    [self.captureDevice removeObserver:self forKeyPath:@"adjustingFocus"];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if( [keyPath isEqualToString:@"adjustingFocus"] )

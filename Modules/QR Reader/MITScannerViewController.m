@@ -47,6 +47,7 @@
 
 @interface MITScannerViewController(BatchScanAlertHandler) <MITBatchScanningAlertViewDelegate>
 - (void)showAlertForScanResult:(QRReaderResult *)result;
+- (void)removeVisibleScanningAlerts;
 @end
 
 @interface MITScannerViewController(DelegatesHandler) <UIPopoverControllerDelegate, MITScannerHelpViewControllerDelegate, MITScannerMgrDelegate>
@@ -243,8 +244,6 @@
 
 - (IBAction)showHistory:(id)sender
 {
-    [self.scannerHistory persistLastTimeHistoryWasOpened];
-    
     if( [self isOnIpad] )
     {
         [self showHistoryOnIpad];
@@ -264,8 +263,23 @@
     [self.navigationController pushViewController:historyVC animated:YES];
 }
 
+- (void)prepareForShowingHistoryOnIpad
+{
+    [self.scannerMgr stopSessionCapture];
+    [self removeVisibleScanningAlerts];
+    [self.scannerHistory resetHistoryNewScanCounter];
+    [self updateHistoryButtonTitle];
+    
+    if( [self.advancedMenuPopover isPopoverVisible] )
+    {
+        [self.advancedMenuPopover dismissPopoverAnimated:NO];
+    }
+}
+
 - (void)showHistoryOnIpad
 {
+    [self prepareForShowingHistoryOnIpad];
+    
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
     self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     self.historyPopoverController.delegate = self;
@@ -273,11 +287,12 @@
     [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
                                           permittedArrowDirections:UIPopoverArrowDirectionUp
                                                           animated:YES];
-    [self.scannerMgr stopSessionCapture];
 }
 
 - (void)showDetailsThroughHistoryForItemWithIndex:(NSInteger)itemIndex
-{    
+{
+    [self prepareForShowingHistoryOnIpad];
+    
     MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
     historyVC.itemToOpenOnLoadIndex = itemIndex;
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:historyVC];
@@ -287,8 +302,6 @@
     [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
                                           permittedArrowDirections:UIPopoverArrowDirectionUp
                                                           animated:YES];
-
-    [self.scannerMgr stopSessionCapture];
 }
 
 - (IBAction)showHelp:(id)sender
@@ -353,9 +366,9 @@
 
 - (void)updateHistoryButtonTitle
 {
-//    NSArray *recentScans = [self.scannerHistory fetchRecentScans];
-//    
-//    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:[recentScans count]];
+    NSInteger newScanCounter = [self.scannerHistory historyNewScanCounter];
+
+    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:newScanCounter];
 }
 
 #pragma mark - Scanning Methods
@@ -477,6 +490,12 @@
 
 - (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView
 {
+    NSInteger index = (alertView.tag == FIRST_ALERT_POSITION_TAG) ? 0 : 1;
+    [self showDetailsThroughHistoryForItemWithIndex:index];
+}
+
+- (void)removeVisibleScanningAlerts
+{
     MITBatchScanningAlertView *firstAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:FIRST_ALERT_POSITION_TAG];
     [firstAlert removeFromSuperview];
     firstAlert = nil;
@@ -484,9 +503,6 @@
     MITBatchScanningAlertView *secondAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:SECOND_ALERT_POSITION_TAG];
     [secondAlert removeFromSuperview];
     secondAlert = nil;
-    
-    NSInteger index = (alertView.tag == FIRST_ALERT_POSITION_TAG) ? 0 : 1;
-    [self showDetailsThroughHistoryForItemWithIndex:index];
 }
 
 @end
@@ -497,6 +513,7 @@
 {
     [self runAsyncOnMainThread:^{
         self.overlayView.highlighted = NO;
+        [self updateHistoryButtonTitle];
         [self.scannerMgr startSessionCapture];
     }];
 }
@@ -517,16 +534,18 @@
 - (void)barCodeProcessed:(QRReaderResult *)result isBatchScanning:(BOOL)isBatchScanning
 {
     [self runAsyncOnMainThread:^{        
-        [self updateHistoryButtonTitle];
-        
+
         if ( isBatchScanning )
         {
-            [self continueBatchScanning];
+            [self.scannerHistory updateHistoryNewScanCounter];
+            [self updateHistoryButtonTitle];
             
             if( [self isOnIpad] )
             {
                 [self showAlertForScanResult:result];
             }
+            
+            [self continueBatchScanning];
         }
         else
         {
