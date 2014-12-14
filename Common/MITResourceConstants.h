@@ -76,8 +76,6 @@ extern NSString * const MITImageMapAnnotationPlacePin;
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
-extern NSString * const MITImageNewsShowGridView;
-extern NSString * const MITImageNewsShowListView;
 
 
 // Used by the News story HTML template. These may no longer be in
@@ -205,6 +203,7 @@ extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight;
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
+extern NSString * const MITImageBarButtonGrid;
 extern NSString * const MITImageBarButtonList;
 extern NSString * const MITImageBarButtonListSelected;
 

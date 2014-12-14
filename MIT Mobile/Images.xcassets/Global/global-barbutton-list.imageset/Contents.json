@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "global-barbutton-list.png"
+      "filename" : "view_list.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "global-barbutton-list@2x.png"
+      "filename" : "view_list@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "global-barbutton-list@3x.png"
+      "filename" : "view_list@3x.png"
     }
   ],
   "info" : {

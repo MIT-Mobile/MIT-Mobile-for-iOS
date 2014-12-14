@@ -112,8 +112,6 @@
 
 #pragma mark - News
     MITCheckAsset(MITImageNewsImagePlaceholder);
-    MITCheckAsset(MITImageNewsShowGridView);
-    MITCheckAsset(MITImageNewsShowListView);
 
     MITCheckAsset(MITImageNewsTemplateButtonBookmark);
     MITCheckAsset(MITImageNewsTemplateButtonShare);
@@ -233,7 +231,9 @@
 #pragma mark UIBarButtonItem icons
     MITCheckAsset(MITImageBarButtonMenu);
     MITCheckAsset(MITImageBarButtonLocation);
+    MITCheckAsset(MITImageBarButtonGrid);
     MITCheckAsset(MITImageBarButtonList);
+    MITCheckAsset(MITImageBarButtonListSelected);
     
     MITCheckAsset(MITImageBarButtonSearch);
     MITCheckAsset(MITImageBarButtonSearchMagnifier);
