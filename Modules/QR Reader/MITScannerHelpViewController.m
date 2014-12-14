@@ -52,7 +52,9 @@
 
 - (void)dismissHelp:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:NULL];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate helpViewControllerDidClose];
+    }];
 }
 
 @end

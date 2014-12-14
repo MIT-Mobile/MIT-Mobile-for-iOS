@@ -25,7 +25,6 @@
 
 - (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId;
 
-- (void)deleteScanResult:(QRReaderResult*)result completion:(void (^)(NSError* error))block;
 - (void)deleteScanResults:(NSArray *)results completion:(void (^)(NSError* error))block;
 
 - (NSArray *)fetchRecentScans;
