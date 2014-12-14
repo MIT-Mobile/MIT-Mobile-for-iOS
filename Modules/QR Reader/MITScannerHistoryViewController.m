@@ -14,6 +14,8 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "SVProgressHUD.h"
 
+#define NO_INDEX_TO_OPEN -1
+
 @interface MITScannerHistoryViewController (MITActionSheetHandler) <UIActionSheetDelegate>
 @end
 
@@ -56,6 +58,8 @@
                                                                      sectionNameKeyPath:nil
                                                                               cacheName:nil];
         self.fetchController.delegate = self;
+        
+        self.itemToOpenOnLoadIndex = NO_INDEX_TO_OPEN;
     }
     
     return self;
@@ -90,13 +94,13 @@
 {
     [super viewDidAppear:animated];
     
-    if( self.openFirstItemOnLoad )
+    if( self.itemToOpenOnLoadIndex != NO_INDEX_TO_OPEN )
     {
-        // so that it only loads first item on initial launch.
-        self.openFirstItemOnLoad = NO;
-        
-        QRReaderResult *result = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        QRReaderResult *result = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:self.itemToOpenOnLoadIndex inSection:0]];
         [self showDetailsForResult:result];
+        
+        // so that it only loads first item on initial launch.
+        self.itemToOpenOnLoadIndex = NO_INDEX_TO_OPEN;
     }
 }
 
