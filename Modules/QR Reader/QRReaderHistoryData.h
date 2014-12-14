@@ -27,11 +27,9 @@
 
 - (void)deleteScanResults:(NSArray *)results completion:(void (^)(NSError* error))block;
 
-- (NSArray *)fetchRecentScans;
-
-- (void)persistLastTimeHistoryWasOpened;
-
-- (NSDate *)lastTimeHistoryWasOpened;
+- (void)resetHistoryNewScanCounter;
+- (void)updateHistoryNewScanCounter;
+- (NSInteger)historyNewScanCounter;
 
 - (void)saveDataModelChanges;
 

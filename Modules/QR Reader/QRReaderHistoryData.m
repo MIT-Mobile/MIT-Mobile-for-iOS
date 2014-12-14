@@ -6,7 +6,7 @@
 #import "MITCoreDataController.h"
 #import "UIKit+MITAdditions.h"
 
-NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKey";
+NSString * const kScannerHistoryNewScanCounterKey = @"kScannerHistoryNewScanCounterKey";
 
 @implementation QRReaderHistoryData
 - (id)init {
@@ -110,34 +110,21 @@ NSString * const kScannerHistoryLastOpenDateKey = @"scannerHistoryLastOpenDateKe
    return (QRReaderResult *)[self.context objectWithID:scanId];
 }
 
-- (NSArray *)fetchRecentScans
+- (void)updateHistoryNewScanCounter
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"QRReaderResult"];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"date >= %@", [self lastTimeHistoryWasOpened]];
-    
-    NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
-    fetchRequest.sortDescriptors = @[dateDescriptor];
-    
-    return[self.context executeFetchRequest:fetchRequest error:NULL];
-}
-
-- (void)persistLastTimeHistoryWasOpened
-{
-    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kScannerHistoryLastOpenDateKey];
+    NSInteger currentCounter = [[NSUserDefaults standardUserDefaults] integerForKey:kScannerHistoryNewScanCounterKey];
+    [[NSUserDefaults standardUserDefaults] setInteger:(++currentCounter) forKey:kScannerHistoryNewScanCounterKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (NSDate *)lastTimeHistoryWasOpened
+- (void)resetHistoryNewScanCounter
 {
-    NSDate *lastTimeHistoryWasOpened = [[NSUserDefaults standardUserDefaults] objectForKey:kScannerHistoryLastOpenDateKey];
-    if ( lastTimeHistoryWasOpened == nil )
-    {
-        [self persistLastTimeHistoryWasOpened];
-        
-        return [NSDate date];
-    }
-    
-    return lastTimeHistoryWasOpened;
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:kScannerHistoryNewScanCounterKey];
+}
+
+- (NSInteger)historyNewScanCounter
+{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kScannerHistoryNewScanCounterKey];
 }
 
 - (void)saveDataModelChanges
