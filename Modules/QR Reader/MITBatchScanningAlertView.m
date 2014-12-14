@@ -25,7 +25,9 @@
     self.frame = frame;
 }
 
-- (void)fadeOutWithDuration:(NSTimeInterval)duration andWait:(NSTimeInterval)wait
+- (void)fadeOutWithDuration:(NSTimeInterval)duration
+                    andWait:(NSTimeInterval)wait
+                 completion:(void (^)(void))completionBlock
 {
     __block UIView *viewToAnimate = self;
     
@@ -33,7 +35,7 @@
         [UIView animateWithDuration:duration delay:wait options:UIViewAnimationOptionAllowUserInteraction animations:^{
             viewToAnimate.alpha = 0.0;
         } completion:^(BOOL finished) {
-            [viewToAnimate removeFromSuperview];
+            if( completionBlock ) completionBlock();
         }];
     });
 }

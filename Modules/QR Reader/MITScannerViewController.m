@@ -14,15 +14,17 @@
 #import "MITBatchScanningAlertView.h"
 #import "MITScannerMgr.h"
 
+#define FIRST_ALERT_POSITION_TAG 20
+#define SECOND_ALERT_POSITION_TAG 21
+
 @interface MITScannerViewController ()
 
-#pragma mark - Scanner Properties
+#pragma mark - Scanner UI components
 @property (strong) UIView *scanView;
 @property (weak) UIImageView *cameraUnavailableView;
 @property (weak) MITScannerOverlayView *overlayView;
 @property (weak) UIButton *infoButton;
 @property (weak) UIButton *advancedButton;
-
 
 // on ipad the scan details show up as a form sheet.
 @property (nonatomic,assign) BOOL isScanDetailsPresented;
@@ -438,35 +440,65 @@
 
 - (void)showAlertForScanResult:(QRReaderResult *)result
 {
+    double fadingDuration = 2.0;
+    double waitBeforeFading = 6.0;
+    
     [self runAsyncOnMainThread:^{
-        static MITBatchScanningAlertView *topAlert;
-        static MITBatchScanningAlertView *bottomAlert;
         
-        if( topAlert != nil )
+        __block MITBatchScanningAlertView *firstAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:FIRST_ALERT_POSITION_TAG];
+        __block MITBatchScanningAlertView *secondAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:SECOND_ALERT_POSITION_TAG];
+        
+        if( firstAlert == nil )
         {
-            if( bottomAlert != nil )
+            firstAlert = [self alertWithScanResult:result];
+            firstAlert.tag = FIRST_ALERT_POSITION_TAG;
+            [self.view addSubview:firstAlert];
+            
+            [firstAlert fadeOutWithDuration:fadingDuration andWait:waitBeforeFading completion:^{
+                [firstAlert removeFromSuperview];
+                firstAlert = nil;
+            }];
+        }
+        else
+        {
+            // if second alert is already created, then need to remove it
+            // as we shift everything down.
+            if( secondAlert != nil )
             {
-                [bottomAlert removeFromSuperview];
-                bottomAlert = nil;
+                [secondAlert removeFromSuperview];
+                secondAlert = nil;
             }
             
-            CGRect topAlertFrame = topAlert.frame;
-            topAlertFrame.origin.y += topAlertFrame.size.height + 5;
-            topAlert.frame = topAlertFrame;
-            bottomAlert = topAlert;
-            topAlert = nil;
+            // moving first alert down on a second position
+            CGRect alertFrame = firstAlert.frame;
+            alertFrame.origin.y += alertFrame.size.height + 5;
+            firstAlert.frame = alertFrame;
+            firstAlert.tag = SECOND_ALERT_POSITION_TAG;
+            
+            // creating another alert and setting it to the first position
+            secondAlert = [self alertWithScanResult:result];
+            secondAlert.tag = FIRST_ALERT_POSITION_TAG;
+            [self.view addSubview:secondAlert];
+            
+            // animating fade animation for that other alert we just created
+            [secondAlert fadeOutWithDuration:fadingDuration andWait:waitBeforeFading completion:^{
+                [secondAlert removeFromSuperview];
+                secondAlert = nil;
+            }];
         }
-        
-        UINib *nib = [UINib nibWithNibName:NSStringFromClass([MITBatchScanningAlertView class]) bundle:nil];
-        topAlert = [nib instantiateWithOwner:nil options:nil][0];
-        topAlert.scanCodeLabel.text = result.text;
-        topAlert.ScanThumbnailView.image = result.thumbnail;
-        topAlert.scanId = result.objectID;
-        topAlert.delegate = self;
-        [self.view addSubview:topAlert];
-        
-        [topAlert fadeOutWithDuration:1.0 andWait:4.0];
     }];
+}
+
+- (MITBatchScanningAlertView *)alertWithScanResult:(QRReaderResult *)result
+{
+    UINib *nib = [UINib nibWithNibName:NSStringFromClass([MITBatchScanningAlertView class]) bundle:nil];
+    MITBatchScanningAlertView *alertView = [nib instantiateWithOwner:nil options:nil][0];
+    alertView.scanCodeLabel.text = result.text;
+    alertView.ScanThumbnailView.image = result.thumbnail;
+    alertView.scanId = result.objectID;
+    alertView.delegate = self;
+    
+    return alertView;
 }
 
 - (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView
@@ -497,18 +529,6 @@
 - (void)helpViewControllerDidClose
 {
     [self.scannerMgr startSessionCapture];
-}
-
-- (void)setBarCodeFound:(BOOL)isFound
-{
-    [self runAsyncOnMainThread:^{
-        self.overlayView.highlighted = isFound;
-        
-        if( isFound )
-        {
-            AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-        }
-    }];
 }
 
 - (void)barCodeFound
