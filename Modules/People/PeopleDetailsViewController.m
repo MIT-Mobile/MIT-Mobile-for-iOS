@@ -9,6 +9,7 @@
 #import "Foundation+MITAdditions.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
+#import "MITMapModelController.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -57,22 +58,6 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         [self updateTableViewHeaderView];
         [self.tableView reloadData];
     }];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([@"showLocationOnMap" isEqualToString:segue.identifier]) {
-//        MITCampusMapViewController *mapViewController = (MITCampusMapViewController*)[segue destinationViewController];
-//        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-//        if (selectedIndexPath.row < [self.attributes count]) {
-//            NSArray *personAttributes = self.attributes[selectedIndexPath.row];
-//
-//            DDLogVerbose(@"Using attribute %@:%@",personAttributes[DisplayNameIndex],personAttributes[AttributeValueIndex]);
-//            NSString *locationName = personAttributes[AttributeValueIndex];
-//
-//            [mapViewController setPendingSearch:locationName];
-//        }
-    }
 }
 
 - (void) setPersonDetails:(PersonDetails *)personDetails
@@ -621,7 +606,12 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)mapIconTapped:(NSString *)room
 {
     if (room) {
-        [self performSegueWithIdentifier:@"showLocationOnMap" sender:self.tableView];
+        NSString *searchString = [MITMapModelController sanitizeMapSearchString:room];
+        NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
+        NSURL *url = [NSURL URLWithString:urlString];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
     }
 }
 
