@@ -58,9 +58,10 @@ NSString * const kActionURL = @"kActionUrl";
     
     self.navigationItem.title = @"Scan Detail";
 
-    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonTapped:)];
-    [self setUpNavBarWithShareButton:shareItem andDoneItem:doneItem];
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                               target:self
+                                                                               action:@selector(shareButtonTapped:)];
+    self.navigationItem.rightBarButtonItem = rightItem;
     
     [self tableViewHeaderDidLoad];
 }
@@ -82,19 +83,6 @@ NSString * const kActionURL = @"kActionUrl";
     [super viewWillDisappear:animated];
     
     [self.urlMappingOperation cancel];
-}
-
-- (void)setUpNavBarWithShareButton:(UIBarButtonItem *)shareItem andDoneItem:(UIBarButtonItem *)doneItem
-{
-    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
-    {
-        self.navigationItem.rightBarButtonItem = doneItem;
-        self.navigationItem.leftBarButtonItem = shareItem;
-    }
-    else
-    {
-        self.navigationItem.rightBarButtonItem = shareItem;
-    }
 }
 
 - (void)tableViewHeaderDidLoad
@@ -130,7 +118,7 @@ NSString * const kActionURL = @"kActionUrl";
     {
         UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:sharingViewController];
         [popoverController setPopoverContentSize:CGSizeMake(100, 100)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
     }
     else
     {

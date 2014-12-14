@@ -262,7 +262,9 @@
 {
     [self.navigationItem.rightBarButtonItem setEnabled:NO];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
-    [self.navigationController pushViewController:[MITScannerHistoryViewController new] animated:YES];
+    
+    MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
+    [self.navigationController pushViewController:historyVC animated:YES];
 }
 
 - (void)showHistoryOnIpad
@@ -272,10 +274,26 @@
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
     self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
     self.historyPopoverController.delegate = self;
-    [self.historyPopoverController setPopoverContentSize:CGSizeMake(320, 480) animated:NO];
+    [self.historyPopoverController setPopoverContentSize:CGSizeMake(400, 480) animated:NO];
     [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
                                           permittedArrowDirections:UIPopoverArrowDirectionUp
                                                           animated:YES];
+}
+
+- (void)showDetailsThroughHistory
+{
+    [self.scannerMgr stopSessionCapture];
+    
+    MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
+    historyVC.openFirstItemOnLoad = YES;
+    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:historyVC];
+    self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    self.historyPopoverController.delegate = self;
+    [self.historyPopoverController setPopoverContentSize:CGSizeMake(400, 480) animated:NO];
+    [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                                          permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                          animated:YES];
+
 }
 
 - (IBAction)showHelp:(id)sender
@@ -351,7 +369,7 @@
 {
     if( [self isOnIpad] )
     {
-        [self ipad_showScanDetailsForScanResult:result];
+        [self showDetailsThroughHistory];
         
         return;
     }
@@ -470,7 +488,10 @@
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    [self.scannerMgr startSessionCapture];
+    [self runAsyncOnMainThread:^{
+        self.overlayView.highlighted = NO;
+        [self.scannerMgr startSessionCapture];
+    }];
 }
 
 - (void)helpViewControllerDidClose

@@ -10,4 +10,6 @@
 
 @interface MITScannerHistoryViewController : UIViewController
 
+@property (assign) BOOL openFirstItemOnLoad;
+
 @end
