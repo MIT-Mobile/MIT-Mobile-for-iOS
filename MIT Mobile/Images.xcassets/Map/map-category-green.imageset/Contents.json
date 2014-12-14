@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "map_browse_residences.png"
+      "filename" : "map-category-courts-and-greenspaces.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "map_browse_residences@2x.png"
+      "filename" : "map-category-courts-and-greenspaces@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "map-category-courts-and-greenspaces@3x.png"
     }
   ],
   "info" : {

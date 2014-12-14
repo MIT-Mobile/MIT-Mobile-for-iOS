@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "map_browse_building.png"
+      "filename" : "map-category-parking.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "map_browse_building@2x.png"
+      "filename" : "map-category-parking@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "map-category-parking@3x.png"
     }
   ],
   "info" : {

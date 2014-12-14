@@ -75,6 +75,19 @@ NSString * const MITImageMapAnnotationUserLocation = @"map-annotation-user-locat
 NSString * const MITImageMapAnnotationPin = @"map-annotation-pin";
 NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
 
+NSString * const MITImageMapCategoryAthenaClusters       = @"map-category-clusters";
+NSString * const MITImageMapCategoryBuildings            = @"map-category-buildings";
+NSString * const MITImageMapCategoryCourtsAndGreenspaces = @"map-category-green";
+NSString * const MITImageMapCategoryFoodServices         = @"map-category-food";
+NSString * const MITImageMapCategoryHotels               = @"map-category-hotel";
+NSString * const MITImageMapCategoryLibrary              = @"map-category-library";
+NSString * const MITImageMapCategoryMuseumsAndGalleries  = @"map-category-museum_gallery";
+NSString * const MITImageMapCategoryParking              = @"map-category-parking";
+NSString * const MITImageMapCategoryResidences           = @"map-category-residence";
+NSString * const MITImageMapCategoryRooms                = @"map-category-room";
+NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
+
+
 
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";

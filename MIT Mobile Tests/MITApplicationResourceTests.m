@@ -100,15 +100,23 @@
     MITCheckAsset(MITImageLibrariesStatusReady);
 
 #pragma mark - Map
-    MITCheckAsset(MITImageMapBrowseBuildings);
-    MITCheckAsset(MITImageMapBrowseFoodServices);
-    MITCheckAsset(MITImageMapBrowseResidences);
     MITCheckAsset(MITImageMapLocation);
     MITCheckAsset(MITImageMapLocationHighlighted);
     MITCheckAsset(MITImageMapAnnotationUserLocation);
     MITCheckAsset(MITImageMapAnnotationPin);
     MITCheckAsset(MITImageMapAnnotationPlacePin);
 
+    MITCheckAsset(MITImageMapCategoryAthenaClusters);
+    MITCheckAsset(MITImageMapCategoryBuildings);
+    MITCheckAsset(MITImageMapCategoryCourtsAndGreenspaces);
+    MITCheckAsset(MITImageMapCategoryFoodServices);
+    MITCheckAsset(MITImageMapCategoryHotels);
+    MITCheckAsset(MITImageMapCategoryLibrary);
+    MITCheckAsset(MITImageMapCategoryMuseumsAndGalleries);
+    MITCheckAsset(MITImageMapCategoryParking);
+    MITCheckAsset(MITImageMapCategoryResidences);
+    MITCheckAsset(MITImageMapCategoryRooms);
+    MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
 #pragma mark - News
     MITCheckAsset(MITImageNewsImagePlaceholder);

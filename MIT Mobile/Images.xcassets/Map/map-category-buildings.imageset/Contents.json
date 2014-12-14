@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "map_browse_foodservices.png"
+      "filename" : "map-category-buildings.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "map_browse_foodservices@2x.png"
+      "filename" : "map-category-buildings@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "map-category-buildings@3x.png"
     }
   ],
   "info" : {

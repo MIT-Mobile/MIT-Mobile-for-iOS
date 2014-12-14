@@ -80,7 +80,7 @@ static NSString * const kMITMapCategoryCellIdentifier = @"MITMapCategoryCell";
     }
     MITMapCategory *category = self.categories[indexPath.row];
     cell.textLabel.text = category.name;
-    cell.imageView.image = [UIImage imageNamed:MITImageMapBrowseBuildings];
+    cell.imageView.image = [UIImage imageNamed:category.iconName];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }

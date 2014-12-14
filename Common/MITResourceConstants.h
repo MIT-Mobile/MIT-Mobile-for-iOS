@@ -73,6 +73,18 @@ extern NSString * const MITImageMapAnnotationUserLocation;
 extern NSString * const MITImageMapAnnotationPin;
 extern NSString * const MITImageMapAnnotationPlacePin;
 
+extern NSString * const MITImageMapCategoryAthenaClusters;
+extern NSString * const MITImageMapCategoryBuildings;
+extern NSString * const MITImageMapCategoryCourtsAndGreenspaces;
+extern NSString * const MITImageMapCategoryFoodServices;
+extern NSString * const MITImageMapCategoryHotels;
+extern NSString * const MITImageMapCategoryLibrary;
+extern NSString * const MITImageMapCategoryMuseumsAndGalleries;
+extern NSString * const MITImageMapCategoryParking;
+extern NSString * const MITImageMapCategoryResidences;
+extern NSString * const MITImageMapCategoryRooms;
+extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
+
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
