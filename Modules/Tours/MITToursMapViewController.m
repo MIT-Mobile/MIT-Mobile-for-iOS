@@ -282,6 +282,9 @@ static NSInteger kAnnotationMarginRight = 50;
     [contentView configureForStop:stop userLocation:mapView.userLocation.location];
     
     SMCalloutView *calloutView = self.calloutView;
+    UIImage *disclosureImage = [UIImage imageNamed:@"global-callout-disclosure"];
+    UIImageView *disclosureView = [[UIImageView alloc] initWithImage:disclosureImage];
+    calloutView.rightAccessoryView = disclosureView;
     calloutView.contentView = contentView;
     calloutView.calloutOffset = annotationView.calloutOffset;
 
