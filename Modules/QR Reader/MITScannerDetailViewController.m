@@ -8,6 +8,7 @@
 
 #import "MITScannerDetailViewController.h"
 #import "QRReaderResult.h"
+#import "CoreDataManager.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "UIKit+MITAdditions.h"
 #import "MITScannerDetailTableViewCell.h"
@@ -50,8 +51,10 @@ NSString * const kActionURL = @"kActionUrl";
     [self.tableView setTableFooterView:[UIView new]];
     [self.tableView registerNib:[UINib nibWithNibName:@"MITScannerDetailTableViewCell" bundle:nil] forCellReuseIdentifier:@"detailCell"];
     
-    self.tableView.estimatedRowHeight = 55.0;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    if( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1 ) {
+        self.tableView.estimatedRowHeight = 55.0;
+        self.tableView.rowHeight = UITableViewAutomaticDimension;
+    }
     
     self.navigationItem.title = @"Scan Detail";
 
@@ -145,6 +148,16 @@ NSString * const kActionURL = @"kActionUrl";
 @end
 
 @implementation MITScannerDetailViewController (TableViewDelegate)
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1 )
+    {
+        return UITableViewAutomaticDimension;
+    }
+    
+    return 80;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

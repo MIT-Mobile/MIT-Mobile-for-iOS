@@ -205,6 +205,7 @@
 		274B39D01A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274B39CF1A2A23160080A959 /* MITScannerAdvancedMenuViewController_ipad.xib */; };
 		276168991A2C1F9500C6147E /* MITScannerHistoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276168981A2C1F9500C6147E /* MITScannerHistoryViewController.xib */; };
 		277493CA1971C88100EB7904 /* MITPeopleSearchRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */; };
+		277544111A3CDB5E0005A933 /* MITScannerMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 277544101A3CDB5E0005A933 /* MITScannerMgr.m */; };
 		277A582F19FD70BA00BE134E /* MITFacilities_ipad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 277A582B19FD70BA00BE134E /* MITFacilities_ipad.storyboard */; };
 		277A583019FD70BA00BE134E /* MITFacilities_iphone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 277A582C19FD70BA00BE134E /* MITFacilities_iphone.storyboard */; };
 		277A583119FD70BA00BE134E /* MITFacilitiesHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A582E19FD70BA00BE134E /* MITFacilitiesHomeViewController.m */; };
@@ -1115,6 +1116,8 @@
 		276168981A2C1F9500C6147E /* MITScannerHistoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITScannerHistoryViewController.xib; sourceTree = "<group>"; };
 		277493C81971C88100EB7904 /* MITPeopleSearchRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleSearchRootViewController.h; sourceTree = "<group>"; };
 		277493C91971C88100EB7904 /* MITPeopleSearchRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleSearchRootViewController.m; sourceTree = "<group>"; };
+		2775440F1A3CDB5E0005A933 /* MITScannerMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerMgr.h; sourceTree = "<group>"; };
+		277544101A3CDB5E0005A933 /* MITScannerMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerMgr.m; sourceTree = "<group>"; };
 		277A582B19FD70BA00BE134E /* MITFacilities_ipad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = MITFacilities_ipad.storyboard; path = v2/MITFacilities_ipad.storyboard; sourceTree = "<group>"; };
 		277A582C19FD70BA00BE134E /* MITFacilities_iphone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = MITFacilities_iphone.storyboard; path = v2/MITFacilities_iphone.storyboard; sourceTree = "<group>"; };
 		277A582D19FD70BA00BE134E /* MITFacilitiesHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITFacilitiesHomeViewController.h; path = v2/MITFacilitiesHomeViewController.h; sourceTree = "<group>"; };
@@ -3498,6 +3501,8 @@
 		2CB6459C134CAF1A00E85E64 /* Scanner */ = {
 			isa = PBXGroup;
 			children = (
+				2775440F1A3CDB5E0005A933 /* MITScannerMgr.h */,
+				277544101A3CDB5E0005A933 /* MITScannerMgr.m */,
 				2C15EB7415A349B200C9C345 /* MITScannerViewController.h */,
 				2C15EB7515A349B200C9C345 /* MITScannerViewController.m */,
 				276168981A2C1F9500C6147E /* MITScannerHistoryViewController.xib */,
@@ -5449,6 +5454,7 @@
 				22E6BCC019E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.m in Sources */,
 				22F2D5AF19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m in Sources */,
 				22D90341199D497100AEBC7D /* MITDiningVenueCell.m in Sources */,
+				277544111A3CDB5E0005A933 /* MITScannerMgr.m in Sources */,
 				22D902F9199BA90C00AEBC7D /* MITDiningHouseDay.m in Sources */,
 				80C5D9DA1A11191C00E63FDD /* MITLibrariesFormSheetGroupAskUsBottomGroup.m in Sources */,
 				0B7602641A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.m in Sources */,
@@ -5653,6 +5659,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5670,6 +5678,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = "-Wall";
 			};
@@ -5681,6 +5690,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5696,6 +5707,7 @@
 					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -5845,6 +5857,7 @@
 					"-ObjC",
 					"-all_load",
 				);
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -5909,6 +5922,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5925,6 +5940,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = TestFlight;

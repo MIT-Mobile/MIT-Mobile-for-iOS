@@ -12,20 +12,9 @@
 #import "MITNavigationController.h"
 #import "MITScannerAdvancedMenuViewController.h"
 #import "MITBatchScanningAlertView.h"
+#import "MITScannerMgr.h"
 
-@interface MITScannerViewController () <AVCaptureMetadataOutputObjectsDelegate>
-
-#pragma mark - Scanner AVFoundation properties
-
-@property (nonatomic, strong) AVCaptureSession *captureSession;
-@property (nonatomic, strong) AVCaptureDevice *captureDevice;
-@property (nonatomic, strong) AVCaptureDeviceInput *deviceInput;
-@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-@property (nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
-
-@property (nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
-
-@property (nonatomic, strong) NSMutableArray *allowedBarcodeTypes;
+@interface MITScannerViewController ()
 
 #pragma mark - Scanner Properties
 @property (strong) UIView *scanView;
@@ -34,42 +23,37 @@
 @property (weak) UIButton *infoButton;
 @property (weak) UIButton *advancedButton;
 
-// boolean flag to check whether scan session is currently active or stopped
-@property (nonatomic,assign) BOOL isCaptureActive;
-// boolean flag that acts as a guard against processing more then one code at once
-@property (nonatomic, assign) BOOL isBarcodeProcessingAlreadyInProgress;
+
 // on ipad the scan details show up as a form sheet.
 @property (nonatomic,assign) BOOL isScanDetailsPresented;
-// scanning is only supported on devices with camera
-@property (readonly) BOOL isScanningSupported;
+
+@property (nonatomic, strong) MITScannerMgr *scannerMgr;
 
 #pragma mark - History Properties
 @property (strong) QRReaderHistoryData *scannerHistory;
 
 #pragma mark - popovers
 @property (nonatomic, strong) UIPopoverController *advancedMenuPopover;
+@property (nonatomic, strong) UIPopoverController *historyPopoverController;
 
 #pragma mark - Private methods
 - (void)ipad_showScanDetailsForScanResult:(QRReaderResult *)result;
 
 - (IBAction)showHistory:(id)sender;
 - (IBAction)showHelp:(id)sender;
-
-- (void)startSessionCapture;
-- (void)stopSessionCapture;
 @end
 
-
+#pragma mark - categories
 @interface MITScannerViewController(ScanDetailViewDelegate) <MITScannerDetailViewControllerDelegate>
-
 - (void)detailFormSheetViewDidDisappear;
-
 @end
 
 @interface MITScannerViewController(BatchScanAlertHandler) <MITBatchScanningAlertViewDelegate>
-
 - (void)showAlertForScanResult:(QRReaderResult *)result;
+@end
 
+@interface MITScannerViewController(DelegatesHandler) <UIPopoverControllerDelegate, MITScannerHelpViewControllerDelegate, MITScannerMgrDelegate>
+- (void)helpViewControllerDidClose;
 @end
 
 #pragma mark -
@@ -85,9 +69,9 @@
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.isCaptureActive = NO;
-        
-        self.scannerHistory = [[QRReaderHistoryData alloc] init];
+        self.scannerHistory = [QRReaderHistoryData new];
+        self.scannerMgr = [[MITScannerMgr alloc] initWithScannerData:self.scannerHistory];;
+        self.scannerMgr.delegate = self;
     }
     return self;
 }
@@ -116,9 +100,12 @@
                                     UIViewAutoresizingFlexibleWidth);
     scannerView.backgroundColor = [UIColor blackColor];
 
-    if (self.isScanningSupported) {
-        [self setupCaptureSession];
-    } else {
+    if( [self.scannerMgr isScanningSupported] )
+    {
+        [self.scannerMgr setupCaptureSession];
+    }
+    else
+    {
         UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageScannerCameraUnsupported]];
         unsupportedView.contentMode = UIViewContentModeCenter;
         [scannerView addSubview:unsupportedView];
@@ -131,7 +118,7 @@
     overlay.userInteractionEnabled = NO;
     overlay.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin |
                                 UIViewAutoresizingFlexibleWidth);
-    if (self.isScanningSupported) {
+    if ([self.scannerMgr isScanningSupported]) {
         overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
     } else {
         overlay.helpText = @"A camera is required to scan QR codes and barcodes";
@@ -164,10 +151,10 @@
     {
         CGRect scannerContentBounds = self.scanView.bounds;
         
-        if (self.isScanningSupported)
+        if ([self.scannerMgr isScanningSupported])
         {
-            self.previewLayer.frame = scannerContentBounds;
-            [self.scanView.layer insertSublayer:self.previewLayer atIndex:0];
+            self.scannerMgr.previewLayer.frame = scannerContentBounds;
+            [self.scanView.layer insertSublayer:self.scannerMgr.previewLayer atIndex:0];
         }
         else
         {
@@ -199,7 +186,7 @@
 {
     [super viewDidLoad];
     
-    if (self.isScanningSupported)
+    if ([self.scannerMgr isScanningSupported])
     {
         UIBarButtonItem *toolbarItem = [[UIBarButtonItem alloc] initWithTitle:@"History"
                                                                         style:UIBarButtonItemStyleBordered
@@ -226,12 +213,12 @@
 {
     [super viewDidAppear:animated];
     
-    [self startSessionCapture];
+    [self.scannerMgr startSessionCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self stopSessionCapture];
+    [self.scannerMgr stopSessionCapture];
     
     [self.scannerHistory saveDataModelChanges];
 }
@@ -254,7 +241,7 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self setVideoOrientation];
+    [self.scannerMgr setVideoOrientation];
 }
 
 - (IBAction)showHistory:(id)sender
@@ -280,17 +267,23 @@
 
 - (void)showHistoryOnIpad
 {
+    [self.scannerMgr stopSessionCapture];
+    
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
-    UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
-    [popoverController setPopoverContentSize:CGSizeMake(320, 480) animated:NO];
-    [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
-                              permittedArrowDirections:UIPopoverArrowDirectionUp
-                                              animated:YES];
+    self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    self.historyPopoverController.delegate = self;
+    [self.historyPopoverController setPopoverContentSize:CGSizeMake(320, 480) animated:NO];
+    [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                                          permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                          animated:YES];
 }
 
 - (IBAction)showHelp:(id)sender
 {
+    [self.scannerMgr stopSessionCapture];
+    
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
+    vc.delegate = self;
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
     helpNavController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
@@ -347,295 +340,12 @@
 
 - (void)updateHistoryButtonTitle
 {
-    NSArray *recentScans = [self.scannerHistory fetchRecentScans];
-    
-    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:[recentScans count]];
+//    NSArray *recentScans = [self.scannerHistory fetchRecentScans];
+//    
+//    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:[recentScans count]];
 }
 
 #pragma mark - Scanning Methods
-
-- (BOOL)isCaptureActive
-{
-    return (self->_isCaptureActive && self.isScanningSupported);
-}
-
-- (void)startSessionCapture
-{
-    if (self.isCaptureActive == NO)
-    {
-        self.isCaptureActive = YES;
-        self.isBarcodeProcessingAlreadyInProgress = NO;
-    
-        self.metadataOutput.metadataObjectTypes = self.metadataOutput.availableMetadataObjectTypes;
-        
-        dispatch_after(
-            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)),
-            dispatch_get_main_queue(),
-        ^{
-            [self.captureSession startRunning];
-        });
-    }
-}
-
-- (void)stopSessionCapture
-{
-    if (self.isCaptureActive)
-    {
-        self.isCaptureActive = NO;
-        [self.captureSession stopRunning];
-    }
-}
-
-- (BOOL)isScanningSupported
-{
-    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
-}
-
-- (NSMutableArray *)allowedBarcodeTypes
-{
-    if( _allowedBarcodeTypes == nil )
-    {
-        _allowedBarcodeTypes = [NSMutableArray new];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeQRCode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypePDF417Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeUPCECode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeAztecCode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Mod43Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN13Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN8Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode93Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode128Code];
-    }
-    
-    return _allowedBarcodeTypes;
-}
-
-- (void)setupCaptureSession
-{
-    if( self.captureSession != nil ) {
-        return;
-    }
-    
-    // 1.
-    self.captureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    if( self.captureDevice == nil )
-    {
-        NSLog(@"No video camera on this device!");
-        return;
-    }
-    
-    // 2.
-    self.captureSession = [[AVCaptureSession alloc] init];
-    
-    // 3.
-    self.deviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:self.captureDevice error:nil];
-    
-    // 4.
-    if( [self.captureSession canAddInput:self.deviceInput] )
-    {
-        [self.captureSession addInput:self.deviceInput];
-    }
-    
-
-    // 5.
-    self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureSession];
-    self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    [self setVideoOrientation];
-    
-    // 6.
-    self.metadataOutput = [[AVCaptureMetadataOutput alloc] init];
-    dispatch_queue_t metadataQueue = dispatch_queue_create("edu.mit.mobile.metadataQueue", 0);
-    [self.metadataOutput setMetadataObjectsDelegate:self queue:metadataQueue];
-    
-    // 7.
-    if( [self.captureSession canAddOutput:self.metadataOutput] )
-    {
-        [self.captureSession addOutput:self.metadataOutput];
-    }
-    
-    // 8. another output to capture screenshots
-    self.stillImageOutput = [AVCaptureStillImageOutput new];
-    if( [self.captureSession canAddOutput:self.stillImageOutput] )
-    {
-        [self.captureSession addOutput:self.stillImageOutput];
-    }
-}
-
-- (AVCaptureVideoOrientation)videoOrientationFromDeviceOrientation
-{
-    AVCaptureVideoOrientation videoOrientation;
-    
-    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
-    switch (deviceOrientation) {
-        case UIDeviceOrientationPortrait:
-            videoOrientation = AVCaptureVideoOrientationPortrait;
-            break;
-        case UIDeviceOrientationPortraitUpsideDown:
-            videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            // Not clear why but the landscape orientations are reversed
-            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
-            videoOrientation = AVCaptureVideoOrientationLandscapeRight;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            // Not clear why but the landscape orientations are reversed
-            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
-            videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
-            break;
-        default:
-            videoOrientation = AVCaptureVideoOrientationPortrait;
-    }
-    
-    return videoOrientation;
-}
-
-- (void)setVideoOrientation
-{
-    AVCaptureVideoOrientation newOrientation = [self videoOrientationFromDeviceOrientation];
-    [self.previewLayer.connection setVideoOrientation:newOrientation];
-}
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
-{
-    if( self.isScanDetailsPresented || self.isBarcodeProcessingAlreadyInProgress )
-    {
-        return;
-    }
-    
-    self.isBarcodeProcessingAlreadyInProgress = YES;
-    
-    [metadataObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if( [obj isKindOfClass:[AVMetadataMachineReadableCodeObject class]] )
-        {
-            AVMetadataObject *metadataObject = [self.previewLayer transformedMetadataObjectForMetadataObject:obj];
-            AVMetadataMachineReadableCodeObject *code =  (AVMetadataMachineReadableCodeObject*)metadataObject;
-            
-            for( NSString *allowedCodeType in self.allowedBarcodeTypes )
-            {
-                if( [code.type isEqualToString:allowedCodeType] )
-                {
-                    [self runAsyncOnMainThread:^{
-                        [self codeFound:code];
-                    }];
-                    
-                    return;
-                }
-            }
-        }
-        
-        // didn't find a code to process
-        self.isBarcodeProcessingAlreadyInProgress = NO;
-    }];
-}
-
-- (void)codeFound:(AVMetadataMachineReadableCodeObject *)code
-{
-    __weak MITScannerViewController *weakSelf = self;
-    
-    [self captureBarcodeImageWithCompletionHandler:^(UIImage *image) {
-        
-        if( image == nil )
-        {
-            // do not proceed and wait for a new scan which should be almost immediately.
-            self.isBarcodeProcessingAlreadyInProgress = NO;
-            return;
-        }
-        else
-        {
-            [weakSelf stopSessionCapture];
-            [weakSelf proccessBarcode:code screenshot:image];
-        }
-    }];
-}
-
-- (void)captureBarcodeImageWithCompletionHandler:(void(^)(UIImage *))completionBlock
-{
-    __block UIImage *image;
-    
-    if( !self.isCaptureActive )
-    {
-        // TODO: how come capturing image happens after session is stopped capturing?
-        // how to stop it? couldn't find 'close' method for connection.
-        return;
-    }
-    
-    [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo]
-                                                       completionHandler:^(CMSampleBufferRef imageSampleBuffer, NSError *error)
-    {
-        if( CMSampleBufferIsValid( imageSampleBuffer ) )
-        {
-            NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-            image = [[UIImage alloc] initWithData:imageData];
-        }
-        
-        if( image == nil )
-        {
-            NSLog(@"warn: missing screenshot");
-        }
-        
-        [self runAsyncOnBackgroundThread:^{
-            if( completionBlock ) completionBlock( image );
-        }];
-    }];
-}
-
-- (void)proccessBarcode:(AVMetadataMachineReadableCodeObject *)code screenshot:(UIImage *)screenshot
-{
-    [self runAsyncOnMainThread:^{
-        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-        self.overlayView.highlighted = YES;
-    }];
-    
-    BOOL doBatchScanning = [[NSUserDefaults standardUserDefaults] boolForKey:kBatchScanningSettingKey];
-    
-    BOOL shouldGenerateThumbnail = [self isOnIpad] && doBatchScanning;
-    
-    [self.scannerHistory insertScanResult:code.stringValue
-                                 withDate:[NSDate date]
-                                withImage:screenshot
-                  shouldGenerateThumbnail:shouldGenerateThumbnail
-                               completion:^(QRReaderResult *result, NSError *error) {
-                                   [self postInsertOfResult:result isBatchScanning:doBatchScanning];
-                               }];
-}
-
-- (void)postInsertOfResult:(QRReaderResult *)result isBatchScanning:(BOOL)isBatchScanning
-{
-    if( result == nil )
-    {
-        return;
-    }
-    
-    [self runAsyncOnMainThread:^{
-        [self updateHistoryButtonTitle];
-    }];
-    
-    if ( isBatchScanning )
-    {
-        [self continueBatchScanning];
-        
-        if( [self isOnIpad] )
-        {
-            [self showAlertForScanResult:result];
-        }
-    }
-    else
-    {
-        [self showScanDetailsForScanResult:result];
-    }
-}
-
-- (void)continueBatchScanning
-{
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-        self.overlayView.highlighted = NO;
-        
-        [self startSessionCapture];
-    });
-}
 
 - (void)showScanDetailsForScanResult:(QRReaderResult *)result
 {
@@ -669,16 +379,11 @@
     MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:viewController];
     navController.modalPresentationStyle = UIModalPresentationFormSheet;
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^{
-        [self.navigationController presentViewController:navController animated:YES completion:^{
-            self.navigationController.navigationBar.userInteractionEnabled = YES;
-            self.overlayView.highlighted = NO;
-            self.overlayView.hidden = YES;
-            
-            [self startSessionCapture];
-        }];
-    });
+    [self.navigationController presentViewController:navController animated:YES completion:^{
+        self.navigationController.navigationBar.userInteractionEnabled = YES;
+        self.overlayView.highlighted = NO;
+        self.overlayView.hidden = NO;
+    }];
 }
 
 - (BOOL)isOnIpad
@@ -704,6 +409,7 @@
 
 - (void)detailFormSheetViewDidDisappear
 {
+    [self.scannerMgr startSessionCapture];
     self.overlayView.hidden = NO;
     self.isScanDetailsPresented = NO;
 }
@@ -756,6 +462,71 @@
     QRReaderResult *scanResult = [self.scannerHistory fetchScanResult:scanId];
     
     [self ipad_showScanDetailsForScanResult:scanResult];
+}
+
+@end
+
+@implementation MITScannerViewController(DelegatesHandler)
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    [self.scannerMgr startSessionCapture];
+}
+
+- (void)helpViewControllerDidClose
+{
+    [self.scannerMgr startSessionCapture];
+}
+
+- (void)setBarCodeFound:(BOOL)isFound
+{
+    [self runAsyncOnMainThread:^{
+        self.overlayView.highlighted = isFound;
+        
+        if( isFound )
+        {
+            AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+        }
+    }];
+}
+
+- (void)barCodeFound
+{
+    [self runAsyncOnMainThread:^{
+        self.overlayView.highlighted = YES;
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    }];
+}
+
+- (void)barCodeProcessed:(QRReaderResult *)result isBatchScanning:(BOOL)isBatchScanning
+{
+    [self runAsyncOnMainThread:^{        
+        [self updateHistoryButtonTitle];
+        
+        if ( isBatchScanning )
+        {
+            [self continueBatchScanning];
+            
+            if( [self isOnIpad] )
+            {
+                [self showAlertForScanResult:result];
+            }
+        }
+        else
+        {
+            [self showScanDetailsForScanResult:result];
+        }
+    }];
+}
+
+- (void)continueBatchScanning
+{
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        self.overlayView.highlighted = NO;
+        
+        [self.scannerMgr startSessionCapture];
+    });
 }
 
 @end
