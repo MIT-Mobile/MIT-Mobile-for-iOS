@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6221" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6213"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -14,8 +15,14 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvL-zO-nbJ">
+                        <rect key="frame" x="15" y="29" width="290" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fJN-m2-yQA">
-                        <rect key="frame" x="8" y="8" width="229" height="21"/>
+                        <rect key="frame" x="15" y="8" width="290" height="21"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="9w9-zn-KtK"/>
                         </constraints>
@@ -23,21 +30,15 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvL-zO-nbJ">
-                        <rect key="frame" x="8" y="29" width="304" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailingMargin" secondItem="hvL-zO-nbJ" secondAttribute="trailing" id="5tJ-rd-65x"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="hvL-zO-nbJ" secondAttribute="trailing" constant="7" id="5tJ-rd-65x"/>
                     <constraint firstItem="fJN-m2-yQA" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="CFd-Q5-Qp7"/>
                     <constraint firstItem="hvL-zO-nbJ" firstAttribute="top" secondItem="fJN-m2-yQA" secondAttribute="bottom" id="EDe-iH-HKK"/>
-                    <constraint firstItem="hvL-zO-nbJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="SRy-R1-1Pl"/>
+                    <constraint firstItem="hvL-zO-nbJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="SRy-R1-1Pl"/>
                     <constraint firstAttribute="bottomMargin" secondItem="hvL-zO-nbJ" secondAttribute="bottom" constant="-3.5" id="el5-pW-4kP"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="fJN-m2-yQA" secondAttribute="trailing" constant="75" id="jRq-bz-DZy"/>
-                    <constraint firstItem="fJN-m2-yQA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="pxN-YF-Fkn"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="fJN-m2-yQA" secondAttribute="trailing" constant="7" id="jRq-bz-DZy"/>
+                    <constraint firstItem="fJN-m2-yQA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="pxN-YF-Fkn"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

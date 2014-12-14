@@ -82,10 +82,6 @@
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(managedObjectContextDidSave:)
-//                                                 name:NSManagedObjectContextDidSaveNotification
-//                                               object:nil];
     
     [self.fetchController performFetch:nil];
 }
@@ -93,6 +89,15 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if( self.openFirstItemOnLoad )
+    {
+        // so that it only loads first item on initial launch.
+        self.openFirstItemOnLoad = NO;
+        
+        QRReaderResult *result = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        [self showDetailsForResult:result];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -100,7 +105,6 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -121,6 +125,13 @@
 - (NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)showDetailsForResult:(QRReaderResult *)result
+{
+    MITScannerDetailViewController *detailsVC = [[MITScannerDetailViewController alloc] init];
+    detailsVC.scanResult = result;
+    [self.navigationController pushViewController:detailsVC animated:YES];
 }
 
 #pragma mark - UITableViewDataSource
@@ -216,12 +227,8 @@
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
-    MITScannerDetailViewController *detailsVC = [[MITScannerDetailViewController alloc] init];
-    detailsVC.scanResult = result;
-    [self.navigationController pushViewController:detailsVC animated:YES];
+    [self showDetailsForResult:[self.fetchController objectAtIndexPath:indexPath]];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -273,17 +280,6 @@
     [self.tableView endUpdates];
     
     [self updateDeleteButtonTitle];
-}
-
-- (void)managedObjectContextDidSave:(NSNotification *)notification
-{
-    [self.fetchContext mergeChangesFromContextDidSaveNotification:notification];
-    
-    if( [self.fetchContext hasChanges] )
-    {
-        NSError *error;
-        [self.fetchContext save:&error];
-    }
 }
 
 #pragma mark - multi edit logic
