@@ -149,6 +149,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     if(apnsDict) {
         [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:apnsDict];
     }
+
     return YES;
 }
 
@@ -263,13 +264,31 @@ static NSString* const MITMobileButtonTitleView = @"View";
     
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
-		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken];
+		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken completion:^(BOOL success) {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                }
+            }];
+        }];
 	} else {
 		NSData *oldToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 		
 		if(![oldToken isEqualToData:deviceToken]) {
-			[MITDeviceRegistration newDeviceToken:deviceToken];
-		}
+			[MITDeviceRegistration newDeviceToken:deviceToken completion:^(BOOL success) {
+                [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                    if (module.pushNotificationSupported) {
+                        [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                    }
+                }];
+            }];
+        } else {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:YES completed:nil];
+                }
+            }];
+        }
 	}
 }
 
@@ -598,6 +617,49 @@ static NSString* const MITMobileButtonTitleView = @"View";
                                                      cancelButtonTitle:@"Close"
                                                      otherButtonTitles:MITMobileButtonTitleView, nil];
     [notificationView show];
+}
+
+- (void)_registerNotificationsForModuleWithName:(NSString*)name enabled:(BOOL)enabled completed:(void (^)(void))block
+{
+    // If we don't have an identity, don't even try to enable (or disable) notifications,
+    // just leave everything as-is
+    if (!self.deviceToken) {
+        if (block) {
+            block();
+        }
+
+        return;
+    } else {
+        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+        parameters[@"module_name"] = name;
+        parameters[@"enabled"] = (enabled ? @"1" : @"0");
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registrationResult) {
+            if (![registrationResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"fatal error: invalid response for push configuration");
+            } else if (registrationResult[@"error"]) {
+                DDLogError(@"failed to enable notifications for module %@ with error %@",name,registrationResult[@"error"]);
+            }
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            DDLogError(@"failed to enable notifications for module %@ with error %@",name,error);
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        }];
+
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
+    }
 }
 
 #pragma mark Application modules helper methods
