@@ -35,7 +35,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupActivityIndicator];
     [self verifyAuthorization];
 }
 
@@ -58,11 +57,6 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 {
     [self setupTableView];
     [self setupNavigationBar];
-}
-
-- (void)setupActivityIndicator
-{
-    self.activityIndicator.color = [UIColor mit_tintColor];
 }
 
 - (void)setupTableView
