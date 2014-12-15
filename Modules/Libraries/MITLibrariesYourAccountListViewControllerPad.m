@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 @property (nonatomic, strong) UIView *loansHeaderView;
 @property (nonatomic, strong) UIView *finesHeaderView;
 @property (nonatomic, strong) UIView *holdsHeaderView;
-@property (nonatomic, assign) CGFloat previousYOffset;
 
 @end
 
@@ -244,6 +243,7 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 {
     MITLibrariesYourAccountCollectionViewHeader *header = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([MITLibrariesYourAccountCollectionViewHeader class]) owner:self options:nil] firstObject];
     [header setAttributedString:attributedText];
+    header.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
     return header;
 }
 
@@ -302,41 +302,6 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
     [baseString appendAttributedString:readyForPickupString];
     
     return [[NSAttributedString alloc] initWithAttributedString:baseString];
-}
-
-#pragma mark - UIScrollViewDelegate Methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (self.tableView.numberOfSections < 3) {
-        return;
-    }
-    
-    CGFloat yOffset = self.tableView.contentOffset.y;
-    
-    CGFloat loansSectionTop = [self.tableView rectForSection:0].origin.y;
-    CGFloat finesSectionTop = [self.tableView rectForSection:1].origin.y;
-    CGFloat holdsSectionTop = [self.tableView rectForSection:2].origin.y;
-    
-    if (yOffset >= loansSectionTop && self.previousYOffset < loansSectionTop) {
-        self.loansHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < loansSectionTop && self.previousYOffset >= loansSectionTop) {
-        self.loansHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    if (yOffset >= finesSectionTop && self.previousYOffset < finesSectionTop) {
-        self.finesHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < finesSectionTop && self.previousYOffset >= finesSectionTop) {
-        self.finesHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    if (yOffset >= holdsSectionTop && self.previousYOffset < holdsSectionTop) {
-        self.holdsHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < holdsSectionTop && self.previousYOffset >= holdsSectionTop) {
-        self.holdsHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    self.previousYOffset = yOffset;
 }
 
 @end
