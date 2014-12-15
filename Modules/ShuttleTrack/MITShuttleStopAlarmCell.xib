@@ -36,29 +36,16 @@
                             <action selector="notificationButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="NOv-yX-p4d"/>
                         </connections>
                     </button>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Alarm Set" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h1b-kf-J2F">
-                        <rect key="frame" x="210" y="14" width="59" height="16"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="16" id="Lqm-x9-RAk"/>
-                            <constraint firstAttribute="width" constant="59" id="vmm-Bl-gyC"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                        <color key="textColor" red="0.6549019814" green="0.66666668650000005" blue="0.66274511810000003" alpha="1" colorSpace="deviceRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="elj-Ma-Fxe" secondAttribute="bottom" constant="12" id="K5S-bZ-ojC"/>
                     <constraint firstItem="elj-Ma-Fxe" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="MsF-Jk-0DT"/>
-                    <constraint firstAttribute="centerY" secondItem="h1b-kf-J2F" secondAttribute="centerY" id="Nzh-e2-F6R"/>
-                    <constraint firstAttribute="trailing" secondItem="h1b-kf-J2F" secondAttribute="trailing" constant="51" id="PDg-75-Cwb"/>
                     <constraint firstAttribute="trailing" secondItem="fYB-G0-uer" secondAttribute="trailing" constant="15" id="Wk0-n0-hUZ"/>
                     <constraint firstAttribute="centerY" secondItem="fYB-G0-uer" secondAttribute="centerY" id="p80-SX-0jN"/>
                     <constraint firstItem="elj-Ma-Fxe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="q3N-0m-9B4"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="alarmSetLabel" destination="h1b-kf-J2F" id="3Wy-LX-srT"/>
                 <outlet property="alertButton" destination="fYB-G0-uer" id="hkg-f4-Raf"/>
                 <outlet property="timeRemainingLabel" destination="elj-Ma-Fxe" id="RNI-Ri-qZa"/>
             </connections>
