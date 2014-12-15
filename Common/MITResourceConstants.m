@@ -74,7 +74,10 @@ NSString * const MITImageMapLocationHighlighted = @"map-location-highlighted";
 NSString * const MITImageMapAnnotationUserLocation = @"map-annotation-user-location";
 NSString * const MITImageMapAnnotationPin = @"map-annotation-pin";
 NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
-NSString * const MITImageMapPinBall = @"map-pin-ball";
+
+NSString * const MITImageMapPinBallBlack = @"map-pin-ball-black";
+NSString * const MITImageMapPinBallBlue = @"map-pin-ball-blue";
+NSString * const MITImageMapPinBallRed = @"map-pin-ball-red";
 NSString * const MITImageMapPinNeedle = @"map-pin-needle";
 NSString * const MITImageMapPinShadow = @"map-pin-shadow";
 
