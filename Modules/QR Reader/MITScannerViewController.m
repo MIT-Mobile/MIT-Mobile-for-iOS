@@ -197,6 +197,7 @@
     }
     
     self.navigationController.toolbarHidden = YES;
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
