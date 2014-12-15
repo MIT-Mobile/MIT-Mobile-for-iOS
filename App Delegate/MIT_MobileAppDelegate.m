@@ -750,6 +750,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)addGlobalMITStyling
 {
     [[UINavigationBar appearance] setTintColor:[UIColor mit_tintColor]];
+    [[UITableViewCell appearance] setTintColor:[UIColor mit_tintColor]];
 }
 
 @end
