@@ -102,8 +102,12 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     
     // We use actual UIButtons so that we can easily change the selected state
     UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
+    listToggleImageNormal = [listToggleImageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImage *listToggleImageSelected = [UIImage imageNamed:MITImageBarButtonListSelected];
-    CGSize listToggleImageSize = listToggleImageNormal.size;
+    listToggleImageSelected = [listToggleImageSelected imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    
+    // Use size of selected image because it is the largest.
+    CGSize listToggleImageSize = listToggleImageSelected.size;
     self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
     [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
     [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];

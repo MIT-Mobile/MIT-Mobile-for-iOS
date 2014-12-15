@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "view_list.png"
+      "filename" : "map-category-residences.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "view_list@2x.png"
+      "filename" : "map-category-residences@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "view_list@3x.png"
+      "filename" : "map-category-residences@3x.png"
     }
   ],
   "info" : {

@@ -31,6 +31,10 @@
 
 - (NSString *)iconName
 {
+    // Two building categories, building_number and building_name.
+    if ([self.identifier hasPrefix:@"building"]) {
+        return @"map-category-buildings";
+    }
     return [NSString stringWithFormat:@"map-category-%@", self.identifier];
 }
 
