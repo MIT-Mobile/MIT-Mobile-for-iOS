@@ -181,11 +181,6 @@ static NSTimeInterval const kPanelAnimationDuration = 0.5;
     }
 }
 
-- (void)currentLocationButtonPressed:(UIBarButtonItem *)sender
-{
-    [self.mapViewController toggleUserTrackingMode];
-}
-
 #pragma mark - MITToursSelfGuidedTourListViewController Methods
 
 - (void)selfGuidedTourListViewController:(MITToursSelfGuidedTourListViewController *)selfGuidedTourListViewController didSelectStop:(MITToursStop *)stop
