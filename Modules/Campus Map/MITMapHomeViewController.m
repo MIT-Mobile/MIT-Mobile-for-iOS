@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
+@property (nonatomic, strong) UIView *searchBarView;
 
 @end
 
@@ -142,11 +143,41 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     // Insert the correct clear button image and uncomment the next line when ready
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
-    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    searchBarView.autoresizingMask = 0;
+    self.searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
+    self.searchBarView.autoresizingMask = 0;
     self.searchBar.delegate = self;
-    [searchBarView addSubview:self.searchBar];
-    self.navigationItem.titleView = searchBarView;
+    [self.searchBarView addSubview:self.searchBar];
+    
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                           attribute:NSLayoutAttributeTop
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:self.searchBar
+                                                           attribute:NSLayoutAttributeTop
+                                                          multiplier:1.0
+                                                            constant:0];
+    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                            attribute:NSLayoutAttributeLeft
+                                                            relatedBy:NSLayoutRelationEqual
+                                                               toItem:self.searchBar
+                                                            attribute:NSLayoutAttributeLeft
+                                                           multiplier:1.0
+                                                             constant:0];
+    NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.searchBar
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0];
+    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.searchBar
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0];
+    [self.searchBarView addConstraints:@[top, left, bottom, right]];
+    self.navigationItem.titleView = self.searchBarView;
     
     self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
@@ -496,6 +527,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return resultsListViewController;
 }
 
+#pragma mark - Rotation
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self resizeAndAlignSearchBar];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -506,7 +545,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.navigationItem setLeftBarButtonItem:nil animated:YES];
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
         [self.searchBar setShowsCancelButton:YES animated:YES];
-
+        [self resizeAndAlignSearchBar];
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -561,6 +600,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([searchBar.text length] == 0) {
         [self clearPlacesAnimated:YES];
     }
+}
+
+- (void)resizeAndAlignSearchBar
+{
+    // Force size to width of view
+    CGRect bounds = self.searchBarView.bounds;
+    bounds.size.width = CGRectGetWidth(self.view.bounds);
+    self.searchBarView.bounds = bounds;
 }
 
 #pragma mark - In App Linking
@@ -771,7 +818,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
-        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         _searchBar.searchBarStyle = UISearchBarStyleMinimal;
         _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _searchBar.placeholder = @"Search MIT Campus";
