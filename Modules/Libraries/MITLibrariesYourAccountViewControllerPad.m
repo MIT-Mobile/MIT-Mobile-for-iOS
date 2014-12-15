@@ -43,7 +43,9 @@
 
 - (void)applicationDidBecomeActive
 {
-    [self refreshUserData];
+    if ([MITTouchstoneController sharedController].isLoggedIn) {
+        [self refreshUserData];
+    }
 }
 
 - (void)setupLoginView
