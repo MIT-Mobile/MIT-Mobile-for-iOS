@@ -700,6 +700,14 @@ static NSString* const MITMobileButtonTitleView = @"View";
 {
     UIViewController *rootViewController = [self.window rootViewController];
     UIViewController *presented = [rootViewController presentedViewController];
+
+    if (UIUserInterfaceIdiomPad == [UIDevice currentDevice].userInterfaceIdiom) {
+        viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+        viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    } else {
+        viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
     if (presented) {
         [presented presentViewController:viewController animated:YES completion:nil];
     } else {
