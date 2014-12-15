@@ -275,6 +275,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
@@ -448,6 +449,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)showTypeAheadPopover
 {
+    self.typeAheadPopoverController.delegate = self;
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
@@ -752,6 +754,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
             [self.mapView deselectAnnotation:annotation animated:NO];
         }
+    } else if (popoverController == self.typeAheadPopoverController) {
+        [self.searchBar resignFirstResponder];
     }
 }
 
