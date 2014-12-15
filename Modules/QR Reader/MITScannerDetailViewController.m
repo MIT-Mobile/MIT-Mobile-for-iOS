@@ -206,7 +206,7 @@ NSString * const kActionURL = @"kActionUrl";
             
             cell.cellDescription.text = action[kActionSubtitle];
             [cell.cellDescription setFont:[UIFont systemFontOfSize:14]];
-            [cell.cellDescription setTextColor:[UIColor colorWithWhite:0.7 alpha:1.0]];
+            [cell.cellDescription setTextColor:[UIColor mit_greyTextColor]];
             [cell.cellDescription sizeToFit];
             
             cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
