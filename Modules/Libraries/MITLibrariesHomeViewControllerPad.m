@@ -361,7 +361,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     self.cancelSearchButton.enabled = YES;
     [self.cancelSearchButton setTitle:@"Cancel" forState:UIControlStateNormal];
     self.cancelSearchButtonWidthConstraint.constant = 60;
-//    [self.searchBar setNeedsLayout];
     self.displayMode = MITLibrariesPadDisplayModeSearch;
     [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.navigationItem.titleView.bounds.size.width / 2, self.navigationItem.titleView.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
@@ -372,7 +371,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     
     self.cancelSearchButton.enabled = YES;
     self.cancelSearchButtonWidthConstraint.constant = 0;
-//    [self.searchBar setNeedsLayout];
     [self.cancelSearchButton setTitle:@"" forState:UIControlStateNormal];
 
     self.searchBar.text = nil;
