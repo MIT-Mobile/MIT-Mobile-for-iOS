@@ -155,46 +155,37 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 + (UIImageView *)accessoryViewWithMITType:(MITAccessoryViewType)type {
     NSString *imageName = nil;
-    NSString *highlightedImageName = nil;
 
     switch (type) {
         case MITAccessoryViewEmail:
             imageName = MITImageNameEmail;
-            highlightedImageName = MITImageNameEmailHighlight;
             break;
         case MITAccessoryViewMap:
             imageName = MITImageNameMap;
-            highlightedImageName = MITImageNameMapHighlight;
             break;
         case MITAccessoryViewPeople:
             imageName = MITImageNamePeople;
-            highlightedImageName = MITImageNamePeopleHighlight;
             break;
         case MITAccessoryViewPhone:
             imageName = MITImageNamePhone;
-            highlightedImageName = MITImageNamePhoneHighlight;
             break;
         case MITAccessoryViewExternal:
             imageName = MITImageActionExternal;
-            highlightedImageName = MITImageActionExternalHighlight;
             break;
 		case MITAccessoryViewEmergency:
 			imageName = MITImageNameEmergency;
-			highlightedImageName = MITImageNameEmergencyHighlight;
 			break;
         case MITAccessoryViewSecure:
             imageName = MITImageNameSecure;
-            highlightedImageName = MITImageNameSecureHighlight;
             break;
         case MITAccessoryViewCalendar:
             imageName = MITImageNameCalendar;
-            highlightedImageName = MITImageNameCalendarHighlight;
             break;
     }
     
     UIImage *image = [UIImage imageNamed:imageName];
-    UIImage *highlightedImage = [UIImage imageNamed:highlightedImageName];
-    UIImageView *accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageView *accessoryView = [[UIImageView alloc] initWithImage:image];
     return accessoryView;
 }
 

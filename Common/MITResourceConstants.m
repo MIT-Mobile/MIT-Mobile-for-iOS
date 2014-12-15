@@ -179,22 +179,14 @@ NSString * const MITImageToursTemplateWhiteActionArrow = @"tours-template-action
 
 #pragma mark - Global Assets
 NSString * const MITImageNameEmail = @"global-action-email";
-NSString * const MITImageNameEmailHighlight = @"global-action-email-highlight";
 NSString * const MITImageNameMap = @"global-action-map";
-NSString * const MITImageNameMapHighlight = @"global-action-map-highlight";
 NSString * const MITImageNamePeople = @"global-action-people";
-NSString * const MITImageNamePeopleHighlight = @"global-action-people-highlight";
 NSString * const MITImageNamePhone = @"global-action-phone";
-NSString * const MITImageNamePhoneHighlight = @"global-action-phone-highlight";
 NSString * const MITImageActionExternalWhite = @"global-action-external_white";
 NSString * const MITImageActionExternal = @"global-action-external";
-NSString * const MITImageActionExternalHighlight = @"global-action-external-highlight";
 NSString * const MITImageNameEmergency = @"global-action-emergency";
-NSString * const MITImageNameEmergencyHighlight = @"global-action-emergency-highlight";
 NSString * const MITImageNameSecure = @"global-action-secure";
-NSString * const MITImageNameSecureHighlight = @"global-action-secure-highlight";
 NSString * const MITImageNameCalendar = @"global-action-calendar";
-NSString * const MITImageNameCalendarHighlight = @"global-action-calendar-highlight";
 NSString * const MITImageNameShare = @"global-action-share";
 
 NSString * const MITImageNameLeftArrow = @"global-arrow-white-left";

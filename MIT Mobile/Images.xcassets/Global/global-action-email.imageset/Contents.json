@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "action-email.png"
+      "filename" : "compose_email.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "action-email@2x.png"
+      "filename" : "compose_email@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "compose_email@3x.png"
     }
   ],
   "info" : {

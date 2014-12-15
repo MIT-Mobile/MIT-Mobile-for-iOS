@@ -208,8 +208,7 @@ NSString * const kActionURL = @"kActionUrl";
             [cell.cellDescription setTextColor:[UIColor colorWithWhite:0.7 alpha:1.0]];
             [cell.cellDescription sizeToFit];
             
-            cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
-                                                   highlightedImage:[UIImage imageNamed:MITImageActionExternalHighlight]];
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
         }
         
         [cell removeLineSeparator];
