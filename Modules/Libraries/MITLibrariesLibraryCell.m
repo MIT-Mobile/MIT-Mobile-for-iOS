@@ -22,7 +22,7 @@
 {
     self.libraryNameLabel.text = library.name;
     
-    NSDate *currentDate = [[NSDate date] dateByAddingTimeInterval:(60*60*9)];
+    NSDate *currentDate = [NSDate date];
     
     if ([library isOpenOnDayOfDate:currentDate]) {
         self.libraryHoursLabel.text = [NSString stringWithFormat:@"Open today %@", [library hoursStringForDate:[NSDate date]]];

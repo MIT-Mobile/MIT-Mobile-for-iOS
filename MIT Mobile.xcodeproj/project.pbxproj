@@ -4515,7 +4515,7 @@
 			children = (
 				DE81CF5E10C6BC390085573D /* About */,
 				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
-				EB86CA6C115D273800C8F3D1 /* Calendar */,
+				EB86CA6C115D273800C8F3D1 /* Events */,
 				DE715446102FE468005E6111 /* Campus Map */,
 				48327CDD16F74EA0003A2F23 /* Dining */,
 				DE715447102FE468005E6111 /* Emergency */,
@@ -4720,7 +4720,7 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		EB86CA6C115D273800C8F3D1 /* Calendar */ = {
+		EB86CA6C115D273800C8F3D1 /* Events */ = {
 			isa = PBXGroup;
 			children = (
 				225F2192197D9A5E00F34DE9 /* Cells */,
@@ -4729,6 +4729,7 @@
 				EB86CA6D115D276700C8F3D1 /* CalendarModule.h */,
 				EB86CA6E115D276700C8F3D1 /* CalendarModule.m */,
 			);
+			name = Events;
 			path = Calendar;
 			sourceTree = "<group>";
 		};

@@ -10,6 +10,7 @@
 @property NSTimeInterval searchExpiryInterval;
 
 + (MITMapModelController*)sharedController;
++ (NSString *)sanitizeMapSearchString:(NSString *)searchString;
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block;
 

@@ -16,6 +16,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 @end
 
 @implementation MITMapModelController
+
 + (instancetype)sharedController
 {
     static MITMapModelController *modelController = nil;
@@ -25,6 +26,30 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     });
 
     return modelController;
+}
+
++ (NSString *)sanitizeMapSearchString:(NSString *)searchString
+{
+    NSString *buildingNumber;
+    NSArray *roomComponents = [searchString componentsSeparatedByString:@"-"];
+    NSString *firstComponent = roomComponents.firstObject;
+    if (firstComponent.length == 1 && firstComponent.intValue == 0) {
+        // First component is a letter.  Someone probably put N-51 or E-15 instead of N51 or E15
+        if (roomComponents.count >= 2) {
+            NSString *secondComponent = roomComponents[1];
+            if (secondComponent.intValue > 0) {
+                buildingNumber = [NSString stringWithFormat:@"%@%@", firstComponent, secondComponent];
+            }
+        } else {
+            buildingNumber = searchString;
+        }
+    } else {
+        buildingNumber = firstComponent;
+    }
+    
+    buildingNumber = [buildingNumber stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    buildingNumber = [buildingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return buildingNumber;
 }
 
 - (instancetype)init
