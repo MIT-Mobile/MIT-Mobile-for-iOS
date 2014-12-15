@@ -20,7 +20,7 @@ static NSString * const kCollectionHeaderIdentifier = @"kCollectionHeaderIdentif
 
 static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontalPadding = 30.0;
 
-@interface MITLibrariesYourAccountGridViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, TopAlignedStickyHeaderCollectionViewFlowLayoutDelegate>
+@interface MITLibrariesYourAccountGridViewControllerPad () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, strong) UICollectionReusableView *loansHeader;
@@ -216,13 +216,8 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
         
         [header setAttributedString:headerText];
         
-        UICollectionViewLayoutAttributes *headerLayoutAttributes = [collectionView.collectionViewLayout layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:indexPath.section]];
-        if (headerLayoutAttributes.frame.origin.y <= self.collectionView.contentOffset.y) {
-            header.backgroundColor = [UIColor mit_cellSeparatorColor];
-        } else {
-            header.backgroundColor = [UIColor whiteColor];
-        }
-        
+        header.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
+
         return header;
     } else {
         return [UICollectionReusableView new];
@@ -251,44 +246,6 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
     CGFloat headerWidth = collectionView.bounds.size.width;
     CGFloat headerHeight = [MITLibrariesYourAccountCollectionViewHeader heightForAttributedString:headerText width:headerWidth];
     return CGSizeMake(headerWidth, headerHeight);
-}
-
-#pragma mark - TopAlignedStickyHeaderCollectionViewFlowLayoutDelegate Methods
-
-- (void)collectionView:(UICollectionView *)collectionView headerScrolledUpToTopInSection:(NSInteger)section
-{
-    switch (section) {
-        case MITAccountListSectionLoans: {
-            self.loansHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
-            break;
-        }
-        case MITAccountListSectionFines: {
-            self.finesHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
-            break;
-        }
-        case MITAccountListSectionHolds: {
-            self.holdsHeader.backgroundColor = [UIColor mit_cellSeparatorColor];
-            break;
-        }
-    }
-}
-
-- (void)collectionView:(UICollectionView *)collectionView headerScrolledDownBelowTopInSection:(NSInteger)section
-{
-    switch (section) {
-        case MITAccountListSectionLoans: {
-            self.loansHeader.backgroundColor = [UIColor whiteColor];
-            break;
-        }
-        case MITAccountListSectionFines: {
-            self.finesHeader.backgroundColor = [UIColor whiteColor];
-            break;
-        }
-        case MITAccountListSectionHolds: {
-            self.holdsHeader.backgroundColor = [UIColor whiteColor];
-            break;
-        }
-    }
 }
 
 #pragma mark - Account Header Attributed Strings

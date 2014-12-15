@@ -94,24 +94,6 @@
         [self updateHeaderAttributes:headerAttributes lastCellAttributes:maxYCellsBySection[sectionKey]];
     }];
     
-    if (self.delegate) {
-        // For each header:
-        // Check if the header used to be below the top and is now at or above the top
-        // else check if the header used to be at or above the top and is now below the top
-        
-        for (NSInteger section = 0; section < self.collectionView.numberOfSections; section++) {
-            NSNumber *sectionKey = @(section);
-            
-            UICollectionViewLayoutAttributes *headerAttributes = headers[sectionKey];
-            
-            if (headerAttributes.frame.origin.y <= self.collectionView.contentOffset.y && headerAttributes.frame.origin.y > self.previousCollectionViewContentOffsetY) {
-                [self.delegate collectionView:self.collectionView headerScrolledUpToTopInSection:section];
-            } else if (headerAttributes.frame.origin.y > self.collectionView.contentOffset.y && headerAttributes.frame.origin.y <= self.previousCollectionViewContentOffsetY) {
-                [self.delegate collectionView:self.collectionView headerScrolledDownBelowTopInSection:section];
-            }
-        }
-    }
-    
     self.previousCollectionViewContentOffsetY = self.collectionView.contentOffset.y;
 	
 	return attributesArray;
