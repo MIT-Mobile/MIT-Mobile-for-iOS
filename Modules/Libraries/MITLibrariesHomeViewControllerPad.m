@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
 
 static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize = {480,400};
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate, MITLibrariesSearchResultsViewControllerDelegate>
+@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate, MITLibrariesSearchResultsViewControllerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -48,6 +48,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 @property (nonatomic, strong) UIBarButtonItem *listLayoutButton;
 
 @property (nonatomic) MITLibrariesPadDisplayMode displayMode;
+@property (nonatomic, strong) NSLayoutConstraint *cancelSearchButtonWidthConstraint;
 
 @end
 
@@ -101,26 +102,70 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     
     self.navigationItem.titleView = searchBarView;
     
-    NSDictionary *views = @{@"searchBar": self.searchBar,
-                            @"cancelButton" : self.cancelSearchButton};
+    [self setupSearchBarConstraintsWithSearchBarView:searchBarView];
+}
+
+- (void)setupSearchBarConstraintsWithSearchBarView:(UIView *)searchBarView
+{
+    NSLayoutConstraint *searchBarTop = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                    attribute:NSLayoutAttributeTop
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.searchBar
+                                                                    attribute:NSLayoutAttributeTop
+                                                                   multiplier:1.0
+                                                                     constant:0.0];
+    NSLayoutConstraint *searchBarLeft = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.searchBar
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                    multiplier:1.0
+                                                                      constant:0.0];
+    NSLayoutConstraint *searchBarBottom = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                       attribute:NSLayoutAttributeBottom
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:self.searchBar
+                                                                       attribute:NSLayoutAttributeBottom
+                                                                      multiplier:1.0
+                                                                        constant:0.0];
+    NSLayoutConstraint *searchBarRight = [NSLayoutConstraint constraintWithItem:self.searchBar
+                                                                      attribute:NSLayoutAttributeRight
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.cancelSearchButton
+                                                                      attribute:NSLayoutAttributeLeft
+                                                                     multiplier:1.0
+                                                                       constant:0.0];
     
-    [searchBarView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[searchBar]-0-[cancelButton]-0-|"
-                                                                          options:0
-                                                                          metrics:nil
-                                                                            views:views]];
+    NSLayoutConstraint *cancelTop = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                 attribute:NSLayoutAttributeTop
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.cancelSearchButton
+                                                                 attribute:NSLayoutAttributeTop
+                                                                multiplier:1.0
+                                                                  constant:0.0];
+    NSLayoutConstraint *cancelRight = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                   attribute:NSLayoutAttributeRight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.cancelSearchButton
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0
+                                                                    constant:0.0];
+    NSLayoutConstraint *cancelBottom = [NSLayoutConstraint constraintWithItem:searchBarView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.cancelSearchButton
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                   multiplier:1.0
+                                                                     constant:0.0];
+    self.cancelSearchButtonWidthConstraint = [NSLayoutConstraint constraintWithItem:self.cancelSearchButton
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:nil
+                                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                                         multiplier:1.0
+                                                                           constant:0];
     
-    [searchBarView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=0)-[searchBar]-5-|"
-                                                                          options:0
-                                                                          metrics:nil
-                                                                            views:views]];
-    
-    [searchBarView addConstraint:[NSLayoutConstraint constraintWithItem:self.searchBar
-                                                              attribute:NSLayoutAttributeCenterY
-                                                              relatedBy:NSLayoutRelationEqual
-                                                                 toItem:self.cancelSearchButton
-                                                              attribute:NSLayoutAttributeCenterY
-                                                             multiplier:1
-                                                               constant:0]];
+    [searchBarView addConstraints:@[searchBarTop, searchBarLeft, searchBarBottom, searchBarRight, cancelTop, cancelRight, cancelBottom, self.cancelSearchButtonWidthConstraint]];
 }
 
 - (void)setupViewControllers
@@ -178,6 +223,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     UINavigationController *navContainer = [[UINavigationController alloc] initWithRootViewController:self.recentSearchesViewController];
     self.recentSearchesPopoverController = [[UIPopoverController alloc] initWithContentViewController:navContainer];
     self.recentSearchesPopoverController.passthroughViews = @[self.cancelSearchButton];
+    self.recentSearchesPopoverController.delegate = self;
 }
 
 - (void)setupToolbar
@@ -308,12 +354,13 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self presentViewController:navController animated:YES completion:nil];
 }
 
-#pragma mark - Search Bar Delegate
+#pragma mark - UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.cancelSearchButton.enabled = YES;
     [self.cancelSearchButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    self.cancelSearchButtonWidthConstraint.constant = 60;
     self.displayMode = MITLibrariesPadDisplayModeSearch;
     [self.recentSearchesPopoverController presentPopoverFromRect:CGRectMake(self.navigationItem.titleView.bounds.size.width / 2, self.navigationItem.titleView.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
@@ -323,6 +370,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self.recentSearchesPopoverController dismissPopoverAnimated:YES];
     
     self.cancelSearchButton.enabled = YES;
+    self.cancelSearchButtonWidthConstraint.constant = 0;
     [self.cancelSearchButton setTitle:@"" forState:UIControlStateNormal];
 
     self.searchBar.text = nil;
@@ -395,6 +443,15 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 - (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item
 {
     [self.searchBar resignFirstResponder];
+}
+
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    if (popoverController == self.recentSearchesPopoverController) {
+        [self.searchBar resignFirstResponder];
+    }
 }
 
 @end

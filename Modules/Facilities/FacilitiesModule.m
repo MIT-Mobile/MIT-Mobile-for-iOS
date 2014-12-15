@@ -6,7 +6,7 @@
 @implementation FacilitiesModule
 - (instancetype)init
 {
-    self = [super initWithName:MITModuleTagFacilities title:@"Bldg Services"];
+    self = [super initWithName:MITModuleTagFacilities title:@"Building Services"];
     if (self) {
         self.longTitle = @"Building Services";
         self.imageName = MITImageBuildingServicesModuleIcon;
