@@ -323,16 +323,6 @@ static NSInteger kAnnotationMarginRight = 50;
     return self.tiledMapView.isTrackingUser;
 }
 
-- (void)centerMapOnUserLocation
-{
-    [self.tiledMapView centerMapOnUserLocation];
-}
-
-- (void)toggleUserTrackingMode
-{
-    [self.tiledMapView toggleUserTrackingMode];
-}
-
 #pragma mark - Location Notifications
 
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
