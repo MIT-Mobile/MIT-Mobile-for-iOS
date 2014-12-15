@@ -494,7 +494,6 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
             
             MITLibrariesHoldingLibraryHeaderCell *holdingHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kHoldingLibraryHeaderCellIdentifier];
             holdingHeaderCell.libraryNameLabel.text = locationName;
-            holdingHeaderCell.libraryHoursLabel.text = @"Put hours here";
             holdingHeaderCell.availableCopiesLabel.text = [NSString stringWithFormat:@"%li of %li available", (long)availableCopiesNumber, (long)totalCopiesNumber];
             return holdingHeaderCell;
         }
@@ -574,7 +573,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
         
         if (indexPath.row == 0) {
             // Header cell
-            return 75;
+            return 55;
         }
         
         NSArray *availableCopiesToDisplay = [availabilityInfo objectForKey:kAvailableCopiesForDisplayKey];
