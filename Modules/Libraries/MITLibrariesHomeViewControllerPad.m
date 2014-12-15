@@ -64,7 +64,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self setupViewControllers];
 
     [self setupToolbar];
-    [self.navigationController setToolbarHidden:NO];
 
     [self loadLinks];
 }
@@ -200,6 +199,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
                           [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                           evenPaddingButton,
                           self.quickLinksButton];
+    [self.navigationController setToolbarHidden:NO];
 }
 
 #pragma mark - Toolbar Button Presses
