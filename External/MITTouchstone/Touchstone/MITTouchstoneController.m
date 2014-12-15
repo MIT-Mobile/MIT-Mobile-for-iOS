@@ -8,6 +8,7 @@
 
 #import "MITMobileServerConfiguration.h"
 #import "MobileKeychainServices.h"
+#import "MITAdditions.h"
 
 #pragma mark - Globals
 static NSString* const MITTouchstoneLastLoggedInUserKey = @"MITTouchstoneLastLoggedInUser";
@@ -45,7 +46,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 
 #pragma mark - Main Implementation
 @implementation MITTouchstoneController {
-    __weak MITTouchstoneDefaultLoginViewController *_touchstoneLoginViewController;
+    __weak UIViewController *_touchstoneLoginViewController;
 }
 
 @synthesize storedCredential = _storedCredential;
@@ -383,11 +384,30 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
     if (!_touchstoneLoginViewController && [self needsToPromptForCredential]) {
         MITTouchstoneDefaultLoginViewController *touchstoneViewController = [[MITTouchstoneDefaultLoginViewController alloc] initWithCredential:self.storedCredential];
         touchstoneViewController.delegate = self;
-        _touchstoneLoginViewController = touchstoneViewController;
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:touchstoneViewController];
-            [self.authenticationDelegate touchstoneController:self presentViewController:navigationController];
+            navigationController.view.tintColor = [UIColor mit_tintColor];
+            _touchstoneLoginViewController = navigationController;
+
+            if ([self.authenticationDelegate respondsToSelector:@selector(touchstoneController:presentViewController:completion:)]) {
+                [self.authenticationDelegate touchstoneController:self presentViewController:navigationController completion:nil];
+            } else {
+                if (UIUserInterfaceIdiomPad == [UIDevice currentDevice].userInterfaceIdiom) {
+                    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+                    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                } else {
+                    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+                    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                }
+
+                UIViewController *rootViewController = [MIT_MobileAppDelegate applicationDelegate].window.rootViewController;
+                if (rootViewController.presentedViewController) {
+                    [rootViewController.presentedViewController presentViewController:navigationController animated:YES completion:nil];
+                } else {
+                    [rootViewController presentViewController:navigationController animated:YES completion:nil];
+                }
+            }
             
             // TODO: See if this is even a sane thing to ask at this point. It seems to work
             // in iOS 7 so far. Also look into firing this off as another block on the
@@ -409,12 +429,26 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
  *  presented login view controller (if one is currently active) and resumes
  *  the internal operation queue.
  */
-- (void)dismissLoginViewController
+- (void)dismissLoginViewController:(void(^)(void))completion
 {
     if (_touchstoneLoginViewController) {
-        [self.authenticationDelegate dismissViewControllerForTouchstoneController:self completion:^{
-            _touchstoneLoginViewController = nil;
-        }];
+        if ([self.authenticationDelegate respondsToSelector:@selector(touchstoneController:dismissViewController:completion:)]) {
+            [self.authenticationDelegate touchstoneController:self dismissViewController:_touchstoneLoginViewController completion:^{
+                _touchstoneLoginViewController = nil;
+
+                if (completion) {
+                    completion();
+                }
+            }];
+        } else {
+            [_touchstoneLoginViewController dismissViewControllerAnimated:YES completion:^{
+                _touchstoneLoginViewController = nil;
+
+                if (completion) {
+                    completion();
+                }
+            }];
+        }
     }
 }
 
@@ -552,24 +586,26 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 - (void)loginViewController:(MITTouchstoneDefaultLoginViewController*)controller didFinishWithCredential:(NSURLCredential*)credential
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self enqueueLoginRequestWithCredential:credential success:^(NSURLCredential *credential, NSDictionary *userInformation) {
-            self.loginCompletionQueue.suspended = NO;
-        } failure:^(NSError *error) {
-            // There are currently only a limited number of ways we can actually reach this point.
-            self.loginCompletionQueue.suspended = NO;
+        [self dismissLoginViewController:^{
+            [self enqueueLoginRequestWithCredential:credential success:^(NSURLCredential *credential, NSDictionary *userInformation) {
+                self.loginCompletionQueue.suspended = NO;
+            } failure:^(NSError *error) {
+                // There are currently only a limited number of ways we can actually reach this point.
+                self.loginCompletionQueue.suspended = NO;
+            }];
         }];
-
-        [self dismissLoginViewController];
     }];
 }
 
 - (void)didCancelLoginViewController:(MITTouchstoneDefaultLoginViewController*)controller
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self loginDidFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserCancelledAuthentication userInfo:nil]];
-        [self dismissLoginViewController];
+        [self dismissLoginViewController:^{
+            [self loginDidFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserCancelledAuthentication userInfo:nil]];
+            
+            self.loginCompletionQueue.suspended = NO;
+        }];
 
-        self.loginCompletionQueue.suspended = NO;
     }];
 }
 
