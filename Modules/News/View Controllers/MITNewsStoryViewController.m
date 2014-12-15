@@ -136,7 +136,7 @@
             
             CGFloat imageRatio = self.coverImageView.image.size.width / self.coverImageView.image.size.height;
             
-            CGRect screenRect = [[UIScreen mainScreen] bounds];
+            CGRect screenRect = self.view.bounds;
             CGFloat screenWidth = screenRect.size.width;
             CGFloat screenHeight = screenRect.size.height;
             CGFloat maxWidth = screenHeight < screenWidth ? screenHeight : screenWidth;
