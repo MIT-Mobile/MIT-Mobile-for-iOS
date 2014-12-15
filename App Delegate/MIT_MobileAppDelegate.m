@@ -696,7 +696,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
 #pragma mark - Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
-- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
+- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController completion:(void(^)(void))completion
 {
     UIViewController *rootViewController = [self.window rootViewController];
     UIViewController *presented = [rootViewController presentedViewController];
@@ -708,21 +708,23 @@ static NSString* const MITMobileButtonTitleView = @"View";
         viewController.modalPresentationStyle = UIModalPresentationFullScreen;
         viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
+
     if (presented) {
-        [presented presentViewController:viewController animated:YES completion:nil];
+        [presented presentViewController:viewController animated:YES completion:completion];
     } else {
-        [rootViewController presentViewController:viewController animated:YES completion:nil];
+        [rootViewController presentViewController:viewController animated:YES completion:completion];
     }
 }
 
-- (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
+- (void)touchstoneController:(MITTouchstoneController*)controller dismissViewController:(UIViewController*)viewController completion:(void(^)(void))completion
 {
     UIViewController *rootViewController = [self.window rootViewController];
     UIViewController *presented = [rootViewController presentedViewController];
+
     if (presented) {
-        [presented dismissViewControllerAnimated:NO completion:nil];
+        [presented dismissViewControllerAnimated:YES completion:completion];
     } else {
-        [rootViewController dismissViewControllerAnimated:NO completion:nil];
+        [rootViewController dismissViewControllerAnimated:YES completion:completion];
     }
 }
 

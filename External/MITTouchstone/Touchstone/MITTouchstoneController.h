@@ -24,6 +24,6 @@
 @end
 
 @protocol MITTouchstoneAuthenticationDelegate <NSObject>
-- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController;
-- (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion;
+- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController completion:(void(^)(void))completion;
+- (void)touchstoneController:(MITTouchstoneController*)controller dismissViewController:(UIViewController*)viewController completion:(void(^)(void))completion;
 @end
