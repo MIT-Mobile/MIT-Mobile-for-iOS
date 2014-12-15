@@ -46,8 +46,8 @@
             }
             .byline {font-size: 16px;min-height:16px; margin: 0; padding-top: 10; padding-bottom: 10;}
             .inline-separator {margin: 0 3px;}
-            #content {border-top: 1px dotted;}
-            .horizontalRule {border-bottom: 1px dotted; margin: 0; padding-top: 10;}
+            #content {border-top: 1px solid #A31F34;}
+            .horizontalRule {border-bottom: 1px solid #A31F34; margin: 0; padding-top: 10;}
             .credential {font-size:8pt;}
             #image {float:right;margin: 14px 0 -1px 8px;}
             #image img.thumbnail {float:right; border: 1px solid #505050; /* scale to width respecting aspect */}
@@ -93,7 +93,7 @@
             <span class="postdate">__DATE__</span>
         </p>    
         <div id="content">
-            <a href="mitmobile://opengallery"><img class="gallery_image" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__"></a>
+            <img class="gallery_image" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__" id="gallery_image">
             <p class="imageDescription" style="width:__GALLERY_WIDTH__;">__GALLERY_DESCRIPTION__</p>
             <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
             <p class="imageSpace" style="width:__GALLERY_WIDTH__;"> </p>
@@ -132,7 +132,7 @@
             imageDescriptionNode.parentElement.removeChild(imageNode);
 
         } else {
-            document.getElementById("imageCount").innerHTML = imageCount + ((imageCount == 1) ? " image" : " images");
+           // document.getElementById("imageCount").innerHTML = imageCount + ((imageCount == 1) ? " image" : " images");
         }
         // remove img.thumbnail if thumbnail is not set (empty src attributes == the base URL)
         if (document.getElementsByClassName("thumbnail").length > 0 && document.getElementsByClassName("thumbnail")[0].src.indexOf("file:") == 0) {
@@ -162,7 +162,7 @@
                 addClass(ele, cls);
             }
         }
-        
+/*
         var bookmarkButton = document.getElementById("bookmarkButton");
         bookmarkButton.addEventListener("touchstart", function() {
             addClass(bookmarkButton, "pressed");
@@ -177,6 +177,11 @@
         });        
         shareButton.addEventListener("touchend", function() {
             removeClass(shareButton, "pressed");
+        });
+ */
+        var gallery = document.getElementById("gallery_image");
+        gallery.addEventListener("touchend", function() {
+                                 window.open("mitmobilenews://opengallery");
         });
         
     </script>

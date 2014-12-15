@@ -133,12 +133,15 @@
     
     if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         if (self.coverImageView.image) {
-            // Using 213 here because all the images from the News office should be around a
-            // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
-            // a point or two.
-            // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
-            // (bskinner - 2014.02.07)
-            self.coverImageViewHeightConstraint.constant = 213.;
+            
+            CGFloat imageRatio = self.coverImageView.image.size.width / self.coverImageView.image.size.height;
+            
+            CGRect screenRect = self.view.bounds;
+            CGFloat screenWidth = screenRect.size.width;
+            CGFloat screenHeight = screenRect.size.height;
+            CGFloat maxWidth = screenHeight < screenWidth ? screenHeight : screenWidth;
+            
+            self.coverImageViewHeightConstraint.constant = maxWidth / imageRatio;
         } else {
             self.coverImageViewHeightConstraint.constant = 0;
         }
@@ -385,16 +388,19 @@
     DDLogWarn(@"story view failed to load: %@", error);
 }
 
-- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
-	BOOL result = YES;
-    
-	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-		NSURL *url = [request URL];
-        if ([[url relativeString] isEqualToString:@"mitmobile://opengallery"])
+- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    BOOL result = YES;
+    if (navigationType == UIWebViewNavigationTypeOther) {
+        NSURL *url = [request URL];
+        if ([[url relativeString] isEqualToString:@"mitmobilenews://opengallery"])
         {
             [self performSegueWithIdentifier:@"showMediaGallery" sender:nil];
             return NO;
         }
+        
+    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        NSURL *url = [request URL];
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]];
         
         if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
@@ -404,9 +410,9 @@
             
             result = NO;
         }
-	}
+    }
     
-	return result;
+    return result;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer

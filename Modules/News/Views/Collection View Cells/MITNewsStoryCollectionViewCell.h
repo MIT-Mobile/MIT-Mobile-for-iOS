@@ -7,6 +7,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *storyImageView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dekLabel;
+@property (strong, nonatomic) UIView *highlightView;
 
 @end
 
