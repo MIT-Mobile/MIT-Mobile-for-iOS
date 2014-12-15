@@ -378,7 +378,10 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     
     if (formSheetVCForPresentation) {
         formSheetVCForPresentation.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(presentedFormSheetViewControllerCancelButtonPressed:)];
+
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:formSheetVCForPresentation];
+
+        nav.view.tintColor = self.view.tintColor;
         nav.modalPresentationStyle = UIModalPresentationFormSheet;
         nav.preferredContentSize = MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize;
         [self presentViewController:nav animated:NO completion:nil];
