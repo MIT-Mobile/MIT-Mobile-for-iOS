@@ -64,6 +64,8 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
     [self setupViewControllers];
 
     [self setupToolbar];
+    [self.navigationController setToolbarHidden:NO];
+
     [self loadLinks];
 }
 
