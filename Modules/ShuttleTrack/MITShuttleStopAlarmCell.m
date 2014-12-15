@@ -46,7 +46,7 @@
         self.timeRemainingLabel.text = @"now";
         self.timeRemainingLabel.textColor = [UIColor mit_tintColor];
     } else {
-        self.timeRemainingLabel.text = [NSString stringWithFormat:@"%im", minutesLeft];
+        self.timeRemainingLabel.text = [NSString stringWithFormat:@"%lim", (long)minutesLeft];
         self.timeRemainingLabel.textColor = [UIColor darkTextColor];
     }
     

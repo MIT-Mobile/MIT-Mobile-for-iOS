@@ -254,11 +254,11 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont librariesTitleStyleFont]}];
     
-    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
+    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu items, ", (unsigned long)self.user.loans.count]
                                                                               attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                            NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
     
-    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
+    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld overdue", (long)self.user.overdueItemsCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                      NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     
@@ -294,11 +294,11 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
     
-    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu holds, ", (unsigned long)self.user.holds.count]
                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                     NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
     
-    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld ready for pickup", (long)self.user.readyForPickupCount]
                                                                                attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
                                                                                             NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     

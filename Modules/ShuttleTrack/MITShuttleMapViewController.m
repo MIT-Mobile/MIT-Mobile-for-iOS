@@ -774,7 +774,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             if (minutesLeft < 1) {
                 arrivalTime = @"now";
             } else {
-                arrivalTime = [NSString stringWithFormat:@"in %i minutes", minutesLeft];
+                arrivalTime = [NSString stringWithFormat:@"in %li minutes", (long)minutesLeft];
             }
             calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
             break;

@@ -131,10 +131,10 @@ static NSString *const kMITCalendarEventCell = @"MITCalendarEventCell";
             }];
         }
         
-        int defaultOffset = row + 1; // Index 0 == number 1, etc.
-        int actualOffset = defaultOffset - holidayEventsOffset;
+        NSInteger defaultOffset = row + 1; // Index 0 == number 1, etc.
+        NSInteger actualOffset = defaultOffset - holidayEventsOffset;
         
-        return [NSString stringWithFormat:@"%i", actualOffset];
+        return [NSString stringWithFormat:@"%li", (long)actualOffset];
     }
 }
 

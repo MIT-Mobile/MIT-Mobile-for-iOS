@@ -17,12 +17,12 @@
     if ([dateDiff second] < 60) {
         [result appendString:@"Just Now"];
     } else if ([dateDiff second] < SECONDS_PER_HOUR) {
-        [result appendFormat:@"%d minute%@ ago",
-         ([dateDiff second] / 60) + 1,
+        [result appendFormat:@"%ldminute%@ ago",
+         (long)([dateDiff second] / 60) + 1,
          ([dateDiff minute] < 2) ? @"" : @"s"];
     } else if ([dateDiff second] < (SECONDS_PER_HOUR * 6)) {
-        [result appendFormat:@"%d hour%@ ago",
-         hours,
+        [result appendFormat:@"%ld hour%@ ago",
+         (long)hours,
          (hours < 2) ? @"" : @"s"];
     } else {
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];

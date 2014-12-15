@@ -24,21 +24,21 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     switch (orientation) {
         case UIImageOrientationDown:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDown", UIImageOrientationDown];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationDown", (long)UIImageOrientationDown];
         case UIImageOrientationDownMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDownMirrored", UIImageOrientationDownMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationDownMirrored", (long)UIImageOrientationDownMirrored];
         case UIImageOrientationLeft:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeft", UIImageOrientationLeft];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationLeft", (long)UIImageOrientationLeft];
         case UIImageOrientationLeftMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeftMirrored", UIImageOrientationLeftMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationLeftMirrored", (long)UIImageOrientationLeftMirrored];
         case UIImageOrientationUp:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUp", UIImageOrientationUp];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationUp", (long)UIImageOrientationUp];
         case UIImageOrientationUpMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUpMirrored", UIImageOrientationUpMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationUpMirrored", (long)UIImageOrientationUpMirrored];
         case UIImageOrientationRight:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRight", UIImageOrientationRight];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationRight", (long)UIImageOrientationRight];
         case UIImageOrientationRightMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRightMirrored", UIImageOrientationRightMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationRightMirrored", (long)UIImageOrientationRightMirrored];
     }
 }
 

@@ -18,7 +18,7 @@
 
 - (NSString *)titleText
 {
-    return [NSString stringWithFormat:@"%d. %@", self.stopIndex + 1, self.stop.title];
+    return [NSString stringWithFormat:@"%ld. %@", (long)self.stopIndex + 1, self.stop.title];
 }
 
 - (NSString *)distanceText

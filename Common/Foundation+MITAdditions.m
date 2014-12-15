@@ -247,11 +247,11 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
     }
     
     NSData *stringData = [htmlFragment dataUsingEncoding:NSUTF8StringEncoding];
-    NSInteger parserOptions = (HTML_PARSE_NONET |
+    int parserOptions = (HTML_PARSE_NONET |
                                HTML_PARSE_RECOVER |
                                HTML_PARSE_NOWARNING |
                                HTML_PARSE_NODEFDTD);
-    document = htmlReadMemory([stringData bytes], [stringData length], "", NULL, parserOptions);
+    document = htmlReadMemory([stringData bytes], (int)[stringData length], "", NULL, parserOptions);
     if (!document) {
         DDLogWarn(@"failed to create xml document from HTML string");
         goto error;

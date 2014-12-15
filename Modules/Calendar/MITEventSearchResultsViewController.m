@@ -240,7 +240,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
                 timeFrameString = @"year";
             }
             
-            cell.textLabel.text = [NSString stringWithFormat:@"%i results in the next %@", numberOfResults, timeFrameString];
+            cell.textLabel.text = [NSString stringWithFormat:@"%li results in the next %@", (long)numberOfResults, timeFrameString];
             cell.textLabel.textColor = [UIColor darkGrayColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;

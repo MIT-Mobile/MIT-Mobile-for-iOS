@@ -263,7 +263,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
-    NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
+    NSAssert([self supportsPresentationStyle:style], @"presentation style %ld is not supported on this device", (long)style);
 
     if (![self supportsPresentationStyle:style]) {
         return;

@@ -191,7 +191,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     return [self numberOfStoredShuttleRoutes] > 0;
 }
 
-- (int)numberOfStoredShuttleRoutes
+- (NSInteger)numberOfStoredShuttleRoutes
 {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];

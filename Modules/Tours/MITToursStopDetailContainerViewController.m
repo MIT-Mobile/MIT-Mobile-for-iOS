@@ -195,7 +195,7 @@
         if (shouldPutNameInTitle) {
             self.title = stop.title;
         } else {
-            self.title = [NSString stringWithFormat:@"Main Loop %d of %d", mainLoopIndex + 1, self.mainLoopStops.count];
+            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)mainLoopIndex + 1, (unsigned long)self.mainLoopStops.count];
         }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
     } else {

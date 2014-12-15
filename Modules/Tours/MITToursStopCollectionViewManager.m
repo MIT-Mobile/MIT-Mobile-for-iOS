@@ -40,7 +40,7 @@ static NSString * const kCellReuseIdentifier = @"MITToursStopCollectionViewCell"
     NSString *title = stop.title;
     NSInteger index = [self.stops indexOfObject:stop];
     if (index != NSNotFound) {
-        title = [NSString stringWithFormat:@"%d. %@", index + 1, stop.title];
+        title = [NSString stringWithFormat:@"%ld. %@", (long)index + 1, stop.title];
     }
     BOOL isSelected = (stop == self.selectedStop);
     [cell configureForImageURL:imageURL title:title selected:isSelected];

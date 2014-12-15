@@ -35,7 +35,7 @@
             break;
 
         default: {
-            NSString *reason = [NSString stringWithFormat:@"unsupported user interface idiom %d",currentUserInterfaceIdiom];
+            NSString *reason = [NSString stringWithFormat:@"unsupported user interface idiom %ld", (long)currentUserInterfaceIdiom];
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
         } break;
     }

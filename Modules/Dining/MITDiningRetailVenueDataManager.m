@@ -113,7 +113,7 @@ static NSString *const kMITFavoriteVenueKey = @"Favorites";
 - (NSString *)absoluteIndexStringForVenue:(MITDiningRetailVenue *)venue
 {
     NSInteger absoluteIndex = [self.retailVenues indexOfObject:venue];
-    return absoluteIndex != NSNotFound ? [NSString stringWithFormat:@"%d", absoluteIndex + 1] : @"";
+    return absoluteIndex != NSNotFound ? [NSString stringWithFormat:@"%ld", (long)absoluteIndex + 1] : @"";
 }
 
 #pragma mark - Building Name Parsing, used for sorting buildings into sections
