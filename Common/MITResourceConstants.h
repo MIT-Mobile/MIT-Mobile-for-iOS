@@ -72,7 +72,9 @@ extern NSString * const MITImageMapLocationHighlighted;
 extern NSString * const MITImageMapAnnotationUserLocation;
 extern NSString * const MITImageMapAnnotationPin;
 extern NSString * const MITImageMapAnnotationPlacePin;
-
+extern NSString * const MITImageMapPinBall;
+extern NSString * const MITImageMapPinNeedle;
+extern NSString * const MITImageMapPinShadow;
 
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;

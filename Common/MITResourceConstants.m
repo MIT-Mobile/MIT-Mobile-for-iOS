@@ -74,6 +74,9 @@ NSString * const MITImageMapLocationHighlighted = @"map-location-highlighted";
 NSString * const MITImageMapAnnotationUserLocation = @"map-annotation-user-location";
 NSString * const MITImageMapAnnotationPin = @"map-annotation-pin";
 NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
+NSString * const MITImageMapPinBall = @"map-pin-ball";
+NSString * const MITImageMapPinNeedle = @"map-pin-needle";
+NSString * const MITImageMapPinShadow = @"map-pin-shadow";
 
 
 #pragma mark - News
