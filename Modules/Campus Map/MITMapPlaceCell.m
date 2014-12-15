@@ -39,7 +39,7 @@ const CGFloat kMapPlaceCellEstimatedHeight = 50.0;
 
 - (void)setPlace:(MITMapPlace *)place order:(NSInteger)order
 {
-    self.titleLabel.text = [NSString stringWithFormat:@"%d. %@", order, place.title];
+    self.titleLabel.text = [NSString stringWithFormat:@"%ld. %@", (long)order, place.title];
     self.subtitleLabel.text = place.subtitle;
 }
 

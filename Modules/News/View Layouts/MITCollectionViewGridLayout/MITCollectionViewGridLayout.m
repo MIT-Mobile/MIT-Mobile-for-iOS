@@ -73,7 +73,7 @@
         }
 
         if (minimumNumberOfItems > numberOfItems) {
-            DDLogError(@"layout may fail: section %d requires at least %d items to present a %dx%d spanning cell, only %d items in section",section,minimumNumberOfItems,span.horizontal,span.vertical,numberOfItems);
+            DDLogError(@"layout may fail: section %lu requires at least %ld items to present a %ldx%ld spanning cell, only %ld items in section", (unsigned long)section, (unsigned long)minimumNumberOfItems, (unsigned long)span.horizontal, (unsigned long)span.vertical, (unsigned long)numberOfItems);
         }
     }];
 }
@@ -84,7 +84,7 @@
 
     if (!sectionLayout) {
         sectionLayout = [self _layoutForSection:section];
-        NSAssert(sectionLayout,@"failed to create layout for section %d",section);
+        NSAssert(sectionLayout,@"failed to create layout for section %ld",(long)section);
         self.sectionLayouts[@(section)] = sectionLayout;
     }
 

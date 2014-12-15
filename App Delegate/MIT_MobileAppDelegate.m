@@ -67,7 +67,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
 + (MIT_MobileAppDelegate*)applicationDelegate
 {
     id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
-    
+
     if ([appDelegate isKindOfClass:[MIT_MobileAppDelegate class]]) {
         return (MIT_MobileAppDelegate*)appDelegate;
     } else {
@@ -85,13 +85,13 @@ static NSString* const MITMobileButtonTitleView = @"View";
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-    
+
     [[UIApplication sharedApplication]
      setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-    
+
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
-    
+
     // Create the default Touchstone controller and set it.
     // -sharedTouchstoneController is a lazy method and it should create
     // a default controller here if needed.
@@ -105,7 +105,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
             [moduleViewControllers addObject:viewController];
         }
     }];
-    
+
     self.rootViewController.viewControllers = moduleViewControllers;
 
     [self updateBasicServerInfo];
@@ -133,7 +133,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
-    
+
     [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
     [MITUnreadNotifications updateUI];
@@ -149,6 +149,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
     if(apnsDict) {
         [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:apnsDict];
     }
+
+    [self addGlobalMITStyling];
+    
     return YES;
 }
 
@@ -181,7 +184,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     } else {
         DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
-    
+
     return canHandle;
 }
 
@@ -207,11 +210,11 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)showNetworkActivityIndicator {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSInteger count = self.networkActivityCounter + 1;
-        
+
         if (count < 1) {
-            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %d",count);
+            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %ld", (long)count);
         }
-        
+
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.networkActivityCounter = count;
     });
@@ -220,7 +223,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)hideNetworkActivityIndicator {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSInteger count = self.networkActivityCounter - 1;
-        
+
         if (count < 1) {
             count = 0;
             [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -260,22 +263,40 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
-    
+
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
-		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken];
+		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken completion:^(BOOL success) {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                }
+            }];
+        }];
 	} else {
 		NSData *oldToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
-		
+
 		if(![oldToken isEqualToData:deviceToken]) {
-			[MITDeviceRegistration newDeviceToken:deviceToken];
-		}
+			[MITDeviceRegistration newDeviceToken:deviceToken completion:^(BOOL success) {
+                [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                    if (module.pushNotificationSupported) {
+                        [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                    }
+                }];
+            }];
+        } else {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:YES completed:nil];
+                }
+            }];
+        }
 	}
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogWarn(@"%@", [error localizedDescription]);
-    
+
     if ([error code] == 3010) {
         // Running the simulator and, since the simulator can't register for notifications
         // just kill our device ID so a nil identity is returned whenever we are asked
@@ -318,64 +339,64 @@ static NSString* const MITMobileButtonTitleView = @"View";
             }
         }
     }
-    
+
     return _lock;
 }
 
 - (MITTouchstoneController*)sharedTouchstoneController
 {
     [self.lock lock];
-    
+
     if (!_sharedTouchstoneController) {
         [self loadTouchstoneController];
         NSAssert(_sharedTouchstoneController && [MITTouchstoneController sharedController], @"failed to load Touchstone authentication controller");
     }
-    
+
     [self.lock unlock];
-    
+
     return _sharedTouchstoneController;
 }
 
 - (MITMobile*)remoteObjectManager
 {
     [self.lock lock];
-    
+
     if (!_remoteObjectManager) {
-        
+
         [self loadRemoteObjectManager];
         NSAssert(_remoteObjectManager, @"failed to initalize the persitence stack");
     }
-    
+
     [self.lock unlock];
-    
+
     return _remoteObjectManager;
 }
 
 - (NSManagedObjectModel*)managedObjectModel
 {
     [self.lock lock];
-    
+
     if (!_managedObjectModel) {
         [self loadManagedObjectModel];
         NSAssert(_managedObjectModel, @"failed to create the managed object model");
     }
-    
+
     [self.lock unlock];
-    
+
     return _managedObjectModel;
 }
 
 - (MITCoreDataController*)coreDataController
 {
     [self.lock lock];
-    
+
     if (!_coreDataController) {
         [self loadCoreDataController];
         NSAssert(_coreDataController, @"failed to load CoreData store controller");
     }
-    
+
     [self.lock unlock];
-    
+
     return _coreDataController;
 }
 
@@ -395,7 +416,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
         [self loadModules];
         NSAssert(_modules,@"failed to load application modules");
     }
-    
+
     return _modules;
 }
 
@@ -404,7 +425,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     if (!_pendingNotifications) {
         _pendingNotifications = [[NSMutableArray alloc] init];
     }
-    
+
     return _pendingNotifications;
 }
 
@@ -434,16 +455,16 @@ static NSString* const MITMobileButtonTitleView = @"View";
                             @"MITShuttleDataModel",
                             @"PeopleDataModel",
                             @"MITToursDataModel"];
-    
+
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:modelName withExtension:@"momd"];
         NSManagedObjectModel *objectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         NSAssert(objectModel, @"managed object model '%@' at URL '%@' could not be loaded",modelName,modelURL);
-        
+
         [managedObjectModels addObject:objectModel];
     }];
-    
+
     _managedObjectModel = [NSManagedObjectModel modelByMergingModels:managedObjectModels];
 }
 
@@ -451,49 +472,49 @@ static NSString* const MITMobileButtonTitleView = @"View";
     // add your MITModule subclass here by adding it to the below
     // Modules are listed in the order they are added here.
     NSMutableArray *modules = [[NSMutableArray alloc] init];
-    
+
     NewsModule *newsModule = [[NewsModule alloc] init];
     [modules addObject:newsModule];
-    
+
     ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
     [modules addObject:shuttlesModule];
-    
+
     CMModule *campusMapModule = [[CMModule alloc] init];
     [modules addObject:campusMapModule];
-    
+
     CalendarModule *calendarModule = [[CalendarModule alloc] init];
     [modules addObject:calendarModule];
-    
+
     PeopleModule *peopleModule = [[PeopleModule alloc] init];
     [modules addObject:peopleModule];
-    
+
     ToursModule *toursModule = [[ToursModule alloc] init];
     [modules addObject:toursModule];
-    
+
     EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
     [modules addObject:emergencyModule];
-    
+
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
     [modules addObject:librariesModule];
-    
+
     FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
     [modules addObject:facilitiesModule];
-    
+
     DiningModule *diningModule = [[DiningModule alloc] init];
     [modules addObject:diningModule];
-    
+
     MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
     [modules addObject:scannerModule];
-    
+
     LinksModule *linksModule = [[LinksModule alloc] init];
     [modules addObject:linksModule];
-    
+
     SettingsModule *settingsModule = [[SettingsModule alloc] init];
     [modules addObject:settingsModule];
-    
+
     AboutModule *aboutModule = [[AboutModule alloc] init];
     [modules addObject:aboutModule];
-    
+
     _modules = modules;
 }
 
@@ -501,28 +522,28 @@ static NSString* const MITMobileButtonTitleView = @"View";
 {
     MITMobile *remoteObjectManager = [[MITMobile alloc] init];
     [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
-    
+
     MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapPlaces];
-    
+
     MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapCategories];
-    
+
     MITMobileResource *newsStories = [[MITNewsStoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsStories];
-    
+
     MITMobileResource *newsCategories = [[MITNewsCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsCategories];
-    
+
     MITMobileResource *personResource = [[MITPersonResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:personResource];
-    
+
     MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:peopleResource];
-    
+
     MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:shuttleRoutesResource];
-    
+
     MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:shuttleRouteDetailResource];
 
@@ -534,49 +555,49 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
     MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:shuttleVehiclesResource];
-    
+
     MITMobileResource *calendarsCalendarsResource = [[MITCalendarsCalendarsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:calendarsCalendarsResource];
 
     MITMobileResource *calendarsCalendarResource = [[MITCalendarsCalendarResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:calendarsCalendarResource];
-    
+
     MITMobileResource *calendarsEventsResource = [[MITCalendarsEventsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:calendarsEventsResource];
-    
+
     MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:calendarsEventResource];
-    
+
     MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:diningResource];
-    
+
     MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
     [remoteObjectManager addResource:librariesResource];
-    
+
     MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
     [remoteObjectManager addResource:librariesLinksResource];
-    
+
     MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
     [remoteObjectManager addResource:librariesAskUsResource];
-    
+
     MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
     [remoteObjectManager addResource:librariesSearchResource];
-    
+
     MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
     [remoteObjectManager addResource:librariesUserResource];
-    
+
     MITMobileResource *librariesMITIdentityResource = [[MITLibrariesMITIdentityResource alloc] init];
     [remoteObjectManager addResource:librariesMITIdentityResource];
-    
+
     MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
     [remoteObjectManager addResource:librariesItemDetailResource];
-    
+
     MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursToursResource];
-    
+
     MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursTourResource];
-    
+
     _remoteObjectManager = remoteObjectManager;
 }
 
@@ -600,6 +621,49 @@ static NSString* const MITMobileButtonTitleView = @"View";
     [notificationView show];
 }
 
+- (void)_registerNotificationsForModuleWithName:(NSString*)name enabled:(BOOL)enabled completed:(void (^)(void))block
+{
+    // If we don't have an identity, don't even try to enable (or disable) notifications,
+    // just leave everything as-is
+    if (!self.deviceToken) {
+        if (block) {
+            block();
+        }
+
+        return;
+    } else {
+        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+        parameters[@"module_name"] = name;
+        parameters[@"enabled"] = (enabled ? @"1" : @"0");
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registrationResult) {
+            if (![registrationResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"fatal error: invalid response for push configuration");
+            } else if (registrationResult[@"error"]) {
+                DDLogError(@"failed to enable notifications for module %@ with error %@",name,registrationResult[@"error"]);
+            }
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            DDLogError(@"failed to enable notifications for module %@ with error %@",name,error);
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        }];
+
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
+    }
+}
+
 #pragma mark Application modules helper methods
 - (MITModule*)moduleWithTag:(NSString *)tag
 {
@@ -610,7 +674,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
             (*stop) = YES;
         }
     }];
-    
+
     return selectedModule;
 }
 
@@ -669,6 +733,13 @@ static NSString* const MITMobileButtonTitleView = @"View";
     if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
         [self.rootViewController setVisibleViewControllerWithModuleName:module.name];
     }
+}
+
+#pragma mark - Global App Styling
+
+- (void)addGlobalMITStyling
+{
+    [[UINavigationBar appearance] setTintColor:[UIColor mit_tintColor]];
 }
 
 @end

@@ -282,6 +282,9 @@ static NSInteger kAnnotationMarginRight = 50;
     [contentView configureForStop:stop userLocation:mapView.userLocation.location];
     
     SMCalloutView *calloutView = self.calloutView;
+    UIImage *disclosureImage = [UIImage imageNamed:@"global-callout-disclosure"];
+    UIImageView *disclosureView = [[UIImageView alloc] initWithImage:disclosureImage];
+    calloutView.rightAccessoryView = disclosureView;
     calloutView.contentView = contentView;
     calloutView.calloutOffset = annotationView.calloutOffset;
 
@@ -318,16 +321,6 @@ static NSInteger kAnnotationMarginRight = 50;
 - (BOOL)isTrackingUser
 {
     return self.tiledMapView.isTrackingUser;
-}
-
-- (void)centerMapOnUserLocation
-{
-    [self.tiledMapView centerMapOnUserLocation];
-}
-
-- (void)toggleUserTrackingMode
-{
-    [self.tiledMapView toggleUserTrackingMode];
 }
 
 #pragma mark - Location Notifications

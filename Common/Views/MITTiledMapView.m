@@ -64,61 +64,11 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     self.mapView.tintColor = [UIColor mit_systemTintColor];
 }
 
-- (void)userLocationButtonPressed:(UIBarButtonItem *)userLocationButton
-{
-    [self toggleUserTrackingMode];
-}
-
 #pragma mark - Public Methods
-
-- (void)centerMapOnUserLocation
-{
-    if ([MITLocationManager locationServicesAuthorized]) {
-        [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate animated:YES];
-    } else if (![MITLocationManager hasRequestedLocationPermissions]) {
-        [[MITLocationManager sharedManager] requestLocationAuthorization];
-    }
-}
 
 - (BOOL)isTrackingUser
 {
     return self.mapView.userTrackingMode == MKUserTrackingModeFollow;
-}
-
-- (void)toggleUserTrackingMode
-{
-    if ([MITLocationManager locationServicesAuthorized]) {
-        if (self.mapView.userTrackingMode == MKUserTrackingModeNone) {
-            // We need to wrap the user tracking enabling like this to prevent an unwanted zoom when we start tracking
-            [UIView animateWithDuration:0.333 animations:^{
-               self.mapView.centerCoordinate = self.mapView.userLocation.location.coordinate;
-           } completion:^(BOOL finished) {
-               [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:NO];
-           }];
-        }
-        else {
-            [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
-        }
-            
-        [self updateUserLocationButtonForTrackingMode];
-    }
-    else if ([MITLocationManager hasRequestedLocationPermissions]) {
-        [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
-        [self showLocationServicesAlert];
-    } else {
-        [[MITLocationManager sharedManager] requestLocationAuthorization];
-    }
-}
-
-- (void)updateUserLocationButtonForTrackingMode
-{
-    if (self.mapView.userTrackingMode == MKUserTrackingModeFollow) {
-        UIButton *userLocationCustomButton = (UIButton *)self.userLocationButton.customView;
-        [userLocationCustomButton setSelected:YES];
-    } else {
-        UIButton *userLocationCustomButton = (UIButton *)self.userLocationButton.customView;
-        [userLocationCustomButton setSelected:NO];
-    }
 }
 
 - (void)showLocationServicesAlert
@@ -152,14 +102,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 - (UIBarButtonItem *)userLocationButton
 {
     if (!_userLocationButton) {
-        UIButton *userLocationCustomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *normalImage = [UIImage imageNamed:MITImageMapLocation];
-        UIImage *selectedImage = [UIImage imageNamed:MITImageMapLocationHighlighted];
-        userLocationCustomButton.frame = CGRectMake(0, 0, normalImage.size.width, normalImage.size.height);
-        [userLocationCustomButton addTarget:self action:@selector(userLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-        [userLocationCustomButton setImage:normalImage forState:UIControlStateNormal];
-        [userLocationCustomButton setImage:selectedImage forState:UIControlStateSelected];
-        _userLocationButton = [[UIBarButtonItem alloc] initWithCustomView:userLocationCustomButton];
+        _userLocationButton = [[MKUserTrackingBarButtonItem alloc] initWithMapView:self.mapView];
     }
     
     return _userLocationButton;
@@ -278,7 +221,6 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
 {
-    [self updateUserLocationButtonForTrackingMode];
     [self.userTrackingDelegate mitTiledMapView:self didChangeUserTrackingMode:mode animated:animated];
 }
 

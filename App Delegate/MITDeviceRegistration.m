@@ -47,8 +47,14 @@ static NSString* MITHexStringFromNSData(NSData* data) {
 	hex = [hex stringByReplacingOccurrencesOfString:@" " withString:@""];
 	return hex;
 }
-	
-+ (void)registerNewDeviceWithToken: (NSData *)deviceToken {
+
++ (void)registerNewDeviceWithToken:(NSData *)deviceToken
+{
+    [self registerNewDeviceWithToken:deviceToken completion:nil];
+}
+
++ (void)registerNewDeviceWithToken:(NSData *)deviceToken completion:(void(^)(BOOL success))block
+{
 	NSMutableDictionary *parameters = [@{MITDeviceTypeKey : MITDeviceTypeApple} mutableCopy];
 	if(deviceToken) {		
 		parameters[@"device_token"] = [self stringFromToken:deviceToken];
@@ -63,8 +69,20 @@ static NSString* MITHexStringFromNSData(NSData* data) {
             [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITDeviceIdKey] forKey:MITDeviceIdKey];
             [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITPassCodeKey] forKey:MITPassCodeKey];
         }
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(YES);
+            }
+        }];
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         DDLogError(@"device registration failed: %@", [error localizedDescription]);
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(NO);
+            }
+        }];
     }];
 
     [[NSOperationQueue mainQueue] addOperation:requestOperation];
@@ -109,18 +127,23 @@ static NSString* MITHexStringFromNSData(NSData* data) {
     [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
-+ (void)newDeviceToken:(NSData *)deviceToken {
-	NSMutableDictionary *parameters = [[self identity] mutableDictionary];
-	parameters[MITDeviceTypeKey] = MITDeviceTypeApple;
++ (void)newDeviceToken:(NSData *)deviceToken
+{
+    [self newDeviceToken:deviceToken completion:nil];
+}
+
++ (void)newDeviceToken:(NSData *)deviceToken completion:(void(^)(BOOL success))block
+{
+    NSMutableDictionary *parameters = [[self identity] mutableDictionary];
+    parameters[MITDeviceTypeKey] = MITDeviceTypeApple;
 
     if(deviceToken) {
-		parameters[@"device_token"] = [self stringFromToken:deviceToken];
-		parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-	}
+        parameters[@"device_token"] = [self stringFromToken:deviceToken];
+        parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
+    }
 
     NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"newDeviceToken" parameters:parameters];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-
     [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registerObject) {
         [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
 
@@ -129,8 +152,21 @@ static NSString* MITHexStringFromNSData(NSData* data) {
             [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITDeviceIdKey] forKey:MITDeviceIdKey];
             [[NSUserDefaults standardUserDefaults] setObject:registerObject[MITPassCodeKey] forKey:MITPassCodeKey];
         }
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(YES);
+            }
+        }];
+
     } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
         DDLogError(@"device registration failed: %@", [error localizedDescription]);
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(NO);
+            }
+        }];
     }];
 
     [[NSOperationQueue mainQueue] addOperation:requestOperation];

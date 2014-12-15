@@ -100,20 +100,26 @@
     MITCheckAsset(MITImageLibrariesStatusReady);
 
 #pragma mark - Map
-    MITCheckAsset(MITImageMapBrowseBuildings);
-    MITCheckAsset(MITImageMapBrowseFoodServices);
-    MITCheckAsset(MITImageMapBrowseResidences);
     MITCheckAsset(MITImageMapLocation);
     MITCheckAsset(MITImageMapLocationHighlighted);
     MITCheckAsset(MITImageMapAnnotationUserLocation);
     MITCheckAsset(MITImageMapAnnotationPin);
     MITCheckAsset(MITImageMapAnnotationPlacePin);
 
+    MITCheckAsset(MITImageMapCategoryAthenaClusters);
+    MITCheckAsset(MITImageMapCategoryBuildings);
+    MITCheckAsset(MITImageMapCategoryCourtsAndGreenspaces);
+    MITCheckAsset(MITImageMapCategoryFoodServices);
+    MITCheckAsset(MITImageMapCategoryHotels);
+    MITCheckAsset(MITImageMapCategoryLibrary);
+    MITCheckAsset(MITImageMapCategoryMuseumsAndGalleries);
+    MITCheckAsset(MITImageMapCategoryParking);
+    MITCheckAsset(MITImageMapCategoryResidences);
+    MITCheckAsset(MITImageMapCategoryRooms);
+    MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
 #pragma mark - News
     MITCheckAsset(MITImageNewsImagePlaceholder);
-    MITCheckAsset(MITImageNewsShowGridView);
-    MITCheckAsset(MITImageNewsShowListView);
 
     MITCheckAsset(MITImageNewsTemplateButtonBookmark);
     MITCheckAsset(MITImageNewsTemplateButtonShare);
@@ -233,7 +239,9 @@
 #pragma mark UIBarButtonItem icons
     MITCheckAsset(MITImageBarButtonMenu);
     MITCheckAsset(MITImageBarButtonLocation);
+    MITCheckAsset(MITImageBarButtonGrid);
     MITCheckAsset(MITImageBarButtonList);
+    MITCheckAsset(MITImageBarButtonListSelected);
     
     MITCheckAsset(MITImageBarButtonSearch);
     MITCheckAsset(MITImageBarButtonSearchMagnifier);

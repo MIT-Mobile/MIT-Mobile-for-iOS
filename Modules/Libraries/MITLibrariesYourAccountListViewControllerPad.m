@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 @property (nonatomic, strong) UIView *loansHeaderView;
 @property (nonatomic, strong) UIView *finesHeaderView;
 @property (nonatomic, strong) UIView *holdsHeaderView;
-@property (nonatomic, assign) CGFloat previousYOffset;
 
 @end
 
@@ -244,6 +243,7 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 {
     MITLibrariesYourAccountCollectionViewHeader *header = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([MITLibrariesYourAccountCollectionViewHeader class]) owner:self options:nil] firstObject];
     [header setAttributedString:attributedText];
+    header.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
     return header;
 }
 
@@ -251,11 +251,11 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Loans " attributes:@{NSFontAttributeName : [UIFont librariesTitleStyleFont]}];
     
-    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d items, ", self.user.loans.count]
+    [baseString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu items, ", (unsigned long)self.user.loans.count]
                                                                               attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                            NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}]];
     
-    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d overdue", self.user.overdueItemsCount]
+    NSAttributedString *overdueString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld overdue", (long)self.user.overdueItemsCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_closedRedColor],
                                                                                      NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     
@@ -291,52 +291,17 @@ typedef NS_ENUM(NSInteger, MITAccountListSection) {
 {
     NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:@"Holds " attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17.0]}];
     
-    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.user.holds.count]
+    [baseString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu holds, ", (unsigned long)self.user.holds.count]
                                                                        attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                     NSFontAttributeName : [UIFont systemFontOfSize:14.0]}]];
     
-    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.user.readyForPickupCount]
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld ready for pickup", (long)self.user.readyForPickupCount]
                                                                                attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
                                                                                             NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     
     [baseString appendAttributedString:readyForPickupString];
     
     return [[NSAttributedString alloc] initWithAttributedString:baseString];
-}
-
-#pragma mark - UIScrollViewDelegate Methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (self.tableView.numberOfSections < 3) {
-        return;
-    }
-    
-    CGFloat yOffset = self.tableView.contentOffset.y;
-    
-    CGFloat loansSectionTop = [self.tableView rectForSection:0].origin.y;
-    CGFloat finesSectionTop = [self.tableView rectForSection:1].origin.y;
-    CGFloat holdsSectionTop = [self.tableView rectForSection:2].origin.y;
-    
-    if (yOffset >= loansSectionTop && self.previousYOffset < loansSectionTop) {
-        self.loansHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < loansSectionTop && self.previousYOffset >= loansSectionTop) {
-        self.loansHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    if (yOffset >= finesSectionTop && self.previousYOffset < finesSectionTop) {
-        self.finesHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < finesSectionTop && self.previousYOffset >= finesSectionTop) {
-        self.finesHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    if (yOffset >= holdsSectionTop && self.previousYOffset < holdsSectionTop) {
-        self.holdsHeaderView.backgroundColor = [UIColor mit_cellSeparatorColor];
-    } else if (yOffset < holdsSectionTop && self.previousYOffset >= holdsSectionTop) {
-        self.holdsHeaderView.backgroundColor = [UIColor whiteColor];
-    }
-    
-    self.previousYOffset = yOffset;
 }
 
 @end

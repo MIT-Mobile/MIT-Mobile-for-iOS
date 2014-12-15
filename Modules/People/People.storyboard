@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6185.11" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6190.4"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
         <!--Master-->
@@ -339,40 +340,17 @@ Phone: '6172531000', '31000'</string>
                         <outlet property="personName" destination="bbU-A2-CDr" id="61S-Em-DDa"/>
                         <outlet property="personOrganization" destination="flg-EW-KeT" id="utT-qt-5PA"/>
                         <outlet property="personTitle" destination="nl5-pf-Fri" id="5P3-3r-5WD"/>
-                        <segue destination="oWL-Fh-eEb" kind="push" identifier="showLocationOnMap" id="RR6-94-BBF"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="18J-Mg-glp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1008" y="482"/>
         </scene>
-        <!--Campus Map View Controller-->
-        <scene sceneID="rKg-90-h9n">
-            <objects>
-                <viewController id="oWL-Fh-eEb" customClass="MITCampusMapViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Qoj-Y3-bqk"/>
-                        <viewControllerLayoutGuide type="bottom" id="1gv-ka-zwx"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Rcx-vv-nax">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="9oY-yX-b5k"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0hV-MV-hTv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1526" y="482"/>
-        </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4">
-            <size key="portraitSize" width="320" height="568"/>
-            <size key="landscapeSize" width="568" height="320"/>
-        </simulatedScreenMetrics>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <color key="tintColor" red="0.6588235294117647" green="0.019607843137254902" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
 </document>

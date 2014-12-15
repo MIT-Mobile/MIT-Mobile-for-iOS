@@ -2,6 +2,7 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicleList.h"
+#import "UIKit+MITShuttles.h"
 
 @interface MITShuttleMapBusAnnotationView()
 
@@ -23,13 +24,20 @@
         self.canShowCallout = NO;
         [self setupBusImageView];
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            [self setupBubbleView];
+            [self setupBubble];
+            
+            MITShuttleVehicle *vehicle = (MITShuttleVehicle *)annotation;
+            NSString *routeTitle = vehicle.route.title;
+            
+            if (routeTitle) {
+                [self refreshBubbleWithRouteTitle:routeTitle];
+            }
         }
     }
     return self;
 }
 
-#pragma mark - Bus Image View
+#pragma mark - Setup
 
 - (void)setupBusImageView
 {
@@ -40,27 +48,32 @@
     [self.layer addSublayer:self.busImageLayer];
 }
 
-#pragma mark - Bubble View
-
-- (void)setupBubbleView
+- (void)setupBubble
 {
-    MITShuttleVehicle *vehicle = (MITShuttleVehicle *)self.annotation;
-    NSString *routeTitle = vehicle.route.title;
-    if (!routeTitle) {
-        return;
-    }
+    [self setupRouteTitleLabel];
+    [self setupBubbleContainerView];
+    [self setupBubbleLayer];
+}
 
-    self.routeTitleLabel = [self labelForRouteTitle:routeTitle];
-    
-    self.bubbleContainerView = [self bubbleContainerViewWithFrame:self.routeTitleLabel.bounds];
-    CGRect bubbleContainerFrame = self.bubbleContainerView.frame;
-    bubbleContainerFrame.size.width += 21; // Padding for title, 6 on left, 15 on right
-    bubbleContainerFrame.size.height += 6; // Padding for title, 1 on top, 5 on bottom
-    if (bubbleContainerFrame.size.height < 24) {
-        bubbleContainerFrame.size.height = 24;
-    }
-    self.bubbleContainerView.frame = bubbleContainerFrame;
-    
+- (void)setupBubbleLayer
+{
+    self.bubbleLayer = [[CALayer alloc] init];
+}
+
+- (void)setupRouteTitleLabel
+{
+    self.routeTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.routeTitleLabel.backgroundColor = [UIColor clearColor];
+    self.routeTitleLabel.textColor = [UIColor mit_busAnnotationTitleTextColor];
+    self.routeTitleLabel.font = [UIFont mit_busAnnotationTitleFont];
+    self.routeTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+- (void)setupBubbleContainerView
+{
+    self.bubbleContainerView = [[UIView alloc] init];
+    self.bubbleContainerView.backgroundColor = [UIColor clearColor];
+    self.bubbleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     
     UIImageView *bubbleImageView = [self bubbleImageView];
     
@@ -72,33 +85,6 @@
     
     [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-6-[routeTitleLabel]-15-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
     [self.bubbleContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-1-[routeTitleLabel]-5-|" options:0 metrics:nil views:@{@"routeTitleLabel": self.routeTitleLabel}]];
-    
-    [self.bubbleContainerView setNeedsLayout];
-    [self.bubbleContainerView layoutIfNeeded];
-    
-    UIGraphicsBeginImageContextWithOptions(self.bubbleContainerView.bounds.size, NO, 0.0);
-    [self.bubbleContainerView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *bubbleImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    self.bubbleLayer = [[CALayer alloc] init];
-    self.bubbleLayer.bounds = CGRectMake(0, 0, bubbleImage.size.width, bubbleImage.size.height);
-    self.bubbleLayer.contents = (__bridge id)bubbleImage.CGImage;
-    self.bubbleLayer.position = CGPointMake(-((self.bubbleLayer.bounds.size.width / 2) + 8), -(self.bubbleLayer.bounds.size.height / 2));
-    
-    [self.layer addSublayer:self.bubbleLayer];
-}
-
-- (UILabel *)labelForRouteTitle:(NSString *)routeTitle
-{
-    UILabel *routeTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    routeTitleLabel.text = routeTitle;
-    routeTitleLabel.backgroundColor = [UIColor clearColor];
-    routeTitleLabel.textColor = [UIColor colorWithWhite:0.2 alpha:1.0];
-    routeTitleLabel.font = [UIFont systemFontOfSize:10.0];
-    routeTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [routeTitleLabel sizeToFit];
-    return routeTitleLabel;
 }
 
 - (UIImageView *)bubbleImageView
@@ -108,21 +94,60 @@
     return bubbleImageView;
 }
 
-- (UIView *)bubbleContainerViewWithFrame:(CGRect)frame
+#pragma mark - Bubble Refresh
+
+- (void)refreshBubbleWithRouteTitle:(NSString *)routeTitle
 {
-    UIView *bubbleContainerView = [[UIView alloc] initWithFrame:frame];
-    bubbleContainerView.backgroundColor = [UIColor clearColor];
-    bubbleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    return bubbleContainerView;
+    [self refreshRouteTitleLabelWithRouteTitle:routeTitle];
+    [self refreshBubbleContainerView];
+    [self refreshBubbleLayer];
+}
+
+- (void)refreshRouteTitleLabelWithRouteTitle:(NSString *)routeTitle
+{
+    self.routeTitleLabel.text = routeTitle;
+    [self.routeTitleLabel sizeToFit];
+}
+
+- (void)refreshBubbleContainerView
+{
+    CGRect bubbleContainerBounds = CGRectMake(0, 0, self.routeTitleLabel.bounds.size.width, self.routeTitleLabel.bounds.size.height);
+    bubbleContainerBounds.size.width += 21; // Padding for title, 6 on left, 15 on right
+    bubbleContainerBounds.size.height += 6; // Padding for title, 1 on top, 5 on bottom
+    if (bubbleContainerBounds.size.height < 24) {
+        bubbleContainerBounds.size.height = 24;
+    }
+    
+    self.bubbleContainerView.bounds = bubbleContainerBounds;
+    
+    [self.bubbleContainerView setNeedsLayout];
+    [self.bubbleContainerView layoutIfNeeded];
+}
+
+- (void)refreshBubbleLayer
+{
+    [self.bubbleLayer removeFromSuperlayer];
+    
+    UIGraphicsBeginImageContextWithOptions(self.bubbleContainerView.bounds.size, NO, 0.0);
+    [self.bubbleContainerView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *bubbleImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    self.bubbleLayer.bounds = CGRectMake(0, 0, bubbleImage.size.width, bubbleImage.size.height);
+    self.bubbleLayer.contents = (__bridge id)bubbleImage.CGImage;
+    self.bubbleLayer.position = CGPointMake(-((self.bubbleLayer.bounds.size.width / 2) + 8), -(self.bubbleLayer.bounds.size.height / 2));
+    
+    [self.layer addSublayer:self.bubbleLayer];
 }
 
 #pragma mark - Route Title
 
 - (void)setRouteTitle:(NSString *)routeTitle
 {
-    self.routeTitleLabel.text = routeTitle;
-    [self.routeTitleLabel sizeToFit];
-    [self layoutIfNeeded];
+    if ([routeTitle isEqualToString:self.routeTitleLabel.text]) {
+        return;
+    }
+    [self refreshBubbleWithRouteTitle:routeTitle];
 }
 
 #pragma mark - Animations

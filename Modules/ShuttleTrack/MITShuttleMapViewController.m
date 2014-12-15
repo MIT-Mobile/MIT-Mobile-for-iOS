@@ -528,14 +528,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.toolbar = [[UIToolbar alloc] init];
     self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
-    UIButton *exitMapStateButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *exitMapStateImage = [UIImage imageNamed:MITImageBarButtonList];
-    [exitMapStateButton setImage:exitMapStateImage forState:UIControlStateNormal];
-    [exitMapStateButton addTarget:self action:@selector(exitMapStateButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    exitMapStateButton.frame = CGRectMake(0, 0, exitMapStateImage.size.width, exitMapStateImage.size.height);
+    UIBarButtonItem *exitMapStateButton = [[UIBarButtonItem alloc] initWithImage:exitMapStateImage style:UIBarButtonItemStyleBordered target:self action:@selector(exitMapStateButtonTapped:)];
+    
     [self.toolbar setItems:@[self.tiledMapView.userLocationButton,
                              [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                             [[UIBarButtonItem alloc] initWithCustomView:exitMapStateButton]] animated:NO];
+                             exitMapStateButton] animated:NO];
     [self.view addSubview:self.toolbar];
     
     NSArray *horizontalToolbarConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}];
@@ -774,7 +772,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             if (minutesLeft < 1) {
                 arrivalTime = @"now";
             } else {
-                arrivalTime = [NSString stringWithFormat:@"in %i minutes", minutesLeft];
+                arrivalTime = [NSString stringWithFormat:@"in %li minutes", (long)minutesLeft];
             }
             calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
             break;

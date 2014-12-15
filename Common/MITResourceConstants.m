@@ -78,16 +78,22 @@ NSString * const MITImageMapPinBall = @"map-pin-ball";
 NSString * const MITImageMapPinNeedle = @"map-pin-needle";
 NSString * const MITImageMapPinShadow = @"map-pin-shadow";
 
+NSString * const MITImageMapCategoryAthenaClusters       = @"map-category-clusters";
+NSString * const MITImageMapCategoryBuildings            = @"map-category-buildings";
+NSString * const MITImageMapCategoryCourtsAndGreenspaces = @"map-category-green";
+NSString * const MITImageMapCategoryFoodServices         = @"map-category-food";
+NSString * const MITImageMapCategoryHotels               = @"map-category-hotel";
+NSString * const MITImageMapCategoryLibrary              = @"map-category-library";
+NSString * const MITImageMapCategoryMuseumsAndGalleries  = @"map-category-museum_gallery";
+NSString * const MITImageMapCategoryParking              = @"map-category-parking";
+NSString * const MITImageMapCategoryResidences           = @"map-category-residence";
+NSString * const MITImageMapCategoryRooms                = @"map-category-room";
+NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
+
+
 
 #pragma mark - News
 NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
-NSString * const MITImageNewsShowGridView = @"news-grid-view";
-// List bar button is used in both Map and News.
-// Asset need to be relocated to global folder and
-// the constants need to be updated with the global
-// identifier after News is merged into the main development branch
-// (mnovak - 2014.11.03)
-NSString * const MITImageNewsShowListView = @"global-barbutton-list";
 
 // Used by the News story HTML template. These may no longer be in
 // active use (although they are referenced).
@@ -213,6 +219,7 @@ NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight = @"_UIPopoverVie
 #pragma mark UIBarButtonItem icons
 NSString * const MITImageBarButtonMenu = @"global-menu";
 NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
+NSString * const MITImageBarButtonGrid = @"global-barbutton-grid";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
 NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
 

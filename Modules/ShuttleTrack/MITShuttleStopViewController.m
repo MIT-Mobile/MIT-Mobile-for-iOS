@@ -362,7 +362,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttlePrediction *prediction = predictionsArray[indexPath.row];
     
     NSMutableArray *predictionsGroup = [NSMutableArray array];
-    for (int i = indexPath.row; i < predictionsArray.count && predictionsGroup.count < 3; i++) {
+    for (NSInteger i = indexPath.row; i < predictionsArray.count && predictionsGroup.count < 3; i++) {
         [predictionsGroup addObject:predictionsArray[i]];
     }
     [[MITShuttleStopNotificationManager sharedManager] toggleNotificationForPredictionGroup:predictionsGroup withRouteTitle:self.route.title];

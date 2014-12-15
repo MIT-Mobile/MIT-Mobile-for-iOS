@@ -87,6 +87,11 @@ CGFloat const refreshControlTextHeight = 19;
     [self reloadData];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self updateNavigationItem:NO];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -258,7 +263,7 @@ CGFloat const refreshControlTextHeight = 19;
 
 - (void)setPresentationStyle:(MITNewsPresentationStyle)style animated:(BOOL)animated
 {
-    NSAssert([self supportsPresentationStyle:style], @"presentation style %d is not supported on this device", style);
+    NSAssert([self supportsPresentationStyle:style], @"presentation style %ld is not supported on this device", (long)style);
 
     if (![self supportsPresentationStyle:style]) {
         return;
@@ -359,7 +364,7 @@ CGFloat const refreshControlTextHeight = 19;
     self.isPreviousStateASingleDataSource = self.isSingleDataSource;
     self.searching = YES;
     self.mainLastUpdated = self.lastUpdated;
-    [self updateNavigationItem:YES];
+    [self updateNavigationItem:NO];
     [self addChildViewController:self.searchController];
     [self.containerView addSubview:self.searchController.view];
     [self.searchController didMoveToParentViewController:self];
@@ -439,13 +444,13 @@ CGFloat const refreshControlTextHeight = 19;
 
     if (self.presentationStyle == MITNewsPresentationStyleList) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
-            UIImage *gridImage = [UIImage imageNamed:MITImageNewsShowGridView];
+            UIImage *gridImage = [UIImage imageNamed:MITImageBarButtonGrid];
             UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleList]) {
-            UIImage *listImage = [UIImage imageNamed:MITImageNewsShowListView];
+            UIImage *listImage = [UIImage imageNamed:MITImageBarButtonList];
             UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:listImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsList:)];
             [rightBarItems addObject:listItem];
         }
@@ -458,7 +463,7 @@ CGFloat const refreshControlTextHeight = 19;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
         } else {
-            self.searchBar.frame = CGRectMake(0, 0, 240, 44);
+            self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
         }
         if (self.isSingleDataSource) {
             self.navigationItem.hidesBackButton = YES;
@@ -482,6 +487,16 @@ CGFloat const refreshControlTextHeight = 19;
     }
     
     [self.navigationItem setRightBarButtonItems:rightBarItems animated:animated];
+   
+    // This width is set here because we do not know the position of
+    // the searchbar until we add it to the navigationbar
+    // Mark Novak 12-11-14
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        CGRect rect = self.searchBar.frame;
+        rect.size.width = rect.size.width + self.searchBar.frame.origin.x - 8;
+        rect.origin.x = 0;
+        self.searchBar.frame = rect;
+    }
 }
 
 #pragma mark Story Refreshing
@@ -1089,7 +1104,7 @@ CGFloat const refreshControlTextHeight = 19;
     [self.searchController removeFromParentViewController];
     self.searchController = nil;
     self.searching = NO;
-    [self updateNavigationItem:YES];
+    [self updateNavigationItem:NO];
     [self changeToMainStories];
 }
 

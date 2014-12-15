@@ -110,8 +110,8 @@
 
 - (NSIndexPath *)indexPathForEvent:(MITCalendarsEvent *)event
 {
-    int section = [self.eventDates indexOfObject:event.startAt];
-    int row = [[self.eventsByDate objectForKey:event.startAt] indexOfObject:event];
+    NSUInteger section = [self.eventDates indexOfObject:event.startAt];
+    NSUInteger row = [[self.eventsByDate objectForKey:event.startAt] indexOfObject:event];
     return [NSIndexPath indexPathForRow:row inSection:section];
 }
 

@@ -1,6 +1,7 @@
 #import "MITNewsRecentSearchController.h"
 #import "MITNewsModelController.h"
 #import "MITNewsRecentSearchQuery.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITNewsRecentSearchController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
 
@@ -42,6 +43,7 @@
         self.clearButtonItem.enabled = NO;
     }
     
+    self.clearButtonItem.tintColor = [UIColor mit_tintColor];
     self.navigationItem.leftBarButtonItem = self.clearButtonItem;
     self.navigationItem.title = @"Recents";
 }

@@ -67,10 +67,10 @@ static NSString *const kMITLibrariesItemHoldCell = @"MITLibrariesItemHoldCell";
 
 - (void)updateHeaderLabel
 {
-    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d holds, ", self.items.count]
+    NSMutableAttributedString *baseString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu holds, ", (unsigned long)self.items.count]
                                                                                    attributes:@{NSForegroundColorAttributeName : [UIColor mit_greyTextColor],
                                                                                                 NSFontAttributeName : [UIFont librariesSubtitleStyleFont]}];
-    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d ready for pickup", self.readyForPickupCount]
+    NSAttributedString *readyForPickupString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld ready for pickup", (long)self.readyForPickupCount]
                                                                         attributes:@{NSForegroundColorAttributeName : [UIColor mit_openGreenColor],
                                                                                      NSFontAttributeName : [UIFont boldSystemFontOfSize:14.0]}];
     

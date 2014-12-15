@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
+@property (nonatomic, strong) UIButton *listViewToggleButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
 @property (nonatomic) MITMapSearchQueryType searchQueryType;
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
@@ -51,7 +52,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (MKMapView *)mapView
 {
-    return self.tiledMapView.mapView;
+    return (MKMapView *)self.tiledMapView.mapView;
 }
 
 #pragma mark - Init
@@ -78,7 +79,22 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO];
         
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(ipadListButtonPressed)];
+        // We use actual UIButtons so that we can easily change the selected state
+        UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
+        listToggleImageNormal = [listToggleImageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage *listToggleImageSelected = [UIImage imageNamed:MITImageBarButtonListSelected];
+        listToggleImageSelected = [listToggleImageSelected imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        
+        // Use size of selected image because it is the largest.
+        CGSize listToggleImageSize = listToggleImageSelected.size;
+        self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
+        [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
+        [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
+        [self.listViewToggleButton addTarget:self action:@selector(ipadListButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+        self.listViewToggleButton.selected = self.isShowingIpadResultsList;
+
+        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
+
         UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
@@ -221,6 +237,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     } else {
         [self openIpadResultsList];
     }
+    self.listViewToggleButton.selected = self.isShowingIpadResultsList;
 }
 
 - (void)closeIpadResultsList
@@ -258,6 +275,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
+    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
@@ -431,6 +449,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)showTypeAheadPopover
 {
+    self.typeAheadPopoverController.delegate = self;
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
@@ -735,6 +754,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
             [self.mapView deselectAnnotation:annotation animated:NO];
         }
+    } else if (popoverController == self.typeAheadPopoverController) {
+        [self.searchBar resignFirstResponder];
     }
 }
 

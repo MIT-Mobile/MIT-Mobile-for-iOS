@@ -106,6 +106,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
     [self alignExtendedNavBarAndDayPickerCollectionView];
+    [self.dayPickerController reloadCollectionView];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -696,7 +697,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     if ([popoverController isEqual:self.typeAheadPopoverController]) {
         if ([self.navigationSearchBar.text isEqualToString:@""]) {
-            [self hideSearchBar];
+            [self cancelButtonPressed:nil];
         } else {
             [self.navigationSearchBar resignFirstResponder];
         }

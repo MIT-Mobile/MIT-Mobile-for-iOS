@@ -12,8 +12,10 @@
 
 @interface MITDeviceRegistration : NSObject
 + (void)registerNewDeviceWithToken:(NSData*)deviceToken;
++ (void)registerNewDeviceWithToken:(NSData *)deviceToken completion:(void(^)(BOOL success))block;
 + (void)registerDeviceWithToken:(NSData*)deviceToken registered:(void (^)(MITIdentity *identity,NSError *error))block;
 + (void)newDeviceToken:(NSData*)deviceToken;
++ (void)newDeviceToken:(NSData *)deviceToken completion:(void(^)(BOOL success))block;
 + (MITIdentity *)identity;
 + (void)clearIdentity;
 @end

@@ -76,10 +76,21 @@ extern NSString * const MITImageMapPinBall;
 extern NSString * const MITImageMapPinNeedle;
 extern NSString * const MITImageMapPinShadow;
 
+extern NSString * const MITImageMapCategoryAthenaClusters;
+extern NSString * const MITImageMapCategoryBuildings;
+extern NSString * const MITImageMapCategoryCourtsAndGreenspaces;
+extern NSString * const MITImageMapCategoryFoodServices;
+extern NSString * const MITImageMapCategoryHotels;
+extern NSString * const MITImageMapCategoryLibrary;
+extern NSString * const MITImageMapCategoryMuseumsAndGalleries;
+extern NSString * const MITImageMapCategoryParking;
+extern NSString * const MITImageMapCategoryResidences;
+extern NSString * const MITImageMapCategoryRooms;
+extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
+
+
 #pragma mark - News
 extern NSString * const MITImageNewsImagePlaceholder;
-extern NSString * const MITImageNewsShowGridView;
-extern NSString * const MITImageNewsShowListView;
 
 
 // Used by the News story HTML template. These may no longer be in
@@ -207,6 +218,7 @@ extern NSString * const UIPopoverViewBlurMaskBackgroundArrowDownRight;
 #pragma mark UIBarButtonItem icons
 extern NSString * const MITImageBarButtonMenu;
 extern NSString * const MITImageBarButtonLocation;
+extern NSString * const MITImageBarButtonGrid;
 extern NSString * const MITImageBarButtonList;
 extern NSString * const MITImageBarButtonListSelected;
 
