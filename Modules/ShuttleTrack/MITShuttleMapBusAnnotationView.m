@@ -2,6 +2,7 @@
 #import "MITShuttleVehicle.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicleList.h"
+#import "UIKit+MITShuttles.h"
 
 @interface MITShuttleMapBusAnnotationView()
 
@@ -63,8 +64,8 @@
 {
     self.routeTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     self.routeTitleLabel.backgroundColor = [UIColor clearColor];
-    self.routeTitleLabel.textColor = [UIColor colorWithWhite:0.2 alpha:1.0];
-    self.routeTitleLabel.font = [UIFont systemFontOfSize:10.0];
+    self.routeTitleLabel.textColor = [UIColor mit_busAnnotationTitleTextColor];
+    self.routeTitleLabel.font = [UIFont mit_busAnnotationTitleFont];
     self.routeTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
