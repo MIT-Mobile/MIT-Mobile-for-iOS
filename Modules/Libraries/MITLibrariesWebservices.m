@@ -121,9 +121,9 @@ static NSString * const kMITLibraryWebservicesTellUsKey = @"tellUs";
     [MITLibrariesWebservices addSearchTermToRecents:searchString];
     
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setObject:[NSString stringWithFormat:@"%d", startingIndex] forKey:kMITLibraryWebservicesStartIndexKey];
+    [parameters setObject:[NSString stringWithFormat:@"%li", startingIndex] forKey:kMITLibraryWebservicesStartIndexKey];
     [parameters setObject:searchString ? searchString : @"" forKey:kMITLibraryWebservicesSearchTermKey];
-    [parameters setObject:[NSString stringWithFormat:@"%d", kMITLibrariesSearchResultsLimit]  forKey:kMITLibraryWebservicesLimitKey];
+    [parameters setObject:[NSString stringWithFormat:@"%li", kMITLibrariesSearchResultsLimit]  forKey:kMITLibraryWebservicesLimitKey];
 
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITLibrariesSearchResourceName parameters:parameters completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
         completion(result.array, error);
