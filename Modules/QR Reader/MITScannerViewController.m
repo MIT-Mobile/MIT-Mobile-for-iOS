@@ -94,8 +94,7 @@
     
     UIView *scannerView = [[UIView alloc] init];
     scannerView.autoresizesSubviews = YES;
-    scannerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                    UIViewAutoresizingFlexibleWidth);
+    scannerView.autoresizingMask = UIViewAutoresizingNone;
     scannerView.backgroundColor = [UIColor blackColor];
 
     if( [self.scannerMgr isScanningSupported] )
@@ -114,8 +113,7 @@
     MITScannerOverlayView *overlay = [[MITScannerOverlayView alloc] initWithFrame:frame];
     overlay.backgroundColor = [UIColor clearColor];
     overlay.userInteractionEnabled = NO;
-    overlay.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin |
-                                UIViewAutoresizingFlexibleWidth);
+    overlay.autoresizingMask = UIViewAutoresizingNone;
     if ([self.scannerMgr isScanningSupported]) {
         overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
     } else {
@@ -173,6 +171,11 @@
         infoBtnFrame.origin.y = frame.origin.y;
         self.infoButton.frame = infoBtnFrame;
     }
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
 }
 
 - (void)didReceiveMemoryWarning
@@ -235,7 +238,17 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
+    if( [self isOnIpad] )
+    {
+        return UIInterfaceOrientationMaskAll;
+    }
+    
     return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self.overlayView setNeedsDisplay];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
