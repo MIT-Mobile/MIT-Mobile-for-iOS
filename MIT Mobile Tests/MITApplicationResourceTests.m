@@ -105,7 +105,12 @@
     MITCheckAsset(MITImageMapAnnotationUserLocation);
     MITCheckAsset(MITImageMapAnnotationPin);
     MITCheckAsset(MITImageMapAnnotationPlacePin);
-
+    MITCheckAsset(MITImageMapPinBallBlack);
+    MITCheckAsset(MITImageMapPinBallBlue);
+    MITCheckAsset(MITImageMapPinBallRed);
+    MITCheckAsset(MITImageMapPinNeedle);
+    MITCheckAsset(MITImageMapPinShadow);
+    
     MITCheckAsset(MITImageMapCategoryAthenaClusters);
     MITCheckAsset(MITImageMapCategoryBuildings);
     MITCheckAsset(MITImageMapCategoryCourtsAndGreenspaces);
