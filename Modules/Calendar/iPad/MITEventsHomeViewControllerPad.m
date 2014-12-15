@@ -697,7 +697,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 {
     if ([popoverController isEqual:self.typeAheadPopoverController]) {
         if ([self.navigationSearchBar.text isEqualToString:@""]) {
-            [self hideSearchBar];
+            [self cancelButtonPressed:nil];
         } else {
             [self.navigationSearchBar resignFirstResponder];
         }
