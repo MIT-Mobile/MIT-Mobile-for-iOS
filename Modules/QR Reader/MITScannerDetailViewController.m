@@ -9,7 +9,6 @@
 #import "MITScannerDetailViewController.h"
 #import "QRReaderResult.h"
 #import "CoreDataManager.h"
-#import "NSDateFormatter+RelativeString.h"
 #import "UIKit+MITAdditions.h"
 #import "MITScannerDetailTableViewCell.h"
 
@@ -104,12 +103,6 @@ NSString * const kActionURL = @"kActionUrl";
         [activityItems addObject:self.scanResult.text];
     }
     
-    UIImage *scanImage = self.scanResult.scanImage;
-    if( scanImage != nil )
-    {
-        [activityItems addObject:scanImage];
-    }
-    
     UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems
                                                                                         applicationActivities:nil];
     sharingViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeAssignToContact];
@@ -131,6 +124,16 @@ NSString * const kActionURL = @"kActionUrl";
     [self dismissViewControllerAnimated:YES completion:^{
         [self.delegate detailFormSheetViewDidDisappear];
     }];
+}
+
+- (NSDateFormatter *)dateFormatter
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd hh:mm a"];
+    }
+    return dateFormatter;
 }
 
 @end
@@ -186,7 +189,7 @@ NSString * const kActionURL = @"kActionUrl";
         cell.cellHeaderTitle.text = @"scanned";
         [cell.cellHeaderTitle sizeToFit];
         
-        cell.cellDescription.text = [NSDateFormatter relativeDateStringFromDate:self.scanResult.date toDate:[NSDate date]];
+        cell.cellDescription.text = [[self dateFormatter] stringFromDate:self.scanResult.date];
         [cell.cellDescription setFont:[UIFont systemFontOfSize:17.0f]];
         [cell.cellDescription sizeToFit];
         
@@ -211,6 +214,8 @@ NSString * const kActionURL = @"kActionUrl";
             
             cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
                                                    highlightedImage:[UIImage imageNamed:MITImageActionExternalHighlight]];
+            
+            cell.selectionStyle = UITableViewCellSelectionStyleGray;
         }
         
         [cell removeLineSeparator];
