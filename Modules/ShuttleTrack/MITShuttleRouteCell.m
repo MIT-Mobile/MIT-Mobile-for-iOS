@@ -4,7 +4,7 @@
 NSString * const kMITShuttleRouteCellNibName = @"MITShuttleRouteCell";
 NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
 
-static const CGFloat kCellHeightNoAlert = 45.0;
+static const CGFloat kCellHeightNoAlert = 44.0;
 
 static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden = 1000;
 
