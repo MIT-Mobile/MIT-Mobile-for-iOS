@@ -34,7 +34,11 @@ NSString * const kScannerHistoryNewScanCounterKey = @"kScannerHistoryNewScanCoun
     [childContext performBlock:^{
         for( QRReaderResult *result in results )
         {
-            [childContext deleteObject:[childContext objectWithID:result.objectID]];
+            @autoreleasepool
+            {
+                QRReaderResult *fetchedResult = (QRReaderResult *)[childContext objectWithID:result.objectID];
+                [childContext deleteObject:fetchedResult];
+            }
         }
 
         NSError *error;

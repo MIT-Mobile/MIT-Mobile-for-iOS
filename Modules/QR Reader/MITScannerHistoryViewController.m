@@ -388,6 +388,11 @@
                 [self.fetchContext save:&error];
             }
             
+            if( self.tableView.isEditing )
+            {
+                [self setEditing:NO animated:YES];
+            }
+            
             [SVProgressHUD dismiss];
         });
     }];
