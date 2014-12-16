@@ -49,6 +49,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 @property (nonatomic, strong) NSArray *rowTypes;
 @property (nonatomic) BOOL isLoadingEventDetails;
 @property (nonatomic) CGFloat descriptionWebviewCellHeight;
+@property (nonatomic) BOOL shouldForceWebviewRedraw;
 
 @end
 
@@ -77,6 +78,20 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     [self setupHeader];
     
     self.title = @"Event Details";
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // The webview doesn't size properly on initial load for some unknown reason -- this seems to be the only way to get it to redraw properly.  On subsequent appearances, consequences are minimal and unnoticable
+    [self performSelector:@selector(forceTableViewReload) withObject:nil afterDelay:0.75];
+}
+
+- (void)forceTableViewReload
+{
+    self.shouldForceWebviewRedraw = YES;
+    [self.tableView reloadData];
 }
 
 #pragma mark - Public Methods
@@ -532,8 +547,11 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
                 MITWebviewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventWebviewCellIdentifier];
       
                 NSString *htmlString = [NSString stringWithFormat:@"<span style=\"font-family:Helvetica; font-size: %i\">%@</span>", 17, self.event.htmlDescription];
+                [cell setHtmlString:htmlString forceUpdate:self.shouldForceWebviewRedraw];
+                if (self.shouldForceWebviewRedraw) {
+                    self.shouldForceWebviewRedraw = NO;
+                }
                 
-                [cell setHtmlString:htmlString];
                 cell.delegate = self;
                 return cell;
             } else {
@@ -546,6 +564,14 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             return [UITableViewCell new];
         }
     }
+}
+
+#pragma mark - Rotation
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self forceTableViewReload];
 }
 
 #pragma mark MFMailComposeViewControllerDelegate
