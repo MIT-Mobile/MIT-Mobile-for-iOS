@@ -78,12 +78,19 @@
     if (!self.lastUpdatedTimestamp || [[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
         return MITShuttleRouteStatusPredictionsUnavailable;
     }
+
+    // Any route with predictions is considered active, because it has active vehicles
+    if ([self.predictable boolValue]) {
+        return MITShuttleRouteStatusInService;
+    }
     
-    if ([self.scheduled boolValue]) {
-        return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
-    } else {
+    // Routes with no predictions and not scheduled are considered inactive.
+    if (![self.scheduled boolValue]) {
         return MITShuttleRouteStatusNotInService;
     }
+    
+    // Anything that falls through is scheduled with no vehicles, which means we don't know what's going on.
+    return MITShuttleRouteStatusPredictionsUnavailable;
 }
 
 - (BOOL)isNextStop:(MITShuttleStop *)stop
