@@ -1,3 +1,8 @@
+//
+//  MITBatchScanningAlertView.m
+//  MIT Mobile
+//
+
 #import "MITBatchScanningAlertView.h"
 
 @interface MITBatchScanningAlertView()
