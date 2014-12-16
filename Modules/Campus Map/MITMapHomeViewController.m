@@ -12,6 +12,7 @@
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITLocationManager.h"
+#import "SMCalloutView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -32,11 +33,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
-@property (nonatomic, strong) UIPopoverController *currentPlacePopoverController;
+@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) UIViewController *calloutViewController;
+
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MKMapView *mapView;
+@property (nonatomic, readonly) MITCalloutMapView *mapView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
@@ -52,9 +55,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - Map View
 
-- (MKMapView *)mapView
+- (MITCalloutMapView *)mapView
 {
-    return (MKMapView *)self.tiledMapView.mapView;
+    return self.tiledMapView.mapView;
 }
 
 #pragma mark - Init
@@ -194,6 +197,20 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
     [self setupMapBoundingBoxAnimated:NO];
+
+    [self setupCalloutView];
+}
+
+- (void)setupCalloutView
+{
+    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
+    calloutView.contentViewMargin = 0;
+    calloutView.anchorMargin = 39;
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
+    
+    self.calloutView = calloutView;
+    
+    self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
 - (void)setupTypeAheadTableView
@@ -237,10 +254,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     if (self.bookmarksPopoverController.isPopoverVisible) {
         [self.bookmarksPopoverController dismissPopoverAnimated:animated];
-    }
-    
-    if (self.currentPlacePopoverController.isPopoverVisible) {
-        [self.currentPlacePopoverController dismissPopoverAnimated:animated];
     }
 }
 
@@ -679,33 +692,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
-        MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-        detailVC.place = place;
-        self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
-        self.currentPlacePopoverController.delegate = self;
-        UIView *annotationView = [self.mapView viewForAnnotation:place];
-        
-        CGFloat tableHeight = 0;
-        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
-            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
-                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-            }
-        }
-        
-        CGFloat navbarHeight = 44;
-        CGFloat statusBarHeight = 20;
-        CGFloat toolbarHeight = 44;
-        CGFloat padding = 30;
-        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
-        
-        if (tableHeight > maxPopoverHeight) {
-            tableHeight = maxPopoverHeight;
-        }
-        
-        self.currentPlacePopoverController.passthroughViews = @[self.navigationController.toolbar];
-        [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-        [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self presentCalloutForAnnotationView:view];
     } else {
         [self addCalloutTapGestureRecognizerToAnnotationView:view];
     }
@@ -715,6 +702,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self removeCalloutTapGestureFromAnnotationView:view];
+    }
+    else if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
+        [self.calloutView dismissCalloutAnimated:YES];
     }
 }
 
@@ -740,6 +730,27 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
     }
+}
+
+#pragma mark - Callout View
+
+- (void)presentCalloutForAnnotationView:(MKAnnotationView *)annotationView
+{
+    MITMapPlace *place = annotationView.annotation;
+    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.place = place;
+    
+    detailVC.view.frame = CGRectMake(0, 0, 295, 270);
+    
+    SMCalloutView *calloutView = self.calloutView;
+    calloutView.contentView = detailVC.view;
+    calloutView.calloutOffset = annotationView.calloutOffset;
+        
+    self.calloutView = calloutView;
+    self.calloutViewController = detailVC;
+    
+    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    detailVC.view.frame = CGRectMake(0, 0, 320, 270);
 }
 
 #pragma mark - Callout Tap Gesture Recognizer
@@ -843,11 +854,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    if (popoverController == self.currentPlacePopoverController) {
-        for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
-            [self.mapView deselectAnnotation:annotation animated:NO];
-        }
-    } else if (popoverController == self.typeAheadPopoverController) {
+    if (popoverController == self.typeAheadPopoverController) {
         [self.searchBar resignFirstResponder];
     }
 }

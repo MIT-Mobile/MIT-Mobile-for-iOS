@@ -4,7 +4,6 @@
 #import "MITToursDirectionsToStop.h"
 #import "MITLocationManager.h"
 #import "UIKit+MITAdditions.h"
-#import "MITCalloutMapView.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
