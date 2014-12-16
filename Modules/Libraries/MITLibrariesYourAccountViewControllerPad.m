@@ -51,7 +51,7 @@
 - (void)setupLoginView
 {
     self.logInButton.tintColor = [UIColor mit_tintColor];
-    [self showHideLoginView];
+    [self showAppropriateViewForLoginState];
 }
 
 - (void)setupViewControllers
@@ -64,7 +64,7 @@
     self.gridViewController.view.frame = self.view.bounds;
     [self addChildViewController:self.gridViewController];
     
-    [self showCurrentlySelectedViewController];
+    [self showAppropriateViewForLoginState];
     
     [self.view addSubview:self.listViewController.view];
     [self.view addSubview:self.gridViewController.view];
@@ -81,18 +81,18 @@
     
     _layoutMode = layoutMode;
     
-    [self showCurrentlySelectedViewController];
+    [self showAppropriateViewForLoginState];
 }
 
 - (IBAction)logInButtonPressed:(UIButton *)sender
 {
     [[MITTouchstoneController sharedController] login:^(BOOL success, NSError *error) {
-        [self showHideLoginView];
+        [self showAppropriateViewForLoginState];
         [self refreshUserData];
     }];
 }
 
-- (void)showHideLoginView
+- (void)showAppropriateViewForLoginState
 {
     if ([MITTouchstoneController sharedController].isLoggedIn) {
         self.loginView.hidden = YES;
@@ -102,12 +102,6 @@
         self.loginView.hidden = NO;
         [self hideViewControllers];
     }
-}
-
-- (void)hideViewControllers
-{
-    self.listViewController.view.hidden = YES;
-    self.gridViewController.view.hidden = YES;
 }
 
 - (void)showCurrentlySelectedViewController
@@ -126,6 +120,12 @@
     }
 }
 
+- (void)hideViewControllers
+{
+    self.listViewController.view.hidden = YES;
+    self.gridViewController.view.hidden = YES;
+}
+
 - (void)refreshUserData
 {
     [self hideViewControllers];
@@ -140,7 +140,7 @@
             
             self.gridViewController.finesUpdatedDate = updatedDate;
             self.gridViewController.user = user;
-            [self showCurrentlySelectedViewController];
+            [self showAppropriateViewForLoginState];
         }
         [self.loadingIndicator stopAnimating];
         self.loadingIndicator.hidden = YES;

@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
 @property (nonatomic, strong) UIView *searchBarView;
+@property (nonatomic) BOOL isKeyboardVisible;
 
 @end
 
@@ -197,18 +198,20 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupTypeAheadTableView
 {
-    self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.typeAheadViewController.delegate = self;
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
-        self.typeAheadViewController.showsTitleHeader = YES;
-    } else {
-        [self addChildViewController:self.typeAheadViewController];
-        self.typeAheadViewController.view.alpha = 0;
-        self.typeAheadViewController.view.frame = CGRectZero;
-        [self.view addSubview:self.typeAheadViewController.view];
-        [self.typeAheadViewController didMoveToParentViewController:self];
+    if (!self.typeAheadViewController) {
+        self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
+        self.typeAheadViewController.delegate = self;
+        
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+            self.typeAheadViewController.showsTitleHeader = YES;
+        } else {
+            [self addChildViewController:self.typeAheadViewController];
+            self.typeAheadViewController.view.alpha = 0;
+            self.typeAheadViewController.view.frame = CGRectZero;
+            [self.view addSubview:self.typeAheadViewController.view];
+            [self.typeAheadViewController didMoveToParentViewController:self];
+        }
     }
 }
 
@@ -390,31 +393,40 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height + 20; // +20 for the status bar
-        CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        self.isKeyboardVisible = YES;
+        NSDictionary *keyboardAnimationDetail = notification.userInfo;
+        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
         
-        // Apple doesn't give the keyboard frame in the current view's coordinate system, it gives it in the window one, so width/height can be reversed when in landscape mode.
-        endFrame = [self.view convertRect:endFrame fromView:nil];
+        CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        CGRect endFrame = [self.view convertRect:keyboardFrame fromView:nil];
         
-        CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
-        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
-        [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.alpha = 1;
-        }];
+        
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat keyboardHeight = CGRectGetHeight(endFrame);
+        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
+        CGRect targetRect = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + keyboardHeight));
+        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+            self.typeAheadViewController.view.frame = targetRect;
+            // Ensure alpha is 1.0 for the occasional situation where it's set to 0.0 during rotation
+            self.typeAheadViewController.view.alpha = 1.0;
+        } completion:nil];
     }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.alpha = 0;
-        } completion:^(BOOL finished) {
-            // We need to set the frame to nothing, as interface orientation changes can accidentally leave this table in view
-            if (finished) {
-                self.typeAheadViewController.view.frame = CGRectZero;
-            }
-        }];
+        self.isKeyboardVisible = NO;
+        NSDictionary *keyboardAnimationDetail = notification.userInfo;
+        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolBarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
+        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + toolBarHeight));
+        } completion:nil];
     }
 }
 
@@ -533,6 +545,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self resizeAndAlignSearchBar];
+    
+    if (!self.isKeyboardVisible && [self.searchBar isFirstResponder] && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
+        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+    }
 }
 
 #pragma mark - UISearchBarDelegate Methods
@@ -546,6 +565,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
         [self.searchBar setShowsCancelButton:YES animated:YES];
         [self resizeAndAlignSearchBar];
+        
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
+        [UIView animateWithDuration:0.25 animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+            self.typeAheadViewController.view.alpha = 1;
+        }];
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -554,7 +581,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self closeSearchBar];
-}
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.typeAheadViewController.view.alpha = 0;
+        } completion:nil];
+    }}
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
@@ -757,9 +788,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectPlace:(MITMapPlace *)place
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithPlace:place];
+            }];
+        } else {
             [self setPlacesWithPlace:place];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
@@ -770,9 +806,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithCategory:category];
+            }];
+        } else {
             [self setPlacesWithCategory:category];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
@@ -783,9 +824,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectQuery:(NSString *)query
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithQuery:query];
+            }];
+        } else {
             [self setPlacesWithQuery:query];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
