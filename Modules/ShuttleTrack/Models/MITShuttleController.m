@@ -92,6 +92,8 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
                                                         if (route) {
                                                             route.predictable = @(vehicleList.predictable);
                                                             route.scheduled = @(vehicleList.scheduled);
+                                                            route.lastUpdatedTimestamp = [NSDate date];
+                                                            self.lastUpdatedPredictionDataRecord[route.identifier] = route.lastUpdatedTimestamp;
                                                         }
                                                     }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
