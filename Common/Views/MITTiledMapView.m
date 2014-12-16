@@ -68,7 +68,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (BOOL)isTrackingUser
 {
-    return self.mapView.userTrackingMode == MKUserTrackingModeFollow;
+    return self.mapView.userTrackingMode == MKUserTrackingModeFollow || self.mapView.userTrackingMode == MKUserTrackingModeFollowWithHeading;
 }
 
 - (void)showLocationServicesAlert
@@ -106,6 +106,18 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     }
     
     return _userLocationButton;
+}
+
+- (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
+{
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
+    }
+    else if (status == kCLAuthorizationStatusDenied) {
+        [self showLocationServicesAlert];
+    }
 }
 
 #pragma mark - Route drawing
