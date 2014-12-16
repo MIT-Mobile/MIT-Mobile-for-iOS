@@ -186,7 +186,7 @@
 
 - (void)didMoveAnnotation:(NSNotification *)notification
 {
-    [self updateVehicle:[notification object] animated:YES];
+    [self updateVehicle:[notification object] animated:NO];
 }
 
 - (void)updateVehicle:(MITShuttleVehicle *)vehicle animated:(BOOL)animated
