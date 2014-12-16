@@ -126,7 +126,6 @@
     self.gridViewController.view.hidden = YES;
 }
 
-
 - (void)refreshUserData
 {
     [self hideViewControllers];
