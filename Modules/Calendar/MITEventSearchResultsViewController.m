@@ -182,7 +182,11 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerResultsTimeframe) {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 26.0;
+    if (section < [self.resultsDataSource allSections].count) {
+        return 26.0;
+    } else {
+        return 0;
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
