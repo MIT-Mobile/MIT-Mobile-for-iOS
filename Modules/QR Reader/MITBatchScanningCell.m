@@ -2,9 +2,6 @@
 //  MITBatchScanningCell.m
 //  MIT Mobile
 //
-//  Created by Yev Motov on 11/15/14.
-//
-//
 
 #import "MITBatchScanningCell.h"
 

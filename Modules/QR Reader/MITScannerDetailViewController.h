@@ -2,9 +2,6 @@
 //  MITScannerDetailViewController.h
 //  MIT Mobile
 //
-//  Created by Yev Motov on 11/16/14.
-//
-//
 
 #import <UIKit/UIKit.h>
 

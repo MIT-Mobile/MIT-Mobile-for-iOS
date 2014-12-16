@@ -2,9 +2,6 @@
 //  UINavigationController+MITAdditions.m
 //  MIT Mobile
 //
-//  Created by Yev Motov on 9/7/14.
-//
-//
 
 #import "UINavigationController+MITAdditions.h"
 

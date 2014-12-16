@@ -2,9 +2,6 @@
 //  MITScannerDetailViewController.m
 //  MIT Mobile
 //
-//  Created by Yev Motov on 11/16/14.
-//
-//
 
 #import "MITScannerDetailViewController.h"
 #import "QRReaderResult.h"

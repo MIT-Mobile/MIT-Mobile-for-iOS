@@ -2,9 +2,6 @@
 //  MITBatchScanningAlertView.h
 //  MIT Mobile
 //
-//  Created by Yev Motov on 12/6/14.
-//
-//
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
