@@ -442,7 +442,7 @@
 - (void)showAlertForScanResult:(QRReaderResult *)result
 {
     double fadingDuration = 2.0;
-    double waitBeforeFading = 6.0;
+    double waitBeforeFading = 4.0;
     
     [self runAsyncOnMainThread:^{
         

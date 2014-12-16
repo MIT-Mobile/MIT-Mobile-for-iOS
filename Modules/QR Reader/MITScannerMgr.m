@@ -81,6 +81,7 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     
     // 2.
     self.captureSession = [[AVCaptureSession alloc] init];
+    self.captureSession.sessionPreset = AVCaptureSessionPresetMedium;
     
     // 3.
     self.deviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:self.captureDevice error:&error];
