@@ -50,6 +50,7 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 @property (nonatomic) BOOL isLoadingEventDetails;
 @property (nonatomic) CGFloat descriptionWebviewCellHeight;
 @property (nonatomic) BOOL shouldForceWebviewRedraw;
+@property (nonatomic) BOOL firstRun;
 
 @end
 
@@ -78,14 +79,18 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
     [self setupHeader];
     
     self.title = @"Event Details";
+    self.firstRun = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    // The webview doesn't size properly on initial load for some unknown reason -- this seems to be the only way to get it to redraw properly.  On subsequent appearances, consequences are minimal and unnoticable
-    [self performSelector:@selector(forceTableViewReload) withObject:nil afterDelay:0.75];
+    // The webview doesn't size properly on initial load for some unknown reason -- this seems to be the only way to get it to redraw properly.
+    if (self.firstRun) {
+        [self performSelector:@selector(forceTableViewReload) withObject:nil afterDelay:0.75];
+        self.firstRun = NO;
+    }
 }
 
 - (void)forceTableViewReload
@@ -545,8 +550,18 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             if (rowType == MITEventDetailRowTypeDescription) {
                 // return webview cell height
                 MITWebviewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventWebviewCellIdentifier];
-      
-                NSString *htmlString = [NSString stringWithFormat:@"<span style=\"font-family:Helvetica; font-size: %i\">%@</span>", 17, self.event.htmlDescription];
+
+                NSString *formatString =
+                @"<html><head>"
+                "<style type=\"text/css\">"
+                "body {"
+                "font-family: Helvetica;"
+                "font-size: 17px;"
+                "}"
+                "a {color: #a31f34;}"
+                "</style>"
+                "</head><body>%@</body></html>";
+                NSString *htmlString = [NSString stringWithFormat:formatString, self.event.htmlDescription];
                 [cell setHtmlString:htmlString forceUpdate:self.shouldForceWebviewRedraw];
                 if (self.shouldForceWebviewRedraw) {
                     self.shouldForceWebviewRedraw = NO;
