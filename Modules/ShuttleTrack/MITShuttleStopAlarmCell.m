@@ -7,7 +7,6 @@
 
 @property (nonatomic, weak) IBOutlet UILabel *timeRemainingLabel;
 @property (nonatomic, weak) IBOutlet UIButton *alertButton;
-@property (weak, nonatomic) IBOutlet UILabel *alarmSetLabel;
 
 - (IBAction)notificationButtonPressed:(id)sender;
 
@@ -60,14 +59,11 @@
     if (scheduledNotification) {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
-        self.alarmSetLabel.hidden = NO;
     } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
         self.alertButton.hidden = YES;
-        self.alarmSetLabel.hidden = YES;
     } else {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOff] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
-        self.alarmSetLabel.hidden = YES;
     }
 }
 
