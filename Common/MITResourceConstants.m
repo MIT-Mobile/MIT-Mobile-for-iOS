@@ -128,9 +128,6 @@ NSString * const MITImageShuttlesNotInServiceSmall = @"shuttles-not-in-service-s
 NSString * const MITImageShuttlesUnknownSmall      = @"shuttles-unknown-small";
 
 
-NSString * const MITImageShuttlesRouteInService = @"shuttles-shuttle";
-NSString * const MITImageShuttlesRouteNotInService = @"shuttles-shuttle-off";
-NSString * const MITImageShuttlesRoutePredictionsUnavailable = @"shuttles-unavailable";
 NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";

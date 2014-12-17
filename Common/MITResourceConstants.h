@@ -124,9 +124,6 @@ extern NSString * const MITImageShuttlesInServiceSmall;
 extern NSString * const MITImageShuttlesNotInServiceSmall;
 extern NSString * const MITImageShuttlesUnknownSmall;
 
-extern NSString * const MITImageShuttlesRouteInService;
-extern NSString * const MITImageShuttlesRouteNotInService;
-extern NSString * const MITImageShuttlesRoutePredictionsUnavailable;
 extern NSString * const MITImageShuttlesBusBubble;
 extern NSString * const MITImageShuttlesAlertOn;
 extern NSString * const MITImageShuttlesAlertOff;
