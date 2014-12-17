@@ -18,8 +18,6 @@
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
-static const CGFloat kMITShuttleMapRegionPaddingFactor = 0.1;
-
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
 static const CGFloat kMapAnnotationAlphaDefault = 1.0;
@@ -494,8 +492,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if (!self.stop) {
         MKCoordinateRegion region;
         MITShuttleRoute *route = self.route;
-        if ([route.pathBoundingBox isKindOfClass:[NSArray class]] && [route.pathBoundingBox count] > 3) {
-            region = [route mapRegionWithPaddingFactor:kMITShuttleMapRegionPaddingFactor];
+        if ([route pathSegmentsAreValid]) {
+            region = [route encompassingMapRegion];
         } else {
             // Center on the MIT Campus with custom map tiles
             region = kMITShuttleDefaultMapRegion;
