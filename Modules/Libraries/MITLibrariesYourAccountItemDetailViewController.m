@@ -37,6 +37,7 @@ typedef NS_ENUM(NSInteger, MITLibrariesItemType) {
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonPressed)];
+        self.title = @"Book Detail";
     }
 }
 
