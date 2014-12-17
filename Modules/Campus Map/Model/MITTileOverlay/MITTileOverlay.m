@@ -10,8 +10,9 @@ static NSString * const kMITTileOverlayParentDirectoryName = @"MITMapTiles";
     NSString *resourceName = [NSString stringWithFormat:@"%li", (long)path.x];
     NSString *tilePath = [mainBundle pathForResource:resourceName ofType:nil inDirectory:[self localDirectoryForOverlayPath:path]];
     if (tilePath) {
-        NSData *data = [NSData dataWithContentsOfFile:tilePath];
-        result(data, nil);
+        NSError *err;
+        NSData *data = [NSData dataWithContentsOfFile:tilePath options:0 error:&err];
+        result(data, err);
     } else {
         [super loadTileAtPath:path result:result];
     }
