@@ -22,7 +22,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -144,6 +144,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupNavigationBar
 {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     // Insert the correct clear button image and uncomment the next line when ready
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
@@ -206,6 +207,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
     calloutView.contentViewMargin = 0;
     calloutView.anchorMargin = 39;
+    calloutView.delegate = self;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     
     self.calloutView = calloutView;
@@ -294,6 +296,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
+        self.calloutView.constrainedInsets = UIEdgeInsetsZero;
         self.isShowingIpadResultsList = NO;
     }
 }
@@ -305,6 +308,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
+        self.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
         self.isShowingIpadResultsList = YES;
     }
 }
@@ -518,7 +522,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             resultsListViewController.hideDetailButton = YES;
-            resultsListViewController.view.frame = CGRectMake(-320, 64, 320, self.view.bounds.size.height - 64 - 44);
+            resultsListViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
             resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;
             
@@ -744,13 +748,21 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = detailVC.view;
+    calloutView.contentView.clipsToBounds = YES;
     calloutView.calloutOffset = annotationView.calloutOffset;
         
     self.calloutView = calloutView;
     self.calloutViewController = detailVC;
     
     [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    detailVC.view.frame = CGRectMake(0, 0, 320, 270);
+    
+    // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
+    if (calloutView.currentArrowDirection == SMCalloutArrowDirectionUp) {
+        detailVC.view.frame = CGRectMake(0, 17, 320, 260);
+    }
+    else {
+        detailVC.view.frame = CGRectMake(0, 5, 320, 260);
+    }
 }
 
 #pragma mark - Callout Tap Gesture Recognizer
@@ -785,6 +797,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
         [self pushDetailViewControllerForPlace:place];
     }
+}
+
+#pragma mark - SMCalloutViewDelegate Methods
+
+- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+{
+    MKMapView *mapView = self.mapView;
+    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
+                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
+    [mapView setCenterCoordinate:newCenter animated:YES];
+    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
 #pragma mark - MITMapResultsListViewControllerDelegate
