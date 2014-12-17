@@ -7,13 +7,13 @@
 
 @dynamic author;
 @dynamic body;
-@dynamic dek;
+@synthesize dek = _dek;
 @dynamic featured;
 @dynamic identifier;
 @dynamic publishedAt;
 @dynamic read;
 @dynamic sourceURL;
-@dynamic title;
+@synthesize title = _title;
 @dynamic topStory;
 @dynamic type;
 @dynamic category;
@@ -50,6 +50,16 @@
     [storyMapping addPropertyMapping:galleryImagesRelationship];
     
     return storyMapping;
+}
+
+- (NSString *)dek
+{
+    return [_dek stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+- (NSString *)title
+{
+    return [_title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end
