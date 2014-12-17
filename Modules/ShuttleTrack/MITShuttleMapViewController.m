@@ -848,7 +848,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         annotationView.image = [self annotationViewImageForStop:stop];
         if (self.shouldUsePinAnnotations) {
-            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
+            annotationView.centerOffset = CGPointMake(8.0, -15.0);
         } else {
             annotationView.centerOffset = CGPointZero;
         }
