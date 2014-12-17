@@ -7,13 +7,13 @@
 
 @dynamic author;
 @dynamic body;
-@synthesize dek = _dek;
+@dynamic dek;
 @dynamic featured;
 @dynamic identifier;
 @dynamic publishedAt;
 @dynamic read;
 @dynamic sourceURL;
-@synthesize title = _title;
+@dynamic title;
 @dynamic topStory;
 @dynamic type;
 @dynamic category;
@@ -54,12 +54,16 @@
 
 - (NSString *)dek
 {
-    return [_dek stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *dek = [self primitiveValueForKey:@"dek"];
+    dek = [dek stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return dek;
 }
 
 - (NSString *)title
 {
-    return [_title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *title = [self primitiveValueForKey:@"title"];
+    title = [title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return title;
 }
 
 @end
