@@ -13,10 +13,23 @@
 // when we interact with UIControl subclasses inside our callout view.
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    if ([touch.view isKindOfClass:[UIControl class]]) {
+    if ([self hasCalloutParentView:touch.view]) {
         return NO;
     } else {
         return [super gestureRecognizer:gestureRecognizer shouldReceiveTouch:touch];
+    }
+}
+
+- (BOOL)hasCalloutParentView:(UIView *)view
+{
+    if (view == nil || [view isKindOfClass:[MITCalloutMapView class]]) {
+        return false;
+    }
+    else if ([view isKindOfClass:[SMCalloutView class]]) {
+        return true;
+    }
+    else {
+        return [self hasCalloutParentView:view.superview];
     }
 }
 

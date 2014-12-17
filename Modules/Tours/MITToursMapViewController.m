@@ -105,7 +105,7 @@ static NSInteger kAnnotationMarginRight = 50;
     self.calloutView = calloutView;
     [self updateCalloutViewInsets];
     
-    MITCalloutMapView *mapView = (MITCalloutMapView *)self.tiledMapView.mapView;
+    MITCalloutMapView *mapView = self.tiledMapView.mapView;
     mapView.calloutView = calloutView;
 }
 
@@ -257,7 +257,8 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     [self dismissCurrentCallout];
-    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)]) {
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)] &&
+        [view.annotation isKindOfClass:[MITToursStopAnnotation class]]) {
         MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
         [self.delegate mapViewController:self didDeselectStop:stop];
     }

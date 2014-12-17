@@ -1,9 +1,9 @@
 #import <MapKit/MapKit.h>
+#import "MITCalloutMapView.h"
 
 extern const MKCoordinateRegion kMITShuttleDefaultMapRegion;
 extern const MKCoordinateRegion kMITToursDefaultMapRegion;
 
-@class MITCalloutMapView;
 @protocol MITTiledMapViewUserTrackingDelegate;
 
 @interface MITTiledMapView : UIView

@@ -1940,8 +1940,8 @@
 		AFB09B0C1A08320500C6D337 /* MITToursStopDetailContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopDetailContainerViewController.m; sourceTree = "<group>"; };
 		AFECAE1A1A06D32B00562B97 /* MITToursTiledMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursTiledMapView.h; sourceTree = "<group>"; };
 		AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursTiledMapView.m; sourceTree = "<group>"; };
-		AFECAE201A06D37300562B97 /* MITCalloutMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalloutMapView.h; sourceTree = "<group>"; };
-		AFECAE211A06D37300562B97 /* MITCalloutMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalloutMapView.m; sourceTree = "<group>"; };
+		AFECAE201A06D37300562B97 /* MITCalloutMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITCalloutMapView.h; path = ../../Modules/Tours/MITCalloutMapView.h; sourceTree = "<group>"; };
+		AFECAE211A06D37300562B97 /* MITCalloutMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITCalloutMapView.m; path = ../../Modules/Tours/MITCalloutMapView.m; sourceTree = "<group>"; };
 		AFECC2BF1A0A856600B59442 /* MITToursStopCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursStopCollectionViewCell.h; sourceTree = "<group>"; };
 		AFECC2C01A0A856600B59442 /* MITToursStopCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursStopCollectionViewCell.m; sourceTree = "<group>"; };
 		AFECC2C11A0A856600B59442 /* MITToursStopCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursStopCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -2422,6 +2422,19 @@
 				224E1A7F19FE87BE00913D99 /* Home */,
 			);
 			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		22483A391A40ABAA00A0CDB3 /* MIT Map View */ = {
+			isa = PBXGroup;
+			children = (
+				A544EEFE1961D1B60046823E /* MITTiledMapView.h */,
+				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
+				AFECAE201A06D37300562B97 /* MITCalloutMapView.h */,
+				AFECAE211A06D37300562B97 /* MITCalloutMapView.m */,
+				2268F39719C728FA007CD3F7 /* MITMapDelegateInterceptor.h */,
+				2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */,
+			);
+			name = "MIT Map View";
 			sourceTree = "<group>";
 		};
 		224BAC3119F00A40004A6477 /* Search */ = {
@@ -4353,10 +4366,7 @@
 		A544EEFD1961D1B60046823E /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A544EEFE1961D1B60046823E /* MITTiledMapView.h */,
-				A544EEFF1961D1B60046823E /* MITTiledMapView.m */,
-				2268F39719C728FA007CD3F7 /* MITMapDelegateInterceptor.h */,
-				2268F39819C728FA007CD3F7 /* MITMapDelegateInterceptor.m */,
+				22483A391A40ABAA00A0CDB3 /* MIT Map View */,
 				A5A9A98819CA14CB0090BE4F /* MITExtendedNavBarView.h */,
 				A5A9A98919CA14CB0090BE4F /* MITExtendedNavBarView.m */,
 				225819D319D9A05C00BE42E4 /* MITAutoSizingCell.h */,
@@ -4390,8 +4400,6 @@
 				AF41E4DF1A06AC2700EC4F18 /* MITToursCalloutContentView.xib */,
 				AFECAE1A1A06D32B00562B97 /* MITToursTiledMapView.h */,
 				AFECAE1B1A06D32B00562B97 /* MITToursTiledMapView.m */,
-				AFECAE201A06D37300562B97 /* MITCalloutMapView.h */,
-				AFECAE211A06D37300562B97 /* MITCalloutMapView.m */,
 				22E1D3341A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.h */,
 				22E1D3351A0FDAB4004696A4 /* MITToursStopDirectionsAnnotationView.m */,
 				AF9282D71A0BFC4300CCC25A /* Stop Collection View */,
@@ -4800,7 +4808,7 @@
 				LastUpgradeCheck = 0610;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = A35W4MM59Y;
+						DevelopmentTeam = THP5EV5EJ9;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -4809,6 +4817,7 @@
 					};
 					2C5D08381A028328006E09C3 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = THP5EV5EJ9;
 						TestTargetID = 1D6058900D05DD3D006BFB54;
 					};
 				};
