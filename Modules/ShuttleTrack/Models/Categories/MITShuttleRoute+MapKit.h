@@ -3,9 +3,8 @@
 
 @interface MITShuttleRoute (MapKit)
 
-- (MKCoordinateRegion)mapRegionWithPaddingFactor:(CGFloat)paddingFactor;
-
 - (BOOL)pathSegmentsAreValid;
 - (NSArray *)pathSegmentPolylines;
+- (MKCoordinateRegion)encompassingMapRegion;
 
 @end
