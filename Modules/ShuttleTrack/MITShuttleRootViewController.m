@@ -91,6 +91,7 @@
 - (void)setupMapViewController
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithNibName:nil bundle:nil];
+    self.mapViewController.shouldUsePinAnnotations = YES;
     self.mapViewController.delegate = self;
     self.detailNavigationController = [[UINavigationController alloc] initWithRootViewController:self.mapViewController];
     if (self.mapViewController.view) { // Make sure the view is loaded so the mapview (and its button) has been created

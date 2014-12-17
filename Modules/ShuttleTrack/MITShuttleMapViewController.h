@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 @property (strong, nonatomic) MITShuttleStop *stop;
 @property (nonatomic) MITShuttleMapState state;
 @property (nonatomic, weak) id<MITShuttleMapViewControllerDelegate> delegate;
+@property (nonatomic) BOOL shouldUsePinAnnotations;
 
 @end
 

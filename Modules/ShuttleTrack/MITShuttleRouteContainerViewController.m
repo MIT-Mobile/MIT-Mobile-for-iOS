@@ -410,12 +410,15 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     switch (state) {
         case MITShuttleRouteContainerStateRoute:
             [self configureLayoutForRouteStateAnimated:animated];
+            self.mapViewController.shouldUsePinAnnotations = NO;
             break;
         case MITShuttleRouteContainerStateStop:
             [self configureLayoutForStopStateAnimated:animated];
+            self.mapViewController.shouldUsePinAnnotations = NO;
             break;
         case MITShuttleRouteContainerStateMap:
             [self configureLayoutForMapStateAnimated:animated];
+            self.mapViewController.shouldUsePinAnnotations = YES;
             break;
         default:
             break;

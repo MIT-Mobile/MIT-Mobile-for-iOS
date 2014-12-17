@@ -528,12 +528,17 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.toolbar = [[UIToolbar alloc] init];
     self.toolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Using UIButton here because setting barButtonWithImage positions very weirdly.
+    UIButton *exitMapStateButton = [UIButton buttonWithType:UIButtonTypeSystem];
     UIImage *exitMapStateImage = [UIImage imageNamed:MITImageBarButtonList];
-    UIBarButtonItem *exitMapStateButton = [[UIBarButtonItem alloc] initWithImage:exitMapStateImage style:UIBarButtonItemStyleBordered target:self action:@selector(exitMapStateButtonTapped:)];
-    
+    [exitMapStateButton setImage:exitMapStateImage forState:UIControlStateNormal];
+    [exitMapStateButton addTarget:self action:@selector(exitMapStateButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [exitMapStateButton setTintColor:[UIColor mit_tintColor]];
+    exitMapStateButton.frame = CGRectMake(0, 0, exitMapStateImage.size.width, exitMapStateImage.size.height);
+    UIBarButtonItem *exitMapStateBarButton = [[UIBarButtonItem alloc] initWithCustomView:exitMapStateButton];
     [self.toolbar setItems:@[self.tiledMapView.userLocationButton,
                              [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                             exitMapStateButton] animated:NO];
+                             exitMapStateBarButton] animated:NO];
     [self.view addSubview:self.toolbar];
     
     NSArray *horizontalToolbarConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}];
@@ -640,24 +645,29 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (UIImage *)annotationViewImageForStop:(MITShuttleStop *)stop
 {
-    MITShuttleStopState state = MITShuttleStopStateDefault;
-    if ([self.route.nextStops containsObject:stop]) {
-        state = state | MITShuttleStopStateNext;
+    if (self.shouldUsePinAnnotations) {
+        return [UIImage imageNamed:MITImageMapAnnotationPlacePin];
     }
-    if ([self.stop isEqual:stop]) {
-        state = state | MITShuttleStopStateSelected;
+    else {
+        MITShuttleStopState state = MITShuttleStopStateDefault;
+        if ([self.route.nextStops containsObject:stop]) {
+            state = state | MITShuttleStopStateNext;
+        }
+        if ([self.stop isEqual:stop]) {
+            state = state | MITShuttleStopStateSelected;
+        }
+        
+        if (state == MITShuttleStopStateDefault) {
+            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
+        } else if (state == MITShuttleStopStateNext) {
+            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
+        } else if (state == MITShuttleStopStateSelected) {
+            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
+        } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
+            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
+        }
+        return nil;
     }
-
-    if (state == MITShuttleStopStateDefault) {
-        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
-    } else if (state == MITShuttleStopStateNext) {
-        return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
-    } else if (state == MITShuttleStopStateSelected) {
-        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
-    } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-        return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
-    }
-    return nil;
 }
 
 - (CGFloat)annotationViewAlphaForStop:(MITShuttleStop *)stop
@@ -838,6 +848,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
         }
         annotationView.image = [self annotationViewImageForStop:stop];
+        if (self.shouldUsePinAnnotations) {
+            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
+        } else {
+            annotationView.centerOffset = CGPointZero;
+        }
         annotationView.alpha = [self annotationViewAlphaForStop:stop];
         return annotationView;
     } else if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
@@ -942,6 +957,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
+}
+
+#pragma mark - Map Pins Update
+
+- (void)setShouldUsePinAnnotations:(BOOL)shouldUsePinAnnotations
+{
+    if (_shouldUsePinAnnotations != shouldUsePinAnnotations) {
+        _shouldUsePinAnnotations = shouldUsePinAnnotations;
+        NSArray *annotations = self.tiledMapView.mapView.annotations;
+        [self.tiledMapView.mapView removeAnnotations:annotations];
+        [self.tiledMapView.mapView addAnnotations:annotations];
+    }
 }
 
 @end
