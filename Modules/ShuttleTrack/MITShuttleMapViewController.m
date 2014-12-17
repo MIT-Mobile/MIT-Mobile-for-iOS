@@ -14,6 +14,7 @@
 #import "SMCalloutView.h"
 #import "MITTiledMapView.h"
 #import "MITLocationManager.h"
+#import "MITTileOverlay.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -565,10 +566,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
     
-    MKTileOverlay *MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
-    MITTileOverlay.canReplaceMapContent = YES;
+    MITTileOverlay *tileOverlay = [[MITTileOverlay alloc] initWithURLTemplate:template];
+    tileOverlay.canReplaceMapContent = YES;
     
-    [self.tiledMapView.mapView addOverlay:MITTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.tiledMapView.mapView addOverlay:tileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 - (void)setupBaseTileOverlay
