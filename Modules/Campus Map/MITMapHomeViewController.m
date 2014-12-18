@@ -228,7 +228,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             self.typeAheadViewController.showsTitleHeader = YES;
         } else {
             [self addChildViewController:self.typeAheadViewController];
-            self.typeAheadViewController.view.alpha = 0;
+            self.typeAheadViewController.view.hidden = YES;
             self.typeAheadViewController.view.frame = CGRectZero;
             [self.view addSubview:self.typeAheadViewController.view];
             [self.typeAheadViewController didMoveToParentViewController:self];
@@ -413,22 +413,12 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         self.isKeyboardVisible = YES;
-        NSDictionary *keyboardAnimationDetail = notification.userInfo;
-        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-        
-        CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-        CGRect endFrame = [self.view convertRect:keyboardFrame fromView:nil];
-        
-        CGFloat toolBarHeight = CGRectGetMaxY(self.navigationController.toolbar.frame);
-        CGFloat keyboardHeight = CGRectGetHeight(endFrame);
-        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
-        CGRect targetRect = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), viewHeight + toolBarHeight - keyboardHeight);
-        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
-            self.typeAheadViewController.view.frame = targetRect;
-            // Ensure alpha is 1.0 for the occasional situation where it's set to 0.0 during rotation
-            self.typeAheadViewController.view.alpha = 1.0;
-        } completion:nil];
+
+        [UIView performWithoutAnimation:^{
+            self.typeAheadViewController.view.frame = self.view.bounds;
+        }];
+
+        self.typeAheadViewController.view.hidden = NO;
     }
 }
 
@@ -436,15 +426,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         self.isKeyboardVisible = NO;
-        NSDictionary *keyboardAnimationDetail = notification.userInfo;
-        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
-        CGFloat toolBarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
-        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
-            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + toolBarHeight));
-        } completion:nil];
+        self.typeAheadViewController.view.hidden = YES;
     }
 }
 
@@ -587,10 +569,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
         CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
         CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
-        [UIView animateWithDuration:0.25 animations:^{
-            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
-            self.typeAheadViewController.view.alpha = 1;
-        }];
+        self.typeAheadViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
+        self.typeAheadViewController.view.hidden = NO;
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -600,10 +580,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [self closeSearchBar];
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.typeAheadViewController.view.alpha = 0;
-        } completion:nil];
-    }}
+        self.typeAheadViewController.view.hidden = YES;
+    }
+}
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
