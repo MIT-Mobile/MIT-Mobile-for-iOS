@@ -26,6 +26,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 @property (nonatomic, strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic, strong) NSMapTable *categoriesByGestureRecognizer;
 @property (nonatomic, strong) NSMutableDictionary *storyHeightsDictionary;
+@property (nonatomic) BOOL displayLoadingMoreMessage;
 
 #pragma mark Story Data Source methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath;
@@ -93,7 +94,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -323,15 +323,24 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
                 self.errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
                 [loadMoreCell.loadingIndicator stopAnimating];
+                self.displayLoadingMoreMessage = YES;
+                
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
                 [loadMoreCell.loadingIndicator startAnimating];
-
-            } else {
+                
+            } else if (_displayLoadingMoreMessage || _storyRefreshInProgress) {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
                 [loadMoreCell.loadingIndicator stopAnimating];
+                self.displayLoadingMoreMessage = NO;
+                
+            } else {
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
+                [loadMoreCell.loadingIndicator startAnimating];
+                [self getMoreStoriesForSection:indexPath.section];
             }
             
             CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;

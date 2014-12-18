@@ -192,12 +192,19 @@
             if (self.errorMessage) {
                 loadMoreCell.textLabel.text = self.errorMessage;
                 loadMoreCell.loadingIndicator.hidden = YES;
+                
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
-            } else {
+            
+            } else if (_storyRefreshInProgress) {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
+            
+            } else {
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
+                [self getMoreStoriesForSection:indexPath.section];
             }
             
             return loadMoreCell;

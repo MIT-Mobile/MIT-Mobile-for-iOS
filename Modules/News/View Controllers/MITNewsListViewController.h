@@ -29,6 +29,7 @@
 @property (nonatomic) BOOL isACategoryView;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (nonatomic) BOOL storyUpdateInProgress;
+@property (nonatomic) BOOL storyRefreshInProgress;
 @end
 
 @protocol MITNewsListDelegate <NSObject>
