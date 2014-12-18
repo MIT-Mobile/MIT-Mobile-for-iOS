@@ -276,8 +276,18 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated
 {
+    NSArray *annotations = self.tiledMapView.mapView.annotations;
+    [self.tiledMapView.mapView removeAnnotations:annotations];
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(stop.coordinate, 50, 50);
-    [self.tiledMapView.mapView setRegion:region animated:animated];
+    if (animated) {
+        [UIView animateWithDuration:0.15 animations:^{
+            [self.tiledMapView.mapView setRegion:region];
+        } completion:^(BOOL finished) {
+            [self.tiledMapView.mapView addAnnotations:annotations];
+        }];
+    } else {
+        [self.tiledMapView.mapView addAnnotations:annotations];
+    }
 }
 
 #pragma mark - NSFetchedResultsController
