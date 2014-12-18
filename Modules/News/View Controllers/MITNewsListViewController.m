@@ -307,6 +307,22 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+
+{
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            
+            if (!_errorMessage && !_storyUpdateInProgress && !_displayLoadingMoreMessage && !_storyRefreshInProgress) {
+                [self getMoreStoriesForSection:indexPath.section];
+            }
+            
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+        }
+    }
+}
+
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
@@ -318,29 +334,29 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
             MITNewsLoadMoreTableViewCell *loadMoreCell = (MITNewsLoadMoreTableViewCell*)cell;
 
-            if (self.errorMessage) {
-                loadMoreCell.textLabel.text = self.errorMessage;
-                self.errorMessage = nil;
+            if (_errorMessage) {
+                loadMoreCell.textLabel.text = _errorMessage;
+                _errorMessage = nil;
                 loadMoreCell.loadingIndicator.hidden = YES;
                 [loadMoreCell.loadingIndicator stopAnimating];
-                self.displayLoadingMoreMessage = YES;
+                _displayLoadingMoreMessage = YES;
                 
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
                 [loadMoreCell.loadingIndicator startAnimating];
+                _displayLoadingMoreMessage = NO;
                 
             } else if (_displayLoadingMoreMessage || _storyRefreshInProgress) {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
                 [loadMoreCell.loadingIndicator stopAnimating];
-                self.displayLoadingMoreMessage = NO;
                 
             } else {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
                 [loadMoreCell.loadingIndicator startAnimating];
-                [self getMoreStoriesForSection:indexPath.section];
+                _displayLoadingMoreMessage = NO;
             }
             
             CGFloat separatorPadding = (CGRectGetWidth(self.tableView.bounds) - MIN(CGRectGetWidth(self.tableView.bounds),648.)) / 2.;
