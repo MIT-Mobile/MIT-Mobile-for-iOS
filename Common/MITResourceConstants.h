@@ -72,6 +72,11 @@ extern NSString * const MITImageMapLocationHighlighted;
 extern NSString * const MITImageMapAnnotationUserLocation;
 extern NSString * const MITImageMapAnnotationPin;
 extern NSString * const MITImageMapAnnotationPlacePin;
+extern NSString * const MITImageMapPinBallBlack;
+extern NSString * const MITImageMapPinBallBlue;
+extern NSString * const MITImageMapPinBallRed;
+extern NSString * const MITImageMapPinNeedle;
+extern NSString * const MITImageMapPinShadow;
 
 extern NSString * const MITImageMapCategoryAthenaClusters;
 extern NSString * const MITImageMapCategoryBuildings;

@@ -229,16 +229,14 @@ static NSInteger kAnnotationMarginRight = 50;
     
     MITToursStop *stop = ((MITToursStopAnnotation *)annotation).stop;
     NSInteger number = [self.tour.stops indexOfObject:stop];
-    [annotationView setNumber:(number + 1)];
     
     if ([stop.stopType isEqualToString:@"Main Loop"]) {
-        annotationView.layer.borderColor = [UIColor clearColor].CGColor;
-        annotationView.layer.borderWidth = 0;
+        [annotationView setRedColor];
     } else {
-        annotationView.layer.borderColor = [UIColor blueColor].CGColor;
-        annotationView.layer.borderWidth = 2;
+        [annotationView setBlueColor];
     }
-    
+    [annotationView setNumber:(number + 1)];
+
     return annotationView;
 }
 
