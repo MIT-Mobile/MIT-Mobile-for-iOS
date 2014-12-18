@@ -82,9 +82,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self setupMapView];
     [self setupTypeAheadTableView];
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self.navigationController setToolbarHidden:NO];
-        
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {        
         // We use actual UIButtons so that we can easily change the selected state
         UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
         listToggleImageNormal = [listToggleImageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -105,8 +103,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
     } else {
-        [self.navigationController setToolbarHidden:NO];
-        
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
         UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -117,6 +113,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.navigationController.toolbarHidden = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self registerForKeyboardNotifications];
@@ -684,6 +681,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         }
         NSInteger placeIndex = [self.places indexOfObject:annotation];
         [annotationView setNumber:(placeIndex + 1)];
+        
         return annotationView;
     }
     return nil;
