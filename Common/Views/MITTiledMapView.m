@@ -2,14 +2,15 @@
 #import "MITMapDelegateInterceptor.h"
 #import "MITToursStop.h"
 #import "MITToursDirectionsToStop.h"
-#import "MITLocationManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTileOverlay.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
 
-@interface MITTiledMapView() <UIAlertViewDelegate, MKMapViewDelegate>
+@interface MITTiledMapView() <UIAlertViewDelegate, MKMapViewDelegate, CLLocationManagerDelegate>
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @property (nonatomic, strong) UIBarButtonItem *userLocationButton;
 
@@ -40,6 +41,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (void)setup
 {
+    [self setupLocationManager];
     [self setupMapView];
     [self setupTileOverlays];
     
@@ -49,6 +51,13 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 - (MITCalloutMapView *)createMapView
 {
     return [[MITCalloutMapView alloc] initWithFrame:self.frame];
+}
+
+- (void)setupLocationManager
+{
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
 }
 
 - (void)setupMapView
@@ -106,18 +115,6 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     }
     
     return _userLocationButton;
-}
-
-- (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
-{
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    
-    if (status == kCLAuthorizationStatusNotDetermined) {
-        [[MITLocationManager sharedManager] requestLocationAuthorization];
-    }
-    else if (status == kCLAuthorizationStatusDenied) {
-        [self showLocationServicesAlert];
-    }
 }
 
 #pragma mark - Route drawing
@@ -233,6 +230,18 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
 {
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.locationManager requestWhenInUseAuthorization];
+        }
+    }
+    else if (status == kCLAuthorizationStatusDenied && mode != MKUserTrackingModeNone) {
+        [self showLocationServicesAlert];
+        self.mapView.userTrackingMode = MKUserTrackingModeNone;
+    }
+    
     [self.userTrackingDelegate mitTiledMapView:self didChangeUserTrackingMode:mode animated:animated];
 }
 
@@ -254,6 +263,15 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
     }
     return _delegateInterceptor;
+}
+
+#pragma mark - Location Manager Delegate
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    if (status == kCLAuthorizationStatusDenied || kCLAuthorizationStatusNotDetermined) {
+        self.mapView.userTrackingMode = MKUserTrackingModeNone;
+    }
 }
 
 @end
