@@ -209,10 +209,7 @@ NSString * const kActionURL = @"kActionUrl";
             [cell.cellDescription setTextColor:[UIColor mit_greyTextColor]];
             [cell.cellDescription sizeToFit];
             
-            cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageActionExternal]
-                                                   highlightedImage:[UIImage imageNamed:MITImageActionExternalHighlight]];
-            
-            cell.selectionStyle = UITableViewCellSelectionStyleGray;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
         }
         
         [cell removeLineSeparator];

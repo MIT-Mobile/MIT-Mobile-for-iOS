@@ -72,6 +72,11 @@ extern NSString * const MITImageMapLocationHighlighted;
 extern NSString * const MITImageMapAnnotationUserLocation;
 extern NSString * const MITImageMapAnnotationPin;
 extern NSString * const MITImageMapAnnotationPlacePin;
+extern NSString * const MITImageMapPinBallBlack;
+extern NSString * const MITImageMapPinBallBlue;
+extern NSString * const MITImageMapPinBallRed;
+extern NSString * const MITImageMapPinNeedle;
+extern NSString * const MITImageMapPinShadow;
 
 extern NSString * const MITImageMapCategoryAthenaClusters;
 extern NSString * const MITImageMapCategoryBuildings;
@@ -178,22 +183,14 @@ extern NSString * const MITImageToursTemplateButtonExternalLink;
 
 #pragma mark - Global Assets
 extern NSString * const MITImageNameEmail;
-extern NSString * const MITImageNameEmailHighlight;
 extern NSString * const MITImageNameMap;
-extern NSString * const MITImageNameMapHighlight;
 extern NSString * const MITImageNamePeople;
-extern NSString * const MITImageNamePeopleHighlight;
 extern NSString * const MITImageNamePhone;
-extern NSString * const MITImageNamePhoneHighlight;
 extern NSString * const MITImageActionExternalWhite;
 extern NSString * const MITImageActionExternal;
-extern NSString * const MITImageActionExternalHighlight;
 extern NSString * const MITImageNameEmergency;
-extern NSString * const MITImageNameEmergencyHighlight;
 extern NSString * const MITImageNameSecure;
-extern NSString * const MITImageNameSecureHighlight;
 extern NSString * const MITImageNameCalendar;
-extern NSString * const MITImageNameCalendarHighlight;
 extern NSString * const MITImageNameShare;
 
 extern NSString * const MITImageNameLeftArrow;

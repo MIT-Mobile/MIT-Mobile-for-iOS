@@ -1,26 +1,8 @@
 #import "MITShuttleRoute+MapKit.h"
 
-@implementation MITShuttleRoute (MapKit)
+static double const kMITShuttleRouteBoundingBoxPaddingFactor = 0.15;
 
-- (MKCoordinateRegion)mapRegionWithPaddingFactor:(CGFloat)paddingFactor
-{
-    NSNumber *bottomLeftLongitude = self.pathBoundingBox[0];
-    NSNumber *bottomLeftLatitude = self.pathBoundingBox[1];
-    NSNumber *topRightLongitude = self.pathBoundingBox[2];
-    NSNumber *topRightLatitude = self.pathBoundingBox[3];
-    
-    CLLocationDegrees latitudeDelta = fabs([topRightLatitude doubleValue] - [bottomLeftLatitude doubleValue]);
-    CLLocationDegrees longitudeDelta = fabs([topRightLongitude doubleValue] - [bottomLeftLongitude doubleValue]);
-    CLLocationDegrees latitudePadding = paddingFactor * latitudeDelta;
-    CLLocationDegrees longitudePadding = paddingFactor * longitudeDelta;
-    
-    CLLocationDegrees middleLatitude = ([topRightLatitude doubleValue] + [bottomLeftLatitude doubleValue]) / 2;
-    CLLocationDegrees middleLongitude = ([topRightLongitude doubleValue] + [bottomLeftLongitude doubleValue]) / 2;
-    CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(middleLatitude, middleLongitude);
-    
-    MKCoordinateSpan boundingBoxSpan = MKCoordinateSpanMake(latitudeDelta + latitudePadding, longitudeDelta + longitudePadding);
-    return MKCoordinateRegionMake(centerCoordinate, boundingBoxSpan);
-}
+@implementation MITShuttleRoute (MapKit)
 
 - (BOOL)pathSegmentsAreValid
 {
@@ -58,6 +40,83 @@
         }
     }
     return [NSArray arrayWithArray:segmentPolylines];
+}
+
+- (MKCoordinateRegion)encompassingMapRegion
+{
+    NSArray *coords = [self coordsForPath];
+    return [self regionForCoords:coords withPaddingFactor:kMITShuttleRouteBoundingBoxPaddingFactor];
+}
+
+- (MKCoordinateRegion)regionForCoords:(NSArray *)coords withPaddingFactor:(CGFloat)paddingFactor {
+    
+    CLLocationDegrees minLat = 90.0;
+    CLLocationDegrees maxLat = -90.0;
+    CLLocationDegrees minLon = 180.0;
+    CLLocationDegrees maxLon = -180.0;
+    
+    for (NSValue *val in coords) {
+        CLLocationCoordinate2D coord = [val MKCoordinateValue];
+        if (coord.latitude < minLat) {
+            minLat = coord.latitude;
+        }
+        if (coord.longitude < minLon) {
+            minLon = coord.longitude;
+        }
+        if (coord.latitude > maxLat) {
+            maxLat = coord.latitude;
+        }
+        if (coord.longitude > maxLon) {
+            maxLon = coord.longitude;
+        }
+    }
+    
+    CLLocationDegrees latDelta = (maxLat - minLat);
+    CLLocationDegrees latPadding = latDelta * paddingFactor;
+    latDelta += latPadding;
+    CLLocationDegrees lonDelta = (maxLon - minLon);
+    CLLocationDegrees lonPadding = lonDelta * paddingFactor;
+    lonDelta += lonPadding;
+    
+    CLLocationDegrees latitudeOffset = fabs(latDelta / 2.0);
+    CLLocationDegrees longitudeOffset = fabs(lonDelta / 2.0);
+    
+    minLat -= latitudeOffset;
+    maxLat += latitudeOffset;
+    minLon -= longitudeOffset;
+    maxLon += longitudeOffset;
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake(latDelta, lonDelta);
+    
+    CLLocationDegrees middleLatitude = (maxLat + minLat) / 2;
+    CLLocationDegrees middleLongitude = (maxLon + minLon) / 2;
+    CLLocationCoordinate2D centerCoordinate = CLLocationCoordinate2DMake(middleLatitude, middleLongitude);
+    
+    return MKCoordinateRegionMake(centerCoordinate, span);
+}
+
+- (NSArray *)coordsForPath
+{
+    NSMutableArray *coordinates = [NSMutableArray array];
+    NSArray *pathSegments = self.pathSegments;
+    for (NSInteger i = 0; i < pathSegments.count; i++) {
+        NSArray *pathSegment = [pathSegments[i] isKindOfClass:[NSArray class]] ? pathSegments[i] : nil;
+        if (pathSegment) {
+            for (NSInteger j = 0; j < pathSegment.count; j++) {
+                NSArray *pathCoordinateArray = [pathSegment[j] isKindOfClass:[NSArray class]] ? pathSegment[j] : nil;
+                
+                if (pathCoordinateArray && pathCoordinateArray.count > 1) {
+                    NSNumber *longitude = pathCoordinateArray[0];
+                    NSNumber *latitude = pathCoordinateArray[1];
+                    CLLocationCoordinate2D pathPointCoordinate = CLLocationCoordinate2DMake([latitude doubleValue], [longitude doubleValue]);
+                    NSValue *coordVal = [NSValue valueWithMKCoordinate:pathPointCoordinate];
+                    [coordinates addObject:coordVal];
+                }
+            }
+            
+        }
+    }
+    return coordinates;
 }
 
 @end

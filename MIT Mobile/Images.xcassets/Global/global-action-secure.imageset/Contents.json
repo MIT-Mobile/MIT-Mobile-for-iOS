@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "action-secure.png"
+      "filename" : "authentication_lock.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "action-secure@2x.png"
+      "filename" : "authentication_lock@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "authentication_lock@3x.png"
     }
   ],
   "info" : {

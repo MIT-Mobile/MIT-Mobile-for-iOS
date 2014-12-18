@@ -52,4 +52,23 @@
     return storyMapping;
 }
 
+- (NSString *)dek
+{
+    [self willAccessValueForKey:@"dek"];
+    NSString *dek = [self primitiveValueForKey:@"dek"];
+    [self didAccessValueForKey:@"dek"];
+
+    dek = [dek stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return dek;
+}
+
+- (NSString *)title
+{
+    [self willAccessValueForKey:@"title"];
+    NSString *title = [self primitiveValueForKey:@"title"];
+    [self didAccessValueForKey:@"title"];
+    title = [title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return title;
+}
+
 @end

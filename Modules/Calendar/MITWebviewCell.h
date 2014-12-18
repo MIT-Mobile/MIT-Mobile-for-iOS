@@ -7,6 +7,7 @@
 @property (nonatomic, weak) id<MITWebviewCellDelegate> delegate;
 
 @property (nonatomic, strong) NSString *htmlString;
+- (void)setHtmlString:(NSString *)htmlString forceUpdate:(BOOL)forceUpdate;
 
 @end
 

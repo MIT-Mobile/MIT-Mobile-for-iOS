@@ -4,7 +4,7 @@
 #import "MITToursDirectionsToStop.h"
 #import "MITLocationManager.h"
 #import "UIKit+MITAdditions.h"
-#import "MITCalloutMapView.h"
+#import "MITTileOverlay.h"
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
@@ -68,7 +68,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (BOOL)isTrackingUser
 {
-    return self.mapView.userTrackingMode == MKUserTrackingModeFollow;
+    return self.mapView.userTrackingMode == MKUserTrackingModeFollow || self.mapView.userTrackingMode == MKUserTrackingModeFollowWithHeading;
 }
 
 - (void)showLocationServicesAlert
@@ -106,6 +106,18 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     }
     
     return _userLocationButton;
+}
+
+- (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
+{
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        [[MITLocationManager sharedManager] requestLocationAuthorization];
+    }
+    else if (status == kCLAuthorizationStatusDenied) {
+        [self showLocationServicesAlert];
+    }
 }
 
 #pragma mark - Route drawing
@@ -200,10 +212,10 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 {
     static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
     
-    MKTileOverlay *MITTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
-    MITTileOverlay.canReplaceMapContent = YES;
+    MITTileOverlay *tileOverlay = [[MITTileOverlay alloc] initWithURLTemplate:template];
+    tileOverlay.canReplaceMapContent = YES;
     
-    [self.mapView addOverlay:MITTileOverlay level:MKOverlayLevelAboveLabels];
+    [self.mapView addOverlay:tileOverlay level:MKOverlayLevelAboveLabels];
 }
 
 - (void)setupBaseTileOverlay

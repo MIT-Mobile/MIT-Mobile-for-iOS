@@ -27,7 +27,7 @@ static int const kAlertViewTagShouldOpenLink = 12323;
     
     CGFloat newWebviewHeight = MAX(0, self.bounds.size.width - (2 * kWebViewHorizontalPadding));
     
-    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(kWebViewHorizontalPadding, kWebViewVerticalPadding, newWebviewHeight, 32)];
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(kWebViewHorizontalPadding, kWebViewVerticalPadding, newWebviewHeight, 1)];
     self.webView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:self.webView];
     
@@ -46,7 +46,12 @@ static int const kAlertViewTagShouldOpenLink = 12323;
 
 - (void)setHtmlString:(NSString *)htmlString
 {
-    if ([htmlString isEqualToString:_htmlString]) {
+    [self setHtmlString:htmlString forceUpdate:NO];
+}
+
+- (void)setHtmlString:(NSString *)htmlString forceUpdate:(BOOL)forceUpdate
+{
+    if (!forceUpdate && [htmlString isEqualToString:_htmlString]) {
         return;
     }
     

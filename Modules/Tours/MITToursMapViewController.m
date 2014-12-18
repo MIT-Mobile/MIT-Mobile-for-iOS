@@ -105,7 +105,7 @@ static NSInteger kAnnotationMarginRight = 50;
     self.calloutView = calloutView;
     [self updateCalloutViewInsets];
     
-    MITCalloutMapView *mapView = (MITCalloutMapView *)self.tiledMapView.mapView;
+    MITCalloutMapView *mapView = self.tiledMapView.mapView;
     mapView.calloutView = calloutView;
 }
 
@@ -229,16 +229,14 @@ static NSInteger kAnnotationMarginRight = 50;
     
     MITToursStop *stop = ((MITToursStopAnnotation *)annotation).stop;
     NSInteger number = [self.tour.stops indexOfObject:stop];
-    [annotationView setNumber:(number + 1)];
     
     if ([stop.stopType isEqualToString:@"Main Loop"]) {
-        annotationView.layer.borderColor = [UIColor clearColor].CGColor;
-        annotationView.layer.borderWidth = 0;
+        [annotationView setRedColor];
     } else {
-        annotationView.layer.borderColor = [UIColor blueColor].CGColor;
-        annotationView.layer.borderWidth = 2;
+        [annotationView setBlueColor];
     }
-    
+    [annotationView setNumber:(number + 1)];
+
     return annotationView;
 }
 
@@ -257,7 +255,8 @@ static NSInteger kAnnotationMarginRight = 50;
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     [self dismissCurrentCallout];
-    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)]) {
+    if ([self.delegate respondsToSelector:@selector(mapViewController:didDeselectStop:)] &&
+        [view.annotation isKindOfClass:[MITToursStopAnnotation class]]) {
         MITToursStop *stop = ((MITToursStopAnnotation *)view.annotation).stop;
         [self.delegate mapViewController:self didDeselectStop:stop];
     }

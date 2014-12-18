@@ -12,6 +12,7 @@
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITLocationManager.h"
+#import "SMCalloutView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -21,7 +22,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -32,17 +33,21 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
-@property (nonatomic, strong) UIPopoverController *currentPlacePopoverController;
+@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) UIViewController *calloutViewController;
+
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MKMapView *mapView;
+@property (nonatomic, readonly) MITCalloutMapView *mapView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
+@property (nonatomic, strong) UIView *searchBarView;
+@property (nonatomic) BOOL isKeyboardVisible;
 
 @end
 
@@ -50,9 +55,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - Map View
 
-- (MKMapView *)mapView
+- (MITCalloutMapView *)mapView
 {
-    return (MKMapView *)self.tiledMapView.mapView;
+    return self.tiledMapView.mapView;
 }
 
 #pragma mark - Init
@@ -139,14 +144,45 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupNavigationBar
 {
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     // Insert the correct clear button image and uncomment the next line when ready
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
-    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    searchBarView.autoresizingMask = 0;
+    self.searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
+    self.searchBarView.autoresizingMask = 0;
     self.searchBar.delegate = self;
-    [searchBarView addSubview:self.searchBar];
-    self.navigationItem.titleView = searchBarView;
+    [self.searchBarView addSubview:self.searchBar];
+    
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                           attribute:NSLayoutAttributeTop
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:self.searchBar
+                                                           attribute:NSLayoutAttributeTop
+                                                          multiplier:1.0
+                                                            constant:0];
+    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                            attribute:NSLayoutAttributeLeft
+                                                            relatedBy:NSLayoutRelationEqual
+                                                               toItem:self.searchBar
+                                                            attribute:NSLayoutAttributeLeft
+                                                           multiplier:1.0
+                                                             constant:0];
+    NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.searchBar
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0];
+    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.searchBarView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self.searchBar
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0];
+    [self.searchBarView addConstraints:@[top, left, bottom, right]];
+    self.navigationItem.titleView = self.searchBarView;
     
     self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
     [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
@@ -162,22 +198,39 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
     [self setupMapBoundingBoxAnimated:NO];
+
+    [self setupCalloutView];
+}
+
+- (void)setupCalloutView
+{
+    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
+    calloutView.contentViewMargin = 0;
+    calloutView.anchorMargin = 39;
+    calloutView.delegate = self;
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
+    
+    self.calloutView = calloutView;
+    
+    self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
 - (void)setupTypeAheadTableView
 {
-    self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    self.typeAheadViewController.delegate = self;
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
-        self.typeAheadViewController.showsTitleHeader = YES;
-    } else {
-        [self addChildViewController:self.typeAheadViewController];
-        self.typeAheadViewController.view.alpha = 0;
-        self.typeAheadViewController.view.frame = CGRectZero;
-        [self.view addSubview:self.typeAheadViewController.view];
-        [self.typeAheadViewController didMoveToParentViewController:self];
+    if (!self.typeAheadViewController) {
+        self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
+        self.typeAheadViewController.delegate = self;
+        
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
+            self.typeAheadViewController.showsTitleHeader = YES;
+        } else {
+            [self addChildViewController:self.typeAheadViewController];
+            self.typeAheadViewController.view.alpha = 0;
+            self.typeAheadViewController.view.frame = CGRectZero;
+            [self.view addSubview:self.typeAheadViewController.view];
+            [self.typeAheadViewController didMoveToParentViewController:self];
+        }
     }
 }
 
@@ -203,10 +256,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     if (self.bookmarksPopoverController.isPopoverVisible) {
         [self.bookmarksPopoverController dismissPopoverAnimated:animated];
-    }
-    
-    if (self.currentPlacePopoverController.isPopoverVisible) {
-        [self.currentPlacePopoverController dismissPopoverAnimated:animated];
     }
 }
 
@@ -247,6 +296,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
+        self.calloutView.constrainedInsets = UIEdgeInsetsZero;
         self.isShowingIpadResultsList = NO;
     }
 }
@@ -258,6 +308,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
+        self.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
         self.isShowingIpadResultsList = YES;
     }
 }
@@ -359,31 +410,40 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height + 20; // +20 for the status bar
-        CGRect endFrame = [[notification.userInfo valueForKeyPath:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        self.isKeyboardVisible = YES;
+        NSDictionary *keyboardAnimationDetail = notification.userInfo;
+        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
         
-        // Apple doesn't give the keyboard frame in the current view's coordinate system, it gives it in the window one, so width/height can be reversed when in landscape mode.
-        endFrame = [self.view convertRect:endFrame fromView:nil];
+        CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        CGRect endFrame = [self.view convertRect:keyboardFrame fromView:nil];
         
-        CGFloat tableViewHeight = self.view.frame.size.height - endFrame.size.height - navBarHeight;
-        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
-        [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.alpha = 1;
-        }];
+        
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat keyboardHeight = CGRectGetHeight(endFrame);
+        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
+        CGRect targetRect = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + keyboardHeight));
+        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+            self.typeAheadViewController.view.frame = targetRect;
+            // Ensure alpha is 1.0 for the occasional situation where it's set to 0.0 during rotation
+            self.typeAheadViewController.view.alpha = 1.0;
+        } completion:nil];
     }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [UIView animateWithDuration:0.5 animations:^{
-            self.typeAheadViewController.view.alpha = 0;
-        } completion:^(BOOL finished) {
-            // We need to set the frame to nothing, as interface orientation changes can accidentally leave this table in view
-            if (finished) {
-                self.typeAheadViewController.view.frame = CGRectZero;
-            }
-        }];
+        self.isKeyboardVisible = NO;
+        NSDictionary *keyboardAnimationDetail = notification.userInfo;
+        UIViewAnimationCurve animationCurve = [keyboardAnimationDetail[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        CGFloat duration = [keyboardAnimationDetail[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolBarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
+        [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + toolBarHeight));
+        } completion:nil];
     }
 }
 
@@ -462,7 +522,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             resultsListViewController.hideDetailButton = YES;
-            resultsListViewController.view.frame = CGRectMake(-320, 64, 320, self.view.bounds.size.height - 64 - 44);
+            resultsListViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
             resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;
             
@@ -496,6 +556,21 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return resultsListViewController;
 }
 
+#pragma mark - Rotation
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self resizeAndAlignSearchBar];
+    
+    if (!self.isKeyboardVisible && [self.searchBar isFirstResponder] && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
+        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+    }
+}
+
 #pragma mark - UISearchBarDelegate Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
@@ -506,7 +581,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.navigationItem setLeftBarButtonItem:nil animated:YES];
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
         [self.searchBar setShowsCancelButton:YES animated:YES];
-
+        [self resizeAndAlignSearchBar];
+        
+        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
+        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
+        [UIView animateWithDuration:0.25 animations:^{
+            self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+            self.typeAheadViewController.view.alpha = 1;
+        }];
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -515,7 +598,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self closeSearchBar];
-}
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.typeAheadViewController.view.alpha = 0;
+        } completion:nil];
+    }}
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
@@ -563,6 +650,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+- (void)resizeAndAlignSearchBar
+{
+    // Force size to width of view
+    CGRect bounds = self.searchBarView.bounds;
+    bounds.size.width = CGRectGetWidth(self.view.bounds);
+    self.searchBarView.bounds = bounds;
+}
+
 #pragma mark - In App Linking
 
 - (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
@@ -601,33 +696,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
-        MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-        detailVC.place = place;
-        self.currentPlacePopoverController = [[UIPopoverController alloc] initWithContentViewController:detailVC];
-        self.currentPlacePopoverController.delegate = self;
-        UIView *annotationView = [self.mapView viewForAnnotation:place];
-        
-        CGFloat tableHeight = 0;
-        for (NSInteger section = 0; section < [detailVC numberOfSectionsInTableView:detailVC.tableView]; section++) {
-            for (NSInteger row = 0; row < [detailVC tableView:detailVC.tableView numberOfRowsInSection:section]; row++) {
-                tableHeight += [detailVC tableView:detailVC.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
-            }
-        }
-        
-        CGFloat navbarHeight = 44;
-        CGFloat statusBarHeight = 20;
-        CGFloat toolbarHeight = 44;
-        CGFloat padding = 30;
-        CGFloat maxPopoverHeight = self.view.bounds.size.height - navbarHeight - statusBarHeight - toolbarHeight - (2 * padding);
-        
-        if (tableHeight > maxPopoverHeight) {
-            tableHeight = maxPopoverHeight;
-        }
-        
-        self.currentPlacePopoverController.passthroughViews = @[self.navigationController.toolbar];
-        [self.currentPlacePopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
-        [self.currentPlacePopoverController presentPopoverFromRect:annotationView.bounds inView:annotationView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self presentCalloutForAnnotationView:view];
     } else {
         [self addCalloutTapGestureRecognizerToAnnotationView:view];
     }
@@ -637,6 +706,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self removeCalloutTapGestureFromAnnotationView:view];
+    }
+    else if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
+        [self.calloutView dismissCalloutAnimated:YES];
     }
 }
 
@@ -661,6 +733,35 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
+    }
+}
+
+#pragma mark - Callout View
+
+- (void)presentCalloutForAnnotationView:(MKAnnotationView *)annotationView
+{
+    MITMapPlace *place = annotationView.annotation;
+    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.place = place;
+    
+    detailVC.view.frame = CGRectMake(0, 0, 295, 270);
+    
+    SMCalloutView *calloutView = self.calloutView;
+    calloutView.contentView = detailVC.view;
+    calloutView.contentView.clipsToBounds = YES;
+    calloutView.calloutOffset = annotationView.calloutOffset;
+        
+    self.calloutView = calloutView;
+    self.calloutViewController = detailVC;
+    
+    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    
+    // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
+    if (calloutView.currentArrowDirection == SMCalloutArrowDirectionUp) {
+        detailVC.view.frame = CGRectMake(0, 17, 320, 260);
+    }
+    else {
+        detailVC.view.frame = CGRectMake(0, 5, 320, 260);
     }
 }
 
@@ -698,6 +799,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+#pragma mark - SMCalloutViewDelegate Methods
+
+- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+{
+    MKMapView *mapView = self.mapView;
+    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
+                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
+    [mapView setCenterCoordinate:newCenter animated:YES];
+    return kSMCalloutViewRepositionDelayForUIScrollView;
+}
+
 #pragma mark - MITMapResultsListViewControllerDelegate
 
 - (void)resultsListViewController:(MITMapResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
@@ -710,9 +823,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectPlace:(MITMapPlace *)place
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithPlace:place];
+            }];
+        } else {
             [self setPlacesWithPlace:place];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
@@ -723,9 +841,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithCategory:category];
+            }];
+        } else {
             [self setPlacesWithCategory:category];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
@@ -736,9 +859,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectQuery:(NSString *)query
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        if (self.presentedViewController) {
+            [self dismissViewControllerAnimated:YES completion:^{
+                [self setPlacesWithQuery:query];
+            }];
+        } else {
             [self setPlacesWithQuery:query];
-        }];
+            [self.searchBar resignFirstResponder];
+        }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
@@ -750,11 +878,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    if (popoverController == self.currentPlacePopoverController) {
-        for (id<MKAnnotation> annotation in self.mapView.selectedAnnotations) {
-            [self.mapView deselectAnnotation:annotation animated:NO];
-        }
-    } else if (popoverController == self.typeAheadPopoverController) {
+    if (popoverController == self.typeAheadPopoverController) {
         [self.searchBar resignFirstResponder];
     }
 }
@@ -771,7 +895,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (UISearchBar *)searchBar
 {
     if (!_searchBar) {
-        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-10, 0, 340, 44)];
+        _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         _searchBar.searchBarStyle = UISearchBarStyleMinimal;
         _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _searchBar.placeholder = @"Search MIT Campus";

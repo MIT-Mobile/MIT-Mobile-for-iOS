@@ -105,7 +105,12 @@
     MITCheckAsset(MITImageMapAnnotationUserLocation);
     MITCheckAsset(MITImageMapAnnotationPin);
     MITCheckAsset(MITImageMapAnnotationPlacePin);
-
+    MITCheckAsset(MITImageMapPinBallBlack);
+    MITCheckAsset(MITImageMapPinBallBlue);
+    MITCheckAsset(MITImageMapPinBallRed);
+    MITCheckAsset(MITImageMapPinNeedle);
+    MITCheckAsset(MITImageMapPinShadow);
+    
     MITCheckAsset(MITImageMapCategoryAthenaClusters);
     MITCheckAsset(MITImageMapCategoryBuildings);
     MITCheckAsset(MITImageMapCategoryCourtsAndGreenspaces);
@@ -205,22 +210,14 @@
 
 #pragma mark - Global Assets
     MITCheckAsset(MITImageNameEmail);
-    MITCheckAsset(MITImageNameEmailHighlight);
     MITCheckAsset(MITImageNameMap);
-    MITCheckAsset(MITImageNameMapHighlight);
     MITCheckAsset(MITImageNamePeople);
-    MITCheckAsset(MITImageNamePeopleHighlight);
     MITCheckAsset(MITImageNamePhone);
-    MITCheckAsset(MITImageNamePhoneHighlight);
     MITCheckAsset(MITImageActionExternalWhite);
     MITCheckAsset(MITImageActionExternal);
-    MITCheckAsset(MITImageActionExternalHighlight);
     MITCheckAsset(MITImageNameEmergency);
-    MITCheckAsset(MITImageNameEmergencyHighlight);
     MITCheckAsset(MITImageNameSecure);
-    MITCheckAsset(MITImageNameSecureHighlight);
     MITCheckAsset(MITImageNameCalendar);
-    MITCheckAsset(MITImageNameCalendarHighlight);
     MITCheckAsset(MITImageNameShare);
 
     MITCheckAsset(MITImageNameLeftArrow);
