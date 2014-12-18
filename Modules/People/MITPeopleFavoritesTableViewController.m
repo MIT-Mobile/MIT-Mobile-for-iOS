@@ -1,10 +1,3 @@
-//
-//  MITPeopleFavoritesTableViewController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleFavoritesTableViewController.h"
 #import "PeopleFavoriteData.h"
 

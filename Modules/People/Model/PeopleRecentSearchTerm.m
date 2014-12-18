@@ -1,10 +1,3 @@
-//
-//  PeopleRecentSearchTerm.m
-//  MIT Mobile
-//
-//
-//
-
 #import "PeopleRecentSearchTerm.h"
 #import "PeopleRecentSearchTermList.h"
 

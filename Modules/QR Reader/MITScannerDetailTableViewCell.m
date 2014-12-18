@@ -1,8 +1,3 @@
-//
-//  MITScannerDetailTableViewCell.m
-//  MIT Mobile
-//
-
 #import "MITScannerDetailTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 

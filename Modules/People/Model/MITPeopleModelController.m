@@ -1,10 +1,3 @@
-//
-//  MITPeopleModelController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleModelController.h"
 #import "MITCoreDataController.h"
 #import "PeopleRecentSearchTermList.h"

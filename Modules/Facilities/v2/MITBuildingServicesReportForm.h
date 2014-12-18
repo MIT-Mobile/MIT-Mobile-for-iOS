@@ -1,9 +1,3 @@
-//
-//  MITBuildingServicesReportForm.h
-//  MIT Mobile
-//
-//
-
 #import <Foundation/Foundation.h>
 
 #import "FacilitiesLocation.h"

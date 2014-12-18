@@ -1,10 +1,3 @@
-//
-//  PeopleFavoriteData.h
-//  MIT Mobile
-//
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "PersonDetails.h"
 

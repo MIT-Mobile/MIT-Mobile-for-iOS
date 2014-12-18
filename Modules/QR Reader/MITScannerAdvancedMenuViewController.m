@@ -1,8 +1,3 @@
-//
-//  MITScannerAdvancedMenuViewController.m
-//  MIT Mobile
-//
-
 #import "MITScannerAdvancedMenuViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITBatchScanningCell.h"

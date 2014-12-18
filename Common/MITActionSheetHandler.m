@@ -1,9 +1,3 @@
-//
-//  MITActionSheetHandler.m
-//  MIT Mobile
-//
-//
-
 #import "MITActionSheetHandler.h"
 #import "UIKit+MITAdditions.h"
 

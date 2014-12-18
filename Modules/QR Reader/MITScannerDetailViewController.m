@@ -1,8 +1,3 @@
-//
-//  MITScannerDetailViewController.m
-//  MIT Mobile
-//
-
 #import "MITScannerDetailViewController.h"
 #import "QRReaderResult.h"
 #import "CoreDataManager.h"

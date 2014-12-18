@@ -1,8 +1,3 @@
-//
-//  MITFacilitiesHomeViewController.m
-//  MIT Mobile
-//
-
 #import "MITFacilitiesHomeViewController.h"
 #import "MITBuildingServicesReportForm.h"
 #import "MITActionSheetHandler.h"

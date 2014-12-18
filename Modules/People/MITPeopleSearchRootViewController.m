@@ -1,10 +1,3 @@
-//
-//  MITPeopleSearchRootViewController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleSearchRootViewController.h"
 #import "MITPeopleSearchHandler.h"
 #import "MITPeopleFavoritesTableViewController.h"

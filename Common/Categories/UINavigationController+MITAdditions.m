@@ -1,8 +1,3 @@
-//
-//  UINavigationController+MITAdditions.m
-//  MIT Mobile
-//
-
 #import "UINavigationController+MITAdditions.h"
 
 @implementation UINavigationController (MITAdditions)

@@ -1,10 +1,3 @@
-//
-//  PeopleSearchResultsViewController.h
-//  MIT Mobile
-//
-//
-//
-
 #import <UIKit/UIKit.h>
 
 #import "MITPeopleSearchHandler.h"

@@ -1,10 +1,3 @@
-//
-//  MITPeopleSearchRootViewController.h
-//  MIT Mobile
-//
-//
-//
-
 #import <UIKit/UIKit.h>
 #import "PersonDetails.h"
 

@@ -1,9 +1,3 @@
-//
-//  MITBuildingServicesReportForm.m
-//  MIT Mobile
-//
-//
-
 #import "MITTouchstoneController.h"
 #import "MITTouchstoneRequestOperation.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"

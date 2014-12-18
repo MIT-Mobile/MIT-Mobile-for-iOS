@@ -1,8 +1,3 @@
-//
-//  MITBatchScanningCell.h
-//  MIT Mobile
-//
-
 #import <UIKit/UIKit.h>
 
 @class MITBatchScanningCell;

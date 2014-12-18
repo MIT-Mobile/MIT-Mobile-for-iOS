@@ -1,10 +1,3 @@
-//
-//  PeopleSearchResultsViewController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleSearchResultsViewController.h"
 #import "PersonDetails.h"
 

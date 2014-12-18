@@ -1,8 +1,3 @@
-//
-//  MITScannerAdvancedMenuViewController.h
-//  MIT Mobile
-//
-
 #import <UIKit/UIKit.h>
 
 extern NSString * const kBatchScanningSettingKey;

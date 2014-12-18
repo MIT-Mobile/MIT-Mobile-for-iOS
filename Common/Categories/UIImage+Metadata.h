@@ -1,8 +1,3 @@
-//
-//  UIImage+Metadata.h
-//  MIT Mobile
-//
-
 #import <UIKit/UIKit.h>
 
 @interface UIImage (Metadata)

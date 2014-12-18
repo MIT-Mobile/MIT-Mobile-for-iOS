@@ -1,10 +1,3 @@
-//
-//  MITPeopleFavoritesTableViewController.h
-//  MIT Mobile
-//
-//
-//
-
 #import <UIKit/UIKit.h>
 #import "MITPeopleSearchRootViewController.h"
 

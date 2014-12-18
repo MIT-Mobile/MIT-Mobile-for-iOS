@@ -1,8 +1,3 @@
-//
-//  MITScannerMgr.m
-//  MIT Mobile
-//
-
 #import "MITScannerMgr.h"
 
 NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";

@@ -1,8 +1,3 @@
-//
-//  MITScannerMgr.h
-//  MIT Mobile
-//
-
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 

@@ -1,10 +1,3 @@
-//
-//  PeopleSearchHandler.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleSearchHandler.h"
 #import "MITPeopleResource.h"
 #import "MITPeopleModelController.h"

@@ -1,8 +1,3 @@
-//
-//  MITScannerHistoryViewController.m
-//  MIT Mobile
-//
-
 #import "MITScannerHistoryViewController.h"
 #import "QRReaderHistoryData.h"
 #import "QRReaderResult.h"

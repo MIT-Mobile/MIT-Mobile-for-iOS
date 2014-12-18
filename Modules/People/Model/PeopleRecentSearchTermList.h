@@ -1,10 +1,3 @@
-//
-//  PeopleRecentSearchTermList.h
-//  MIT Mobile
-//
-//
-//
-
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"

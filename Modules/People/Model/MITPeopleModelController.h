@@ -1,10 +1,3 @@
-//
-//  MITPeopleModelController.h
-//  MIT Mobile
-//
-//
-//
-
 #import <Foundation/Foundation.h>
 
 @interface MITPeopleModelController : NSObject

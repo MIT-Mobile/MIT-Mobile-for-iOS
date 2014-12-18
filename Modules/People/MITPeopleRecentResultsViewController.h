@@ -1,10 +1,3 @@
-//
-//  MITPeopleRecentResultsViewController.h
-//  MIT Mobile
-//
-//
-//
-
 #import <UIKit/UIKit.h>
 #import "MITPeopleSearchRootViewController.h"
 #import "MITPeopleSearchHandler.h"

@@ -1,8 +1,3 @@
-//
-//  MITBatchScanningCell.m
-//  MIT Mobile
-//
-
 #import "MITBatchScanningCell.h"
 
 @interface MITBatchScanningCell()

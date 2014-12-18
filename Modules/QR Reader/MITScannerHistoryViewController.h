@@ -1,8 +1,3 @@
-//
-//  MITScannerHistoryViewController.h
-//  MIT Mobile
-//
-
 #import <UIKit/UIKit.h>
 
 @interface MITScannerHistoryViewController : UIViewController
