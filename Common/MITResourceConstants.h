@@ -128,10 +128,7 @@ extern NSString * const MITImageShuttlesBusBubble;
 extern NSString * const MITImageShuttlesAlertOn;
 extern NSString * const MITImageShuttlesAlertOff;
 extern NSString * const MITImageShuttlesAnnotationBus;
-extern NSString * const MITImageShuttlesAnnotationNextStop;
-extern NSString * const MITImageShuttlesAnnotationNextStopSelected;
 extern NSString * const MITImageShuttlesAnnotationCurrentStop;
-extern NSString * const MITImageShuttlesAnnotationCurrentStopSelected;
 
 
 #pragma mark - Tours

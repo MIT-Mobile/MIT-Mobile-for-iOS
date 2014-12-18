@@ -157,10 +157,7 @@
     MITCheckAsset(MITImageShuttlesAlertOn);
     MITCheckAsset(MITImageShuttlesAlertOff);
     MITCheckAsset(MITImageShuttlesAnnotationBus);
-    MITCheckAsset(MITImageShuttlesAnnotationNextStop);
-    MITCheckAsset(MITImageShuttlesAnnotationNextStopSelected);
     MITCheckAsset(MITImageShuttlesAnnotationCurrentStop);
-    MITCheckAsset(MITImageShuttlesAnnotationCurrentStopSelected);
 
 
 #pragma mark - Tours

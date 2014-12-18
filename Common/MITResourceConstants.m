@@ -132,10 +132,7 @@ NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
 NSString * const MITImageShuttlesAnnotationBus = @"shuttles-annotation-bus";
-NSString * const MITImageShuttlesAnnotationNextStop = @"shuttles-annotation-next-stop";
-NSString * const MITImageShuttlesAnnotationNextStopSelected = @"shuttles-annotation-next-stop-selected";
 NSString * const MITImageShuttlesAnnotationCurrentStop = @"shuttles-annotation-current-stop";
-NSString * const MITImageShuttlesAnnotationCurrentStopSelected = @"shuttles-annotation-current-stop-selected";
 
 
 #pragma mark - Tours

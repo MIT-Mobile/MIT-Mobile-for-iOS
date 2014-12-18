@@ -648,24 +648,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return [UIImage imageNamed:MITImageMapAnnotationPlacePin];
     }
     else {
-        MITShuttleStopState state = MITShuttleStopStateDefault;
-        if ([self.route.nextStops containsObject:stop]) {
-            state = state | MITShuttleStopStateNext;
-        }
-        if ([self.stop isEqual:stop]) {
-            state = state | MITShuttleStopStateSelected;
-        }
-        
-        if (state == MITShuttleStopStateDefault) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
-        } else if (state == MITShuttleStopStateNext) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
-        } else if (state == MITShuttleStopStateSelected) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
-        } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
-        }
-        return nil;
+        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
     }
 }
 
