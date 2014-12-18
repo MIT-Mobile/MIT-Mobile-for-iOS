@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic) BOOL isShowingIpadResultsList;
 @property (nonatomic, strong) SMCalloutView *calloutView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
+@property (nonatomic, strong) MITMapPlace *currentlySelectedPlace;
 
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
@@ -209,6 +210,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
+
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
+    }
     
     self.calloutView = calloutView;
     
@@ -418,11 +423,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         CGRect keyboardFrame = [keyboardAnimationDetail[UIKeyboardFrameEndUserInfoKey] CGRectValue];
         CGRect endFrame = [self.view convertRect:keyboardFrame fromView:nil];
         
-        
-        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+        CGFloat toolBarHeight = CGRectGetMaxY(self.navigationController.toolbar.frame);
         CGFloat keyboardHeight = CGRectGetHeight(endFrame);
         CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
-        CGRect targetRect = CGRectMake(0, navBarHeight, CGRectGetWidth(self.view.bounds), viewHeight - (navBarHeight + keyboardHeight));
+        CGRect targetRect = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), viewHeight + toolBarHeight - keyboardHeight);
         [UIView animateWithDuration:duration delay:0.0 options:(animationCurve << 16) animations:^{
             self.typeAheadViewController.view.frame = targetRect;
             // Ensure alpha is 1.0 for the occasional situation where it's set to 0.0 during rotation
@@ -695,20 +699,20 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        [self presentCalloutForAnnotationView:view];
-    } else {
-        [self addCalloutTapGestureRecognizerToAnnotationView:view];
+    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            [self presentIPadCalloutForAnnotationView:view];
+        } else {
+            [self presentIPhoneCalloutForAnnotationView:view];
+        }
     }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self removeCalloutTapGestureFromAnnotationView:view];
-    }
-    else if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
+    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
         [self.calloutView dismissCalloutAnimated:YES];
+        self.currentlySelectedPlace = nil;
     }
 }
 
@@ -738,9 +742,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - Callout View
 
-- (void)presentCalloutForAnnotationView:(MKAnnotationView *)annotationView
+- (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
     MITMapPlace *place = annotationView.annotation;
+    self.currentlySelectedPlace = place;
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.place = place;
     
@@ -765,38 +770,16 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
-#pragma mark - Callout Tap Gesture Recognizer
-
-- (void)addCalloutTapGestureRecognizerToAnnotationView:(MKAnnotationView *)view
+- (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    // Make the entire callout tappable, not just the disclosure button
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mapViewDidSelectAnnotationCallout:)];
-    [view addGestureRecognizer:tapGestureRecognizer];
-}
+    MITMapPlace *place = annotationView.annotation;
+    
+    self.currentlySelectedPlace = place;
+    self.calloutView.title = place.title;
+    self.calloutView.subtitle = place.subtitle;
+    self.calloutView.calloutOffset = annotationView.calloutOffset;
 
-- (void)removeCalloutTapGestureFromAnnotationView:(MKAnnotationView *)view
-{
-    if ([view.gestureRecognizers count] > 0) {
-        UITapGestureRecognizer *tapGestureRecognizer = nil;
-        for (UIGestureRecognizer *gestureRecognizer in view.gestureRecognizers) {
-            if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-                tapGestureRecognizer = (UITapGestureRecognizer *)gestureRecognizer;
-                break;
-            }
-        }
-        if (tapGestureRecognizer) {
-            [view removeGestureRecognizer:tapGestureRecognizer];
-        }
-    }
-}
-
-- (void)mapViewDidSelectAnnotationCallout:(UITapGestureRecognizer *)recognizer
-{
-    MKAnnotationView *annotationView = (MKAnnotationView *)recognizer.view;
-    if ([annotationView isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
-        [self pushDetailViewControllerForPlace:place];
-    }
+    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
 #pragma mark - SMCalloutViewDelegate Methods
@@ -809,6 +792,21 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
     [mapView setCenterCoordinate:newCenter animated:YES];
     return kSMCalloutViewRepositionDelayForUIScrollView;
+}
+
+- (void)calloutViewClicked:(SMCalloutView *)calloutView
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self pushDetailViewControllerForPlace:self.currentlySelectedPlace];
+    }
+}
+
+- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        return YES;
+    }
+    return NO;
 }
 
 #pragma mark - MITMapResultsListViewControllerDelegate
