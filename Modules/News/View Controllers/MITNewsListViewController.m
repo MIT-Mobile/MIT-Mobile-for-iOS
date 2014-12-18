@@ -307,22 +307,6 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     return MIN(self.maximumNumberOfStoriesPerCategory,[self numberOfStoriesForCategoryInSection:section]);
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-
-{
-    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
-        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
-            
-            if (!_errorMessage && !_storyUpdateInProgress && !_displayLoadingMoreMessage && !_storyRefreshInProgress) {
-                [self getMoreStoriesForSection:indexPath.section];
-            }
-            
-        } else {
-            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
-        }
-    }
-}
-
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
@@ -382,6 +366,22 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
         cell.separatorInset = UIEdgeInsetsMake(0, separatorPadding + rightPadding, 0, separatorPadding);
     }
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+
+{
+    if ([cell.reuseIdentifier isEqualToString:MITNewsLoadMoreCellIdentifier]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreTableViewCell class]]) {
+            
+            if (!_errorMessage && !_storyUpdateInProgress && !_displayLoadingMoreMessage && !_storyRefreshInProgress) {
+                [self getMoreStoriesForSection:indexPath.section];
+            }
+            
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreTableViewCell class]),NSStringFromClass([cell class]));
+        }
+    }
 }
 
 #pragma mark UITableViewDataSourceDynamicSizing
