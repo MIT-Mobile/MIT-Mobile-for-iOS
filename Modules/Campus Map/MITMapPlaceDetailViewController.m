@@ -40,19 +40,9 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
 @implementation MITMapPlaceDetailViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -61,6 +51,12 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
     [self.tableView registerNib:[UINib nibWithNibName:kMITMapPlaceNameCellNibName bundle:nil] forCellReuseIdentifier:kMITMapPlaceNameCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:kMITMapPlacePhotoCellNibName bundle:nil] forCellReuseIdentifier:kMITMapPlacePhotoCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:kMITMapPlaceBottomButtonCellNibName bundle:nil] forCellReuseIdentifier:kMITMapPlaceBottomButtonCellIdentifier];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated

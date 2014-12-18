@@ -23,13 +23,8 @@
         self.centerOffset = CGPointMake(0, -self.image.size.height / 2);
         self.calloutOffset = CGPointMake((redPinBall.size.width - self.image.size.width)/2, 0);
         
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-            self.canShowCallout = YES;
-        } else {
-            self.canShowCallout = NO;
-        }
+        self.canShowCallout = NO;
         
-        [self setupDisclosureButton];
         [self setupNumberLabel];
     }
     return self;
@@ -71,13 +66,6 @@
     numberLabel.textAlignment = NSTextAlignmentCenter;
     [self addSubview:numberLabel];
     self.numberLabel = numberLabel;
-}
-
-- (void)setupDisclosureButton
-{
-    UIButton *disclosureButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [disclosureButton setImage:[UIImage imageNamed:MITImageDisclosureRight] forState:UIControlStateNormal];
-    self.rightCalloutAccessoryView = disclosureButton;
 }
 
 - (void)setNumber:(NSInteger)number
