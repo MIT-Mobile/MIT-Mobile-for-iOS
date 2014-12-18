@@ -54,7 +54,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     
     switch (section) {
         case kMITVenueListSectionAnnouncements:
-            return @"ANNOUNCEMENTS";
+            return self.diningData.announcementsHTML ? @"ANNOUNCEMENTS" : nil;
             break;
         case kMITVenueListSectionVenues:
             return @"VENUES";
@@ -72,7 +72,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
 {
     switch (section) {
         case kMITVenueListSectionAnnouncements:
-            return 1;
+            return self.diningData.announcementsHTML ? 1 : 0;
             break;
         case kMITVenueListSectionVenues:
             return self.houseVenues.count;
@@ -208,7 +208,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
     _diningData = diningData;
     self.houseVenues = [diningData.venues.house array];
     self.diningLinks = [diningData.links array];
-    
+
     [self.tableView reloadData];
 }
 
