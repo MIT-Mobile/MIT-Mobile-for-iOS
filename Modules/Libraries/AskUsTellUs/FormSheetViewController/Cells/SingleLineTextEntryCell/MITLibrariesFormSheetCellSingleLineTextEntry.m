@@ -14,6 +14,7 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
     [super awakeFromNib];
     self.textField.delegate = self;
     [self.textField addTarget:self action:@selector(textFieldTextDidChange:) forControlEvents:UIControlEventEditingChanged];
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)configureCellForFormSheetElement:(MITLibrariesFormSheetElement *)element
@@ -25,6 +26,13 @@ NSString * const MITLibrariesFormSheetCellSingleLineTextEntryNibName = @"MITLibr
 + (CGFloat)heightForCell
 {
     return 44.0;
+}
+
+#pragma mark - MITLibrariesFormSheetTextEntryCellProtocol
+
+- (void)makeTextEntryFirstResponder
+{
+    [self.textField becomeFirstResponder];
 }
 
 #pragma mark - TextFieldTextDidChange

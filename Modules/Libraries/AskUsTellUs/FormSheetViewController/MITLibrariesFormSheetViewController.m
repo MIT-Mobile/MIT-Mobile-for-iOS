@@ -424,9 +424,13 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
             }
             break;
         }
-        default:
-            // Ignore other touches
-            break;
+        case MITLibrariesFormSheetElementTypeSingleLineTextEntry:
+        case MITLibrariesFormSheetElementTypeMultiLineTextEntry: {
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            if ([cell conformsToProtocol:@protocol(MITLibrariesFormSheetTextEntryCellProtocol)]) {
+                [(UITableViewCell<MITLibrariesFormSheetTextEntryCellProtocol> *)cell makeTextEntryFirstResponder];
+            }
+        }
     }
 }
 
